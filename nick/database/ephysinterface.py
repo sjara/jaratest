@@ -347,7 +347,7 @@ class EphysInterface(object):
             clusters.append(cluster)
 
         dataList = zip(sessions, tetrodes, behavSuffixs, clusters)
-        flipper = extraplots.FlipThrough(self._cluster_tuning, datalist)
+        flipper = extraplots.FlipThrough(self._cluster_tuning, dataList)
         return flipper
 
     @staticmethod
