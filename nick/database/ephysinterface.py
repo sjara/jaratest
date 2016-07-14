@@ -315,8 +315,10 @@ class EphysInterface(object):
         print 'Clustering tetrode {}'.format(tetrode)
         sessionString = self.loader.get_session_filename(session)
         oneTT = spikesorting.TetrodeToCluster(self.animalName, sessionString, tetrode)
-        oneTT.run_clustering()
+        oneTT.load_waveforms()
         oneTT.create_fet_files()
+        oneTT.run_clustering()
+        oneTT.save_report()
 
     def cluster_array(self, session, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8]):
         for tetrode in tetrodes:
