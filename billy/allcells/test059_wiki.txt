@@ -1,0 +1,896 @@
+{{lowercase}}
+== Animal information ==
+* '''DOB''': 2014-03-18
+* '''Strain''': C57BL/6J
+* '''Experimenter''': Billy
+* '''Study''': Tetrode recordings from auditory striatum during switching task
+
+== Procedures ==
+* 2015-05-31: Billy implanted 8 tetrodes coated in DiI to target right auditory striatum.
+** A-P: -1.7mm from Bregma
+** M-L: 3.5mm right
+** D-V: -2.0mm from brain surface on day of surgery
+* 2015-08-11: Perfused and brain extracted
+
+== Skull measurements ==
+From Bregma (where sutures meet) to Lambda:
+* X: 0.00mm left
+* Y: -3.64mm back
+* Z: -0.07mm up
+
+From where Bregma lines meet to where they would have met: 0.47mm
+
+From where Lambda lines meet to where they would have met: 0mm
+
+Notes: Bregma lines come in and dip low before meeting together. Point where lines met midline was used as origin for measurements. Point where they would have met was used (not where they actually met) in making craniotomies.
+
+Z coordinate at sight of craniotomy:
+* Left side: -0.46mm
+* right side: -0.53mm
+
+== Details ==
+
+=== Purpose ===
+This animal was trained and implanted on the right side auditory striatum. The purpose was collect data from an awake, behaving mouse. We analyzed data from the animal doing the switching task.
+
+=== Going Deaf ===
+This animal we presume went deaf. He was very old when implanted. Then he was doing the switching task well but seemingly overnight, he couldn't do the switching task. We switched him to the psychometric curve and he couldn't perform. He even did the simple two frequency discrimination task and couldn't get it (he was guessing every time). He was implanted at 14 months old and went deaf at 16 months old.
+
+=== Superglue as first layer ===
+As with the last few animals, superglue was used as a first layer on the skull. This has proven to be very successful.
+
+=== Electrolytic Lesions ===
+Before, euthanizing this animal, electrolytic lesions were made. The polarity was switched so that the ground of the 12V DC source was touching the gold pins in the implant and the power was in the mouth of the mouse. The ground was just touched to the gold pins very quickly. The animal was still seen to jump. See electrolytic lesion section below to see lesion images.
+
+=== Skull screws to hold implant ===
+Three screws of size #000-120 were put into the skull. Two screws were in the front (anterior) of the skull in front of bregma (one on each side of bregma) and one on the opposite side of the implant. The holes were made first by hand drill using a 0.028" diameter drill bit. Drilling the holes caused a little bit of blood to come out. The screws were later covered with dental acrylic to securely attach the implant to the skull.
+
+=== Tetrode DiI coating ===
+The tetrodes were coated with DiI so that when the brain slices are imaged, where the tetrodes were inserted could clearly be seen. These can be seen in the images labelled overlay in the brain slice images. They are useful in determining whether the target was reached and if the coordinates to get to the auditory striatum were correct or not.
+
+=== Ground wire ===
+Stainless steel (0.005" bare, 0.008" coated, annealed) was used for ground wire. A 1mm hook was made and placed under the skull after a small craniotomy. The ground wire craniotomy was made on the same side of the midline from where the implant is.
+
+== Tetrode Lengths ==
+The tetrodes were cut at an angle so that not all were the same length. The longest tetrode was inserted 2mm into the brain. The lengths listed below are lengths from the longest tetrode. (These are according to the names of the tetrodes on open-ephys NOT the EIB)
+* TT8: 0um
+* TT1: 100um
+* TT5: 190um
+* TT7: 280um
+* TT2: 510um
+* TT3,TT4: 610um
+* TT6: 930um
+
+
+The tetrode impedences seemed to be in the normal range of 100-400kOhms when tested except for TT6. TT6 electrodes #3 and #4 have 0.55kOhm and ).46kOhm impedance. They may be shorted to Gnd.
+
+== Tetrode advance ==
+* starting depth of tetrodes in brain: 2.0 mm from surface
+* 1 turn is 317 micrometers
+* For screw positions, up (^) is the anterior of the brain
+Time // Amount Turned // Total Turned // Screw Position // Sound Response // Frequency Response // Activity Comments
+
+=== 2015-06-10 ===
+* 4:22 // 0.000 turn // 0.000 turn // ^ // no_ // no_ // Everything is noisy. TT1 and TT3 have big spikes. TT2, TT4, and TT7 have medium spikes.
+* 4:26 // 0.250 turn // 0.250 turn // > // no_ // no_ // Everything is noisy. TT1 and TT3 have big spikes. TT2, TT4, and TT6 have medium spikes.
+* 4:34 // 0.250 turn // 0.500 turn // v // no_ // no_ // Everything is noisy. TT1, TT3, and TT4 have big spikes. TT7 has medium spikes.
+* 4:39 // 0.250 turn // 0.750 turn // < // no_ // no_ // Everything is noisy. TT1, TT3, and TT4 have big spikes. TT2 and TT7 have medium spikes.
+* 4:44 // 0.250 turn // 1.000 turn // ^ // no_ // no_ // Everything is noisy. TT1, TT3, and TT4 have big spikes. TT5 and TT7 have medium spikes. TT2 and TT6 have medium, inverted spikes. Depth: 2.32mm
+
+=== 2015-06-11 ===
+* 5:46 // 0.000 turn // 1.000 turn // ^ // no_ // no_ // Everything is noisy. TT1,TT3,TT4 and TT8 have big spikes. TT5 and TT7 have medium spikes. TT7 occasionally inverted. 
+* 5:56 // 0.250 turn // 1.250 turn // > // no_ // no_ // Everything is noisy. TT1,TT3,TT4 and TT8 have big spikes. TT2, TT5, TT6 and TT7 have medium spikes. TT7 occasionally inverted. 
+* 6:16 // 0.250 turn // 1.500 turn // v // no_ // no_ // Everything is noisy. TT1,TT3,TT4, TT5 and TT8 have big spikes. TT2, TT6 and TT7 have medium spikes. 
+* 6:31 // 0.250 turn // 1.750 turn // < // no_ // no_ // Everything is noisy. TT1,TT3,TT4, and TT5 have big spikes. 
+* 6:37 // 0.250 turn // 2.000 turn // < // no_ // no_ // Everything is noisy. TT1,TT3,TT7, and TT8 have big spikes. Depth: 2.64mm
+
+=== 2015-06-12 ===
+* 11:46 // 0.000 turn // 2.000 turn // ^ // no_ // no_ // Everything is noisy. TT1 and TT7 have big spikes.
+* 11:52 // 0.250 turn // 2.250 turn // > // no_ // no_ // Everything is noisy. TT1, TT6, and TT7 have big spikes.
+* 11:56 // 0.250 turn // 2.500 turn // v // yes // no_ // Everything is noisy. TT1, TT6, and TT7 have big spikes. TT8 has medium spikes. 
+* 12:02 // 0.250 turn // 2.750 turn // < // yes // no_ // Everything is noisy. TT1, TT3, TT6, TT7, and TT8 have big spikes. TT1 looks less noisy.
+* 12:10 // 0.250 turn // 3.000 turn // ^ // yes // yes // Everything is noisy. Less noise on TT1, TT2, TT3, and TT5. TT2, TT5, TT6, TT7, and TT8 have big spikes. Depth: 2.96mm
+
+=== 2015-06-15 ===
+* 7:32 // 0.000 turn // 3.000 turn // ^ // yes // yes // Everything is noisy. Less noise on TT1, TT3, TT4 and TT5. TT2, TT3, TT6, TT7, and TT8 have big spikes. TT7 has tall skinny spikes. Medium spikes on TT1 and TT5 are sometimes inverted. Depth: 2.96mm
+
+=== 2015-06-16 ===
+* 3:36 // 0.000 turn // 3.000 turn // ^ // yes // yes // Everything is noisy. TT1, TT2, TT3,TT4, TT6, TT7, and TT8 have big spikes. TT5 has wide medium spikes. TT1, TT2, TT6 and TT7 have tall skinny spikes. Depth: 2.96mm
+
+=== 2015-06-17 ===
+* 9:08 // 0.000 turn // 3.000 turn // ^ // yes // yes // Everything is noisy. TT1, TT2,TT4, TT6, and TT7 have big spikes. TT3, TT5 and TT8 have medium spikes. TT1, TT2, TT4, TT6 and TT7 have tall, narrow spikes. Spikes on TT5 and TT8 are fatter. Depth: 2.96mm
+
+=== 2015-06-18 ===
+* 2:14 // 0.000 turn // 3.000 turn // ^ // yes // yes // Everything is noisy. TT1, TT2,TT4, TT5, TT6, TT7, and TT8 have big spikes. TT3 has medium spikes. TT1, TT2, TT4, TT6 and TT7 have tall, narrow spikes. Spikes on TT5 and TT8 are fatter. Depth: 2.96mm
+
+=== 2015-06-19 ===
+* 1:40 // 0.000 turn // 3.000 turn // ^ // yes // yes // Everything is noisy. TT1, TT2,TT4, TT5, TT6, TT7, and TT8 have big spikes. TT3 has medium spikes. TT1, TT2, TT4, TT6 and TT7 have tall, narrow spikes. Spikes on TT5 and TT8 are fatter. Depth: 2.96mm
+* 4:13 // 0.000 turn // 3.125 turn // ^ // yes // yes // Everything is noisy. TT1, TT4, TT6, TT7, and TT8 have big spikes. TT3 and TT5 have medium spikes. TT1, TT4, TT6 and TT7 have tall, narrow spikes. Spikes on TT5 and TT8 are fatter.
+
+=== 2015-06-22 ===
+* 2:45 // 0.000 turn // 3.125 turn // ^ // yes // yes // Everything is noisy. All tetrodes have large spikes. TT1, TT2, TT4, TT6 and TT7 have tall, narrow spikes.
+
+=== 2015-06-23 ===
+* 2:45 // 0.000 turn // 3.125 turn // ^ // yes // yes // Everything is noisy. TT1, TT2, TT4, TT6, TT7 and TT8 have large spikes. TT3 and TT5 have medium spikes, except on channel 1. TT1, TT2, TT4, TT6 and TT7 have tall, narrow spikes. 
+
+=== 2015-06-24 ===
+* 1:15 // 0.000 turn // 3.125 turn // ^ // yes // yes // Everything is noisy. TT1, TT4, TT6, TT7 and TT8 have large spikes. TT2, TT3 and TT5 have medium spikes. TT1, TT2, TT4, TT6 and TT7 have tall, narrow spikes.
+
+=== 2015-06-25 ===
+* 2:59 // 0.000 turn // 3.125 turn // ^ // yes // yes // Everything is noisy. TT1, , TT2, TT3, TT4, TT6, and TT7 have large spikes. TT5 and TT8 have medium spikes. TT1, TT2, TT4, TT6 and TT7 have tall, narrow spikes. 
+
+=== 2015-06-26 ===
+* 3:15 // 0.000 turn // 3.125 turn // ^ // yes // yes // TT1, TT6, and TT7 have large spikes. TT2, TT3, TT4, TT5 and TT8 have medium spikes. TT1, TT2, TT6 and TT7 have tall, narrow spikes. 
+* 4:53 // 0.125 turn // 3.250 turn // > // no_ // no_ // TT1, TT6, and TT7 have large spikes. TT2, TT3, TT4, TT5 and TT8 have medium spikes. TT1, TT2, TT6 and TT7 have tall, narrow spikes. 
+
+=== 2015-06-28 ===
+* 4:48 // 0.000 turn // 3.250 turn // > // yes // yes // TT1, TT2, TT4, TT6, and TT7 have large spikes. Depth: 3.03mm
+
+=== 2015-06-29 ===
+* 5:15 // 0.000 turn // 3.250 turn // > // yes // yes // TT1, TT2, TT4, TT6, and TT7 have large spikes. 
+
+=== 2015-06-30 ===
+* 4:11 // 0.000 turn // 3.250 turn // > // yes // yes // TT1, TT3, TT6, and TT7 have large spikes. TT2, TT4, TT5 and TT8 have medium spikes. 
+
+=== 2015-07-01 ===
+* 2:46 // 0.000 turn // 3.250 turn // > // yes // yes // TT1, TT2, TT3, TT5, and TT8 have medium spikes. TT4, TT5, TT6, and TT7 have large spikes. 
+* 4:44 // 0.125 turn // 3.375 turn // > // no_ // no_ // TT1, TT2, TT3, TT5, and TT8 have medium spikes. TT4, TT5, TT6, and TT7 have large spikes. 
+
+=== 2015-07-02 ===
+* 3:17 // 0.000 turn // 3.375 turn // > // yes // yes // TT1, TT4, TT6, TT7, and TT8 have large spikes. TT2, TT3, and TT5 have medium spikes. 
+
+=== 2015-07-03 ===
+*12:18 // 0.000 turn // 3.375 turn // > // yes // yes // TT1, TT6, TT7, and TT8 have large spikes. TT2, TT3, TT4 and TT5 have medium spikes. 
+
+=== 2015-07-14 ===
+*4:15 // 0.000 turn // 3.375 turn // > // no_ // no_ // TT1, TT2, TT4, TT6, TT7, and TT8 have large spikes. TT3 has medium spikes. 
+*4:30 // 0.125 turn // 3.500 turn // v // no_ // no_ // TT1, TT2, TT4, TT6, TT7, and TT8 have large spikes. TT3 has medium spikes. 
+*4:58 // 0.250 turn // 3.750 turn // < // no_ // no_ // TT1, TT2, TT4, TT6, TT7, and TT8 have large spikes. TT3 has medium spikes. 
+*5:14 // 0.250 turn // 4.000 turn // ^ // no_ // no_ // TT1, TT2, TT3 and TT4 have medium spikes. TT6 and TT8 have large spikes.
+
+=== 2015-07-16 ===
+*10:25 // 0.000 turn // 4.000 turn // ^ // no_ // no_ // Very noisy.
+*10:45 // 0.125 turn // 4.250 turn // > // no_ // no_ // Seems less noisy. TT1, TT3, TT4, TT6 and TT8 have large spikes. TT3 has medium spikes. 
+*11:10 // 0.000 turn // 4.500 turn // v // no_ // no_ // TT1, TT3, TT4, TT6 and TT8 have large spikes. TT5 has medium spikes. 
+
+=== 2015-07-17 ===
+*12:00 // 0.000 turn // 4.500 turn // v // no_ // no_ // TT1, TT2, TT6, TT7, and TT8 have large spikes. TT3 has medium and some inverted spikes. 
+
+=== 2015-07-20 ===
+*10:50 // 0.000 turn // 4.500 turn // v // no_ // no_ // Very noisy. TT1, TT2, TT6, and TT8 have large spikes. TT3, TT4 and TT7 have medium spikes. 
+
+
+=== Recordings ===
+test059noise parameters for sound response recordings:
+* Experiementer: billy
+* subject: test059
+* minimum frequency: 2000Hz
+* maximum frequency: 40000Hz
+* number of frequencies: 16
+* minimum intensity: 50dB
+* maximum intensity: 50dB
+* number of intensities: 1
+* tone duration: 0.1sec
+* minimum interstimulus interval: 0.5sec
+* maximum interstimulus interval: 1.0sec
+* amplitude: 0.3
+* presentation mode: random
+* sound type: noise
+
+test059freq parameters for sound response recordings:
+* Experiementer: billy
+* subject: test059
+* minimum frequency: 2000Hz
+* maximum frequency: 40000Hz
+* number of frequencies: 16
+* minimum intensity: 50dB
+* maximum intensity: 50dB
+* number of intensities: 1
+* tone duration: 0.1sec
+* minimum interstimulus interval: 0.5sec
+* maximum interstimulus interval: 1.0sec
+* amplitude: 0.3
+* presentation mode: random
+* sound type: chord
+
+==Experiments==
+
+===2015-06-10===
+* 0.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-10_16-18-56
+** TT8 #1 as Gnd, 250 trials of noise.
+** No sound response found.
+
+* 0.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-10_16-25-05
+** TT8 #1 as Gnd, 292 trials of noise.
+** Weak sound response found on TT1, TT2, and TT7.
+
+* 0.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-10_16-32-21
+** TT8 #1 as Gnd, 223 trials of noise.
+** Weak sound response found on TT1 and TT8.
+
+* 0.75 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-10_16-38-09
+** TT8 #1 as Gnd, 221 trials of noise.
+** Weak sound response found on TT1 and TT7.
+
+* 1.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-10_16-43-30
+** TT8 #1 as Gnd, 260 trials of noise.
+** Weak sound response found on TT1 and TT7.
+
+===2015-06-11===
+
+* 1.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-11_17-44-36
+** TT5 #1 as Gnd, 342 trials of noise.
+** Weak sound response on TT1, TT2, TT4, TT7. 
+
+* 1.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-11_17-58-35
+** TT5 #1 as Gnd, 432 trials of noise.
+** Weak sound response on TT5. 
+
+* 1.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-11_18-15-21
+** TT6 #3 as Gnd, 802 trials of noise.
+** Weak sound response on TT2, TT3, TT4, and TT5. 
+
+* 1.75 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-11_18-29-50
+** TT6 #3 as Gnd, 200 trials of noise.
+** Weak sound response on TT2, TT3, TT4, and TT5. 
+
+* 2.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-11_18-34-12
+** TT6 #3 as Gnd, 247 trials of noise.
+** Weak sound response on TT1, TT2, TT3, TT4, and TT7. 
+
+===2015-06-12===
+
+* 2.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-12_23-44-04
+** TT5 #1 as Gnd, 234 trials of noise.
+** Weak sound response on all tetrodes. 
+
+* 2.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-12_23-50-25
+** TT4 #1 as Gnd, 216 trials of noise.
+** Weak sound response on TT1 and TT5. 
+
+* 2.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-12_23-55-24
+** TT4 #1 as Gnd, 261 trials of noise.
+** Weak sound response on TT1, TT2, and TT5. 
+
+* 2.75 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-13_00-01-36
+** TT4 #1 as Gnd, 287 trials of noise.
+** Weak sound response on TT1 and TT5.
+
+* 3.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-13_00-10-49
+** TT4 #1 as Gnd, 353 trials of noise.
+** Weak sound response on TT1, TT2, TT5, TT6, and TT7.
+
+* 3.00 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-13_00-18-43
+** behavior recording name: test086_tuning_curve_20150613a.h5
+** TT4 #1 as Gnd, 552 trials
+** Weak frequency tuning found on TT1 (3.6k to 14.7kHz), TT5 (6.6k to 14.7kHz), TT7 (6.6k to 12kHz), and TT8 (8k to 14.7kHz).
+
+===2015-06-15===
+* 3.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-15_19-45-16
+** TT4 #1 as Gnd, 373 trials of noise.
+** Sound response on TT1, TT2, TT4, and TT7. Weak sound response on TT3, TT5, and TT8.
+
+* 3.00 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-15_19-45-16
+** behavior recording name: test086_tuning_curve_20150615a.h5
+** TT4 #1 as Gnd, 506 trials
+** Weak frequency tuning found on TT1 (2.44k to 17.99kHz), and TT2 (6.63k to 17.99kHz).
+
+===2015-06-16===
+* 3.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-16_16-07-12
+** TT8 #1 as Gnd, 506 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT5, and TT7.
+
+* 3.00 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-16_16-16-51
+** behavior recording name: test086_tuning_curve_20150616a.h5
+** TT8 #1 as Gnd, 508 trials
+** Possible frequency tuning found on TT1 (2.44k to 14.74kHz).
+
+===2015-06-17===
+* 3.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-17_21-07-21
+** TT8 #1 as Gnd, 366 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT5, and TT7.
+
+* 3.00 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-17_21-15-19
+** behavior recording name: test086_tuning_curve_20150617a.h5
+** TT8 #1 as Gnd, 546 trials
+** Frequency tuning found on TT1 (4.45k to 14.74kHz), TT2 (4.45k to 12.07kHz), TT4 (5.43kHz to 14.74kHz), TT5 (5.43kHz to 14.74kHz), TT7 (5.43kHz to 14.74kHz). Weak frequency tuning on TT3 (6.63k to 14.74kHz).
+
+===2015-06-18===
+* 3.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-18_14-13-38
+** TT8 #4 as Gnd, 306 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT5, and TT7.
+
+* 3.00 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-18_14-19-46
+** behavior recording name: test086_tuning_curve_20150618a.h5
+** TT8 #4 as Gnd, 801 trials
+** Frequency tuning found on TT1 (3.64k to 14.74kHz), TT2 (4.45k to 12.07kHz), TT3 (6.63k to 12.07kHz), TT5 (3.64kHz to 14.74kHz), TT7 (3.64kHz to 12.07kHz). 
+
+===2015-06-19===
+* 3.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-19_13-42-39
+** TT8 #1 as Gnd, 355 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT5, and TT7. Weak response on TT6. 
+
+* 3.00 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-19_13-49-41
+** behavior recording name: test086_tuning_curve_20150619a.h5
+** TT8 #1 as Gnd, 644 trials
+** Frequency tuning found on TT1 (3.64k to 14.74kHz), TT2 (5.43k to 12.07kHz), TT3 (6.63k to 12.07kHz), TT4 (5.43k to 12.07kHz), TT5 (3.64kHz to 14.74kHz), TT7 (3.64kHz to 12.07kHz). 
+
+* 3.125 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-19_16-17-06
+** TT8 #4 as Gnd, 368 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT5, TT6 and TT7.
+
+* 3.125 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-19_16-24-10
+** behavior recording name: test086_tuning_curve_20150619b.h5
+** TT8 #4 as Gnd, 575 trials
+** Frequency tuning found on TT1 (5.43k to 12.07kHz), TT2 (8.09k to 9.88kHz), TT3 (8.09k to 9.88kHz), TT4 (8.09k to 9.88kHz), TT5 (5.43kHz to 14.74kHz), TT7 (6.63kHz to 12.07kHz). 
+
+===2015-06-22===
+* 3.125 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-22_14-53-33
+** TT5 #1 as Gnd, 305 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT6, TT7, and TT8.
+
+* 3.125 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-22_15-01-08
+** behavior recording name: test059_tuning_curve_20150622a.h5
+** TT5 #1 as Gnd, 508 trials
+** Frequency tuning found on TT1 (4.45k to 14.74kHz), TT2 (5.43k to 12.07kHz), TT3 (6.63k to 14.74kHz), TT4 (5.43k to 14.74kHz), TT5 (4.45kHz to 12.07kHz), TT7 (3.64kHz to 14.74kHz), TT8 (4.45k to 12.07kHz). 
+
+===2015-06-23===
+* 3.125 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-23_14-43-50
+** TT5 #1 as Gnd, 504 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT6, TT7, and TT8.
+
+* 3.125 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-23_14-52-57
+** behavior recording name: test059_tuning_curve_20150623a.h5
+** TT5 #1 as Gnd, 500 trials
+** Frequency tuning found on TT1 (4.45k to 12.07kHz), TT2 (4.45k to 12.07kHz), TT3 (5.43k to 14.74kHz), TT4 (6.63k to 12.07kHz), TT7 (5.43kHz to 12.07kHz), TT8 (5.43k to 14.74kHz). 
+
+===2015-06-24===
+* 3.125 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-24_13-18-11
+** TT5 #1 as Gnd, 299 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT7, and TT8.
+
+* 3.125 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-24_13-23-53
+** behavior recording name: test059_tuning_curve_20150624a.h5
+** TT5 #1 as Gnd, 658 trials
+** Frequency tuning found on TT1 (3.64k to 12.07kHz), TT2 (4.45k to 12.07kHz), TT3 (3.64k to 14.74kHz), TT4 (5.43k to 12.07kHz), TT7 (3.64kHz to 12.07kHz), TT8 (4.45k to 12.07kHz). 
+
+===2015-06-25===
+* 3.125 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-25_14-58-02
+** TT8 #1 as Gnd, 318 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT5, and TT7.
+
+* 3.125 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-25_15-04-26
+** behavior recording name: test059_tuning_curve_20150625a.h5
+** TT8 #1 as Gnd, 688 trials
+** Frequency tuning found on TT1 (4.45k to 12.07kHz), TT2 (4.45k to 12.07kHz), TT3 (5.43k to 12.07kHz), TT4 (6.63k to 9.88kHz), TT5 (4.45k to 14.47kHz), and TT7 (6.63kHz to 12.07kHz).
+
+===2015-06-26===
+* 3.125 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-26_15-22-15
+** TT5 #1 as Gnd, 319 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT7 and TT8.
+
+* 3.125 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-26_15-28-39
+** behavior recording name: test059_tuning_curve_20150626a.h5
+** TT5 #1 as Gnd, 760 trials
+** Frequency tuning found on TT1 (3.64k to 12.07kHz), TT2 (4.45k to 12.07kHz), TT3 (5.43k to 12.07kHz), TT4 (5.43k to 12.07kHz), TT7 (5.43kHz to 12.07kHz), and TT8 (3.64k to 12.07kHz).
+
+===2015-06-28===
+* 3.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-28_16-46-04
+** TT5 #1 as Gnd, 206 trials of noise.
+** Sound response on TT1, TT2, TT3, TT4, TT7 and TT8.
+
+* 3.25 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-28_16-49-45
+** behavior recording name: test059_tuning_curve_20150628a.h5
+** TT5 #1 as Gnd, 524 trials
+** Frequency tuning found on TT1 (3.64k to 12.07kHz), TT2 (4.45k to 12.07kHz), TT3 (4.4k to 12.07kHz), TT4 (6k to 9.8kHz), TT6 (3kHz to 6.6kHz), TT7 (4.5kHz to 12.07kHz), and TT8 (4.5k to 12.07kHz).
+
+===2015-06-29===
+* 3.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-29_17-14-23
+** TT2 #1 as Gnd, 53 trials of noise.
+** Forgot to change reference, so stopped before many trials were completed. 
+
+* 3.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-29_17-17-30
+** TT5 #1 as Gnd, 319 trials of noise.
+** Sound response found on TT1, TT2, TT3, TT4, TT6 and TT7. 
+
+* 3.25 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-29_17-24-10
+** behavior recording name: test059_tuning_curve_20150629a.h5
+** TT5 #1 as Gnd, 806 trials
+** Weird noise thing on all tetrodes. Chose a different ground to try again.
+
+* 3.25 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-29_17-45-01
+** behavior recording name: test059_tuning_curve_20150629b.h5
+** TT3 #2 as Gnd, 806 trials
+** Continues to look like speaker noise. Possible frequency tuning found on TT1 (4.45k to 12.07kHz), TT2 (4.45k to 14.74kHz), TT4 (5.43k to 12.07kHz), TT5-TT8 have thick bars, possibly speaker noise. Similar to signals on test086.
+
+===2015-06-30===
+* 3.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-06-30_16-09-42
+** TT2 #2 as Gnd, 301 trials of noise.
+** Weak sound response found on TT1, TT3, TT4, TT5, TT7, TT8. 
+
+* 3.25 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-06-30_16-16-33
+** behavior recording name: test059_tuning_curve_20150630a.h5
+** TT2 #2 as Gnd, 506 trials
+** Frequency tuing on TT1 (5.43k to 12.07kHz), TT2 (5.43 to 9.88kHz), TT3 (5.43k to 12.07kHz), TT4 (6.63 to 12.07kHz), TT5 (4.45k to 12.07kHz), TT7 (6.63 to 12.07kHz), and TT8 (5.43 to 12.07kHz).
+
+===2015-07-01===
+* 3.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-01_14-44-34
+** TT2 #2 as Gnd, 369 trials of noise.
+** Weak sound response found on TT1, TT3, TT4, TT5, TT7, TT8. 
+
+* 3.25 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-07-01_14-51-19
+** behavior recording name: test059_tuning_curve_20150701a.h5
+** TT2 #2 as Gnd, 642 trials
+** Mismatch between data sets. Unable to plot. Re-recorded. 
+
+* 3.25 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-07-01_15-10-20
+** behavior recording name: test059_tuning_curve_20150701b.h5
+** TT2 #2 as Gnd, 553 trials
+** Frequency tuning on TT1 (5.43k to 12.07kHz), TT3 (6.63k to 12.07kHz), TT4 (5.43 to 12.07kHz), TT5 (5.43k to 12.07kHz), TT7 (5.43 to 12.07kHz), and TT8 (5.43 to 12.07kHz).
+
+===2015-07-02===
+* 3.375 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-02_15-14-43
+** TT2 #2 as Gnd, 390 trials of noise.
+** Sound response found on TT1, TT3, TT4, TT5, TT6, TT7, TT8. 
+
+* 3.375 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-07-02_15-22-07
+** behavior recording name: test059_tuning_curve_20150702a.h5
+** TT2 #2 as Gnd, 550 trials
+** Frequency tuning on TT1 (5.43k to 12.07kHz), TT2 (6.63k to 12.07kHz), TT3 (5.43k to 12.07kHz), TT4 (6.63 to 12.07kHz), TT5 (5.43k to 12.07kHz), TT6 (4.45 to 9.88kHz), TT7 (5.43 to 12.07kHz), and TT8 (5.43 to 12.07kHz).
+
+===2015-07-03===
+* 3.375 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-03_12-15-56
+** TT2 #1 as Gnd, 303 trials of noise.
+** Weak sound response found on TT7 and TT8. 
+
+* 3.375 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-07-02_12-22-41
+** behavior recording name: test059_tuning_curve_20150703a.h5
+** TT2 #1 as Gnd, 596 trials
+** Forgot to save so recorded a second time.
+
+* 3.375 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-07-03_12-32-46
+** behavior recording name: test059_tuning_curve_20150703a.h5
+** TT2 #1 as Gnd, 538 trials
+** Frequency tuning on TT1 (5.43k to 12.07kHz), TT3 (5.43k to 12.07kHz), TT4 (5.43 to 12.07kHz), TT5 (5.43k to 9.88kHz), TT6 (8.09 to 9.88kHz), TT7 (5.43 to 12.07kHz), and TT8 (5.43 to 12.07kHz). Weak frequency tuning on TT2 (6.63k to 12.07kHz).
+
+===2015-07-14===
+* 3.375 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-14_16-14-17
+** TT5 #1 as Gnd, 299 trials of noise.
+** No sound response.
+
+* 3.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-14_16-36-43
+** TT5 #1 as Gnd, 305 trials of noise.
+** No sound response.
+
+* 3.75 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-14_16-59-52
+** TT5 #1 as Gnd, 299 trials of noise.
+** No clear sound response. Possibly some noise. 
+
+* 3.75 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-14_17-09-17
+** TT5 #1 as Gnd, 150 trials of noise.
+** No clear sound response. 
+
+* 4.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-14_17-17-52
+** TT5 #1 as Gnd, 250 trials of noise.
+** Sound response on all tetrodes, coinciding with sound presentation, like speaker noise. 
+
+* 4.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-14_17-25-08
+** TT7 #1 as Gnd, 150 trials of noise.
+** No clear sound response. 
+
+* 4.00 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-07-14_xxxxxxx
+** behavior recording name: test059_tuning_curve_20150714a.h5
+** TT7 #1 as Gnd, 380 trials
+** Clearly speaker noise.
+
+===2015-07-16===
+* 4.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-16_10-31-54
+** TT4 #1 as Gnd, 318 trials of noise.
+** Response on TT1, TT2, TT6, TT7 and TT8. Response lasts the entire length of sound presentation, but only in the first half of trials.
+
+* 4.00 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-16_10-40-07
+** TT4 #1 as Gnd, 150 trials of noise.
+** No sound response.
+
+* 4.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-16_10-57-39
+** TT7 #1 as Gnd, 127 trials of noise.
+** No sound response.
+
+* 4.25 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-16_11-01-36
+** TT4 #1 as Gnd, 354 trials of noise.
+** No sound response.
+
+* 4.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-16_11-11-45
+** TT4 #1 as Gnd, 301 trials of noise.
+** No sound response.
+
+* 4.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-14_11-11-45
+** TT4 #1 as Gnd, 338 trials of noise.
+** No sound response.
+
+===2015-07-17===
+* 4.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-17_12-01-16
+** TT4 #1 as Gnd, 330 trials of noise.
+** No sound response. 
+
+* 4.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-17_12-08-52
+** TT5 #1 as Gnd, 150 trials of noise.
+** No sound response. 
+
+===2015-07-20===
+* 4.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-07-20_10-54-25
+** TT5 #1 as Gnd, 306 trials of noise.
+** No sound response. 
+
+* 4.50 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-07-20_11-00-34
+** behavior recording name: test059_tuning_curve_20150720a.h5
+** TT5 #1 as Gnd, 491 trials
+** Frequency tuning on all tetrodes from 6.63kHz to 9.88kHz. 
+
+===2015-08-06===
+
+* 4.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-08-06_16-59-33
+** TT8 #1 as Gnd, 230 trials of noise.
+** No sound response. Only noise picked up from speaker due to bad ground connection.
+
+* 4.50 turns, presented noise using test059noise parameters
+** ephys recording name: 2015-08-06_17-06-23
+** TT7 #1 as Gnd, 334 trials of noise.
+** No sound response. Only noise picked up from speaker due to bad ground connection.
+
+* 4.50 turns, presented frequencies using test059freq parameters
+** ephys recording name: 2015-08-06_17-12-35
+** behavior recording name: test059_tuning_curve_20150806a.h5
+** TT7 #1 as Gnd, 506 trials
+** Frequency tuning on all tetrodes from 6.63kHz to 9.88kHz because of the bad ground connection.
+
+== Switching Task Training ==
+
+The animal was recorded from while behaving. This animal was trained with the switching task.
+
+Parameters used during training:
+* Experimenter: Santiago
+* Subject: test059
+* Time valve left: 0.03 sec
+* Time center left: 0.03 sec
+* Time right left: 0.03 sec
+* Outcome mode: only_if_correct
+* Anti-bias mode: off
+* Mean delay to target: 0.2 sec
+* +/-: 0.05 sec
+* Target duration: 0.1 sec
+* Reward Availability: 4 sec
+* Punishment (error): 4 sec
+* Punishment (early): 0 sec
+* Trials per block: 200
+* Current block: high/low_boundary
+* PsyCurve Mode: off
+* N frequencies: 8
+* Automation Mode: off
+* High freq: 19200 Hz
+* Middle freq: 11000 Hz
+* Low freq: 6200 Hz
+* Intensity Mode: fixed
+* Max intensity: 50
+
+
+=== Training Dates ===
+
+* 2015-06-04
+** start: 7:35pm, end: 9:14pm
+** N valid: 713, N rewarded: 502
+** 1584 total trials
+** Switching task starting on low block with 3000 trials per block, 4 second error punishment, 0.0 sec early punishment, 0.01 punish amplitude, and intensity mode at fixed.
+
+* 2015-06-05
+** start: 1:03pm, end: 2:30pm
+** N valid: 671, N rewarded: 573
+** 1029 total trials
+** Switching task starting on low block with 3000 trials per block, 4 second error punishment, 0.0 sec early punishment, 0.01 punish amplitude, and intensity mode at fixed.
+
+* 2015-06-06
+** start: 7:55pm, end: 9:30pm
+** N valid: 1001, N rewarded: 655
+** 1029 total trials
+** Switching task starting on high block with 3000 trials per block, 4 second error punishment, 0.0 sec early punishment, 0.01 punish amplitude, and intensity mode at fixed.
+
+* 2015-06-07
+** start: 6:02pm, end: 6:50pm
+** N valid: 591, N rewarded: 461
+** 847 total trials
+** Switching task starting on high block with 3000 trials per block, 4 second error punishment, 0.0 sec early punishment, 0.01 punish amplitude, and intensity mode at fixed.
+
+* 2015-06-08
+** start: 4:32pm, end: 5:45pm
+** N valid: 917, N rewarded: 737
+** 1262 total trials
+** Switching task starting on high block with 3000 trials per block, 4 second error punishment, 0.0 sec early punishment, 0.01 punish amplitude, and intensity mode at fixed.
+
+* 2015-06-09
+** start: 11:32am, end: 12:43pm
+** N valid: 744, N rewarded: 597
+** 979 total trials
+** Switching task starting on high block with 400 trials per block, 4 second error punishment, 0.0 sec early punishment, 0.01 punish amplitude, and intensity mode at fixed.
+
+* 2015-06-10
+** start: 11:17am, end: 12:43pm
+** N valid: 852, N rewarded: 671
+** 1040 total trials
+** Switching task starting on low block with 400 trials per block, 4 second error punishment, 0.0 sec early punishment, 0.01 punish amplitude, and intensity mode at fixed.
+
+* 2015-06-11
+** start: 11:54am, end: 1:24pm
+** N valid: 871, N rewarded: 655
+** 1224 total trials
+** Switching task starting on high block with 400 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+* 2015-06-12
+** start: 2:08pm, end: 3:26pm
+** N valid: 947, N rewarded: 733
+** 1412 total trials
+** Switching task starting on low block with 400 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+* 2015-06-13
+** start: 12:35am, end: 1:39am
+** N valid: 928, N rewarded: 754
+** 1412 total trials
+** Switching task starting on high block with 400 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+* 2015-06-15
+** start: 8:08pm, end: 9:38am
+** N valid: 682, N rewarded: 505
+** 895 total trials
+** Switching task starting on low block with 300 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+* 2015-06-16
+** start: 4:35pm, end: 9:38am
+** N valid: 503, N rewarded: 391
+** 644 total trials
+** Switching task starting on low block with 300 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.00 turns, 2015-06-17
+** ephys recording name: 2015-06-17_21-36-38
+** start: 9:38pm, end: 10:44pm
+** N valid: 755, N rewarded: 587
+** TT8 #1 Gnd, 1613 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.00 turns, 2015-06-18
+** ephys recording name: 2015-06-18_14-41-21
+** start: 2:42pm, end: 3:38pm
+** N valid: 619, N rewarded: 502
+** TT8 #4 Gnd, 770 total trials
+** Switching task starting on low block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.00 turns, 2015-06-19
+** ephys recording name: 2015-06-19_14-05-19
+** start: 2:06pm, end: 3:09pm
+** N valid: 767, N rewarded: 615
+** TT8 #1 Gnd, 972 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.125 turns, 2015-06-22
+** ephys recording name: 2015-06-22_15-21-02
+** start: 3:22pm, end: 4:pm
+** N valid: 473, N rewarded: 291
+** TT5 #1 Gnd, 742 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.125 turns, 2015-06-23
+** ephys recording name: 2015-06-23_15-05-47
+** start: 3:06pm, end: 4:15pm
+** N valid: 848, N rewarded: 713
+** TT5 #1 Gnd, 1253 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+** saved as ...b
+
+*  3.125 turns, 2015-06-24
+** ephys recording name: 2015-06-24_13-38-31
+** start: 1:40pm, end: 2:39pm
+** N valid: 643, N rewarded: 516
+** TT5 #1 Gnd, 978 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.125 turns, 2015-06-25
+** ephys recording name: 2015-06-25_15-22-32
+** start: 3:24pm, end: 2:39pm
+** N valid: 815, N rewarded: 645
+** TT8 #1 Gnd, 1181 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.125 turns, 2015-06-26
+** ephys recording name: 2015-06-26_15-46-23
+** start: 3:47pm, end: 2:39pm
+** N valid: 775, N rewarded: 618
+** TT5 #1 Gnd, 1118 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.25 turns, 2015-06-28
+** ephys recording name: 2015-06-28_17-10-44
+** start: 5:12pm, end: 6:57pm
+** N valid: 853, N rewarded: 721
+** TT5 #1 Gnd, 1150 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.25 turns, 2015-06-29
+** ephys recording name: 2015-06-29_18-01-08
+** start: 6:01pm, end: 7:25pm
+** N valid: 836, N rewarded: 665
+** TT3 #2 Gnd, 1363 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.25 turns, 2015-06-30
+** ephys recording name: 2015-06-30_16-34-20
+** start: 4:32pm, end: 5:45pm
+** N valid: 831, N rewarded: 645
+** TT2 #2 Gnd, 1304 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.25 turns, 2015-07-01
+** ephys recording name: 2015-07-01_15-26-17
+** start: 3:27pm, end: 4:30pm
+** N valid: 685, N rewarded: 517
+** TT2 #2 Gnd, 1168 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.375 turns, 2015-07-02
+** ephys recording name: 2015-07-02_15-37-40
+** start: 3:38pm, end: 4:46pm
+** N valid: 566, N rewarded: 368
+** TT2 #2 Gnd, 1283 total trials
+** Switching task starting on high block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.375 turns, 2015-07-03
+** ephys recording name: not recorded
+** start: 12:47pm, end: 2:11pm
+** N valid: 170, N rewarded: 71
+** TT2 #1 Gnd, 307 total trials
+** Switching task starting on low block with 200 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.375 turns, 2015-07-04
+** ephys recording name: not recorded
+** start: 4:14pm, end: 5:44pm
+** N valid: 479, N rewarded: 244
+** TT2 #1 Gnd, 955 total trials
+** Switching task starting on low block with 2000 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  3.375 turns, 2015-07-07
+** ephys recording name: no recording
+** start: 4:14pm, end: 5:44pm
+** N valid: 245, N rewarded: 128
+** No Gnd, 498 total trials
+** Uniform 8 point psychometric curve with 2000 trials per block, 4 second error punishment, 0.0 sec early punishment, and intensity mode at randminus20. Mean delay to target changed to 0.1 abot halfway through the session.
+
+*  3.375 turns, 2015-07-08
+** ephys recording name: no recording
+** start: 2:34pm, end: 3:38pm
+** N valid: 217, N rewarded: 125
+** No Gnd, 729 total trials
+** Uniform 2 point psychometric curve (6200 v 19200Hz) with 2000 trials per block, 4 second error punishment, 0.0 sec early punishment, intensity mode at randminus20, and anti-bias mode: repeat_mistake. 
+
+*  3.375 turns, 2015-07-09
+** ephys recording name: no recording
+** start: 2:38pm, end: 3:54pm
+** N valid: 325, N rewarded: 191
+** No Gnd, 753 total trials
+** Uniform 2 point psychometric curve (6200 v 19200Hz) with 2000 trials per block, mean delay to target: 0.1, 4 second error punishment, 0.0 sec early punishment, intensity mode at randminus20, and anti-bias mode: repeat_mistake. Crashed before any trials completed. Restarted at 3:06pm.
+
+*  3.375 turns, 2015-07-09
+** ephys recording name: no recording
+** start: 11:53pm, end: 1:04pm
+** N valid: 328, N rewarded: 199
+** No Gnd, 955 total trials
+** Uniform 6 point psychometric curve (5000 v 15000Hz) with 2000 trials per block, mid boundary, mean delay to target: 0.2, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  4.00 turns, 2015-07-16
+** ephys recording name: 2015-07-16_16-08-42
+** start: 4:10pm, end: 5:19pm
+** N valid: 436, N rewarded: 292
+** No Gnd, 1280 total trials
+** Uniform 6 point psychometric curve (7500 v 12000Hz) with 2000 trials per block, mid boundary, mean delay to target: 0.2, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  4.00 turns, 2015-07-17
+** ephys recording name: 2015-07-17_12-22-34
+** start: 12:15pm, end: 1:34pm
+** N valid: 301, N rewarded: 192
+** No Gnd, 942 total trials
+** Uniform 6 point psychometric curve (7700 v 12000Hz) with 2000 trials per block, mid boundary, mean delay to target: 0.2, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+*  4.00 turns, 2015-07-20
+** ephys recording name: 2015-07-20_11-15-22
+** start: 11:16pm, end: 12:54pm
+** N valid: 136, N rewarded: 82
+** No Gnd, 335 total trials
+** Uniform 8 point psychometric curve (7700 v 12000Hz) with 2000 trials per block, mid boundary, mean delay to target: 0.2, 4 second error punishment, 0.0 sec early punishment, and intensity mode at fixed.
+
+=== Training Results ===
+The mouse did well on the switching task between 6k and 19kHz. However, he was very old when implanted and went deaf. He was unable to do the switching task and when we switched to use the psychometric curve, he could not perform either (the line was flat). Even on the simple two frequency discrimination task he seemed to be guessing. Therefore, we suspect he went deaf.
+
+== Accuracy of implant==
+Distance to start of right auditory striatum: 300um anterior
+
+The tetrodes were found to be in the correct area
+
+These images show red DiI where the the end of the tetrodes were and therefore one can estimate how accurate the coordinates for the craniotomy to get to the auditory striatum were. The tetrodes were coated with DiI before being inserted into the brain. The images shown were taken as an overlay to show the DiI and where the tetrodes were in the brain. For this mouse, the tetrodes were inserted 2.0mm deep then moved down. The tetrodes seem to be at the desired target in the auditory striatum. The tetrodes found very good auditory response and frequency tuning in this location.
+[[File: test059_overlay1.jpg |600px|none|thumb|showing DiI overlay of brain slice C6 to show accuracy of implant coordinates to the auditory striatum on the right side. The tetrodes were coated in DiI before the implant was inserted into the brain. DiI is shown in red.]]
+[[File: test059_overlay2.jpg |600px|none|thumb|showing DiI overlay of brain slice D1 to show accuracy of implant coordinates to the auditory striatum on the right side. The tetrodes were coated in DiI before the implant was inserted into the brain. DiI is shown in red.]]
+[[File: test059_overlay3.jpg |600px|none|thumb|showing DiI overlay of brain slice D2 to show accuracy of implant coordinates to the auditory striatum on the right side. The tetrodes were coated in DiI before the implant was inserted into the brain. DiI is shown in red.]]
+
+== Electrolytic Lesion ==
+Only 2 tetrodes were used to make electrolytic lesions in the brain. Tetrodes 6 and 8 were used since they were the shortest and longest length tetrodes. Two lesions can clearly be seen. They look like dark circles on the bottom of the right striatum. The first slice, C5, shows a small hole where the lesion is.
+[[File: test059_lesion1.jpg |600px|none|thumb|showing brain slice C5 to show electrolytic lesions in striatum. This shows where the end of the tetrodes were right before the mouse was perfused.]]
+[[File: test059_lesion2.jpg |600px|none|thumb|showing brain slice C6 to show electrolytic lesions in striatum. This shows where the end of the tetrodes were right before the mouse was perfused.]]
+[[File: test059_lesion3.jpg |600px|none|thumb|showing brain slice D1 to show electrolytic lesions in striatum. This shows where the end of the tetrodes were right before the mouse was perfused.]]
+
