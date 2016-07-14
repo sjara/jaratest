@@ -309,8 +309,18 @@ class EphysInterface(object):
 
     #Relies on module for clustering multiple sessions
     #Also relies on methods for plotting rasters and cluster waveforms
-    def cluster_sessions_and_plot_rasters_for_each_cluster(self, ):
-        pass
+    def cluster_session(self, session, tetrode):
+        from jaratoolbox import spikesorting
+
+        print 'Clustering tetrode {}'.format(tetrode)
+        sessionString = self.loader.get_session_filename(session)
+        oneTT = spikesorting.TetrodeToCluster(self.animalName, sessionString, tetrode)
+        oneTT.run_clustering()
+        oneTT.create_fet_files()
+
+    def cluster_array(self, session, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8]):
+        for tetrode in tetrodes:
+            self.cluster_session(session, tetrode)
 
 
     def flip_tetrode_tuning(self, session, behavSuffix, tetrodes=None , rasterRange=[-0.5, 1], tcRange=[0, 0.1]):
