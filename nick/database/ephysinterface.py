@@ -217,7 +217,7 @@ class EphysInterface(object):
             plotTitle = self.loader.get_session_filename(session)
 
         eventData = self.loader.get_session_events(session)
-        spikeData = self.loader.get_session_spikes(session, tetrode)
+        spikeData = self.loader.get_session_spikes(session, tetrode, cluster=cluster)
 
         eventOnsetTimes = self.loader.get_event_onset_times(eventData)
         spikeTimestamps=spikeData.timestamps
