@@ -1,0 +1,61 @@
+
+=== 2015-08-15 ===
+x - 'animalName' should be replaced by 'subject'
+x - cellDB items don't have experimenter or paradigm?
+x - If data doesn't exist loader.get_cluster_data() does not fail. Just gives empty data.
+x - Regarding use of str() and expr(). Maybe the default expr() should be to print every attribute.
+  and str() have a shorter summary
+  for example for cellDB.Site
+  Reason: I find site5.clusterList misleading (it doesn't tell me what type the items are)
+x - CellDB should have an easy way to add a cluster (without creating all the other stuff).
+x - cellDB.Cluster should have a way to create a cluster easily from basic info.
+  Currently we need to create a site (add sessions and add clusters), and get clusterList to add it to CellDB.
+
+x- Easy way to see the files corresponding to each cell of interest (to copy them easily from jarahub)
+x - Why do we need to specify tetrodes when creating a site? (if we need to do it again when adding a cluster)
+  is it because we want to be able to do run analysis per site? (like spike-sorting)
+    This problem should be solved once we have a method for making clusters manually
+
+x - Why the underscores in repr of cluster?
+  This is just printing the cluster ID, which is a unique string for each cluster
+
+x - The fact that we have a different "experimenter" for different data sets sometimes gets on the way. Let's discuss the possibility of getting rid of experimenter.
+x - cluster.get_data_filenames with no arguments should return the list of all
+
+Related to the dataloader
+- loader did not work for test059 2015-06-26_15-46-23 T3c8. Different number of
+  behav and ephys trials. but the older method worked fine.
+- Not clear why dataloader.DataLoader() has param 'offline'
+
+=== 2015-07-31 ===
+* loadopenephys.py
+- The goal is to load raw data from a file (in raw format?)
+- Should it have a way to add cluster data?
+- Should it also convert numbers to the right units? (timestamps to seconds, divide gain, etc)
+
+* ephyscore.py
+- The goal is to load data easily given a cell from the database.
+- It may make it inefficient to load several clusters/cells from the same tetrode.
+  (since it requires reloading the tetrode spike data)
+- It should associate to ephys events (sent from arduino) and to relevant behavioral data (stored by taskontrol).
+
+
+
+
+=== 2015-07-28 ===
+
+* recordingday.py
+- recordingday imports ephys_experiment_v3.EphysExperiment
+  but when using them we also need to import both?
+  Somethign seems recursive. They should be independent or hierarchical.
+- Parameters laserPulseResponse,soundResponsive,followsTrain don't seem appropriate
+  because they will probably change in the future (some added, some gone).
+  Maybe we should have them in a dictionary of 'features'.
+
+* ephys_experiment_v3.py
+- This object should be independent of the server. Maybe we need to define better the role of this object.
+
+= Minor:
+- Name 'recordingday.Recording' may be misleading (there are many recordings per day), 
+  but I can't come up with a better one.
+

@@ -1,0 +1,58 @@
+anat027
+├── 1.25x
+│   ├── p1-A1-01b.czi
+│   ├── ... (All the original CZI files for 1.25x go here)
+│   ├── p2-C3-01r.czi
+│   └── registered
+│       ├── b
+│       │   ├── anat027-1.25x-b0000.jpg
+│       │   ├── ... (All the brightfield channel registered images here)
+│       │   └── anat027-1.25x-b0038.jpg
+│       ├── g
+│       │   ├── anat027-1.25x-g0000.jpg
+│       │   ├── ... (All the green channel registered images here)
+│       │   └── anat027-1.25x-g0038.jpg
+│       └── r
+│           ├── anat027-1.25x-r0000.jpg
+│           ├── ... (All the red channel registered images here)
+│           └── anat027-1.25x-r0038.jpg
+├── 2.5x
+│   ├── left
+│   │   ├── p1-A6-05b.czi
+│   │   ├── ... (Left side CZI files here)
+│   │   ├── p1-C4-05r.czi
+│   │   └── registered
+│   │       ├── b
+│   │       │   ├── anat027-2.5x-left-b0000.jpg
+│   │       │   ├── ... (Left blue channel registered images here)
+│   │       │   └── anat027-2.5x-left-b0010.jpg
+│   │       ├── g
+│   │       │   ├── anat027-2.5x-left-g0000.jpg
+│   │       │   ├── ... (Left green channel registered images here)
+│   │       │   └── anat027-2.5x-left-g0010.jpg
+│   │       └── r
+│   │           ├── anat027-2.5x-left-r0000.jpg
+│   │           ├── ... (Left red channel registered images here)
+│   │           └── anat027-2.5x-left-r0010.jpg
+│   └── right 
+│       ├── p1-A6-05b.czi
+│       ├── ... (Right side CZI files here)
+│       ├── p1-C4-05r.czi
+│       └── registered
+│           ├── b
+│           │   ├── anat027-2.5x-right-b0000.jpg
+│           │   ├── ... (Right blue channel registered images here)
+│           │   └── anat027-2.5x-right-b0010.jpg
+│           ├── g
+│           │   ├── anat027-2.5x-right-g0000.jpg
+│           │   ├── ... (Right green channel registered images here)
+│           │   └── anat027-2.5x-right-g0010.jpg
+│           └── r
+│               ├── anat027-2.5x-right-r0000.jpg
+│               ├── ... (Right red channel registered images here)
+│               └── anat027-2.5x-right-r0010.jpg
+└── coords
+    ├── coords_1.25x_left.json
+    ├── coords_1.25x_right.json
+    ├── coords_2.5x_left.json
+    └── coords_2.5x_right.json

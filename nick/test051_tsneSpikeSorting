@@ -1,0 +1,4 @@
+ephysPath = '/home/nick/data/ephys/pinp013/'
+ephysFn='2016-05-27_14-08-54'
+contFn = os.path.join(ephysPath, ephysFn, '109_CH23.continuous')
+spikesFn = os.path.join(ephysPath, ephysFn, 'Tetrode3.spikes')
