@@ -338,9 +338,9 @@ class EphysInterface(object):
             self.cluster_session(session, tetrode)
             spikeData = self.loader.get_session_spikes(session, tetrode)
 
-        clusters = np.unique(spikeData.clusters)
+        possibleClusters = np.unique(spikeData.clusters)
 
-        for cluster in clusters:
+        for cluster in possibleClusters:
             sessions.append(session)
             tetrodes.append(tetrode)
             behavSuffixs.append(behavSuffix)
