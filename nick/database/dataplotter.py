@@ -85,7 +85,7 @@ def two_axis_sorted_raster(spikeTimestamps,
                            firstSortArray,
                            secondSortArray,
                            firstSortLabels=None,
-                           secondSortLabels=None,
+                           secondSortLabels=None, # Changed so that this will be a title for each subplot
                            xLabel=None,
                            yLabel=None,
                            plotTitle=None,
@@ -144,6 +144,8 @@ def two_axis_sorted_raster(spikeTimestamps,
     #Grab the current figure and clear it for plotting
     fig = plt.gcf()
     plt.clf()
+    plt.suptitle(plotTitle)
+
     #Make a new plot for each unique value of the second sort array, and then plot a raster on that plot sorted by this second array
     for ind, secondArrayVal in enumerate(secondPossibleVals):
         if ind == 0:
@@ -165,9 +167,12 @@ def two_axis_sorted_raster(spikeTimestamps,
             labels=firstSortLabels)
         plt.setp(pRaster, ms=ms)
         if secondSortLabels:
-            plt.ylabel(secondSortLabels[ind])
+            # plt.ylabel(secondSortLabels[ind])
+            plt.title(secondSortLabels[ind])
         if ind == len(secondPossibleVals) - 1:
             plt.xlabel(xLabel)
+        if yLabel:
+            plt.ylabel(yLabel)
 
 
 #TODO: The Freq and Intensity should always be first and second sort arrays between this function and the previous one

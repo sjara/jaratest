@@ -209,7 +209,7 @@ class EphysInterface(object):
 
         plt.show()
 
-    def plot_two_axis_sorted_raster(self, session, tetrode, firstSortArray, secondSortArray, cluster = None, replace=0, timeRange = [-0.5, 1], ms = 1, firstLabels=None, secondLabels=None):
+    def plot_two_axis_sorted_raster(self, session, tetrode, firstSortArray, secondSortArray, cluster = None, replace=0, timeRange = [-0.5, 1], ms = 1, firstLabels=None, secondLabels=None, yLabel=None):
         '''
         Plot rasters sorted by 2 arrays
         '''
@@ -245,6 +245,7 @@ class EphysInterface(object):
                                            firstLabels,
                                            secondLabels,
                                            xLabel,
+                                           yLabel,
                                            plotTitle,
                                            flipFirstAxis=False,
                                            flipSecondAxis=True,
