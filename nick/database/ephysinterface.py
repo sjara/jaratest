@@ -334,7 +334,7 @@ class EphysInterface(object):
         currentIntensity = bdata['currentIntensity']
 
         spikeData = self.loader.get_session_spikes(session, tetrode)
-        if not hasattr(spikeData, 'clusters'):
+        if not spikeData.clusters:
             self.cluster_array(session)
             spikeData = self.loader.get_session_spikes(session, tetrode)
 
