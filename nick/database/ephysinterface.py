@@ -6,8 +6,8 @@ This module will provide a frontend for plotting data during an ephys experiment
 The job of the module will be to take session names, get the data, and then pass the data to the correct plotting function
 '''
 
-from jaratoolbox.test.nick.database import dataloader
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import dataloader
+from jaratest.nick.database import dataplotter
 reload(dataplotter)
 reload(dataloader)
 import os

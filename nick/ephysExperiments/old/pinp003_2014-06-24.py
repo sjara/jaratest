@@ -1,7 +1,7 @@
-from jaratoolbox.test.nick.ephysExperiments import ephys_experiment
+from jaratest.nick.ephysExperiments import ephys_experiment
 reload(ephys_experiment)
-from jaratoolbox.test.nick.ephysExperiments.ephys_experiment import RecordingSite
-from jaratoolbox.test.nick.ephysExperiments.ephys_experiment import EphysExperiment
+from jaratest.nick.ephysExperiments.ephys_experiment import RecordingSite
+from jaratest.nick.ephysExperiments.ephys_experiment import EphysExperiment
 
 site1 = RecordingSite(depth = 3543,
                       noiseburstEphysSession  = '2015-06-24_15-22-29',

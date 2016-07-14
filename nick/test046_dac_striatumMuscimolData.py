@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 from jaratoolbox import extrastats
 from matplotlib import pyplot as plt
 import numpy as np

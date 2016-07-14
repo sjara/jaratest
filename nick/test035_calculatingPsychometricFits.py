@@ -1,7 +1,7 @@
 import pypsignifit
 from jaratoolbox import extrastats
 from jaratoolbox import extraplots
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 
 muscimolSessions = ['20160413a', '20160415a', '20160417a', '20160519a', '20160921a']
 salineSessions = ['20160412a', '20160414a', '20160416a', '20160518a', '20160520a']

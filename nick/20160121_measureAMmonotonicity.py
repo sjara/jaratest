@@ -1,6 +1,6 @@
-from jaratoolbox.test.nick.database import cellDB
-from jaratoolbox.test.nick.database import dataloader
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import cellDB
+from jaratest.nick.database import dataloader
+from jaratest.nick.database import dataplotter
 from jaratoolbox import behavioranalysis
 
 

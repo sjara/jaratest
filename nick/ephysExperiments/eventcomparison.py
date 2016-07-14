@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick.ephysExperiments import ephys_experiment
+from jaratest.nick.ephysExperiments import ephys_experiment
 
 ee = ephys_experiment.EphysExperiment('
 

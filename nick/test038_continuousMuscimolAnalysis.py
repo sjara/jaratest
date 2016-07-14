@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 
 animals = ['amod002', 'amod003']
 sessions = ['20160421a', '20160422a', '20160423a', '20160424a']

@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick.histology import apply_grid_to_mouse as ag
+from jaratest.nick.histology import apply_grid_to_mouse as ag
 reload(ag)
 bg = ag.BrainGrid('anat030', '2.5', 'left')
 bg.define_grid(8)

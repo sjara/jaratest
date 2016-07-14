@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick.ephysExperiments import recordingday as rd
+from jaratest.nick.ephysExperiments import recordingday as rd
 reload(rd)
 
 today = rd.Recording(animalName = 'pinp003',

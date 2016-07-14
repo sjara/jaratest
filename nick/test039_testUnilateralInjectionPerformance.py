@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick import behavioranalysis_vnick as ba
+from jaratest.nick import behavioranalysis_vnick as ba
 animals = ['amod002', 'amod003']
 sessions = ['20160426a', '20160427a', '20160428a', '20160429a']
 side = [0, 1, 0, 1] #0 - Right, 1 - Left

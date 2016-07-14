@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick import striatumMuscimolSessions as ms
+from jaratest.nick import striatumMuscimolSessions as ms
 import numpy as np
 from jaratoolbox import beahvioranalysis
 from collections import Counter

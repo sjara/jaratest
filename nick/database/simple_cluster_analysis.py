@@ -1,13 +1,13 @@
-from jaratoolbox.test.nick.database import dataloader
+from jaratest.nick.database import dataloader
 reload(dataloader)
 
-from jaratoolbox.test.nick.database import cellDB
+from jaratest.nick.database import cellDB
 reload(cellDB)
 
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import dataplotter
 reload(dataplotter)
 from jaratoolbox import spikesorting
-from jaratoolbox.test.nick import clustercutting
+from jaratest.nick import clustercutting
 reload(clustercutting)
 
 from pylab import *

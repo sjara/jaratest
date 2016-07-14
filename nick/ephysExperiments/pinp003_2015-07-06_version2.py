@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick.ephysExperiments import ephys_experiment_v3 as ee3
+from jaratest.nick.ephysExperiments import ephys_experiment_v3 as ee3
 reload(ee3)
 
 #The session types to use for this kind of experiment
@@ -55,7 +55,7 @@ site4.add_session('13-30-00', None, sessionTypes['3p'])
 site4.add_session('13-31-58', None, sessionTypes['1p'])
 site4.generate_main_report('site4')
 
-#from jaratoolbox.test.nick.ephysExperiments import laserTCanalysis
+#from jaratest.nick.ephysExperiments import laserTCanalysis
 #reload(laserTCanalysis)
 #for indSite, site in enumerate(today.siteList):
     #laserTCanalysis.laser_tc_analysis(site, indSite+1)

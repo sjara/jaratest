@@ -5,7 +5,7 @@ Test suite for the Jaralab cell database
 '''
 
 import unittest
-from jaratoolbox.test.nick.database import cellDB
+from jaratest.nick.database import cellDB
 reload(cellDB)
 
 class ImportDB(unittest.TestCase):

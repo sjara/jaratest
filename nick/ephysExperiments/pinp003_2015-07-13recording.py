@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick.ephysExperiments import ephys_experiment_v3 as ee3
+from jaratest.nick.ephysExperiments import ephys_experiment_v3 as ee3
 reload(ee3)
 
 #The session types to use for this kind of experiment
@@ -103,7 +103,7 @@ site4.generate_main_report('site4')
 Still getting best frequencies around 5-9kHz. Removing the electrodes at 2210hrs and putting the mouse away
 '''
 
-#from jaratoolbox.test.nick.ephysExperiments import laserTCanalysis
+#from jaratest.nick.ephysExperiments import laserTCanalysis
 #reload(laserTCanalysis)
 #for indSite, site in enumerate(today.siteList):
     #laserTCanalysis.laser_tc_analysis(site, indSite+1)

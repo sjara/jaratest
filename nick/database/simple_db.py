@@ -1,7 +1,7 @@
-from jaratoolbox.test.nick.database import cellDB
+from jaratest.nick.database import cellDB
 reload(cellDB)
 
-from jaratoolbox.test.nick.database import sitefuncs
+from jaratest.nick.database import sitefuncs
 reload(sitefuncs)
 '''
 2015-07-31 Nick Ponvert

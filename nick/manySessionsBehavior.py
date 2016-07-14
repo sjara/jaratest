@@ -2,7 +2,7 @@
 For compiling the behavior data from muscimol and saline days
 '''
 import sys
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 # from jaratoolbox import behavioranalysis
 reload(behavioranalysis)
 

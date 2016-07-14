@@ -1,5 +1,5 @@
 import numpy as np
-from jaratoolbox.test.nick import circstats
+from jaratest.nick import circstats
 from jaratoolbox import spikesanalysis
 
 
@@ -21,7 +21,7 @@ from jaratoolbox import spikesanalysis
 # hist(spikeRads, bins=10*np.pi, histtype='stepfilled', color='k')
 # xlim([0, 2*np.pi])
 
-# from jaratoolbox.test.nick import circstats
+# from jaratest.nick import circstats
 
 # ral_test = circstats.rayleigh_test(spikeRads)
 

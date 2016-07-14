@@ -42,7 +42,7 @@ from jaratoolbox import behavioranalysis
 #     return (dataObjs, dataSoundTypes)
 
 
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 
 
 

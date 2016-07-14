@@ -1,6 +1,6 @@
 from jaratoolbox import loadbehavior
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
-from jaratoolbox.test.nick.behavioranalysis_vnick import *
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick.behavioranalysis_vnick import *
 from jaratoolbox import extraplots
 from jaratoolbox import colorpalette
 

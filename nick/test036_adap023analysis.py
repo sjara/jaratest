@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 
 '''
 Test data analysis for adap023 - this needs work because all of my muscimol overview reports are currently written for data with different sound types

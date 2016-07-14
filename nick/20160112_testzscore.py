@@ -14,7 +14,7 @@ binEdges = np.arange(responseTimeRange[0], responseTimeRange[1], binTime)
 
 
 
-from jaratoolbox.test.nick.database import ephysinterface
+from jaratest.nick.database import ephysinterface
 reload(ephysinterface)
 
 ei = ephysinterface.EphysInterface('pinp003', '2015-06-30', 'nick', 'laser_tuning_curve')
@@ -22,7 +22,7 @@ ei = ephysinterface.EphysInterface('pinp003', '2015-06-30', 'nick', 'laser_tunin
 
 spikeTimes, eventOnsetTimes = ei.get_processed_session_data('16-56-14', 3, cluster=2)
 
-from jaratoolbox.test.nick.database import sitefuncs
+from jaratest.nick.database import sitefuncs
 sitefuncs.calculate_isi_violations(spikeTimes) #To calculate the isi violations
 
 

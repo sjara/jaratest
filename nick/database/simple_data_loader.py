@@ -5,8 +5,8 @@ This file shows how to load a database file, query the database to find certain 
 extract the session filenames from the cluster, and use the **DataLoading** object to load the
 data.
 '''
-from jaratoolbox.test.nick.database import dataloader
-from jaratoolbox.test.nick.database import cellDB
+from jaratest.nick.database import dataloader
+from jaratest.nick.database import cellDB
 from jaratoolbox import spikesanalysis
 from matplotlib import pyplot as plt
 reload(cellDB)

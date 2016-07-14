@@ -1,5 +1,5 @@
 
-from jaratoolbox.test.nick.ephysExperiments import ephys_experiment_v2 as ee
+from jaratest.nick.ephysExperiments import ephys_experiment_v2 as ee
 from pylab import *
 reload(ee)
 

@@ -1,6 +1,6 @@
 from jaratoolbox import loadopenephys
 from jaratoolbox import spikesorting
-from jaratoolbox.test.nick import clustercutting
+from jaratest.nick import clustercutting
 import os
 
 # ephysPath = '/home/nick/data/ephys/pinp013/'

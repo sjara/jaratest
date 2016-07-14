@@ -1,5 +1,5 @@
 
-from jaratoolbox.test.nick.database import cellDB
+from jaratest.nick.database import cellDB
 
 dbFn = '/home/nick/data/database/nick_thalamus_cells.json'
 db = cellDB.CellDB()

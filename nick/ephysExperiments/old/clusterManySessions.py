@@ -185,8 +185,8 @@ class MultiSessionClusterReport(object):
 
 if __name__=="__main__":
     
-    from jaratoolbox.test.nick.ephysExperiments import ephys_experiment
-    from jaratoolbox.test.nick.ephysExperiments.ephys_experiment import EphysExperiment
+    from jaratest.nick.ephysExperiments import ephys_experiment
+    from jaratest.nick.ephysExperiments.ephys_experiment import EphysExperiment
     reload(ephys_experiment)
 
     animalName = 'pinp003'

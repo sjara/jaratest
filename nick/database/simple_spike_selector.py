@@ -1,9 +1,9 @@
 from jaratoolbox import spikesanalysis
 from jaratoolbox import spikesorting
 from matplotlib import pyplot as plt
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import dataplotter
 reload(dataplotter)
-from jaratoolbox.test.nick.database import dataloader
+from jaratest.nick.database import dataloader
 reload(dataloader)
 
 

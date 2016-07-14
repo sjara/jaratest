@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 animals = ['adap023', 'adap022', 'adap026', 'adap027', 'adap030']
 nAnimals = len(animals)
 
