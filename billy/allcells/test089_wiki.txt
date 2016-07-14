@@ -1,0 +1,2217 @@
+{{lowercase}}
+== Animal information ==
+* '''DOB''': 2014-10-05
+* '''Strain''': C57BL/6J
+* '''Experimenter''': Billy
+* '''Study''': Tetrode recordings from auditory striatum during switching task
+
+== Procedures ==
+* 2015-05-31: Billy implanted 8 tetrodes coated in DiI to target right auditory striatum.
+** A-P: -1.7mm from Bregma
+** M-L: 3.5mm right
+** D-V: -2.0mm from brain surface on day of surgery
+* 2016-02-17: Euthanized and perfused.
+
+== Skull measurements ==
+From Bregma (where sutures meet) to Lambda:
+* X: 0.00mm left
+* Y: -3.42mm back
+* Z: -0.00mm down
+
+From where Bregma lines meet to where they would have met: 0.64mm up (0.13mm to the right)
+
+From where Lambda lines meet to where they would have met: 0mm
+
+Notes: Bregma lines come in and dip low before meeting together. Point where lines met midline was used as origin for measurements. Point where they would have met was used (not where they actually met) in making craniotomies.
+
+Z coordinate at sight of craniotomy:
+* Left side: -0.54mm
+* Right side: -0.54mm
+
+== Details ==
+
+=== Purpose ===
+This animal was trained and implanted on the right side auditory striatum. The purpose was collect data from an awake, behaving mouse. We analyzed data from the animal doing the switching task.
+
+=== Superglue as first layer ===
+As with the last few animals, superglue was used as a first layer on the skull. This has proven to be very successful.
+
+=== Electrolytic Lesions ===
+Before, euthanizing this animal, electrolytic lesions were made. The polarity was switched so that the ground of the 12V DC source was touching the gold pins in the implant and the power was in the mouth of the mouse. The ground was just touched to the gold pins very quickly. The animal was still seen to jump. See electrolytic lesion section below to see lesion images.
+
+=== Skull screws to hold implant ===
+Three screws of size #000-120 were put into the skull. Two screws were in the front (anterior) of the skull in front of bregma (one on each side of bregma) and one on the opposite side of the implant. The holes were made first by hand drill using a 0.028" diameter drill bit. Drilling the holes caused a little bit of blood to come out. The screws were later covered with dental acrylic to securely attach the implant to the skull.
+
+=== Tetrode DiI coating ===
+The tetrodes were coated with DiI so that when the brain slices are imaged, where the tetrodes were inserted could clearly be seen. These can be seen in the images labelled overlay in the brain slice images. They are useful in determining whether the target was reached and if the coordinates to get to the auditory striatum were correct or not.
+
+=== Ground wire ===
+Stainless steel (0.005" bare, 0.008" coated, annealed) was used for ground wire. A 1mm hook was made and placed under the skull after a small craniotomy. The ground wire craniotomy was made on the same side of the midline from where the implant is.
+
+=== Sound Response ===
+Sound response and frequency tuning was found in this mouse. The tetrodes seem to be in the striatum and moved all the way through.
+
+== Tetrode Lengths ==
+The tetrodes were cut at an angle so that not all were the same length. The longest tetrode was inserted 2mm into the brain. The lengths listed below are lengths from the longest tetrode. (These are according to the names of the tetrodes on open-ephys NOT the EIB)
+* TT7,TT8: 0um
+* TT1: 110um
+* TT5: 230um
+* TT2: 310um
+* TT6: 430um
+* TT3: 460um
+* TT4: 570um
+
+
+The tetrode impedences seemed to be in the normal range of 100-400kOhms when tested.
+
+== Tetrode advance ==
+* starting depth of tetrodes in brain: 2.0 mm from surface
+* 1 turn is 317 micrometers
+* For screw positions, up (^) is the anterior of the brain
+Time // Amount Turned // Total Turned // Screw Position // Sound Response // Frequency Response // Activity Comments
+
+=== 2015-07-20 ===
+* 4:11 // 0.000 turn // 0.000 turn // ^ // yes // no_ // Everything is noisy. TT2, TT3, and TT6, TT7 have large spikes. TT3 and TT5 have medium spikes, except on channel 1. TT1, TT2, TT4, TT6 and TT7 have tall, narrow spikes. 
+
+=== 2015-07-28 ===
+* 1:35 // 0.000 turn // 1.375 turn // > // yes // yes // Everything is noisy. TT1, TT3, TT4, TT5 and TT6 have large spikes. TT7 and TT8 have medium spikes. TT2 has small spikes. 
+
+=== 2015-07-29 ===
+* 9:58 // 0.000 turn // 1.375 turn // > // yes // no_ // Everything is noisy. TT1, TT3, TT4, TT5, TT6 and TT8 have large spikes. TT4 has medium spikes. TT2 and TT7 have small spikes. 
+
+=== 2015-07-30 ===
+* 3:22 // 0.000 turn // 1.375 turn // > // yes // yes // Everything is noisy. TT1, TT2, TT4, TT5, and TT7 have large spikes. TT3, TT6, and TT8 have very large, narrow spikes.
+
+=== 2015-07-31 ===
+* 2:22 // 0.000 turn // 1.375 turn // v // yes // yes // Everything is noisy. TT1, TT3, TT4, TT5, TT6, TT7 and TT8 have large spikes. TT2 has medium spikes. 
+
+=== 2015-08-01 ===
+* 1:20 // 0.000 turn // 1.625 turn // v // yes // yes // TT3, TT4, TT5, TT6, and TT7 have large spikes. TT1, TT2, and TT8 have medium spikes. 
+
+=== 2015-08-03 ===
+* 3:45 // 0.000 turn // 1.625 turn // v // yes // yes // TT2, TT3, TT4, TT5, TT6, TT7 and TT8 have large spikes. TT1 has medium spikes. 
+
+=== 2015-08-04 ===
+* 11:08 // 0.000 turn // 1.75 turn // < // yes // yes // TT3, TT4, TT5, TT6, and TT7 have large spikes. TT1 and TT2 have medium spikes. TT8 has small, inverted spikes.
+
+=== 2015-08-05 ===
+* 04:10 // 0.000 turn // 1.75 turn // < // yes // yes // TT3, TT4, TT5, TT6, and TT7 have large spikes. TT1 and TT2 have medium spikes. TT8 has small spikes.
+
+=== 2015-08-06 ===
+* 12:57 // 0.000 turn // 1.750 turn // < // yes // yes // TT1, TT2, TT3, TT4, TT5, and TT7 have large spikes. TT5 has medium spikes. TT8 has small spikes.
+* 03:01 // 0.125 turn // 1.875 turn // < // no_ // no_ // TT2, TT3, TT4, TT6, TT7, and TT8 have large spikes. TT1 and TT5 have medium spikes.
+
+=== 2015-08-07 ===
+* 03:40 // 0.000 turn // 1.875 turn // < // yes // yes // TT1, TT2, TT3, TT4, TT6, and TT8 have large spikes. TT7 has medium spikes.
+
+=== 2015-08-10 ===
+* 03:04 // 0.000 turn // 1.875 turn // < // yes // yes // TT1, TT2, TT3, TT5, and TT6 have large spikes. TT4 and TT8 have medium spikes.
+* 04:43 // 0.125 turn // 2.000 turn // ^ // no_ // no_ // TT1, TT2, TT3, TT5, TT6, and TT8 have large spikes. TT4 and TT7 have medium spikes.
+
+=== 2015-08-11 ===
+* 11:07 // 0.000 turn // 2.000 turn // ^ // yes // yes // TT3, TT4, TT5, and TT6 have large spikes. TT1, TT2, TT7, and TT8 have medium spikes. Signals are somewhat noisy.
+
+=== 2015-08-12 ===
+* 11:08 // 0.000 turn // 2.000 turn // ^ // yes // yes // TT2, TT3, TT4, TT5, TT6, and TT8 have large spikes. TT1 has medium and medium, inverted spikes. Signals are somewhat noisy.
+* 12:44 // 0.125 turn // 2.125 turn // ^ // no_ // no_ // TT1, TT2, TT3, and TT4 have large spikes. TT5 has large, inverted spikes. TT6 has medium spikes. Signals are somewhat noisy.
+
+=== 2015-08-13 ===
+* 04:43 // 0.000 turn // 2.125 turn // ^ // yes // yes // TT1, TT2, TT3, TT4, and TT6 have large spikes. TT5 has big, inverted spikes. TT7 and TT8 have medium and medium, inverted spikes. Signals are somewhat noisy.
+
+=== 2015-08-14 ===
+* 12:50 // 0.000 turn // 2.125 turn // ^ // yes // yes // TT1, TT2, TT3, TT4, and TT6 have large spikes. TT5 has big, inverted spikes. TT7 and TT8 have medium and medium, inverted spikes. Signals are somewhat noisy.
+
+=== 2015-08-17 ===
+* 03:13 // 0.000 turn // 2.125 turn // ^ // yes // yes // TT1, TT2, TT3, TT4, and TT6 have large spikes. TT5 has big, inverted spikes. TT7 has small spikes.
+* 05:28 // 0.125 turn // 2.250 turn // > // no_ // no_ // TT1, TT2, TT3, and TT6 have large spikes. TT5 has big, inverted spikes. TT4 and TT8 have small spikes.
+
+=== 2015-08-18 ===
+* 05:21 // 0.000 turn // 2.250 turn // > // yes // yes // TT1, TT2, TT3, and TT6 have large spikes. TT4 and TT5 have big, inverted spikes. TT8 has small spikes.
+
+=== 2015-08-19 ===
+* 12:33 // 0.000 turn // 2.250 turn // > // yes // yes // TT1, TT2, TT3, and TT6 have large spikes. TT4 and TT5 have big, inverted spikes. TT8 has small spikes.
+
+=== 2015-08-20 ===
+* 12:36 // 0.000 turn // 2.250 turn // > // yes // yes // TT1, TT2, TT3, and TT6 have large spikes. TT4 and TT5 have big, inverted spikes.
+
+=== 2015-08-27 ===
+* 11:40 // 0.000 turn // 2.250 turn // > // yes // yes // TT2, TT3, and TT6 have large spikes. TT1 and TT4 have medium spikes. TT5 has medium, inverted spikes.
+
+=== 2015-08-28 ===
+* 11:06 // 0.000 turn // 2.250 turn // > // yes // yes // TT2, TT3, and TT6 have large spikes. TT1, TT5, and TT8 have medium spikes.
+* 12:31 // 0.125 turn // 2.375 turn // > // no_ // no_ // TT1, TT2, TT3, TT4, TT5, and TT6 have large spikes. TT7 and TT8 have infrequent, big spikes.
+
+=== 2015-08-31 ===
+* 03:57 // 0.000 turn // 2.375 turn // > // yes // yes // TT2, TT3, TT5, and TT6 have large spikes. TT1 and TT4 have medium spikes. TT7 and TT8 have medium, inverted spikes.
+
+=== 2015-09-01 ===
+* 01:54 // 0.000 turn // 2.375 turn // > // yes // yes // TT1, TT2, TT3, TT4, and TT6 have large spikes. TT7 and TT8 have medium spikes. TT5 has medium, inverted spikes.
+* 03:30 // 0.125 turn // 2.500 turn // v // no_ // no_ // TT1, TT2, TT3, TT4, TT6, and TT7 have large spikes. TT5 and TT8 have medium spikes.
+
+=== 2015-09-02 ===
+* 02:22 // 0.000 turn // 2.500 turn // v // yes // yes // TT1, TT2, TT3, TT6, and TT7 have large spikes. TT4 and TT8 have medium spikes. TT5 has small spikes.
+
+=== 2015-09-09 ===
+* 01:17 // 0.000 turn // 2.500 turn // v // yes // yes // TT1, TT2, TT3, TT6, and TT8 have large spikes. TT4, TT5, and TT7 have medium spikes.
+* 03:00 // 0.125 turn // 2.625 turn // v // no_ // no_ // TT1, TT2, TT3, TT6, and TT8 have large spikes. TT5 and TT7 have medium spikes.
+
+=== 2015-09-10 ===
+* 01:17 // 0.000 turn // 2.625 turn // v // yes // yes // TT1, TT2, TT3, TT6, and TT8 have large spikes. TT5 has big and medium, inverted spikes. TT4 has medium and big, infrequent spikes. TT7 has medium, inverted spikes.
+
+=== 2015-09-11 ===
+* 12:18 // 0.000 turn // 2.625 turn // v // yes // yes // TT2, TT3, TT5, TT6, TT7, and TT8 have large spikes. TT1 has big and big, inverted spikes. TT4 has big, infrequent spikes.
+* 02:17 // 0.125 turn // 2.750 turn // < // no_ // no_ // All tetrodes have large spikes.
+
+=== 2015-09-13 ===
+* 03:46 // 0.000 turn // 2.750 turn // < // yes // yes // TT2, TT3, TT4, TT5, TT6, TT7, and TT8 have big, narrow spikes. TT1 has medium, wide spikes.
+
+=== 2015-09-14 ===
+* 05:48 // 0.000 turn // 2.750 turn // < // yes // yes // TT2, TT3, TT4, TT5, TT6, TT7, and TT8 have big, narrow spikes.
+
+=== 2015-09-15 ===
+* 12:21 // 0.000 turn // 2.750 turn // < // yes // yes // TT2, TT3, TT4, TT5, TT6, and TT7 have big, narrow spikes. TT8 has big, inverted spikes.
+* 02:08 // 0.125 turn // 2.875 turn // < // no_ // no_ // TT2, TT3, TT4, TT5, TT6, and TT7 have big, narrow spikes. TT8 has big, inverted spikes.
+
+=== 2015-09-17 ===
+* 01:14 // 0.000 turn // 2.875 turn // < // yes // yes // TT3, TT4, TT5, TT6, and TT7 have big, narrow spikes. TT8 has big, inverted spikes. TT2 has medium spikes.
+
+=== 2015-09-18 ===
+* 12:44 // 0.000 turn // 2.875 turn // < // yes // yes // TT2, TT3, TT5, TT6, TT7, and TT8 have big, narrow spikes. TT2 and TT4 have medium spikes.
+
+=== 2015-09-21 ===
+* 12:07 // 0.000 turn // 2.875 turn // < // yes // yes // TT1, TT3, TT4, TT5, TT6, TT7, and TT8 have big, narrow spikes. TT2 has medium spikes.
+
+=== 2015-09-23 ===
+* 12:29 // 0.000 turn // 2.875 turn // < // yes // yes // TT1, TT3, TT4, TT5, TT6, TT7, and TT8 have big, narrow spikes. TT2 has medium spikes.
+* 01:59 // 0.125 turn // 3.000 turn // ^ // no_ // no_ // TT1, TT2, TT3, TT4, TT5, TT6, TT7, and TT8 have big, narrow spikes.
+
+=== 2015-09-24 ===
+* 01:25 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT1, TT3, TT5, TT6, and TT7 have big, narrow spikes. TT2 has medium spikes.
+
+=== 2015-09-25 ===
+* 12:28 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT1, TT3, TT5, TT6, and TT7 have big, narrow spikes. TT2 has big, inverted spikes.
+
+=== 2015-09-26 ===
+* 01:40 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT1, TT2, TT3, TT5, TT6, and TT7 have big, narrow spikes. TT4 and TT8 have medium spikes.
+
+=== 2015-10-08 ===
+* 01:36 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT3, TT5, and TT7 have big, narrow spikes. Lots of broken tetrodes or crazy, large spikes. Lots of inverted spikes.
+
+=== 2015-10-09 ===
+* 11:27 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT3, TT5, TT6, and TT7 have big, narrow spikes. No noise from broken tetrodes (they may not have been broken). TT1 and TT2 have small spikes.
+
+=== 2015-10-14 ===
+* 11:01 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT3, TT5, TT6, and TT7 have big, narrow spikes. TT8 #4 is a broken electrode. TT2 and TT4 have small spikes.
+
+=== 2015-12-02 ===
+* 11:04 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT3, TT5, and TT6 have big, narrow spikes. TT1, TT2, and TT4 have medium spikes. TT8 has medium, inverted spikes.
+
+=== 2015-12-04 ===
+* 08:10 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT1, TT3, TT4, TT5, TT6, and TT8 have big, narrow spikes. TT2 has medium spikes.
+
+=== 2015-12-07 ===
+* 11:41 // 0.000 turn // 3.000 turn // ^ // yes // yes // TT3, TT4, TT5, and TT6 have big, narrow spikes. TT1 and TT2 have medium spikes. TT8 has medium, inverted spikes.
+* 12:49 // 0.125 turn // 3.125 turn // ^ // no_ // no_ // TT3, TT4, and TT5 have big, narrow spikes. TT1, TT2, and TT6 have medium spikes. TT8 has medium, inverted spikes.
+
+=== 2015-12-08 ===
+* 11:31 // 0.000 turn // 3.125 turn // ^ // yes // yes // TT1, TT4, TT5, and TT6 have big, narrow spikes. TT3 has medium spikes. TT8 has medium, inverted spikes. TT2 has small spikes.
+* 12:57 // 0.125 turn // 3.250 turn // > // yes // yes // TT4 and TT5 have big, narrow spikes. TT1, TT6, and TT7 have medium spikes. TT2 and TT3 have small spikes.
+
+=== 2015-12-09 ===
+* 11:16 // 0.000 turn // 3.250 turn // > // yes // yes // TT4 has big, narrow spikes. TT5 and TT6 have big and big, inverted spikes. TT7 has big, inverted spikes. TT2 has small spikes. TT8 has small, inverted spikes.
+* 12:49 // 0.125 turn // 3.375 turn // > // yes // yes // TT3 and TT4 have big, narrow spikes. TT5 and TT6 have big and big, inverted spikes. TT7 has big, inverted spikes. TT2 and TT7 have small spikes. TT8 has small, inverted spikes.
+
+=== 2015-12-10 ===
+* 11:34 // 0.000 turn // 3.375 turn // > // yes // yes // TT4 has big, narrow spikes. TT2, TT5, TT6, and TT7 have big and big, inverted spikes. TT2 has medium, wide spikes.
+* 01:16 // 0.125 turn // 3.500 turn // v // yes // yes // TT4 has big, narrow spikes. TT2, TT5, TT6, and TT7 have big and big, inverted spikes. TT2 has medium, wide spikes.
+
+=== 2015-12-11 ===
+* 11:22 // 0.000 turn // 3.500 turn // v // yes // yes // TT4 has big, narrow spikes. TT6 big and big, inverted spikes. TT2 has big, inverted spikes. TT5 has small, inverted spikes. TT7 has medium, wide spikes.
+* 01:39 // 0.125 turn // 3.625 turn // v // yes // yes // TT4 has big, narrow spikes. TT6 big and big, inverted spikes. TT2 has big, inverted spikes. TT5 has small, inverted spikes. TT7 has medium, wide spikes.
+
+=== 2015-12-13 ===
+* 06:46 // 0.000 turn // 3.625 turn // v // yes // yes // TT2, TT5, and TT6 have big, inverted spikes. TT8 has small and small, inverted spikes.
+
+=== 2015-12-14 ===
+* 02:11 // 0.000 turn // 3.625 turn // v // yes // yes // TT2, TT5, and TT6 have big, inverted spikes. TT8 has medium, wide spikes. TT1 and TT4 have small spikes.
+* 03:49 // 0.125 turn // 3.750 turn // < // no_ // no_ // TT2, TT5, and TT6 have big, inverted spikes. TT8 has medium, wide spikes. TT1 and TT4 have medium spikes.
+
+=== 2015-12-15 ===
+* 04:21 // 0.000 turn // 3.750 turn // < // yes // yes // TT2, TT5, and TT6 have big, inverted spikes. TT8 has medium, inverted spikes. TT4 and TT7 have small spikes.
+
+=== 2015-12-16 ===
+* 03:48 // 0.000 turn // 3.750 turn // < // yes // yes // TT5 and TT6 have big, inverted spikes. TT2 and TT8 have medium, inverted spikes. TT4 and TT7 have small spikes.
+
+=== 2015-12-17 ===
+* 02:08 // 0.000 turn // 3.750 turn // < // yes // yes // TT1 and TT5 have big spikes. TT2 and TT6 have medium, inverted spikes. TT8 has big, inverted spikes. TT7 has medium spikes.
+
+=== 2015-12-18 ===
+* 01:33 // 0.000 turn // 3.750 turn // < // yes // yes // TT5 has big, narrow spikes. TT2 has medium, inverted spikes. TT8 has big, inverted spikes. TT7 has has big, wide spikes. TT6 has big, inverted and medium spikes.
+
+=== 2015-12-21 ===
+* 12:36 // 0.000 turn // 3.750 turn // < // yes // yes // TT5 and TT6 have big, narrow spikes. TT8 has big, inverted spikes. TT7 has medium, wide spikes.
+
+=== 2015-12-22 ===
+* 02:57 // 0.000 turn // 3.750 turn // < // yes // yes // TT5 has big, narrow spikes. TT6 has big, narrrow and big, inverted spikes. TT7 has big, wide spikes. TT8 has big, inverted spikes. TT1, TT2, and TT4 have small spikes.
+
+=== 2015-12-23 ===
+* 02:16 // 0.000 turn // 3.750 turn // < // yes // yes // TT4, TT5, and TT6 have big, narrow spikes. TT8 has medium, wide and big, inverted spikes. TT7 has big, wide spikes. TT1 and TT2 have small spikes.
+
+=== 2016-01-11 ===
+* 04:45 // 0.000 turn // 3.750 turn // < // yes // yes // TT4 has big, narrow spikes. TT1 and TT6 have big, inverted spikes.
+
+=== 2016-01-12 ===
+* 01:47 // 0.000 turn // 3.750 turn // < // yes // yes // TT1, TT4, and TT6 have have big, inverted spikes. TT2 has medium, inverted spikes. TT7 has big spikes. TT8 has medium spikes.
+* 03:10 // 0.125 turn // 3.875 turn // < // no_ // no_ // TT1, TT4, and TT6 have have big, inverted spikes. TT2 has medium, inverted spikes. TT7 has big spikes. TT8 has medium spikes.
+
+=== 2016-01-13 ===
+* 03:35 // 0.000 turn // 3.875 turn // < // yes // yes // TT1 has big, wide, inverted spikes. TT4 has have big, inverted spikes. TT6 has big spikes. TT2 and TT7 have small spikes.
+* 04:44 // 0.125 turn // 4.000 turn // ^ // no_ // no_ // TT1 has big, wide, inverted spikes. TT4 has have big, inverted spikes. TT6 has big spikes. TT2 and TT7 have small spikes.
+
+=== 2016-01-14 ===
+* 10:40 // 0.000 turn // 4.000 turn // ^ // yes // yes // TT1 has big, wide, inverted spikes. TT2 and TT4 have big, inverted spikes. TT6 and TT7 have big spikes.
+* 12:09 // 0.125 turn // 4.125 turn // ^ // no_ // no_ // TT1 has big, wide, inverted spikes. TT2 and TT4 have big, inverted spikes. TT6 and TT7 have big spikes.
+
+=== 2016-01-15 ===
+* 10:53 // 0.000 turn // 4.125 turn // ^ // yes // yes // TT2 and TT6 have big, inverted spikes. TT4 has big, inverted spikes and medium spikes. TT7 has big, narrow spikes. TT1 has big, wide, inverted spikes.
+* 03:04 // 0.125 turn // 4.250 turn // > // no_ // no_ // TT2 and TT6 have big, inverted spikes. TT4 has big, inverted spikes and medium spikes. TT7 has big, inverted, narrow spikes. TT1 has big, wide, inverted spikes.
+
+=== 2016-01-16 ===
+* 03:04 // 0.000 turn // 4.250 turn // > // yes // yes // TT2 and TT8 have big, inverted spikes. TT1 and TT7 have big, narrow spikes. TT4 has medium, inverted spikes.
+
+=== 2016-01-18 ===
+* 03:55 // 0.000 turn // 4.250 turn // > // yes // yes // TT8 has big, inverted and medium, inverted spikes. TT7 has big spikes. TT2 has medium, inverted spikes. TT4 has small spikes.
+
+=== 2016-01-19 ===
+* 05:18 // 0.000 turn // 4.250 turn // > // yes // yes // TT7 has big spikes. TT2 has medium, inverted spikes. TT4 and TT6 have small spikes.
+
+=== 2016-01-20 ===
+* 04:38 // 0.000 turn // 4.250 turn // > // yes // yes // TT2 and TT7 have big spikes. TT4 and TT8 have medium, inverted spikes. TT6 has small spikes.
+
+=== 2016-01-21 ===
+* 01:57 // 0.000 turn // 4.250 turn // > // yes // yes // TT2 and TT7 have big spikes. TT8 has medium, inverted spikes. TT4 and TT6 have big, narrow, inverted spikes. TT1 has big, wide, inverted spikes.
+
+=== 2016-01-22 ===
+* 02:47 // 0.000 turn // 4.250 turn // > // yes // yes // TT7 and TT8 have big, wide spikes. TT4 has big, narrow, inverted spikes. TT1 has big, wide, inverted spikes. TT2 has medium, inverted spikes.
+* 04:29 // 0.125 turn // 4.375 turn // > // no_ // no_ // TT7 and TT8 have big, wide spikes. TT4 has big, narrow, inverted spikes. TT1 has big, wide, inverted spikes. TT2 has medium, inverted spikes.
+
+=== 2016-01-23 ===
+* 04:10 // 0.000 turn // 4.375 turn // > // yes // yes // TT7 has big, wide spikes. TT4 has big, narrow, inverted spikes. TT2 has medium spikes. TT8 has medium, wide spikes.
+* 06:02 // 0.125 turn // 4.500 turn // v // no_ // no_ // TT7 has big, wide spikes. TT4 has big, narrow, inverted spikes. TT2 has medium spikes. TT8 has medium, wide spikes.
+
+=== 2016-01-24 ===
+* 04:39 // 0.000 turn // 4.500 turn // v // yes // yes // TT7 and TT8 have big, wide spikes. TT4 has big, narrow, inverted spikes. TT2 has big, narrow spikes.
+
+=== 2016-01-25 ===
+* 02:58 // 0.000 turn // 4.500 turn // v // yes // yes // TT7 has big, wide spikes. TT8 has big, narrow, inverted spikes. TT2 and TT4 have medium, narrow spikes.
+* 04:26 // 0.125 turn // 4.625 turn // v // no_ // no_ // TT7 has big, wide spikes. TT8 has big, narrow, inverted spikes. TT2 and TT4 have medium, narrow spikes.
+
+=== 2016-01-26 ===
+* 02:21 // 0.000 turn // 4.625 turn // v // yes // yes // TT8 has big, wide spikes. TT4 has big, narrow, inverted spikes. TT2 has big, narrow spikes. TT6 has small, inverted spikes.
+
+=== 2016-01-27 ===
+* 03:33 // 0.000 turn // 4.625 turn // v // yes // yes // TT7 and TT8 have big, wide spikes. TT4 has big, narrow, inverted spikes. TT2 has big, narrow spikes. TT6 has small, inverted spikes.
+
+=== 2016-01-28 ===
+* 02:13 // 0.000 turn // 4.625 turn // v // yes // yes // TT7 has big, wide spikes. TT1 has big, wide, inverted spikes. TT2 has big, narrow spikes. TT6 has small spikes.
+* 03:30 // 0.125 turn // 4.750 turn // < // no_ // no_ // TT7 has big, wide spikes. TT1 has big, wide, inverted spikes. TT2 has big, narrow spikes. TT6 has small spikes.
+
+=== 2016-01-29 ===
+* 11:58 // 0.000 turn // 4.750 turn // < // yes // yes // TT7 and TT8 have big, wide spikes. TT2 has big, narrow spikes. TT5 has medium, wide spikes. TT4 and TT6 have small, inverted spikes.
+
+=== 2016-01-30 ===
+* 11:58 // 0.000 turn // 4.750 turn // < // yes // yes // TT7 and TT8 have big, wide spikes. TT1, TT2, and TT6 have big, narrow spikes. TT4 and TT5 have medium, narrow, inverted spikes. 
+
+=== 2016-02-01 ===
+* 01:48 // 0.000 turn // 4.750 turn // < // yes // yes // TT7 and TT8 have big, wide spikes. TT6 has medium, narrow spikes. TT4 has big, narrow, inverted spikes. TT3 has medium, narrow, inverted spikes. 
+
+=== 2016-02-02 ===
+* 10:48 // 0.000 turn // 4.750 turn // < // yes // yes // TT7 and TT8 have big, wide spikes. TT4 has big, narrow, inverted spikes. 
+
+=== 2016-02-03 ===
+* 11:30 // 0.000 turn // 4.750 turn // < // yes // yes // TT7 and TT8 have big, wide spikes. TT4 has big, narrow, inverted spikes. TT6 has small spikes. TT3 has small, inverted spikes.
+
+=== 2016-02-08 ===
+* 10:30 // 0.000 turn // 4.750 turn // < // yes // yes // TT7 has big, wide spikes. TT1, TT4, and TT8 have medium, wide spikes. TT3 and TT6 have medium, inverted spikes.
+
+=== 2016-02-09 ===
+* 02:00 // 0.000 turn // 4.750 turn // < // yes // yes // TT1 and TT7 have big, wide spikes. TT5 and TT8 have medium, wide spikes. TT6 has big, inverted spikes. TT4 has big, narrow spikes.
+
+=== 2016-02-10 ===
+* 02:23 // 0.000 turn // 4.750 turn // < // yes // yes // TT1, TT7, and TT8 have big, wide spikes. TT5 has medium, wide spikes. TT3 and TT6 have medium, inverted spikes. TT4 has medium, narrow spikes.
+
+=== 2016-02-15 ===
+* 11:23 // 0.000 turn // 4.750 turn // < // yes // yes // TT1 and TT7 have big, wide spikes. TT5 and TT8 have medium, wide spikes. TT6 has big, inverted with double-valley spikes. TT4 has small, inverted spikes.
+* 01:08 // 0.125 turn // 4.875 turn // < // no_ // no_ // TT1 and TT7 have big, wide spikes. TT5 and TT8 have medium, wide spikes. TT6 has big, inverted with double-valley spikes. TT4 has small, inverted spikes.
+
+=== 2016-02-16 ===
+* 10:23 // 0.000 turn // 4.875 turn // < // yes // yes // TT8 and TT8 have big, wide spikes. TT4 has big, inverted, narrow spikes. TT1 and TT5 have medium, wide spikes. TT6 has big, inverted with double-valley spikes. TT3 has medium, inverted spikes.
+
+
+
+=== Recordings ===
+test089noise parameters for sound response recordings:
+* Experiementer: billy
+* subject: test089
+* minimum frequency: 2000Hz
+* maximum frequency: 40000Hz
+* number of frequencies: 16
+* minimum intensity: 50dB
+* maximum intensity: 50dB
+* number of intensities: 1
+* tone duration: 0.1sec
+* minimum interstimulus interval: 0.5sec
+* maximum interstimulus interval: 1.0sec
+* amplitude: 0.3
+* presentation mode: random
+* sound type: noise
+
+test089freq parameters for sound response recordings:
+* Experiementer: billy
+* subject: test089
+* minimum frequency: 2000Hz
+* maximum frequency: 40000Hz
+* number of frequencies: 16
+* minimum intensity: 50dB
+* maximum intensity: 50dB
+* number of intensities: 1
+* tone duration: 0.1sec
+* minimum interstimulus interval: 0.5sec
+* maximum interstimulus interval: 1.0sec
+* amplitude: 0.3
+* presentation mode: random
+* sound type: chord
+
+==Experiments==
+===2015-07-20===
+
+* 0.00 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-20_16-12-54
+** TT7 #2 as Gnd, 302 trials of noise.
+** Weak sound response on all tetrodes. 
+
+* 0.25 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-20_16-44-19
+** TT7 #4 as Gnd, 384 trials of noise.
+** Sound response on all tetrodes. Slightly later on TT7 and TT8.
+
+* 0.25 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-20_17-16-19
+** TT7 #3 as Gnd, 334 trials of noise.
+** Sound response on all tetrodes except TT7. 
+
+===2015-07-24===
+
+* 0.50 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-24_15-35-41
+** TT2 #4 as Gnd, 153 trials of noise.
+** Weak sound response on TT8. 
+
+* 0.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-24_15-45-32
+** TT2 #4 as Gnd, 241 trials of noise.
+** Weak sound response on TT1, TT6, TT7 and TT8. 
+
+* 1.00 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-24_15-55-22
+** TT2 #3 as Gnd, 151 trials of noise.
+** Weak sound response on TT1, TT6, TT7 and TT8. 
+
+* 1.25 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-24_16-02-24
+** TT2 #3 as Gnd, 112 trials of noise.
+** Weak sound response on TT1, TT7 and TT8. 
+
+===2015-07-27===
+
+* 1.25 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-27_15-41-29
+** TT2 #4 as Gnd, 300 trials of noise.
+** Sound response on TT1, TT7 and TT8. 
+
+* 1.25 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-07-27_15-48-06
+** behavior recording name: test089_tuning_curve_20150727a.h5
+** TT2 #4 as Gnd, 580 trials
+** Frequency tuning on TT8 (2.98kHz to 8.09 kHz). Weak frequency tuning on TT1 (3.64k to 5.43kHz and 8.09 to 14.74kHz), TT4 (8.09 to 14.74kHz), and TT7 (8.09 to 17.99kHz).
+
+===2015-07-28===
+
+* 1.375 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-28_13-33-08
+** TT2 #4 as Gnd, 317 trials of noise.
+** Sound response on TT1, TT4, TT6, TT7 and TT8. 
+
+* 1.375 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-07-28_13-39-35
+** behavior recording name: test089_tuning_curve_20150728a.h5
+** TT2 #4 as Gnd, 531 trials
+** Frequency tuning on TT8 (2.98k to 14.74kHz and 32 to 40kHz). Weak frequency tuning on TT1 (4.45kHz to 12.07 kHz) and TT7 (6.63k to 14.74kHz).
+
+===2015-07-29===
+
+* 1.375 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-29_09-56-38
+** TT2 #4 as Gnd, 303 trials of noise.
+** Sound response on TT7 and TT8. Weak sound response on TT1 and TT4. 
+
+* 1.375 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-07-29_10-02-50
+** behavior recording name: test089_tuning_curve_20150729a.h5
+** TT2 #4 as Gnd, 521 trials
+** Frequency tuning on TT8 (5.43 to 14.74kHz and 32 to 40kHz). Weak frequency tuning on TT1 (12.07 to 14.74kHz), TT3 (12.07 to 14.74kHz), TT5 (12.07 to 14.74kHz) and TT7 (6.63k to 14.74kHz).
+
+===2015-07-30===
+
+* 1.375 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-30_15-17-35
+** TT7 #3 as Gnd, 302 trials of noise.
+** Same sound response on all tetrodes. Check new reference.
+
+* 1.375 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-30_15-26-27
+** Ground as Gnd, 158 trials of noise.
+** Sound response on TT7 all tetrodes, but somewhat unclear if similar, so checking again.
+
+* 1.375 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-30_15-29-38
+** Ground as Gnd, 318 trials of noise.
+** Sound response on TT7 and TT8. Weak sound response on TT1 and TT4. 
+
+* 1.375 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-07-30_15-45-05
+** behavior recording name: test089_tuning_curve_20150730a.h5
+** Ground as Gnd, 475 trials
+** Frequency tuning on TT8 (5.43 to 14.74kHz and 32 to 40kHz). Weak frequency tuning on TT1 (12.07 to 14.74kHz), TT3 (12.07 to 14.74kHz), TT5 (12.07 to 14.74kHz) and TT7 (6.63k to 14.74kHz).
+
+* 1.375 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-07-30_16-01-13
+** behavior recording name: test089_tuning_curve_20150730b.h5
+** TT1 #3 as Gnd, 495 trials
+** Frequency tuning on TT8? Running again. Possibly a skipped trial--tuning looks jumbled. 
+
+* 1.375 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-07-30_16-14-33
+** behavior recording name: test089_tuning_curve_20150730c.h5
+** TT1 #3 as Gnd, 864 trials
+** Frequency tuning on TT7 and TT8 (5.43 to 17.99kHz).
+
+===2015-07-31===
+
+* 1.375 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-07-31_14-20-49
+** TT1 #3 as Gnd, 308 trials of noise.
+**Sound response on TT6, TT7 and TT8.
+
+* 1.375 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-07-31_14-27-52
+** behavior recording name: test089_tuning_curve_20150731a.h5
+** TT1 #3 as Gnd, 503 trials
+** Frequency tuning on TT5 (8.09 to 14.74kHz), TT7 (5.43 to 21.97kHz), and TT8 (onset from 5.43 to 17.99kHz and offset from 3.64 to 5.43). Weak frequency tuning on TT4 (8.09 to 14.74kHz), 
+
+===2015-08-01===
+
+* 1.625 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-01_13-16-10
+** TT7 #1 as Gnd, 210 trials of noise.
+** Onset sound response on all tetrodes.
+
+* 1.625 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-01_13-20-36
+** TT8 #1 as Gnd, 195 trials of noise.
+** Weak onset sound response on all tetrodes.
+
+* 1.625 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-08-01_13-24-02
+** behavior recording name: test089_tuning_curve_20150801a.h5
+** TT8 #1 as Gnd, 690 trial5
+** Frequency tuning on TT1 (5.4 to 26kHz), and TT7 (4.5 to 26kHz). Weak frequency tuning on TT2 (4.5 to 14.74kHz), TT3 (14 to 20kHz), TT4 (12 to 18kHz), TT5 (6.6 to 18kHz), TT6 (8 to 18kHz), and TT5 (3.6 to 26kHz). All have onset and offset responses.
+
+===2015-08-03===
+
+* 1.625 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-03_15-39-37
+** TT7 #1 as Gnd, 343 trials of noise.
+** Onset sound response on all tetrodes. Spikes increase, then drop off slightly then increase again. Same as days before, appears to be coming from reference?
+
+* 1.625 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-03_15-47-42
+** TT8 #1 as Gnd, 258 trials of noise.
+** Onset sound response on all tetrodes.
+
+* 1.625 turns, presented frequencies using test055freq parameters
+** ephys recording name: 2015-08-03_15-53-28
+** behavior recording name: test089_tuning_curve_20150803a.h5
+** TT8 #1 as Gnd, 618 trials
+** Frequency tuning on TT1 (6.6 to 32kHz), TT5 (5.4k to 17.99kHz), TT6 (6.6k to 17.99kHz), and TT7 (4.5 to 17.99kHz). Weak frequency tuning on TT2 (5.4 to 17.9kHz), TT3 (6.6 to 17.99kHz), and TT4 (4.45 to 18kHz).
+
+===2015-08-04===
+
+* 1.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-04_11-05-28
+** TT8 #1 as Gnd, 216 trials of noise.
+** Weak onset sound response on all tetrodes. Good response on TT7.
+
+* 1.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-04_11-10-06
+** behavior recording name: test089_tuning_curve_20150804a.h5
+** TT8 #1 as Gnd, 630 trials
+** Frequency tuning on TT1 (4.45 to 32kHz) and TT7 (8 to 26kHz). Weak frequency tuning on TT2 (5.4 to 17.9kHz), TT3 (4.5 to 17.99kHz), TT4 (8 to 18kHz), TT5 (8k to 17.99kHz), and TT6 (5.4k to 17.99kHz).
+
+===2015-08-05===
+
+* 1.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-05_16-07-24
+** TT8 #1 as Gnd, 579 trials of noise.
+** Strong sound response on all tetrodes.
+
+* 1.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-05_16-18-41
+** TT7 #1 as Gnd, 455 trials of noise.
+** Strong sound response on all tetrodes.
+
+* 1.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-05_16-27-21
+** TT8 #3 as Gnd, 181 trials of noise.
+** Sound response on all tetrodes.
+
+* 1.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-05_16-31-14
+** behavior recording name: test089_tuning_curve_20150805a.h5
+** TT8 #3 as Gnd, 630 trials
+** Frequency tuning on TT1 (4.45 to 32kHz) and TT7 (5.4 to 26kHz). Weak frequency tuning on TT2 (5.4 to 17.9kHz), TT3 (5.4 to 17.99kHz), TT4 (5.4 to 14.7kHz), TT5 (5.4k to 26kHz), and TT6 (5.4k to 17.99kHz).
+
+===2015-08-06===
+
+* 1.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-06_12-54-28
+** TT8 #3 as Gnd, 200 trials of noise.
+** Onset sound response on all tetrodes except TT8.
+
+* 1.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-06_13-00-55
+** TT2 #2 as Gnd, 200 trials of noise.
+** Onset sound response on TT1, TT3, TT7, and TT8.
+
+* 1.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-06_13-04-36
+** behavior recording name: test089_tuning_curve_20150806a.h5
+** TT2 #2 as Gnd, 516 trials
+** Frequency tuning on TT7 (5.4 to 26kHz) and TT8 (6.6 to 14.7kHz). Weak frequency tuning on TT1 (4.5 to 17.9kHz), TT3 (5.4 to 17.99kHz), TT4 (6.6 to 12kHz), TT5 (5.4k to 12kHz), and TT6 (6.6k to 14.7kHz).
+
+===2015-08-07===
+
+* 1.875 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-07_15-41-32
+** TT1 #3 as Gnd, 200 trials of noise.
+** Onset sound response on all tetrodes. Strong, short onset response on TT7 and TT8.
+
+* 1.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-07_15-47-51
+** behavior recording name: test089_tuning_curve_20150807a.h5
+** TT1 #3 as Gnd, 588 trials
+** Onset and offset frequency tuning on TT7 (5.4 to 26kHz) and TT8 (4.45 to 26kHz). Weak frequency tuning on TT5 (8 to 26kHz) and TT6 (5.4k to 18kHz).
+
+===2015-08-10===
+
+* 1.875 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-10_15-02-14
+** TT5 #1 as Gnd, 201 trials of noise.
+** Strong, short onset response on TT7 and TT8. Weaker onset response found on TT1.
+
+* 1.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-10_15-06-35
+** behavior recording name: test089_tuning_curve_20150810a.h5
+** TT5 #1 as Gnd, 634 trials
+** Onset and offset frequency tuning on TT7 (5.4 to 22kHz) and TT8 (4.45 to 18kHz). Weak frequency tuning on TT1 (8 to 22kHz).
+
+===2015-08-11===
+
+* 2.00 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-11_11-00-19
+** TT3 #2 as Gnd, 258 trials of noise.
+** Strong, short onset response on TT7 and TT8. Weaker onset response found on TT1 and TT2.
+
+* 2.00 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-11_11-04-53
+** behavior recording name: test089_tuning_curve_20150811a.h5
+** TT3 #2 as Gnd, 531 trials
+** Onset and offset frequency tuning on TT7 (5.4 to 22kHz) and TT8 (5.4 to 18kHz). Weak frequency tuning on TT1 (5.4 to 18kHz) and TT5 (8 to 14.7kHz).
+
+===2015-08-12===
+
+* 2.00 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-12_23-08-07
+** TT5 #1 as Gnd, 195 trials of noise.
+** Strong, short onset response on TT7 and TT8. Weaker onset response found on TT1, TT2, and TT3.
+
+* 2.00 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-12_23-11-37
+** behavior recording name: test089_tuning_curve_20150812a.h5
+** TT5 #1 as Gnd, 611 trials
+** Onset and offset frequency tuning on TT1 (5.4 to 26kHz), TT7 (3.6 to 22kHz), and TT8 (3.6 to 22kHz).
+
+===2015-08-13===
+
+* 2.125 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-13_16-40-47
+** TT5 #3 as Gnd, 245 trials of noise.
+** Strong, short onset response on TT7 and TT8. Weaker onset response found on TT1, TT2, TT3, and TT4.
+
+* 2.125 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-13_16-45-00
+** behavior recording name: test089_tuning_curve_20150813a.h5
+** TT5 #3 as Gnd, 811 trials
+** Onset and offset frequency tuning on TT1 (4.5 to 27kHz), TT7 (4.5 to 22kHz), and TT8 (4.5 to 22kHz). Weak frequency tuning on TT2, TT4, TT5, and TT6.
+
+===2015-08-14===
+
+* 2.125 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-14_12-47-53
+** TT3 #4 as Gnd, 205 trials of noise.
+** Strong, short onset response on TT7 and TT8. Weaker onset response found on TT1, TT2, TT4, TT5 and TT6.
+
+* 2.125 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-14_12-51-33
+** behavior recording name: test089_tuning_curve_20150814a.h5
+** TT3 #4 as Gnd, 591 trials
+** Gnd wire had a bad connection in middle of recording so there was a lot of speaker noise. Rerecorded.
+
+* 2.125 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-14_13-03-20
+** behavior recording name: test089_tuning_curve_20150814b.h5
+** TT3 #4 as Gnd, 503 trials
+** Onset and offset frequency tuning on TT1 (5.4 to 22kHz), TT7 (4.5 to 22kHz), and TT8 (4.5 to 18kHz). Weak frequency tuning on TT2, TT5, and TT6.
+
+===2015-08-17===
+
+* 2.125 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-17_15-09-24
+** TT5 #1 as Gnd, 213 trials of noise.
+** Strong, short onset response on TT1, TT7, and TT8. Weaker onset response found on TT2, TT3, TT4, and TT6.
+
+* 2.125 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-17_15-13-03
+** behavior recording name: test089_tuning_curve_20150817a.h5
+** TT5 #1 as Gnd, 500 trials
+** Onset and offset frequency tuning on TT1 (4.5 to 18kHz), TT7 (4.5 to 18kHz), and TT8 (5.4 to 18kHz). Weak frequency tuning on TT2, TT3, TT4, and TT6.
+
+===2015-08-18===
+
+* 2.250 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-18_17-16-42
+** TT5 #1 as Gnd, 214 trials of noise.
+** Strong, short onset response on TT1, TT7, and TT8. Weaker onset response found on TT2, TT3, TT4, and TT6.
+
+* 2.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-18_17-20-28
+** behavior recording name: test089_tuning_curve_20150818a.h5
+** TT5 #1 as Gnd, 533 trials
+** Onset and offset frequency tuning on TT1 (4.5 to 26kHz), TT7 (4.5 to 26kHz), and TT8 (3.6 to 18kHz). Weak frequency tuning on TT2, TT3, TT4 (6.6 to 14.7kHz), and TT6.
+
+===2015-08-19===
+
+* 2.250 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-19_12-31-32
+** TT5 #1 as Gnd, 200 trials of noise.
+** Strong, short onset response on TT1, TT7 (weaker today than before), and TT8. Weaker onset response found on TT3.
+
+* 2.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-19_12-44-48
+** behavior recording name: test089_tuning_curve_20150819a.h5
+** TT5 #1 as Gnd, 500 trials
+** Onset and offset frequency tuning on TT1 (4.5 to 18kHz), TT7 (6.6 to 14.7kHz), and TT8 (5.4 to 18kHz). Weak frequency tuning on TT2, TT3, TT4 (6.6 to 14.7kHz), and TT6.
+
+===2015-08-20===
+
+* 2.250 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-20_12-36-07
+** TT5 #1 as Gnd, 200 trials of noise.
+** Strong, short onset response on TT1, TT7, and TT8. Weaker onset response found on TT4.
+
+* 2.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-20_12-39-56
+** behavior recording name: test089_tuning_curve_20150820a.h5
+** TT5 #1 as Gnd, 635 trials
+** Onset and offset frequency tuning on TT1 (4.5 to 18kHz), TT7 (3.6 to 14.7kHz), and TT8 (4.5 to 18kHz). Weak frequency tuning on TT2, TT3, TT4 (5.4 to 9.88kHz), and TT6.
+
+===2015-08-21===
+
+* 2.250 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-21_15-24-31
+** TT5 #1 as Gnd, 100 trials of noise.
+
+* Santiago's AM data  (before fixing the bug tha precluded having event signals on ephys)
+** 2015-08-21_15-32-29
+** test089_laser_tuning_curve_20150821a.h5 (in experimenter santiago)
+
+* Santiago's AM data
+** 2015-08-21_15-48-16
+** test089_laser_tuning_curve_20150821a.h5 (in experimenter billy)
+
+* Santiago's AM data
+** 2015-08-21_16-08-15
+** test089_laser_tuning_curve_20150821b.h5 (in experimenter billy)
+
+* Santiago's AM data
+** 2015-08-21_16-16-16
+** test089_laser_tuning_curve_20150821c.h5 (in experimenter billy)
+
+* 2.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-21_16-42-06
+** behavior recording name: test089_tuning_curve_20150821a.h5
+** TT5 #1 as Gnd, 410 trials
+
+* 2.250 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-21_16-50-41
+** TT5 #1 as Gnd, 110 trials of noise.
+
+===2015-08-27===
+
+* 2.250 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-27_11-39-45
+** TT5 #1 as Gnd, 203 trials of noise.
+** Strong, short onset response on TT1, TT3, TT4, TT7, and TT8. Weaker onset response found on TT6.
+
+* 2.250 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-27_11-43-50
+** TT4 #3 as Gnd, 204 trials of noise.
+** Strong, short onset response on TT1, TT3, TT7, and TT8. Weaker onset response found on TT5 and TT6.
+
+* 2.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-27_11-47-43
+** behavior recording name: test089_tuning_curve_20150827a.h5
+** TT4 #3 as Gnd, 500 trials
+** Onset and offset frequency tuning on TT1 (3.6 to 26kHz), TT7 (3.6 to 14.7kHz), and TT8 (4.5 to 18kHz). Weak frequency tuning on TT3, TT5, and TT6.
+
+===2015-08-28===
+
+* 2.250 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-28_11-01-11
+** TT4 #3 as Gnd, 200 trials of noise.
+** Strong, short onset response on TT1, TT5, TT7, and TT8. Weaker onset response found on TT3 and TT6.
+
+* 2.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-28_11-04-56
+** behavior recording name: test089_tuning_curve_20150828a.h5
+** TT4 #3 as Gnd, 505 trials
+** Onset and offset frequency tuning on TT1 (3.6 to 26kHz), TT5 (5.4 to 14.7kHz), TT7 (4.5 to 14.7kHz), and TT8 (4.5 to 18kHz). Weak frequency tuning on TT6.
+
+===2015-08-31===
+
+* 2.375 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-08-31_15-55-26
+** TT4 #1 as Gnd, 200 trials of noise.
+** Strong, short onset response on TT1, TT5, TT7, and TT8. Weaker onset response found on TT3 and TT6.
+
+* 2.375 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-08-31_15-59-13
+** behavior recording name: test089_tuning_curve_20150831a.h5
+** TT4 #1 as Gnd, 904 trials
+** Onset and offset frequency tuning on TT1 (4.5 to 26kHz), TT5 (4.5 to 12kHz), TT7 (4.5 to 18kHz), and TT8 (3.6 to 26kHz). Weak frequency tuning on TT2, TT3, and TT6.
+
+===2015-09-01===
+
+* 2.375 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-01_13-53-10
+** TT5 #1 as Gnd, 200 trials of noise.
+** Strong, short onset response on TT1, TT7, and TT8. Weaker onset response found on TT3, TT4, and TT6.
+
+* 2.375 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-01_13-56-47
+** behavior recording name: test089_tuning_curve_20150901a.h5
+** TT5 #1 as Gnd, 525 trials
+** Onset and offset frequency tuning on TT1 (4.5 to 26kHz), TT5 (4.5 to 12kHz), TT7 (5.4 to 14.7kHz), and TT8 (4.5 to 18kHz). Weak frequency tuning on TT2, TT3, TT4, TT5, and TT6.
+
+===2015-09-02===
+
+* 2.500 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-02_14-21-14
+** TT5 #1 as Gnd, 228 trials of noise.
+** Strong onset and some offset response on TT1, TT7, and TT8. Weaker onset response found on TT3, TT4, and TT6.
+
+* 2.500 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-02_14-25-18
+** behavior recording name: test089_tuning_curve_20150902a.h5
+** TT5 #1 as Gnd, 503 trials
+** Onset and offset frequency tuning on TT1 (4.5 to 26kHz), TT7 (6.6 to 14.7kHz), and TT8 (6.6 to 14.7kHz). Weak frequency tuning on TT3, TT4, and TT6.
+
+===2015-09-09===
+
+* 2.500 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-09_13-15-47
+** TT5 #1 as Gnd, 200 trials of noise.
+** Strong onset and some offset response on TT1, TT6, and TT7. Weaker onset response found on TT3, TT4, and TT8.
+
+* 2.500 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-09_13-19-59
+** behavior recording name: test089_tuning_curve_20150909a.h5
+** TT5 #1 as Gnd, 553 trials
+** Onset and offset frequency tuning on TT1 (6.6 to 26kHz), TT7 (3.6 to 14.7kHz), and TT8 (6.6 to 12kHz). Weak frequency tuning on TT3, TT4, and TT6.
+
+===2015-09-10===
+
+* 2.625 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-10_12-20-32
+** TT5 #1 as Gnd, 208 trials of noise.
+** Strong onset and some offset response on TT1, TT3, TT6, TT7, and TT8. Weaker onset response found on TT4 and TT5.
+
+* 2.625 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-10_12-24-35
+** behavior recording name: test089_tuning_curve_20150910a.h5
+** TT5 #1 as Gnd, 664 trials
+** Onset and offset frequency tuning on TT1 (5.4 to 26kHz), TT7 (3.6 to 14.7kHz), and TT8 (5.4 to 12kHz). Weak frequency tuning on TT2, TT3, TT4, TT5, and TT6.
+
+===2015-09-11===
+
+* 2.625 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-11_12-15-19
+** TT5 #1 as Gnd, 221 trials of noise.
+** Strong onset and some offset response on TT1 and TT7. Strong onset response on TT3, TT6, and TT8. Weaker onset response found on TT4 and TT5.
+
+* 2.625 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-11_12-19-19
+** behavior recording name: test089_tuning_curve_20150911a.h5
+** TT5 #1 as Gnd, 685 trials
+** Onset and offset frequency tuning on TT1 (6.6 to 26kHz), TT7 (4.5 to 14.7kHz), and TT8 (6.6 to 9.8kHz). Weak frequency tuning on TT2, TT3, TT4, TT5, and TT6.
+
+===2015-09-13===
+
+* 2.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-13_15-45-53
+** TT5 #1 as Gnd, 211 trials of noise.
+** Strong onset response on TT1, TT3, and TT6. Weaker onset response found on TT4, TT7, and TT8.
+
+* 2.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-13_15-49-37
+** behavior recording name: test089_tuning_curve_20150913a.h5
+** TT5 #1 as Gnd, 662 trials
+** Onset and offset frequency tuning on TT1 (6.6 to 18kHz), TT3 (6.6 to 9.9kHz), TT5 (6.6 to 12kHz), TT7 (6.6 to 14.7kHz), and TT8 (6.6 to 14.7kHz). Weak frequency tuning on TT2, TT4, and TT6.
+
+===2015-09-14===
+
+* 2.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-14_17-46-31
+** TT5 #1 as Gnd, 203 trials of noise.
+** Strong onset response on TT1, TT3, and TT5. Weaker onset response found on TT6, TT7, and TT8.
+
+* 2.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-14_17-50-55
+** behavior recording name: test089_tuning_curve_20150914a.h5
+** TT8 #1 as Gnd, 673 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT5 (6.6 to 22kHz), and TT6 (6.6 to 12kHz). Weak frequency tuning on TT2, TT4, TT7, and TT8. Much less tuning than before.
+
+===2015-09-15===
+
+* 2.75 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-15_12-19-30
+** TT8 #1 as Gnd, 202 trials of noise.
+** Strong onset response on TT1, TT3, TT4, TT5, and TT6. Weaker onset response found on TT2, TT7, and TT8.
+
+* 2.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-15_12-23-20
+** behavior recording name: test089_tuning_curve_20150915a.h5
+** TT8 #1 as Gnd, 1111 trials
+** Onset frequency tuning on TT1 (5.4 to 22kHz), TT2 (5.4 to 14.7kHz), TT3 (6.6 to 18kHz), TT4 (4.5 to 18kHz), TT5 (4.5 to 26kHz), TT6 (5.4 to 14.7kHz), and TT7 (6.6 to 14.7kHz). Offset frequency tuning on TT8 (5.4 to 14.7kHz)
+
+===2015-09-17===
+
+* 2.875 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-17_13-12-59
+** TT8 #4 as Gnd, 233 trials of noise.
+** Strong onset response on TT1, TT3, TT4, TT5, and TT6. Weaker onset response found on TT2, TT7, and TT8.
+
+* 2.875 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-17_13-17-41
+** TT7 #4 as Gnd, 209 trials of noise.
+** Strong onset response on TT1, TT3, TT4, TT5, and TT6. Weaker onset response found on TT2 and TT8.
+
+* 2.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-17_13-30-14
+** behavior recording name: test089_tuning_curve_20150917a.h5
+** TT7 #4 as Gnd, 884 trials
+** One trial was skipped in ephys so has to rerun script.
+
+* 2.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-17_13-44-54
+** behavior recording name: test089_tuning_curve_20150917b.h5
+** TT7 #4 as Gnd, 1206 trials
+** board became unplugged. had to rerun. Onset frequency tuning on TT1 (3.6 to 22kHz), TT2 (6.6 to 14.7kHz), TT3 (6.6 to 18kHz), TT4 (4.5 to 14.7kHz), TT5 (4.5 to 22kHz), TT6 (5.4 to 14.7kHz), and TT7 (9.8 to 14.7kHz), and TT8 (9.8 to 14.7kHz).
+
+* 2.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-17_14-06-01
+** behavior recording name: test089_tuning_curve_20150917c.h5
+** TT7 #4 as Gnd,  trials
+** One trial was skipped in ephys.
+
+===2015-09-18===
+
+* 2.875 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-18_12-41-53
+** TT1 #2 as Gnd, 200 trials of noise.
+** Strong onset response on all tetrodes.
+
+* 2.875 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-18_12-46-11
+** TT8 #3 as Gnd, 264 trials of noise.
+** Strong onset response on TT1, TT3, TT4, TT5, and TT6. Weaker onset response found on TT2 and TT7. Offset response on TT5.
+
+* 2.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-18_12-50-42
+** behavior recording name: test089_tuning_curve_20150918a.h5
+** TT8 #3 as Gnd, 511 trials
+** Onset frequency tuning on TT1 (4.45 to 18kHz), TT2 (5.4 to 14.7kHz), TT3 (8 to 22kHz), TT4 (5.4 to 14.7kHz), TT5 (4.5 to 22kHz), TT6 (5.4 to 14.7kHz), TT7 (12 to 14.7kHz), and TT8 (3.6 to 4.45kHz).
+
+===2015-09-21===
+
+* 2.875 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-21_12-04-20
+** TT8 #3 as Gnd, 216 trials of noise.
+** Strong onset response on TT1, TT3, TT4, TT5, and TT6. Weaker onset response found on TT2 and TT7. Offset response on TT5.
+
+* 2.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-21_12-08-09
+** behavior recording name: test089_tuning_curve_20150921a.h5
+** TT8 #3 as Gnd, 903 trials
+** Onset frequency tuning on TT1 (3 to 14.7kHz), TT2 (5.4 to 9.88kHz), TT3 (6.6 to 14.7kHz), TT4 (5.4 to 14.7kHz), TT5 (6.6 to 14.7kHz), TT6 (4.5 to 14.7kHz), and TT7 (8 to 14.7kHz), and TT8 (2.8 to 4.45kHz).
+
+===2015-09-23===
+
+* 2.875 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-23_12-28-51
+** TT8 #1 as Gnd, 200 trials of noise.
+** Strong onset response on TT1, TT3, TT4, TT5, and TT6. Weaker onset response found on TT2 and TT7.
+
+* 2.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-23_12-32-17
+** behavior recording name: test089_tuning_curve_20150923a.h5
+** TT8 #1 as Gnd, 812 trials
+** Onset frequency tuning on TT1 (4.5 to 18kHz), TT2 (6.6 to 14.7kHz), TT3 (6.6 to 18kHz), TT4 (5.4 to 14.7kHz), TT5 (6.6 to 14.7kHz), TT6 (6.6 to 14.7kHz), and TT7 (8 to 14.7kHz), and TT8 (6.6 to 14.7kHz).
+
+===2015-09-24===
+
+* 3.000 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-24_13-18-19
+** TT6 #4 as Gnd, 200 trials of noise.
+** Strong onset response on all tetrodes.
+
+* 3.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-24_13-23-14
+** behavior recording name: test089_tuning_curve_20150924a.h5
+** TT6 #4 as Gnd, 513 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT3 (6.6 to 9.8kHz), TT4 (6.6 to 14.7kHz), TT5 (6.6 to 14.7kHz), TT6 (6.6 to 18kHz), and TT7 (6.6 to 14.7kHz), and TT8 (6.6 to 18kHz). Frequency tuning looks different. Responses go long after sound is off.
+
+===2015-09-25===
+
+* 3.000 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-25_12-27-12
+** TT8 #1 as Gnd, 200 trials of noise.
+** Strong onset response on TT1, TT3, TT4, TT5, and TT6. Weaker onset response found on TT2 and TT7.
+
+* 3.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-09-25_12-30-40
+** behavior recording name: test089_tuning_curve_20150925a.h5
+** TT8 #1 as Gnd, 575 trials
+** Onset frequency tuning on TT1 (5.4 to 12kHz), TT3 (8 to 14.7kHz), TT4 (5.4 to 14.7kHz), TT5 (6.6 to 9.9kHz), TT6 (6.6 to 12kHz), and TT7 (9.9 to 14.7kHz), and TT8 (6.6 to 12kHz). Weak tuning on TT2 Frequency tuning looks different. Responses go long after sound is off.
+
+===2015-09-26===
+
+* 3.000 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-26_13-38-35
+** TT5 #4 as Gnd, 206 trials of noise.
+** Strong onset response on TT1 and TT3. Some noise in recording.
+
+* 3.000 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-26_13-42-25
+** TT8 #4 as Gnd, 201 trials of noise.
+** Strong onset response on TT1 and TT3. Some possible speaker noise on all channels (maybe from Gnd).
+
+* 3.000 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-09-26_13-46-53
+** TT4 #1 as Gnd, 205 trials of noise.
+** Strong onset response on TT1, TT3, TT5, and TT6.
+
+===2015-10-08===
+
+* 3.000 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-10-08_13-33-18
+** TT8 #2 as Gnd,  trials of noise.
+** Weak onset response on TT1, TT2, TT3, TT6, and TT7.
+
+* 3.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-10-08_13-37-12
+** behavior recording name: test089_tuning_curve_20151008a.h5
+** TT8 #2 as Gnd, 876 trials
+** Onset frequency tuning on TT1 (4.5 to 18kHz), TT2 (5.4 to 12kHz), TT3 (6.6 to 14.7kHz), TT4 (5.4 to 14.7kHz), TT5 (6.6 to 12kHz), TT6 (6.6 to 12kHz), and TT7 (8 to 14.7kHz).
+
+===2015-10-09===
+
+* 3.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-10-09_11-25-21
+** behavior recording name: test089_tuning_curve_20151009a.h5
+** TT4 #1 as Gnd, 937 trials
+** Onset frequency tuning on TT1 (5.4 to 18kHz), TT2 (6.6 to 14.7kHz), TT3 (6.6 to 18kHz), TT4 (6.6 to 14.7kHz), TT5 (6.6 to 14.7kHz), TT6 (6.6 to 14.7kHz), TT7 (8 to 14.7kHz), and TT8 (6.6 to 14.7kHz).
+
+===2015-10-14===
+
+* 3.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-10-14_11-00-10
+** behavior recording name: test089_tuning_curve_20151014a.h5
+** TT8 #3 as Gnd, 500 trials
+** Onset frequency tuning on TT3 (6.6 to 22kHz). Weak response on TT2, TT4, TT5, TT6, and TT7.
+
+===2015-12-02===
+
+* 3.000 turns, presented noise using test089noise parameters
+** ephys recording name: 2015-12-02_11-02-10
+** TT8 #1 as Gnd, 190 trials of noise.
+** Onset response on TT3 and TT6.
+
+* 3.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-02_11-05-35
+** behavior recording name: test089_tuning_curve_20151202a.h5
+** TT8 #1 as Gnd, 900 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT2 (5.4 to 12kHz), TT3 (3.6 to 14.7kHz), TT4 (5.4 to 12kHz), TT5 (5.4 to 12kHz), TT6 (4.5 to 14.7kHz), TT7 (6.6 to 9.8kHz), and TT8 (6.6 to 12kHz).
+
+===2015-12-04===
+
+* 3.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-04_20-07-25
+** behavior recording name: test089_tuning_curve_20151204a.h5
+** TT7 #1 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (5.4 to 12kHz), TT3 (4.5 to 14.7kHz), TT4 (6.6 to 8kHz), TT6 (5.4 to 12kHz), and TT8 (5.4 to 9.8kHz).
+
+===2015-12-07===
+
+* 3.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-07_11-36-26
+** behavior recording name: test089_tuning_curve_20151207a.h5
+** TT7 #1 as Gnd, 501 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT2 (3.6 to 14.7kHz), TT3 (3.6 to 14.7kHz), TT4 (5.4 to 14.7kHz), TT5 (5.4 to 12kHz), TT6 (3.6 to 14.7kHz), and TT8 (6.6 to 12kHz).
+
+===2015-12-08===
+
+* 3.125 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-08_11-29-01
+** behavior recording name: test089_tuning_curve_20151208a.h5
+** TT7 #1 as Gnd, 515 trials
+** Onset frequency tuning on TT1 (6.6 to 14.7kHz), TT2 (5.4 to 9.9kHz), TT3 (4.5 to 14.7kHz), and TT6 (4.5 to 14.7kHz). Offset tuning on TT8 (6.6 to 12kHz).
+
+===2015-12-09===
+
+* 3.25 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-09_11-13-35
+** behavior recording name: test089_tuning_curve_20151209a.h5
+** TT2 #2 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (4.5 to 12kHz), TT2 (4.5 to 12kHz), TT3 (3.6 to 14.7kHz), TT4 (4.5 to 14.7kHz), TT5 (4.5 to 12kHz), TT6 (4.5 to 14.7kHz), and TT8 (4.5 to 12kHz). Offset tuning on TT8 (5.4 to 9.8kHz).
+
+===2015-12-10===
+
+* 3.375 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-10_11-34-02
+** behavior recording name: test089_tuning_curve_20151210a.h5
+** TT1 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (6.6 to 9.8kHz), TT2 (5.4 to 14.7kHz), TT3 (4.5 to 14.7kHz), TT4 (5.4 to 8kHz), TT5 (6.6 to 14.7kHz), TT6 (5.4 to 12kHz), TT7 (6.6 to 9.8kHz), and TT8 (6.6 to 9.8kHz).
+
+===2015-12-11===
+
+* 3.5 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-11_11-22-03
+** behavior recording name: test089_tuning_curve_20151211a.h5
+** TT1 #1 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (5.4 to 9.8kHz), TT2 (5.4 to 8kHz), TT3 (4.5 to 14.7kHz), TT4 (4.5 to 12kHz), TT5 (4.5 to 14.7kHz), TT6 (5.4 to 9.8kHz), TT7 (4.5 to 9.8kHz), and TT8 (5.4 to 9.8kHz).
+
+===2015-12-13===
+
+* 3.625 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-13_18-44-45
+** behavior recording name: test089_tuning_curve_20151213a.h5
+** TT1 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (5.4 to 12kHz), TT2 (5.4 to 12kHz), TT3 (4.5 to 14.7kHz), TT4 (5.4 to 12kHz), TT5 (5.4 to 14.7kHz), TT6 (5.4 to 12kHz), TT7 (6.6 to 12kHz), and TT8 (6.6 to 9.8kHz).
+
+===2015-12-14===
+
+* 3.625 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-14_14-11-22
+** behavior recording name: test089_tuning_curve_20151214a.h5
+** TT3 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT4 (5.4 to 14.7kHz), TT5 (3.6 to 14.7kHz), TT6 (4.5 to 9.8kHz), TT7 (5.4 to 14.7kHz), and TT8 (6.6 to 14.7kHz).
+
+===2015-12-15===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-15_16-20-59
+** behavior recording name: test089_tuning_curve_20151215a.h5
+** TT3 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT2 (5.4 to 14.7kHz), TT4 (4.5 to 14.7kHz), TT5 (3.6 to 14.7kHz), TT6 (4.5 to 12kHz), TT7 (5.4 to 14.7kHz), and TT8 (6.6 to 9.8kHz).
+
+===2015-12-16===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-16_15-47-56
+** behavior recording name: test089_tuning_curve_20151216a.h5
+** TT8 #3 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (6.6 to 8kHz), TT2 (5.4 to 14.7kHz), TT3 (5.4 to 8kHz), TT4 (4.5 to 8kHz), TT5 (3.6 to 12kHz), and TT6 (5.4 to 8kHz).
+
+===2015-12-17===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-17_14-08-07
+** behavior recording name: test089_tuning_curve_20151217a.h5
+** TT3 #4 as Gnd, 506 trials
+** Onset frequency tuning on TT1 (5.4 to 12kHz), TT2 (5.4 to 14.7kHz), TT3 (5.4 to 14.7kHz), TT4 (4.5 to 14.7kHz), TT5 (4.5 to 14.7kHz), TT6 (5.4 to 12kHz), TT7 (5.4 to 14.7kHz), TT8 (6.6 to 9.8kHz).
+
+===2015-12-18===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-18_13-33-26
+** behavior recording name: test089_tuning_curve_20151218a.h5
+** TT4 #1 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT2 (5.4 to 14.7kHz), TT3 (4.5 to 12kHz), TT5 (3.6 to 14.7kHz), TT6 (4.5 to 12kHz), TT7 (5.4 to 14.7kHz), TT8 (6.6 to 9.8kHz).
+
+===2015-12-21===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-21_12-36-50
+** behavior recording name: test089_tuning_curve_20151220a.h5
+** TT3 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (4.5 to 14.7kHz), TT2 (5.4 to 14.7kHz), TT3 (5.4 to 14.7kHz), TT4 (5.4 to 14.7kHz), TT5 (3.6 to 14.7kHz), TT6 (4.5 to 14.7kHz), TT7 (6.6 to 14.7kHz), TT8 (5.4 to 12kHz).
+
+===2015-12-22===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-22_14-57-24
+** behavior recording name: test089_tuning_curve_20151222a.h5
+** TT3 #4 as Gnd, 512 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT2 (5.4 to 14.7kHz), TT3 (5.4 to 14.7kHz), TT4 (5.4 to 14.7kHz), TT5 (5.4 to 14.7kHz), TT6 (5.4 to 14.7kHz), TT7 (5.4 to 14.7kHz), TT8 (6.6 to 12kHz).
+
+===2015-12-23===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2015-12-23_14-14-01
+** behavior recording name: test089_tuning_curve_20151223a.h5
+** TT3 #4 as Gnd, 512 trials
+** Onset frequency tuning on TT1 (6.6 to 14.7kHz), TT2 (5.4 to 14.7kHz), TT3 (6.6 to 9.8kHz), TT4 (4.5 to 14.7kHz), TT5 (4.5 to 14.7kHz), TT6 (5.4 to 12kHz), TT7 ( to 14.7kHz), TT8 (6.6 to 12kHz).
+
+===2016-01-11===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-11_16-44-37
+** behavior recording name: test089_tuning_curve_20160111a.h5
+** TT3 #2 as Gnd, 512 trials
+** Onset frequency tuning on TT1 (3.6 to 14.7kHz), TT2 (5.4 to 12kHz), TT3 (5.4 to 14.7kHz), TT4 (3.6 to 14.7kHz), TT5 (5.4 to 12kHz), TT6 (4.5 to 14.7kHz), TT7 (6.6 to 12kHz), and TT8 (6.6 to 12kHz).
+
+===2016-01-12===
+
+* 3.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-12_13-44-21
+** behavior recording name: test089_tuning_curve_20160112a.h5
+** TT3 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (3.6 to 14.7kHz), TT2 (3.6 to 14.7kHz), TT3 (4.5 to 14.7kHz), TT4 (3.6 to 14.7kHz), TT5 (4.5 to 14.7kHz), TT6 (4.5 to 14.7kHz), TT7 (4.5 to 14.7kHz), and TT8 (4.5 to 14.7kHz).
+
+===2016-01-13===
+
+* 3.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-13_15-33-11
+** behavior recording name: test089_tuning_curve_20160113a.h5
+** TT8 #3 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (4.5 to 14.7kHz), TT2 (5.4 to 12kHz), TT3 (4.5 to 14.7kHz), TT4 (3.6 to 14.7kHz), TT5 (5.4 to 9.8kHz), TT6 (3.6 to 14.7kHz), TT7 (6.6 to 9.8kHz), and TT8 (6.6 to 9.8kHz).
+
+===2016-01-14===
+
+* 4.000 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-14_10-35-18
+** behavior recording name: test089_tuning_curve_20160114a.h5
+** TT7 #1 as Gnd, 590 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT2 (5.4 to 9.8kHz), TT3 (5.4 to 14.7kHz), TT4 (4.5 to 12kHz), TT5 (5.4 to 9.8kHz), TT6 (5.4 to 14.7kHz), TT7 (5.4 to 14.7kHz), and TT8 (5.4 to 9.8kHz).
+
+===2016-01-15===
+
+* 4.125 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-15_10-52-21
+** behavior recording name: test089_tuning_curve_20160115a.h5
+** TT3 #1 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT2 (5.4 to 12kHz), TT3 (5.4 to 12kHz), TT4 (5.4 to 12kHz), TT5 (5.4 to 12kHz), TT6 (5.4 to 12kHz), TT7 (5.4 to 12kHz), and TT8 (5.4 to 12kHz).
+
+===2016-01-16===
+
+* 4.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-16_15-03-42
+** behavior recording name: test089_tuning_curve_20160116a.h5
+** TT3 #1 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT2 (6.6 to 12kHz), TT3 (6.6 to 12kHz), TT4 (6.6 to 14.7kHz), TT5 (6.6 to 14.7kHz), TT6 (6.6 to 14.7kHz), TT7 (6.6 to 14.7kHz), and TT8 (5.4 to 14.7kHz).
+
+===2016-01-18===
+
+* 4.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-18_15-55-09
+** behavior recording name: test089_tuning_curve_20160118a.h5
+** TT1 #3 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT2 (6.6 to 12kHz), TT3 (5.4 to 12kHz), TT4 (6.6 to 14.7kHz), TT5 (6.6 to 12kHz), TT6 (5.4 to 12kHz), TT7 (5.4 to 12kHz), and TT8 (6.6 to 12kHz).
+
+===2016-01-19===
+
+* 4.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-19_17-18-18
+** behavior recording name: test089_tuning_curve_20160119a.h5
+** TT1 #3 as Gnd, 502 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT7 (5.4 to 12kHz), and TT8 (6.6 to 12kHz).
+
+===2016-01-20===
+
+* 4.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-20_16-35-55
+** behavior recording name: test089_tuning_curve_20160120a.h5
+** TT5 #2 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT7 (5.4 to 14.7kHz).
+
+===2016-01-21===
+
+* 4.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-21_13-54-52
+** behavior recording name: test089_tuning_curve_20160121a.h5
+** TT5 #2 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (4.5 to 14.7kHz), TT2 (6.6 to 12kHz), TT6 (12 to 14.7kHz), TT7 (6.6 to 14.7kHz).
+
+===2016-01-22===
+
+* 4.250 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-22_14-46-21
+** behavior recording name: test089_tuning_curve_20160122a.h5
+** TT3 #4 as Gnd,  trials
+** Onset frequency tuning on TT1 (5.4 to 14.7kHz), TT2 (6.6 to 12kHz), TT4 (8 to 12kHz), TT6 (6.6 to 8kHz), TT7 (6.6 to 14.7kHz), TT8 (6.6 to 9.8kHz).
+
+===2016-01-23===
+
+* 4.375 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-23_16-09-57
+** behavior recording name: test089_tuning_curve_20160123a.h5
+** TT3 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (6.6 to 9.8kHz), TT4 (5.4 to 12kHz), TT6 (6.6 to 12kHz), TT7 (6.6 to 14.7kHz), TT8 (8 to 12kHz).
+
+===2016-01-24===
+
+* 4.500 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-24_16-37-23
+** behavior recording name: test089_tuning_curve_20160124a.h5
+** TT3 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT2 (6.6 to 12kHz), TT3 (6.6 to 9.8kHz), TT4 (6.6 to 14.7kHz), TT6 (5.4 to 12kHz), TT7 (6.6 to 14.7kHz), TT8 (6.6 to 12kHz).
+
+===2016-01-25===
+
+* 4.500 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-25_14-55-26
+** behavior recording name: test089_tuning_curve_20160125a.h5
+** TT3 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT1 (6.6 to 9.8kHz), TT4 (6.6 to 9.8kHz), TT6 (6.6 to 9.8kHz), TT7 (8 to 9.8kHz), TT8 (8 to 9.8kHz).
+
+===2016-01-26===
+
+* 4.625 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-26_14-20-06
+** behavior recording name: test089_tuning_curve_20160126a.h5
+** TT3 #4 as Gnd, 507 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT2 (6.6 to 9.8kHz), TT4 (6.6 to 12kHz), TT5 (5.4 to 12kHz), TT6 (6.6 to 12kHz), TT7 (5.4 to 12kHz), TT8 (6.6 to 12kHz).
+
+===2016-01-27===
+
+* 4.625 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-27_15-33-25
+** behavior recording name: test089_tuning_curve_20160127a.h5
+** TT3 #4 as Gnd, 500 trials
+** Onset frequency tuning on TT7 (6.6 to 12kHz), TT8 (6.6 to 12kHz).
+
+===2016-01-28===
+
+* 4.625 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-28_14-11-05
+** behavior recording name: test089_tuning_curve_20160128a.h5
+** TT3 #4 as Gnd, 712 trials
+** Onset frequency tuning on TT1 (5.4 to 12kHz), TT2 (5.4 to 12kHz), TT4 (6.6 to 12kHz), TT6 (5.4 to 12kHz), TT7 (6.6 to 14.7kHz), TT8 (5.4 to 12kHz).
+
+===2016-01-29===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-29_11-57-12
+** behavior recording name: test089_tuning_curve_20160129a.h5
+** TT3 #4 as Gnd, 618 trials
+** Onset frequency tuning on TT1 (5.4 to 12kHz), TT2 (3.6 to 9.8kHz), TT4 (6.6 to 8kHz), TT6 (6.6 to 12kHz), TT7 (5.4 to 12kHz), TT8 (5.4 to 12kHz).
+
+===2016-01-30===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-01-30_13-01-55
+** behavior recording name: test089_tuning_curve_20160130a.h5
+** TT3 #4 as Gnd, 523 trials
+** Onset frequency tuning on TT1 (8 to 12kHz), TT2 (8 to 12kHz), TT4 (8 to 12kHz), TT7 (5.4 to 12kHz), TT8 (6.6 to 12kHz).
+
+===2016-02-01===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-02-01_13-44-37
+** behavior recording name: test089_tuning_curve_20160201a.h5
+** TT1 #1 as Gnd, 501 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT2 (6.6 to 9.8kHz), TT6 (3.6 to 9.8kHz), TT7 (6.6 to 9.8kHz), TT8 (5.4 to 9.8kHz).
+
+===2016-02-02===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-02-02_10-45-36
+** behavior recording name: test089_tuning_curve_20160202a.h5
+** TT3 #2 as Gnd, 504 trials
+** Onset frequency tuning on TT1 (5.4 to 12kHz), TT2 (8 to 14.7kHz), TT6 (6.6 to 12kHz), TT7 (5.4 to 12kHz), TT8 (8 to 12kHz).
+
+===2016-02-03===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-02-03_11-29-15
+** behavior recording name: test089_tuning_curve_20160203a.h5
+** TT3 #4 as Gnd, 604 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT2 (6.6 to 9.8kHz), TT6 (3 to 12kHz), TT7 (5.4 to 12kHz), TT8 (5.4 to 12kHz).
+
+===2016-02-08===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-02-08_10-38-26
+** behavior recording name: test089_tuning_curve_20160208a.h5
+** TT4 #1 as Gnd, 680 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT2 (6.6 to 9.8kHz), TT4 (5.4 to 12kHz), TT6 (5.4 to 12kHz), TT7 (6.6 to 12kHz), TT8 (6.6 to 12kHz).
+
+===2016-02-09===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-02-09_13-59-14
+** behavior recording name: test089_tuning_curve_20160208a.h5
+** TT3 #1 as Gnd, 525 trials
+** Onset frequency tuning on TT1 (6.6 to 12kHz), TT6 (6.6 to 9.8kHz), TT7 (8 to 9.8kHz), TT8 (8 to 9.8kHz).
+
+===2016-02-10===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-02-10_14-22-08
+** behavior recording name: test089_tuning_curve_20160210a.h5
+** TT3 #1 as Gnd, 500 trials
+** Weak Onset frequency tuning on TT1 (6.6 to 9.8kHz), TT7 (8 to 12kHz), TT8 (8 to 12kHz).
+
+===2016-02-15===
+
+* 4.75 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-02-15_11-20-21
+** behavior recording name: test089_tuning_curve_20160215a.h5
+** TT3 #1 as Gnd, 500 trials
+** No frequency tuning found.
+
+===2016-02-16===
+
+* 4.875 turns, presented frequencies using test089freq parameters
+** ephys recording name: 2016-02-16_10-21-55
+** behavior recording name: test089_tuning_curve_20160216a.h5
+** TT3 #1 as Gnd, 500 trials
+** Weak Onset frequency tuning on TT7 (5.4 to 12kHz), TT8 (6.6 to 12kHz).
+
+== Switching Task Training ==
+
+The animal was recorded from while behaving. This animal was trained with the switching task.
+
+Parameters used during training:
+* Experimenter: Santiago
+* Subject: test089
+* Time valve left: 0.03 sec
+* Time center left: 0.03 sec
+* Time right left: 0.03 sec
+* Outcome mode: only_if_correct
+* Anti-bias mode: off
+* Mean delay to target: 0.2 sec
+* +/-: 0.05 sec
+* Target duration: 0.1 sec
+* Reward Availability: 4 sec
+* Punishment (error): 0 sec
+* Punishment (early): 0 sec
+* Trials per block: 300
+* Current block: mid_boundary
+* PsyCurve Mode: uniform
+* N frequencies: 8
+* Automation Mode: off
+* High freq: 16000 Hz
+* Middle freq: 7000 Hz
+* Low freq: 3000 Hz
+* Intensity Mode: fixed
+* Max intensity: 60
+
+=== Training Dates ===
+
+* 2015-07-02
+** start: 10:34am, end: 11:45pm
+** N valid: 600, N rewarded: 405
+** 1475 total trials
+** Switching task at the high block with 300 trials per block, 4 second error punishment, 0.5 sec early punishment, 0.05 punish amplitude, and intensity mode at randMinus20.
+
+* 2015-07-06
+** start: 3:39am, end: 4:05pm
+** N valid: 780, N rewarded: 629
+** 1548 total trials
+** Switching task at the high block with 200 trials per block, 4 second error punishment, 0.5 sec early punishment, 0.05 punish amplitude, and intensity mode at randMinus20.
+
+* 2015-07-08
+** start: 3:40am, end: 4:05pm
+** N valid: 776, N rewarded: 627
+** 1624 total trials
+** Switching task starting on the high block with 200 trials per block, 4 second error punishment, 0.5 sec early punishment, 0.05 punish amplitude, and intensity mode at randMinus20. Switched to low block on valid trial 340, total trial 627 (4:09pm).
+
+* 2015-07-09
+** start: 12:56am, end: 2:03pm
+** N valid: 591, N rewarded: 471
+** 1298 total trials
+** Switching task starting on the high block with 300 trials per block, 4 second error punishment, 0.5 sec early punishment, 0.05 punish amplitude, and intensity mode at randMinus20. Used repeat mistake mode for a little bit around trial 100. Switched to low boundary at valid trial 216. Low boundary set for 200 trials per block.
+
+* 2015-07-10
+** start: 3:02am, end: 4:07pm
+** N valid: 696, N rewarded: 553
+** 1537 total trials
+** Switching task starting on the high block with 200 trials per block, 4 second error punishment, 0.5 sec early punishment, 0.05 punish amplitude, and intensity mode at randMinus20.
+
+* 2015-07-11
+** start: 11:50am, end: 12:49pm
+** N valid: 606, N rewarded: 473
+** 1121 total trials
+** Switching task starting on the high block with 200 trials per block, 4 second error punishment, 0.5 sec early punishment, 0.05 punish amplitude, and intensity mode at randMinus20.
+
+* 2015-07-13
+** start: 10:29am, end: 11:43pm
+** N valid: 594, N rewarded: 480
+** 1617 total trials
+** Switching task starting on the high block with 2000 trials per block, switched to low just after 300 trials, 4 second error punishment, 0.5 sec early punishment, 0.05 punish amplitude, and intensity mode at randMinus20.
+
+* 2015-07-14
+** start: 1:50pm, end: 3:00pm
+** N valid: 586, N rewarded: 483
+** 1291 total trials
+** Switching task starting on the high block with 2000 trials per block, switched to low after 300 trials, 4 second error punishment, 0.5 sec early punishment, 0.05 punish amplitude, and intensity mode at randMinus20.
+
+* 1.25 turns, 2015-07-27
+** ephys recording name: 2015-07-27_16-03-24
+** start: 4:03pm, end: 5:06pm
+** N valid: 640 N rewarded: 498
+** TT2 #4 Gnd, 1089 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.375 turns, 2015-07-28
+** ephys recording name: 2015-07-28_13-54-29
+** start: 1:55pm, end: 5:06pm
+** N valid: 640 N rewarded: 498
+** TT2 #4 Gnd, 1089 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.375 turns, 2015-07-29
+** ephys recording name: 2015-07-29_10-26-08
+** start: 10:26pm, end: 5:06pm
+** N valid: 569 N rewarded: 474
+** TT2 #4 Gnd, 1357 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.375 turns, 2015-07-30
+** ephys recording name: 2015-07-30_16-33-35
+** start: 4:33pm, end: 5:36pm
+** N valid: 717 N rewarded: 555
+** TT1 #3 Gnd, 1359 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.375 turns, 2015-07-31
+** ephys recording name: 2015-07-31_14-40-40
+** start: 2:42pm, end: 3:42pm
+** N valid: 609 N rewarded: 504
+** TT1 #3 Gnd, 1485 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.375 turns, 2015-08-01
+** ephys recording name: 2015-08-01_13-35-46
+** start: 1:38pm, end: 2:42pm
+** N valid: 686 N rewarded: 578
+** TT8 #1 Gnd, 1479 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.375 turns, 2015-08-03
+** ephys recording name: 2015-08-03_16-12-32
+** start: 4:14pm, end: 5:23pm
+** N valid: 780 N rewarded: 636
+** TT8 #1 Gnd, 2324 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.75 turns, 2015-08-04
+** ephys recording name: 2015-08-04_11-21-11
+** start: 11:24pm, end: 12:43pm
+** N valid: 675 N rewarded: 552
+** TT8 #1 Gnd, 1503 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.75 turns, 2015-08-05
+** ephys recording name: 2015-08-05_16-44-02
+** start: 4:45pm, end: 5:51pm
+** N valid: 664 N rewarded: 527
+** TT8 #3 Gnd, 2428 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.75 turns, 2015-08-06
+** ephys recording name: 2015-08-06_13-29-50
+** start: 1:33pm, end: 2:57pm
+** N valid: 798, N rewarded: 651
+** TT2 #2 Gnd, 1885 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.875 turns, 2015-08-07
+** ephys recording name: 2015-08-07_16-05-00
+** start: 4:07pm, end: 5:21pm
+** N valid: 808, N rewarded: 688
+** TT1 #3 Gnd, 1926 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 1.875 turns, 2015-08-10
+** ephys recording name: 2015-08-10_15-17-29
+** start: 3:20pm, end: 4:37pm
+** N valid: 792, N rewarded: 631
+** TT5 #1 Gnd, 1445 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.00 turns, 2015-08-11
+** ephys recording name: 2015-08-11_11-14-14
+** start: 11:17am, end: 12:45pm
+** N valid: 903, N rewarded: 755
+** TT3 #2 Gnd, 1645 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.00 turns, 2015-08-12
+** ephys recording name: 2015-08-12_23-22-12
+** start: 11:25am, end: 12:40pm
+** N valid: 766, N rewarded: 606
+** TT5 #1 Gnd, 1337 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.125 turns, 2015-08-13
+** ephys recording name: 2015-08-13_16-59-59
+** start: 5:03pm, end: 6:35pm
+** N valid: 993, N rewarded: 790
+** TT5 #3 Gnd, 1925 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.125 turns, 2015-08-14
+** ephys recording name: 2015-08-14_13-12-32
+** start: 1:15pm, end: 2:58pm
+** N valid: 681, N rewarded: 561
+** TT3 #4 Gnd, 1396 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.125 turns, 2015-08-17
+** ephys recording name: 2015-08-17_15-22-05
+** start: 3:25pm, end: 5:26pm
+** N valid: 845, N rewarded: 678
+** TT5 #1 Gnd, 1323 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.25 turns, 2015-08-18
+** ephys recording name: 2015-08-18_17-32-48
+** start: 5:34pm, end: 6:34pm
+** N valid: 737, N rewarded: 583
+** TT5 #1 Gnd, 1474 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.25 turns, 2015-08-19
+** ephys recording name: 2015-08-19_12-53-30
+** start: 12:55pm, end: 2:26pm
+** N valid: 728, N rewarded: 561
+** TT5 #1 Gnd, 1652 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.25 turns, 2015-08-20
+** ephys recording name: 2015-08-20_12-51-26 (open ephys froze in middle of recording)
+** start: 12:52pm, end: 2:17pm
+** N valid: 571, N rewarded: 418
+** TT5 #1 Gnd, 1282 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.25 turns, 2015-08-21
+** ephys recording name: 2015-08-21_16-54-19 
+** start: 4:54pm, end: 6:02pm
+** N valid: 677, N rewarded: 557
+** TT5 #1 Gnd, 1349 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.25 turns, 2015-08-22
+** ephys recording name: no recording
+** start: 3:02pm, end: 4:00pm
+** N valid: 721, N rewarded: 570
+** NO Gnd, 1471 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. randminus20 intensity. 350 trials per block.
+
+* 2.25 turns, 2015-08-24
+** ephys recording name: no recording
+** start: 6:01pm, end: 7:03pm
+** N valid: 678, N rewarded: 551
+** NO Gnd, 1339 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. randminus20 intensity. 400 trials per block.
+
+* 2.25 turns, 2015-08-25
+** ephys recording name: no recording
+** start: 5:38pm, end: 6:40pm
+** N valid: 783, N rewarded: 640
+** NO Gnd, 1339 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. randminus20 intensity. 300 trials per block.
+
+* 2.25 turns, 2015-08-26
+** ephys recording name: no recording
+** start: 2:14pm, end: 3:40pm
+** N valid: 746, N rewarded: 613
+** NO Gnd, 1513 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. randminus20 intensity. 3000 trials per block.
+
+* 2.25 turns, 2015-08-27
+** ephys recording name: 2015-08-27_11-56-32
+** start: 11:58pm, end: 1:01pm
+** N valid: 806, N rewarded: 665
+** NO Gnd, 1374 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.25 turns, 2015-08-28
+** ephys recording name: 2015-08-28_11-14-17
+** start: 11:16pm, end: 12:30pm
+** N valid: 808, N rewarded: 661
+** TT4 #3, 1487 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.375 turns, 2015-08-31
+** ephys recording name: 2015-08-31_16-14-28
+** start: 4:15pm, end: 8:36pm
+** N valid: 846, N rewarded: 676
+** TT4 #1, 1587 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.375 turns, 2015-09-01
+** ephys recording name: 2015-09-01_14-06-28
+** start: 2:08pm, end: 3:29pm
+** N valid: 737, N rewarded: 605
+** TT4 #1, 1478 total trials
+** Switching task starting on low block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.500 turns, 2015-09-02
+** ephys recording name: 2015-09-02_14-34-43
+** start: 2:36pm, end: 3:40pm
+** N valid: 735, N rewarded: 609
+** TT4 #1, 1609 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.500 turns, 2015-09-03
+** ephys recording name: no recording
+** start: 3:44pm, end: :pm
+** N valid: 662, N rewarded: 537 
+** None , 1522 total trials
+** Switching task starting on high block with 4 second error punishment. No early punishment. Fixed intensity. 200 trials per block.
+
+* 2.500 turns, 2015-09-05
+** ephys recording name: no recording
+** start: 3:27pm, end: 4:42pm
+** N valid: 604, N rewarded: 471  
+** None , 1061 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity randminus20. 300 trials per block.
+
+* 2.500 turns, 2015-09-07
+** ephys recording name: no recording
+** start: 2:50pm, end: 3:54pm
+** N valid: 831, N rewarded: 677  
+** None , 1435 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity randminus20. Switched to low block at trial 444 for 300 trials per block.
+
+* 2.500 turns, 2015-09-08
+** ephys recording name: no recording
+** start: 11:29am, end: 12:57pm
+** N valid: 515, N rewarded: 439  
+** None , 1093 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity randminus20. 
+
+* 2.500 turns, 2015-09-09
+** ephys recording name: 2015-09-09_13-29-23
+** start: 1:32pm, end: 2:55pm
+** N valid: 812, N rewarded: 691 
+** TT5 #1, 1613 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 2.625 turns, 2015-09-10
+** ephys recording name: 2015-09-10_12-37-41
+** start: 12:39pm, end: 1:49pm
+** N valid: 801, N rewarded: 647
+** TT5 #1, 1491 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 2.625 turns, 2015-09-11
+** ephys recording name: 2015-09-11_12-33-17
+** start: 12:34pm, end: 2:15pm
+** N valid: 792, N rewarded: 643
+** TT5 #1, 1525 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 2.75 turns, 2015-09-13
+** ephys recording name: 2015-09-13_16-00-43
+** start: 4:01pm, end: 5:18pm
+** N valid: 734, N rewarded: 610
+** TT5 #1, 1468 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 2.75 turns, 2015-09-14
+** ephys recording name: 2015-09-14_18-02-42
+** start: 6:03pm, end: 7:18pm
+** N valid: 812, N rewarded: 649
+** TT5 #1, 1627 total trials 
+** Switching task starting on low block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 2.75 turns, 2015-09-15
+** ephys recording name: 2015-09-15_12-41-17
+** start: 12:42pm, end: 7:18pm
+** N valid: 694, N rewarded: 566
+** TT8 #1, 998 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 2.875 turns, 2015-09-17
+** ephys recording name: 2015-09-17_14-19-06
+** start: 2:20pm, end: 7:18pm
+** N valid: 624, N rewarded: 477
+** TT7 #4, 1028 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 2.875 turns, 2015-09-18
+** ephys recording name: 2015-09-18_13-00-00
+** start: 1:01pm, end: 2:12pm
+** N valid: 766, N rewarded: 607
+** TT8 #3, 1683 total trials 
+** Switching task starting on low block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 2.875 turns, 2015-09-21
+** ephys recording name: 2015-09-21_12-23-48
+** start: 12:25pm, end: 1:45pm
+** N valid: 634, N rewarded: 552
+** TT8 #3, 1462 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block. Tether came unplugged during recording.
+
+* 2.875 turns, 2015-09-22
+** ephys recording name: not recorded
+** start: 5:08pm, end: 6:10pm
+** N valid: 628, N rewarded: 509
+** TT8 #3, 1682 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 300 trials per block.
+
+* 2.875 turns, 2015-09-23
+** ephys recording name: 2015-09-23_12-45-45
+** start: 12:49pm, end: 6:10pm
+** N valid: 730, N rewarded: 584
+** TT8 #1, 1938 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 3.000 turns, 2015-09-24
+** ephys recording name: 2015-09-24_13-32-28
+** start: 1:34pm, end: 2:52pm
+** N valid: 663, N rewarded: 544
+** TT8 #1, 1802 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 3.000 turns, 2015-09-25
+** ephys recording name: 2015-09-25_12-41-02
+** start: 12:42pm, end: 1:58pm
+** N valid: 734, N rewarded: 616
+** TT8 #1, 1905 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block. Headstage came uplugged during recording.
+
+* 3.000 turns, 2015-09-26
+** ephys recording name: 2015-09-26_14-03-31
+** start: 2:05pm, end: 3:19pm
+** N valid: 665, N rewarded: 544
+** TT4 #1, 1273 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block. Ground wire came loose so there is speaker noise.
+
+* 3.000 turns, 2015-10-08
+** ephys recording name: 2015-10-08_13-51-27
+** start: 1:53pm, end: 3:21pm
+** N valid: 698, N rewarded: 524
+** TT8 #2, 1904 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 3.000 turns, 2015-10-09
+** ephys recording name: 2015-10-09_11-41-20
+** start: 11:43pm, end: 1:20pm
+** N valid: 860, N rewarded: 662
+** TT4 #1, 2594 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block.
+
+* 3.000 turns, 2015-10-14
+** ephys recording name: 2015-10-14_11-09-05
+** start: 11:11pm, end: 1:20pm
+** N valid: 793, N rewarded: 636
+** TT8 #3, 2511 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.2. Intensity fixed. 200 trials per block. Headstage came unplugged during recording. Chewed on headstage and tether.
+
+* 3.000 turns, 2015-12-02
+** ephys recording name: 2015-12-02_11-20-25
+** start: 11:22pm, end: 12:40pm
+** N valid: 629, N rewarded: 471
+** TT8 #1, 1576 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.000 turns, 2015-12-04
+** ephys recording name: 2015-12-04_20-16-21
+** start: 8:18pm, end: 9:45pm
+** N valid: 653, N rewarded: 534
+** TT7 #1, 2214 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.000 turns, 2015-12-07
+** ephys recording name: 2015-12-07_11-45-08
+** start: 11:46pm, end: 12:47pm
+** N valid: 687, N rewarded: 560
+** TT7 #1, 1218 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.125 turns, 2015-12-08
+** ephys recording name: 2015-12-08_11-37-49
+** start: 11:40pm, end: 12:55pm
+** N valid: 618, N rewarded: 489
+** TT7 #1, 1942 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.25 turns, 2015-12-09
+** ephys recording name: 2015-12-09_11-22-28
+** start: 11:22pm, end: 12:47pm
+** N valid: 710, N rewarded: 569
+** TT2 #2, 1846 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.375 turns, 2015-12-10
+** ephys recording name: 2015-12-10_11-43-39
+** start: 11:43pm, end: 12:47pm
+** N valid: 710, N rewarded: 569
+** TT1 #4, 1846 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.50 turns, 2015-12-11
+** ephys recording name: 2015-12-11_11-31-06
+** start: 11:31pm, end: 1:37pm
+** N valid: 964, N rewarded: 754
+** TT1 #1, 3206 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.625 turns, 2015-12-13
+** ephys recording name: 2015-12-13_18-54-08
+** start: 6:54pm, end: 8:30pm
+** N valid: 853, N rewarded: 658
+** TT1 #4, 2156 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.625 turns, 2015-12-14
+** ephys recording name: 2015-12-14_14-22-50
+** start: 2:23pm, end: 8:30pm
+** N valid: 734, N rewarded: 570
+** TT3 #4, 2014 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.75 turns, 2015-12-15
+** ephys recording name: 2015-12-15_16-29-48
+** start: 4:31pm, end: 5:38pm
+** N valid: 695, N rewarded: 519
+** TT3 #4, 1479 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02. Forgot to attach rubberband so headstage came unplugged.
+
+* 3.75 turns, 2015-12-16
+** ephys recording name: 2015-12-16_15-56-35
+** start: 3:57pm, end: 5:32pm
+** N valid: 771, N rewarded: 593
+** TT3 #4, 2476 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02. 
+
+* 3.75 turns, 2015-12-17
+** ephys recording name: 2015-12-17_14-16-40
+** start: 2:17pm, end: 5:32pm
+** N valid: 684, N rewarded: 522
+** TT3 #4, 2350 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02. 
+
+* 3.75 turns, 2015-12-18
+** ephys recording name: 2015-12-18_13-41-51
+** start: 1:42pm, end: 3:00pm
+** N valid: 749, N rewarded: 588
+** TT4 #1, 1760 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02. 
+
+* 3.75 turns, 2015-12-21
+** ephys recording name: 2015-12-21_12-45-50
+** start: 12:46pm, end: 2:30pm
+** N valid: 761, N rewarded: 581
+** TT3 #4, 1906 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02. 
+
+* 3.75 turns, 2015-12-22
+** ephys recording name: 2015-12-22_15-06-18
+** start: 3:06pm, end: 4:33pm
+** N valid: 818, N rewarded: 676
+** TT3 #4, 1931 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02. 
+
+* 3.75 turns, 2015-12-23
+** ephys recording name: 2015-12-23_14-22-34
+** start: 2:23pm, end: 3:51pm
+** N valid: 765, N rewarded: 602
+** TT3 #4, 2041 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02. 
+
+* 3.75 turns, 2016-01-05
+** ephys recording name: not recorded
+** start: 2:30pm, end: 3:45pm
+** N valid: 461, N rewarded: 337
+** No Gnd,  total trials 
+** High and low freq simple discrimination with 4 second error punishment. Early punishment 0. Intensity fixed. Mean delay: 0.13 +- 0.02. Did ok.
+
+* 3.75 turns, 2016-01-06
+** ephys recording name: not recorded
+** start: 3:06pm, end: 4:18pm
+** N valid: 725, N rewarded: 662
+** No Gnd, 1158 total trials 
+** High and low freq simple discrimination with 4 second error punishment. Early punishment 0. Intensity fixed. Mean delay: 0.13 +- 0.02. Did well.
+
+* 3.75 turns, 2016-01-07
+** ephys recording name: not recorded
+** start: 2:10pm, end: 3:23pm
+** N valid: 790, N rewarded: 661
+** No Gnd, 1059 total trials 
+** High and low freq simple discrimination with 4 second error punishment. Early punishment 0. Intensity fixed. Mean delay: 0.13 +- 0.02.
+
+* 3.75 turns, 2016-01-08
+** ephys recording name: not recorded
+** start: 3:24pm, end: 4:29pm
+** N valid: 894, N rewarded: 740
+** No Gnd, 1137 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.75 turns, 2016-01-11
+** ephys recording name: 2016-01-11_16-55-08
+** start: 4:56pm, end: 6:04pm
+** N valid: 742, N rewarded: 597
+** TT3 #2 Gnd, 1243 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.75 turns, 2016-01-12
+** ephys recording name: 2016-01-12_13-52-50
+** start: 1:54pm, end: 3:10pm
+** N valid: 972, N rewarded: 819
+** TT3 #4 Gnd, 1379 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 3.875 turns, 2016-01-13
+** ephys recording name: 2016-01-13_15-41-48
+** start: 3:42pm, end: 4:42pm
+** N valid: 801, N rewarded: 651
+** TT8 #3 Gnd, 1323 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.000 turns, 2016-01-14
+** ephys recording name: 2016-01-14_10-45-25
+** start: 10:46am, end: 12:08pm
+** N valid: 877, N rewarded: 740
+** TT7 #1 Gnd, 1235 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.125 turns, 2016-01-15
+** ephys recording name: 2016-01-15_11-03-35
+** start: 11:05am, end: 12:26pm
+** N valid: 1112, N rewarded: 895
+** TT3 #2 Gnd, 1925 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.25 turns, 2016-01-16
+** ephys recording name: 2016-01-16_15-12-13
+** start: 3:16am, end: 5:21pm
+** N valid: 934, N rewarded: 758
+** TT3 #2 Gnd, 2365 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.25 turns, 2016-01-18
+** ephys recording name: 2016-01-18_16-03-39
+** start: 4:04am, end: 5:42pm
+** N valid: 823, N rewarded: 636
+** TT1 #3 Gnd, 1707 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.25 turns, 2016-01-19
+** ephys recording name: 2016-01-19_17-27-25
+** start: 5:28am, end: 5:42pm
+** N valid: 823, N rewarded: 636
+** TT5 #2 Gnd, 1707 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.25 turns, 2016-01-20
+** ephys recording name: 2016-01-20_16-44-25
+** start: 4:45am, end: 6:10pm
+** N valid: 869, N rewarded: 688
+** TT5 #2 Gnd, 1988 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.25 turns, 2016-01-21
+** ephys recording name: 2016-01-21_14-03-15
+** start: 2:04am, end: 6:10pm
+** N valid: 869, N rewarded: 688
+** TT5 #2 Gnd, 1988 total trials 
+** Switching task starting on low block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.25 turns, 2016-01-22
+** ephys recording name: 2016-01-22_14-54-43
+** start: 2:55am, end: 4:28pm
+** N valid: 824, N rewarded: 688
+** TT3 #4 Gnd, 1988 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.375 turns, 2016-01-23
+** ephys recording name: 2016-01-23_16-18-45
+** start: 4:19am, end: 5:57pm
+** N valid: 764, N rewarded: 595
+** TT3 #4 Gnd, 2250 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.50 turns, 2016-01-24
+** ephys recording name: 2016-01-24_16-46-10
+** start: 4:47am, end: 5:59pm
+** N valid: 880, N rewarded: 595
+** TT3 #4 Gnd, 2250 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.50 turns, 2016-01-25
+** ephys recording name: 2016-01-25_15-03-55
+** start: 3:04am, end: 4:25pm
+** N valid: 752, N rewarded: 638
+** TT3 #4 Gnd, 1309 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.625 turns, 2016-01-26
+** ephys recording name: 2016-01-26_14-28-41
+** start: 2:29am, end: 3:35pm
+** N valid: 804, N rewarded: 603
+** TT3 #4 Gnd, 1421 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.625 turns, 2016-01-27
+** ephys recording name: 2016-01-27_15-41-59
+** start: 3:43am, end: 5:13pm
+** N valid: 797, N rewarded: 639
+** TT3 #4 Gnd, 1427 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.625 turns, 2016-01-28
+** ephys recording name: 2016-01-28_14-23-09
+** start: 2:24am, end: 3:31pm
+** N valid: 891, N rewarded: 723
+** TT3 #4 Gnd, 1680 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.75 turns, 2016-01-29
+** ephys recording name: 2016-01-29_12-07-45
+** start: 12:08am, end: 1:25pm
+** N valid: 988, N rewarded: 773
+** TT3 #4 Gnd, 1950 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.75 turns, 2016-01-30
+** ephys recording name: 2016-01-30_13-10-40
+** start: 1:11am, end: 2:35pm
+** N valid: 868, N rewarded: 691
+** TT3 #4 Gnd, 2128 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.75 turns, 2016-02-01
+** ephys recording name: 2016-02-01_13-53-07
+** start: 1:54am, end: 3:11pm
+** N valid: 761, N rewarded: 563
+** TT1 #1 Gnd, 1769 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.75 turns, 2016-02-02
+** ephys recording name: 2016-02-02_10-53-55
+** start: 10:55am, end: 12:02pm
+** N valid: 731, N rewarded: 593
+** TT3 #2 Gnd, 1636 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.75 turns, 2016-02-03
+** ephys recording name: 2016-02-03_11-39-32
+** start: 11:41am, end: 12:43pm
+** N valid: 764, N rewarded: 589
+** TT3 #4 Gnd, 1661 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.75 turns, 2016-02-04
+** ephys recording name: not recorded
+** start: 11:12am, end: 12:43pm
+** N valid: 899, N rewarded: 673
+** TT3 #4 Gnd, 2398 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.15 +- 0.00. Anti-biased mode.
+
+* 4.75 turns, 2016-02-05
+** ephys recording name: not recorded
+** start: 10:42am, end: 12:08pm
+** N valid: 824, N rewarded: 580
+** TT3 #4 Gnd, 1693 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.15 +- 0.00. Anti-biased mode.
+
+* 4.75 turns, 2016-02-08
+** ephys recording name: 2016-02-08_10-49-39
+** start: 10:51am, end: 12:04pm
+** N valid: 760, N rewarded: 566
+** TT4 #1 Gnd, 1997 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.75 turns, 2016-02-09
+** ephys recording name: 2016-02-09_14-08-15
+** start: 2:09am, end: 3:49pm
+** N valid: 843, N rewarded: 587
+** TT3 #1 Gnd, 2196 total trials 
+** Switching task starting on high block with 4 second error punishment. Early punishment 0.5. Intensity fixed. 200 trials per block. Mean delay: 0.13 +- 0.02.
+
+* 4.75 turns, 2016-02-10
+** ephys recording name: 2016-02-10_14-30-58
+** start: 2:32pm, end: 4:06pm
+** N valid: 969, N rewarded: 700
+** TT3 #1 Gnd, 1853 total trials 
+** Psychometric curve with 6 points from 17k to 6.2k, Intensity: fixed, punish error: 4, punish early: 0.5, punish amp:0.01. 
+
+* 4.75 turns, 2016-02-11
+** ephys recording name: not_recorded
+** start: 6:00pm, end: 4:06pm
+** N valid: 780, N rewarded: 693
+** TT3 #1 Gnd, 1864 total trials 
+** Psychometric curve with 6 points from 17k to 6.2k, Intensity: fixed, punish error: 4, punish early: 0.5, punish amp:0.01. 
+
+* 4.75 turns, 2016-02-15
+** ephys recording name: 2016-02-15_11-29-46
+** start: 11:31am, end: 1:07pm
+** N valid: 777, N rewarded: 533
+** TT3 #1 Gnd, 2808 total trials 
+** Psychometric curve with 6 points from 17k to 6.2k, Intensity: fixed, punish error: 4, punish early: 0.5, punish amp:0.01. 
+
+* 4.875 turns, 2016-02-16
+** ephys recording name: 2016-02-16_10-31-15
+** start: 10:32am, end: 11:29pm
+** N valid: 605, N rewarded: 411
+** TT3 #1 Gnd, 1294 total trials 
+** Psychometric curve with 6 points from 17k to 6.2k, Intensity: fixed, punish error: 4, punish early: 0.5, punish amp:0.01.
+
+=== Training Results ===
+
+Test089 was very good at switching at first and did many trials. However, he was very old (a year and a half when he died) and therefore had very poor performance near the end. He often would start on the high block and do very well, then switch to the low block well, and then not be able to switch back to the high block. Curiously, after the winter break when he got free water for over a week, I was able to train him to switch well for a little while (maybe a week or so). He did switching well and started to have the same issue of not being able switch back to the high block.
+
+One large issue with test089 was that he did a lot of invalid trials (60% or so). This I believe affected his performance because he did not know when the block had switched. He'd often start to do a lot of invalid trials at the switch of a block and do very poorly on a block. Maybe he got impatient when he got an error and started to poke faster. His delay before target had to be changed to 0.13 +- 0.02 sec. This helped for a bit but then he started to have the same issue even at these times.
+
+== Accuracy of implant==
+
+Distance to the end of the right auditory striatum: 700um anterior
+
+These images show red DiI where the the end of the tetrodes were and therefore one can estimate how accurate the coordinates for the craniotomy to get to the auditory striatum were. The tetrodes were coated with DiI before being inserted into the brain. The images shown were taken as an overlay to show the DiI and where the tetrodes were in the brain. For this mouse, the tetrodes were inserted 2.0mm deep then moved down. The tetrodes seem to be approximately 700um too anterior to the desired target in the auditory striatum. The depth of the tetrodes at the time of lesioning was too deep. The tetrodes found good auditory response and frequency tuning in this location.
+[[File: test089_overlay1.jpg |600px|none|thumb|showing DiI overlay of brain slice C6 to show accuracy of implant coordinates to the auditory striatum on the right side. The tetrodes were coated in DiI before the implant was inserted into the brain. DiI is shown in red.]]
+[[File: test089_overlay2.jpg |600px|none|thumb|showing DiI overlay of brain slice D1 to show accuracy of implant coordinates to the auditory striatum on the right side. The tetrodes were coated in DiI before the implant was inserted into the brain. DiI is shown in red.]]
+[[File: test089_overlay3.jpg |600px|none|thumb|showing DiI overlay of brain slice D2 to show accuracy of implant coordinates to the auditory striatum on the right side. The tetrodes were coated in DiI before the implant was inserted into the brain. DiI is shown in red.]]
+
+== Electrolytic Lesion ==
+
+Only 3 tetrodes were used to make electrolytic lesions in the brain. Tetrodes 4, 7, and 8 were used since they were the two longest and shortest tetrodes. One large lesion can clearly be seen. However, which is which lesion is unknown.
+[[File: test089_lesion1.jpg |600px|none|thumb|showing brain slice C6 to show electrolytic lesions in striatum. This shows where the end of the tetrodes were right before the mouse was perfused.]]
+[[File: test089_lesion2.jpg |600px|none|thumb|showing brain slice D1 to show electrolytic lesions in striatum. This shows where the end of the tetrodes were right before the mouse was perfused.]]
