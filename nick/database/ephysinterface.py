@@ -335,7 +335,7 @@ class EphysInterface(object):
 
         spikeData = self.loader.get_session_spikes(session, tetrode)
         if not spikeData.clusters:
-            self.cluster_array(session)
+            self.cluster_session(session, tetrode)
             spikeData = self.loader.get_session_spikes(session, tetrode)
 
         clusters = np.unique(spikeData.clusters)
