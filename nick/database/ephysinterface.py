@@ -209,11 +209,13 @@ class EphysInterface(object):
 
         plt.show()
 
-    def plot_two_axis_sorted_raster(self, session, tetrode, firstSortArray, secondSortArray, cluster = None, replace=0, timeRange = [-0.5, 1], ms = 1, firstLabels=None, secondLabels=None, yLabel=None):
+    def plot_two_axis_sorted_raster(self, session, tetrode, firstSortArray, secondSortArray, cluster = None, replace=0, timeRange = [-0.5, 1], ms = 1, firstLabels=None, secondLabels=None, yLabel=None, plotTitle=None):
         '''
         Plot rasters sorted by 2 arrays
         '''
-        plotTitle = self.loader.get_session_filename(session)
+        if not plotTitle:
+            plotTitle = self.loader.get_session_filename(session)
+
         eventData = self.loader.get_session_events(session)
         spikeData = self.loader.get_session_spikes(session, tetrode)
 
