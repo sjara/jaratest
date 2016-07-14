@@ -192,8 +192,6 @@ class EphysInterface(object):
         intensityLabels = ['{:.0f} dB'.format(intensity) for intensity in possibleIntensity]
         xLabel="Time from sound onset (sec)"
 
-        plt.figure()
-
         dataplotter.two_axis_sorted_raster(spikeTimestamps,
                                            eventOnsetTimes,
                                            freqEachTrial,
@@ -206,8 +204,6 @@ class EphysInterface(object):
                                            flipSecondAxis=True,
                                            timeRange=timeRange,
                                            ms=ms)
-
-        plt.show()
 
     def plot_two_axis_sorted_raster(self, session, tetrode, firstSortArray, secondSortArray, cluster = None, replace=0, timeRange = [-0.5, 1], ms = 1, firstLabels=None, secondLabels=None, yLabel=None, plotTitle=None):
         '''
@@ -324,6 +320,41 @@ class EphysInterface(object):
         for tetrode in tetrodes:
             self.cluster_session(session, tetrode)
 
+    def flip_cluster_tuning(self, session, behavSuffix, tetrode, rasterRange=[-0.5, 1]):
+
+        from jaratoolbox import extraplots
+
+        sessions = []
+        tetrodes = []
+        behavSuffixs = []
+        clusters = []
+
+        bdata = self.loader.get_session_behavior(behavSuffix)
+        currentFreq = bdata['currentFreq']
+        currentIntensity = bdata['currentIntensity']
+
+        spikeData = self.loader.get_session_spikes(session, tetrode)
+        if not hasattr(spikeData, 'clusters'):
+            self.cluster_array(session)
+            spikeData = self.loader.get_session_spikes(session, tetrode)
+
+        clusters = np.unique(spikeData.clusters)
+
+        for cluster in clusters:
+            sessions.append(session)
+            tetrodes.append(tetrode)
+            behavSuffixs.append(behavSuffix)
+            clusters.append(cluster)
+
+        dataList = zip(sessions, tetrodes, behavSuffixs, clusters)
+        flipper = extraplots.FlipThrough(self._cluster_tuning, datalist)
+        return flipper
+
+    @staticmethod
+    def _cluster_tuning(dataTuple):
+
+        session, tetrode, behavSuffix, cluster = dataTuple
+        self.plot_sorted_tuning_raster(session, tetrode, behavSuffix, cluster)
 
     def flip_tetrode_tuning(self, session, behavSuffix, tetrodes=None , rasterRange=[-0.5, 1], tcRange=[0, 0.1]):
 
@@ -358,8 +389,6 @@ class EphysInterface(object):
         # self._tetrode_tuning(dataList)
         flipper=dataplotter.FlipT(self._tetrode_tuning, dataList)
         return flipper
-
-
 
     # @dataplotter.FlipThroughData
     @staticmethod
