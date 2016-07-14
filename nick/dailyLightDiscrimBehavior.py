@@ -1,5 +1,5 @@
 import sys
-from jaratoolbox.test.nick import light_discrim_behavior
+from jaratest.nick import light_discrim_behavior
 import matplotlib.pyplot as plt
 
 subjects = ['adap022', 'adap026', 'adap027', 'adap030']

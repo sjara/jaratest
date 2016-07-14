@@ -3,7 +3,7 @@ For Daily Behavior Monitoring.
 Loads behavior data from mounted jarahub/data/behavior for animals of interest, plot psychometric curve and dynamics data.
 '''
 import sys
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 reload(behavioranalysis)
 
 # subjects = ['amod001', 'amod002', 'amod003', 'amod004', 'amod005']

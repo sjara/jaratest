@@ -1,6 +1,6 @@
 import os
 from jaratoolbox import settings
-from jaratoolbox.test.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick import behavioranalysis_vnick as behavioranalysis
 from jaratoolbox import extraplots
 reload(behavioranalysis)
 

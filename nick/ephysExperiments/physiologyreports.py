@@ -1,5 +1,5 @@
-from jaratoolbox.test.nick.ephysExperiments import clusterManySessions_v2 as cms2
-from jaratoolbox.test.nick.ephysExperiments import ephys_experiment_v3 as ee3
+from jaratest.nick.ephysExperiments import clusterManySessions_v2 as cms2
+from jaratest.nick.ephysExperiments import ephys_experiment_v3 as ee3
 import matplotlib.pyplot as plt
 from jaratoolbox import extraplots
 from jaratoolbox import spikesorting

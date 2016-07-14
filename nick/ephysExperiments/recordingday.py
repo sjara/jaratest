@@ -1,8 +1,8 @@
 import os
 import json
 import itertools
-from jaratoolbox.test.nick.ephysExperiments import ephys_experiment_v3 as ee3
-from jaratoolbox.test.nick.ephysExperiments import physiologyreports
+from jaratest.nick.ephysExperiments import ephys_experiment_v3 as ee3
+from jaratest.nick.ephysExperiments import physiologyreports
 reload(physiologyreports)
 
 

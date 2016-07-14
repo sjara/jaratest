@@ -1,5 +1,5 @@
-from jaratoolbox.test.nick.database import ephysinterface
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import ephysinterface
+from jaratest.nick.database import dataplotter
 
 ei = ephysinterface.EphysInterface('pinp013', '2016-05-25', 'nick', 'am_tuning_curve')
 bdata = ei.loader.get_session_behavior('a')

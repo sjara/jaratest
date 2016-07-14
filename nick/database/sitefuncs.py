@@ -4,10 +4,10 @@
 This module will contain report plotting methods that act on entire sites
 
 '''
-from jaratoolbox.test.nick.ephysExperiments import clusterManySessions_v2 as cms2
+from jaratest.nick.ephysExperiments import clusterManySessions_v2 as cms2
 reload(cms2)
-from jaratoolbox.test.nick.database import dataloader
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import dataloader
+from jaratest.nick.database import dataplotter
 reload(dataplotter)
 from jaratoolbox import extraplots
 from jaratoolbox import spikesorting
@@ -37,7 +37,7 @@ def cluster_site(site, siteName, tetrode, report=True):
 
 def cluster_site_PCA(site, siteName, tetrode, report=True, **kwargs):
 
-    from jaratoolbox.test.nick.spikesorting import pcasort
+    from jaratest.nick.spikesorting import pcasort
 
     oneTT = cms2.MultipleSessionsToCluster(site.animalName, site.get_session_ephys_filenames(), tetrode, '{}_{}'.format(site.date, siteName))
     oneTT.load_all_waveforms()

@@ -16,10 +16,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pdb
 
-from jaratoolbox.test.nick.ephysExperiments import clusterManySessions
+from jaratest.nick.ephysExperiments import clusterManySessions
 reload(clusterManySessions)
-#from jaratoolbox.test.nick.ephysExperiments.clusterManySessions import MultipleSessionsToCluster
-#from jaratoolbox.test.nick.ephysExperiments.clusterManySessions import MultiSessionClusterReport
+#from jaratest.nick.ephysExperiments.clusterManySessions import MultipleSessionsToCluster
+#from jaratest.nick.ephysExperiments.clusterManySessions import MultiSessionClusterReport
 
 class EphysExperiment(object):
 

@@ -1,5 +1,5 @@
 import sys
-from jaratoolbox.test.nick import soundtypes
+from jaratest.nick import soundtypes
 from matplotlib import pyplot as plt
 
 

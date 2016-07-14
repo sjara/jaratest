@@ -1,5 +1,5 @@
 def setup():
-    from jaratoolbox.test.nick.database import ephysinterface
+    from jaratest.nick.database import ephysinterface
     reload(ephysinterface)
 
     global interface
@@ -31,7 +31,7 @@ flipper=interface.flip_tetrode_tuning('15-31-48', 'a', tetrodes=[3, 4, 5, 6])
 
 
 #Dataplotter base plotting functions
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import dataplotter
 reload(dataplotter)
 
 #Test plot_raster

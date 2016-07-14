@@ -6,8 +6,8 @@ This module will provide a frontend for plotting data during an ephys experiment
 The job of the module will be to take session names, get the data, and then pass the data to the correct plotting function
 '''
 
-from jaratoolbox.test.nick.database import dataloader
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import dataloader
+from jaratest.nick.database import dataplotter
 reload(dataplotter)
 reload(dataloader)
 import os
@@ -217,7 +217,7 @@ class EphysInterface(object):
             plotTitle = self.loader.get_session_filename(session)
 
         eventData = self.loader.get_session_events(session)
-        spikeData = self.loader.get_session_spikes(session, tetrode)
+        spikeData = self.loader.get_session_spikes(session, tetrode, cluster=cluster)
 
         eventOnsetTimes = self.loader.get_event_onset_times(eventData)
         spikeTimestamps=spikeData.timestamps
@@ -309,8 +309,20 @@ class EphysInterface(object):
 
     #Relies on module for clustering multiple sessions
     #Also relies on methods for plotting rasters and cluster waveforms
-    def cluster_sessions_and_plot_rasters_for_each_cluster(self, ):
-        pass
+    def cluster_session(self, session, tetrode):
+        from jaratoolbox import spikesorting
+
+        print 'Clustering tetrode {}'.format(tetrode)
+        sessionString = self.loader.get_session_filename(session)
+        oneTT = spikesorting.TetrodeToCluster(self.animalName, sessionString, tetrode)
+        oneTT.load_waveforms()
+        oneTT.create_fet_files()
+        oneTT.run_clustering()
+        oneTT.save_report()
+
+    def cluster_array(self, session, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8]):
+        for tetrode in tetrodes:
+            self.cluster_session(session, tetrode)
 
 
     def flip_tetrode_tuning(self, session, behavSuffix, tetrodes=None , rasterRange=[-0.5, 1], tcRange=[0, 0.1]):

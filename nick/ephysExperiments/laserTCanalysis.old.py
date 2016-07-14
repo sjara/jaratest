@@ -1,7 +1,7 @@
 import os
-from jaratoolbox.test.nick.ephysExperiments import clusterManySessions_v2 as cms2
+from jaratest.nick.ephysExperiments import clusterManySessions_v2 as cms2
 reload(cms2)
-from jaratoolbox.test.nick.ephysExperiments import ephys_experiment_v2 as ee2
+from jaratest.nick.ephysExperiments import ephys_experiment_v2 as ee2
 reload(ee2)
 import matplotlib.pyplot as plt
 plt.ioff() #Turn off interactive plottting, save figs to png instead

@@ -14,9 +14,9 @@ import os
 import subprocess
 import numpy as np
 
-#from jaratoolbox.test.nick.ephysExperiments import recordingday as rd
+#from jaratest.nick.ephysExperiments import recordingday as rd
 
-from jaratoolbox.test.nick.ephysExperiments import clusterManySessions_v2 as cms2
+from jaratest.nick.ephysExperiments import clusterManySessions_v2 as cms2
 reload(cms2)
 
 class EphysExperiment(object):
@@ -68,7 +68,7 @@ class EphysExperiment(object):
 
             return ephysSession
 
-        elif isinstance(session, jaratoolbox.test.nick.ephysExperiments.recordingday.Session):
+        elif isinstance(session, jaratest.nick.ephysExperiments.recordingday.Session):
             ephysSession = session.session
             behavFileIdentifier = session.behavFileIdentifier
 

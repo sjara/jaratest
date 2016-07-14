@@ -2,8 +2,8 @@
 This file will contain an example showing how to use EphysExperiment to process data from an experiment
 '''
 import jaratoolbox
-import jaratoolbox.test.nick.ephysExperiments.ephys_experiment_v3 as ee3
-import jaratoolbox.test.nick.ephysExperiments.recordingday as rd
+import jaratest.nick.ephysExperiments.ephys_experiment_v3 as ee3
+import jaratest.nick.ephysExperiments.recordingday as rd
 from jaratoolbox import spikesanalysis
 import matplotlib.pyplot as plt
 reload(ee3)

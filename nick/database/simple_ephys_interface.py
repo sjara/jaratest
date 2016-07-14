@@ -1,4 +1,4 @@
-from jaratoolbox.test.nick.database import ephysinterface
+from jaratest.nick.database import ephysinterface
 reload(ephysinterface)
 
 #Some sessions from 2015-06-24 for reference. 

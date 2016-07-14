@@ -1,15 +1,15 @@
-from jaratoolbox.test.nick.database import simple_spike_selector
+from jaratest.nick.database import simple_spike_selector
 reload(simple_spike_selector)
 
-from jaratoolbox.test.nick.database import dataloader
+from jaratest.nick.database import dataloader
 reload(dataloader)
 
-from jaratoolbox.test.nick.database import cellDB
+from jaratest.nick.database import cellDB
 reload(cellDB)
 
-from jaratoolbox.test.nick.database import dataplotter
+from jaratest.nick.database import dataplotter
 from jaratoolbox import spikesorting
-from jaratoolbox.test.nick import clustercutting
+from jaratest.nick import clustercutting
 
 from pylab import *
 
