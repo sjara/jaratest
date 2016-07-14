@@ -37,7 +37,7 @@ def cluster_site(site, siteName, tetrode, report=True):
 
 def cluster_site_PCA(site, siteName, tetrode, report=True, **kwargs):
 
-    from jaratoolbox.test.nick.spikesorting import pcasort
+    from jaratest.nick.spikesorting import pcasort
 
     oneTT = cms2.MultipleSessionsToCluster(site.animalName, site.get_session_ephys_filenames(), tetrode, '{}_{}'.format(site.date, siteName))
     oneTT.load_all_waveforms()
