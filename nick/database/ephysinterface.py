@@ -78,9 +78,9 @@ class EphysInterface(object):
 
         if cluster:
             spikeTimestamps = spikeTimestamps[spikeData.clusters==cluster]
-            
+
         return (spikeTimestamps, eventOnsetTimes)
-        
+
 
     def plot_am_tuning(self, session, tetrode, behavSuffix, replace=1, timeRange=[-0.5, 1], ms=1):
 
@@ -178,7 +178,7 @@ class EphysInterface(object):
         bdata = self.loader.get_session_behavior(behavSuffix)
         plotTitle = self.loader.get_session_filename(session)
         eventData = self.loader.get_session_events(session)
-        spikeData = self.loader.get_session_spikes(session, tetrode)
+        spikeData = self.loader.get_session_spikes(session, tetrode, cluster)
 
         eventOnsetTimes = self.loader.get_event_onset_times(eventData)
         spikeTimestamps=spikeData.timestamps
@@ -347,13 +347,12 @@ class EphysInterface(object):
             clusters.append(cluster)
 
         dataList = zip(sessions, tetrodes, behavSuffixs, clusters)
-        flipper = extraplots.FlipThrough(self._cluster_tuning, datalist)
+        flipper = extraplots.FlipThrough(self._cluster_tuning, dataList)
         return flipper
 
-    @staticmethod
-    def _cluster_tuning(dataTuple):
+    def _cluster_tuning(self, session, tetrode, behavSuffix, cluster):
 
-        session, tetrode, behavSuffix, cluster = dataTuple
+        #session, tetrode, behavSuffix, cluster = dataTuple
         self.plot_sorted_tuning_raster(session, tetrode, behavSuffix, cluster)
 
     def flip_tetrode_tuning(self, session, behavSuffix, tetrodes=None , rasterRange=[-0.5, 1], tcRange=[0, 0.1]):
@@ -418,4 +417,3 @@ class EphysInterface(object):
         ax2.set_xticks(range(len(freqLabels)))
         ax2.set_xticklabels(freqLabels, rotation='vertical')
         ax2.set_xlabel('Freq (kHz)')
-
