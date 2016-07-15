@@ -347,13 +347,13 @@ class EphysInterface(object):
             clusters.append(cluster)
 
         dataList = zip(sessions, tetrodes, behavSuffixs, clusters)
-        flipper = extraplots.FlipThrough(self._cluster_tuning, dataList)
+        flipper = extraplots.FlipThrough(self.plot_sorted_tuning_raster, dataList)
         return flipper
 
-    def _cluster_tuning(self, session, tetrode, behavSuffix, cluster):
+    # def _cluster_tuning(self, session, tetrode, behavSuffix, cluster):
 
-        #session, tetrode, behavSuffix, cluster = dataTuple
-        self.plot_sorted_tuning_raster(session, tetrode, behavSuffix, cluster)
+    #     #session, tetrode, behavSuffix, cluster = dataTuple
+    #     self.plot_sorted_tuning_raster(session, tetrode, behavSuffix, cluster)
 
     def flip_tetrode_tuning(self, session, behavSuffix, tetrodes=None , rasterRange=[-0.5, 1], tcRange=[0, 0.1]):
 
