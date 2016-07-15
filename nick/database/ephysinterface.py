@@ -78,9 +78,9 @@ class EphysInterface(object):
 
         if cluster:
             spikeTimestamps = spikeTimestamps[spikeData.clusters==cluster]
-            
+
         return (spikeTimestamps, eventOnsetTimes)
-        
+
 
     def plot_am_tuning(self, session, tetrode, behavSuffix, replace=1, timeRange=[-0.5, 1], ms=1):
 
@@ -178,7 +178,7 @@ class EphysInterface(object):
         bdata = self.loader.get_session_behavior(behavSuffix)
         plotTitle = self.loader.get_session_filename(session)
         eventData = self.loader.get_session_events(session)
-        spikeData = self.loader.get_session_spikes(session, tetrode)
+        spikeData = self.loader.get_session_spikes(session, tetrode, cluster)
 
         eventOnsetTimes = self.loader.get_event_onset_times(eventData)
         spikeTimestamps=spikeData.timestamps
@@ -192,8 +192,6 @@ class EphysInterface(object):
         intensityLabels = ['{:.0f} dB'.format(intensity) for intensity in possibleIntensity]
         xLabel="Time from sound onset (sec)"
 
-        plt.figure()
-
         dataplotter.two_axis_sorted_raster(spikeTimestamps,
                                            eventOnsetTimes,
                                            freqEachTrial,
@@ -206,8 +204,6 @@ class EphysInterface(object):
                                            flipSecondAxis=True,
                                            timeRange=timeRange,
                                            ms=ms)
-
-        plt.show()
 
     def plot_two_axis_sorted_raster(self, session, tetrode, firstSortArray, secondSortArray, cluster = None, replace=0, timeRange = [-0.5, 1], ms = 1, firstLabels=None, secondLabels=None, yLabel=None, plotTitle=None):
         '''
@@ -309,9 +305,55 @@ class EphysInterface(object):
 
     #Relies on module for clustering multiple sessions
     #Also relies on methods for plotting rasters and cluster waveforms
-    def cluster_sessions_and_plot_rasters_for_each_cluster(self, ):
-        pass
+    def cluster_session(self, session, tetrode):
+        from jaratoolbox import spikesorting
 
+        print 'Clustering tetrode {}'.format(tetrode)
+        sessionString = self.loader.get_session_filename(session)
+        oneTT = spikesorting.TetrodeToCluster(self.animalName, sessionString, tetrode)
+        oneTT.load_waveforms()
+        oneTT.create_fet_files()
+        oneTT.run_clustering()
+        oneTT.save_report()
+
+    def cluster_array(self, session, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8]):
+        for tetrode in tetrodes:
+            self.cluster_session(session, tetrode)
+
+    def flip_cluster_tuning(self, session, behavSuffix, tetrode, rasterRange=[-0.5, 1]):
+
+        from jaratoolbox import extraplots
+
+        sessions = []
+        tetrodes = []
+        behavSuffixs = []
+        clusters = []
+
+        bdata = self.loader.get_session_behavior(behavSuffix)
+        currentFreq = bdata['currentFreq']
+        currentIntensity = bdata['currentIntensity']
+
+        spikeData = self.loader.get_session_spikes(session, tetrode)
+        if spikeData.clusters is None:
+            self.cluster_session(session, tetrode)
+            spikeData = self.loader.get_session_spikes(session, tetrode)
+
+        possibleClusters = np.unique(spikeData.clusters)
+
+        for cluster in possibleClusters:
+            sessions.append(session)
+            tetrodes.append(tetrode)
+            behavSuffixs.append(behavSuffix)
+            clusters.append(cluster)
+
+        dataList = zip(sessions, tetrodes, behavSuffixs, clusters)
+        flipper = extraplots.FlipThrough(self.plot_sorted_tuning_raster, dataList)
+        return flipper
+
+    # def _cluster_tuning(self, session, tetrode, behavSuffix, cluster):
+
+    #     #session, tetrode, behavSuffix, cluster = dataTuple
+    #     self.plot_sorted_tuning_raster(session, tetrode, behavSuffix, cluster)
 
     def flip_tetrode_tuning(self, session, behavSuffix, tetrodes=None , rasterRange=[-0.5, 1], tcRange=[0, 0.1]):
 
@@ -347,8 +389,6 @@ class EphysInterface(object):
         flipper=dataplotter.FlipT(self._tetrode_tuning, dataList)
         return flipper
 
-
-
     # @dataplotter.FlipThroughData
     @staticmethod
     def _tetrode_tuning(dataTuple):
@@ -377,4 +417,3 @@ class EphysInterface(object):
         ax2.set_xticks(range(len(freqLabels)))
         ax2.set_xticklabels(freqLabels, rotation='vertical')
         ax2.set_xlabel('Freq (kHz)')
-
