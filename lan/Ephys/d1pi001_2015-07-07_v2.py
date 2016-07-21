@@ -73,7 +73,7 @@ site8.add_session('18-42-14', 'h', sessionTypes['tc'])
 site8.add_session('18-53-39', None, sessionTypes['3p'])
 
 
-from jaratoolbox.test.lan.Ephys import laserTCanalysis_added_clu_report as laserTC
+from jaratest.lan.Ephys import laserTCanalysis_added_clu_report as laserTC
 reload(laserTC)
 for indSite, site in enumerate(today.siteList):
     laserTC.laser_tc_analysis(site, indSite+1)

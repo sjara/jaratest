@@ -5,7 +5,7 @@ Lan Guo 2016-03-29 -NOT COMPLETED
 '''
 #using CellDatabase that contains laserSession for evaluating laser responsiveness
 
-from jaratoolbox.test.lan.Ephys import celldatabase_quality_laser as celldatabase
+from jaratest.lan.Ephys import celldatabase_quality_laser as celldatabase
 reload(celldatabase)
 
 

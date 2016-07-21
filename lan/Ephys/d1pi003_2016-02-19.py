@@ -1,6 +1,6 @@
 from jaratoolbox.test.nick.database import cellDB
 reload(cellDB)
-from jaratoolbox.test.lan.Ephys import sitefuncs_vlan as sitefuncs
+from jaratest.lan.Ephys import sitefuncs_vlan as sitefuncs
 reload(sitefuncs)
 
 

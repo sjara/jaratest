@@ -1,8 +1,8 @@
 from jaratoolbox.test.nick.database import cellDB
 reload(cellDB)
-from jaratoolbox.test.lan.Ephys import sitefuncs_vlan as sitefuncs
+from jaratest.lan.Ephys import sitefuncs_vlan as sitefuncs
 reload(sitefuncs)
-from jaratoolbox.test.lan import test012_add_good_clusters as test012
+from jaratest.lan import test012_add_good_clusters as test012
 
 sessionTypes = {'nb':'noiseBurst',
                 'lp':'laserPulse',

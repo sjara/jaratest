@@ -7,8 +7,8 @@ import os
 import numpy as np
 from jaratoolbox import extraplots
 #from jaratoolbox import celldatabase
-from jaratoolbox.test.lan.Ephys import celldatabase_quality_vlan as celldatabase
-from jaratoolbox.test.lan import test022_plot2afc_given_cell_rew_change as cellplotter
+from jaratest.lan.Ephys import celldatabase_quality_vlan as celldatabase
+from jaratest.lan import test022_plot2afc_given_cell_rew_change as cellplotter
 reload(cellplotter)
 import matplotlib.pyplot as plt
 import sys

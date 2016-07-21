@@ -46,7 +46,7 @@ for mouseName in mouseNameList:
     allcellsFileName = 'allcells_'+mouseName
     sys.path.append(settings.ALLCELLS_PATH)
     allcells = importlib.import_module(allcellsFileName)
-    #from jaratoolbox.test.lan.Allcells import allcellsFileName as allcells
+    #from jaratest.lan.Allcells import allcellsFileName as allcells
     subject = allcells.cellDB[0].animalName
     ephysRootDir = settings.EPHYS_PATH
     outputDir = '/home/languo/data/ephys/'+mouseName

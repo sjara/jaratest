@@ -7,7 +7,7 @@ import sys
 import matplotlib.pyplot as plt
 from jaratoolbox import spikesorting
 from jaratoolbox import settings
-from jaratoolbox.test.lan import test022_plot2afc_given_cell_rew_change as cellplotter
+from jaratest.lan import test022_plot2afc_given_cell_rew_change as cellplotter
 import importlib
 
 '''

@@ -7,10 +7,10 @@ Modulated to include function for plotting ephys data during 2afc behavior - Lan
 
 LG 20151202 modified to use new features for clustering (peak, valleyFirstHalf)
 '''
-from jaratoolbox.test.lan.Ephys import clusterManySessions_vlan as cms2 #this version uses new features for clustering
+from jaratest.lan.Ephys import clusterManySessions_vlan as cms2 #this version uses new features for clustering
 reload(cms2)
 from jaratoolbox.test.nick.database import dataloader
-from jaratoolbox.test.lan.Ephys import dataplotter_vlan as dataplotter
+from jaratest.lan.Ephys import dataplotter_vlan as dataplotter
 reload(dataplotter)
 from jaratoolbox import extraplots
 from jaratoolbox import spikesorting

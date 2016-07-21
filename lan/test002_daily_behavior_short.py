@@ -4,7 +4,7 @@ Loads behavior data from mounted jarahub/data/behavior for animals of interest, 
 '''
 import sys
 import os
-from jaratoolbox.test.lan import behavioranalysis_vlan as behavioranalysis
+from jaratest.lan import behavioranalysis_vlan as behavioranalysis
 reload(behavioranalysis)
 from jaratoolbox import settings_2 as settings
 reload(settings)

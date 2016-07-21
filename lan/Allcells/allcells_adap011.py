@@ -3,9 +3,9 @@ List of all isolated units from adap011, with cluster quality added.
 Lan Guo 2016-01-11
 '''
 
-from jaratoolbox.test.lan.Ephys import celldatabase_quality_vlan as celldatabase
+from jaratest.lan.Ephys import celldatabase_quality_vlan as celldatabase
 reload(celldatabase)
-#from jaratoolbox.test.lan import test012_add_good_clusters as test012
+#from jaratest.lan import test012_add_good_clusters as test012
 
 eSession = celldatabase.EphysSessionInfo  # Shorter name to simplify code
 

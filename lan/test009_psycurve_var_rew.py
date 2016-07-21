@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 #from jaratoolbox import behavioranalysis
-from jaratoolbox.test.lan import behavioranalysis_vlan as behavioranalysis
+from jaratest.lan import behavioranalysis_vlan as behavioranalysis
 reload(behavioranalysis)
 from jaratoolbox import extraplots
 from jaratoolbox import loadbehavior

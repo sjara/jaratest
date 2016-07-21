@@ -3,7 +3,7 @@ List of all isolated units from adap011 that meet our criteria of good waveform,
 Here the persistent firing rate criterion is only based on looking at the ephy session associated with behavior even though all sessions (including noise test and tuning are clustered together)
 '''
 
-from jaratoolbox.test.lan.Ephys import celldatabase_quality_vlan as celldatabase
+from jaratest.lan.Ephys import celldatabase_quality_vlan as celldatabase
 reload(celldatabase)
 import numpy as np
 
