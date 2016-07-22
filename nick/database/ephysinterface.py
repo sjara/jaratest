@@ -298,11 +298,6 @@ class EphysInterface(object):
         plt.show()
 
 
-
-
-
-
-
     #Relies on module for clustering multiple sessions
     #Also relies on methods for plotting rasters and cluster waveforms
     def cluster_session(self, session, tetrode):
@@ -417,3 +412,90 @@ class EphysInterface(object):
         ax2.set_xticks(range(len(freqLabels)))
         ax2.set_xticklabels(freqLabels, rotation='vertical')
         ax2.set_xlabel('Freq (kHz)')
+
+    def plot_LFP_tuning(self, session, channel, behavSuffix): #FIXME: Time range??
+
+        bdata = self.loader.get_session_behavior(behavSuffix)
+        plotTitle = self.loader.get_session_filename(session)
+        eventData = self.loader.get_session_events(session, convertToSeconds=False)
+
+        contData = self.loader.get_session_cont(session, channel)
+
+        startTimestamp = contData.timestamps[0]
+
+        eventOnsetTimes = self.loader.get_event_onset_times(eventData, diffLimit=False)
+
+        freqEachTrial = bdata['currentFreq']
+        intensityEachTrial = bdata['currentIntensity']
+
+        possibleFreq = np.unique(freqEachTrial)
+        possibleIntensity = np.unique(intensityEachTrial)
+
+        secondsEachTrace = 0.1
+        meanTraceEachSetting = np.empty((len(possibleIntensity), len(possibleFreq), secondsEachTrace*self.loader.EPHYS_SAMPLING_RATE))
+
+
+        for indFreq, currentFreq in enumerate(possibleFreq):
+            for indIntensity, currentIntensity in enumerate(possibleIntensity):
+
+                #Determine which trials this setting was presented on.
+                trialsThisSetting = np.flatnonzero((freqEachTrial == currentFreq) & (intensityEachTrial == currentIntensity))
+
+                #Get the onset timestamp for each of the trials of this setting.
+                timestampsThisSetting = eventOnsetTimes[trialsThisSetting]
+
+                #Subtract the starting timestamp value to get the sample number
+                sampleNumbersThisSetting = timestampsThisSetting - startTimestamp
+
+                #Preallocate an array to store the traces for each trial on which this setting was presented.
+                traces = np.empty((len(sampleNumbersThisSetting), secondsEachTrace*self.loader.EPHYS_SAMPLING_RATE))
+
+                #Loop through all of the trials for this setting, extracting the trace after each presentation
+                for indSamp, sampNumber in enumerate(sampleNumbersThisSetting):
+                    trace = contData.samples[sampNumber:sampNumber + secondsEachTrace*self.loader.EPHYS_SAMPLING_RATE]
+                    trace = trace - trace[0]
+                    traces[indSamp, :] = trace
+
+                #Take the mean of all of the samples for this setting, and store it according to the freq and intensity
+                mean_trace = np.mean(traces, axis = 0)
+                meanTraceEachSetting[indIntensity, indFreq, :] = mean_trace
+
+        maxVoltageAllSettings = np.max(np.max(meanTraceEachSetting, axis = 2))
+        minVoltageAllSettings = np.min(np.min(meanTraceEachSetting, axis = 2))
+
+        #Plot all of the mean traces in a grid according to frequency and intensity
+        for intensity in range(len(possibleIntensity)):
+            #Subplot2grid plots from top to bottom, but we need to plot from bottom to top
+            #on the intensity scale. So we make an array of reversed intensity indices.
+            intensPlottingInds = range(len(possibleIntensity))[::-1]
+            for frequency in range(len(possibleFreq)):
+                plt.subplot2grid((len(possibleIntensity), len(possibleFreq)), (intensPlottingInds[intensity], frequency))
+                plt.plot(meanTraceEachSetting[intensity, frequency, :], 'k-')
+                plt.ylim([minVoltageAllSettings, maxVoltageAllSettings])
+                plt.axis('off')
+
+        #This function returns the location of the text labels
+        #We have to mess with the ideal locations due to the geometry of the plot
+        def getXlabelpoints(n):
+            rawArray = np.array(range(1, n+1))/float(n+1) #The positions in a perfect (0,1) world
+            diffFromCenter = rawArray - 0.6
+            partialDiffFromCenter = diffFromCenter * 0.175 #Percent change has to be determined empirically
+            finalArray = rawArray - partialDiffFromCenter
+            return finalArray
+
+        #Not sure yet if similar modification to the locations will be necessary.
+        def getYlabelpoints(n):
+            rawArray = np.array(range(1, n+1))/float(n+1) #The positions in a perfect (0,1) world
+            return rawArray
+
+        freqLabelPositions = getXlabelpoints(len(possibleFreq))
+        for indp, position in enumerate(freqLabelPositions):
+            plt.figtext(position, 0.075, "%.1f"% (possibleFreq[indp]/1000), ha = 'center')
+
+        intensLabelPositions = getYlabelpoints(len(possibleIntensity))
+        for indp, position in enumerate(intensLabelPositions):
+            plt.figtext(0.075, position, "%d"% possibleIntensity[indp])
+
+        plt.figtext(0.525, 0.025, "Frequency (kHz)", ha = 'center')
+        plt.figtext(0.025, 0.5, "Intensity (dB SPL)", va = 'center', rotation = 'vertical')
+        plt.show()

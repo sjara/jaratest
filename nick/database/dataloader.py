@@ -92,6 +92,20 @@ class DataLoader(object):
 
         return eventData
 
+    def get_session_cont(self, session, channel):
+
+        if self.mode=='online':
+            ephysSession = self.get_session_filename(session)
+            contFilename = os.path.join(self.onlineEphysPath, ephysSession, '109_CH{}.continuous'.format(channel))
+
+        elif self.mode=='offline': #The session should already be relative to the mouse
+            contFilename = os.path.join(settings.EPHYS_PATH, session, '109_CH{}.continuous'.format(channel))
+
+
+        contData=loadopenephys.DataCont(contFilename) #FIXME: Convert to mV?
+
+        return contData
+
 
     @staticmethod
     def get_event_onset_times(eventData, eventID=1, eventChannel=0, minEventOnsetDiff=0.5):
