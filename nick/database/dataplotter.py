@@ -79,6 +79,32 @@ def plot_raster(spikeTimestamps,
         labels=labels, *args, **kwargs)
     #Set the marker size for better viewing
     plt.setp(pRaster, ms=ms)
+    
+def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1], binsize = 50, lw=3, *args, **kwargs):
+    '''
+    Function to accept spike timestamps, event onset times, and an optional sorting array and plot a
+    PSTH (sorted if the sorting array is passed)
+
+    This function does not replicate functionality. It allows you to pass spike timestamps and event
+    onset times, which are simple to get.
+    
+    Args:
+        binsize (float) = size of bins for PSTH in ms
+    '''    
+    # If a sort array is supplied, find the trials that correspond to each value of the array
+    if len(sortArray) > 0:
+        trialsEachCond = behavioranalysis.find_trials_each_type(
+            sortArray, np.unique(sortArray))
+    else:
+        trialsEachCond = []
+    # Align spiketimestamps to the event onset times for plotting
+    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+        spikeTimestamps, eventOnsetTimes, timeRange)
+    binsize = binsize/1000.0
+    binEdges = np.around(np.arange(timeRange[0], timeRange[1]+binsize, binsize), decimals=2)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, binEdges)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binsize, 3, binEdges[:-1], trialsEachCond, *args, **kwargs)
+    plt.setp(pPSTH, lw=lw)
 
 def two_axis_sorted_raster(spikeTimestamps,
                            eventOnsetTimes,

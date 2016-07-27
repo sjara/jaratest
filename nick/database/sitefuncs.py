@@ -29,9 +29,9 @@ def cluster_site(site, siteName, tetrode, report=True):
         oneTT.set_clusters_from_file()
         oneTT.save_single_session_clu_files()
 
-    if report:
-        plt.clf()
-        oneTT.save_multisession_report()
+        if report:
+            plt.clf()
+            oneTT.save_multisession_report()
 
     return oneTT #This is a little bit lazy, it should really spit out some attributes not the whole object
 

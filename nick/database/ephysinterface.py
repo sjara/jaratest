@@ -50,7 +50,7 @@ class EphysInterface(object):
         print ' '.join(transferCommand)
         subprocess.call(transferCommand)
 
-    def plot_session_raster(self, session, tetrode, cluster = None, sortArray = [], timeRange=[-0.5, 1], replace=0, ms=4):
+    def plot_session_raster(self, session, tetrode, cluster = None, sortArray = [], timeRange=[-0.5, 1], replace=0, ms=4, show=True, hold=False, colorEachCond=None):
 
         plotTitle = self.loader.get_session_filename(session)
         spikeData= self.loader.get_session_spikes(session, tetrode)
@@ -66,9 +66,27 @@ class EphysInterface(object):
         else:
             plt.figure()
 
-        dataplotter.plot_raster(spikeTimestamps, eventOnsetTimes, sortArray = sortArray, timeRange=timeRange, ms=ms)
+        dataplotter.plot_raster(spikeTimestamps, eventOnsetTimes, sortArray = sortArray, timeRange=timeRange, ms=ms, colorEachCond=colorEachCond)
+        if show:
+            plt.show()
+    
+    def plot_session_PSTH(self, session, tetrode, cluster = None, sortArray = [], timeRange = [-0.5, 1], replace=0, lw=3, show=True, colorEachCond=None):
+        plotTitle = self.loader.get_session_filename(session)
+        spikeData= self.loader.get_session_spikes(session, tetrode)
+        eventData = self.loader.get_session_events(session)
+        eventOnsetTimes = self.loader.get_event_onset_times(eventData)
+        spikeTimestamps=spikeData.timestamps
 
-        plt.show()
+        if cluster:
+            spikeTimestamps = spikeTimestamps[spikeData.clusters==cluster]
+        if replace:
+            plt.cla()
+        else:
+            plt.figure()
+
+        dataplotter.plot_psth(spikeTimestamps, eventOnsetTimes, sortArray = sortArray, timeRange=timeRange, lw=lw, colorEachCond=colorEachCond)
+        if show:
+            plt.show()
 
     def get_processed_session_data(self, session, tetrode, cluster=None):
         spikeData= self.loader.get_session_spikes(session, tetrode)
@@ -82,13 +100,20 @@ class EphysInterface(object):
         return (spikeTimestamps, eventOnsetTimes)
 
 
-    def plot_am_tuning(self, session, tetrode, behavSuffix, replace=1, timeRange=[-0.5, 1], ms=1):
+    def plot_am_tuning(self, session, tetrode, behavSuffix, replace=1, timeRange=[-0.2, 1.5], ms=1, lw=3, colorEachCond=None):
 
         '''Helper fxn to plot AM modulation tuning rasters'''
-
+        if replace:
+            plt.cla()
+        else:
+            plt.figure()
         bdata=self.loader.get_session_behavior(behavSuffix)
         freqEachTrial = bdata['currentFreq']
-        self.plot_session_raster(session, tetrode, sortArray=freqEachTrial, replace=replace, timeRange=timeRange, ms=ms)
+        plt.subplot(211)
+        self.plot_session_raster(session, tetrode, sortArray=freqEachTrial, replace=1, timeRange=timeRange, ms=ms, colorEachCond=colorEachCond)
+        plt.subplot(212)
+        self.plot_session_PSTH(session, tetrode, sortArray=freqEachTrial, replace=1, timeRange=timeRange, lw=lw, colorEachCond=colorEachCond)
+        #plt.show()
 
     def plot_array_freq_tuning(self, session, behavSuffix, replace=0, tetrodes=None, timeRange=[0, 0.1]):
 
