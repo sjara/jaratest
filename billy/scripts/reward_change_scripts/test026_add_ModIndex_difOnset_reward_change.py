@@ -26,7 +26,7 @@ mouseName = str(sys.argv[1]) #the first argument is the mouse name to tell the s
 allcellsFileName = 'allcells_'+mouseName
 sys.path.append(settings.ALLCELLS_PATH)
 allcells = importlib.import_module(allcellsFileName)
-#from jaratoolbox.test.lan.Allcells import allcellsFileName as allcells
+#from jaratest.lan.Allcells import allcellsFileName as allcells
 reload(allcells)
 
 SAMPLING_RATE=30000.0

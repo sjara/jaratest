@@ -1,0 +1,38 @@
+
+######This is the data analysis pipeline billy used for the data he collected during 2afc switching task in wild-type male mice.#######
+
+Paradigm: adaptive_freq_discrim.py in tkparadigm (commit 7d22f6a93687f5b501253f923135cbf24abb1ae5)
+Each animal's parameters for the task are recorded on the wiki (each animal has its own page)
+
+#########Experiment##########
+1. Collect response to white noise using paradigm tuning_curve.py in tkparadigm (commit 01921b6b1abcb43677a0c626b6c7bd4679e79831)
+
+2. Collect tunining to chords using paradigm tuning_curve.py (parameters are in each animal's wiki page) 
+3. Record during 2afc.
+
+Session info for clustering are scrapped off the wiki for each animal using billy's scripts(jaratest/billy/scripts/20160714_clustering/translate_clustring_wiki.py).
+
+Clustering is done with KlustaKwik, using features 'peak' and 'valleyFirstHalf' (the script we used for clustering is using clusterManySessions_v2.py in ~/src/jaratest/nick/ephysExperiments/).
+
+Billy generated an allcells file for each animal (before cluster quality is done) for plotting using script jaratest/billy/allcells/test031_translate_allcells_old_allcells.py, this file is translated from the wiki page, without cluster quality line and depth line.
+
+Spike quality is done manually using criteria listed on 
+http://jarahub.uoregon.edu/wiki/Report_2015-06-29:_Numbering_System_of_Cluster_Quality.
+
+When doing cluster quality, billy generated a new allcells file with clusterQuality and depth lines, these files are name with 'allcells_animalName_quality.py'.
+
+##########Data analysis/stats###########
+#See jaratest/billy/scripts/multiClusterAndPlot.sh  
+All the data analysis/stats are done for all possible clusters (12 clusters 8 tetrodes).
+These analysis include (order is not important):
+Calculate modulation index: addModulationCheckSwitching.py
+Calculate ISI violation percentage: test029_add_ISIViolations.py
+Check for minimal trial number for inclusion: addMinTrialCheckSwitching.py
+Check for minimal behavior performance for inclusion: addMinBehavePerformanceSwitch.py
+Calculate sound response Z score: add_sound_response_stat.py
+Calculate movement Z score: ????
+Calculate movement modulation index: ????
+
+##########Make reports after all analysis are done##########
+These reports include rasters from trials of middle frequency (switching frequency) aligned to different signal and cluster quality stuff (old).
+switch_tuning_report.py

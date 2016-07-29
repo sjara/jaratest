@@ -215,23 +215,36 @@ class SoundPlayer(threading.Thread):
             soundwaveObj = pyo.Sine(freq=soundParams['frequency'],
                                     mul=soundObj).out()
             return(soundObj,[envelope,soundwaveObj])
+        elif soundParams['type']=='band':
+            frequency = soundParams['frequency']
+            octaves = soundParams['octaves']
+            freqhigh = frequency * np.power(2, octaves/2)
+            freqlow = frequency / np.power(2, octaves/2)
+            soundObj = pyo.Fader(fadein=self.risetime, fadeout=self.falltime,
+                                 dur=soundParams['duration'], mul=soundAmp)
+            freqcent = (freqhigh + freqlow)/2
+            bandwidth = freqhigh - freqlow
+            n = pyo.Noise(mul=soundObj)
+            soundwaveObj = pyo.IRWinSinc(n, freq=freqcent, bw = bandwidth, type=3, order=400).out()
+            return(soundObj,soundwaveObj)
         elif soundParams['type']=='band_AM':
             if isinstance(soundAmp, list):
                 halfAmp = [0.5*x for x in soundAmp]
             else:
                 halfAmp = 0.5*soundAmp
-	    frequency = soundParams['frequency']
-	    octaves = soundParams['octaves']
-	    freqhigh = frequency * np.power(2, octaves/2)
-	    freqlow = frequency / np.power(2, octaves/2)
+            frequency = soundParams['frequency']
+            octaves = soundParams['octaves']
+            freqhigh = frequency * np.power(2, octaves/2)
+            freqlow = frequency / np.power(2, octaves/2)
             envelope = pyo.Sine(freq=soundParams['modRate'],
                                 mul=halfAmp,
                                 add=halfAmp,phase=0.75)
             soundObj = pyo.Fader(fadein=self.risetime, fadeout=self.falltime,
                                  dur=soundParams['duration'], mul=envelope)
+            freqcent = (freqhigh + freqlow)/2
+            bandwidth = freqhigh - freqlow
             n = pyo.Noise(mul=soundObj)
-	    f = pyo.IRWinSinc(n, freq= freqlow, type=1, order=200)
-	    soundwaveObj = pyo.IRWinSinc(f, freq=freqhigh, type=0, order=200).out()
+            soundwaveObj = pyo.IRWinSinc(n, freq=freqcent, bw = bandwidth, type=3, order=400).out()
             return(soundObj,[envelope,soundwaveObj])
         elif soundParams['type']=='fromfile':
             tableObj = pyo.SndTable(soundParams['filename'])
@@ -326,7 +339,7 @@ class SoundClient(object):
 
 
 if __name__ == "__main__":
-    CASE = 7
+    CASE = 8
     if CASE==1:
         soundPlayerThread = SoundPlayer(serialtrigger=True)
         soundPlayerThread.daemon=True
@@ -390,21 +403,24 @@ if __name__ == "__main__":
         sc.play_sound(1)
         sc.shutdown()
     if CASE==6:
-	sc = SoundClient() #(serialtrigger=False)
+        sc = SoundClient() #(serialtrigger=False)
         s1 = {'type':'tone_AM', 'frequency':2000, 'modRate':10, 'duration':1, 'amplitude':0.1}
         sc.set_sound(1,s1)
         sc.start()
         sc.play_sound(1)
         sc.shutdown()
     if CASE==7:
-	sc = SoundClient() #(serialtrigger=False)
+        sc = SoundClient() #(serialtrigger=False)
         s1 = {'type':'band_AM', 'frequency':8000, 'octaves':0.5, 'modRate':2, 'duration':10, 'amplitude':0.1}
-        import time
-        TicTime = time.time()
         sc.set_sound(1,s1)
         sc.start()
         sc.play_sound(1)
-	print 'Elapsed Time: ' + str(time.time()-TicTime)
+    if CASE==8:
+        sc = SoundClient() #(serialtrigger=False)
+        s1 = {'type':'band', 'frequency':8000, 'octaves':1.5, 'duration':1, 'amplitude':0.1}
+        sc.set_sound(1,s1)
+        sc.start()
+        sc.play_sound(1)
         sc.shutdown()
 
 #test.play_sound(0)

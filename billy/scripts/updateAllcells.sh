@@ -24,10 +24,10 @@
 #rsync -a --progress ~/data/ephys/adap017/reports_clusters/ jarauser@jarahub:/data/reports/cluster_reports/adap017/
 #rsync -a --progress ~/data/ephys/adap020/reports_clusters/ jarauser@jarahub:/data/reports/cluster_reports/adap020/
 
-#rsync -a --progress --include '*[0-9][0-9].py' --exclude=* ~/src/jaratoolbox/test/billy/scripts/allcells/ jarauser@jarahub:/data/reports/allcells/ #copies all the allcells_testXXX.py files
-#rsync -a --progress --include '*psy.py' --exclude=* ~/src/jaratoolbox/test/billy/scripts/allcells/ jarauser@jarahub:/data/reports/allcells/ #copies all the allcells_testXXX.py files
-#rsync -a --progress --include '*reward.py' --exclude=* ~/src/jaratoolbox/test/billy/scripts/allcells/ jarauser@jarahub:/data/reports/allcells/ #copies all the allcells_testXXX.py files
-rsync -a --progress --include '*_quality.py' --exclude=* jarauser@jarahub:/data/reports/allcells/ ~/src/jaratoolbox/test/billy/scripts/allcells/ 
+#rsync -a --progress --include '*[0-9][0-9].py' --exclude=* ~/src/jaratest/billy/scripts/allcells/ jarauser@jarahub:/data/reports/allcells/ #copies all the allcells_testXXX.py files
+#rsync -a --progress --include '*psy.py' --exclude=* ~/src/jaratest/billy/scripts/allcells/ jarauser@jarahub:/data/reports/allcells/ #copies all the allcells_testXXX.py files
+#rsync -a --progress --include '*reward.py' --exclude=* ~/src/jaratest/billy/scripts/allcells/ jarauser@jarahub:/data/reports/allcells/ #copies all the allcells_testXXX.py files
+rsync -a --progress --include '*_quality.py' --exclude=* jarauser@jarahub:/data/reports/allcells/ ~/src/jaratest/billy/scripts/allcells/ 
 
 
 #rsync -a --progress ~/data/ephys/test059/reports_clusters/ jarauser@jarahub:/data/reports/cluster_reports/test059/
