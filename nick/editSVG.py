@@ -59,8 +59,14 @@ for element in doc.iter():
     if element.attrib.has_key('style'):
         style = element.attrib['style']
         styleDict = style_string_to_dict(style)
+
         styleDict['stroke']='#babdb6'
         element.attrib['style'] = style_dict_to_string(styleDict)
+
+        if styleDict.has_key('stroke-dasharray'):
+            if styleDict['stroke-dasharray'] is not 'none':
+                element.getparent().remove(element)
+
 
 f = open('/tmp/newStriatum.svg', 'w')
 f.write(et.tostring(doc, pretty_print=True))

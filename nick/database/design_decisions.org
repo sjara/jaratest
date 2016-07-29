@@ -1,0 +1,15 @@
+* What to write when you are collecting data
+
+#+BEGIN_SRC python
+
+from jaratoolbox import database
+
+#+END_SRC
+
+* What happens to that file after data collection
+
+* How do we store information about each cluster that was identified during the recording? 
+
+* How do we get information about clusters?
+
+* How do we set information about clusters? 
