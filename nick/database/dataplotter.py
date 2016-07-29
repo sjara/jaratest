@@ -103,7 +103,7 @@ def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1]
     binsize = binsize/1000.0
     binEdges = np.around(np.arange(timeRange[0], timeRange[1]+binsize, binsize), decimals=2)
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, binEdges)
-    pPSTH = extraplots.plot_psth(spikeCountMat/binsize, 3, binEdges[:-1], trialsEachCond, *args, **kwargs)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binsize, 1, binEdges[:-1], trialsEachCond, *args, **kwargs)
     plt.setp(pPSTH, lw=lw)
 
 def two_axis_sorted_raster(spikeTimestamps,
@@ -290,12 +290,15 @@ def two_axis_heatmap(spikeTimestamps,
 def one_axis_tc_or_rlf(spikeTimestamps,
                        eventOnsetTimes,
                        sortArray,
-                       timeRange=[0, 0.1]):
+                       timeRange=[0, 0.1],
+                       labels = None):
     trialsEachCond = behavioranalysis.find_trials_each_type(
         sortArray, np.unique(sortArray))
     spikeArray = avg_spikes_in_event_locked_timerange_each_cond(
         spikeTimestamps, trialsEachCond, eventOnsetTimes, timeRange)
     plt.plot(spikeArray, ls='-', lw=2, c='0.25')
+    #ax = plt.gca()
+    #ax.set_xticklabels(labels, rotation='vertical')
 
 
 def avg_spikes_in_event_locked_timerange_each_cond(

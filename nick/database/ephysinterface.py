@@ -50,7 +50,7 @@ class EphysInterface(object):
         print ' '.join(transferCommand)
         subprocess.call(transferCommand)
 
-    def plot_session_raster(self, session, tetrode, cluster = None, sortArray = [], timeRange=[-0.5, 1], replace=0, ms=4, show=True, hold=False, colorEachCond=None):
+    def plot_session_raster(self, session, tetrode, cluster = None, sortArray = [], timeRange=[-0.5, 1], replace=0, ms=4, colorEachCond=None):
 
         plotTitle = self.loader.get_session_filename(session)
         spikeData= self.loader.get_session_spikes(session, tetrode)
@@ -67,10 +67,9 @@ class EphysInterface(object):
             plt.figure()
 
         dataplotter.plot_raster(spikeTimestamps, eventOnsetTimes, sortArray = sortArray, timeRange=timeRange, ms=ms, colorEachCond=colorEachCond)
-        if show:
-            plt.show()
+
     
-    def plot_session_PSTH(self, session, tetrode, cluster = None, sortArray = [], timeRange = [-0.5, 1], replace=0, lw=3, show=True, colorEachCond=None):
+    def plot_session_PSTH(self, session, tetrode, cluster = None, sortArray = [], timeRange = [-0.5, 1], replace=0, lw=3, colorEachCond=None):
         plotTitle = self.loader.get_session_filename(session)
         spikeData= self.loader.get_session_spikes(session, tetrode)
         eventData = self.loader.get_session_events(session)
@@ -83,10 +82,8 @@ class EphysInterface(object):
             plt.cla()
         else:
             plt.figure()
-
+        
         dataplotter.plot_psth(spikeTimestamps, eventOnsetTimes, sortArray = sortArray, timeRange=timeRange, lw=lw, colorEachCond=colorEachCond)
-        if show:
-            plt.show()
 
     def get_processed_session_data(self, session, tetrode, cluster=None):
         spikeData= self.loader.get_session_spikes(session, tetrode)
@@ -100,7 +97,7 @@ class EphysInterface(object):
         return (spikeTimestamps, eventOnsetTimes)
 
 
-    def plot_am_tuning(self, session, tetrode, behavSuffix, replace=1, timeRange=[-0.2, 1.5], ms=1, lw=3, colorEachCond=None):
+    def plot_am_tuning(self, session, tetrode, behavSuffix, replace=0, timeRange=[-0.2, 0.8], ms=1, lw=3, colorEachCond=None):
 
         '''Helper fxn to plot AM modulation tuning rasters'''
         if replace:
@@ -114,7 +111,54 @@ class EphysInterface(object):
         plt.subplot(212)
         self.plot_session_PSTH(session, tetrode, sortArray=freqEachTrial, replace=1, timeRange=timeRange, lw=lw, colorEachCond=colorEachCond)
         #plt.show()
+        
+    def plot_am_freq_tuning(self, freqsession, amsession, freqBehavSuffix, amBehavSuffix, tetrode, freqTimeRange = [-0.1, 0.3], amTimeRange = [-0.2, 0.8], colorEachCond=None, replace=1, ms=1, lw=3):
+        '''Fxn to easier assess both characteristic frequency and best AM rate
+        
+        Takes as input two separate behaviour files and sessions (freq tuning and am tuning)'''
+        if replace:
+            plt.cla()
+        else:
+            plt.figure()
+        bdata =self.loader.get_session_behavior(freqBehavSuffix)
+        freqEachTrial = bdata['currentFreq']
+        bdata2=self.loader.get_session_behavior(amBehavSuffix)
+        rateEachTrial = bdata2['currentFreq']
+        plt.subplot(221)
+        self.plot_session_raster(amsession, tetrode, sortArray=rateEachTrial, replace=1, timeRange=amTimeRange, ms=ms, colorEachCond=colorEachCond)
+        plt.xlabel('Time from event onset (sec)')
+        plt.ylabel('Modulation rate (Hz)')
+        plt.subplot(223)
+        self.plot_session_PSTH(amsession, tetrode, sortArray=rateEachTrial, replace=1, timeRange=amTimeRange, lw=lw, colorEachCond=colorEachCond)
+        plt.xlabel('Time from event onset (sec)')
+        plt.ylabel('Firing rate (Hz)')
+        plt.subplot(222)
+        self.plot_session_raster(freqsession, tetrode, sortArray=freqEachTrial, replace=1, timeRange=freqTimeRange, ms=ms)
+        plt.xlabel('Time from event onset (sec)')
+        plt.ylabel('Frequency (Hz)')
+        plt.subplot(224)
+        self.plot_session_freq_tuning(freqsession, tetrode, sortArray=freqEachTrial, replace=1, timeRange=[0, 0.1])
+        plt.xlabel('Frequency (kHz)')
+        plt.ylabel('Average number of spikes in range [0, 0.1]')
+        plt.suptitle('TT{}'.format(tetrode))
 
+    def plot_session_freq_tuning(self, session, tetrode, sortArray=[], replace=0, timeRange=[0,0.1]):
+        if replace:
+            plt.cla()
+        else:
+            plt.figure()
+        eventData = self.loader.get_session_events(session)
+        eventOnsetTimes = self.loader.get_event_onset_times(eventData)
+        plotTitle = self.loader.get_session_filename(session)
+        freqEachTrial = sortArray
+        freqLabels = ["%.1f"%freq for freq in np.unique(freqEachTrial)/1000]
+        spikeData = self.loader.get_session_spikes(session, tetrode)
+        spikeTimestamps = spikeData.timestamps
+        dataplotter.one_axis_tc_or_rlf(spikeTimestamps, eventOnsetTimes, freqEachTrial, timeRange=timeRange)
+        ax = plt.gca()
+        ax.set_xticks(range(len(freqLabels)))
+        ax.set_xticklabels(freqLabels, rotation='vertical')
+    
     def plot_array_freq_tuning(self, session, behavSuffix, replace=0, tetrodes=None, timeRange=[0, 0.1]):
 
         if not tetrodes:
@@ -403,10 +447,34 @@ class EphysInterface(object):
             rasterRangeList.append(rasterRange)
             tcRangeList.append(tcRange)
 
-        dataList=zip(spikesList, eventsList, freqList, tetrodes, rasterRangeList, tcRangeList)
+        dataList = zip(sessions, tetrodes, behavSuffixs, clusters)
+        flipper = extraplots.FlipThrough(self.plot_sorted_tuning_raster, dataList)
+        return flipper
+        
+    def flip_freq_am_tuning(self, freqsession, amsession, freqBehavSuffix, amBehavSuffix, tetrodes=[1,2,3,4,5,6,7,8], freqRange = [-0.1, 0.3], amRange = [-0.2, 0.8], colorEachCond=None):
+        freqsessionList=[]
+        amsessionList=[]
+        freqBehavSuffixList=[]
+        amBehavSuffixList=[]
+        tetrodeList=[]
+        amRangeList=[]
+        freqRangeList=[]
+        colorList=[]
+        
+        from jaratoolbox import extraplots
 
-        # self._tetrode_tuning(dataList)
-        flipper=dataplotter.FlipT(self._tetrode_tuning, dataList)
+        for tetrode in tetrodes:
+            freqsessionList.append(freqsession)
+            amsessionList.append(amsession)
+            freqBehavSuffixList.append(freqBehavSuffix)
+            amBehavSuffixList.append(amBehavSuffix)
+            tetrodeList.append(tetrode)
+            amRangeList.append(amRange)
+            freqRangeList.append(freqRange)
+            colorList.append(colorEachCond)
+
+        dataList=zip(freqsessionList, amsessionList, freqBehavSuffixList, amBehavSuffixList, tetrodeList, freqRangeList, amRangeList, colorList)
+        flipper=extraplots.FlipThrough(self.plot_am_freq_tuning, dataList)
         return flipper
 
     # @dataplotter.FlipThroughData
