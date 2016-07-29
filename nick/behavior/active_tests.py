@@ -2,6 +2,8 @@
 import sys; sys.path.append('/home/nick/src')
 
 from jaratest.nick.behavior import behavtests
+from jaratest.nick.behavior import emailme
+reload(emailme)
 
 subjects = ['amod006', 'amod007','amod008','amod009','amod010']
 paradigm = '2afc'
@@ -20,7 +22,7 @@ class color:
    END = '\033[0m'
 
 message = []
-message.append("Test: Percent correct above, all sound types")
+subject = "Amod behavior report"
 for subject in subjects:
     amodtest = behavtests.PercentCorrectAboveAllSoundType(80)
     if amodtest.passes_test(subject, paradigm, sessionstr):
@@ -30,7 +32,11 @@ for subject in subjects:
     # print outcome
     message.append('{}: {} - {}'.format(outcome, subject, ', '.join(amodtest.message)))
 
-print '\n'.join(message)
+mailer = emailme.EmailMe('email')
+text = '\n'.join(message)
+email = 'Subject: {}\n\n{}'.format(subject, text)
+print email
+mailer.send_message(email)
 
 
 

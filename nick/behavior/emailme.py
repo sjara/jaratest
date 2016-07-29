@@ -2,10 +2,10 @@ import smtplib
 from jaratest.nick import localsettings
 
 class EmailMe():
-    def __init__(self, mode)
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(localsettings.GMAIL_ACCT, localsettings.GMAIL_PASS)
+    def __init__(self, mode):
+        self.server = smtplib.SMTP("smtp.gmail.com", 587)
+        self.server.starttls()
+        self.server.login(localsettings.GMAIL_ACCT, localsettings.GMAIL_PASS)
         assert mode in ['email', 'text'], "Mode must be either 'email' or 'text'"
         self.mode = mode
 
@@ -14,7 +14,7 @@ class EmailMe():
             toAddr = localsettings.GMAIL_ACCT
         elif self.mode == 'text':
             toAddr = localsettings.TEXT
-        server.sendmail(localsettings.GMAIL_ACCT, toAddr, messageText)
+        self.server.sendmail(localsettings.GMAIL_ACCT, toAddr, messageText)
 
 
 
