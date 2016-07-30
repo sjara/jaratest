@@ -44,6 +44,7 @@ for experiment in inforec.test098.experiments:
                     clusterDict.update({'tetrode':tetrode, 'cluster':cluster})
                     celldb.db = celldb.db.append(clusterDict, ignore_index=True)
 
+celldb.db.to_csv('/home/jarauser/src/jaratest/nick/analysis/test098_celldb.csv')
 
 
 

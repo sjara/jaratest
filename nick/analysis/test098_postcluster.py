@@ -34,6 +34,6 @@ for indCell, cell in db.iterrows():
     #Add number of spikes to the database
     db.loc[indCell, 'nSpikes']=nSpikes
 
-    
+db.to_csv('/home/jarauser/src/jaratest/nick/analysis/test098_celldb_analysisCopy.csv')
     
 
