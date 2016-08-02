@@ -112,14 +112,14 @@ class DataLoader(object):
         '''
         Calculate event onset times given an eventData object.
         Accepts a jaratoolbox.loadopenephys.Events object and finds the event onset times.
-
+        Looking for the right events: eventChannel==0 are the sound-onset events (use outbit0); eventChannel==2 are the laser-onset events (use outbit2). For now just look for all events with eventID==1.
         '''
 
         evID=np.array(eventData.eventID)
         evChannel = np.array(eventData.eventChannel)
 
         eventTimes = np.array(eventData.timestamps)
-        eventOnsetTimes=eventTimes[(evID==eventID)&(evChannel==eventChannel)]
+        eventOnsetTimes=eventTimes[(evID==eventID)] #&(evChannel==eventChannel]
 
         #Restrict to events are seperated by more than the minimum event onset time
         evdiff = np.r_[1.0, np.diff(eventOnsetTimes)]
