@@ -13,11 +13,13 @@ import numpy as np
 import os
 
 
-def plot_bandwidth_report(mouse, date, site, siteName, charfreq, modrate):
+def plot_bandwidth_report(mouse, date, site, siteName):
     sessions = site.get_session_ephys_filenames()
     behavFilename = site.get_session_behav_filenames()
     ei = ephysinterface.EphysInterface(mouse, date, '', 'bandwidth_am')
     bdata = ei.loader.get_session_behavior(behavFilename[3][-4:-3])
+    charfreq = np.unique(bdata['charFreq'])
+    modrate = np.unique(bdata['modRate'])
     ei2 = ephysinterface.EphysInterface(mouse, date, '', 'am_tuning_curve')
     bdata2 = ei2.loader.get_session_behavior(behavFilename[1][-4:-3])  
     bdata3 = ei2.loader.get_session_behavior(behavFilename[2][-4:-3])  
