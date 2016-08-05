@@ -15,29 +15,14 @@ from jaratoolbox import settings
 from jaratoolbox import colorpalette
 
 
-#EXPERIMENTER = 'lan'
-#settings.BEHAVIOR_PATH = '/home/languo/data/mnt/jarahubdata'
-#settings.BEHAVIOR_PATH = '/var/tmp/data/'
 
-subjects = ['d1pi011']
+def plot_ave_photostim_psycurve_by_trialtype(animal,sessions):
 
-FREQCOLORS = [colorpalette.TangoPalette['Chameleon3'],
-              colorpalette.TangoPalette['ScarletRed1'],
-              colorpalette.TangoPalette['SkyBlue2'] , 'g', 'm', 'k']
+    FREQCOLORS = [colorpalette.TangoPalette['Chameleon3'],
+                  colorpalette.TangoPalette['ScarletRed1'],
+                  colorpalette.TangoPalette['SkyBlue2'] , 'g', 'm', 'k']
 
-if len(sys.argv)>1:
-    sessions = sys.argv[1:]
-    
-nSessions = len(sessions)
-nAnimals = len(subjects)
-#gs = gridspec.GridSpec(nAnimals, 3)
-gs = gridspec.GridSpec(nAnimals,1)
-gs.update(hspace=0.5,wspace=0.4)
-plt.clf()
-
-for inda, thisAnimal in enumerate(subjects):
-    allBehavDataThisAnimal = behavioranalysis.load_many_sessions(thisAnimal,sessions)
-    
+    allBehavDataThisAnimal = behavioranalysis.load_many_sessions(animal,sessions)
     targetFrequency = allBehavDataThisAnimal['targetFrequency']
     choice=allBehavDataThisAnimal['choice']
     valid=allBehavDataThisAnimal['valid']& (choice!=allBehavDataThisAnimal.labels['choice']['none'])
@@ -52,9 +37,11 @@ for inda, thisAnimal in enumerate(subjects):
     #print trialsEachType
     
     nBlocks = len(stimTypes)
-    thisAnimalPos = inda
+    #thisAnimalPos = inda
     #ax1=plt.subplot(gs[thisAnimalPos,0])
-    ax1=plt.subplot(gs[thisAnimalPos])
+    #ax1=plt.subplot(gs[thisAnimalPos])
+    
+    #plt.figure()
     fontsize = 12
     allPline = []
     curveLegends = []
@@ -70,21 +57,27 @@ for inda, thisAnimal in enumerate(subjects):
                                                                 ciHitsEachValue,xTickPeriod=1)
 
             plt.setp((pline, pcaps, pbars), color=FREQCOLORS[stimType])
+            plt.hold(True)
             plt.setp(pdots, mfc=FREQCOLORS[stimType], mec=FREQCOLORS[stimType])
+            plt.hold(True)
             allPline.append(pline)
             curveLegends.append(stimLabels[stimType])
-            
+            #plt.hold(True)
     plt.xlabel('Frequency (kHz)',fontsize=fontsize)
     plt.ylabel('Rightward trials (%)',fontsize=fontsize)
     extraplots.set_ticks_fontsize(plt.gca(),fontsize)
     legend = plt.legend(allPline,curveLegends,loc=2)
     # Add the legend manually to the current Axes.
-    ax = plt.gca().add_artist(legend)
-    #plt.hold(True)
-    #plt.legend(bbox_to_anchor=(1, 1), bbox_transform=plt.gcf().transFigure)
-    plt.show()
-    plt.title('%s_%sto%s'%(thisAnimal,sessions[0],sessions[-1]))   
+    #ax = plt.gca().add_artist(legend)
+    plt.gca().add_artist(legend)
     
+    #plt.legend(bbox_to_anchor=(1, 1), bbox_transform=plt.gcf().transFigure)
+    #plt.show()
+    if len(sessions)==1:
+        plt.title('%s_%s' %(animal,sessions[0]))
+    else:
+        plt.title('%s_%sto%s'%(animal,sessions[0],sessions[-1]))   
+    plt.show()
     '''
     #######Plot dynamics and laser trials##############
     ax2=plt.subplot(gs[thisAnimalPos,1:])
@@ -99,21 +92,32 @@ for inda, thisAnimal in enumerate(subjects):
             stimTrials=np.nonzero(stimTrials)[0]
             
             ax2.vlines(stimTrials,0,100,alpha=0.2,linestyles='solid')
-    '''
-
-    plt.show()
-    plt.title('%s_%sto%s'%(thisAnimal,sessions[0],sessions[-1]))   
-    
-
-outputDir='/home/languo/data/behavior_reports' 
-animalStr = '-'.join(subjects)
-sessionStr = '-'.join(sessions)
-#plt.gcf().set_size_inches((8.5,11))
-figformat = 'png' 
-filename = 'behavior_summary_%s_%s.%s'%(animalStr,sessionStr,figformat)
-fullFileName = os.path.join(outputDir,filename)
-print 'saving figure to %s'%fullFileName
-plt.gcf().savefig(fullFileName,format=figformat)
+    '''  
+def save_figure(animal,sessions,figformat='png'):
+    outputDir='/home/languo/data/behavior_reports' 
+    animalStr = animal
+    sessionStr = '-'.join(sessions)
+    #plt.gcf().set_size_inches((8.5,11))
+    #figformat = 'png' 
+    filename = 'behavior_summary_%s_%s.%s'%(animalStr,sessionStr,figformat)
+    fullFileName = os.path.join(outputDir,filename)
+    print 'saving figure to %s'%fullFileName
+    plt.gcf().savefig(fullFileName,format=figformat)
 
 
+if __name__ == '__main__':
+    animals = ['d1pi015','d1pi016']
 
+    if len(sys.argv)>1:
+        sessions = sys.argv[1:]
+
+    #nSessions = len(sessions)
+    #nAnimals = len(subjects)
+    #gs = gridspec.GridSpec(nAnimals, 3)
+    #gs = gridspec.GridSpec(nAnimals,1)
+    #gs.update(hspace=0.5,wspace=0.4)
+
+    for inda, thisAnimal in enumerate(animals):
+        plt.figure()
+        plot_ave_photostim_psycurve_by_trialtype(thisAnimal,sessions)
+        save_figure(thisAnimal,sessions)

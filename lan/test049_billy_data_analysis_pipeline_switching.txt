@@ -34,5 +34,12 @@ Calculate movement Z score: ????
 Calculate movement modulation index: ????
 
 ##########Make reports after all analysis are done##########
-These reports include rasters from trials of middle frequency (switching frequency) aligned to different signal and cluster quality stuff (old).
-switch_tuning_report.py
+These reports include rasters from trials of middle frequency (switching frequency) aligned to different signal and cluster quality stuff.
+switch_tuning_report.py (tuning raster, 2afc mid freq raster aligned to sound and aligned to center-out)
+switch_tuning_allfreq_report.py (tuning raster, 2afc all freqs raster aligned to sound and aligned to center-out)
+switch_tuning_block_allfreq_report.py (tuning raster, 2afc mid freq raster aligned to sound and all freqs raster aligned to sound)
+switch_tuning_sidein_report.py (tuning raster, 2afc mid freq raster aligned to center-out and aligned to side-in)
+
+###########Copy the good cell's reports to a separate folder########
+e.g. using copyFileQualityClusterSwitching.py in src/jaratest/billy/script/
+can change parameter in the minimal criteria section.
