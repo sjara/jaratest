@@ -55,3 +55,14 @@ test = statesTests[mouseState]
 assert test.passes_test(subject, paradigm, sessionstr), "Mouse not ready"
 
 
+def mouse_dict_factory(self, mouseFile):
+    '''
+    Reads a h5 file, tests mouse behavior, returns the the appropriate param dict
+    '''
+
+
+
+amod006 = mouse_dict_factory('/home/nick/data/mousefiles/amod006.h5')
+
+
+class ShapeFile(object):

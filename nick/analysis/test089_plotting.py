@@ -6,7 +6,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import settings
 SAMPLING_RATE=30000.0
 
-db = pd.io.parsers.read_csv('/home/jarauser/src/jaratest/nick/analysis/test098_celldb_analysis-copy.csv')
+db = pd.io.parsers.read_csv('/home/nick/src/jaratest/nick/analysis/test098_celldb_analysis-copy.csv')
 
 db = db[db['date']=='2016-07-28']
 
@@ -49,4 +49,4 @@ for indSession, session in enumerate(sessions):
     plt.plot(indSession, np.mean(ratesThisSession), 'ro')
 
 
-plt.show()
+    plt.show()
