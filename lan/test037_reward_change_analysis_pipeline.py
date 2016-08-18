@@ -1,4 +1,6 @@
 '''
+Lan Guo 2016-04-06
+
 Analysis pipeline for wild-type mice, reward-change freq discrimination paradigm. Includes: 
 
 #Calculate sound response Z score (test013). 

@@ -16,7 +16,13 @@ from jaratoolbox import colorpalette
 
 
 
-def plot_ave_photostim_psycurve_by_trialtype(animal,sessions):
+def plot_ave_photostim_psycurve_by_trialtype(animal,sessions,trialLimit=None):
+    '''
+    Arguments:
+    animal is a string of the animal name you want to plot.
+    sessions is a list of strings of the behavior session names you want to plot.
+    trialLimit is an optional parameter, should be a list of integers giving the beginning and end of trials numbers you want to plot.
+    '''
 
     FREQCOLORS = [colorpalette.TangoPalette['Chameleon3'],
                   colorpalette.TangoPalette['ScarletRed1'],
@@ -26,6 +32,14 @@ def plot_ave_photostim_psycurve_by_trialtype(animal,sessions):
     targetFrequency = allBehavDataThisAnimal['targetFrequency']
     choice=allBehavDataThisAnimal['choice']
     valid=allBehavDataThisAnimal['valid']& (choice!=allBehavDataThisAnimal.labels['choice']['none'])
+    if trialLimit:
+        trialSelector = np.zeros(len(valid),dtype=bool)
+        trialSelector[trialLimit[0]:trialLimit[1]] = True
+    else:
+        trialSelector = np.ones(len(valid),dtype=bool)
+    valid = (valid & trialSelector)
+    print sum(trialSelector), sum(valid)
+    
     choiceRight = choice==allBehavDataThisAnimal.labels['choice']['right']
     trialType = allBehavDataThisAnimal['trialType']
     stimTypes = [allBehavDataThisAnimal.labels['trialType']['no_laser'],allBehavDataThisAnimal.labels['trialType']['laser_left'],allBehavDataThisAnimal.labels['trialType']['laser_right']]

@@ -24,19 +24,20 @@ EPHYSDIR_MOUNTED = '/home/languo/data/jarastorephys'
 BEHAVDIR_MOUNTED = '/home/languo/data/mnt/jarahubdata'
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
+minBlockSize = 20  #minimal number of trials per block to be plotted
 
-def load_remote_tuning_data(oneCell,behavDirMounted,ephysDirMounted):
+def load_remote_tuning_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MOUNTED):
     '''
     Given a CellInfo object and remote behavior and ephys directories, this function loads the associated tuning ephys and tuning behav data from the mounted jarastore drive. Returns eventOnsetTimes, spikeTimestamps, and bData objects.
     '''
     
     ### Get behavior data associated with tuning curve ###
     behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'tuning_curve',oneCell.tuningBehavior)
-    behavFile = os.path.join(behavDirMounted,oneCell.animalName,behavFileName)
+    behavFile = os.path.join(behavDir,oneCell.animalName,behavFileName)
     bData = loadbehavior.BehaviorData(behavFile,readmode='full')
 
     ### Get events data ###
-    fullEventFilename=os.path.join(ephysDirMounted, oneCell.animalName, oneCell.tuningSession, 'all_channels.events')
+    fullEventFilename=os.path.join(ephysDir, oneCell.animalName, oneCell.tuningSession, 'all_channels.events')
     eventData = loadopenephys.Events(fullEventFilename)
 
     ### Get event onset times ###
@@ -45,24 +46,24 @@ def load_remote_tuning_data(oneCell,behavDirMounted,ephysDirMounted):
     eventOnsetTimes=eventTimestamps[(evID==1)]
     
     ### GEt spike data ###
-    spikeFilename = os.path.join(ephysDirMounted,oneCell.animalName,oneCell.tuningSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
+    spikeFilename = os.path.join(ephysDir,oneCell.animalName,oneCell.tuningSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
     spikeData = loadopenephys.DataSpikes(spikeFilename)
     spikeTimestamps=spikeData.timestamps/EPHYS_SAMPLING_RATE
 
     return (eventOnsetTimes, spikeTimestamps, bData)
 
-def load_remote_2afc_data(oneCell,behavDirMounted,ephysDirMounted):
+def load_remote_2afc_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MOUNTED):
     '''
     Given a CellInfo object and remote behavior and ephys directories, this function loads the associated 2afc ephys and 2afc behav data from the mounted jarastore drive. Returns eventOnsetTimes, spikeTimestamps, and bData objects.
     '''
     
     ### Get behavior data associated with tuning curve ###
     behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
-    behavFile = os.path.join(behavDirMounted,oneCell.animalName,behavFileName)
-    bData = loadbehavior.BehaviorData(behavFile,readmode='full')
+    behavFile = os.path.join(behavDir,oneCell.animalName,behavFileName)
+    bData = loadbehavior.FlexCategBehaviorData(behavFile,readmode='full')
 
     ### Get events data ###
-    fullEventFilename=os.path.join(ephysDirMounted, oneCell.animalName, oneCell.ephysSession, 'all_channels.events')
+    fullEventFilename=os.path.join(ephysDir, oneCell.animalName, oneCell.ephysSession, 'all_channels.events')
     eventData = loadopenephys.Events(fullEventFilename)
 
     ### Get event onset times ###
@@ -71,7 +72,7 @@ def load_remote_2afc_data(oneCell,behavDirMounted,ephysDirMounted):
     #eventOnsetTimes=eventTimestamps[(evID==1)]
     
     ### GEt spike data ###
-    spikeFilename = os.path.join(ephysDirMounted,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
+    spikeFilename = os.path.join(ephysDir,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
     spikeData = loadopenephys.DataSpikes(spikeFilename)
     spikeTimestamps=spikeData.timestamps/EPHYS_SAMPLING_RATE
 
@@ -117,18 +118,12 @@ def plot_tuning_raster_one_intensity(oneCell, intensity=50):
     plt.title(plotTitle)
     
 
-def plot_switching_raster(oneCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True):
+def get_trials_each_cond_switching(oneCell, freqToPlot='middle', byBlock=True):
     '''
-    Plots raster for 2afc switching task with different alignment at time 0 and different choices for what frequencies to include in the plot.
-    Arguments:
-    oneCell is a CellInfo object.
-    freqToPlot is a string; 'middle' means plotting only the middle frequency, 'all' means plotting all three frequenciens.
-    alignment should be a string with possible values: 'sound', 'center-out','side-in'.
-    timeRange is a list of two floats, indicating the start and end of plot range.
-    '''
-
-    #calls load_remote_2afc_data(oneCell) to get the data, then plot raster
-    eventData, spikeTimestamps, bdata = load_remote_2afc_data(oneCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
+    Given a cellInfo object, the frequency to plot(string, value of 'middle' or 'all'), whether to plot by block (boolean), gets the trialsEachCond and colorEachCond vectors for raster and PSTH plotting.
+    ''' 
+    # -- Calls load_remote_2afc_data(oneCell) to get the data, then plot raster -- #
+    (eventData, spkData, bdata) = load_remote_2afc_data(oneCell)
     # -- Check to see if ephys has skipped trials, if so remove trials from behav data -- #
     eventOnsetTimes=np.array(eventData.timestamps)
     soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
@@ -139,17 +134,77 @@ def plot_switching_raster(oneCell, freqToPlot='middle', alignment='sound',timeRa
     missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
     # Remove missing trials
     bdata.remove_trials(missingTrials)
+
+     # -- Select trials to plot from behavior file -- #
+    correct = bdata['outcome']==bdata.labels['outcome']['correct']
+    possibleFreq = np.unique(bdata['targetFrequency'])
+  
+    # -- Select trials to plot based on desired frequencies to plot and whether to plot by block -- #
+    if freqToPlot == 'middle':
+        middleFreq = possibleFreq[1] #selects middle frequency
+        oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
+        correctOneFreq = oneFreq  & correct 
+
+        # -- Find trials each block (if plotting mid frequency by block) or find trials each type (e.g. low-boundary, high-boundary; if not plotting by block) -- #
+        if byBlock:
+            bdata.find_trials_each_block()
+            trialsEachBlock = bdata.blocks['trialsEachBlock']
+            correctTrialsEachBlock = trialsEachBlock & correctOneFreq[:,np.newaxis]
+            correctBlockSizes = sum(correctTrialsEachBlock)
+            if (correctBlockSizes[-1] < minBlockSize): #A check to see if last block is too small to plot
+                correctTrialsEachBlock = correctTrialsEachBlock[:,:-1]
+
+            trialsEachCond = correctTrialsEachBlock
+            if bdata['currentBlock'][0]==bdata.labels['currentBlock']['low_boundary']:
+                colorEachCond = 5*['g','r'] #assume there are not more than 5 blocks
+            else:
+                colorEachCond = 5*['r','g']
+               
+        else:
+            currentBlock = bdata['currentBlock']
+            blockTypes = [bdata.labels['currentBlock']['low_boundary'],bdata.labels['currentBlock']['high_boundary']]
+            trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
+            midFreqCorrectBlockLow = correctOneFreq&trialsEachType[:,0]
+            midFreqCorrectBlockHigh = correctOneFreq&trialsEachType[:,1]
+            trialsEachCond = np.c_[midFreqCorrectBlockLow,midFreqCorrectBlockHigh]
+            colorEachCond = ['g','r']
+ 
+    # -- When plotting all 3 frequencies will not be plotting by block, just plot by type of block (low_boundary vs high_boundary) -- #
+    elif freqToPlot == 'all':
+        assert byBlock == False  #when plotting all frequencies will not be plotting by block
+        lowFreq = possibleFreq[0]
+        middleFreq = possibleFreq[1]
+        highFreq = possibleFreq[2]
+        leftward = bdata['choice']==bdata.labels['choice']['left']
+        rightward = bdata['choice']==bdata.labels['choice']['right']
+ 
+        trialsToUseLowFreq = ((bdata['targetFrequency'] == lowFreq) & correct) #low_boundary block
+        trialsToUseHighFreq = ((bdata['targetFrequency'] == highFreq) & correct) #high_boundary block
+        trialsToUseMidFreqLeft = leftward & (bdata['targetFrequency'] == middleFreq) #mid freq correct trials in high_boundary block
+        trialsToUseMidFreqRight = rightward & (bdata['targetFrequency'] == middleFreq)#mid freq correct trials in low_boundary block
+        trialsEachCond = np.c_[trialsToUseLowFreq,trialsToUseMidFreqLeft,trialsToUseMidFreqRight,trialsToUseHighFreq]
+        colorEachCond = ['y','r','g','b']
     
-    # -- Find trials each block (if plotting by block) or find trials each type (e.g. low-boundary, high-boundary; if not plotting by block) -- #
-    if byBlock:
-        bdata.find_trials_each_block()
-        trialsEachBlock = bdata.blocks['trialsEachBlock']
-    else:
-        #####????What is the dif between this method and the one below????####
-        ##trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
-    
-    
+    return trialsEachCond, colorEachCond
+
+def plot_switching_raster(oneCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True):
+    '''
+    Plots raster for 2afc switching task with different alignment at time 0 and different choices for what frequencies to include in the plot.
+    Arguments:
+    oneCell is a CellInfo object.
+    freqToPlot is a string; 'middle' means plotting only the middle frequency, 'all' means plotting all three frequenciens.
+    alignment should be a string with possible values: 'sound', 'center-out','side-in'.
+    timeRange is a list of two floats, indicating the start and end of plot range.
+    byBlock is a boolean, indicates whether to split the plot into behavior blocks.
+    '''
+
+    # -- calls load_remote_2afc_data(oneCell) to get the data, then plot raster -- #
+    eventData, spikeTimestamps, bdata = load_remote_2afc_data(oneCell)
+    # -- Get trialsEachCond and colorEachCond for plotting -- #
+    (trialsEachCond, colorEachCond) = get_trials_each_cond_switching(oneCell=oneCell, freqToPlot=freqToPlot, byBlock=byBlock)
+
     # -- Calculate eventOnsetTimes based on alignment parameter -- #
+    eventOnsetTimes=np.array(eventData.timestamps)
     if alignment == 'sound':
         soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
         EventOnsetTimes = eventOnsetTimes[soundOnsetEvents]
@@ -164,48 +219,49 @@ def plot_switching_raster(oneCell, freqToPlot='middle', alignment='sound',timeRa
         diffTimes=bdata['timeSideIn']-bdata['timeTarget']
         EventOnsetTimes+=diffTimes
 
-
-    # -- Select trials to plot from behavior file -- #
-    rightward = bdata['choice']==bdata.labels['choice']['right']
-    leftward = bdata['choice']==bdata.labels['choice']['left']
-    invalid = bdata['outcome']==bdata.labels['outcome']['invalid']
-    correct = bdata['outcome']==bdata.labels['outcome']['correct']
-    correctRightward = rightward & correct
-    correctLeftward = leftward & correct
-
-    possibleFreq = np.unique(bdata['targetFrequency'])
-    trialsEachBlock = bdata.blocks['trialsEachBlock']
-
-    # -- Select trials to plot based on desired frequencies to plot -- #
-    if freqToPlot == 'middle':
-        middleFreq = possibleFreq[1] #selects middle frequency
-        oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
-        trialsToUseRight = rightward & oneFreq #if only plotting middle frequency, then plot both correct and incorrect trials
-        trialsToUseLeft = leftward & oneFreq
-        trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
-        colorEachCond = ['r','g']   
-    elif freqToPlot == 'all':
-        lowFreq = possibleFreq[0]
-        middleFreq = possibleFreq[1]
-        highFreq = possibleFreq[2]
-        
-        trialsToUseLowFreq = ((bdata['targetFrequency'] == lowFreq) & correct)
-        trialsToUseHighFreq = ((bdata['targetFrequency'] == highFreq) & correct)
-        trialsToUseMidFreqLeft = leftward & (bdata['targetFrequency'] == middleFreq)
-        trialsToUseMidFreqRight = rightward & (bdata['targetFrequency'] == middleFreq)
-        trialsEachCond = np.c_[trialsToUseLowFreq,trialsToUseMidFreqLeft,trialsToUseMidFreqRight,trialsToUseHighFreq]
-        colorEachCond = ['b','r','g','r']
-    
     # -- Calculate matrix of spikes per trial for plotting -- #
     (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
 spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
     
-    # -- Plot raster and PSTH -- #
+    # -- Plot raster -- #
     plt.figure()
     extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,fillWidth=None,labels=None)
     
     plt.ylabel('Trials')
     plt.title('{0}_{1}_T{2}c{3}_{4}_{5} frequency'.format(oneCell.animalName,oneCell.behavSession,oneCell.tetrode,oneCell.cluster,alignment,freqToPlot)) 
+
+
+def plot_switching_PSTH(oneCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True, binWidth=0.010):
+    # -- calls load_remote_2afc_data(oneCell) to get the data, then plot raster -- #
+    (eventData, spikeTimestamps, bdata) = load_remote_2afc_data(oneCell)
+    # -- Get trialsEachCond and colorEachCond for plotting -- #
+    (trialsEachCond, colorEachCond) = get_trials_each_cond_switching(oneCell=oneCell, freqToPlot=freqToPlot, byBlock=byBlock)
+
+    # -- Calculate eventOnsetTimes based on alignment parameter -- #
+    eventOnsetTimes=np.array(eventData.timestamps)
+    if alignment == 'sound':
+        soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
+        EventOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+    elif alignment == 'center-out':
+        soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
+        EventOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+        diffTimes=bdata['timeCenterOut']-bdata['timeTarget']
+        EventOnsetTimes+=diffTimes
+    elif alignment == 'side-in':
+        soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
+        EventOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+        diffTimes=bdata['timeSideIn']-bdata['timeTarget']
+        EventOnsetTimes+=diffTimes
+    
+    (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
+    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+    smoothWinSize = 3
+    plt.figure()
+    extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSize,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=3,downsamplefactor=1)
+    plt.xlabel('Time from {0} onset (s)'.format(alignment))
+    plt.ylabel('Firing rate (spk/sec)')
 
 
 def plot_psy_curve_raster(oneCell, alignment='sound'):
@@ -218,12 +274,12 @@ def plot_summary_per_cell(oneCell):
 
 if __name__ == '__main__':
     ### Params associated with the cell of interest ###
-    cellParams = {'behavSession':'20160420a',
-                  'tetrode':3,
-                  'cluster':3}
+    cellParams = {'behavSession':'20150624a',
+                  'tetrode':1,
+                  'cluster':2}
 
     ### Loading allcells file for a specified mouse ###
-    mouseName = 'adap017'
+    mouseName = 'test059'
     allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
     sys.path.append(settings.ALLCELLS_PATH)
 
@@ -237,7 +293,11 @@ if __name__ == '__main__':
     tuningSession = thisCell.tuningSession
     tuningBehavior = thisCell.tuningBehavior
 
-    eventOnsetTimes, spikeTimestamps, bData = load_remote_tuning_data(thisCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
+    #(eventOnsetTimes, spikeTimestamps, bData) = load_remote_tuning_data(thisCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
     #plot_tuning_raster_one_intensity(thisCell)
-    plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1])
+    #plt.show()
+    #plt.clf()
+    (eventData, spikeTimestamps, bData) = load_remote_2afc_data(thisCell)
+    plot_switching_raster(thisCell, freqToPlot='all', alignment='center-out',timeRange=[-0.5,1],byBlock=False)
+    plot_switching_PSTH(thisCell, freqToPlot='all', alignment='center-out',timeRange=[-0.5,1],byBlock=False)
     plt.show()

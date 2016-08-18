@@ -1,10 +1,10 @@
 '''
 Lan Guo 20160111
 Modified from Billy's modIndexCalcSwitching.py
-New version, now takes cellDB whose individual cells contain the property 'quality' to mark whether it's a good cell or not.
-Finds modulation index for all good cells (based on oneCell.quality, score of 1 or 6) for reward_change task. Comparing response to one frequency under less or more reward conditions using only correct trials.
-NEW: can choose different alignment options (sound, center-out, side-in) and calculate Mod Index for different time windows with aligned spikes. 
-Implemented: using santiago's methods to remove missing trials from behavior when ephys has skipped trials. -LG20160307
+Takes cellDB whose individual cells contain the property 'quality' to mark whether it's a good cell or not.
+Finds modulation index for all cells (now not checking cell quality) for reward_change task. Comparing response to one frequency under less or more reward conditions using only correct trials.
+Can choose different alignment options (sound, center-out, side-in) and calculate Mod Index for different time windows with aligned spikes. 
+Using santiago's methods to remove missing trials from behavior when ephys has skipped trials. -LG20160307
 Implemented 'trialLimit' constraint to exclude blocks with few trials at the end of a behav session. -LG 20160324
 '''
 
@@ -62,11 +62,14 @@ for mouseName in mouseNameList:
 
     finalOutputDir = outputDir+'/'+subject+'_stats'
     
+    '''
+    #experimenter param is obsolete -LG 20160812
     if mouseName=='adap015' or mouseName=='adap013' or mouseName=='adap017':
         experimenter = 'billy'
     else:
         experimenter = 'lan'
-    
+    '''
+
     paradigm = '2afc'
     numOfCells = len(allcells.cellDB) #number of cells that were clustered on all sessions clustered
     print numOfCells
@@ -101,8 +104,6 @@ for mouseName in mouseNameList:
     except:
         modI_file = open('%s/%s.txt' % (finalOutputDir,nameOfmodIFile), 'w') #when file dosenot exit then create it, but will truncate the existing file
 
-
-    #No need to initialize modIList again since all behav sessions in modI file should be the same as the ones in modSig file.
     try:
         modSig_file = open('%s/%s.txt' % (finalOutputDir,nameOfmodSFile), 'r+') #open a text file to read and write in
         behavName = ''
@@ -116,7 +117,7 @@ for mouseName in mouseNameList:
     except:
         modSig_file = open('%s/%s.txt' % (finalOutputDir,nameOfmodSFile), 'w') #when file dosenot exit then create it, but will truncate the existing file
 
-
+#########################################################################################
     badSessionList = [] #Makes sure sessions that crash don't get modI values printed
     behavSession = ''
     modIndexArray = []
@@ -143,7 +144,7 @@ for mouseName in mouseNameList:
                     print behavSession
 
                     # -- Load Behavior Data --
-                    behaviorFilename = loadbehavior.path_to_behavior_data(subject,experimenter,paradigm,behavSession)
+                    behaviorFilename = loadbehavior.path_to_behavior_data(subject,paradigm,behavSession)
                     bdata = loadbehavior.BehaviorData(behaviorFilename)
                     soundOnsetTimeBehav = bdata['timeTarget']
 

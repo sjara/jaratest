@@ -26,6 +26,7 @@ def calculate_ave_waveform(waveforms):
 if __name__ == '__main__':
             
     ### Loading allcells file for a specified mouse ###
+
     mouseName = 'adap017'
     allcellsFileName = 'allcells_'+mouseName
     sys.path.append(settings.ALLCELLS_PATH)
