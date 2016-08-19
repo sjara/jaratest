@@ -27,16 +27,18 @@ class PhotostimSession(object):
     tuningSurffix is the surffix of the behavior session associated with tuning curve, should be a string.
     behavSurffix is the surffix of the photostim_freq_discrim behavior session, should be a string.
     '''
-    def __init__(self, animalName, date, ephysSession, tuningSurffix, behavSurffix, tuningParadigm='laser_tuning_curve', behavParadigm='2afc', tetrodes=[1,2,3,4,5,6,7,8]):
+    def __init__(self, animalName, date, stimHemi, depth, ephysSession, tuningSurffix, behavSurffix, tuningParadigm='laser_tuning_curve', behavParadigm='2afc', tetrodes=[1,2,3,4,5,6,7,8]):
         # -- Basic info --
         self.animalName = animalName
-        self.date=date
+        self.date = date
+        self.stimHemi = stimHemi #string indicating which hemisphere received photostim during 2afc
         self.ephysSession = ephysSession #ephys session associated with tuning curve
         #self.tuningSession = animalName+'_'+tuningParadigm+'_'+date+tuningSurffix
         self.tuningSession = tuningSurffix
         self.behavSession =  ''.join(date.split('-'))+behavSurffix 
-        self.tuningParadigm='laser_tuning_curve' 
-        self.behavParadigm='2afc'
+        self.tuningParadigm ='laser_tuning_curve' 
+        self.behavParadigm ='2afc'
+        self.depth = depth
         self.tetrodes = tetrodes
         ####I decided not to repeat low-level data loading and plotting methods since they already exist. Instead, in the plotting methods I'm using methods in nick's dataloader and dataplotter #####
         self.loader = loader.DataLoader(mode='online', animalName=animalName, experimenter='', date=date, paradigm=tuningParadigm) #loader's default paradigm is for loading the behav data corresponding to tuning curve 

@@ -179,6 +179,7 @@ def plot_bandwidth_report(mouse, date, site, siteName):
             fig.savefig(full_fig_path, format = 'png', bbox_inches='tight')
             #fig.show()
 
+
 def band_select_plot(spikeTimeStamps, eventOnsetTimes, amplitudes, bandwidths, timeRange, fullRange = [0.0, 2.0], title=None):
     numBands = np.unique(bandwidths)
     numAmps = np.unique(amplitudes)
@@ -224,7 +225,10 @@ def band_select_plot(spikeTimeStamps, eventOnsetTimes, amplitudes, bandwidths, t
     #plt.legend(handles=[patch1, patch2], bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     if title:
         plt.title(title)
-
+        
+def suppression_stats(spikeArray):
+    peakLowAmp = max(spikeArray[1])
+    peakHighAmp = max(spikeArray[0])
         
     
         

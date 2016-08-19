@@ -1,11 +1,11 @@
 '''
-calculates max Z value for all frequencies (only uses valid trails in calculations) for all cells with good quality (score of 1 or 6).
+calculates max Z value for all frequencies (only uses valid trails in calculations) for all cells.
 Lan Guo, modified from script by Santiago Jaramillo and Billy Walker
 Implemented: using santiago's methods to remove missing trials from behavior when ephys has skipped trials. -LG20160309
 '''
 
 from jaratoolbox import loadbehavior
-from jaratoolbox import settings_2 as settings
+from jaratoolbox import settings
 reload (settings)
 from jaratoolbox import ephyscore
 import os
@@ -19,7 +19,8 @@ from jaratoolbox import celldatabase as cellDB
 import matplotlib.pyplot as plt
 import sys
 import importlib
-import re
+#import re
+import codecs
 
 mouseName = str(sys.argv[1]) #the first argument is the mouse name to tell the script which allcells file to use
 allcellsFileName = 'allcells_'+mouseName
@@ -78,11 +79,12 @@ maxZDict = nestedDict()
 #ZscoreArray = np.array([])
 maxZList = [] #List of behavior sessions that already have maxZ values calculated
 
-try:
-    text_file = open('%s/%s.txt' % (finalOutputDir,nameOfFile), 'r+') #open a text file to read and write in
+maxZ_filename = '%s/%s.txt' % (finalOutputDir,nameOfFile)
+if os.path.isfile(maxZ_filename):
+    maxZ_file = open(maxZ_filename, 'r+') #open a text file to read and write in
     #text_file.readline()
     behavName = ''
-    for line in text_file:
+    for line in maxZ_file:
         if line.startswith(codecs.BOM_UTF8):
             line = line[3:]
         behavLine = line.split(':')
@@ -91,9 +93,10 @@ try:
             behavName = behavLine[1][:-1]
             maxZList.append(behavName)
             
+else:
+    maxZ_file = open(maxZ_filename, 'w') #open a text file to read and write in
 
-except:
-    text_file = open('%s/%s.txt' % (finalOutputDir,nameOfFile), 'w') #open a text file to read and write in
+
 
 badSessionList = []#Makes sure sessions that crash don't get ZValues printed
 
@@ -101,110 +104,122 @@ for cellID in range(0,numOfCells):
     oneCell = allcells.cellDB[cellID]
     tetrode = oneCell.tetrode
     cluster = oneCell.cluster
-    quality = oneCell.quality
+    #quality = oneCell.quality
 
     if (oneCell.behavSession in maxZList): #checks to make sure the maxZ value is not recalculated
         continue
-    if quality ==1 or quality ==6:
-        try:
-            if (behavSession != oneCell.behavSession):
+    #if quality ==1 or quality ==6:  #20160811 commented out so calculate Z score for all cells regardless of quality
+    #try:
+    if (behavSession != oneCell.behavSession):
 
-                subject = oneCell.animalName
-                behavSession = oneCell.behavSession
-                ephysSession = oneCell.ephysSession
-                ephysRoot = os.path.join(ephysRootDir,subject)
+        # -- write to file maxZ results from last session just finished
+        if behavSession != '':
+            maxZ_file.write("Behavior Session:%s" % behavSession)
+            for freq in maxZDict[behavSession]:
+                maxZ_file.write("\n%s " % freq)
+                for ZVal in maxZDict[behavSession][freq]:
+                    maxZ_file.write("%s," % ZVal)
+            maxZ_file.write("\n")
+        
+        # -- Start processing new session --
+        subject = oneCell.animalName
+        behavSession = oneCell.behavSession
+        ephysSession = oneCell.ephysSession
+        ephysRoot = os.path.join(ephysRootDir,subject)
 
-                print oneCell.behavSession
+        print oneCell.behavSession
 
-                # -- Load Behavior Data --
-                behaviorFilename = loadbehavior.path_to_behavior_data(subject,experimenter,paradigm,behavSession)
-                bdata = loadbehavior.BehaviorData(behaviorFilename)
-                numberOfTrials = len(bdata['choice'])
-                print "number of behavior trials ",numberOfTrials
+        # -- Load Behavior Data --
+        behaviorFilename = loadbehavior.path_to_behavior_data(subject,paradigm,behavSession) #Omitted experimenter since data no longer stored in experimenter folder
 
-                # -- Load event data and convert event timestamps to ms --
-                ephysDir = os.path.join(ephysRoot, ephysSession)
-                eventFilename=os.path.join(ephysDir, 'all_channels.events')
-                events = loadopenephys.Events(eventFilename) # Load events data
-                eventTimes=np.array(events.timestamps)/SAMPLING_RATE #get array of timestamps for each event and convert to seconds by dividing by sampling rate (Hz). matches with eventID and 
+        bdata = loadbehavior.BehaviorData(behaviorFilename)
+        numberOfTrials = len(bdata['choice'])
+        print "number of behavior trials ",numberOfTrials
 
-                soundOnsetEvents = (events.eventID==1) & (events.eventChannel==soundTriggerChannel)
-                # -- Check to see if ephys has skipped trials, if so remove trials from behav data 
-                soundOnsetTimeEphys = eventTimes[soundOnsetEvents]
-                soundOnsetTimeBehav = bdata['timeTarget']
+        # -- Load event data and convert event timestamps to ms --
+        ephysDir = os.path.join(ephysRoot, ephysSession)
+        eventFilename=os.path.join(ephysDir, 'all_channels.events')
+        events = loadopenephys.Events(eventFilename) # Load events data
+        eventTimes=np.array(events.timestamps)/SAMPLING_RATE #get array of timestamps for each event and convert to seconds by dividing by sampling rate (Hz). matches with eventID and 
 
-                # Find missing trials
-                missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
-                # Remove missing trials
-                bdata.remove_trials(missingTrials)
-                soundOnsetTimeBehav = bdata['timeTarget']
-                nTrialsBehav = len(soundOnsetTimeBehav)
-                nTrialsEphys = len(soundOnsetTimeEphys)
-                print 'N (behav) = {0}'.format(nTrialsBehav)
-                print 'N (ephys) = {0}'.format(nTrialsEphys)
+        soundOnsetEvents = (events.eventID==1) & (events.eventChannel==soundTriggerChannel)
+        # -- Check to see if ephys has skipped trials, if so remove trials from behav data 
+        soundOnsetTimeEphys = eventTimes[soundOnsetEvents]
+        soundOnsetTimeBehav = bdata['timeTarget']
 
-                eventOnsetTimes = eventTimes[soundOnsetEvents]
-                #print "number of ephys trials ",len(eventOnsetTimes)
+        # Find missing trials
+        missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
+        # Remove missing trials
+        bdata.remove_trials(missingTrials)
+        soundOnsetTimeBehav = bdata['timeTarget']
+        nTrialsBehav = len(soundOnsetTimeBehav)
+        nTrialsEphys = len(soundOnsetTimeEphys)
+        print 'N (behav) = {0}'.format(nTrialsBehav)
+        print 'N (ephys) = {0}'.format(nTrialsEphys)
 
-                possibleFreq = np.unique(bdata['targetFrequency'])
-                numberOfFrequencies = len(possibleFreq)
-                for possFreq in possibleFreq:
-                    maxZDict[behavSession][possFreq] = np.zeros([clusNum*numTetrodes]) #initialize a list for storing maxZ with max length, only good clusters will be filled in so the rest of the entries will be zeros.
-                #maxZArray = np.empty([clusNum*numTetrodes])
+        eventOnsetTimes = eventTimes[soundOnsetEvents]
+        #print "number of ephys trials ",len(eventOnsetTimes)
 
-                validTrials = ((bdata['outcome'] == bdata.labels['outcome']['correct']) | (bdata['outcome'] == bdata.labels['outcome']['error']))
+        possibleFreq = np.unique(bdata['targetFrequency'])
+        numberOfFrequencies = len(possibleFreq)
+        for possFreq in possibleFreq:
+            maxZDict[behavSession][possFreq] = np.zeros([clusNum*numTetrodes]) #initialize a list for storing maxZ with max length, only good clusters will be filled in so the rest of the entries will be zeros.
+        #maxZArray = np.empty([clusNum*numTetrodes])
 
-            # -- Load Spike Data From Certain Cluster --
-            for Frequency in range(numberOfFrequencies):
-                Freq = possibleFreq[Frequency]
-                oneFreqTrials = bdata['targetFrequency'] == Freq  #only use a certain frequency
-                trialsToUse = (oneFreqTrials & validTrials)
+        validTrials = ((bdata['outcome'] == bdata.labels['outcome']['correct']) | (bdata['outcome'] == bdata.labels['outcome']['error']))
 
-                oneFreqEventOnsetTimes = eventOnsetTimes[trialsToUse] #Choose only the trials with this frequency
+    # -- Load Spike Data From Certain Cluster --
+    for Frequency in range(numberOfFrequencies):
+        Freq = possibleFreq[Frequency]
+        oneFreqTrials = bdata['targetFrequency'] == Freq  #only use a certain frequency
+        trialsToUse = (oneFreqTrials & validTrials)
 
-
-                spkData = ephyscore.CellData(oneCell)
-                spkTimeStamps = spkData.spikes.timestamps
-
-                (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
-                    spikesanalysis.eventlocked_spiketimes(spkTimeStamps,oneFreqEventOnsetTimes,timeRange)
+        oneFreqEventOnsetTimes = eventOnsetTimes[trialsToUse] #Choose only the trials with this frequency
 
 
-                [zStat,pValue,maxZ] = spikesanalysis.response_score(spikeTimesFromEventOnset,indexLimitsEachTrial,baseRange,binEdges) #computes z score for each bin. zStat is array of z scores. maxZ is maximum value of z in timeRange
+        spkData = ephyscore.CellData(oneCell)
+        spkTimeStamps = spkData.spikes.timestamps
 
-                clusterNumber = (tetrode-1)*clusNum+(cluster-1)
-                #maxZArray[clusterNumber].append(maxZ)
-                maxZDict[behavSession][Freq][clusterNumber] = maxZ
-                #if abs(maxZ)=<Zthreshold & onecell.soundResponsive!=True:
-                    #oneCell.soundResponsive=False
-                #elif abs(maxZ)>Zthreshold:
-                    #oneCell.soundResponsive=True
+        (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+            spikesanalysis.eventlocked_spiketimes(spkTimeStamps,oneFreqEventOnsetTimes,timeRange)
 
-                #ZscoreArray[:,Frequency,cellID] = zStat
-        except:
-            #print "error with session "+oneCell.behavSession
-            if (oneCell.behavSession not in badSessionList):
-                badSessionList.append(oneCell.behavSession)
 
-    else:
-        continue
+        [zStat,pValue,maxZ] = spikesanalysis.response_score(spikeTimesFromEventOnset,indexLimitsEachTrial,baseRange,binEdges) #computes z score for each bin. zStat is array of z scores. maxZ is maximum value of z in timeRange
 
+        clusterNumber = (tetrode-1)*clusNum+(cluster-1)
+        #maxZArray[clusterNumber].append(maxZ)
+        maxZDict[behavSession][Freq][clusterNumber] = maxZ
+        #if abs(maxZ)=<Zthreshold & onecell.soundResponsive!=True:
+            #oneCell.soundResponsive=False
+        #elif abs(maxZ)>Zthreshold:
+            #oneCell.soundResponsive=True
+
+        #ZscoreArray[:,Frequency,cellID] = zStat
+    #except:
+        #print "error with session "+oneCell.behavSession
+        #if (oneCell.behavSession not in badSessionList):
+            #badSessionList.append(oneCell.behavSession)
+
+    #else:
+        #continue
+'''
 bSessionList = []
 for bSession in maxZDict:
     if (bSession not in badSessionList):
         bSessionList.append(bSession)
+'''
+#bSessionList.sort()
+#for bSession in bSessionList:
+if behavSession != '':
+    maxZ_file.write("Behavior Session:%s" % behavSession)
+    for freq in maxZDict[behavSession]:
+        maxZ_file.write("\n%s " % freq)
+        for ZVal in maxZDict[behavSession][freq]:
+            maxZ_file.write("%s," % ZVal)
+    maxZ_file.write("\n")
 
-bSessionList.sort()
-for bSession in bSessionList:
-    text_file.write("Behavior Session:%s" % bSession)
-    for freq in maxZDict[bSession]:
-        text_file.write("\n%s " % freq)
-        for ZVal in maxZDict[bSession][freq]:
-            text_file.write("%s," % ZVal)
-    text_file.write("\n")
-
-text_file.close()
-print 'error with sessions: '
-for badSes in badSessionList:
-    print badSes
+maxZ_file.close()
+#print 'error with sessions: '
+#for badSes in badSessionList:
+    #print badSes
 print 'finished max Z value check'

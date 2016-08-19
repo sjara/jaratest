@@ -1,14 +1,14 @@
 '''
 Lan Guo 20160411
 
-Calculates modulation index for all good cells (based on oneCell.quality, score of 1 or 6) in an allcells file. Comparing activity during movement in leftward trials versus in rightward trials, using only correct trials.
+Calculates modulation index for all cells in an allcells file. Comparing activity during movement in leftward trials versus in rightward trials, using only correct trials.
 Spikes are aligned to 'center-out'. 
 Used santiago's methods to remove missing trials from behavior when ephys has skipped trials.
-Implemented 'trialLimit' constraint to exclude blocks with few trials at the end of a behav session. 
+# (have taken this out) Implemented 'trialLimit' constraint to exclude blocks with few trials at the end of a behav session.
 '''
 
 from jaratoolbox import loadbehavior
-from jaratoolbox import settings_2 as settings
+from jaratoolbox import settings
 from jaratoolbox import ephyscore
 import os
 import numpy as np
@@ -19,6 +19,7 @@ from jaratoolbox import behavioranalysis
 import matplotlib.pyplot as plt
 import sys
 import importlib
+import codecs
 
 ########---Input system arguments after python file name: start of countTimeRange, end of countTimeRange, subjects---#############
 if sys.argv[1]=='0':
@@ -59,11 +60,6 @@ for mouseName in mouseNameList:
 
     finalOutputDir = outputDir+'/'+subject+'_stats'
     
-    if mouseName=='adap015' or mouseName=='adap013' or mouseName=='adap017':
-        experimenter = 'billy'
-    else:
-        experimenter = 'lan'
-    
     paradigm = '2afc'
     numOfCells = len(allcells.cellDB) #number of cells that were clustered on all sessions clustered
     print numOfCells
@@ -80,29 +76,37 @@ for mouseName in mouseNameList:
                 value = self[item] = type(self)()
                 return value
     #############################################################################################
-
-
     modIList = []#List of behavior sessions that already have modI values calculated
-    try:
-        modI_file = open('%s/%s.txt' % (finalOutputDir,nameOfmodIFile), 'r+') #open a text file to read and write in
+    modSList = []
+    modI_filename = '%s/%s.txt' % (finalOutputDir,nameOfmodIFile)
+    if os.path.isfile(modI_filename):
+        modI_file = open(modI_filename, 'r+') #open a text file to read and write in
         behavName = ''
         for line in modI_file:
+            if line.startswith(codecs.BOM_UTF8):
+                line = line[3:]
             behavLine = line.split(':')
             if (behavLine[0] == 'Behavior Session'):
                 behavName = behavLine[1][:-1]
                 modIList.append(behavName)
+            modI_file.close()
+    else:
+        modI_file = open(modI_filename, 'w') #when file dosenot exit then create it, but will truncate the existing file
 
-    except:
-        modI_file = open('%s/%s.txt' % (finalOutputDir,nameOfmodIFile), 'w') #when file dosenot exit then create it, but will truncate the existing file
-
-
-    #No need to initialize modIList again since all behav sessions in modI file should be the same as the ones in modSig file.
-    try:
-        modSig_file = open('%s/%s.txt' % (finalOutputDir,nameOfmodSFile), 'r+') #open a text file to read and write in
-
-    except:
-        modSig_file = open('%s/%s.txt' % (finalOutputDir,nameOfmodSFile), 'w') #when file dosenot exit then create it, but will truncate the existing file
-
+    modSig_filename = '%s/%s.txt' % (finalOutputDir,nameOfmodSFile)
+    if os.path.isfile(modSig_filename):
+        modSig_file = open(modSig_filename, 'r+') #open a text file to read and write in
+        behavName = ''
+        for line in modSig_file:
+            if line.startswith(codecs.BOM_UTF8):
+                line = line[3:]
+            behavLine = line.split(':')
+            if (behavLine[0] == 'Behavior Session'):
+                behavName = behavLine[1][:-1]
+                modSList.append(behavName)
+        modSig_file.close()
+    else:
+        modSig_file = open(modS_filename, 'w') #when file dosenot exit then create it, but will truncate the existing file
 
     badSessionList = [] #Makes sure sessions that crash don't get modI values printed
     behavSession = ''
@@ -113,106 +117,134 @@ for mouseName in mouseNameList:
     for cellID in range(0,numOfCells):
         oneCell = allcells.cellDB[cellID]
 
-        if oneCell.quality==1 or oneCell.quality==6:
+        #if oneCell.quality==1 or oneCell.quality==6:
 
-            if (oneCell.behavSession in modIList): #checks to make sure the modI value is not recalculated
-                continue
-            try:
-
-                if (behavSession != oneCell.behavSession):
-
-                    subject = oneCell.animalName
-                    behavSession = oneCell.behavSession
-                    ephysSession = oneCell.ephysSession
-                    ephysRoot = os.path.join(ephysRootDir,subject)
-                    trialLimit = oneCell.trialLimit
-
-                    print behavSession
-
-                    # -- Load Behavior Data --
-                    behaviorFilename = loadbehavior.path_to_behavior_data(subject,experimenter,paradigm,behavSession)
-                    bdata = loadbehavior.BehaviorData(behaviorFilename)
-                    soundOnsetTimeBehav = bdata['timeTarget']
-
-                    print behaviorFilename
-                    # -- Load event data and convert event timestamps to ms --
-                    ephysDir = os.path.join(ephysRoot, ephysSession)
-                    eventFilename=os.path.join(ephysDir, 'all_channels.events')
-                    events = loadopenephys.Events(eventFilename) # Load events data
-                    eventTimes=np.array(events.timestamps)/SAMPLING_RATE #get array of timestamps for each event and convert to seconds by dividing by sampling rate (Hz). matches with eventID and 
-
-                    soundOnsetEvents = (events.eventID==1) & (events.eventChannel==soundTriggerChannel)
-                    soundOnsetTimeEphys = eventTimes[soundOnsetEvents]
-                    ######check if ephys and behav miss-aligned, if so, remove skipped trials####
-
-                    # Find missing trials
-                    missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
-
-                    # Remove missing trials,all fields of bdata's results are modified after this
-                    bdata.remove_trials(missingTrials)
-                    print 'behav length',len(soundOnsetTimeBehav),'ephys length',len(soundOnsetTimeEphys)
-
-                    ##########Spike data will be aligned to center-out movement onset########                    
-                    EventOnsetTimes = eventTimes[soundOnsetEvents]
-                    diffTimes=bdata['timeCenterOut']-bdata['timeTarget']
-                    EventOnsetTimes+=diffTimes
-
-                    rightward = bdata['choice']==bdata.labels['choice']['right']
-                    leftward = bdata['choice']==bdata.labels['choice']['left']
-                    #valid = (bdata['outcome']==bdata.labels['outcome']['correct'])|(bdata['outcome']==bdata.labels['outcome']['error'])
-                    correct = bdata['outcome']==bdata.labels['outcome']['correct']
-
-                    ####### Implemented trialLimit constraint to exclude blocks with few trials at the end of a behav session 
-                    if(not len(trialLimit)):
-                        validTrials = np.ones(len(correct),dtype=bool)
-                    else:
-                        validTrials = np.zeros(len(correct),dtype=bool)
-                        validTrials[trialLimit[0]:trialLimit[1]] = 1
-
-                    correctRightward = rightward & correct & validTrials
-                    correctLeftward = leftward & correct & validTrials
-
-                    modIDict[behavSession] = np.zeros([clusNum*numTetrodes]) #0 being no modIndex
-                    modSigDict[behavSession] = np.ones([clusNum*numTetrodes]) #1 being no significance test
-
-                # -- Load Spike Data From Certain Cluster --
-                spkData = ephyscore.CellData(oneCell)
-                spkTimeStamps = spkData.spikes.timestamps
-
-                clusterNumber = (oneCell.tetrode-1)*clusNum+(oneCell.cluster-1)
-
-                trialsEachCond = [correctRightward,correctLeftward]
-
-                (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
-                    spikesanalysis.eventlocked_spiketimes(spkTimeStamps,EventOnsetTimes,timeRange)
-                print len(spikeTimesFromEventOnset)
-
-                spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,countTimeRange)
-
-                spikeCountEachTrial = spikeCountMat.flatten()
-                spikeAvgLeftward = sum(spikeCountEachTrial[correctLeftward])/float(sum(correctLeftward))
-                spikeAvgRightward = sum(spikeCountEachTrial[correctRightward])/float(sum(correctRightward))
-                print 'cluster', clusterNumber, spikeAvgRightward, spikeAvgLeftward
-
-                if ((spikeAvgRightward + spikeAvgLeftward) == 0):
-                    modIDict[behavSession][clusterNumber]=0.0
-                    modSigDict[behavSession][clusterNumber]=1.0
-                else:
-                    modIDict[behavSession][clusterNumber]=((spikeAvgRightward - spikeAvgLeftward)/(spikeAvgRightward + spikeAvgLeftward))  
-                    modSig = spikesanalysis.evaluate_modulation(spikeTimesFromEventOnset,indexLimitsEachTrial,countTimeRange,trialsEachCond)
-                    modSigDict[behavSession][clusterNumber]=modSig[1]
-                    print modIDict[behavSession][clusterNumber],modSigDict[behavSession][clusterNumber]
-
-            except:
-                if (oneCell.behavSession not in badSessionList):
-                    badSessionList.append(oneCell.behavSession)
-
-        else:
+        if (oneCell.behavSession in modIList): #checks to make sure the modI value is not recalculated
             continue
+        
+        if (behavSession != oneCell.behavSession):
+            # -- Write modIndex and modSig to file as have finished calculating last session--
+            if behavSession != '':
+                modI_file = open(modI_filename, 'a')
+                modI_file.write("Behavior Session:%s" % behavSession)
+                for modInd in modIDict[behavSession]:
+                    modI_file.write("%s," % modInd)
+                modI_file.write("\n")
+                modI_file.close()
+                modSig_file = open(modSig_filename, 'a')
+                modSig_file.write("Behavior Session:%s" % behavSession)
+                for modSig in modSigDict[behavSession]:
+                    modSig_file.write("%s," % modSig)
+                modSig_file.write("\n")
+                modSig_file.close()
+
+            # -- Start to process this session --
+            subject = oneCell.animalName
+            behavSession = oneCell.behavSession
+            ephysSession = oneCell.ephysSession
+            ephysRoot = os.path.join(ephysRootDir,subject)
+            #trialLimit = oneCell.trialLimit
+
+            print behavSession
+
+            # -- Load Behavior Data --
+            behaviorFilename = loadbehavior.path_to_behavior_data(subject,paradigm,behavSession)
+            bdata = loadbehavior.BehaviorData(behaviorFilename)
+            soundOnsetTimeBehav = bdata['timeTarget']
+
+            print behaviorFilename
+            # -- Load event data and convert event timestamps to ms --
+            ephysDir = os.path.join(ephysRoot, ephysSession)
+            eventFilename=os.path.join(ephysDir, 'all_channels.events')
+            events = loadopenephys.Events(eventFilename) # Load events data
+            eventTimes=np.array(events.timestamps)/SAMPLING_RATE #get array of timestamps for each event and convert to seconds by dividing by sampling rate (Hz). matches with eventID and 
+
+            soundOnsetEvents = (events.eventID==1) & (events.eventChannel==soundTriggerChannel)
+            soundOnsetTimeEphys = eventTimes[soundOnsetEvents]
+            ######check if ephys and behav miss-aligned, if so, remove skipped trials####
+
+            # Find missing trials
+            missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
+
+            # Remove missing trials,all fields of bdata's results are modified after this
+            bdata.remove_trials(missingTrials)
+            print 'behav length',len(soundOnsetTimeBehav),'ephys length',len(soundOnsetTimeEphys)
+
+            ##########Spike data will be aligned to center-out movement onset########                    
+            EventOnsetTimes = eventTimes[soundOnsetEvents]
+            diffTimes=bdata['timeCenterOut']-bdata['timeTarget']
+            EventOnsetTimes+=diffTimes
+
+            rightward = bdata['choice']==bdata.labels['choice']['right']
+            leftward = bdata['choice']==bdata.labels['choice']['left']
+            #valid = (bdata['outcome']==bdata.labels['outcome']['correct'])|(bdata['outcome']==bdata.labels['outcome']['error'])
+            correct = bdata['outcome']==bdata.labels['outcome']['correct']
+
+            ####### Implemented trialLimit constraint to exclude blocks with few trials at the end of a behav session 
+            #if(not len(trialLimit)):
+                #validTrials = np.ones(len(correct),dtype=bool)
+            #else:
+                #validTrials = np.zeros(len(correct),dtype=bool)
+                #validTrials[trialLimit[0]:trialLimit[1]] = 1
+
+            correctRightward = rightward & correct #& validTrials
+            correctLeftward = leftward & correct #& validTrials
+
+            modIDict[behavSession] = np.zeros([clusNum*numTetrodes]) #0 being no modIndex
+            modSigDict[behavSession] = np.ones([clusNum*numTetrodes]) #1 being no significance test
+
+        # -- Load Spike Data From Certain Cluster --
+        spkData = ephyscore.CellData(oneCell)
+        spkTimeStamps = spkData.spikes.timestamps
+
+        clusterNumber = (oneCell.tetrode-1)*clusNum+(oneCell.cluster-1)
+
+        trialsEachCond = [correctRightward,correctLeftward]
+
+        (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+            spikesanalysis.eventlocked_spiketimes(spkTimeStamps,EventOnsetTimes,timeRange)
+        #print len(spikeTimesFromEventOnset)
+
+        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,countTimeRange)
+
+        spikeCountEachTrial = spikeCountMat.flatten()
+        spikeAvgLeftward = sum(spikeCountEachTrial[correctLeftward])/float(sum(correctLeftward))
+        spikeAvgRightward = sum(spikeCountEachTrial[correctRightward])/float(sum(correctRightward))
+        #print 'cluster', clusterNumber, spikeAvgRightward, spikeAvgLeftward
+
+        if ((spikeAvgRightward + spikeAvgLeftward) == 0):
+            modIDict[behavSession][clusterNumber]=0.0
+            modSigDict[behavSession][clusterNumber]=1.0
+        else:
+            modIDict[behavSession][clusterNumber]=((spikeAvgRightward - spikeAvgLeftward)/(spikeAvgRightward + spikeAvgLeftward))  
+            modSig = spikesanalysis.evaluate_modulation(spikeTimesFromEventOnset,indexLimitsEachTrial,countTimeRange,trialsEachCond)
+            modSigDict[behavSession][clusterNumber]=modSig[1]
+            #print modIDict[behavSession][clusterNumber],modSigDict[behavSession][clusterNumber]
+
+        #except:
+            #if (oneCell.behavSession not in badSessionList):
+                #badSessionList.append(oneCell.behavSession)
+
+        #else:
+            #continue
 
     #########################################################################################
-    #This is the save all the values in a text file
-    #########################################################################################
+    if behavSession != '':
+        modI_file=open(modI_filename, 'a')
+        modI_file.write("Behavior Session:%s" % behavSession)
+        for modInd in modIDict[behavSession]:
+            modI_file.write("%s," % modInd)
+        modI_file.write("\n")
+        modI_file.close()
+        
+        modSig_file = open(modSig_filename, 'a')
+        modSig_file.write("Behavior Session:%s" % behavSession)
+        for modSig in modSigDict[behavSession]:
+            modSig_file.write("%s," % modSig)
+        modSig_file.write("\n")
+        modSig_file.close()
+    
+    '''
     bSessionList = []
     for bSession in modIDict:
         if (bSession not in badSessionList):
@@ -238,6 +270,7 @@ for mouseName in mouseNameList:
     print 'error with sessions: '
     for badSes in badSessionList:
         print badSes
+    '''
     print 'finished modI value check'
 
 

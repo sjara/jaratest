@@ -1,9 +1,9 @@
 '''
-Given an allcells file, calculate and write ISI violation (ISI<2msec) percentage to a file.
+Given an allcells file, calculate and write ISI violation (ISI<2msec) percentage for all the cells to a file.
 LG 20160328
 '''
 
-from jaratoolbox import settings_2 as settings
+from jaratoolbox import settings
 from jaratoolbox import loadopenephys
 import numpy as np
 import os
@@ -57,71 +57,79 @@ for mouseName in mouseNameList:
     ISIDict = nestedDict()
     #ZscoreArray = np.array([])
     ISIList = [] #List of behavior sessions that already have maxZ values calculated
-
-    try:
-        text_file = open('%s/%s.txt' % (finalOutputDir,nameOfFile), 'r+') #open a text file to read and write in
+    
+    ISI_filename = '%s/%s.txt' % (finalOutputDir,nameOfFile)
+    if os.path.isfile(ISI_filename):
+        ISI_file = open(ISI_filename, 'r+') #open a text file to read and write in
         behavName = ''
-        for line in text_file:
+        for line in ISI_file:
             if line.startswith(codecs.BOM_UTF8):
                 line = line[3:]
             behavLine = line.split(':')
-            freqLine = line.split()
+            #freqLine = line.split()
             if (behavLine[0] == 'Behavior Session'):
                 behavName = behavLine[1][:-1]
                 ISIList.append(behavName)            
+        ISI_file.close()
 
-    except:
-        text_file = open('%s/%s.txt' % (finalOutputDir,nameOfFile), 'w') #open a text file to read and write in
+    else:
+        ISI_file = open(ISI_filename, 'w') #open a text file to read and write in
 
     badSessionList = []#Makes sure sessions that crash don't get ZValues printed
 
     for cellID in range(0,numOfCells):
         oneCell = allcells.cellDB[cellID]
-        quality = oneCell.quality
+        #quality = oneCell.quality
         tetrode = oneCell.tetrode
         cluster = oneCell.cluster
 
         if (oneCell.behavSession in ISIList): #checks to make sure the ISI violation value is not recalculated
             continue
         if behavSession!=oneCell.behavSession:
+            # -- Write modIndex and modSig to file as have finished calculating last session--
+            if behavSession != '':
+                ISI_file = open(ISI_filename, 'a') #append this session to the end of file.
+                ISI_file.write("Behavior Session:%s\n" %behavSession)
+                for ISIfraction in ISIDict[behavSession]:
+                    ISI_file.write("%s," %ISIfraction)
+                ISI_file.write("\n")
+                ISI_file.close()
+                print 'write to file %s'%behavSession
             behavSession=oneCell.behavSession
             ISIDict[behavSession] = np.ones([clusNum*numTetrodes]) #initialize ISIDict for each behavior session once; ISI violation fraction of bad cells are set to 1(maximal)
-        if quality ==1 or quality ==6:
-            try:
-                #if (behavSession != oneCell.behavSession):
+        #if quality ==1 or quality ==6:
 
-                subject = oneCell.animalName
-                #behavSession = oneCell.behavSession
-                ephysSession = oneCell.ephysSession
-                ephysRoot = os.path.join(ephysRootDir,subject)
-                clusterNumber = (tetrode-1)*clusNum+(cluster-1)
-                print oneCell.behavSession
+        subject = oneCell.animalName
+        #behavSession = oneCell.behavSession
+        ephysSession = oneCell.ephysSession
+        ephysRoot = os.path.join(ephysRootDir,subject)
+        clusterNumber = (tetrode-1)*clusNum+(cluster-1)
+        print oneCell.behavSession
 
-                spkData = ephyscore.CellData(oneCell)
-                spkTimeStamps = spkData.spikes.timestamps
+        spkData = ephyscore.CellData(oneCell)
+        spkTimeStamps = spkData.spikes.timestamps
 
-                ISI = np.diff(spkTimeStamps)
+        ISI = np.diff(spkTimeStamps)
 
-                if np.any(ISI<0):
-                    raise 'Times of events are not ordered (or there is at least one repeated).'
-                if len(ISI)==0:  # Hack in case there is only one spike
-                    ISI = np.array(10)
+        if np.any(ISI<0):
+            raise 'Times of events are not ordered (or there is at least one repeated).'
+        if len(ISI)==0:  # Hack in case there is only one spike
+            ISI = np.array(10)
 
-                ISIVioBool = ISI<ISIcutoff #ISI smaller than 2msec
+        ISIVioBool = ISI<ISIcutoff #ISI smaller than 2msec
 
-                fractionViolation = np.mean(ISIVioBool) 
-                ISIDict[behavSession][clusterNumber] = fractionViolation
+        fractionViolation = np.mean(ISIVioBool) 
+        ISIDict[behavSession][clusterNumber] = fractionViolation
 
-                print 'ISI Violation less than ',ISIcutoff,' is ',fractionViolation
+        #print 'ISI Violation less than ',ISIcutoff,' is ',fractionViolation
 
-            except:
-                #print "error with session "+oneCell.behavSession
-                if (oneCell.behavSession not in badSessionList):
-                    badSessionList.append(oneCell.behavSession)
 
-        else:
-            continue
+            #if (oneCell.behavSession not in badSessionList):
+                #badSessionList.append(oneCell.behavSession)
 
+        #else:
+            #continue
+    '''
     bSessionList = []
     for bSession in ISIDict:
         if (bSession not in badSessionList):
@@ -134,9 +142,18 @@ for mouseName in mouseNameList:
             for ISIfraction in ISIDict[bSession]:
                 text_file.write("%s," %ISIfraction)
             text_file.write("\n")
-    text_file.close()
+    '''
+    # -- write the last session's ISI to file. -- 
+    if behavSession != '':
+        ISI_file=open(ISI_filename, 'a')
+        ISI_file.write("Behavior Session:%s\n" %behavSession)
+        for ISIfraction in ISIDict[behavSession]:
+            ISI_file.write("%s," %ISIfraction)
+        ISI_file.write("\n")
+    ISI_file.close()
+    
 
-    print 'error with sessions: '
-    for badSes in badSessionList:
-        print badSes
-    print 'finished ISI violation check for', subject
+    #print 'error with sessions: '
+    #for badSes in badSessionList:
+        #print badSes
+    #print 'finished ISI violation check for', subject
