@@ -41,7 +41,7 @@ clusterQuality = '''                 clusterQuality = {1:[]},'''
 # --- Read Billy's wiki info ---
 experimenter = ''
 defaultParadigm = 'tuning_curve'
-subject = 'adap020'
+subject = 'adap024'
 filename = '{0}_wiki.txt'.format(subject)
 content = [line.rstrip('\n') for line in open(filename)]
 
@@ -51,7 +51,7 @@ trainingDateLine = re.compile(r'\*  (\d.\d+) turns, (\d\d\d\d-\d\d-\d\d)')
 tuningLine = re.compile(r'\* (\d.\d+) turns, presented frequencies')
 ephysLine = re.compile(r'\*\* ephys recording name: (\d\d\d\d-\d\d-\d\d_\d\d-\d\d-\d\d)')
 behavLine = re.compile(r'\*\* behavior recording name: \w{7}_tuning_curve_(\d\d\d\d\d\d\d\d\w).h5')
-rewardchangeLine = re.compile(r'\*\* Switching')
+rewardchangeLine = re.compile(r'\*\* The psychometric curve')
 dbase = {}
 
 

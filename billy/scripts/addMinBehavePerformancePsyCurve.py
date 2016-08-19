@@ -16,7 +16,7 @@ sys.path.append(settings.ALLCELLS_PATH)
 allcells = importlib.import_module(allcellsFileName)
 
 
-outputDir = '/home/billywalker/data/ephys'
+outputDir = settings.EPHYS_PATH#'/home/billywalker/data/ephys/'
 nameOfFile = 'minPerformance'
 minPerf = 0.70 #the minimum performance or percentage correct of the end frequencies
 
@@ -32,7 +32,7 @@ ephysRootDir = settings.EPHYS_PATH
 experimenter = 'santiago'
 paradigm = '2afc'
 
-finalOutputDir = outputDir+'/'+subject+'_processed'
+finalOutputDir = outputDir+subject+'_processed'
 minPerfList = []
 try:
     text_file = open("%s/%s.txt" % (finalOutputDir,nameOfFile), "r+") #open a text file to read and write in
@@ -58,7 +58,7 @@ for cellID in range(0,numOfCells):
 
 
         # -- Load Behavior Data --
-        behaviorFilename = loadbehavior.path_to_behavior_data(subject,experimenter,paradigm,behavSession)
+        behaviorFilename = loadbehavior.path_to_behavior_data(subject=subject,paradigm=paradigm,sessionstr=behavSession)
         bdata = loadbehavior.BehaviorData(behaviorFilename)
         numberOfTrials = len(bdata['choice'])
 

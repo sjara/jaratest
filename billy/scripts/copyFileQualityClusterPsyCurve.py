@@ -1,10 +1,12 @@
 
 from jaratoolbox import settings
 import os
+import glob
 import sys
 import importlib
 import re
 import numpy as np
+import animalTetDepths #This is to get the lengths of the tetrodes for each animal
 
 mouseName = str(sys.argv[1]) #the first argument is the mouse name to tell the script which allcells file to use
 allcellsFileName = 'allcells_'+mouseName+'_quality'
@@ -24,11 +26,11 @@ numTetrodes = 8 #Number of tetrodes
 ################################################################################################
 ##############################-----Minimum Requirements------###################################
 ################################################################################################
-qualityList = [1,6]
-minZVal = 0.0
-maxISIviolation = 1.00
-
-minFileName = 'good_quality-1-6_ZVal-0_ISI-0' #name of the file to put the copied files in
+qualityList = [1,6] #quality of the cells that should be included. See wiki Report 2015-06-29: Numbering System of Cluster Quality.
+minZVal = 3.0 #the minimum Z value for the sound response
+maxISIviolation = 0.02 #maximum ISI violation below 2ums
+inStriatumRangeCheck = True #if true, check that the cells are in the striatum
+minFileName = 'in_striatum_BEST_quality-1-6_ZVal-3_ISI-02' #name of the file to put the copied files in
 ################################################################################################
 ################################################################################################
 
@@ -116,9 +118,17 @@ minTrialFile.close()
 copyToCenterFreqDir = '/home/billywalker/Pictures/quality_clusters/psyCurve_tuning_centerfreq_sound_reports/'+subject+'/'+minFileName+'/'
 if not os.path.exists(copyToCenterFreqDir):
     os.makedirs(copyToCenterFreqDir)
+os.chdir(copyToCenterFreqDir)#This deletes the files that already exist in that folder
+files=glob.glob('*.png')
+for filename in files:
+    os.unlink(filename)
 copyToAllFreqDir = '/home/billywalker/Pictures/quality_clusters/psyCurve_tuning_allFreq_movement_reports/'+subject+'/'+minFileName+'/'
 if not os.path.exists(copyToAllFreqDir):
     os.makedirs(copyToAllFreqDir)
+os.chdir(copyToAllFreqDir)#This deletes the files that already exist in that folder
+files=glob.glob('*.png')
+for filename in files:
+    os.unlink(filename)
 
 
 for cellID in range(0,numOfCells):
@@ -131,6 +141,7 @@ for cellID in range(0,numOfCells):
     tetrode = oneCell.tetrode
     cluster = oneCell.cluster
     clusterQuality = oneCell.quality[cluster-1]
+    depth = oneCell.depth #FOR DEPTH CLUSTER QUALTIY
 
     if clusterQuality not in qualityList:
         continue
@@ -149,7 +160,7 @@ for cellID in range(0,numOfCells):
    
     clusterNumber = (tetrode-1)*clusNum+(cluster-1)
     for freq in minTrialDict[behavSession]:
-        if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
+        if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation) & (not(inStriatumRangeCheck) or animalTetDepths.tetDB.isInStriatum(subject,tetrode,depth))):
             #thisRaster = '/home/billywalker/Pictures/raster_hist/'+subject+'/Center_Frequencies/rast_'+subject+'_'+behavSession+'_'+freq+'_T'+str(tetrode)+'c'+str(cluster)+'.png'
             #if (os.path.isfile(thisRaster)):
                 #os.system('cp /home/billywalker/Pictures/raster_hist/%s/Center_Frequencies/rast_%s_%s_%s_T%sc%s.png /home/billywalker/Pictures/quality_clusters/raster_hist/%s/%s/' % (subject,subject,behavSession,freq,str(tetrode),str(cluster),subject,minFileName))

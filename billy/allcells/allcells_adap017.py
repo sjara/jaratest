@@ -20,7 +20,7 @@ oneES = eSession(animalName='adap017',
                  clustersEachTetrode = {1:range(1,13),2:range(1,13),3:range(1,13),4:range(1,13),5:range(1,13),6:range(1,13),7:range(1,13),8:range(1,13)},
                  behavSession = '20160418a')
 cellDB.append_session(oneES)
-'''
+
 oneES = eSession(animalName='adap017',
                  ephysSession = '2016-04-14_14-41-07',
                  clustersEachTetrode = {1:range(1,13),2:range(1,13),3:range(1,13),4:range(1,13),5:range(1,13),6:range(1,13),7:range(1,13),8:range(1,13)},
@@ -212,4 +212,4 @@ oneES = eSession(animalName='adap017',
                  clustersEachTetrode = {1:range(1,13),2:range(1,13),3:range(1,13),4:range(1,13),5:range(1,13),6:range(1,13),7:range(1,13),8:range(1,13)},
                  behavSession = '20160509a')
 cellDB.append_session(oneES)
-'''
+

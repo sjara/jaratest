@@ -35,7 +35,7 @@ stimulusRange = [0.0,0.1] # The time range that the stimulus is being played
 timeRange = [-0.2,0.8] # In seconds. Time range for rastor plot to plot spikes (around some event onset as 0)#####################################################################################
 
 ephysRootDir = settings.EPHYS_PATH
-outputDir = '/home/billywalker/data/ephys'
+outputDir = ephysRootDir#'/home/billywalker/data/ephys/'
 
 experimenter = 'santiago'
 paradigm = '2afc'
@@ -47,7 +47,7 @@ behavSession = ''
 #processedDir = os.path.join(settings.EPHYS_PATH,subject+'_processed')######################################3
 
 nameOfFile = 'modIndex'
-finalOutputDir = outputDir+'/'+subject+'_processed'
+finalOutputDir = outputDir+subject+'_processed'
 
 modIList = []#List of behavior sessions that already have modI values calculated
 try:
@@ -95,7 +95,7 @@ for cellID in range(0,numOfCells):
             modDirectionScoreDict[behavSession] = np.zeros((clusNum*numTetrodes),dtype = float)
 
             # -- Load Behavior Data --
-            behaviorFilename = loadbehavior.path_to_behavior_data(subject,experimenter,paradigm,behavSession)
+            behaviorFilename = loadbehavior.path_to_behavior_data(subject=subject,paradigm=paradigm,sessionstr=behavSession)
             bdata = loadbehavior.BehaviorData(behaviorFilename)
 
             # -- Load event data and convert event timestamps to ms --

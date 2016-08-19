@@ -26,7 +26,7 @@ allcells = importlib.import_module(allcellsFileName)
 
 SAMPLING_RATE=30000.0
 
-outputDir = '/home/billywalker/data/ephys'
+outputDir = settings.EPHYS_PATH#'/home/billywalker/data/ephys/'
 nameOfFile = 'maxZVal'
 soundTriggerChannel = 0 # channel 0 is the sound presentation, 1 is the trial
 binWidth = 0.010 # Size of each bin in histogram in seconds
@@ -56,7 +56,7 @@ binEdges = np.arange(0,5)*binTime  # Edges of bins to calculate response (in sec
 ################################################################################################
 
 
-finalOutputDir = outputDir+'/'+subject+'_processed'
+finalOutputDir = outputDir+subject+'_processed'
 
 
 class nestedDict(dict):#This is to create maxZDict
@@ -89,12 +89,12 @@ except:
 badSessionList = []#Makes sure sessions that crash don't get ZValues printed
 
 for cellID in range(0,numOfCells):
-        oneCell = allcells.cellDB[cellID]
-        tetrode = oneCell.tetrode
-        cluster = oneCell.cluster
+    oneCell = allcells.cellDB[cellID]
+    tetrode = oneCell.tetrode
+    cluster = oneCell.cluster
 
-        if (oneCell.behavSession in maxZList): #checks to make sure the maxZ value is not recalculated
-            continue
+    if (oneCell.behavSession in maxZList): #checks to make sure the maxZ value is not recalculated
+        continue
     try:
         if (behavSession != oneCell.behavSession):
 

@@ -1,13 +1,15 @@
 
 from jaratoolbox import settings
 import os
+import glob
 import sys
 import importlib
 import re
 import numpy as np
+import animalTetDepths #This is to get the lengths of the tetrodes for each animal
 
 mouseName = str(sys.argv[1]) #the first argument is the mouse name to tell the script which allcells file to use
-allcellsFileName = 'allcells_'+mouseName+'_quality'
+allcellsFileName = 'allcells_'+mouseName+'_quality'#_separated_tuning'############!!!!!!!!!!!!!!!!!!!!!!!!!
 sys.path.append(settings.ALLCELLS_PATH)
 allcells = importlib.import_module(allcellsFileName)
 
@@ -24,11 +26,11 @@ numTetrodes = 8 #Number of tetrodes
 ################################################################################################
 ##############################-----Minimum Requirements------###################################
 ################################################################################################
-qualityList = [1,6]#[1,4,5,6,7]#range(1,10)
-minZVal = 0.0#3.0
-maxISIviolation = 1.0#0.02
-
-minFileName = 'good_shape-1-6_ZVAL-0_ISI-0'#'BEST_quality-1-6_ZVal-3_ISI-2' #name of the file to put the copied files in 'ONLY_SHAPE_quality-1-6_ZVal-0_ISI-100'
+qualityList = [1,6]#[11,61,13,63,14,64,15,65]#[1,4,5,6,7]#range(1,10)#################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+minZVal = 3.0
+maxISIviolation = 0.02
+inStriatumRangeCheck = True #if true, check that the cells are in the striatum
+minFileName = 'in_striatum_BEST_quality-1-6_ZVal-3_ISI-02'#'test_separated_tuning_BEST_quality-11-61_13_63_14_64_15_65_ZVal-3_ISI-2' #name of the file to put the copied files in 'ONLY_SHAPE_quality-1-6_ZVal-0_ISI-100''good_shape-1-6_ZVAL-0_ISI-100'#####!!!!!!!!!!!!!!!!!!!!!!!
 ################################################################################################
 ################################################################################################
 
@@ -107,7 +109,7 @@ ISIFile.close()
 maxZFile.close()
 minPerfFile.close()
 minTrialFile.close()
-
+'''
 copyToDir = '/home/billywalker/Pictures/quality_clusters/raster_hist/'+subject+'/'+minFileName+'/'
 copyBlockToDir = '/home/billywalker/Pictures/quality_clusters/raster_block/'+subject+'/'+minFileName+'/'
 if not os.path.exists(copyToDir):
@@ -123,15 +125,28 @@ if not os.path.exists(copyReportsToDir):
 copyRastRepToDir = '/home/billywalker/Pictures/quality_clusters/raster_block_reports/'+subject+'/'+minFileName+'/'###################################################################################################3
 if not os.path.exists(copyRastRepToDir):#################################################################
     os.makedirs(copyRastRepToDir)#########################################################################33
+'''
 copyTuningReportsToDir = '/home/billywalker/Pictures/quality_clusters/switching_tuning_reports/'+subject+'/'+minFileName+'/'
 if not os.path.exists(copyTuningReportsToDir):
     os.makedirs(copyTuningReportsToDir)
+os.chdir(copyTuningReportsToDir)#This deletes the files that already exist in that folder
+files=glob.glob('*.png')
+for filename in files:
+    os.unlink(filename)
 copyTuningSideinReportsToDir = '/home/billywalker/Pictures/quality_clusters/switching_tuning_sidein_reports/'+subject+'/'+minFileName+'/'
 if not os.path.exists(copyTuningSideinReportsToDir):
     os.makedirs(copyTuningSideinReportsToDir)
+os.chdir(copyTuningSideinReportsToDir)#This deletes the files that already exist in that folder
+files=glob.glob('*.png')
+for filename in files:
+    os.unlink(filename)
 copyTuningAllfreqReportsToDir = '/home/billywalker/Pictures/quality_clusters/switching_tuning_allfreq_reports/'+subject+'/'+minFileName+'/'
 if not os.path.exists(copyTuningAllfreqReportsToDir):
     os.makedirs(copyTuningAllfreqReportsToDir)
+os.chdir(copyTuningAllfreqReportsToDir)#This deletes the files that already exist in that folder
+files=glob.glob('*.png')
+for filename in files:
+    os.unlink(filename)
 
 for cellID in range(0,numOfCells):
     oneCell = allcells.cellDB[cellID]
@@ -142,6 +157,7 @@ for cellID in range(0,numOfCells):
     ephysSession = oneCell.ephysSession
     tetrode = oneCell.tetrode
     cluster = oneCell.cluster
+    depth = oneCell.depth #FOR DEPTH CLUSTER QUALTIY
     clusterQuality = oneCell.quality[cluster-1]
 
     if clusterQuality not in qualityList:
@@ -157,7 +173,7 @@ for cellID in range(0,numOfCells):
 
     clusterNumber = (tetrode-1)*clusNum+(cluster-1)
     midFreq = minTrialDict[behavSession][0]
-    if ((abs(float(maxZDict[behavSession][midFreq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
+    if ((abs(float(maxZDict[behavSession][midFreq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation) & (not(inStriatumRangeCheck) or animalTetDepths.tetDB.isInStriatum(subject,tetrode,depth))):
         for freq in minTrialDict[behavSession]:
             #os.system('cp /home/billywalker/Pictures/raster_hist/%s/%s/rast_%s_%s_%s_T%sc%s.png /home/billywalker/Pictures/quality_clusters/raster_hist/%s/%s/' % (subject,freq,subject,behavSession,freq,str(tetrode),str(cluster),subject,minFileName))
             #os.system('cp /home/billywalker/Pictures/raster_block/%s/block_%s_%s_%s_T%sc%s.png /home/billywalker/Pictures/quality_clusters/raster_block/%s/%s/' % (subject,subject,behavSession,freq,str(tetrode),str(cluster),subject,minFileName))

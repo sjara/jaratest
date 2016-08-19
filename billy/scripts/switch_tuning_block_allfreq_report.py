@@ -247,7 +247,6 @@ def main():
 
 
         except:
-            #print "error with session "+oneCell.behavSession
             if (oneCell.behavSession not in badSessionList):
                 badSessionList.append(oneCell.behavSession)
 

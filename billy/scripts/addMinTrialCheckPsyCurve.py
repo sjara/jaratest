@@ -17,7 +17,6 @@ sys.path.append(settings.ALLCELLS_PATH)
 allcells = importlib.import_module(allcellsFileName)
 
 
-outputDir = '/home/billywalker/data/ephys'
 nameOfFile = 'minTrial'
 minTrialNumber = 30 #the minimum number of trials in each direction to be found
 
@@ -28,11 +27,12 @@ ephysSession = ''
 
 numOfCells = len(allcells.cellDB) #number of cells that were clustered on all sessions clustered
 ephysRootDir = settings.EPHYS_PATH
+outputDir = settings.EPHYS_PATH#'/home/billywalker/data/ephys/'
 
 experimenter = 'santiago'
 paradigm = '2afc'
 
-finalOutputDir = outputDir+'/'+subject+'_processed'
+finalOutputDir = outputDir+subject+'_processed'
 
 minTrialList = [] #includes all behavior session names and frequencies in list in mixed order
 try:
@@ -86,6 +86,7 @@ for cellID in range(0,numOfCells):
             trialsToUseLeft = leftward & oneFreq
             
             if ((sum(trialsToUseRight) >= minTrialNumber) & (sum(trialsToUseLeft) >= minTrialNumber)):
+                print 'got here'
                 text_file.write(" %s" % FreqName)
 
 

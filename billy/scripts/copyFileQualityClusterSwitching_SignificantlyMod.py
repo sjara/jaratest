@@ -1,6 +1,7 @@
 
 from jaratoolbox import settings
 import os
+import glob
 import sys
 import importlib
 import re
@@ -27,7 +28,7 @@ numTetrodes = 8 #Number of tetrodes
 qualityList = [1,6]#[1,4,5,6,7]#range(1,10)
 minZVal = 3.0
 maxISIviolation = 0.02
-minPVal = 0.05
+minPVal = 0.05 #the minimum significance p value (actually is a max number)
 minDepth = 2.1######################################FOR DEPTH CLUSTER QUALTIY
 maxDepth = 3.27######################################FOR DEPTH CLUSTER QUALITY
 
@@ -126,6 +127,10 @@ minTrialFile.close()
 copyReportsToDir = '/home/billywalker/Pictures/quality_clusters/switching_reports/'+subject+'/'+minFileName+'/'
 if not os.path.exists(copyReportsToDir):
     os.makedirs(copyReportsToDir)
+os.chdir(copyReportsToDir)#This deletes the files that already exist in that folder
+files=glob.glob('*.png')
+for filename in files:
+    os.unlink(filename)
 
 
 for cellID in range(0,numOfCells):

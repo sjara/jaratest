@@ -19,7 +19,7 @@ allcells = importlib.import_module(allcellsFileName)
 
 
 
-outputDir = '/home/billywalker/data/ephys'
+
 nameOfFile = 'minTrial'
 minTrialNumber = 30 #the minimum number of correct trials in each direction to be found
 
@@ -30,13 +30,14 @@ ephysSession = ''
 
 numOfCells = len(allcells.cellDB) #number of cells that were clustered on all sessions clustered
 ephysRootDir = settings.EPHYS_PATH
+outputDir = ephysRootDir#'/home/billywalker/data/ephys/'
 
 experimenter = 'santiago'
 paradigm = '2afc'
 
 Frequency = 1
 
-finalOutputDir = outputDir+'/'+subject+'_processed'
+finalOutputDir = outputDir+subject+'_processed'
 
 minTrialList = [] #includes all behavior session names and frequencies in list in mixed order
 try:

@@ -68,7 +68,7 @@ ephysRoot = os.path.join(ephysRootDir,subject)
 
 
 # -- Load Behavior Data --
-behaviorFilename = loadbehavior.path_to_behavior_data(subject,experimenter,paradigm,behavSession)
+behaviorFilename = loadbehavior.path_to_behavior_data(subject=subject,paradigm=paradigm,sessionstr=behavSession)
 bdata = loadbehavior.FlexCategBehaviorData(behaviorFilename)
 bdata.find_trials_each_block()
 

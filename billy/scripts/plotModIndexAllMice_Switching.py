@@ -14,8 +14,9 @@ from jaratoolbox import extraplots
 import matplotlib.pyplot as plt
 import sys
 import importlib
+import animalTetDepths #This is to get the lengths of the tetrodes for each animal
 
-mouseList = ['test089','test059','test017']
+mouseList = ['test089','test059','test017','adap020']
 
 outputDir = '/home/billywalker/Pictures/modIndex/'
 
@@ -28,11 +29,13 @@ numTetrodes = 8 #Number of tetrodes
 ################################################################################################
 ##############################-----Minimum Requirements------###################################
 ################################################################################################
-qualityList = [1,6]#[1,4,5,6,7]#range(1,10)
-minZVal = 3.0
-maxISIviolation = 0.02
-minModDirectionScore = 1.0
-minPValue = 0.05
+qualityList = [1,6]#[1,4,5,6,7]#range(1,10) the quality of the cells that should be included in the copy
+minZVal = 3.0 #the minimum Z value for the sound response of the cells included in the modulation index plot
+maxISIviolation = 0.02 #maximum ISI violation fractio below 2ums
+minModDirectionScore = 1.0 #modulation direction score. how many times the modulation changed directions between blocks. See wiki page "Billy's Documentation for scripts and reports"
+minPValue = 0.05 #the max p value in order for a cell to be considered significant
+inStriatumRangeCheck = True #if true, check that the cells are in the striatum
+modFileName = 'modIndex_striatumRange'
 ################################################################################################
 ################################################################################################
 
@@ -150,6 +153,7 @@ for mouseName in mouseList:
         tetrode = oneCell.tetrode
         cluster = oneCell.cluster
         clusterQuality = oneCell.quality[cluster-1]
+        depth = oneCell.depth #FOR DEPTH CLUSTER QUALTIY
 
 
         if clusterQuality not in qualityList:
@@ -167,12 +171,20 @@ for mouseName in mouseList:
 
         clusterNumber = (tetrode-1)*clusNum+(cluster-1)
         midFreq = minTrialDict[behavSession][0]
+        '''#This is the old way without inStriatumRangeCheck
         if ((abs(float(maxZDict[behavSession][midFreq][clusterNumber])) < minZVal) | (ISIDict[behavSession][clusterNumber] > maxISIviolation)):
             continue
         else:
             modIndexArray.append([modIDict[behavSession][clusterNumber],modSigDict[behavSession][clusterNumber],modDirectionScoreDict[behavSession][clusterNumber]])
-
-            print 'subject ',subject,' behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
+        '''
+        if inStriatumRangeCheck:
+            if ((abs(float(maxZDict[behavSession][midFreq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation) & (animalTetDepths.tetDB.isInStriatum(subject,tetrode,depth))):
+                modIndexArray.append([modIDict[behavSession][clusterNumber],modSigDict[behavSession][clusterNumber],modDirectionScoreDict[behavSession][clusterNumber]])
+                #print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
+        else:
+            if ((abs(float(maxZDict[behavSession][midFreq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
+                modIndexArray.append([modIDict[behavSession][clusterNumber],modSigDict[behavSession][clusterNumber],modDirectionScoreDict[behavSession][clusterNumber]])
+                print 'subject ',subject,' behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
 
 ##########################THIS IS TO PLOT HISTOGRAM################################################
 modIndBinVec = np.arange(-1,1,binWidth)
@@ -216,7 +228,7 @@ plt.figtext(.15,.91,'Percentage of Sig Mod Cells: %s'%(round((totalSig/float(len
 
 plt.gcf().set_size_inches((8.5,11))
 figformat = 'png'
-filename = 'modIndex_%s.%s'%('allmice_switching',figformat)
+filename = '%s_%s.%s'%(modFileName,'allmice_switching',figformat)
 fulloutputDir = outputDir+'allmice'+'/'
 fullFileName = os.path.join(fulloutputDir,filename)
 

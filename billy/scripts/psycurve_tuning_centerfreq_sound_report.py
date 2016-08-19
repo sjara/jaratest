@@ -402,7 +402,7 @@ def modulation_index_psycurve(centerFrequencies):
     Freq2 = str(possibleFreq[centerFrequencies[1]])
     secondCenterMI = str(round(modIDict[behavSession][Freq2][clusterNumber],3))
     secondCenterMSig = str(round(modSigDict[behavSession][Freq2][clusterNumber],3))
-    titleText = 'Small Center Freq: Mod Index: '+firstCenterMI+', (p='+firstCenterMSig+'),  Large Center Freq: Mod Index: '+secondCenterMI+', (p='+secondCenterMSig+')'
+    titleText = 'Low Center Freq: Mod Index: '+firstCenterMI+', (p='+firstCenterMSig+'),  High Center Freq: Mod Index: '+secondCenterMI+', (p='+secondCenterMSig+')'
 
 
 def raster_tuning(ax):

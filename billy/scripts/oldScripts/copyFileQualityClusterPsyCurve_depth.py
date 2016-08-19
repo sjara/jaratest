@@ -5,9 +5,10 @@ import sys
 import importlib
 import re
 import numpy as np
+import animalTetDepths #This is to get the lengths of the tetrodes for each animal
 
 mouseName = str(sys.argv[1]) #the first argument is the mouse name to tell the script which allcells file to use
-allcellsFileName = 'allcells_'+mouseName+'_quality_depth'############################FOR DEPTH CLUSTER QUALITY
+allcellsFileName = 'allcells_'+mouseName+'_quality'
 sys.path.append(settings.ALLCELLS_PATH)
 allcells = importlib.import_module(allcellsFileName)
 
@@ -27,10 +28,8 @@ numTetrodes = 8 #Number of tetrodes
 qualityList = [1,6]
 minZVal = 3.0
 maxISIviolation = 0.02
-minDepth = 0#2.1######################################FOR DEPTH CLUSTER QUALTIY
-maxDepth = 30#3.0######################################FOR DEPTH CLUSTER QUALITY
 
-minFileName = 'BEST_quality-1-6_ZVal-3_ISI-2' #name of the file to put the copied files in
+minFileName = 'BEST_quality_in_striatum_range-1-6_ZVal-3_ISI-2' #name of the file to put the copied files in
 ################################################################################################
 ################################################################################################
 
@@ -84,16 +83,12 @@ for line in maxZFile:
 
 
 ISIDict = {}
-ephysName = ''
+behavName = ''
 for line in ISIFile:
-    ephysLine = line.split(':')
-    tetrodeLine = line.split()
-    tetrodeName = tetrodeLine[0].split(':')
-    if (ephysLine[0] == 'Ephys Session'):
-        ephysName = ephysLine[1][:-1]
-        ISIDict.update({ephysName:np.full((numTetrodes,clusNum),1.0)})
+    if (line.split(':')[0] == 'Behavior Session'):
+        behavName = line.split(':')[1][:-1]
     else:
-        ISIDict[ephysName][int(tetrodeName[1])] = tetrodeLine[1:]
+        ISIDict[behavName] = [float(x) for x in line.split(',')[0:-1]]
 
 
 ISIFile.close()
@@ -101,12 +96,18 @@ maxZFile.close()
 minPerfFile.close()
 minTrialFile.close()
 
-copyToDir = '/home/billywalker/Pictures/quality_clusters/raster_hist/'+subject+'/'+minFileName+'/'
-if not os.path.exists(copyToDir):
-    os.makedirs(copyToDir)
-copyReportsToDir = '/home/billywalker/Pictures/quality_clusters/psyCurve_reports/centerFreq/'+subject+'/'+minFileName+'/'
-if not os.path.exists(copyReportsToDir):
-    os.makedirs(copyReportsToDir)
+#copyToDir = '/home/billywalker/Pictures/quality_clusters/raster_hist/'+subject+'/'+minFileName+'/'
+#if not os.path.exists(copyToDir):
+    #os.makedirs(copyToDir)
+#copyReportsToDir = '/home/billywalker/Pictures/quality_clusters/psyCurve_reports/centerFreq/'+subject+'/'+minFileName+'/'
+#if not os.path.exists(copyReportsToDir):
+    #os.makedirs(copyReportsToDir)
+copyToCenterFreqDir = '/home/billywalker/Pictures/quality_clusters/psyCurve_tuning_centerfreq_sound_reports/'+subject+'/'+minFileName+'/'
+if not os.path.exists(copyToCenterFreqDir):
+    os.makedirs(copyToCenterFreqDir)
+copyToAllFreqDir = '/home/billywalker/Pictures/quality_clusters/psyCurve_tuning_allFreq_movement_reports/'+subject+'/'+minFileName+'/'
+if not os.path.exists(copyToAllFreqDir):
+    os.makedirs(copyToAllFreqDir)
 
 
 
@@ -130,17 +131,29 @@ for cellID in range(0,numOfCells):
         continue
     elif behavSession not in maxZDict:
         continue
-    elif ephysSession not in ISIDict:
+    elif behavSession not in ISIDict: #CHANGE THIS TO EPHYSESSION FOR OLD ISI FILE
         continue
-    elif ((depth < minDepth) or (depth > maxDepth)):#################################FOR DEPTH CLUSTER QUALTIY
+    elif not (animalTetDepths.tetDB.isInStriatum(subject,tetrode,depth)):
         continue
     
     clusterNumber = (tetrode-1)*clusNum+(cluster-1)
     for freq in minTrialDict[behavSession]:
-        if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[ephysSession][tetrode-1][cluster-1] <= maxISIviolation)):
+        if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
+            os.system('cp /home/billywalker/Pictures/psyCurve_tuning_centerfreq_sound_reports/%s/psycurve_report_centerfreq_sound_%s_%s_T%sc%s.png /home/billywalker/Pictures/quality_clusters/psyCurve_tuning_centerfreq_sound_reports/%s/%s/' % (subject,subject,behavSession,str(tetrode),str(cluster),subject,minFileName))
+            os.system('cp /home/billywalker/Pictures/psyCurve_tuning_allFreq_movement_reports/%s/psycurve_report_allFreq_movement_%s_%s_T%sc%s.png /home/billywalker/Pictures/quality_clusters/psyCurve_tuning_allFreq_movement_reports/%s/%s/' % (subject,subject,behavSession,str(tetrode),str(cluster),subject,minFileName))
+
+
+
+
+
+
+'''
+#OLD CODE
+
             thisRaster = '/home/billywalker/Pictures/raster_hist/'+subject+'/Center_Frequencies/rast_'+subject+'_'+behavSession+'_'+freq+'_T'+str(tetrode)+'c'+str(cluster)+'.png'
             if (os.path.isfile(thisRaster)):
                 os.system('cp /home/billywalker/Pictures/raster_hist/%s/Center_Frequencies/rast_%s_%s_%s_T%sc%s.png /home/billywalker/Pictures/quality_clusters/raster_hist/%s/%s/' % (subject,subject,behavSession,freq,str(tetrode),str(cluster),subject,minFileName))
             else:
                 os.system('cp /home/billywalker/Pictures/raster_hist/%s/Outside_Frequencies/rast_%s_%s_%s_T%sc%s.png /home/billywalker/Pictures/quality_clusters/raster_hist/%s/%s/' % (subject,subject,behavSession,freq,str(tetrode),str(cluster),subject,minFileName))
             os.system('cp /home/billywalker/Pictures/psyCurve_reports/centerFreq/%s/report_centerFreq_%s_%s_T%sc%s.png /home/billywalker/Pictures/quality_clusters/psyCurve_reports/centerFreq/%s/%s/' % (subject,subject,behavSession,str(tetrode),str(cluster),subject,minFileName))
+'''

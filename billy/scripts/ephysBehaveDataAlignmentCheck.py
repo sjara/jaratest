@@ -8,6 +8,7 @@ author: Billy Walker
 #from jaratoolbox import ephyscore
 from jaratoolbox import loadopenephys
 from jaratoolbox import loadbehavior
+from jaratoolbox import settings
 #from jaratoolbox import spikesanalysis
 #from jaratoolbox import extraplots
 import numpy as np
@@ -17,22 +18,22 @@ import os
 
 
 
-subject = 'test055'
-behavSession = '20150328a'
-ephysSession = '2015-03-28_20-36-26'
+subject = 'adap017'
+behavSession = '20160323a'
+ephysSession = '2016-03-23_15-33-17'
 
 
 
 
 SAMPLING_RATE=30000.0
-ephysRootDir='/home/billywalker/data/ephys/'
-experimenter = 'santiago'#DEPENDS ON THE TASK!!!!!!!!!!!!!!!
+ephysRootDir=settings.EPHYS_PATH
+#experimenter = 'santiago'#DEPENDS ON THE TASK!!!!!!!!!!!!!!!
 paradigm = '2afc'
 ephysRoot = ephysRootDir+subject+'/'
 eventID = 0
 
 # -- Load Behavior Data --
-behaviorFilename = loadbehavior.path_to_behavior_data(subject,experimenter,paradigm,behavSession)
+behaviorFilename = loadbehavior.path_to_behavior_data(subject=subject,paradigm=paradigm,sessionstr=behavSession)
 bdata = loadbehavior.BehaviorData(behaviorFilename)
 numberOfTrials = len(bdata['choice'])
 

@@ -2,32 +2,46 @@
 Plot the average firing rate in response to each frequency presented.
 '''
 
-import allcells_test017 as allcells
+#import allcells_noisetest as allcells
 from jaratoolbox import ephyscore
 from jaratoolbox import loadbehavior
 from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
+from jaratoolbox import settings
+from jaratoolbox import spikesorting_ISI as spikesorting
 import numpy as np
 from pylab import *
 import os
+import sys
+import importlib
+
+mouseName = str(sys.argv[1]) #the first argument is the mouse name to tell the script which allcells file to use
+allcellsFileName = 'allcells_'+mouseName+'_tuning'###########################################
+sys.path.append(settings.ALLCELLS_PATH)
+allcells = importlib.import_module(allcellsFileName)
 
 SAMPLING_RATE=30000.0
-timeRange=[-0.5, 1] #In seconds
+timeRange=[-0.2, 0.3] #In seconds
+responseRange = [0.000,0.10] #range of time to count spikes in after event onset in seconds
 
 
-outputDir = '/home/billywalker/Pictures/psyCurve/'
-nametrialsToUse = 'tuning_curve'
+outputDir = '/home/billywalker/Pictures/tuning/'
+#nametrialsToUse = 'tuning_curve'
 numOfCells = len(allcells.cellDB) #number of cells that were clustered on all sessions clustered
 ephysRootDir = '/home/billywalker/data/ephys/'
 behaviorDir='/home/billywalker/data/behavior/billy/'
 
 
+fulloutputDir = outputDir+mouseName+'/'
+if not os.path.exists(fulloutputDir):
+    os.makedirs(fulloutputDir)
 
 for cellID in range(0,numOfCells):
     oneCell = allcells.cellDB[cellID]
     
     subject = oneCell.animalName
     behavSession = oneCell.behavSession
+    print behavSession
     ephysSession = oneCell.ephysSession
     ephysRoot = ephysRootDir+subject+'/'
     tetrodeID = oneCell.tetrode
@@ -104,8 +118,7 @@ for cellID in range(0,numOfCells):
 
 
     # -- Calculate tuning --
-    responseRange = [0.000,0.10] #range of time to count spikes in after event onset
-    nSpikes = spikesanalysis.count_spikes_in_range(spikeTimesFromEventOnset,indexLimitsEachTrial,responseRange) #array of the number of spikes in range for each trial
+    nSpikes = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,responseRange) #array of the number of spikes in range for each trial
     '''Count number of spikes on each trial in a given time range.
 
            spikeTimesFromEventOnset: vector of spikes timestamps with respect
@@ -127,8 +140,17 @@ for cellID in range(0,numOfCells):
         meanSpikesEachFrequency[indf] = np.mean(nSpikes[trialsEachFreq[indf]])
 
     clf()
-    ax2 = plt.subplot2grid((1,4), (0, 0), colspan=3)
-    plot(spikeTimesFromEventOnset, sortedIndexForEachSpike, '.', ms=1)
+    if (len(spkTimeStamps)>0):
+        ax1 = plt.subplot2grid((4,4), (3, 0), colspan=1)
+        spikesorting.plot_isi_loghist(spkData.spikes.timestamps)
+        ax3 = plt.subplot2grid((4,4), (3, 3), colspan=1)
+        spikesorting.plot_events_in_time(spkTimeStamps)
+        samples = spkData.spikes.samples.astype(float)-2**15
+        samples = (1000.0/spkData.spikes.gain[0,0]) *samples
+        ax2 = plt.subplot2grid((4,4), (3, 1), colspan=2)
+        spikesorting.plot_waveforms(samples)
+    ax4 = plt.subplot2grid((4,4), (0, 0), colspan=3,rowspan = 3)
+    plot(spikeTimesFromEventOnset, sortedIndexForEachSpike, '.', ms=3)
     axvline(x=0, ymin=0, ymax=1, color='r')
 
     #The cumulative sum of the list of specific frequency presentations, 
@@ -137,20 +159,20 @@ for cellID in range(0,numOfCells):
 
     #Plot the lines across the figure in between each group of sorted trials
     for indf, num in enumerate(numTrials):
-        ax2.axhline(y = num, xmin = 0, xmax = 1, color = '0.90', zorder = 0)
+        ax4.axhline(y = num, xmin = 0, xmax = 1, color = '0.90', zorder = 0)
         #ax2.text(timeRange[0]-0.075, numTrials - mean(numTrialsEachFreq)/2, "%0.2f" % (possibleFreq[indf]/1000), color = 'grey', va = 'center')
 
     tickPositions = numTrials - mean(numTrialsEachFreq)/2
     tickLabels = ["%0.2f" % (possibleFreq[indf]/1000) for indf in range(len(possibleFreq))]
-    ax2.set_yticks(tickPositions)
-    ax2.set_yticklabels(tickLabels)
+    ax4.set_yticks(tickPositions)
+    ax4.set_yticklabels(tickLabels)
     ylabel('Frequency Presented (kHz), {} total trials'.format(numTrials[-1]))
     title(ephysSession+' T{}c{}'.format(tetrodeID,clusterID))
     xlabel('Time (sec)')
 
 
-    ax2 = plt.subplot2grid((1,4), (0, 3), colspan=1)
-    ax2.set_xscale('log')
+    ax5 = plt.subplot2grid((4,4), (0, 3), colspan=1,rowspan=3)
+    ax5.set_xscale('log')
     plot(possibleFreq,meanSpikesEachFrequency,'o-')
     ylabel('Avg spikes in window {0}-{1} sec'.format(*responseRange))
     xlabel('Frequency')
@@ -161,8 +183,7 @@ for cellID in range(0,numOfCells):
     tetrodeClusterName = 'T'+str(tetrodeID)+'c'+str(clusterID)
     plt.gcf().set_size_inches((8.5,11))
     figformat = 'png' #'png' #'pdf' #'svg'
-    filename = 'psy_%s_%s_%s_%s.%s'%(subject,behavSession,tetrodeClusterName,nametrialsToUse,figformat)
-    fulloutputDir = outputDir+subject+'/'+'tuning_curve'+'/'
+    filename = 'tuning_%s_%s_%s.%s'%(subject,behavSession,tetrodeClusterName,figformat)
     fullFileName = os.path.join(fulloutputDir,filename)
     print 'saving figure to %s'%fullFileName
     plt.gcf().savefig(fullFileName,format=figformat)

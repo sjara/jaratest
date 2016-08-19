@@ -14,7 +14,7 @@ eSession = celldatabase.EphysSessionInfo  # Shorter name to simplify code
 
 cellDB = celldatabase.CellDatabase()
 
-
+'''
 oneES = eSession(animalName='adap013',
                  ephysSession = '2016-04-13_17-24-42',
                  clustersEachTetrode = {1:range(1,13),2:range(1,13),3:range(1,13),4:range(1,13),5:range(1,13),6:range(1,13),7:range(1,13),8:range(1,13)},
@@ -128,4 +128,4 @@ oneES = eSession(animalName='adap013',
                  clustersEachTetrode = {1:range(1,13),2:range(1,13),3:range(1,13),4:range(1,13),5:range(1,13),6:range(1,13),7:range(1,13),8:range(1,13)},
                  behavSession = '20160210a')
 cellDB.append_session(oneES)
-
+'''

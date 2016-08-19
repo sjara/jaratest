@@ -19,6 +19,7 @@ This reads the adap013_wiki.txt (a text copy of the wiki) in the allcells folder
 
 
 import re
+from jaratoolbox import settings
 
 # --- Define string format ---
 header = '''
@@ -41,8 +42,8 @@ formatSessionTuning = '''site1.add_session('{ephysTime}', 'a', sessionTypes['tc'
 # --- Read Billy's wiki info ---
 experimenter = ''
 defaultParadigm = 'tuning_curve'
-subject = 'adap020'
-filename = 'allcells/{0}_wiki.txt'.format(subject)
+subject = 'adap024'
+filename = settings.ALLCELLS_PATH+'{0}_wiki.txt'.format(subject)
 content = [line.rstrip('\n') for line in open(filename)]
 
 ### re.search(r'\* \d.\d+ turns, \d\d\d\d-\d\d-\d\d', oneline).group()
@@ -50,7 +51,7 @@ content = [line.rstrip('\n') for line in open(filename)]
 trainingDateLine = re.compile(r'(\d.\d+) turns, (\d\d\d\d-\d\d-\d\d)')#'\* (\d.\d+) turns, (\d\d\d\d-\d\d-\d\d)')
 tuningLine = re.compile(r'\* (\d.\d+) turns, presented frequencies')
 ephysLine = re.compile(r'\*\* ephys recording name: (\d\d\d\d-\d\d-\d\d_\d\d-\d\d-\d\d)')
-rewardchangeLine = re.compile(r'\*\* Switching task')
+rewardchangeLine = re.compile(r'\*\* The psychometric curve')
 dbase = {}
 
 

@@ -14,6 +14,7 @@ from jaratoolbox import extraplots
 import matplotlib.pyplot as plt
 import sys
 import importlib
+import animalTetDepths #This is to get the lengths of the tetrodes for each animal
 
 subject = str(sys.argv[1]) #the first argument is the mouse name to tell the script which allcells file to use
 allcellsFileName = 'allcells_'+subject+'_quality'
@@ -33,11 +34,13 @@ numTetrodes = 8 #Number of tetrodes
 ################################################################################################
 ##############################-----Minimum Requirements------###################################
 ################################################################################################
-qualityList = [1,6]#[1,4,5,6,7]#range(1,10)
-minZVal = 3.0
-maxISIviolation = 0.02
-minModDirectionScore = 1
-minPValue = 0.05
+modIndFileName = 'modIndex_striatumRange'
+qualityList = [1,6]#[1,4,5,6,7]#range(1,10) the quality of the cells that should be included
+minZVal = 3.0 #the minimum Z value for the sound response of the cells included in the modulation index plot
+maxISIviolation = 0.02 #maximum ISI violation fraction below 2ums
+#minModDirectionScore = 1
+minPValue = 0.05 #the max p value in order for a cell to be considered significant
+inStriatumRangeCheck = True #if true, check that the cells are in the striatum
 ################################################################################################
 ################################################################################################
 
@@ -142,8 +145,8 @@ for cellID in range(0,numOfCells):
     ephysSession = oneCell.ephysSession
     tetrode = oneCell.tetrode
     cluster = oneCell.cluster
+    depth = oneCell.depth #FOR DEPTH CLUSTER QUALTIY
 
-    #print behavSession,' ',tetrode,' ',cluster####################################################
 
     clusterQuality = oneCell.quality[cluster-1]
 
@@ -169,21 +172,29 @@ for cellID in range(0,numOfCells):
 
     clusterNumber = (tetrode-1)*clusNum+(cluster-1)
     for freq in minTrialDict[behavSession]:
-        if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
-            modIndexArray.append([modIDict[behavSession][freq][clusterNumber],modSigDict[behavSession][freq][clusterNumber]])
-            #print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
+        if inStriatumRangeCheck:
+            if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation) & (animalTetDepths.tetDB.isInStriatum(subject,tetrode,depth))):
+                modIndexArray.append([modIDict[behavSession][freq][clusterNumber],modSigDict[behavSession][freq][clusterNumber]])
+                #if modSigDict[behavSession][freq][clusterNumber] <0.05:
+                print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
+        else:
+            if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
+                modIndexArray.append([modIDict[behavSession][freq][clusterNumber],modSigDict[behavSession][freq][clusterNumber]])
+                print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
 
 ##########################THIS IS TO PLOT HISTOGRAM################################################
 modIndBinVec = np.arange(-1,1,binWidth)
 binModIndexArraySig = np.empty(len(modIndBinVec))
 binModIndexArrayNonSig = np.empty(len(modIndBinVec))
 maxMI=0
+totalSig = 0
 for binInd in range(len(modIndBinVec)-1):
     binTotalSig = 0
     binTotalNonSig = 0
     for modIndSig in modIndexArray:
         if ((modIndSig[0] >= modIndBinVec[binInd]) and (modIndSig[0] < modIndBinVec[binInd+1]) and (modIndSig[1] <= minPValue)):
             binTotalSig += 1
+            totalSig += 1
         elif ((modIndSig[0] >= modIndBinVec[binInd]) and (modIndSig[0] < modIndBinVec[binInd+1])):
             binTotalNonSig += 1
         maxMI = max(maxMI,abs(modIndSig[0]))
@@ -193,7 +204,7 @@ binModIndexArraySig[-1] = 0
 binModIndexArrayNonSig[-1] = 0
 
 print 'number of cells: ',len(modIndexArray)
-
+print 'number of significantly modulated cells: ',totalSig
 
 plt.clf() 
 
@@ -205,11 +216,13 @@ plt.xlim((-(maxMI+binWidth),maxMI+binWidth))
 plt.xlabel('Modulation Index')
 plt.ylabel('Number of Cells')
 
-plt.figtext(.2,.91,'Total Number of Cells: %s'%(len(modIndexArray)),fontsize=15)
+
+plt.figtext(.2,.87,'Total Number of Cells: %s'%(len(modIndexArray)),fontsize=15)
+plt.figtext(.2,.91,'Total Number of Significantly Modulated Cells: %s'%totalSig,fontsize=15)
 
 plt.gcf().set_size_inches((8.5,11))
 figformat = 'png'
-filename = 'modIndex_%s.%s'%(subject,figformat)
+filename = '%s_%s.%s'%(modIndFileName,subject,figformat)
 fulloutputDir = outputDir+subject +'/'
 fullFileName = os.path.join(fulloutputDir,filename)
 

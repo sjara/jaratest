@@ -3,7 +3,7 @@ Given an allcells file, calculate and write ISI violation (ISI<2msec) percentage
 LG 20160328
 '''
 
-from jaratoolbox import settings_2 as settings
+from jaratoolbox import settings
 from jaratoolbox import loadopenephys
 import numpy as np
 import os

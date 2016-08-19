@@ -26,12 +26,10 @@ numTetrodes = 8 #Number of tetrodes
 ##############################-----Minimum Requirements------###################################
 ################################################################################################
 qualityList = [1,6]#[1,4,5,6,7]#range(1,10)
-minZVal = 0.0#3.0
+minZVal = 3.0
 maxISIviolation = 0.02
-#minDepth = 2.1######################################FOR DEPTH CLUSTER QUALTIY
-#maxDepth = 3.8######################################FOR DEPTH CLUSTER QUALITY
 
-minFileName = 'good_quality_in_striatum-1-6_ZVal-0_ISI-2'#'BEST_quality-1-6_ZVal-3_ISI-2' #name of the file to put the copied files in
+minFileName = 'good_quality_in_striatum_range-1-6_ZVal-3_ISI-02'#'BEST_quality-1-6_ZVal-3_ISI-2' #name of the file to put the copied files in
 ################################################################################################
 ################################################################################################
 
@@ -86,26 +84,11 @@ for line in maxZFile:
 ISIDict = {}
 behavName = ''
 for line in ISIFile:
-    #ehavLine = line.split(':')
-    #reqLine = line.split()
     if (line.split(':')[0] == 'Behavior Session'):
         behavName = line.split(':')[1][:-1]
     else:
         ISIDict[behavName] = [float(x) for x in line.split(',')[0:-1]]
-'''
-#OLD WAY TO READ ISI FILE
-ISIDict = {}
-ephysName = ''
-for line in ISIFile:
-    ephysLine = line.split(':')
-    tetrodeLine = line.split()
-    tetrodeName = tetrodeLine[0].split(':')
-    if (ephysLine[0] == 'Ephys Session'):
-        ephysName = ephysLine[1][:-1]
-        ISIDict.update({ephysName:np.full((numTetrodes,clusNum),1.0)})
-    else:
-        ISIDict[ephysName][int(tetrodeName[1])] = tetrodeLine[1:]
-'''
+
 
 ISIFile.close()
 maxZFile.close()

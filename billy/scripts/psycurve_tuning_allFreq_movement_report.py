@@ -412,7 +412,7 @@ def modulation_index_psycurve(centerFrequencies):
     Freq2 = str(possibleFreq[centerFrequencies[1]])
     secondCenterMI = str(round(modIDict[behavSession][Freq2][clusterNumber],3))
     secondCenterMSig = str(round(modSigDict[behavSession][Freq2][clusterNumber],3))
-    titleText = 'Small Center Freq: Mod Index: '+firstCenterMI+', (p='+firstCenterMSig+'),  Large Center Freq: Mod Index: '+secondCenterMI+', (p='+secondCenterMSig+')\n'+'Green is High Freq, Red is Low Freq'
+    titleText = 'Low Center Freq: Mod Index: '+firstCenterMI+', (p='+firstCenterMSig+'),  High Center Freq: Mod Index: '+secondCenterMI+', (p='+secondCenterMSig+')\n'+'Green is High Freq, Red is Low Freq'
 
 
 def raster_tuning(ax):
@@ -624,7 +624,7 @@ def hist_allfreq_sound_psycurve(ax):
     trialsEachCond = trialsToUseEachCond; colorEachCond = [[0.5,0.0,0.0],[1.0,0.0,0.0],[1.0,0.3,0.7],[0.1,1.0,0.1],[0.1,0.6,0.1],[0.0,0.3,0.0]]
 
     timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
-    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachMovementTrial,timeVec)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     #print np.shape(spikeCountMat)
     #print 'timeVec ',np.shape(timeVec)
 

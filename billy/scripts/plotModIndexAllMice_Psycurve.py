@@ -14,6 +14,7 @@ from jaratoolbox import extraplots
 import matplotlib.pyplot as plt
 import sys
 import importlib
+import animalTetDepths #This is to get the lengths of the tetrodes for each animal
 
 mouseList = ['test055','test053','adap015','adap017','adap013']#test086 missed striatum
 
@@ -28,10 +29,12 @@ numTetrodes = 8 #Number of tetrodes
 ################################################################################################
 ##############################-----Minimum Requirements------###################################
 ################################################################################################
-qualityList = [1,6]#[1,4,5,6,7]#range(1,10)
-minZVal = 3.0
-maxISIviolation = 0.02
-minPValue = 0.05
+qualityList = [1,6]#[1,4,5,6,7]#range(1,10) the quality of the cells that should be included in the copy
+minZVal = 3.0 #the minimum Z value for the sound response of the cells included in the modulation index plot
+maxISIviolation = 0.02 #maximum ISI violation fractio below 2ums
+minPValue = 0.05 #the max p value in order for a cell to be considered significant
+inStriatumRangeCheck = True #if true, check that the cells are in the striatum
+modIndFileName = 'modIndex_striatumRange'#filename to save to
 ################################################################################################
 ################################################################################################
 
@@ -146,6 +149,7 @@ for mouseName in mouseList:
         tetrode = oneCell.tetrode
         cluster = oneCell.cluster
         clusterQuality = oneCell.quality[cluster-1]
+        depth = oneCell.depth #FOR DEPTH CLUSTER QUALTIY
 
 
         if clusterQuality not in qualityList:
@@ -162,10 +166,22 @@ for mouseName in mouseList:
             continue
 
         clusterNumber = (tetrode-1)*clusNum+(cluster-1)
+        '''#This is the old way without inStriatumRangeCheck
         for freq in minTrialDict[behavSession]:
             if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
                 modIndexArray.append([modIDict[behavSession][freq][clusterNumber],modSigDict[behavSession][freq][clusterNumber]])
                 print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
+        '''
+        for freq in minTrialDict[behavSession]:
+            if inStriatumRangeCheck:
+                if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation) & (animalTetDepths.tetDB.isInStriatum(subject,tetrode,depth))):
+                    modIndexArray.append([modIDict[behavSession][freq][clusterNumber],modSigDict[behavSession][freq][clusterNumber]])
+                    print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
+            else:
+                if ((abs(float(maxZDict[behavSession][freq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
+                    modIndexArray.append([modIDict[behavSession][freq][clusterNumber],modSigDict[behavSession][freq][clusterNumber]])
+                    print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
+
 
 
 ##########################THIS IS TO PLOT HISTOGRAM################################################
@@ -208,7 +224,7 @@ plt.figtext(.15,.91,'Percentage of Sig Mod Cells: %s'%(round((totalSig/float(len
 
 plt.gcf().set_size_inches((8.5,11))
 figformat = 'png'
-filename = 'modIndex_%s.%s'%('allmice_psycurve',figformat)
+filename = '%s_%s.%s'%(modIndFileName,'allmice_psycurve',figformat)
 fulloutputDir = outputDir+'allmice'+'/'
 fullFileName = os.path.join(fulloutputDir,filename)
 

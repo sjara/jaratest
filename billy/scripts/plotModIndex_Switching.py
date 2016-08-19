@@ -14,9 +14,10 @@ from jaratoolbox import extraplots
 import matplotlib.pyplot as plt
 import sys
 import importlib
+import animalTetDepths #This is to get the lengths of the tetrodes for each animal
 
 subject = str(sys.argv[1]) #the first argument is the mouse name to tell the script which allcells file to use
-allcellsFileName = 'allcells_'+subject+'_quality'
+allcellsFileName = 'allcells_'+subject+'_quality'#_separated_tuning'############!!!!!!!!!!!!!!!!!!!!!!!!!
 sys.path.append(settings.ALLCELLS_PATH)
 allcells = importlib.import_module(allcellsFileName)
 
@@ -33,11 +34,13 @@ numTetrodes = 8 #Number of tetrodes
 ################################################################################################
 ##############################-----Minimum Requirements------###################################
 ################################################################################################
-qualityList = [1,6]#[1,4,5,6,7]#range(1,10)
-minZVal = 3.0
-maxISIviolation = 0.02
-minModDirectionScore = 1.0
-minPValue = 0.05
+qualityList = [1,6]#[11,61,13,63,14,64]#[1,4,5,6,7]#range(1,10) the quality of the cells that should be included
+minZVal = 3.0 #the minimum Z value for the sound response of the cells included in the modulation index plot
+maxISIviolation = 0.02 #maximum ISI violation fraction below 2ums 
+minModDirectionScore = 1.0 #modulation direction score. how many times the modulation changed directions between blocks. See wiki page "Billy's Documentation for scripts and reports"
+minPValue = 0.05 #the max p value in order for a cell to be considered significant
+modFileName = 'modIndex_striatumRange'#'modIndex'#'test_endStriatum_modIndex_separated_tuning_134'
+inStriatumRangeCheck = True #if true, check that the cells are in the striatum
 ################################################################################################
 ################################################################################################
 
@@ -147,6 +150,7 @@ for cellID in range(0,numOfCells):
     ephysSession = oneCell.ephysSession
     tetrode = oneCell.tetrode
     cluster = oneCell.cluster
+    depth = oneCell.depth #FOR DEPTH CLUSTER QUALTIY
     clusterQuality = oneCell.quality[cluster-1]
 
     if clusterQuality not in qualityList:
@@ -154,22 +158,28 @@ for cellID in range(0,numOfCells):
     elif behavSession not in minPerfList:
         continue
     elif behavSession not in minTrialDict:
+        print 'no minTrialDict'
         continue
     elif behavSession not in maxZDict:
+        print 'no maxZDict ',behavSession
         continue
     elif behavSession not in modIDict:
+        print 'no modIDict'
         continue
     elif behavSession not in ISIDict: #CHANGE THIS TO EPHYSESSION FOR OLD ISI FILE
+        print 'no ISIDict'
         continue
 
     clusterNumber = (tetrode-1)*clusNum+(cluster-1)
     midFreq = minTrialDict[behavSession][0]        
-    if ((abs(float(maxZDict[behavSession][midFreq][clusterNumber])) < minZVal) | (ISIDict[behavSession][clusterNumber] > maxISIviolation)):
-        continue
+    if inStriatumRangeCheck:
+        if ((abs(float(maxZDict[behavSession][midFreq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation) & (animalTetDepths.tetDB.isInStriatum(subject,tetrode,depth))):
+            modIndexArray.append([modIDict[behavSession][clusterNumber],modSigDict[behavSession][clusterNumber],modDirectionScoreDict[behavSession][clusterNumber]])
+            #print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
     else:
-        modIndexArray.append([modIDict[behavSession][clusterNumber],modSigDict[behavSession][clusterNumber],modDirectionScoreDict[behavSession][clusterNumber]])
-
-    print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
+        if ((abs(float(maxZDict[behavSession][midFreq][clusterNumber])) >= minZVal) & (ISIDict[behavSession][clusterNumber] <= maxISIviolation)):
+            modIndexArray.append([modIDict[behavSession][clusterNumber],modSigDict[behavSession][clusterNumber],modDirectionScoreDict[behavSession][clusterNumber]])
+            print 'behavior ',behavSession,' tetrode ',tetrode,' cluster ',cluster
 
 ##########################THIS IS TO PLOT HISTOGRAM################################################
 modIndBinVec = np.arange(-1,1,binWidth)
@@ -211,7 +221,7 @@ plt.figtext(.2,.91,'Total Number of Significantly Modulated Cells: %s'%totalSig,
 
 plt.gcf().set_size_inches((8.5,11))
 figformat = 'png'
-filename = 'modIndex_%s.%s'%(subject,figformat)
+filename = '%s_%s.%s'%(modFileName,subject,figformat)
 fulloutputDir = outputDir+subject +'/'
 fullFileName = os.path.join(fulloutputDir,filename)
 

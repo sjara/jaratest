@@ -28,7 +28,7 @@ sys.path.append(settings.ALLCELLS_PATH)
 allcells = importlib.import_module(allcellsFileName)
 
 
-ISIcutoff = 0.002
+ISIcutoff = 0.002 #in seconds.
 
 SAMPLING_RATE=30000.0
 soundTriggerChannel = 0 # channel 0 is the sound presentation, 1 is the trial
@@ -72,7 +72,7 @@ ISIVioBool = ISI<ISIcutoff
 
 fractionViolation = np.mean(ISIVioBool) # Assumes ISI in usec
 
-print 'ISI Violation less than ',ISIcutoff,' is ',fractionViolation
+print 'ISI Violation less than ',ISIcutoff,'sec is ',fractionViolation
 
 ISIVioBoolFirst = np.append(ISIVioBool,False)
 ISIVioBoolSecond = np.append(False,ISIVioBool)

@@ -33,7 +33,7 @@ clusNum = 12 #Number of clusters that Klustakwik speparated into
 numTetrodes = 8 #Number of tetrodes
 
 ephysRootDir = settings.EPHYS_PATH
-outputDir = '/home/billywalker/data/ephys'
+outputDir = ephysRootDir#'/home/billywalker/data/ephys/'
 
 experimenter = 'santiago'
 paradigm = '2afc'
@@ -46,7 +46,7 @@ behavSession = ''
 #processedDir = os.path.join(settings.EPHYS_PATH,subject+'_processed')
 
 nameOfFile = 'modIndex'
-finalOutputDir = outputDir+'/'+subject+'_processed'
+finalOutputDir = outputDir+subject+'_processed'
 
 
 class nestedDict(dict):#This is for maxZDict
