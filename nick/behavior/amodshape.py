@@ -59,10 +59,11 @@ def mouse_dict_factory(self, mouseFile):
     '''
     Reads a h5 file, tests mouse behavior, returns the the appropriate param dict
     '''
+amod006 = mouse_dict_factory()
 
+mouseFile = '/home/nick/data/mousefiles/amod006.h5'
+import h5py
 
+f = h5py.File(mouseFile, 'w')
 
-amod006 = mouse_dict_factory('/home/nick/data/mousefiles/amod006.h5')
-
-
-class ShapeFile(object):
+dset = f.create_dataset

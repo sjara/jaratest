@@ -15,7 +15,7 @@ tetrodes = range(1, 9)
 
 celldb = celldatabase.NewCellDB()
 
-for experiment in inforec.test098.experiments:
+for experiment in inforec.experiments:
     for site in experiment.sites:
         for session in site.sessions:
             for tetrode in tetrodes:
@@ -39,10 +39,25 @@ for experiment in inforec.test098.experiments:
                     oneTT.run_clustering()
                     oneTT.save_report()
 
-                for cluster in np.unique(oneTT.dataTT.clusters):
+                    #NOTE:Could create a mini dataframe with the clustering results at this point
+                    #This should store percent isi violations, nspikes.
+
+
+## -- Clustering is done, now add clusters to database
+
+for experiment in inforec.experiments:
+    for site in experiment.sites:
+        for session in site.sessions:
+            for tetrode in tetrodes:
+
+                #Load the data
+                dataSpikes = loadopenephys.DataSpikes(path)
+
+                for cluster in np.unique(dataSpikes.clusters):
                     clusterDict=vars(session)
                     clusterDict.update({'tetrode':tetrode, 'cluster':cluster})
                     celldb.db = celldb.db.append(clusterDict, ignore_index=True)
+
 
 celldb.db.to_csv('/home/jarauser/src/jaratest/nick/analysis/test098_celldb.csv')
 

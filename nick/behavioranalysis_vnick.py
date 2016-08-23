@@ -10,6 +10,7 @@ from jaratoolbox import extrafuncs
 from jaratoolbox import extraplots
 from jaratoolbox import extrastats
 from jaratoolbox import loadbehavior
+reload(loadbehavior)
 from jaratoolbox import settings
 reload(settings)
 from jaratoolbox import colorpalette
@@ -135,7 +136,7 @@ def load_many_sessions(animalNames,sessions,paradigm='2afc',datesRange=None):
     for inda,animalName in enumerate(animalNames):
         for indsa,thisSession in enumerate(allSessions):
             try:
-                behavFile = loadbehavior.path_to_behavior_data(animalName,EXPERIMENTER,paradigm,thisSession)
+                behavFile = loadbehavior.path_to_behavior_data(animalName,paradigm,thisSession)
                 behavData = loadingClass(behavFile,readmode=readmode)
             except IOError:
                 print thisSession+' does not exist'
@@ -185,7 +186,7 @@ def behavior_summary(subjects,sessions,trialslim=[],outputDir='',paradigm=None,s
     for inds,thisSession in enumerate(sessions):
         for inda,animalName in enumerate(subjects):
             try:
-                behavFile = loadbehavior.path_to_behavior_data(animalName,EXPERIMENTER,paradigm,thisSession)
+                behavFile = loadbehavior.path_to_behavior_data(animalName,paradigm,thisSession)
                 behavData = loadingClass(behavFile,readmode='full')
             except IOError:
                 print thisSession+' does not exist'
@@ -1022,13 +1023,13 @@ def overall_muscimol_performance(animal, muscimolSessions, salineSessions):
 
     for indp, pair in enumerate(zip(salineSessions, muscimolSessions)):
 
-        salineFile = loadbehavior.path_to_behavior_data(animal,settings.DEFAULT_EXPERIMENTER,'2afc',pair[0])
+        salineFile = loadbehavior.path_to_behavior_data(animal,'2afc',pair[0])
         salineData = loadbehavior.BehaviorData(salineFile,readmode='full')
 
         salineChords = percent_correct_sound_type(salineData, 'chords')
         salineMod = percent_correct_sound_type(salineData, 'amp_mod')
 
-        muscimolFile = loadbehavior.path_to_behavior_data(animal,settings.DEFAULT_EXPERIMENTER,'2afc',pair[1])
+        muscimolFile = loadbehavior.path_to_behavior_data(animal,'2afc',pair[1])
         muscimolData = loadbehavior.BehaviorData(muscimolFile,readmode='full')
 
         muscimolChords = percent_correct_sound_type(muscimolData, 'chords')

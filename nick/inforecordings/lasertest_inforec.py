@@ -1,3 +1,6 @@
+from jaratoolbox import celldatabase
+experiments = []
+
 laserCal = {
     '0.5':1.5,
     '1.0':1.3, #Mistake here??
@@ -16,28 +19,34 @@ laserCal = {
 
 #1.5 on dial - 1.6mW
 
-'2016-08-22_16-03-24'
+exp0 = celldatabase.Experiment('lasertest', '2016-08-22')
+experiments.append(exp0)
+exp0.add_site(0)
+
+#1.5 on dial, 1.7mW
+exp0.add_session('16-03-24', None, '1.7mW', paradigm='am_tuning_curve')
 
 #2.5 on dial - 2.7mW
-'16-05-57'
+exp0.add_session('16-05-57', None, '2.7mW', paradigm='am_tuning_curve')
 
 #3.5 on dial - 3.3mW
-'16-06-50'
+exp0.add_session('16-06-50', None, '3.3mW', paradigm='am_tuning_curve')
 
 #4.5 - 4.1mW
-'16-07-42'
+exp0.add_session('16-07-42', None, '4.1mW', paradigm='am_tuning_curve')
 
 #5.5 - 4.9mW
-'16-08-33'
+exp0.add_session('16-08-33', None, '4.9mW', paradigm='am_tuning_curve')
 
 #6.5 - 5.9mW
-'16-09-24'
+exp0.add_session('16-09-24', None, '5.9mW', paradigm='am_tuning_curve')
 
-#7.5 - 6.5mW
-'16-10-12' #72 trials
+#7.5 - 6.5mW #72 trials
+exp0.add_session('16-10-12', None, '4.9mW', paradigm='am_tuning_curve')
 
 #8.5 - 6.9mW
-'16-11-20'
+exp0.add_session('16-11-20', None, '4.9mW', paradigm='am_tuning_curve')
 
 #9.5 - 7.2mW
-'16-12-06'
+exp0.add_session('16-12-06', None, '4.9mW', paradigm='am_tuning_curve')
+
