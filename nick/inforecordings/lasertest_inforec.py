@@ -50,3 +50,12 @@ exp0.add_session('16-11-20', None, '4.9mW', paradigm='am_tuning_curve')
 #9.5 - 7.2mW
 exp0.add_session('16-12-06', None, '4.9mW', paradigm='am_tuning_curve')
 
+exp1 = celldatabase.Experiment(subject, '2016-08-24')
+exp1.add_site(0)
+
+#some waveforms going up instead of down
+#Dial at 10 - 8.5mW
+exp1.add_session('16-19-46', None, 'High', paradimg='am_tuning_curve')
+
+#Dial at 1 - 0.6mW
+exp1.add_session('16-23-40', None, 'Low' paradimg='am_tuning_curve')
