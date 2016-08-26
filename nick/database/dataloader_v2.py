@@ -104,8 +104,9 @@ class DataLoader(object):
             spikeData.timestamps = spikeData.timestamps/self.EPHYS_SAMPLING_RATE
 
         #If clustering has been done for the tetrode, add the clusters to the spikedata object
-        clustersDir = os.path.join(self.ephysPath, self.subject, '{}_kk'.format(sessionDir))
+        clustersDir = os.path.join(self.ephysPath, '{}_kk'.format(sessionDir))
         clustersFile = os.path.join(clustersDir,'{}{}.clu.1'.format(electrodeName, tetrode))
+        print clustersFile
         if os.path.isfile(clustersFile):
             spikeData.set_clusters(clustersFile)
 
