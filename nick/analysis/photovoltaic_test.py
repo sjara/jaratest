@@ -3,7 +3,9 @@ from jaratest.nick.probes import probelayout
 from jaratoolbox import settings
 from jaratoolbox import loadopenephys
 from matplotlib import pyplot as plt
+import matplotlib.patches as mpatches
 from jaratest.nick.inforecordings import lasertest_inforec as inforec
+reload(inforec)
 import os
 
 channelMap = probelayout.channelMap[:6, :] #Only tetrodes 1-6 are still intact
@@ -21,6 +23,8 @@ EPHYS_SAMPLING_RATE=30000.0
 timebase = np.arange(0, secondsEachTrace*EPHYS_SAMPLING_RATE)/EPHYS_SAMPLING_RATE
 
 sessions = inforec.experiments[0].sites[0].session_ephys_dirs()
+
+sessions=sessions[:1]
 
 #maprow = tetrode
 #mapcol = channel
@@ -83,11 +87,17 @@ for indSession, session in enumerate(sessions):
 
         if indSession==0:
             ax.plot(2*[0],[0,-scalebarSize],color='0.5',lw=3)
+            # ax.plot([0, -scalebarSize], [1e-01, -scalebarSize],
+                    # color='0.5', lw=3)
+            ax.axvline(x=0, ymin=0.7, ymax=0.8)
+            ax.axvline(x=0.1, ymin=0.7, ymax=0.8)
 
         if ((indSession==0)&(indr==0)&(indc==0)):
             ax.text(-0.01,-scalebarSize/2,'{0:0.0f}uV'.format(np.round(scalebarSize)),
                         ha='right',va='center',ma='center',fontsize=fontsize, rotation='vertical')
 
+            ax.text(-0.03,scalebarSize/2,'100msec',
+                        ha='left',va='center',ma='center',fontsize=fontsize)
 def getYlabelpoints(n):
     rawArray = np.array(range(1, n+1))/float(n+1) #The positions in a perfect (0,1) world
     diffFromCenter = rawArray - 0.6
@@ -103,4 +113,14 @@ for indp, position in enumerate(sessionLabelPositions[::-1]):
 
 
 color_patches = []
-color_patches.append(mpatches.Patch(color='red', label='0.25mg/ml'))
+labels = inforec.experiments[0].sites[0].session_types()
+
+for indLabel, label in enumerate(labels):
+    color_patches.append(mpatches.Patch(color=colors[indLabel], label=label))
+
+plt.gcf().subplots_adjust(right=0.8)
+plt.legend(handles=color_patches,
+           bbox_to_anchor=(0.975,0.95),
+           bbox_transform=plt.gcf().transFigure)
+
+plt.savefig('/tmp/photovoltaictest_large.png')
