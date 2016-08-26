@@ -1,3 +1,7 @@
+import os
+import subprocess
+from jaratoolbox import settings
+
 def rsync_session_data(subject,
                        session,
                        server = 'jarauser@jarastore',
