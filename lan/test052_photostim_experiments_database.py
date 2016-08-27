@@ -40,10 +40,19 @@ expList.append(exp)
 
 exp = photostimExp.PhotostimSession(animalName='d1pi015',date='2016-08-10', stimHemi='left', ephysSession='16-07-12',tuningSurffix='a',behavSurffix='a', depth=2180, tetrodes=tetrodesDict['d1pi015_lefthemi']) 
 expList.append(exp)
-'''
+
 #exp = photostimExp.PhotostimSession(animalName='d1pi015',date='2016-08-15', stimHemi='right', ephysSession='13-17-45',tuningSurffix='b',behavSurffix='a', depth=2180, tetrodes=tetrodesDict['d1pi015_righthemi']) 
 exp = photostimExp.PhotostimSession(animalName='d1pi015',date='2016-08-15', stimHemi='right', ephysSession='13-08-29',tuningSurffix='a',behavSurffix='a', depth=2180, tetrodes=tetrodesDict['d1pi015_righthemi']) 
 expList.append(exp)
+'''
+
+exp = photostimExp.PhotostimSession(animalName='d1pi015',date='2016-08-16', stimHemi='left', ephysSession='15-01-41',tuningSurffix='b',behavSurffix='a', depth=2180, tetrodes=tetrodesDict['d1pi015_lefthemi']) 
+expList.append(exp)
+
+
+exp = photostimExp.PhotostimSession(animalName='d1pi015',date='2016-08-17', stimHemi='right', ephysSession='14-14-36',tuningSurffix='b',behavSurffix='a', depth=2180, tetrodes=tetrodesDict['d1pi015_righthemi']) 
+expList.append(exp)
+
 
 ######### d1pi016 ##########
 '''
@@ -103,6 +112,11 @@ exp = photostimExp.PhotostimSession(animalName='d1pi016',date='2016-08-13', stim
 #exp = photostimExp.PhotostimSession(animalName='d1pi016',date='2016-08-13', stimHemi='left', ephysSession='16-07-52',tuningSurffix='a',behavSurffix='a',depth=2260,tetrodes=tetrodesDict['d1pi016_lefthemi'])
 expList.append(exp)
 '''
+exp = photostimExp.PhotostimSession(animalName='d1pi016',date='2016-08-16', stimHemi='left', ephysSession='17-04-42',tuningSurffix='c',behavSurffix='a',depth=2340,tetrodes=tetrodesDict['d1pi016_lefthemi'])
+expList.append(exp)
+
+exp = photostimExp.PhotostimSession(animalName='d1pi016',date='2016-08-17', stimHemi='right', ephysSession='16-15-04',tuningSurffix='b',behavSurffix='a',depth=2420,tetrodes=tetrodesDict['d1pi016_righthemi'])
+expList.append(exp)
 
 ##### Plot and save tuning and psy curve reports for all experiments ######
 for exp in expList:
