@@ -8,7 +8,7 @@ def rsync_session_data(subject,
                        serverEphysPath = '/data2016/ephys',
                        skipIfExists=False):
     '''
-    #TODO: server user and server name as one string
+    #DONE: server user and server name as one string
     #TODO: server ephys path and user in settings file
     Rsync just the sessions you need from jarahub
     '''
@@ -16,6 +16,22 @@ def rsync_session_data(subject,
     serverDataPath = '{}:{}'.format(server, fullRemotePath)
     localDataPath = os.path.join(settings.EPHYS_PATH, subject) + os.sep
     fullLocalPath = os.path.join(localDataPath, session)
+    transferCommand = ['rsync', '-av', serverDataPath, localDataPath]
+    if skipIfExists:
+        if not os.path.exists(fullLocalPath):
+            subprocess.call(transferCommand)
+    else:
+        subprocess.call(transferCommand)
+
+def rsync_behavior(subject,
+                   behavFile,
+                   server = 'jarauser@jarahub',
+                   serverBehavPath = '/data/behavior',
+                   skipIfExists=False):
+    fullRemotePath = os.path.join(serverBehavPath, subject, behavFile)
+    serverDataPath = '{}:{}'.format(server, fullRemotePath)
+    localDataPath = os.path.join(settings.BEHAVIOR_PATH, subject) + os.sep
+    fullLocalPath = os.path.join(localDataPath, behavFile)
     transferCommand = ['rsync', '-av', serverDataPath, localDataPath]
     if skipIfExists:
         if not os.path.exists(fullLocalPath):
