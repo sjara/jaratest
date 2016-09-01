@@ -57,11 +57,18 @@ class DataLoader(object):
         evChannel = np.array(eventData.eventChannel)
 
         eventTimes = np.array(eventData.timestamps)
-        eventOnsetTimes=eventTimes[(evID==eventID)] #&(evChannel==eventChannel]
+
+        if evID is not None:
+            eventOnsetTimes=eventTimes[(evID==eventID)&(evChannel==eventChannel)]
+        else:
+            eventOnsetTimes=eventTimes[evChannel==eventChannel]
+
 
         #Restrict to events are seperated by more than the minimum event onset time
-        evdiff = np.r_[1.0, np.diff(eventOnsetTimes)]
-        eventOnsetTimes=eventOnsetTimes[evdiff>minEventOnsetDiff]
+        #TODO: Make the default None, not the setting for laser trains
+        if minEventOnsetDiff is not None:
+            evdiff = np.r_[1.0, np.diff(eventOnsetTimes)]
+            eventOnsetTimes=eventOnsetTimes[evdiff>minEventOnsetDiff]
 
         return eventOnsetTimes
 
@@ -106,7 +113,7 @@ class DataLoader(object):
         #If clustering has been done for the tetrode, add the clusters to the spikedata object
         clustersDir = os.path.join(self.ephysPath, '{}_kk'.format(sessionDir))
         clustersFile = os.path.join(clustersDir,'{}{}.clu.1'.format(electrodeName, tetrode))
-        print clustersFile
+        print clustersFile #NOTE: For debugging
         if os.path.isfile(clustersFile):
             spikeData.set_clusters(clustersFile)
 
