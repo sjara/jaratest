@@ -1,6 +1,7 @@
 *.pyc
 *~
 \#*
+.#*
 .emacs*
 doc/_build
 
