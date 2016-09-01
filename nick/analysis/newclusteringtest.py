@@ -42,7 +42,7 @@ def cluster_session(session, tetrode, features=['peak', 'valleyFirstHalf']):
         oneTT.save_report()
     return oneTT
 
-def cluster_site(site, tetrode, idString,
+def cluster_many_sessions(sessions, tetrode, idString,
                  features=['peak', 'valleyFirstHalf'],
                  saveSingleSessionCluFiles=False):
     oneTT = cms.MultipleSessionsToCluster(site.subject,
