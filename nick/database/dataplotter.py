@@ -90,7 +90,8 @@ def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1]
     
     Args:
         binsize (float) = size of bins for PSTH in ms
-    '''    
+    '''   
+    binsize = binsize/1000.0 
     # If a sort array is supplied, find the trials that correspond to each value of the array
     if len(sortArray) > 0:
         trialsEachCond = behavioranalysis.find_trials_each_type(
@@ -99,12 +100,12 @@ def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1]
         trialsEachCond = []
     # Align spiketimestamps to the event onset times for plotting
     spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-        spikeTimestamps, eventOnsetTimes, timeRange)
-    binsize = binsize/1000.0
-    binEdges = np.around(np.arange(timeRange[0], timeRange[1]+binsize, binsize), decimals=2)
+        spikeTimestamps, eventOnsetTimes, [timeRange[0]-binsize, timeRange[1]])
+    binEdges = np.around(np.arange(timeRange[0]-binsize, timeRange[1]+2*binsize, binsize), decimals=2)
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, binEdges)
     pPSTH = extraplots.plot_psth(spikeCountMat/binsize, 1, binEdges[:-1], trialsEachCond, *args, **kwargs)
     plt.setp(pPSTH, lw=lw)
+    plt.xlim(timeRange)
 
 def two_axis_sorted_raster(spikeTimestamps,
                            eventOnsetTimes,
