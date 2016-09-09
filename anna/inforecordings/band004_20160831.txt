@@ -1,0 +1,36 @@
+band004: 2016-08-24
+
+probe: 92B1 (three-shanks)
+Probe impedances are quite low today... some dipping as low at 600kOhms, most below 1MOhm! Weird. Maybe the isopropanol cleaning for yesterdays DiI took off some old gunk as well?
+
+We are recording as far medial in the craniotomy as we can go with the fiber in the way. Probes coated with DiD. Looks like fiber might be getting pushed into TT5/6... will try to go as slow as we can.
+
+At 750um, going down, hunting for neurons.
+
+At 850um, looks like the beginning of some spikes on TT2, but very small and shitty.
+
+At 890um, highly mediocre spikes on TT2 and 4. Perhaps a little something on 6.
+After waiting 15 min, improved spikes on TT2,4,6.
+Looks like possible laser response on TT2 and 6, but spikes are crappy enough that I'm willing to give this site a pass.
+
+At 910um, improved spike shapes, but still not quite doing it for me. We could try them...
+Responses not good enough to justify recording from such crappy cells.
+
+At 950um, greatly improved spiking on all tetrodes.
+Totally unimpressive laser responses, moving on.
+
+At 980um, the TT2-4-6 temptation is real.
+Looks like a strong TT4 laser response and maybe a bit of a TT6 response as well.
+Open-ephys crashed during recording of noise bursts... May want to retake laser tests.
+Redid laser responses, now there's a strong TT6 response with a very big, sexy spike.
+TT6 likes everything from 12-22kHz, strong onset responses to AM.
+Will go with 18kHz, 16Hz mod.
+
+At 1075um, spikes everywhere but TT5. Low impedance means we're picking up a lot of noise, which is starting to get really annoying...
+Laser responses on TT3 and 6. Sound responsive.
+TT3 loves 26kHz and has pretty sustained responses to 16Hz mod and up.
+
+At 1125um, good spikes again, but laser responses look highly identical to previous site.
+
+At 1175um, some really nice spikes on TT4, as well as ok ones on TT1,2,3,6.
+Again laser responses are pretty similar, but new cells on TT4 look like they're very active and strongly inhibited by laser, and that might be interesting enough to record on its own.

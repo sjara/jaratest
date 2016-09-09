@@ -1,0 +1,37 @@
+band004: 2016-08-24
+
+probe: 92B1 (three-shanks), now with optical fiber!
+
+We are recording from right AC with probes near lateral edge of craniotomy. Probes and fiber coated with DiI.
+
+At 916um, moving down, looking for neurons.
+
+At 981um, maybe spikes on TT2,4,6. TT6 laser responsive. Responses going away and spike shape is quite crappy, maybe try moving closer?
+
+At 992um, some improvement in TT6 spikes. Much improved laser response (and better inhibitory laser response on TT4). Checking sound response.
+All tetrodes sound responsive, TT6 looks like it has onset/inhibitory response (multiple cells?)
+TT2 likes 26kHz but suppressed by AM, TT4 loves 40kHz and very sustained response to 4Hz am, TT6 likes 18kHz and hates 4Hz mod the least.
+Going with 18kHz, 4Hz for TT6 cell, as it's the only laser responsive one.
+
+At 1030um, pretty nice spikes on TT2,4, mediocre ones on TT6.
+TT6 hardcore laser response, TT2 and 4 suppressed by laser. Maybe we didn't move far enough away and these are the same cells? But their waveforms are better, so let's go with it.
+Sound responses look much the same as before. Unfortunately, I don't give a fuck.
+Yeah, these are definitely the same cells. Going with 18kHz, 8Hz mod.
+
+At 1092, really good spikes on TT2,4, ok on 6.
+Possible laser responses on all three tetrodes, not as sexy as before.
+Something appeared on TT3 during recording, making new site since we were referencing TT3.
+Okay, that's a TT4 response. And the TT4 spikes are large and in charge!
+TT4 sound response is kinda weird/barely there, but barely there is all I need. TT2 also sound responsive.
+TT4 really likes 26-32kHz, hates white noise. All others irrelevant.
+
+At 1150um, pretty good spikes on TT1,2,3,4,6. Still got that TT4 laser response, same cells?
+Compared to laser responses from previous site... these are the same cells. Moving on.
+
+At 1200um, good signals again on TT1,2,4,5,6.
+TT2 and 4 laser responsess still look the same as before, but looks like we got something new on TT5!
+TT5 has strong onset response to laser, looks like might be on TT6 too?
+TT5 does not appear to have a sound response (maybe is inhibited by it? Hard to say). I will keep going though to see if it likes pure tones.
+TT5 likes 18kHz best, but is ok with 32kHz as well. TT4 and 6 both really like 32kHz. All inhibited by white noise.
+Going with 32kHz to hit all three of TT4,5,6.
+TT4 laser response is gone in end, but TT5 still strong, so gonna go with another bandwidth session for TT5 (18kHz, 4Hz mod)
