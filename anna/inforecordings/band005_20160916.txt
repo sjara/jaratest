@@ -1,0 +1,29 @@
+band005: 2016-09-16
+
+probe: 92B1 (three-shanks)
+
+Recording from left AC with probes pretty close to medial edge of craniotomy. Probes coated with DiD.
+
+Probes in at 517um, slowly going down as TT5/6 shank was flexing a bit going in.
+
+Starting to get what looks like spikes at 750um, eases my paranoia of broken probe.
+
+After many microns of suspicious broken-probe-like noise, finally see some spikes on TT2 at 1036um!
+May be something on TT4 as well. Testing sound and laser responses.
+Really hard to tell from mouse jumping every time sound plays (and casing movement artifacts), but cell does not appear to be sound responsive.
+Wouldn't you know it, it's laser responsive but not sound responsive.
+Going to do a tuning curve anyway (maybe it just doesn't like white noise?) It's the first laser responsive cell we've found, we gotta give it a shot!
+No, this cell definitely couldn't care less about sound.
+
+At 1125um, cells again on TT2, and some on TT4 this time. Another shank confirmed unbroken. Trying to move a bit closer to get better TT4 signal.
+Moved down to 1135um, now picking something up on TT6 as well. Moved to 1140um.
+Off response to laser on TT2. TT2 also sound responsive. Interesting enough to record from.
+TT2 appears to favour 12kHz, looks like mostly onset responses for AM.
+Ok, off response on TT2 is gone, but might as well do bandwidth since we went through trouble of collecting it...
+
+At 1270um, cells on TT1,2,4,6 (TT1 cell maybe TT2 cell from previous site)
+Off response to laser on TT2. Hard to tell if there's a sound response due to movement artifacts from mouse jumping. Maybe off sound response?
+TT1 and 2 like 14-18 kHz (TT1 has a strong off response!)
+
+At 1310um, pretty good spikes on TT2,4,6, looks like adequate ones on TT1,3.
+Maybe a weak on response on TT1, good off responses on TT2,4.
