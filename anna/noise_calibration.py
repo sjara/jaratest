@@ -16,11 +16,12 @@ soundAmp = 0.3
 
 
 soundObj = pyo.Fader(fadein=0.002, fadeout=0.002, dur=duration, mul=soundAmp)
-n = pyo.Noise(mul=soundObj)
-soundWaveObj = pyo.EQ(n, freq=14000, q=10, boost=10, type=0).out()
+soundWaveObj = pyo.Noise(mul=soundObj).out()
+#n = pyo.Noise(mul=soundObj)
+#soundWaveObj = pyo.EQ(n, freq=14000, q=10, boost=10, type=0).out()
 
 # -- Set recording parameters --
-soundFilename = '/home/jarauser/workspace/sounds/calibration.wav'
+soundFilename = '/home/jarauser/tmp/calibration.wav'
 ss.recordOptions(dur=duration, filename=soundFilename,
                 fileformat=0, sampletype=0)
 

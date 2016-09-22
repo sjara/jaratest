@@ -1,0 +1,42 @@
+band004: 2016-09-11
+
+probe: 92B1 (three-shanks)
+Impedances pretty low again today. How odd.
+Recording from left AC with probes relatively near medial edge of craniotomy. Probes coated with DiO.
+
+Probes in at 1066um. Instantly seeing spikes on TT2,4. Frequency of spiking leads me to suspect hippocampus...
+Total inhibitory response on TT4, somewhat on TT2, maybe a really weak laser response on TT6.
+Testing noise response just because I suspect TT2 is hippocampus.
+TT2 does appear to have a bit of a sound response. TT4 and 6 have decent sound responses. Going to try getting closer to the TT6 cell and seeing if it really is laser responsive.
+
+At 1080um, looks like better TT6 response, may have picked something up on TT1 and 3 as well.
+TT6 kinda weird... looks like it just keeps going at baseline rate, then shuts off once laser over. Two cells maybe?
+TT2 and 4 have such powerful off responses to laser that I think they'd be interesting to record.
+TT2,4,6 have weeeeeird sound responses... I'm recording this!
+So TT6 does still appear to have some sort of laser response, though it appears there is also a non-PV cell on that tetrode.
+TT6 looks broadly tuned (or multiple cells...), appears maybe one cell likes 27kHz, second likes 12kHz.
+Can try both of them at 64Hz mod.
+
+At 1200um, spikes on every tetrode! Which one do I sacrifice?? Could try going referenceless.
+All tetrodes have strong off responses to laser. Not the cells I'm looking for.
+
+At 1250um, testing laser responses again. Spikes on all tetrodes, no reference.
+Still just off laser responses.
+
+Trying my luck at 1300um, still spikes on all tetrodes, no reference.
+Still off response everywhere, but TT5 looks like it might have a laser onset response?
+Take tuning curve, do laser again, onset response on TT5 looks quite week, but I came this far...
+TT5 doesn't even have clear tuning, so let's go with TT2 since it has the most interesting response.
+7kHz, 64Hz mod.
+
+At 1350um, spikes on all tetrodes, off responses to laser.
+
+At 1400um, still just off responses.
+
+No luck at 1450um.
+
+Trying 1550um. Still nothing!
+
+All right, doesn't look like we'll be getting more laser responses, but TT1 and TT4 have amazing spikes that get inhibitory input from PV cells, so why not?
+Recording as 1575um, TT1 and 3 seem to like 12kHz (TT1 somewhat broadly tuned), unclear what TT4 likes.
+12kHz, 64Hz mod.

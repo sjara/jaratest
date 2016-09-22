@@ -1,0 +1,33 @@
+band004: 2016-09-09
+
+probe: 92B1 (three-shanks)
+Had some skin or something grow over left craniotomy? Had to be removed. Lateral edge is very bloody and hard to see where craniotomy ends.
+
+Recording from left AC with probes at what appears to be midline of craniotomy. Probes covered in DiI.
+Not the best ground placement, not fully in agar.
+At 1000um, going down, hunting for neurons.
+
+Already appears to be spikes at 1000um on TT4, maybe something on 6 and 3.
+Stuff appeared on TT5 during laser pulses, redoing recording with TT1 as reference.
+All tetrodes appear to be inhibited by laser. These are not the cells we're looking for.
+
+At 1050um, some damn good spikes on TT2, plus decent ones on TT3,4,6.
+TT2 is inhibited by laser, but TT4 looks laser responsive!
+All tetrodes sound responsive, TT4 especially so. Doing more laser pulses to make sure these are same cells.
+Much more clear laser response on TT4 this time.
+TT4 is the important one, so it's getting 14kHz, 64Hz mod.
+Okay, looks like TT4 laser response is gone... but now there's one on TT6. May wish to create new site for this.
+TT6 likes 14kHz and 32Hz, but let's check laser responses again before jumping into bandwidth...
+
+At 1120, big spikes on every tetrode, going to try referencing broken TT7 and see how that goes.
+It goes not great when mouse moves.
+
+At 1150, sacrificing TT5 spikes for the greater good.
+Possible laser responses on TT4, but looks like there's an excitatory cell there too. How will we tell them apart?
+No, looks like TT4 response is gone. All tetrodes show inhibitory response to laser.
+
+At 1220um, trying luck with TT1,3,4,6 spikes.
+Wanna go 10kHz, 32Hz mod for TT4 cell, but let's check again real quick!
+Suspicious new response on TT3... may as well do another train.
+Gonna go with 10kHz, 64Hz mod for both TT3 and 4. Unfortunately, looks like both also have components that are inhibited by laser... hard to say which cell tuning curve came from.
+TT3 and 4 look like they have secondary tuning peaks at 32kHz... can try running a second bandwidth paradigm for that.
