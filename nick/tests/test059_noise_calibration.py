@@ -264,7 +264,8 @@ class SpeakerCalibration(QtGui.QMainWindow):
     #         oneOutputButton.soundType = self.soundTypeList[soundTypeInd]
 
     def initialize_sound(self):
-        s = pyo.Server(audio='jack').boot()
+        # s = pyo.Server(audio='jack').boot()
+        s = pyo.Server().boot()
         s.start()
         return s
 
