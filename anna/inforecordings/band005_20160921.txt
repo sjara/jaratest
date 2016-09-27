@@ -1,0 +1,9 @@
+band005: 2016-09-21
+
+probe: 92B1 (three-shanks)
+
+Recording from left AC with probes at about the center of the craniotomy, but further anterior than previous days. Probes coated with DiI.
+
+At 500um, going down relatively slow as shank 1 was flexing a bit going on (though straightening out just as quickly).
+
+At 800um, checked on mouse, shank 1 is flexing very heavily going in. Will give it some time to straighten, but if it doesn't, will have to pull out and choose another site.
