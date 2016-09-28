@@ -15,6 +15,9 @@ A4X2TET=np.array([[4, 7, 5, 2],
                   [28, 31, 29, 26],
                   [27, 32, 30, 25]])
 
+#Entering this for now as 1 big "tetrode"
+A1X32_POLY2 = np.array([[23, 10, 24, 9, 25, 8, 26, 7, 27, 6, 28, 5, 29, 4, 30, 3, 31, 2, 32, 1, 22, 11, 21, 12, 20, 13, 19, 14, 18, 15, 17, 16]])
+
 #The electrode a32 connector package. Electrode numbers from left to right, top to bottom (4x10 np.array)
 #GND = -1
 #REF=-2
@@ -109,10 +112,15 @@ def convert_electrode(tetrodes):
 
     return tetConfig
 
+
 channelMap = convert_electrode(A4X2TET)
+
+iraChannelMap = convert_electrode(A1X32_POLY2)
 
 #The openephys GUI counts from 1, so we need to add 1
 channelMap = channelMap + 1
+
+iraChannelMap = np.array(iraChannelMap) + 1
 
 '''
 Code to try and generate the config file - I just did it manually for the second mapping
