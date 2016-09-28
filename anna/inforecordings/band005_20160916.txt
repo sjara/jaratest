@@ -27,3 +27,5 @@ TT1 and 2 like 14-18 kHz (TT1 has a strong off response!)
 
 At 1310um, pretty good spikes on TT2,4,6, looks like adequate ones on TT1,3.
 Maybe a weak on response on TT1, good off responses on TT2,4.
+TT2 might have an off response to noise.
+TT2 and 4 seem to like 10kHz the best, TT4 has best response to 8Hz AM.

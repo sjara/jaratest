@@ -137,7 +137,7 @@ class SaveButton(QtGui.QPushButton):
             dataDir = dataRootDir #os.path.join(dataRootDir)
             if not os.path.exists(dataDir):
                 os.makedirs(dataDir)
-            fileNameOnly = 'speaker_calibration_{0}.{1}'.format(date,fileExt)
+            fileNameOnly = 'noise_calibration_{0}.{1}'.format(date,fileExt)
             defaultFileName = os.path.join(dataDir,fileNameOnly)
 
         self.logMessage.emit('Saving data...')
@@ -186,11 +186,11 @@ class SaveButton(QtGui.QPushButton):
         self.filename = fname
         self.logMessage.emit('Saved data to {0}'.format(fname))
 
-class SpeakerCalibration(QtGui.QMainWindow):
+class NoiseCalibration(QtGui.QMainWindow):
     def __init__(self, parent=None, paramfile=None, paramdictname=None):
         super(SpeakerCalibration, self).__init__(parent)
 
-        self.name = 'speakercalibration'
+        self.name = 'noisecalibration'
         self.soundServer = self.initialize_sound()
 
         # -- Add graphical widgets to main window --

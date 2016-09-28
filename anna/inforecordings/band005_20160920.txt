@@ -1,0 +1,15 @@
+band005: 2016-09-20
+
+probe: 92B1 (three-shanks)
+
+Recording from left AC with probes at about the center of the craniotomy, but closer to lateral edge. Probes coated with DiI.
+
+At 500um, TT1,2 and 5,6 shanks are flexing quite a bit, so going down very very slowly, 10um at a time.
+
+Down to 900um, still seeing nothing but noise. Noise different on broken shanks, which leads me to believe the other shanks are still intact. Visual confirmation every 50um tells me shanks 1 and 3 are still flexed, but not any more so that 400um ago.
+
+At 940um, possible spikes on TT2? (They're real shitty though)
+
+At 1150um, possibly getting something shitty on TT2 and 4, but just as likely to be noise.
+
+Got all the way down to 1350um, neer saw a single spike. Not a lot of agar was in well and it's quickly drying out/deteriorating. Calling it quits for the day.

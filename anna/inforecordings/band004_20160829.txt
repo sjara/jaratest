@@ -1,0 +1,32 @@
+band004: 2016-08-24
+
+probe:  (three-shanks), now with optical fiber!
+
+We are recording from right AC with prodes near center of craniotomy. probes and fiber coated with DiO.
+
+At 673um, spikes on TT1,2 and 4
+Move down to 678, recorded sound and laser responeses.
+TT4 definitely sound responsive and inhibited by laser pulses (not PV cell)
+
+At 686um, thought there might be laser responses, but turns out it's just cell bouncing back from being inhibited.
+
+At 725um, laser testing, inhibitory response again.
+
+At 759um, laser testing, inhibitory response
+
+At 828um, laser testing, MAYBE LASER RESPONSE ON TT6?? Doing another run of laser pulses to be sure.
+TT6 cell is sound responsive, turning up laser power to 2.5 and checking again.
+
+Moving down a tiny bit to 832 to try to pick up cell better.
+Looks like definite laser responses on TT4 and 6 HELL YEAH!
+Going through the motions of tuning. TT1,2,4 appear to really enjoy 22-40kHz (TT4 has particularly strong sustained response to 32kHz). TT6 really likes12-22kHz, peak at around 14kHz.
+TT6 just has big onset response to AM, most sustained at 16Hz mod.
+
+At 884um, looks like we got quite the laser response on TT2 and 6!
+Looks like we may have lost the TT6 laser response, but TT2 still going strong!
+Interestingly, TT2 and 6 look like they have an onset and off response to sound.
+TT1,2,3 all really like 26kHz, TT4 likes 32kHz, TT6 likes 14kHz, but hates sound after.
+TT6 probably has closest to a sustained response, TT2 sort of sustained at 16Hz.
+
+At 950um, laser response once more on TT2. Sound responsive as well.
+TT2 quite likes 26kHz, not very sustained response to AM, maybe a bit to 16Hz. Don't care about other tetrodes since they're NOT LASER RESPONSIVE.
