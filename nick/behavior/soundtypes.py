@@ -252,55 +252,59 @@ def sound_type_behavior_summary(subjects, sessions, output_dir, trialslim=None):
     nAnimals = len(subjects)
 
     for indAnimal, animalName in enumerate(subjects):
-        for indSession, session in enumerate(sessions):
-            #The sound types separated into different bdata objects
-            try:
-                (bdataObjs, bdataSoundTypes) = load_behavior_sessions_sound_type(animalName,
-                                                                                 [session])
-            except KeyError: #Will happen if the bdata does not have 'soundType' key'
-                print "ERROR: Data for {} - {} may not be in the correct format".format(animalName, session)
-                break
+        try:
+            for indSession, session in enumerate(sessions):
+                #The sound types separated into different bdata objects
+                try:
+                    (bdataObjs, bdataSoundTypes) = load_behavior_sessions_sound_type(animalName,
+                                                                                    [session])
+                except KeyError: #Will happen if the bdata does not have 'soundType' key'
+                    print "ERROR: Data for {} - {} may not be in the correct format".format(animalName, session)
+                    break
 
-            #All the bdata together for plotting the dynamics
-            allBehavData = behavioranalysis.load_many_sessions(animalName, [session])
-            nSoundTypes = len(bdataSoundTypes) #This should hopefully be the same for all the animals being plotted
+                #All the bdata together for plotting the dynamics
+                allBehavData = behavioranalysis.load_many_sessions(animalName, [session])
+                nSoundTypes = len(bdataSoundTypes) #This should hopefully be the same for all the animals being plotted
 
-            #Keeps track of the min and max for each sound type for plotting dynamics
-            allFreqsToUse = []
+                #Keeps track of the min and max for each sound type for plotting dynamics
+                allFreqsToUse = []
 
-            #The y inds for plotting
-            yInd = indAnimal + indSession + indAnimal*(nSessions-1)
+                #The y inds for plotting
+                yInd = indAnimal + indSession + indAnimal*(nSessions-1)
 
-            for indSoundType, soundType in enumerate(bdataSoundTypes):
-                plt.subplot2grid((nAnimals*nSessions, nSoundTypes+2), (yInd, indSoundType))
-                thisBehavData = bdataObjs[indSoundType]
+                for indSoundType, soundType in enumerate(bdataSoundTypes):
+                    plt.subplot2grid((nAnimals*nSessions, nSoundTypes+2), (yInd, indSoundType))
+                    thisBehavData = bdataObjs[indSoundType]
 
-                #Find min and max freqs for plotting
-                possibleFreq = np.unique(thisBehavData['targetFrequency'])
-                freqsToUse = [min(possibleFreq), max(possibleFreq)]
-                allFreqsToUse.extend(freqsToUse)
+                    #Find min and max freqs for plotting
+                    possibleFreq = np.unique(thisBehavData['targetFrequency'])
+                    freqsToUse = [min(possibleFreq), max(possibleFreq)]
+                    allFreqsToUse.extend(freqsToUse)
 
-                #Plot psycurves or summaries
-                if any(thisBehavData['psycurveMode']):
-                    (pline, pcaps, pbars, pdots) = behavioranalysis.plot_frequency_psycurve(thisBehavData)
-                    thisColor = FREQCOLORS[indSoundType*2]
-                    plt.setp(pline, color=thisColor)
-                    plt.setp(pcaps, color=thisColor)
-                    plt.setp(pbars, color=thisColor)
-                    plt.setp(pdots, markerfacecolor=thisColor)
-                    plt.title(soundType)
-                    if not indSoundType==0:
-                        plt.ylabel('')
-                else:
-                    thisBehavData.find_trials_each_block()
-                    behavioranalysis.plot_summary(thisBehavData,fontsize=8,soundfreq=freqsToUse)
-                    plt.title(soundType)
+                    #Plot psycurves or summaries
+                    if any(thisBehavData['psycurveMode']):
+                        (pline, pcaps, pbars, pdots) = behavioranalysis.plot_frequency_psycurve(thisBehavData)
+                        thisColor = FREQCOLORS[indSoundType*2]
+                        plt.setp(pline, color=thisColor)
+                        plt.setp(pcaps, color=thisColor)
+                        plt.setp(pbars, color=thisColor)
+                        plt.setp(pdots, markerfacecolor=thisColor)
+                        plt.title(soundType)
+                        if not indSoundType==0:
+                            plt.ylabel('')
+                    else:
+                        thisBehavData.find_trials_each_block()
+                        behavioranalysis.plot_summary(thisBehavData,fontsize=8,soundfreq=freqsToUse)
+                        plt.title(soundType)
 
-            #Plot the dynamics for all the sound types
-            plt.subplot2grid((nAnimals*nSessions, nSoundTypes+2), (yInd, nSoundTypes), colspan=2)
-            behavioranalysis.plot_dynamics(allBehavData, soundfreq = allFreqsToUse)
-            plt.ylabel('')
-            if trialslim:
-                plt.xlim(trialslim)
-            plt.title('{}, {}'.format(animalName, session))
-            plt.subplots_adjust(hspace = 0.7)
+                #Plot the dynamics for all the sound types
+                plt.subplot2grid((nAnimals*nSessions, nSoundTypes+2), (yInd, nSoundTypes), colspan=2)
+                behavioranalysis.plot_dynamics(allBehavData, soundfreq = allFreqsToUse)
+                plt.ylabel('')
+                if trialslim:
+                    plt.xlim(trialslim)
+                plt.title('{}, {}'.format(animalName, session))
+                plt.subplots_adjust(hspace = 0.7)
+        except UnboundLocalError:
+            print "Error for animal {}".format(animalName)
+

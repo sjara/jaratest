@@ -1,19 +1,30 @@
+#!/usr/bin/python
+
 import sys
-from jaratest.nick import soundtypes
+sys.path.append('/home/nick/src/')
+from jaratest.nick.behavior import soundtypes
+from jaratest.nick.utils import transferutils
+reload(soundtypes)
 from matplotlib import pyplot as plt
+import datetime
 
 
 subjects = ['amod006', 'amod007', 'amod008', 'amod009', 'amod010']
 
 if len(sys.argv)>1:
-    sessions = sys.argv[1:]
-    #sessions = input("Enter sessions (in a list of strings ['','']) to check behavior performance:")
+    if sys.argv[1]=='today':
+        today = datetime.datetime.today()
+        session = '{}a'.format(today.strftime('%Y%m%d'))
+    else:
+        session = sys.argv[1]
 
-# else:
-#     sessions = ['20160621a', '20160622a', '20160623a', '20160624a', '20160625a', '20160626a', '20160627a', '20160628a', '20160629a', '20160630a', '20160701a', '20160702a', '20160703a', '20160704a', '20160705a', '20160706a', '20160707a', '20160708a', '20160709a', '20160710a']
+for subject in subjects:
+    behavFile = '{}_2afc_{}.h5'.format(subject, session)
+    transferutils.rsync_behavior(subject, behavFile)
 
-for session in sessions:
-    soundtypes.sound_type_behavior_summary(subjects, session, '', trialslim=[0, 1200])
-    plt.show()
-    plt.savefig('/tmp/{}-{}_{}.png'.format(subjects[0], subjects[-1], session)) 
+soundtypes.sound_type_behavior_summary(subjects, session, '', trialslim=[0, 1200])
+fig = plt.gcf()
+fig.set_size_inches(8.5, 11)
+# plt.show()
+plt.savefig('/home/nick/Dropbox/jaralab/reports/amodbehav/{}-{}_{}.png'.format(subjects[0], subjects[-1], session)) 
 

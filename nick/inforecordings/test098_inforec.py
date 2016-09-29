@@ -32,7 +32,7 @@ exp0.add_session('14-52-07', 'j', 'noisebursts', 'am_tuning_curve')
 ## Second experiment, 2016-07-28 ##
 ## Pipette loaded with 0.125mg/ml muscimol
 
-exp1 = celldatabase.Experiment('2016-07-28')
+exp1 = celldatabase.Experiment(subject, '2016-07-28')
 experiments.append(exp1)
 exp1.add_site(3200)
 

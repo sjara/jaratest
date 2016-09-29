@@ -25,6 +25,8 @@ Plotting sorted tuning rasters
 This module should do things like describe the plot layout for these different plots, but should
 leave the actual plotting to outside methods. (I will have to move the method for plotting an array as
 a heatmap to an outside method)
+
+#NOTE: This type of thing has been done - behavioranalysis has a function plot_frequency_psycurve, which takes a bdata object. This func then uses 2 funcs from the same module (find_trials_each_type and calculate_psychometric) and then uses extraplots.plot_psychometric to do the plotting.
  '''
 
 import numpy as np
