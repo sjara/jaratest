@@ -290,6 +290,33 @@ class NoiseCalibration(QtGui.QMainWindow):
         self.soundServer.shutdown()
         #self.pyoServer.shutdown()
         event.accept()
+        
+class Calibration(object):
+    '''
+    Reads data from file and finds appropriate amplitude for a desired
+    sound intensity at a particular frequency.
+    This class assumes two channels (left,right)
+    '''
+    def __init__(self,filename=None):
+        if filename is not None:
+            h5file = h5py.File(filename,'r')
+            self.amplitude = h5file['amplitude'][...]
+            self.intensity = h5file['intensity'][...]
+            h5file.close()
+        else:
+            self.amplitude = 0.1*np.ones((2,2))
+            self.intensity = 60
+        self.nChannels = self.amplitude.shape[0]
+            
+    def find_amplitude(self, type, intensity):
+        '''
+        Type: 0 for dB SPL, 1 for spectral power
+        Returns an array with the amplitude for each channel.
+        '''
+        ampAtRef = self.amplitude[:,type]
+        dBdiff = intensity-self.intensity
+        ampFactor = 10**(dBdiff/20.0)
+        return np.array(ampAtRef)*ampFactor
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL) # Enable Ctrl-C
