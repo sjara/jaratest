@@ -8,7 +8,7 @@ Added waveform measures (the times and magnitudes of the capacitive peak, sodium
 
 import time
 import pandas as pd
-from jaratoolbox import settings_2 as settings
+from jaratoolbox import settings
 import sys
 import importlib
 import os

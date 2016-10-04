@@ -38,7 +38,7 @@ def plot_ave_photostim_psycurve_by_trialtype(animal,sessions,trialLimit=None):
     else:
         trialSelector = np.ones(len(valid),dtype=bool)
     valid = (valid & trialSelector)
-    print sum(trialSelector), sum(valid)
+    #print sum(trialSelector), sum(valid)
     
     choiceRight = choice==allBehavDataThisAnimal.labels['choice']['right']
     trialType = allBehavDataThisAnimal['trialType']
@@ -56,15 +56,16 @@ def plot_ave_photostim_psycurve_by_trialtype(animal,sessions,trialLimit=None):
     #ax1=plt.subplot(gs[thisAnimalPos])
     
     #plt.figure()
-    fontsize = 12
+    fontsize = 8
     allPline = []
     curveLegends = []
     for stimType in range(nBlocks):
         if np.any(trialsEachType[:,stimType]):
             targetFrequencyThisBlock = targetFrequency[trialsEachType[:,stimType]]    
             validThisBlock = valid[trialsEachType[:,stimType]]
+            #print len(validThisBlock), sum(validThisBlock)
             choiceRightThisBlock = choiceRight[trialsEachType[:,stimType]]
-            
+            numValidTrialThisBlock = sum(validThisBlock)
             (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue)=\
                                                                                                     behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)
             (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue,
@@ -74,13 +75,14 @@ def plot_ave_photostim_psycurve_by_trialtype(animal,sessions,trialLimit=None):
             plt.hold(True)
             plt.setp(pdots, mfc=FREQCOLORS[stimType], mec=FREQCOLORS[stimType])
             plt.hold(True)
+            plt.annotate('%s: %s trials'%(stimLabels[stimType],numValidTrialThisBlock), xy=(0.2, 0.35+stimType/10.0), fontsize=fontsize, xycoords='axes fraction')
             allPline.append(pline)
             curveLegends.append(stimLabels[stimType])
             #plt.hold(True)
     plt.xlabel('Frequency (kHz)',fontsize=fontsize)
     plt.ylabel('Rightward trials (%)',fontsize=fontsize)
     extraplots.set_ticks_fontsize(plt.gca(),fontsize)
-    legend = plt.legend(allPline,curveLegends,loc=2)
+    legend = plt.legend(allPline,curveLegends,loc='best',labelspacing=0.2,prop={'size':4})
     # Add the legend manually to the current Axes.
     #ax = plt.gca().add_artist(legend)
     plt.gca().add_artist(legend)
@@ -88,9 +90,9 @@ def plot_ave_photostim_psycurve_by_trialtype(animal,sessions,trialLimit=None):
     #plt.legend(bbox_to_anchor=(1, 1), bbox_transform=plt.gcf().transFigure)
     #plt.show()
     if len(sessions)==1:
-        plt.title('%s_%s' %(animal,sessions[0]))
+        plt.title('%s_%s' %(animal,sessions[0]),fontsize=fontsize)
     else:
-        plt.title('%s_%sto%s'%(animal,sessions[0],sessions[-1]))   
+        plt.title('%s_%sto%s'%(animal,sessions[0],sessions[-1]),fontsize=fontsize)   
     plt.show()
     '''
     #######Plot dynamics and laser trials##############
@@ -119,8 +121,44 @@ def save_figure(animal,sessions,figformat='png'):
     plt.gcf().savefig(fullFileName,format=figformat)
 
 
+def psychometric_fit(xValues, nTrials, nHits, constraints=None, alpha=0.05):
+    '''
+    Function moved from jaratoolbox/extrastats.py
+    Given performance for each value of parameter, estimate the curve.
+    This function uses psignifit (BootstrapInference)
+    
+    xValues: 1-D array of size M #Numbers of frequencies
+    nHits:   1-D array of size M #Nnumber of hits each frequency
+    nTrials: 1-D array of size M #Nnumber of trials each frequency
+    
+    Returns 4 values:
+    '''
+    import pypsignifit as psi
+
+    if constraints is None:
+        constraints = ( 'flat', 'Uniform(0,0.3)' ,'Uniform(0,0.2)', 'Uniform(0,0.2)')
+    data = np.c_[xValues,nHits,nTrials]
+    session = psi.BootstrapInference(data,sample=False, priors=constraints, nafc=1)
+    # session = psi.BayesInference(data,sample=False,priors=constraints,nafc=1)
+    # (pHit,confIntervals) = binofit(nHits,nTrials,alpha)
+    # return (session.estimate,pHit,confIntervals)
+    return session.estimate
+
+
+def psychfun(xval,alpha,beta,lamb,gamma):
+    '''Psychometric function that allowing arbitrary asymptotes.
+    alpha: bias
+    beta : related to slope
+    lamb : lapse term (up)
+    gamma: lapse term (down)
+    '''
+    #return gamma + (1-gamma-lamb)*weibull(xval,alpha,beta)
+    #return gamma + (1-gamma-lamb)*gaussianCDF(xval,alpha,beta)
+    return gamma + (1-gamma-lamb)*logistic(xval,alpha,beta)
+
+
 if __name__ == '__main__':
-    animals = ['d1pi015','d1pi016']
+    animals = ['d1pi014']
 
     if len(sys.argv)>1:
         sessions = sys.argv[1:]

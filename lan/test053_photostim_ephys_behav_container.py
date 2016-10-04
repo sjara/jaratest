@@ -9,6 +9,7 @@ Lan Guo 20160803
 import numpy as np
 import os
 import pandas as pd
+import pdb
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 from jaratoolbox import settings
@@ -17,6 +18,7 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import spikesanalysis
 from jaratoolbox import spikesorting
 from jaratoolbox import extraplots
+from jaratoolbox import behavioranalysis
 from jaratest.nick.database import dataloader as loader
 from jaratest.nick.database import dataplotter as dataplotter
 from jaratest.nick.database import cellDB
@@ -132,7 +134,7 @@ class PhotostimSite (cellDB.Site):
                 oneTT.set_clusters_from_file()
 
             else:
-                oneTT.load_all_waveforms() #load waveforms only if need to cluster
+                #oneTT.load_all_waveforms() #load waveforms only if need to cluster
                 oneTT.create_multisession_fet_files()
                 oneTT.run_clustering()
                 oneTT.set_clusters_from_file()
@@ -377,8 +379,54 @@ class PhotostimSite (cellDB.Site):
         #print session
         photostimPlotter.plot_ave_photostim_psycurve_by_trialtype(self.animalName, session)
 
+   
+    def fit_psycuve(self):
+        '''
+        Fit psycometric curve with pypsignifit BootstrapInference class (using 'ab' core and 'logistic' sigmoid function.
+        Using constraints silently inside (not ideal): list of four distributions (can be 'unconstrained') for alpha, beta, lapse, guess, respectively; used in fitting to constrain the position of the curve.
+        '''
+        import pypsignifit as psi        
+        main2afcind = self.get_session_types().index('2afc')
+        behavSession = self.get_session_behav_filenames()[main2afcind]
+        session = [behavSession.split('_')[2].strip('.h5')]
+        bdata = behavioranalysis.load_many_sessions(self.animalName,session)
+        targetFrequency=bdata['targetFrequency']
+        choice=bdata['choice']
+        valid=bdata['valid'] & (choice!=bdata.labels['choice']['none'])
+        choiceRight = choice==bdata.labels['choice']['right']
+
+        trialType = bdata['trialType']
+        stimTypes = [bdata.labels['trialType']['no_laser'],bdata.labels['trialType']['laser_left'],bdata.labels['trialType']['laser_right']]
+        stimLabels = ['no_laser','laser_left','laser_right']
+        trialsEachType = behavioranalysis.find_trials_each_type(trialType,stimTypes)
+        nStimTypes = len(stimTypes)
+        curveParamDf = pd.DataFrame()
+        for stimType in range(nStimTypes):
+            if np.any(trialsEachType[:,stimType]):
+                targetFrequencyThisBlock = targetFrequency[trialsEachType[:,stimType]]    
+                validThisBlock = valid[trialsEachType[:,stimType]]
+                choiceRightThisBlock = choiceRight[trialsEachType[:,stimType]]
+                # -- Calculate and plot psychometric points --
+                (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue)=\
+            behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)
+
+                logPossibleValues = np.log2(possibleValues)
+
+            # -- Calculate and plot psychometric fit --
+                constraints = ['Uniform({},{})'.format(logPossibleValues[0],logPossibleValues[-1]), 'unconstrained' ,'unconstrained', 'unconstrained']
+                # -- Fit psy curve with psi.BoostrapInference object -- #
+                data = np.c_[logPossibleValues,nHitsEachValue,nTrialsEachValue]
+                # linear core 'ab': (x-a)/b; logistic sigmoid: 1/(1+np.exp(-(xval-alpha)/beta))
+                psyCurveInference = psi.BootstrapInference(data,sample=False, sigmoid='logistic', core='ab',priors=constraints, nafc=1)
+                curveParams = psyCurveInference.estimate
+                deviance = psyCurveInference.deviance
+                predicted = psyCurveInference.predicted
+                (alpha, beta, lapse, guess) = list(curveParams)
+                curveParamDf = curveParamDf.append({'animal':self.animalName,'session':self.date,'photostim':stimLabels[stimType],'bias':alpha,'slope':beta,'upper':(1-lapse)*100,'lower':100*guess},ignore_index=True)
+         
+        return curveParamDf       
     
-    
+
     def plot_tuning_heatmap_one_tetrode(self,tetrode,mainTCind):
         '''
         Method for plotting heatmap for multiunit tuning at one site. 
@@ -606,19 +654,20 @@ class PhotostimSite (cellDB.Site):
 
             response_df = response_df.append({'tetrode':tetrode,'good_clusters':goodClusterNumbers,'freq':Freq,'maxZ':maxZValue,'ave_spike':aveSpikes,'std_spike':stdSpikes}, ignore_index=True)
             #print num
-
+        
+        highestAveSpikesFreq = response_df['freq'][np.argmax(response_df['ave_spike'])]
         responsive = (np.abs(response_df['maxZ']) >= maxZthreshold)
         if np.any(responsive):
             responsiveFreqs = response_df['freq'][responsive]   
         else:
             responsiveFreqs = None
-        return (response_df, responsiveFreqs)
+        return (response_df, responsiveFreqs, highestAveSpikesFreq)
 
 
     def plot_tuning_response_stats(self,mainTCind,tetrode,intensity=50.0,baseRange=[-0.050,-0.025],binEdges=[0,0.025,0.05,0.075,0.1],aveTimeRange=[0,0.125],maxZthreshold=2):
-        (response_df, responsiveFreqs) = self.estimate_responsive_freq_range_tuning(mainTCind,tetrode,intensity,baseRange,binEdges,aveTimeRange,maxZthreshold)
+        (response_df, responsiveFreqs, highestAveSpikesFreq) = self.estimate_responsive_freq_range_tuning(mainTCind,tetrode,intensity,baseRange,binEdges,aveTimeRange,maxZthreshold)
         freqs, aveSpikes, stdSpikes, maxZ = np.split(response_df.ix[:,['freq','ave_spike','std_spike','maxZ']].values,4,1)
-        
+         
         #plot mean and std of spike number during sound, freqs on log scale
         plt.errorbar(freqs.flatten(), aveSpikes.flatten(), yerr=stdSpikes.flatten(), fmt='-o',linewidth=2)
         plt.ylabel('Ave spikes (%s to %ssec)'%(aveTimeRange[0],aveTimeRange[-1]),color='blue')
@@ -634,9 +683,224 @@ class PhotostimSite (cellDB.Site):
         plt.xlabel('Freq (kHz)')
         plt.subplots_adjust(bottom=0.25)
         plt.axhline(y=2, linestyle='dashed', linewidth=0.7, color='black')
+        #xmin,xmax,ymin,ymax = plt.axis()
         #if np.any(responsiveFreqs):
-            #plt.text(0.5,0.5,('responsive freqs:'+str(['%s'%freq for freq in responsiveFreqs])), color='r')
+        #    plt.text(0.5*(xmin+xmax), 0.5*(ymin+ymax),('responsive freqs:\n'+str(['%s'%freq for freq in responsiveFreqs]))+'\n'+str(highestAveSpikesFreq), color='r')
         #plt.show()
+
+
+    def calculate_percent_correct_each_freq_each_cond(self):
+        '''
+        Method to calculate percent of correct trials for each frequency presented in the 2afc task in each stimulation conditions.
+
+        '''
+        main2afcind = self.get_session_types().index('2afc')
+        behavSession = self.get_session_behav_filenames()[main2afcind]
+        session = [behavSession.split('_')[2].strip('.h5')]
+        allBehavDataThisAnimal = behavioranalysis.load_many_sessions(self.animalName,session)
+        targetFrequency = allBehavDataThisAnimal['targetFrequency']
+        choice=allBehavDataThisAnimal['choice']
+        valid=allBehavDataThisAnimal['valid']& (choice!=allBehavDataThisAnimal.labels['choice']['none'])
+
+        choiceRight = choice==allBehavDataThisAnimal.labels['choice']['right']
+        trialType = allBehavDataThisAnimal['trialType']
+        stimTypes = [allBehavDataThisAnimal.labels['trialType']['no_laser'],allBehavDataThisAnimal.labels['trialType']['laser_left'],allBehavDataThisAnimal.labels['trialType']['laser_right']]
+        stimLabels = ['no_laser','laser_left','laser_right']
+
+        trialsEachType = behavioranalysis.find_trials_each_type(trialType,stimTypes)
+        #trialsEachType=np.vstack(( ( (trialType==0) | (trialType==2) ),trialType==1, np.zeros(len(trialType),dtype=bool) )).T  ###This is a hack when percentLaserTrials were sum of both sides and just did one side stim
+        #print trialsEachType
+
+        nStimeTypes = len(stimTypes)
+        percentCorrectEachFreqEachCond = pd.DataFrame()
+        import math
+        for stimType in range(nStimeTypes):
+            if np.any(trialsEachType[:,stimType]):
+                targetFrequencyThisBlock = targetFrequency[trialsEachType[:,stimType]]    
+                validThisBlock = valid[trialsEachType[:,stimType]]
+                choiceRightThisBlock = choiceRight[trialsEachType[:,stimType]]
+
+                (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue)=\
+                                                                                                        behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)\
+                                                                                                        
+                numFreqs = len(possibleValues)
+                
+                fractionCorrectLeftFreqs = 1-np.array(fractionHitsEachValue[:int(math.floor(0.5*numFreqs))])
+                fractionCorrectRightFreqs = np.array(fractionHitsEachValue[int(math.ceil(0.5*numFreqs)):])
+                percentCorrectEachFreqEachCond.loc[:,'percentCorrect_%s'%(stimLabels[stimType])]=np.append(fractionCorrectLeftFreqs,fractionCorrectRightFreqs)
+        percentCorrectEachFreqEachCond.loc[:,'freqs']=possibleValues
+
+        return percentCorrectEachFreqEachCond
+        
+
+    def calculate_percent_rightward_each_freq_each_cond(self):
+        '''
+        Method to calculate percent of correct trials for each frequency presented in the 2afc task in each stimulation conditions.
+
+        '''
+        main2afcind = self.get_session_types().index('2afc')
+        behavSession = self.get_session_behav_filenames()[main2afcind]
+        session = [behavSession.split('_')[2].strip('.h5')]
+        allBehavDataThisAnimal = behavioranalysis.load_many_sessions(self.animalName,session)
+        targetFrequency = allBehavDataThisAnimal['targetFrequency']
+        choice=allBehavDataThisAnimal['choice']
+        valid=allBehavDataThisAnimal['valid']& (choice!=allBehavDataThisAnimal.labels['choice']['none'])
+
+        choiceRight = choice==allBehavDataThisAnimal.labels['choice']['right']
+        trialType = allBehavDataThisAnimal['trialType']
+        stimTypes = [allBehavDataThisAnimal.labels['trialType']['no_laser'],allBehavDataThisAnimal.labels['trialType']['laser_left'],allBehavDataThisAnimal.labels['trialType']['laser_right']]
+        stimLabels = ['no_laser','laser_left','laser_right']
+
+        trialsEachType = behavioranalysis.find_trials_each_type(trialType,stimTypes)
+        #trialsEachType=np.vstack(( ( (trialType==0) | (trialType==2) ),trialType==1, np.zeros(len(trialType),dtype=bool) )).T  ###This is a hack when percentLaserTrials were sum of both sides and just did one side stim
+        #print trialsEachType
+
+        nStimeTypes = len(stimTypes)
+        percentRightwardEachFreqEachCond = pd.DataFrame()
+        import math
+        for stimType in range(nStimeTypes):
+            if np.any(trialsEachType[:,stimType]):
+                targetFrequencyThisBlock = targetFrequency[trialsEachType[:,stimType]]    
+                validThisBlock = valid[trialsEachType[:,stimType]]
+                choiceRightThisBlock = choiceRight[trialsEachType[:,stimType]]
+
+                (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue)=\
+                                                                                                        behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)\
+    
+                numFreqs = len(possibleValues)
+                
+                percentRightwardEachFreqEachCond.loc[:,'percentRightward_%s'%(stimLabels[stimType])]=fractionHitsEachValue
+        percentRightwardEachFreqEachCond.loc[:,'freqs']=possibleValues
+
+        return percentRightwardEachFreqEachCond
+
+
+
+    def calculate_ave_percent_correct_lhfreqs_each_cond(self):
+        '''
+        Function that takes a PhotostimSite objects. Calculates the average percent correct for the low and high freqs under no stim and stim conditions.
+        '''
+        avePercentCorrectByTypeByFreq = pd.DataFrame(columns=['freq_label','stim_type','ave_performance_baseline','ave_performance_stim'])
+        import math
+        percentCorrectDf = self.calculate_percent_correct_each_freq_each_cond()
+        #percentCorrectDf always has three columns with the last one being 'freqs', first two would be 'percentCorrect_no_laser' and 'percentCorrect_laser_left' or 'percentCorrect_laser_right'
+        numFreq = len(percentCorrectDf['freqs'])
+        noStimPerf = percentCorrectDf['percentCorrect_no_laser']
+        avePercentCorrectNoStim = np.append(np.mean(noStimPerf[:int(math.floor(0.5*numFreq))]),np.mean(noStimPerf[int(math.ceil(0.5*numFreq)):]))
+
+        try:
+            stimPerf = percentCorrectDf['percentCorrect_laser_right']
+            stimType = ['right','right']
+        except KeyError:
+            stimPerf = percentCorrectDf['percentCorrect_laser_left']
+            stimType = ['left','left']
+
+        avePercentCorrectStim = np.append(np.mean(stimPerf[:int(math.floor(0.5*numFreq))]),
+                                                      np.mean(stimPerf[int(math.ceil(0.5*numFreq)):]))
+
+        freqLabel = ['low','high']
+        avePercentCorrectByTypeByFreq = pd.concat([avePercentCorrectByTypeByFreq, pd.DataFrame({'freq_label':freqLabel,'stim_type':stimType,'ave_performance_baseline':avePercentCorrectNoStim,'ave_performance_stim':avePercentCorrectStim})], ignore_index=True)
+        return avePercentCorrectByTypeByFreq
+    
+
+    def calculate_ave_percent_rightward_lhfreqs_each_cond(self):
+        '''
+        Function that takes a PhotostimSite objects. Calculates the average percent correct for the low and high freqs under no stim and stim conditions.
+        '''
+        avePercentRightwardByTypeByFreq = pd.DataFrame(columns=['freq_label','stim_type','ave_performance_baseline','ave_performance_stim'])
+        import math
+        percentRightwardDf = self.calculate_percent_rightward_each_freq_each_cond()
+        #percentRightwardDf always has three columns with the last one being 'freqs', first two would be 'percentRightward_no_laser' and 'percentRightward_laser_left' or 'percentRightward_laser_right'
+        numFreq = len(percentRightwardDf['freqs'])
+        noStimPerf = percentRightwardDf['percentRightward_no_laser']
+        avePercentRightwardNoStim = np.append(np.mean(noStimPerf[:int(math.floor(0.5*numFreq))]),np.mean(noStimPerf[int(math.ceil(0.5*numFreq)):]))
+
+        try:
+            stimPerf = percentRightwardDf['percentRightward_laser_right']
+            stimType = ['right','right']
+        except KeyError:
+            stimPerf = percentRightwardDf['percentRightward_laser_left']
+            stimType = ['left','left']
+
+        avePercentRightwardStim = np.append(np.mean(stimPerf[:int(math.floor(0.5*numFreq))]),
+                                                      np.mean(stimPerf[int(math.ceil(0.5*numFreq)):]))
+
+        freqLabel = ['low','high']
+        avePercentRightwardByTypeByFreq = pd.concat([avePercentRightwardByTypeByFreq, pd.DataFrame({'freq_label':freqLabel,'stim_type':stimType,'ave_performance_baseline':avePercentRightwardNoStim,'ave_performance_stim':avePercentRightwardStim})], ignore_index=True)
+        return avePercentRightwardByTypeByFreq
+
+
+
+    def task_freq_distance_to_best_freq(self,bestFreq):
+        pass
+    
+    
+
+#######################################################################################################
+# -- Multi-site methods -- #
+def paired_dot_plot_with_lines(y1,y2,**kwargs):
+    '''
+    Given two columns in a dataframe with each row containing paired observations, generate dot plot for each category and link the pair of dots by a line segment.
+    '''
+    ax = plt.gca()
+    #nCategories = ndarray.shape[1]
+    #nObservations = ndarray.shape[0]
+    #nCategories = 2
+    nObservations = len(y1)
+    xs=[]
+    ys=[]
+    #for colNum in range(0, nCategories):
+    x=np.tile(1, nObservations)
+    y=y1.values
+    ax.plot(x,y,'o')
+    xs.append(x)
+    ys.append(y)
+    x=np.tile(2, nObservations)
+    y=y2.values
+    ax.plot(x,y,'o')
+    xs.append(x)
+    ys.append(y)
+    ax.plot(xs,ys,linewidth=1.5,color='k')  
+    plt.xlim(0.8,2.2)
+    
+def paired_dot_plot_with_lines_df(df,**kwargs):
+    '''
+    Given a dataframe with each row containing paired observations, generate dot plot for each category and link the pair of dots by a line segment.
+    '''
+    ax = plt.gca()
+    ndarray = df.values
+    nCategories = ndarray.shape[1]
+    nObservations = ndarray.shape[0]
+    xs=[]
+    ys=[]
+    for colNum in range(0, nCategories):
+        x=np.tile(colNum+1, nObservations)
+        y=ndarray[:,colNum]
+        ax.plot(x,y,'o')
+        xs.append(x)
+        ys.append(y)
+    ymask = np.isfinite(ys)
+    #pdb.set_trace()
+    ax.plot(xs[ymask],ys[ymask],linewidth=1.5,color='k')    
+    
+
+def plot_ave_performance_lhfreqs_each_cond(avePercentPerfByTypeByFreq):
+    '''
+    Takes a dataframe containing 
+    '''
+    import seaborn as sns
+    import matplotlib
+    import matplotlib.pyplot as plt
+    plt.style.use(['seaborn-white', 'seaborn-talk'])             
+    font={'family':"sans-serif",'size':18}
+    matplotlib.rc("font", **font)
+
+    #sns.set(font='serif')
+    g = sns.FacetGrid(avePercentPerfByTypeByFreq, row="stim_type", col="freq_label", margin_titles=True)
+    g=(g.map(paired_dot_plot_with_lines,'ave_performance_baseline','ave_performance_stim').set(xlim=(0.5,2.5),ylim=(-0.05,1.05),xticks=[1,2],xticklabels=['Baseline','Photostim'],xlabel='',ylabel='Average rightward choice (%)'))
+    #g.set_axis_labels('','Average rightward choice (%)')
+    plt.show()
+
 
 
 '''
@@ -661,27 +925,28 @@ OLD: PhostostimSession __init__ method before changing this object to a cellDB.E
 '''
 
 if __name__ == '__main__':
-    CASE = 1
+    CASE = 2
+
+    sessionTypes = {'nb':'noiseBurst',
+                    'lp':'laserPulse',
+                    'lt':'laserTrain',
+                    'tc':'tuningCurve',
+                    'bf':'bestFreq',
+                    '3p':'3mWpulse',
+                    '1p':'1mWpulse',
+                    '2afc':'2afc'}
+
+
+    ##### Mapping tetrodes to hemisphere in each mice ######
+    tetrodesDict={'d1pi015_righthemi':[5,6,7,8], 'd1pi015_lefthemi':[1,2,3,4], 'd1pi016_righthemi':[1,2,7,8], 'd1pi016_lefthemi':[3,4,5,6]}
+    ########################################################
+    session = PhotostimSession(animalName='d1pi016', date ='2016-08-01', experimenter='', defaultParadigm='laser_tuning_curve')
+    site1 = session.add_site(depth=2100, tetrodes=tetrodesDict['d1pi016_lefthemi'], stimHemi='left')
+    site1.add_session('13-51-14', 'a', sessionTypes['tc'])
+    site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+    site1.add_clusters(clusterDict = {4:[2,5],5:[9]})
 
     if CASE == 1:
-        sessionTypes = {'nb':'noiseBurst',
-                'lp':'laserPulse',
-                'lt':'laserTrain',
-                'tc':'tuningCurve',
-                'bf':'bestFreq',
-                '3p':'3mWpulse',
-                '1p':'1mWpulse',
-                '2afc':'2afc'}
-
-
-        ##### Mapping tetrodes to hemisphere in each mice ######
-        tetrodesDict={'d1pi015_righthemi':[5,6,7,8], 'd1pi015_lefthemi':[1,2,3,4], 'd1pi016_righthemi':[1,2,7,8], 'd1pi016_lefthemi':[3,4,5,6]}
-        ########################################################
-        session = PhotostimSession(animalName='d1pi016', date ='2016-08-01', experimenter='', defaultParadigm='laser_tuning_curve')
-        site1 = session.add_site(depth=2100, tetrodes=tetrodesDict['d1pi016_lefthemi'], stimHemi='left')
-        site1.add_session('13-51-14', 'a', sessionTypes['tc'])
-        site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
-        site1.add_clusters(clusterDict = {4:[2,5],5:[9]})
         response_df,responsiveFreqs=site1.estimate_responsive_freq_range_tuning(mainTCind=0,tetrode=4,intensity=50.0,baseRange=[-0.050,-0.025],binEdges=[0,0.025,0.05,0.075,0.1],maxZthreshold=2)
         '''
         tetrode = 4
@@ -726,3 +991,8 @@ if __name__ == '__main__':
         aveSpikesThisCond = np.mean(numSpikesEachTrialThisCond,dtype=float)
         sdSpikesThisCond = np.std(numSpikesEachTrialThisCond,dtype=float)
         '''
+    if CASE == 2:
+        siteList=[]
+        #percentCorrectDf = site1.calculate_percent_correct_each_freq_each_cond(main2afcind=1)
+        siteList.append(site1)
+        plot_ave_performance_lhfreqs_each_cond(siteList)

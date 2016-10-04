@@ -86,7 +86,7 @@ for mouseName in mouseNameList:
         if (oneCell.behavSession in ISIList): #checks to make sure the ISI violation value is not recalculated
             continue
         if behavSession!=oneCell.behavSession:
-            # -- Write modIndex and modSig to file as have finished calculating last session--
+            # -- Write ISI violation percentage to file as have finished calculating last session--
             if behavSession != '':
                 ISI_file = open(ISI_filename, 'a') #append this session to the end of file.
                 ISI_file.write("Behavior Session:%s\n" %behavSession)

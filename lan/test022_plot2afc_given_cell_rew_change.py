@@ -65,11 +65,12 @@ def load_behav_per_cell(oneCell):
     behavSession=oneCell.behavSession
     behavDir=settings.BEHAVIOR_PATH
     fullBehavName=oneCell.animalName+'_2afc_'+behavSession+'.h5'
-    if oneCell.animalName=='adap015' or oneCell.animalName=='adap013' or oneCell.animalName=='adap017':
-        experimenter = 'billy'
-    else:
-        experimenter = 'lan'
-    behavFullFilePath = os.path.join(behavDir,experimenter,oneCell.animalName,fullBehavName)
+    
+    #if oneCell.animalName=='adap015' or oneCell.animalName=='adap013' or oneCell.animalName=='adap017':
+        #experimenter = 'billy'
+    #else:
+        #experimenter = 'lan'
+    behavFullFilePath = os.path.join(behavDir,'',oneCell.animalName,fullBehavName)
     loadingClass = loadbehavior.FlexCategBehaviorData
     bdata = loadingClass(behavFullFilePath,readmode='full')
     return bdata
@@ -485,6 +486,30 @@ def plot_rew_change_byblock_per_cell(oneCell,trialLimit=[],alignment='sound',cho
     #plt.tight_layout()
     plt.gcf().set_size_inches((8.5,11))
     #plt.savefig(full_fig_path, format = 'png')
+
+
+if __name__ == '__main__':
+    import sys
+    import importlib
+
+    cellParams = {'behavSession':'20160219a',
+                  'tetrode':2,
+                  'cluster':11}
+
+    ### Loading allcells file for a specified mouse ###
+    mouseName = 'adap015'
+    allcellsFileName = 'allcells_'+mouseName
+    #allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
+    sys.path.append(settings.ALLCELLS_PATH)
+    allcells = importlib.import_module(allcellsFileName)
+    reload(allcells)
+    ### Using cellDB methode to find the index of this cell in the cellDB ###
+    cellIndex = allcells.cellDB.findcell(mouseName,**cellParams)
+    thisCell = allcells.cellDB[cellIndex]
+
+    plot_rew_change_byblock_per_cell(thisCell,trialLimit=[],alignment='side-in',choiceSide='right')
+
+
 
 
 '''

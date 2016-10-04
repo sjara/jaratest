@@ -231,14 +231,14 @@ for mouseName in mouseNameList:
     #########################################################################################
     if behavSession != '':
         modI_file=open(modI_filename, 'a')
-        modI_file.write("Behavior Session:%s" % behavSession)
+        modI_file.write("Behavior Session:%s\n" % behavSession)
         for modInd in modIDict[behavSession]:
             modI_file.write("%s," % modInd)
         modI_file.write("\n")
         modI_file.close()
         
         modSig_file = open(modSig_filename, 'a')
-        modSig_file.write("Behavior Session:%s" % behavSession)
+        modSig_file.write("Behavior Session:%s\n" % behavSession)
         for modSig in modSigDict[behavSession]:
             modSig_file.write("%s," % modSig)
         modSig_file.write("\n")
