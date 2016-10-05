@@ -425,9 +425,7 @@ class Paradigm(templates.Paradigm2AFC):
                               outputsOn=stimOutput,serialOut=noiseID,
                               outputsOff=trialStartOutput)
             self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
-                              transitions={'Tup':'reward'},
-                              outputsOn=stimOutput,serialOut=toneID,
-                              outputsOff=trialStartOutput)
+                              transitions={'Tup':'reward'}, serialOut=toneID)
             self.sm.add_state(name='reward', statetimer=rewardDuration,
                               transitions={'Tup':'stopReward'},
                               outputsOn=[rewardOutput],
@@ -448,9 +446,7 @@ class Paradigm(templates.Paradigm2AFC):
                               outputsOn=stimOutput,serialOut=noiseID,
                               outputsOff=trialStartOutput)
             self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
-                              transitions={'Tup':'waitForSidePoke'},
-                              outputsOn=stimOutput,serialOut=toneID,
-                              outputsOff=trialStartOutput)
+                              transitions={'Tup':'waitForSidePoke'},serialOut=toneID)
             self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
                               transitions={'Lin':'choiceLeft','Rin':'choiceRight',
                                            'Tup':'noChoice'},
@@ -493,10 +489,12 @@ class Paradigm(templates.Paradigm2AFC):
                               transitions={'Tup':'playStimulus','Cout':'waitForCenterPoke'})
             # Note that 'delayPeriod' may happen several times in a trial, so
             # trialStartOutput off here would only meaningful for the first time in the trial.
-            self.sm.add_state(name='playStimulus', statetimer=LONGTIME,
-                              transitions={'Cout':'waitForSidePoke'},
-                              outputsOn=stimOutput, serialOut=soundID,
+            self.sm.add_state(name='playNoiseStimulus', statetimer=0,
+                              transitions={'Tup':'playToneStimulus'},
+                              outputsOn=stimOutput, serialOut=noiseID,
                               outputsOff=trialStartOutput)
+            self.sm.add_state(name='playToneStimulus', statetimer=LONGTIME,
+                              transitions={'Cout':'waitForSidePoke'}, serialOut=toneID)
             # NOTE: The idea of outputsOff here (in other paradigms) was to indicate the end
             #       of the stimulus. But in this paradigm the stimulus will continue to play.
             self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
