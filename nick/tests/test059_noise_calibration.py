@@ -14,7 +14,7 @@ DEFAULT_AMPLITUDE = 0.01
 AMPLITUDE_STEP = 0.0005
 MAX_AMPLITUDE = 0.5
 
-DEFAULT_INTENSITY = 50 # dB-SPL
+DEFAULT_INTENSITY = 40 # dB-SPL
 
 DATADIR = '/var/tmp/'
 
@@ -188,7 +188,7 @@ class SaveButton(QtGui.QPushButton):
 
 class NoiseCalibration(QtGui.QMainWindow):
     def __init__(self, parent=None, paramfile=None, paramdictname=None):
-        super(SpeakerCalibration, self).__init__(parent)
+        super(NoiseCalibration, self).__init__(parent)
 
         self.name = 'noisecalibration'
         self.soundServer = self.initialize_sound()
@@ -264,8 +264,8 @@ class NoiseCalibration(QtGui.QMainWindow):
     #         oneOutputButton.soundType = self.soundTypeList[soundTypeInd]
 
     def initialize_sound(self):
-        # s = pyo.Server(audio='jack').boot()
-        s = pyo.Server().boot()
+        s = pyo.Server(audio='jack').boot()
+        #s = pyo.Server().boot()
         s.start()
         return s
 
@@ -323,7 +323,7 @@ if __name__ == "__main__":
     app=QtGui.QApplication.instance() # checks if QApplication already exists
     if not app: # create QApplication if it doesnt exist
         app = QtGui.QApplication(sys.argv)
-    spkcal = SpeakerCalibration()
+    spkcal = NoiseCalibration()
     spkcal.show()
     sys.exit(app.exec_())
     '''
