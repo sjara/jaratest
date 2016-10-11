@@ -86,7 +86,7 @@ site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
 site1.add_clusters(clusterDict = {5:[2,3,5,8],6:[4,6,7]})
-site1.daily_report(mainTCind=1, main2afcind=4)
+#site1.daily_report(mainTCind=1, main2afcind=4)
 siteList.append(site1)
 
 session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-07', experimenter='', defaultParadigm='laser_tuning_curve')
@@ -98,7 +98,7 @@ site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0],mainTCind=1)
 site1.add_clusters(clusterDict = {4:[2,3,5]})
-site1.daily_report(mainTCind=1, main2afcind=2)
+#site1.daily_report(mainTCind=1, main2afcind=2)
 siteList.append(site1)
 
 session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-08', experimenter='', defaultParadigm='laser_tuning_curve')
@@ -112,7 +112,7 @@ site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0,4],mainTCind=1)
 site1.add_clusters(clusterDict = {6:[5,6,8,9,11,12],8:[2,4,6]})
-site1.daily_report(mainTCind=1, main2afcind=5)
+#site1.daily_report(mainTCind=1, main2afcind=5)
 siteList.append(site1)
 
 session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-10', experimenter='', defaultParadigm='laser_tuning_curve')
@@ -125,7 +125,7 @@ site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
 site1.add_clusters(clusterDict = {4:[3]})
-site1.daily_report(mainTCind=1, main2afcind=4)
+#site1.daily_report(mainTCind=1, main2afcind=4)
 siteList.append(site1)
 
 
@@ -780,7 +780,7 @@ site1.add_clusters(clusterDict = {7:[4,10]})
 #site1.daily_report(mainTCind=2, main2afcind=4)
 siteList.append(site1)
 
-'''
+
 from jaratest.lan.analysis_photostim import plot_best_freq as plotter
 reload(plotter)
 import matplotlib.pyplot as plt
@@ -789,14 +789,14 @@ tuningFilename = '/home/languo/data/behavior_reports/photostim_response_freq_sum
 plotter.plot_best_freq_n_tuning_range_all_sites(siteList, tuningFilename=tuningFilename)
 plt.show()
 
-plotter.plot_psycurve_by_cond_n_tuning(siteList, tuningFilename=tuningFilename, aggregateFunc='mean')
+plotter.plot_psycurve_by_cond_n_tuning(siteList, tuningFilename=tuningFilename, aggregateFunc='mean',byHemi=True)
 plt.show()
 
-plotter.plot_psycurve_by_cond_n_tuning(siteList, tuningFilename=tuningFilename, aggregateFunc='median')
+plotter.plot_psycurve_by_cond_n_tuning(siteList, tuningFilename=tuningFilename, aggregateFunc='median',byHemi=True)
 plt.show()
 
 
-
+'''
 ####################### Summary Plots ##############################################
 # -- ave performance for high and low freq under dif stim conditions -- #
 import numpy as np
