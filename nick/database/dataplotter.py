@@ -82,7 +82,7 @@ def plot_raster(spikeTimestamps,
     #Set the marker size for better viewing
     plt.setp(pRaster, ms=ms)
     
-def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1], binsize = 50, lw=3, *args, **kwargs):
+def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1], binsize = 50, lw=2, *args, **kwargs):
     '''
     Function to accept spike timestamps, event onset times, and an optional sorting array and plot a
     PSTH (sorted if the sorting array is passed)
@@ -107,6 +107,8 @@ def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1]
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, binEdges)
     pPSTH = extraplots.plot_psth(spikeCountMat/binsize, 1, binEdges[:-1], trialsEachCond, *args, **kwargs)
     plt.setp(pPSTH, lw=lw)
+    plt.hold(True)
+    zline = plt.axvline(0,color='0.75',zorder=-10)
     plt.xlim(timeRange)
 
 def two_axis_sorted_raster(spikeTimestamps,

@@ -2,21 +2,26 @@
 Fitting psychometric curve.
 '''
 import numpy as np
+import matplotlib.pyplot as plt
+import pypsignifit as psi
+import os
 from jaratoolbox import extrastats
 from jaratoolbox import extraplots
 reload(extraplots)
 from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
-import matplotlib.pyplot as plt
-import pypsignifit as psi
 from jaratoolbox import colorpalette
+
+#plt.style.use(['seaborn-white', 'seaborn-talk']) 
+import matplotlib as mpl
+
 
 FREQCOLORS = [colorpalette.TangoPalette['Chameleon3'],
                   colorpalette.TangoPalette['ScarletRed1'],
                   colorpalette.TangoPalette['SkyBlue2'] , 'g', 'm', 'k']
 
 animal = 'd1pi015'
-sessions = ['20160804a']
+sessions = ['20160829a']
 
 #behavFile = loadbehavior.path_to_behavior_data(subject,'2afc',session)
 #bdata = loadbehavior.BehaviorData(behavFile)
@@ -42,26 +47,16 @@ for stimType in range(nStimTypes):
     behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)
 
         logPossibleValues = np.log2(possibleValues)
-
-        #plt.clf()
-
-
         #(pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(possibleValues,fractionHitsEachValue,ciHitsEachValue)
-        plt.plot(logPossibleValues,fractionHitsEachValue,color=FREQCOLORS[stimType])
+        plt.plot(logPossibleValues,fractionHitsEachValue,'o',color=FREQCOLORS[stimType])
         #plt.setp(pdots,ms=6,mec='k',mew=2,mfc='k')
-        plt.xlabel('Frequency (log_Hz)')
-        plt.ylabel('Rightward choice (%)')
         plt.hold(True)
-        
-
-
     # -- Calculate and plot psychometric fit --
         constraints = None
-        #constraints = ['flat', 'Uniform(0,0.3)' ,'Uniform(0,0.2)', 'Uniform(0,0.2)']
-        #constraints = ['Uniform({},{})'.format(logPossibleValues[0],logPossibleValues[-1]), 'unconstrained' ,'Uniform(0,0.2)', 'Uniform(0,0.2)']
+        
+        #constraints = ['Uniform({},{})'.format(logPossibleValues[0],logPossibleValues[-1]), 'unconstrained' ,'unconstrained', 'unconstrained']
         #curveParams = extrastats.psychometric_fit(possibleValues,nTrialsEachValue, nHitsEachValue)
         
-
         # -- Fit psy curve with psi.BoostrapInference object -- #
 
         data = np.c_[logPossibleValues,nHitsEachValue,nTrialsEachValue]
@@ -72,14 +67,30 @@ for stimType in range(nStimTypes):
         curveParams = psyCurveInference.estimate
         deviance = psyCurveInference.deviance
         predicted = psyCurveInference.predicted
+        (alpha, beta, lapse, guess) = list(curveParams)
 
         xValues = logPossibleValues
         xRange = xValues[-1]-xValues[1]
-        fitxval = np.linspace(xValues[0]-0.1*xRange,xValues[-1]+0.1*xRange,40)
+        fitxval = np.linspace(xValues[0]-0.2*xRange,xValues[-1]+0.2*xRange,40)
         fityval = psyCurveInference.evaluate(x=fitxval)
         #fityval = extrastats.psychfun(fitxval,*curveParams)
-        hfit = plt.plot(fitxval, fityval, '-', linewidth=2, color=FREQCOLORS[stimType])
-        plt.plot(logPossibleValues, predicted,'^',color=FREQCOLORS[stimType])
+        plt.plot(fitxval, fityval, '-', linewidth=2, color=FREQCOLORS[stimType])
+        #plt.plot(logPossibleValues, predicted,'^',color='k')
         plt.hold(True)
-        plt.draw()
+        plt.ylim(0,1.05)
+        plt.xlim(fitxval[0],fitxval[-1])
+        xmin,xmax,ymin,ymax = plt.axis()
+        #plt.text(0.5*(xmin+xmax),ymax-0.1*stimType,'alpha %.2f, beta %.2f, guess %.2f, lapse %.2f'%(alpha,beta,guess,lapse),color=FREQCOLORS[stimType],horizontalalignment='center')
+        #plt.draw()
+
+plt.xlabel('Frequency (log_Hz)',fontsize=18)
+plt.ylabel('Rightward choice (%)',fontsize=18)
+label_size = 12
+mpl.rcParams['xtick.labelsize'] = label_size 
+mpl.rcParams['ytick.labelsize'] = label_size 
 plt.show()
+if constraints:
+    figname = '{}_{}_{}_{}_{}.svg'.format(animal,sessions,'logistic','ab','alphaconstrained')
+else:
+    figname = '{}_{}_{}_{}_{}.svg'.format(animal,sessions,'logistic','ab','unconstrained')
+plt.savefig(os.path.join('/home/languo/data/behavior_reports',figname))

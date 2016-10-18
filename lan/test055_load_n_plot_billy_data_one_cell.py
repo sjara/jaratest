@@ -10,6 +10,7 @@ import os
 import importlib
 import numpy as np
 import matplotlib.pyplot as plt
+import pdb
 from jaratest.billy.scripts import celldatabase_quality_tuning as cellDB
 from jaratest.nick.database import dataplotter 
 from jaratoolbox import settings
@@ -19,6 +20,8 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import spikesanalysis
 from jaratoolbox import extraplots
 from jaratoolbox import spikesorting
+from jaratoolbox import ephyscore
+
 
 ### ephys and behavior directory to load data from. SPECIFIC TO BILLY'S DATA. THIS REQUIRES MOUNTING THE DATA2016/EPHYS DIRECTORY AS A DRIVE ON MY COMPUTER ###
 EPHYSDIR_MOUNTED = '/home/languo/data/jarastorephys'
@@ -46,12 +49,17 @@ def load_remote_tuning_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_
     evID=np.array(eventData.eventID)
     eventOnsetTimes=eventTimestamps[(evID==1)]
     
-    ### GEt spike data ###
+    ### GEt spike data for just this cluster ###
+    '''
     spikeFilename = os.path.join(ephysDir,oneCell.animalName,oneCell.tuningSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
     spikeData = loadopenephys.DataSpikes(spikeFilename)
     spikeTimestamps=spikeData.timestamps/EPHYS_SAMPLING_RATE
+    '''
+    spikeData = ephyscore.CellData(oneCell)
+    spikeTimestamps=spikeData.spikes.timestamps
 
     return (eventOnsetTimes, spikeTimestamps, bData)
+
 
 def load_remote_2afc_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MOUNTED):
     '''
@@ -72,15 +80,18 @@ def load_remote_2afc_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MO
     #evID=np.array(eventData.eventID)
     #eventOnsetTimes=eventTimestamps[(evID==1)]
     
-    ### GEt spike data ###
+    ### GEt spike data of just this cluster ###
+    '''
+    # -- obsolete: this code will get spikes from all clusters! --#
     spikeFilename = os.path.join(ephysDir,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
     spikeData = loadopenephys.DataSpikes(spikeFilename)
     spikeData.timestamps=spikeData.timestamps/EPHYS_SAMPLING_RATE
-
+    '''
+    spikeData = ephyscore.CellData(oneCell)
     return (eventData, spikeData, bData)
 
 
-def plot_tuning_raster_one_intensity(oneCell, intensity=50):
+def plot_tuning_raster_one_intensity(oneCell, intensity=50.0):
     #calls load_remote_tuning_data(oneCell) to get the data, then plot raster
     eventOnsetTimes, spikeTimestamps, bdata = load_remote_tuning_data(oneCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
     freqEachTrial = bdata['currentFreq']
@@ -88,7 +99,7 @@ def plot_tuning_raster_one_intensity(oneCell, intensity=50):
     possibleFreq = np.unique(freqEachTrial)
     possibleIntensity = np.unique(intensityEachTrial)
     if len(possibleIntensity) != 1:
-        intensity = 50.0 #50dB is the stimulus intensity used in 2afc task
+        intensity = intensity #50dB is the stimulus intensity used in 2afc task
         ###Just select the trials with a given intensity###
         trialsThisIntensity = [intensityEachTrial==intensity]
         freqEachTrial = freqEachTrial[trialsThisIntensity]
@@ -119,6 +130,56 @@ def plot_tuning_raster_one_intensity(oneCell, intensity=50):
     plt.title(plotTitle)
     
 
+
+def plot_tuning_PSTH_one_intensity(oneCell,intensity=50.0,timeRange=[-0.5,1],binWidth=0.010,halfFreqs=True):
+    #calls load_remote_tuning_data(oneCell) to get the data, then plot raster
+    eventOnsetTimes, spikeTimestamps, bdata = load_remote_tuning_data(oneCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
+    freqEachTrial = bdata['currentFreq']
+    intensityEachTrial = bdata['currentIntensity']
+    possibleIntensity = np.unique(intensityEachTrial)
+    if len(possibleIntensity) != 1:
+        intensity = intensity #50dB is the stimulus intensity used in 2afc task
+        ###Just select the trials with a given intensity###
+        trialsThisIntensity = [intensityEachTrial==intensity]
+        freqEachTrial = freqEachTrial[trialsThisIntensity]
+        intensityEachTrial = intensityEachTrial[trialsThisIntensity]
+        eventOnsetTimes = eventOnsetTimes[trialsThisIntensity]
+    
+    possibleFreq = np.unique(freqEachTrial)
+    numFreqs = len(possibleFreq)
+    if halfFreqs:
+        possibleFreq = possibleFreq[0:numFreqs:2] #slice to get every other frequence presented
+
+    #print len(intensityEachTrial),len(eventOnsetTimes),len(spikeTimestamps)
+    trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
+    #pdb.set_trace()  #for debug
+
+    #colormap = plt.cm.gist_ncar
+    #colorEachFreq = [colormap(i) for i in np.linspace(0, 0.9, numFreqs)]
+    from jaratoolbox.colorpalette import TangoPalette as Tango
+    colorEachFreq = [Tango['Aluminium3'], Tango['Orange2'],Tango['Chameleon1'],Tango['Plum1'],Tango['Chocolate1'],Tango['SkyBlue2'],Tango['ScarletRed1'],'k']
+    
+    #Create legend
+    import matplotlib.patches as mpatches
+    handles = []
+    for (freq, color) in zip(possibleFreq,colorEachFreq):
+        patch = mpatches.Patch(color=color, label=str(freq)+' kHz')
+        handles.append(patch)
+
+    (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+        spikesanalysis.eventlocked_spiketimes(spikeTimestamps,eventOnsetTimes,timeRange)
+    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+    smoothWinSize = 3
+    #plt.figure()
+    extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSize,timeVec,trialsEachCond=trialsEachFreq,colorEachCond=colorEachFreq,linestyle=None,linewidth=2,downsamplefactor=1)
+    extraplots.set_ticks_fontsize(ax=plt.gca(),fontSize=14)
+    plt.legend(handles=handles, loc=2)
+    plt.xlabel('Time from sound onset (s)',fontsize=18)
+    plt.ylabel('Firing rate (spk/sec)',fontsize=18)
+
+
+
 def get_trials_each_cond_switching(oneCell, freqToPlot='middle', byBlock=True):
     '''
     Given a cellInfo object, the frequency to plot(string, value of 'middle' or 'all'), whether to plot by block (boolean), gets the trialsEachCond and colorEachCond vectors for raster and PSTH plotting.
@@ -139,10 +200,11 @@ def get_trials_each_cond_switching(oneCell, freqToPlot='middle', byBlock=True):
      # -- Select trials to plot from behavior file -- #
     correct = bdata['outcome']==bdata.labels['outcome']['correct']
     possibleFreq = np.unique(bdata['targetFrequency'])
-  
+    numFreqs = len(possibleFreq)
     # -- Select trials to plot based on desired frequencies to plot and whether to plot by block -- #
     if freqToPlot == 'middle':
-        middleFreq = possibleFreq[1] #selects middle frequency
+        middleFreq = possibleFreq[numFreqs/2] #selects middle frequency, using int division resulting in int property. MAY FAIL IN THE FUTURE
+        #pdb.set_trace()
         oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
         correctOneFreq = oneFreq  & correct 
 
@@ -186,7 +248,7 @@ def get_trials_each_cond_switching(oneCell, freqToPlot='middle', byBlock=True):
         trialsEachCond = np.c_[trialsToUseLowFreq,trialsToUseMidFreqLeft,trialsToUseMidFreqRight,trialsToUseHighFreq]
         colorEachCond = ['y','r','g','b']
     
-    return trialsEachCond, colorEachCond
+    return bdata, trialsEachCond, colorEachCond
 
 def plot_switching_raster(oneCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True):
     '''
@@ -200,10 +262,10 @@ def plot_switching_raster(oneCell, freqToPlot='middle', alignment='sound',timeRa
     '''
 
     # -- calls load_remote_2afc_data(oneCell) to get the data, then plot raster -- #
-    eventData, spikeData, bdata = load_remote_2afc_data(oneCell)
-    spikeTimestamps = spikeData.timestamps
+    (eventData, spikeData, oldBdata) = load_remote_2afc_data(oneCell)
+    spikeTimestamps = spikeData.spikes.timestamps
     # -- Get trialsEachCond and colorEachCond for plotting -- #
-    (trialsEachCond, colorEachCond) = get_trials_each_cond_switching(oneCell=oneCell, freqToPlot=freqToPlot, byBlock=byBlock)
+    (bdata,trialsEachCond, colorEachCond) = get_trials_each_cond_switching(oneCell=oneCell, freqToPlot=freqToPlot, byBlock=byBlock) #bdata generated here removed missing trials
 
     # -- Calculate eventOnsetTimes based on alignment parameter -- #
     eventOnsetTimes=np.array(eventData.timestamps)
@@ -228,17 +290,17 @@ spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
     # -- Plot raster -- #
     #plt.figure()
     extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,fillWidth=None,labels=None)
-    
+    plt.ylim()
     plt.ylabel('Trials')
     plt.title('{0}_{1}_T{2}c{3}_{4}_{5} frequency'.format(oneCell.animalName,oneCell.behavSession,oneCell.tetrode,oneCell.cluster,alignment,freqToPlot)) 
 
 
 def plot_switching_PSTH(oneCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True, binWidth=0.010):
     # -- calls load_remote_2afc_data(oneCell) to get the data, then plot raster -- #
-    (eventData, spikeData, bdata) = load_remote_2afc_data(oneCell)
-    spikeTimestamps = spikeData.timestamps
+    (eventData, spikeData, oldBdata) = load_remote_2afc_data(oneCell)
+    spikeTimestamps = spikeData.spikes.timestamps
     # -- Get trialsEachCond and colorEachCond for plotting -- #
-    (trialsEachCond, colorEachCond) = get_trials_each_cond_switching(oneCell=oneCell, freqToPlot=freqToPlot, byBlock=byBlock)
+    (bdata, trialsEachCond, colorEachCond) = get_trials_each_cond_switching(oneCell=oneCell, freqToPlot=freqToPlot, byBlock=byBlock)
 
     # -- Calculate eventOnsetTimes based on alignment parameter -- #
     eventOnsetTimes=np.array(eventData.timestamps)
@@ -287,66 +349,81 @@ def save_report_plot(animal,date,tetrode,cluster,filepath):
 
 if __name__ == '__main__':
     ### Params associated with the cell of interest ###
-    cellParams = {'behavSession':'20150624a',
-                  'tetrode':1,
-                  'cluster':2}
+    cellParams = {'behavSession':'20150923a',
+                  'tetrode':6,
+                  'cluster':12}
 
     ### Loading allcells file for a specified mouse ###
-    mouseName = 'test059'
-    allcellsFileName = 'allcells_'+mouseName
-    #allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
+    mouseName = 'test089'
+    #allcellsFileName = 'allcells_'+mouseName
+    allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
     sys.path.append(settings.ALLCELLS_PATH)
 
     allcells = importlib.import_module(allcellsFileName)
 
     ### Using cellDB methode to find the index of this cell in the cellDB ###
-    #cellIndex = allcells.cellDB.findcell(mouseName,**cellParams)
-    
+    cellIndex = allcells.cellDB.findcell(mouseName,**cellParams)
+    #pdb.set_trace()
     # TEST, plotting cells with sig modulation in 20150624a behav session
-    for cellIndex in [1,28,65]:
-        
-        thisCell = allcells.cellDB[cellIndex]
-        ephysSession = thisCell.ephysSession
-        tuningSession = thisCell.tuningSession
-        tuningBehavior = thisCell.tuningBehavior
 
-        #(eventOnsetTimes, spikeTimestamps, bData) = load_remote_tuning_data(thisCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
-        #plot_tuning_raster_one_intensity(thisCell)
-        #plt.show()
-        #plt.clf()
-        (eventData, spikeData, bData) = load_remote_2afc_data(thisCell)
-        spikeTimestamps = spikeData.timestamps
-        spikeWaveforms = spikeData.samples
+    thisCell = allcells.cellDB[cellIndex]
+    ephysSession = thisCell.ephysSession
+    tuningSession = thisCell.tuningSession
+    tuningBehavior = thisCell.tuningBehavior
 
-        plt.subplot2grid((8, 8), (0, 0), rowspan = 5, colspan = 4)
-        plot_tuning_raster_one_intensity(thisCell)
-        
-        plt.subplot2grid((8, 8), (0, 4), rowspan = 5, colspan = 4)
-        plot_switching_raster(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
+    #(eventOnsetTimes, spikeTimestamps, bData) = load_remote_tuning_data(thisCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
+    plt.figure()
+    plot_tuning_raster_one_intensity(thisCell)
+    #plt.figure()
+    #plot_tuning_PSTH_one_intensity(thisCell,halfFreqs=True)
+    #movement-selectivity plot
+    plt.figure()
+    plot_switching_raster(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
+    plt.figure()
+    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True, binWidth=0.010)
+    plt.figure()
+    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True)
+    plt.figure()
+    plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True)
 
-        plt.subplot2grid((8, 8), (5, 4), rowspan = 2, colspan = 4)
-        plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
-        
-        # -- Plot ISI histogram --
-        plt.subplot2grid((8, 8), (5,0), rowspan=1, colspan=4)
-        spikesorting.plot_isi_loghist(spikeTimestamps)
-        plt.ylabel('c%d'%thisCell.cluster,rotation=0,va='center',ha='center')
-        plt.xlabel('')
+    #plt.xlim
+    plt.show()
+    #plt.clf()
+    '''
+    (eventData, spikeData, bData) = load_remote_2afc_data(thisCell)
+    spikeTimestamps = spikeData.timestamps
+    spikeWaveforms = spikeData.samples
 
-        # -- Plot waveforms --
-        plt.subplot2grid((8, 8), (6,0), rowspan=1, colspan=4)
-        spikesorting.plot_waveforms(spikeWaveforms)
+    plt.subplot2grid((8, 8), (0, 0), rowspan = 5, colspan = 4)
+    plot_tuning_raster_one_intensity(thisCell)
 
-        # -- Plot projections --
-        plt.subplot2grid((8, 8), (7,0), rowspan=1, colspan=4)
-        spikesorting.plot_projections(spikeWaveforms)
+    plt.subplot2grid((8, 8), (0, 4), rowspan = 5, colspan = 4)
+    plot_switching_raster(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
 
-        # -- Plot events in time --
-        plt.subplot2grid((8, 8), (7,4), rowspan=1, colspan=4)
-        spikesorting.plot_events_in_time(spikeTimestamps)
+    plt.subplot2grid((8, 8), (5, 4), rowspan = 2, colspan = 4)
+    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
 
-        #plt.show()
-        outputDir = '/home/languo/data/ephys/'+thisCell.animalName+'/summary_plots/'
-        if not os.path.exists(outputDir):
-            os.makedirs(outputDir)
-        save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,outputDir)
+    # -- Plot ISI histogram --
+    plt.subplot2grid((8, 8), (5,0), rowspan=1, colspan=4)
+    spikesorting.plot_isi_loghist(spikeTimestamps)
+    plt.ylabel('c%d'%thisCell.cluster,rotation=0,va='center',ha='center')
+    plt.xlabel('')
+
+    # -- Plot waveforms --
+    plt.subplot2grid((8, 8), (6,0), rowspan=1, colspan=4)
+    spikesorting.plot_waveforms(spikeWaveforms)
+
+    # -- Plot projections --
+    plt.subplot2grid((8, 8), (7,0), rowspan=1, colspan=4)
+    spikesorting.plot_projections(spikeWaveforms)
+
+    # -- Plot events in time --
+    plt.subplot2grid((8, 8), (7,4), rowspan=1, colspan=4)
+    spikesorting.plot_events_in_time(spikeTimestamps)
+
+    #plt.show()
+    outputDir = '/home/languo/data/ephys/'+thisCell.animalName+'/summary_plots/'
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
+    save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,outputDir)
+    '''
