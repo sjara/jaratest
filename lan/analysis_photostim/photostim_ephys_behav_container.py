@@ -883,6 +883,19 @@ def paired_dot_plot_with_lines_df(df,**kwargs):
     #pdb.set_trace()
     ax.plot(xs[ymask],ys[ymask],linewidth=1.5,color='k')    
     
+def dot_plot_by_category(y1,y2,**kwargs):
+    '''
+    Given two columns in a dataframe with each row containing paired observations, generate dot plot for each category.
+    '''
+    ax = plt.gca()
+    nObservations = len(y1)
+    x1=np.tile(1, nObservations)
+    y1=y1.values
+    ax.plot(x1,y1,'o')
+    x2=np.tile(2, nObservations)
+    y2=y2.values
+    ax.plot(x2,y2,'o')
+
 
 def plot_ave_performance_lhfreqs_each_cond(avePercentPerfByTypeByFreq):
     '''

@@ -50,15 +50,21 @@ def load_remote_tuning_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_
     eventOnsetTimes=eventTimestamps[(evID==1)]
     
     ### GEt spike data for just this cluster ###
-    '''
     spikeFilename = os.path.join(ephysDir,oneCell.animalName,oneCell.tuningSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
     spikeData = loadopenephys.DataSpikes(spikeFilename)
-    spikeTimestamps=spikeData.timestamps/EPHYS_SAMPLING_RATE
-    '''
-    spikeData = ephyscore.CellData(oneCell)
-    spikeTimestamps=spikeData.spikes.timestamps
+    spikeData.timestamps=spikeData.timestamps/EPHYS_SAMPLING_RATE
+    clustersDir = os.path.join(ephysDir,oneCell.animalName,oneCell.tuningSession)+'_kk'
+    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(oneCell.tetrode))
+    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
+    spikeData.timestamps = spikeData.timestamps[clusters==oneCell.cluster]
+    spikeData.samples = spikeData.samples[clusters==oneCell.cluster, :, :]
+    spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
+    # FIXME: This assumes the gain is the same for all channels and records
+    spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
+    #spikeData = ephyscore.CellData(oneCell)
+    #spikeTimestamps=spikeData.spikes.timestamps
 
-    return (eventOnsetTimes, spikeTimestamps, bData)
+    return (eventOnsetTimes, spikeData.timestamps, bData)
 
 
 def load_remote_2afc_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MOUNTED):
@@ -81,13 +87,19 @@ def load_remote_2afc_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MO
     #eventOnsetTimes=eventTimestamps[(evID==1)]
     
     ### GEt spike data of just this cluster ###
-    '''
-    # -- obsolete: this code will get spikes from all clusters! --#
     spikeFilename = os.path.join(ephysDir,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
     spikeData = loadopenephys.DataSpikes(spikeFilename)
-    spikeData.timestamps=spikeData.timestamps/EPHYS_SAMPLING_RATE
-    '''
-    spikeData = ephyscore.CellData(oneCell)
+    spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
+    clustersDir = os.path.join(ephysDir,oneCell.animalName,oneCell.ephysSession)+'_kk'
+    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(oneCell.tetrode))
+    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
+    spikeData.timestamps = spikeData.timestamps[clusters==oneCell.cluster]
+    spikeData.samples = spikeData.samples[clusters==oneCell.cluster, :, :]
+    spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
+    # FIXME: This assumes the gain is the same for all channels and records
+    spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
+    #spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
+    
     return (eventData, spikeData, bData)
 
 
@@ -254,16 +266,16 @@ def plot_switching_raster(oneCell, freqToPlot='middle', alignment='sound',timeRa
     '''
     Plots raster for 2afc switching task with different alignment at time 0 and different choices for what frequencies to include in the plot.
     Arguments:
-    oneCell is a CellInfo object.
-    freqToPlot is a string; 'middle' means plotting only the middle frequency, 'all' means plotting all three frequenciens.
-    alignment should be a string with possible values: 'sound', 'center-out','side-in'.
-    timeRange is a list of two floats, indicating the start and end of plot range.
-    byBlock is a boolean, indicates whether to split the plot into behavior blocks.
+        oneCell is a CellInfo object.
+        freqToPlot is a string; 'middle' means plotting only the middle frequency, 'all' means plotting all three frequenciens.
+        alignment should be a string with possible values: 'sound', 'center-out','side-in'.
+        timeRange is a list of two floats, indicating the start and end of plot range.
+        byBlock is a boolean, indicates whether to split the plot into behavior blocks.
     '''
 
     # -- calls load_remote_2afc_data(oneCell) to get the data, then plot raster -- #
     (eventData, spikeData, oldBdata) = load_remote_2afc_data(oneCell)
-    spikeTimestamps = spikeData.spikes.timestamps
+    spikeTimestamps = spikeData.timestamps
     # -- Get trialsEachCond and colorEachCond for plotting -- #
     (bdata,trialsEachCond, colorEachCond) = get_trials_each_cond_switching(oneCell=oneCell, freqToPlot=freqToPlot, byBlock=byBlock) #bdata generated here removed missing trials
 
@@ -298,7 +310,7 @@ spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
 def plot_switching_PSTH(oneCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True, binWidth=0.010):
     # -- calls load_remote_2afc_data(oneCell) to get the data, then plot raster -- #
     (eventData, spikeData, oldBdata) = load_remote_2afc_data(oneCell)
-    spikeTimestamps = spikeData.spikes.timestamps
+    spikeTimestamps = spikeData.timestamps
     # -- Get trialsEachCond and colorEachCond for plotting -- #
     (bdata, trialsEachCond, colorEachCond) = get_trials_each_cond_switching(oneCell=oneCell, freqToPlot=freqToPlot, byBlock=byBlock)
 
@@ -349,9 +361,9 @@ def save_report_plot(animal,date,tetrode,cluster,filepath):
 
 if __name__ == '__main__':
     ### Params associated with the cell of interest ###
-    cellParams = {'behavSession':'20150923a',
-                  'tetrode':6,
-                  'cluster':12}
+    cellParams = {'behavSession':'20160124a',
+                  'tetrode':4,
+                  'cluster':6}
 
     ### Loading allcells file for a specified mouse ###
     mouseName = 'test089'
@@ -377,19 +389,19 @@ if __name__ == '__main__':
     #plt.figure()
     #plot_tuning_PSTH_one_intensity(thisCell,halfFreqs=True)
     #movement-selectivity plot
-    plt.figure()
-    plot_switching_raster(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
-    plt.figure()
-    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True, binWidth=0.010)
-    plt.figure()
-    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True)
-    plt.figure()
-    plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True)
+    #plt.figure()
+    #plot_switching_raster(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
+    #plt.figure()
+    #plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True, binWidth=0.010)
+    #plt.figure()
+    #plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=False)
+    #plt.figure()
+    #plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=False)
 
     #plt.xlim
-    plt.show()
+    #plt.show()
     #plt.clf()
-    '''
+   
     (eventData, spikeData, bData) = load_remote_2afc_data(thisCell)
     spikeTimestamps = spikeData.timestamps
     spikeWaveforms = spikeData.samples
@@ -398,10 +410,10 @@ if __name__ == '__main__':
     plot_tuning_raster_one_intensity(thisCell)
 
     plt.subplot2grid((8, 8), (0, 4), rowspan = 5, colspan = 4)
-    plot_switching_raster(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
+    plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True)
 
     plt.subplot2grid((8, 8), (5, 4), rowspan = 2, colspan = 4)
-    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
+    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True)
 
     # -- Plot ISI histogram --
     plt.subplot2grid((8, 8), (5,0), rowspan=1, colspan=4)
@@ -426,4 +438,4 @@ if __name__ == '__main__':
     if not os.path.exists(outputDir):
         os.makedirs(outputDir)
     save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,outputDir)
-    '''
+    
