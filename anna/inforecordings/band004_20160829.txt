@@ -1,4 +1,4 @@
-band004: 2016-08-24
+band004: 2016-08-29
 
 probe:  (three-shanks), now with optical fiber!
 

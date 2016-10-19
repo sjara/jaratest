@@ -1,4 +1,4 @@
-band004: 2016-08-24
+band004: 2016-08-31
 
 probe: 92B1 (three-shanks)
 Probe impedances are quite low today... some dipping as low at 600kOhms, most below 1MOhm! Weird. Maybe the isopropanol cleaning for yesterdays DiI took off some old gunk as well?
