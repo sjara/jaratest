@@ -26,7 +26,7 @@ oneES = eSession(animalName='adap015',
                  ephysSession = '2016-02-07_15-27-13',
                  clustersEachTetrode = {1:range(1,13),2:range(1,13),3:range(1,13),4:range(1,13),5:range(1,13),6:range(1,13),7:range(1,13),8:range(1,13)},
                  behavSession = '20160207a',
-                 trialLimit=[0,854],
+                 #trialLimit=[0,854],
                  clusterQuality = {1:[3,4,4,4,4,4,1,2,4,3,0,0],2:[3,3,2,3,3,4,2,2,2,2,4,0],3:[3,2,2,1,3,4,4,4,2,1,1,1],4:[3,1,1,1,2,1,1,1,1,1,1,4],5:[3,2,4,2,4,4,2,2,2,3,2,2],6:[3,2,2,7,1,2,2,1,1,2,3,7],7:[9,0,0,0,0,0,0,0,0,0,0,0],8:[3,2,2,2,1,2,4,2,1,6,2,2]})
 cellDB.append_session(oneES)
 
@@ -35,7 +35,7 @@ oneES = eSession(animalName='adap015',
                  ephysSession = '2016-02-11_17-18-34',
                  clustersEachTetrode = {1:range(1,13),2:range(1,13),3:range(1,13),4:range(1,13),5:range(1,13),6:range(1,13),7:range(1,13),8:range(1,13)},
                  behavSession = '20160211a',
-                 trialLimit=[0,598],
+                 #trialLimit=[0,598],
                  clusterQuality = {1:[3,2,3,2,4,4,4,4,4,4,4,0],2:[3,2,3,3,6,4,6,2,2,2,2,3],3:[3,4,4,4,2,1,4,6,4,4,1,0],4:[3,2,1,7,6,1,1,2,2,6,1,1],5:[9,0,0,0,0,0,0,0,0,0,0,0],6:[3,2,1,4,1,4,2,1,2,1,1,4],7:[3,2,2,4,4,4,4,4,4,4,3,2],8:[3,3,2,2,2,2,2,2,2,2,2,2]})
 cellDB.append_session(oneES)
 
@@ -79,7 +79,7 @@ oneES = eSession(animalName='adap015',
                  ephysSession = '2016-02-24_17-21-23',
                  clustersEachTetrode = {1:range(1,13),2:range(1,13),3:range(1,13),4:range(1,13),5:range(1,13),6:range(1,13),7:range(1,13),8:range(1,13)},
                  behavSession = '20160224a',
-                 trialLimit=[0,776],
+                 #trialLimit=[0,776],
                  clusterQuality = {1:[3,7,3,2,4,2,2,2,3,2,7,2],2:[3,2,3,2,2,2,2,2,2,1,3,2],3:[3,2,3,2,1,7,7,7,2,1,2,7],4:[3,2,2,2,3,1,1,1,2,4,2,2],5:[3,3,3,1,2,2,1,2,3,2,2,3],6:[3,2,1,2,2,1,3,3,1,4,2,4],7:[9,0,0,0,0,0,0,0,0,0,0,0],8:[3,3,1,2,2,2,2,2,1,2,2,1]})
 cellDB.append_session(oneES)
 
