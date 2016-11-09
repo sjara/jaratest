@@ -22,6 +22,10 @@ from jaratoolbox import extraplots
 from jaratoolbox import spikesorting
 from jaratoolbox import ephyscore
 
+import matplotlib
+#matplotlib.rcParams['font.family'] = 'Helvetica'
+matplotlib.rcParams['font.family'] = 'FreeSerif' #'Whitney-Medium'
+matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 ### ephys and behavior directory to load data from. SPECIFIC TO BILLY'S DATA. THIS REQUIRES MOUNTING THE DATA2016/EPHYS DIRECTORY AS A DRIVE ON MY COMPUTER ###
 EPHYSDIR_MOUNTED = '/home/languo/data/jarastorephys'
@@ -103,7 +107,7 @@ def load_remote_2afc_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MO
     return (eventData, spikeData, bData)
 
 
-def plot_tuning_raster_one_intensity(oneCell, intensity=50.0):
+def plot_tuning_raster_one_intensity(oneCell, intensity=50.0, timeRange = [-0.5,1]):
     #calls load_remote_tuning_data(oneCell) to get the data, then plot raster
     eventOnsetTimes, spikeTimestamps, bdata = load_remote_tuning_data(oneCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
     freqEachTrial = bdata['currentFreq']
@@ -125,7 +129,6 @@ def plot_tuning_raster_one_intensity(oneCell, intensity=50.0):
     xlabel="Time from sound onset (sec)"
     #plotTitle = ephysSession+'tuning with chords'
     plotTitle = 'Tt'+str(oneCell.tetrode)+'c'+str(oneCell.cluster)+' tuning with 50dB chords'
-    timeRange = [-0.5,1]
     ### FIXME: this is a bad hack for when ephys is one trial more than behavior file ###
     if len(eventOnsetTimes)==len(intensityEachTrial)+1:
         eventOnsetTimes=eventOnsetTimes[:-1]
@@ -139,6 +142,7 @@ def plot_tuning_raster_one_intensity(oneCell, intensity=50.0):
                             ms=1,
                             labels=freqLabels)
     plt.xlabel('Time from sound onset')
+    plt.xlim(timeRange[0]+0.1,timeRange[1])
     plt.title(plotTitle)
     
 
@@ -156,26 +160,28 @@ def plot_tuning_PSTH_one_intensity(oneCell,intensity=50.0,timeRange=[-0.5,1],bin
         freqEachTrial = freqEachTrial[trialsThisIntensity]
         intensityEachTrial = intensityEachTrial[trialsThisIntensity]
         eventOnsetTimes = eventOnsetTimes[trialsThisIntensity]
-    
     possibleFreq = np.unique(freqEachTrial)
-    numFreqs = len(possibleFreq)
     if halfFreqs:
-        possibleFreq = possibleFreq[0:numFreqs:2] #slice to get every other frequence presented
-
+        possibleFreq = possibleFreq[1::3] #slice to get every other frequence presented
+    numFreqs = len(possibleFreq)    
     #print len(intensityEachTrial),len(eventOnsetTimes),len(spikeTimestamps)
     trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
     #pdb.set_trace()  #for debug
 
     #colormap = plt.cm.gist_ncar
     #colorEachFreq = [colormap(i) for i in np.linspace(0, 0.9, numFreqs)]
-    from jaratoolbox.colorpalette import TangoPalette as Tango
-    colorEachFreq = [Tango['Aluminium3'], Tango['Orange2'],Tango['Chameleon1'],Tango['Plum1'],Tango['Chocolate1'],Tango['SkyBlue2'],Tango['ScarletRed1'],'k']
+    #from jaratoolbox.colorpalette import TangoPalette as Tango
+    #colorEachFreq = [Tango['Aluminium3'], Tango['Orange2'],Tango['Chameleon1'],Tango['Plum1'],Tango['Chocolate1'],Tango['SkyBlue2'],Tango['ScarletRed1'],'k']
+    #Creat colorEachCond from color map
+    from matplotlib import cm
+    cm_subsection = np.linspace(0.0, 1.0, numFreqs)
+    colorEachFreq = [cm.winter(x) for x in cm_subsection]
     
     #Create legend
     import matplotlib.patches as mpatches
     handles = []
     for (freq, color) in zip(possibleFreq,colorEachFreq):
-        patch = mpatches.Patch(color=color, label=str(freq)+' kHz')
+        patch = mpatches.Patch(color=color, label=str(freq)+' Hz')
         handles.append(patch)
 
     (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
@@ -186,6 +192,7 @@ def plot_tuning_PSTH_one_intensity(oneCell,intensity=50.0,timeRange=[-0.5,1],bin
     #plt.figure()
     extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSize,timeVec,trialsEachCond=trialsEachFreq,colorEachCond=colorEachFreq,linestyle=None,linewidth=2,downsamplefactor=1)
     extraplots.set_ticks_fontsize(ax=plt.gca(),fontSize=14)
+    plt.xlim(timeRange[0]+0.1,timeRange[1])
     plt.legend(handles=handles, loc=2)
     plt.xlabel('Time from sound onset (s)',fontsize=18)
     plt.ylabel('Firing rate (spk/sec)',fontsize=18)
@@ -302,9 +309,13 @@ spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
     # -- Plot raster -- #
     #plt.figure()
     extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,fillWidth=None,labels=None)
-    plt.ylim()
-    plt.ylabel('Trials')
+    #plt.ylim()
+    plt.xlabel('Time from {} (s)'.format(alignment),fontsize=18)
+    plt.ylabel('Trials',fontsize=18)
+    plt.xlim(timeRange[0]+0.1,timeRange[1])
     plt.title('{0}_{1}_T{2}c{3}_{4}_{5} frequency'.format(oneCell.animalName,oneCell.behavSession,oneCell.tetrode,oneCell.cluster,alignment,freqToPlot)) 
+    #plt.fill([0,0.1,0.1,0],[plt.ylim()[0],plt.ylim()[0],plt.ylim()[1],plt.ylim()[1]],color='0.75')
+    extraplots.set_ticks_fontsize(plt.gca(),fontSize=16)
 
 
 def plot_switching_PSTH(oneCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True, binWidth=0.010):
@@ -337,9 +348,11 @@ spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
     smoothWinSize = 3
     #plt.figure()
     extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSize,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=2,downsamplefactor=1)
-    plt.xlabel('Time from {0} onset (s)'.format(alignment))
+    plt.xlabel('Time from {0} (s)'.format(alignment))
+    plt.xlim(timeRange[0]+0.1,timeRange[1])
     plt.ylabel('Firing rate (spk/sec)')
-
+    plt.fill([0,0.1,0.1,0],[plt.ylim()[0],plt.ylim()[0],plt.ylim()[1],plt.ylim()[1]],color='0.75')
+    extraplots.set_ticks_fontsize(plt.gca(),fontSize=16)
 
 def plot_psy_curve_raster(oneCell, alignment='sound'):
     pass
@@ -351,22 +364,21 @@ def plot_summary_per_cell(oneCell):
     '''
     pass
 
-def save_report_plot(animal,date,tetrode,cluster,filepath):
-    outputDir=filepath
-    filename = '%s_%s_%s_%s.png'%(animal,date,tetrode,cluster)
-    fullFileName = os.path.join(outputDir,filename)
+def save_report_plot(animal,date,tetrode,cluster,filePath,figFormat,chartType='report'):
+    filename = '%s_%s_%s_%s_%s.%s'%(animal,date,tetrode,cluster,chartType,figFormat)
+    fullFileName = os.path.join(filePath,filename)
     print 'saving figure to %s'%fullFileName
     plt.gcf().savefig(fullFileName)
 
 
 if __name__ == '__main__':
     ### Params associated with the cell of interest ###
-    cellParams = {'behavSession':'20160124a',
-                  'tetrode':4,
-                  'cluster':6}
+    cellParams = {'behavSession':'20160418a',
+                  'tetrode':6,
+                  'cluster':8}
 
     ### Loading allcells file for a specified mouse ###
-    mouseName = 'test089'
+    mouseName = 'adap020'
     #allcellsFileName = 'allcells_'+mouseName
     allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
     sys.path.append(settings.ALLCELLS_PATH)
@@ -384,24 +396,28 @@ if __name__ == '__main__':
     tuningBehavior = thisCell.tuningBehavior
 
     #(eventOnsetTimes, spikeTimestamps, bData) = load_remote_tuning_data(thisCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
-    plt.figure()
-    plot_tuning_raster_one_intensity(thisCell)
+    #plt.style.use(['seaborn-white', 'seaborn-talk']) 
     #plt.figure()
-    #plot_tuning_PSTH_one_intensity(thisCell,halfFreqs=True)
+    #plot_tuning_raster_one_intensity(thisCell)
+    #plt.figure()
+    #plot_tuning_PSTH_one_intensity(thisCell,timeRange=[-0.3,0.4],halfFreqs=True)
     #movement-selectivity plot
-    #plt.figure()
-    #plot_switching_raster(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True)
-    #plt.figure()
-    #plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='center-out',timeRange=[-0.5,1],byBlock=True, binWidth=0.010)
+    filePath = '/tmp'
+    plt.figure()
+    plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,0.5],byBlock=True)
+    save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,filePath,chartType='raster',figFormat='svg')
+    plt.figure()
+    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,0.5],byBlock=False, binWidth=0.010)
+    save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,filePath,chartType='PSTH',figFormat='svg')
     #plt.figure()
     #plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=False)
     #plt.figure()
     #plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=False)
 
     #plt.xlim
-    #plt.show()
+    plt.show()
     #plt.clf()
-   
+    '''
     (eventData, spikeData, bData) = load_remote_2afc_data(thisCell)
     spikeTimestamps = spikeData.timestamps
     spikeWaveforms = spikeData.samples
@@ -438,4 +454,4 @@ if __name__ == '__main__':
     if not os.path.exists(outputDir):
         os.makedirs(outputDir)
     save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,outputDir)
-    
+    '''

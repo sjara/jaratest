@@ -13,7 +13,7 @@ def plot_best_freq_n_tuning_range_all_sites(siteList, tuningFilename):
     for indr, tuningRange in enumerate(tuningDf['responsive_freqs']):
         if not tuningRange is np.nan:
             responsiveFreqs=tuningRange.split(',')
-            x = tuningDf['stim_hemi'][indr]+((np.random.random()-0.5)/5)
+            x = tuningDf['stim_hemi'][indr]+((np.random.random()-0.5)/2)
             if len(responsiveFreqs) == 2:
                 plt.vlines(x,*responsiveFreqs,color='grey',linewidth=1)
             plt.plot(x,tuningDf['most_responsive_freq'][indr],'bo')
@@ -122,10 +122,10 @@ def plot_psycurve_by_cond_n_tuning(siteList, tuningFilename, aggregateFunc='mean
             dfToPlotRight['laser_site tuned to high freqs'] = np.median(laserPsycurveByTuningRight['high'], axis=0)
             dfToPlotLeft['laser_site with no tuning'] = np.median(laserPsycurveByTuningLeft['none'], axis=0)
             dfToPlotRight['laser_site with no tuning'] = np.median(laserPsycurveByTuningRight['none'], axis=0)
-        plt.figure()
+        #plt.figure()
         dfToPlotLeft.plot(linewidth=2)
         plt.title('Left hemisphere photostim {} psycurve by best freq'.format(aggregateFunc))  
-        plt.figure()
+        #plt.figure()
         dfToPlotRight.plot(linewidth=2)
         plt.title('Right hemisphere photostim {} psycurve by best freq'.format(aggregateFunc))  
 
@@ -145,6 +145,6 @@ def plot_psycurve_by_cond_n_tuning(siteList, tuningFilename, aggregateFunc='mean
             dfToPlot['laser_site tuned to high freqs'] = np.mean(np.vstack((laserPsycurveByTuningLeft['high'],laserPsycurveByTuningRight['high'])), axis=0)
             dfToPlot['laser_site with no tuning'] = np.mean(np.vstack((laserPsycurveByTuningLeft['none'],laserPsycurveByTuningRight['none'])), axis=0)
 
-        plt.figure()
+        #plt.figure()
         dfToPlot.plot(linewidth=2)
         plt.title('Photostim {} psycurve by best freq'.format(aggregateFunc))

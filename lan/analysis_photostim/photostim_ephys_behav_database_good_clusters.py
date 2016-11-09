@@ -138,7 +138,7 @@ site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=2)
 site1.add_clusters(clusterDict = {5:[4,6,7,10],6:[2,4,6,7,12],8:[4,5,7,8]})
-site1.daily_report(mainTCind=2, main2afcind=4)
+#site1.daily_report(mainTCind=2, main2afcind=4)
 siteList.append(site1)
 
 session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-12', experimenter='', defaultParadigm='laser_tuning_curve')
@@ -150,7 +150,7 @@ site1.add_session('14-37-09', None, sessionTypes['lp'])
 site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=2)
-#site1.add_clusters(clusterDict = {5:[4,6,7,10],6:[2,4,6,7,12],8:[4,5,7,8]})
+site1.add_clusters(clusterDict = {5:[2,5,6,10,11],6:[3],8:[5]})
 #site1.daily_report(mainTCind=2, main2afcind=4)
 siteList.append(site1)
 
@@ -163,7 +163,7 @@ site1.add_session('13-51-23', None, sessionTypes['lp'])
 site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0,2],mainTCind=1)
-#site1.add_clusters(clusterDict = {5:[4,6,7,10],6:[2,4,6,7,12],8:[4,5,7,8]})
+site1.add_clusters(clusterDict = {4:[2]})
 #site1.daily_report(mainTCind=1, main2afcind=3)
 siteList.append(site1)
 
@@ -177,7 +177,173 @@ site1.add_session('15-35-41', None, sessionTypes['lp'])
 site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
-#site1.add_clusters(clusterDict = {5:[4,6,7,10],6:[2,4,6,7,12],8:[4,5,7,8]})
+site1.add_clusters(clusterDict = {5:[2,3,4,5,7,8,9,10],6:[2,9,10,11],8:[2,3,5,8]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-18', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2300, tetrodes=tetrodesDict['d1pi014_lefthemi'], stimHemi='left')
+site1.add_session('13-25-49', None, sessionTypes['nb'])
+site1.add_session('13-28-38', 'a', sessionTypes['tc'])
+site1.add_session('13-36-27', 'b', sessionTypes['tc'])
+site1.add_session('13-41-34', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+site1.add_clusters(clusterDict = {1:[3,4,7],4:[5]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-19', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2340, tetrodes=tetrodesDict['d1pi014_righthemi'], stimHemi='right')
+site1.add_session('13-25-06', None, sessionTypes['nb'])
+site1.add_session('13-27-35', 'a', sessionTypes['tc'])
+site1.add_session('13-34-30', 'b', sessionTypes['tc'])
+site1.add_session('13-37-26', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+site1.add_clusters(clusterDict = {5:[2,3,6,7,8,10,11],6:[3,4,5,8,9,10,11,12],8:[4]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-20', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2340, tetrodes=tetrodesDict['d1pi014_lefthemi'], stimHemi='left')
+site1.add_session('15-31-54', None, sessionTypes['nb'])
+site1.add_session('15-34-10', 'a', sessionTypes['tc'])
+site1.add_session('15-40-34', 'b', sessionTypes['tc'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0],mainTCind=1)
+site1.add_clusters(clusterDict = {1:[4,8,11],2:[3,7],4:[2,5,6,7]})
+#site1.daily_report(mainTCind=1, main2afcind=3)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-21', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2380, tetrodes=tetrodesDict['d1pi014_righthemi'], stimHemi='right')
+site1.add_session('14-31-16', None, sessionTypes['nb'])
+site1.add_session('14-33-47', 'a', sessionTypes['tc'])
+site1.add_session('14-43-06', 'b', sessionTypes['tc'])
+site1.add_session('14-47-01', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+site1.add_clusters(clusterDict = {5:[2,3,4,5,6,7,8,9,11],6:[2,4,6,9],8:[2,3,5,6]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-24', experimenter='right', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2420, tetrodes=tetrodesDict['d1pi014_righthemi'], stimHemi='right')
+site1.add_session('15-18-10', None, sessionTypes['nb'])
+site1.add_session('15-20-29', 'a', sessionTypes['tc'])
+site1.add_session('15-28-12', 'b', sessionTypes['tc'])
+site1.add_session('15-33-11', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+site1.add_clusters(clusterDict = {5:[2,4,5,6,7,8,9,11],6:[3,5,6,8,9,10,12],8:[2,5,6]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-25', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2380, tetrodes=tetrodesDict['d1pi014_lefthemi'], stimHemi='left')
+site1.add_session('12-59-50', None, sessionTypes['nb'])
+site1.add_session('13-02-00', 'a', sessionTypes['tc'])
+site1.add_session('13-08-40', 'b', sessionTypes['tc'])
+site1.add_session('13-11-41', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+site1.add_clusters(clusterDict = {4:[2,3,4,5,6,7]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-26', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2460, tetrodes=tetrodesDict['d1pi014_righthemi'], stimHemi='right')
+site1.add_session('13-42-52', None, sessionTypes['nb'])
+site1.add_session('13-45-28', 'a', sessionTypes['tc'])
+site1.add_session('13-54-16', 'b', sessionTypes['tc'])
+site1.add_session('13-58-06', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+site1.add_clusters(clusterDict = {5:[2,3,5,6,7,8,9,10,12],6:[2,3,4,5,6,9,11,12],8:[2,3,5]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-27', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2420, tetrodes=tetrodesDict['d1pi014_lefthemi'], stimHemi='left')
+site1.add_session('13-47-12', None, sessionTypes['nb'])
+site1.add_session('13-49-35', 'a', sessionTypes['tc'])
+site1.add_session('13-57-59', 'b', sessionTypes['tc'])
+site1.add_session('14-04-58', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+site1.add_clusters(clusterDict = {4:[2,3,4,5,7,9]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-10-31', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2460, tetrodes=tetrodesDict['d1pi014_lefthemi'], stimHemi='left')
+site1.add_session('15-20-55', None, sessionTypes['nb'])
+site1.add_session('15-25-03', 'a', sessionTypes['tc'])
+site1.add_session('15-31-41', 'b', sessionTypes['tc'])
+site1.add_session('15-36-36', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+site1.add_clusters(clusterDict = {4:[4,5,6,7]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-11-02', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2500, tetrodes=tetrodesDict['d1pi014_righthemi'], stimHemi='right')
+site1.add_session('15-52-50', None, sessionTypes['nb'])
+site1.add_session('15-55-28', 'a', sessionTypes['tc'])
+site1.add_session('16-02-36', 'b', sessionTypes['tc'])
+site1.add_session('16-06-24', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+#site1.add_clusters(clusterDict = {4:[4,5,6,7]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-11-05', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2500, tetrodes=tetrodesDict['d1pi014_lefthemi'], stimHemi='left')
+site1.add_session('18-34-39', None, sessionTypes['nb'])
+site1.add_session('18-37-03', 'a', sessionTypes['tc'])
+site1.add_session('18-51-37', 'b', sessionTypes['tc'])
+site1.add_session('18-55-05', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+#site1.add_clusters(clusterDict = {4:[4,5,6,7]})
+#site1.daily_report(mainTCind=1, main2afcind=4)
+siteList.append(site1)
+
+
+session = photostim.PhotostimSession(animalName='d1pi014', date ='2016-11-05', experimenter='', defaultParadigm='laser_tuning_curve')
+site1 = session.add_site(depth=2460, tetrodes=tetrodesDict['d1pi014_lefthemi'], stimHemi='left')
+site1.add_session('1', None, sessionTypes['nb'])
+site1.add_session('1', 'a', sessionTypes['tc'])
+site1.add_session('1', 'b', sessionTypes['tc'])
+site1.add_session('1', None, sessionTypes['lp'])
+site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
+site1.cluster_photostim_session() 
+site1.raster_reports_all_clusters(mainRasterInds=[0,3],mainTCind=1)
+#site1.add_clusters(clusterDict = {4:[4,5,6,7]})
 #site1.daily_report(mainTCind=1, main2afcind=4)
 siteList.append(site1)
 
@@ -202,7 +368,7 @@ site1.add_session('12-58-22', 'a', sessionTypes['tc'])
 site1.add_session(None, 'a', sessionTypes['2afc'], paradigm='2afc')
 site1.cluster_photostim_session() 
 site1.raster_reports_all_clusters(mainRasterInds=[0,1],mainTCind=2)
-#site1.add_clusters(clusterDict = {4:[3,7],5:[8,10]})
+#site1.add_clusters(clusterDict = {4:[8,12],5:[4,7,8,9]})
 #site1.daily_report(mainTCind=2, main2afcind=3)
 siteList.append(site1)
 
@@ -834,7 +1000,8 @@ site1.add_clusters(clusterDict = {7:[4,10]})
 siteList.append(site1)
 
 
-'''
+####################### Summary Plots Based on siteList ##############################################
+# -- Plot best frequency and tuning range for all sites -- #
 from jaratest.lan.analysis_photostim import plot_psycurve_by_tuning as plotter
 reload(plotter)
 import matplotlib.pyplot as plt
@@ -850,7 +1017,6 @@ plotter.plot_psycurve_by_cond_n_tuning(siteList, tuningFilename=tuningFilename, 
 plt.show()
 
 
-####################### Summary Plots ##############################################
 # -- ave performance for high and low freq under dif stim conditions -- #
 import numpy as np
 import pandas as pd
@@ -889,8 +1055,8 @@ for site in siteList:
 
 photostim.plot_ave_performance_lhfreqs_each_cond(avePercentRightwardByTypeByFreq)
 
-
-# -- make a plot of all psycurves -- #
+'''
+# -- make a plot of all psycurves with best freq and tuning range marked on curve-- #
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import pandas as pd

@@ -12,7 +12,8 @@ reload(settings)
 #settings.BEHAVIOR_PATH = '/home/languo/data/mnt/jarahubdata'
 #settings.DEFAULT_EXPERIMENTER = 'billy'
 
-subjects = ['d1pi014','d1pi018','d1pi019','d1pi020']
+#subjects = ['d1pi014','d1pi018','d1pi019','d1pi020']
+subjects = ['test053']
 
 if len(sys.argv)>1:
     sessions = sys.argv[1:]

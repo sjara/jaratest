@@ -43,6 +43,7 @@ for thisCell in allcells.cellDB:
             if np.any(spikeTimesToPlotThisSession['spikeTimes']):
                 spikeTimesDf = pd.DataFrame(spikeTimesToPlotThisSession)
                 spikeTimesDf.groupby(['switchNum']).plot(x='spikeTimes',y='cellIndexEachSpike',kind='scatter')
+                #spikeTimesDf.groupby(['switchNum'])['spikeTimes'].plot(kind='kde')
                 plt.show()
                 #spikeTimes = spikeTimesToPlotThisSession['spikeTimes']
                 #cellIndex = spikeTimesToPlotThisSession['cellIndexEachSpike']
@@ -97,7 +98,7 @@ for thisCell in allcells.cellDB:
 
 if np.any(spikeTimesToPlotThisSession['spikeTimes']):
     spikeTimesDf = pd.DataFrame(spikeTimesToPlotThisSession)
-    spikeTimesDf.groupby(['switchNum']).plot(x='spikeTimes',y='cellIndexEachSpike',kind='scatter')
+    spikeTimesDf.groupby(['switchNum']).plot(x='spikeTimes',y='cellIndexEachSpike',kind='scatter',s=0.5)
     plt.show()
     #spikeTimes = spikeTimesToPlotThisSession['spikeTimes']
     #cellIndex = spikeTimesToPlotThisSession['cellIndexEachSpike']
