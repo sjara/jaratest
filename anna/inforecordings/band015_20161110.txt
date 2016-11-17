@@ -1,0 +1,49 @@
+band015: 2016-11-10
+
+probe: 7752 (three-dots)
+
+Recording from right AC, somewhat close to medial edge. Probes coated with DiD.
+
+At 500um, slowly moving down.
+
+At 750um, still nothing, probes appear intact in scope. LFP pretty quiet, probably because of relatively high impedance of new probe.
+
+At 900um, starting to see something on TT2 and 8!
+
+At 980um, definite spikes on TT2, though small and shitty.
+
+At 1060um, starting to pick up signals on TT6 and 7 as well, but still shit.
+
+At 1090, good spikes on TT2! Something on TT6,8 as well.
+Doesn't look sound responsive (noise from mouse jumping?) No laser response.
+
+At 1175um, more spikes on TT2.
+Sound response on TT2! Possible off laser response, but very hard to tell with all the noise.
+
+At 1225um, spikes on TT2 and 6.
+Looks like a sound response on TT2. Looks like laser off response?
+Testing tuning because why not at this point. TT2 likes 15kHz, 64Hz mod.
+
+At 1275um, new spikes on TT6, possibly same ones on TT2.
+Only TT2 sound responsive, and I think those are the same cells.
+
+At 1325, some damn good spikes on TT2, maybe something on TT6.
+TT2 sound responsive. Looks like a laser off response.
+TT2 has pretty similar response to before (15kHz, 64Hz mod). TT6 weakly sound responsive, but likes 26kHz.
+
+At 1400, great spikes on TT6, decent ones on TT2,8.
+Strong sound response on TT2, weak one on TT6. Laser off response.
+14kHz, 64Hz mod for TT2.
+
+At 1450um, decent spikes on TT2,6,8.
+Same old TT2 response, but new sound response on TT8.
+Still just laser off response.
+
+At 1500um, spikes on TT1,2,5,6,8, possibly 4?
+TT1,2,6 sound responsive. Possible TT8 laser response?
+
+Move to 1510um to maybe get closer to TT8 cell? Also spikes on TT7.
+MAYBE laser response on TT8. Might as well go for it.
+TT8 likes 22kHz and 32Hz mod, checking laser again to see if response still there.
+Hard to say... trying a laser train.
+Seems unlikely... but might as well record somewhat interesting TT8 response.

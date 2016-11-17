@@ -1,0 +1,35 @@
+band015: 2016-11-12
+
+probe: 7752 (three-dots)
+
+Recording from left AC, about midline of craniotomy. Probes coated with DiD. TT7/8 flexing slightly going in, but seem fine after agar.
+
+Was at 500um, planned to go down slowly, but forgot to change speed of manipulator and went all the way down to 900um in ten seconds. On bright side, shanks aren't flexing and can see crappy spikes on TT2,4,8!
+
+At 950um, some garbage on TT2,4,6,8 that might be worth checking out.
+Pretty strong sound response on TT2. Laser off response on TT2, but laser response on TT6 and 8! Weird onset response though.
+Strong tuning on TT2, but it's a boring laser off cell. TT6 looks like it might like 26kHz, TT8 might like 32kHz, neither cares much for AM noise.
+Going with 32kHz, 64Hz mod for TT8.
+
+At 1000um, went to have lunch, came back to massive spikes on TT2,6,8, some on 1,4 as well.
+Really nice sound response on TT2! VERY strong TT8 laser response. Might be same cell as previous site... but this response is so much better!
+26kHz, 64Hz mod for that sweet TT8 response.
+
+At 1100um, picking up nice spikes on TT2,3,6,8. Are those TT8 spikes the same ones as before? Let's find out!
+Nothing but off responses here, but that is still fine in the interest of looking at excitatory cells.
+Had to change reference site a few times because we have spikes on every tetrode! (lots are crap and do nothing but mess up referencing)
+12kHz, 32Hz mod for TT2 and 6 cells.
+
+At 1150um, still spikes everywhere.
+Strong laser response on TT7. Certain same cell as previous TT8 cell, seeing as we went 150um down and tetrodes on shank are 150um apart.
+Weird little laser on response on TT1. TT1 likes 15kHz, 64Hz mod.
+
+At 1200um, real nice spikes on TT2,6,8.
+Only off responses again.
+
+At 1250um, wow what TT8 spikes.
+Nothing but off response.
+
+At 1275um, very nice TT4 spikes.
+Nothing but off response!!
+...might as well record from these since the spikes are so nice.

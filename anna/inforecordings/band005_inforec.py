@@ -50,3 +50,29 @@ exp0.add_session('15-16-14', 'i', 'AM', 'am_tuning_curve')
 exp0.add_session('15-22-46', None, 'laserPulse', 'am_tuning_curve')
 exp0.add_session('15-25-27', None, 'laserTrain', 'am_tuning_curve')
 exp0.add_session('15-27-50', 'j', 'bandwidth', 'bandwidth_am')
+
+exp1 = celldatabase.Experiment(subject, '2016-09-20')
+experiments.append(exp1)
+
+exp1.laserCalibration = {
+    '0.5':0.65,
+    '1.0':1.0,
+    '1.5':1.35,
+    '2.0':1.75,
+    '2.5':2.2,
+    '3.0':2.7,
+    '3.5':3.35
+}
+
+exp2 = celldatabase.Experiment(subject, '2016-09-21')
+experiments.append(exp2)
+
+exp2.laserCalibration = {
+    '0.5':0.8,
+    '1.0':1.4,
+    '1.5':2.05,
+    '2.0':2.75,
+    '2.5':3.75,
+    '3.0':4.65,
+    '3.5':5.5
+}
