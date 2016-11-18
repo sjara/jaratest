@@ -1,0 +1,38 @@
+band015: 2016-11-11
+
+probe: 7752 (three-dots)
+
+Recording from left AC, right on medial edge, though TT7/8 more lateral than TT1/2 as headstage had to be tilted to get the whole deal far enough to the right. Probes coated with DiI.
+
+At 820um, slowly moving down. Can already see spikes on TT6 and 8, but want better ones.
+
+At 875um, left to have lunch/allow brain to settle, come back to spikes on TT2,4,6,8!
+Looks like a possible sound response on TT2 and 6.
+Doesn't look like much of a laser response, either on or off. Moving on.
+
+Moved to 900um, spikes bigger, more clear. Trying again.
+Clearer sound response on TT2,6, laser off response on TT6. Booooring.
+
+At 925um, possible new spikes on TT2 and 8.
+Not much of a sound response.
+
+At 950um, new spikes on TT7!
+Sound response on TT2,6. Very strong off response on all tetrodes. Might as well record?
+None of the tuning curves are particularly clear, but let's go with 13kHz, 32Hz mod.
+Mouse trying really hard to scratch at left ear! However, still seeing spikes on all shanks. Anti-mouse guard is holding up for now.
+
+At 1000um, some really nice spiking on TT2,8, decent spikes on TT4,6,7.
+Sound response on TT2,4,6,8. Still just laser off responses, but the spikes are so nice and there's so many...
+Going with 14kHz, 16Hz mod.
+MAYBE A LASER RESPONSE ON TT8???
+
+At 1026, new spikes on TT7, testing for laser response.
+TT8 IS LASER RESPONSIVE!!!!!!!!!!!!!!!!!!!!
+TT8 sound response not that strong, but does look responsive?
+Going with 22kHz, 64Hz mod for TT8. (tuning curve on TT8 not super clear, but is responsive to 12-32 kHz)
+
+Still a ton of spikes at 1100um, testing laser responses.
+Looks like a bit of an onset laser response on TT6? Confirming with laser train.
+Yes, definitely a laser onset response on TT6 (and 5 a bit too).
+Rechecking laser responses after tuning curve... is that a TT2 response?
+Looks like both TT2 and 6 might like 15kHz with 64Hz mod.

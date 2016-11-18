@@ -7,3 +7,14 @@ Recording from left AC with probes at about the center of the craniotomy, but fu
 At 500um, going down relatively slow as shank 1 was flexing a bit going on (though straightening out just as quickly).
 
 At 800um, checked on mouse, shank 1 is flexing very heavily going in. Will give it some time to straighten, but if it doesn't, will have to pull out and choose another site.
+Shanks still flexed after 10min of rest, but watching them go in, they do not flex any more as shanks advanced. Perhaps that's just the position they were in when agar solidified.
+
+At 875um, saw a single spike on TT6!
+
+Okay, now all the shanks are flexing and are quite far from where they originally were. Pulling out.
+
+New site is a little more posterior and lateral, probes coated with DiD. Want to try not using agar and just filling well with saline.
+
+At 600um, all shanks are still flexing quite a bit. Perhaps left AC dried out and difficult to penetrate?
+
+Even going to 615um, probes flex like crazy. Doesn't look like this recording will pan out either.

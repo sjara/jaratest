@@ -1,0 +1,54 @@
+band015: 2016-11-13
+
+probe: 7752 (three-dots)
+
+Recording from left AC, lateral edge of craniotomy. Probes coated with DiI. TT5/6 flexing slightly going in, but seem fine after agar.
+
+At 550um, going down slowly. Can already see shitty spikes on TT2.
+
+At 850um, starting to see some half-decent spikes on TT2.
+
+At 875um, all right spikes on TT2, testing for laser response.
+No laser response at all.
+
+At 900um, new spikes on TT2.
+Ah-ha, TT2 laser response!
+Kind of a TT2 sound response? Looks like we're losing the spikes there. Testing for laser again.
+Laser response seems to come and go... how odd.
+
+Moving a tiny bit deeper (910um) to try to pick up that TT2 SOM cell.
+TT2 cell continues to pop in and out.
+
+At 930um, spikes on TT2,4,6.
+No laser response.
+
+At 980um, gigantic spikes on TT2.
+Off laser response.
+
+At 995um, new big spikes on TT2,6.
+Laser off response on TT2 and 6, but the spikes on T2 are so nice I'm going for it.
+Alas, no sound response.
+
+At 1025um, nice, rapid spiking on TT1,2,4,6.
+Laser off responses. TT2,4 slightly sound responsive.
+
+At 1075um, new cell on TT2,6. Pretty sure TT2 cell is PV based on spike shape.
+Looks like a laser response on TT4. Attempting to inch closer to cell.
+
+At 1080um, lowered spike threshold a bunch to try to get that elusive TT4 spike.
+Nice, both TT4 and 8 have laser responses! All tetrodes also have sound responses except 4.
+Both TT4 and 8 seem to like 14kHz, 4 likes 64Hz mod.
+After retesting laser response, the TT8 response is gone, but now we have onsets on TT1 and 6? TT4 response also not as strong.
+Luckily TT6 also likes 14kHz.
+
+At 1150um, spikes everywhere.
+Laser response on TT2,6. Strong sound response on TT2.
+
+At 1225um, spikes continue to be everywhere.
+Nothing but weird laser onset responses and laser off.
+
+At 1260, unlimited spike works.
+Some kind of laser response on TT4. Lowering spike threshold and trying again.
+...I lowered the threshold so much there's a response on EVERY tetrode. Raising threshold!
+TT2,3,4 have best laser responses.
+Some really spooky noise on TT7/8... hope shank is OK!

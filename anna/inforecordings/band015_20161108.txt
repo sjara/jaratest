@@ -1,0 +1,21 @@
+band015: 2016-11-08
+
+probe: 92B1 (three-shanks)
+
+Recording from right AC, somewhat close to lateral edge, though tall wells make it hard to see entire craniotomy. Probes coated with DiI.
+
+At 500um, slowly moving down.
+
+At 675um, looks like beginning of spikes on TT2, also TT5/6 might be broken.
+
+At 775um, definite spikes on TT2, though not very big.
+
+At 910um, decent spikes on TT2.
+
+At 950um, testing TT2 responses.
+Maybe a sound response? Could just be noise though.
+Possible inhibition by laser? (SOM mouse confirmed??)
+Responses not strong/interesting enough, moving on.
+
+At 970um, looks like spikes on TT2 and 4.
+Oops, I did it again. RIP laser-three-shanks.
