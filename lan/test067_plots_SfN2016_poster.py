@@ -156,6 +156,7 @@ elif CASE == 2:
         #plt.show()
        
 elif CASE == 3:
+    # -- Stats for photostim ave % rightward by frequency(high,low) and stim hemi -- #
     import pandas as pd
     import scipy.stats as stats
     df = pd.read_csv('/home/languo/data/behavior_reports/avePercentR_byStimType_byFreq.csv')   

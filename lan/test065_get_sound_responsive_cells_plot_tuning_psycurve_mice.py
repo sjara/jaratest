@@ -38,10 +38,10 @@ def read_sound_maxZ_file_psychometric_return_Df(maxZFilename):
     maxZDf = pd.DataFrame()
     numCellsPerSession = 96
     for behavSession in maxZDict.keys():
-        allFreqsSorted = sorted(maxZDict[behavSession].keys())
+        allFreqsSorted = sorted(int(maxZ) for maxZ in maxZDict[behavSession].keys())
         maxZAllFreqs = np.zeros((numCellsPerSession,6)) #initialize ndarray for all cells and all 6 frequencies in the psychometric, some sessions may not have all 6 so those values will be zero
         for indf,freq in enumerate(allFreqsSorted):
-            maxZThisFreq = maxZDict[behavSession][freq]
+            maxZThisFreq = maxZDict[behavSession][str(freq)]
             maxZAllFreqs[:,indf] = maxZThisFreq
         thisSessionDf = pd.DataFrame({'session':np.tile(behavSession,numCellsPerSession),'tetrode':np.repeat(range(1,9),12),'cluster':np.tile(range(1,13),8),'maxZsound1':maxZAllFreqs[:,0],'maxZsound2':maxZAllFreqs[:,1],'maxZsound3':maxZAllFreqs[:,2],'maxZsound4':maxZAllFreqs[:,3],'maxZsound5':maxZAllFreqs[:,4],'maxZsound6':maxZAllFreqs[:,5]})
         maxZDf = maxZDf.append(thisSessionDf, ignore_index=True)
