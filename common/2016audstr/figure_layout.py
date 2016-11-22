@@ -1,8 +1,13 @@
 '''
 Template for making figures.
 
-First, make the followin change to ~/.config/matplotlib/matplotlibrc
-font.sans-serif     : Helvetica, Bitstream Vera Sans, Arial, sans-serif
+To install a new font (e.g., Helvetica) for matplotlib (Ubuntu 14.04), do:
+1. Create ~/.config/matplotlib/matplotlibrc if it doesn't exist
+   (you can copy it from /etc/matplotlibrc
+2. Modify ~/.config/matplotlib/matplotlibrc to add Helvetica as preferred font:
+   font.sans-serif     : Helvetica, Bitstream Vera Sans, Arial, sans-serif
+3. You need to delete ~/.cache/matplotlib/fontList.cache
+   to force system to regenerate font cache.
 '''
 
 import numpy as np
@@ -17,10 +22,10 @@ matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 
-PRINT_FIGURE = 1
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'testfig' # Do not include extension
-figFormat = 'svg' #'pdf'
+figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [8,6]
 
 fontSizeLabels = 12
@@ -71,6 +76,6 @@ ax3.annotate('C', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fo
 
 plt.show()
 
-if PRINT_FIGURE:
+if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
