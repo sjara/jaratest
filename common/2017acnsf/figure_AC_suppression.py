@@ -9,8 +9,8 @@
 import numpy as np
 import pandas as pd
 from jaratest.nick.database import dataloader_v2 as dataloader
-from jaratest.anna import bandwidths_analysis
-reload(bandwidths_analysis)
+#from jaratest.anna import bandwidths_analysis
+#reload(bandwidths_analysis)
 from matplotlib import pyplot as plt
 from jaratoolbox import colorpalette as cp
 from jaratoolbox import extraplots
@@ -19,11 +19,12 @@ import matplotlib.gridspec as gridspec
 import matplotlib
 import string
 import pdb
-from jaratest.nick.database import dataplotter
-reload(dataplotter)
+#from jaratest.nick.database import dataplotter
+#reload(dataplotter)
 
 SAMPLING_RATE=30000.0
-CELL_NUM = 270
+#band002, 2016-08-12, 1380um, T6c4
+CELL_NUM = 161
 
 db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/band002_celldb.csv')
 cell = db.loc[CELL_NUM]
@@ -31,6 +32,79 @@ ephysDirs = [word.strip(string.punctuation) for word in cell['ephys'].split()]
 behavDirs = [word.strip(string.punctuation) for word in cell['behavior'].split()]
 sessType = [word.strip(string.punctuation) for word in cell['sessiontype'].split()]
 bandIndex = sessType.index('bandwidth')
+
+def bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial, timeRange = [-0.2, 1.5]):          
+    from jaratoolbox import behavioranalysis
+    from jaratoolbox import spikesanalysis
+    numBands = np.unique(bandEachTrial)
+    numAmps = np.unique(ampEachTrial)
+            
+    firstSortLabels = ['{}'.format(band) for band in numBands]
+            
+    trialsEachCond = behavioranalysis.find_trials_each_combination(bandEachTrial, 
+                                                                           numBands, 
+                                                                           ampEachTrial, 
+                                                                           numAmps)
+    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+                                                                                                        spikeTimestamps, 
+                                                                                                        eventOnsetTimes,
+                                                                                                        timeRange) 
+
+    return spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond, firstSortLabels
+
+def band_select(spikeTimeStamps, eventOnsetTimes, amplitudes, bandwidths, timeRange, fullRange = [0.0, 2.0]):
+    from jaratoolbox import behavioranalysis
+    from jaratoolbox import spikesanalysis
+    from scipy import stats
+    numBands = np.unique(bandwidths)
+    numAmps = np.unique(amplitudes)
+    spikeArray = np.zeros((len(numBands), len(numAmps)))
+    errorArray = np.zeros_like(spikeArray)
+    trialsEachCond = behavioranalysis.find_trials_each_combination(bandwidths, 
+                                                                   numBands, 
+                                                                   amplitudes, 
+                                                                   numAmps)
+    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+                                                                                                        spikeTimeStamps, 
+                                                                                                        eventOnsetTimes,
+                                                                                                        fullRange)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
+    baseTimeRange = [timeRange[1]+0.5, fullRange[1]]
+    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseTimeRange)
+    baselineSpikeRate = np.mean(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
+    plt.hold(True)
+    for amp in range(len(numAmps)):
+        trialsThisAmp = trialsEachCond[:,:,amp]
+        for band in range(len(numBands)):
+            trialsThisBand = trialsThisAmp[:,band]
+            if spikeCountMat.shape[0] != len(trialsThisBand):
+                spikeCountMat = spikeCountMat[:-1,:]
+                print "FIXME: Using bad hack to make event onset times equal number of trials"
+            thisBandCounts = spikeCountMat[trialsThisBand].flatten()
+            spikeArray[band, amp] = np.mean(thisBandCounts)
+            errorArray[band,amp] = stats.sem(thisBandCounts)
+    return spikeArray, errorArray, baselineSpikeRate
+
+def band_select_plot(spikeArray, errorArray, baselineSpikeRate, bands, legend = False, labels = ['50 dB SPL', '70 dB SPL'], timeRange = [0,1], title=None):
+    import matplotlib.patches as mpatches
+    xrange = range(len(bands))
+    plt.plot(xrange, baselineSpikeRate*(timeRange[1]-timeRange[0])*np.ones(len(bands)), color = '0.75', linewidth = 2)
+    plt.plot(xrange, spikeArray[:,0].flatten(), '-o', color = '#4e9a06', linewidth = 3)
+    plt.fill_between(xrange, spikeArray[:,0].flatten() - errorArray[:,0].flatten(), 
+                     spikeArray[:,0].flatten() + errorArray[:,0].flatten(), alpha=0.2, edgecolor = '#8ae234', facecolor='#8ae234')
+    plt.plot(range(len(bands)), spikeArray[:,1].flatten(), '-o', color = '#5c3566', linewidth = 3)
+    plt.fill_between(xrange, spikeArray[:,1].flatten() - errorArray[:,1].flatten(), 
+                     spikeArray[:,1].flatten() + errorArray[:,1].flatten(), alpha=0.2, edgecolor = '#ad7fa8', facecolor='#ad7fa8')
+    ax = plt.gca()
+    ax.set_xticklabels(bands)
+    plt.xlabel('bandwidth (octaves)')
+    plt.ylabel('Average num spikes')
+    if legend: 
+        patch1 = mpatches.Patch(color='#5c3566', label=labels[1])
+        patch2 = mpatches.Patch(color='#4e9a06', label=labels[0])
+        plt.legend(handles=[patch1, patch2], bbox_to_anchor=(0.95, 0.95), borderaxespad=0.)
+    if title:
+        plt.title(title)
 
 loader = dataloader.DataLoader(cell['subject'])
 
@@ -59,7 +133,7 @@ spikeTimestamps = spikeData.timestamps
 bdata = loader.get_session_behavior(behavDirs[bandIndex])
 bandEachTrial = bdata['currentBand']
 ampEachTrial = bdata['currentAmp']
-spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond, firstSortLabels = bandwidths_analysis.bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial)
+spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond, firstSortLabels = bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial)
 
 
 ax1 = plt.subplot(gs[0, :-2])
@@ -68,7 +142,8 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                 indexLimitsEachTrial,
                                                 timeRange = [-0.2, 1.5],
                                                 trialsEachCond=trialsThisSecondVal,
-                                                labels=firstSortLabels)
+                                                labels=firstSortLabels,
+                                                colorEachCond=np.tile(['#4e9a06','#8ae234'],len(bandEachTrial)/2+1))
 plt.setp(pRaster, ms=4)
 extraplots.boxoff(plt.gca())
 plt.xlabel('Time from stimulus onset (s)', fontsize=fontSizeLabels)
@@ -83,7 +158,8 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                 indexLimitsEachTrial,
                                                 timeRange = [-0.2, 1.5],
                                                 trialsEachCond=trialsThisSecondVal,
-                                                labels=firstSortLabels)
+                                                labels=firstSortLabels,
+                                                colorEachCond=np.tile(['#5c3566','#ad7fa8'],len(bandEachTrial)/2+1))
 plt.setp(pRaster, ms=4)
 extraplots.boxoff(plt.gca())
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -93,8 +169,8 @@ ax2.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fo
 
 
 ax3 = plt.subplot(gs[0:, -2:])
-spikeArray, errorArray, baseSpikeRate = bandwidths_analysis.band_select(spikeTimestamps, eventOnsetTimes, ampEachTrial, bandEachTrial, timeRange = [0,1])
-bandwidths_analysis.band_select_plot(spikeArray, errorArray, baseSpikeRate, np.unique(bandEachTrial), legend = True, labels = ['54 dB', '66 dB'])
+spikeArray, errorArray, baseSpikeRate = band_select(spikeTimestamps, eventOnsetTimes, ampEachTrial, bandEachTrial, timeRange = [0,1])
+band_select_plot(spikeArray, errorArray, baseSpikeRate, np.unique(bandEachTrial), legend = True, labels = ['54 dB', '66 dB'])
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.xlabel('Bandwidth (octaves)', fontsize=fontSizeLabels)
 plt.ylabel('Average number of spikes during stimulus', fontsize=fontSizeLabels)
