@@ -8,7 +8,7 @@ import bandwidths_analysis
 
 SAMPLING_RATE=30000.0
 
-db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/band005_celldb.csv')
+db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/band015_celldb.csv')
 
 
 cells = db[db['isiViolations']<2.0]
