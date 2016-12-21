@@ -55,7 +55,7 @@ for stimType in range(nStimTypes):
         psycurveDict['fityval_{}'.format(stimLabels[stimType])] = fityval
         
         
-outputDir = '/home/languo/data/mnt/figures_papers'
+outputDir = '/home/languo/data/mnt/figuresdata'
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, **psycurveDict)
@@ -108,7 +108,7 @@ for stimType in range(nStimTypes):
         psycurveDict['fityval_{}'.format(stimLabels[stimType])] = fityval
         
         
-outputDir = '/home/languo/data/mnt/figures_papers'
+outputDir = '/home/languo/data/mnt/figuresdata'
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, **psycurveDict)

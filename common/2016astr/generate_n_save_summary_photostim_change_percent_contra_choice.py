@@ -23,8 +23,8 @@ for mouse in np.unique(tuningDf.animalName):
     dfThisMouse = tuningDf.loc[tuningDf.animalName==mouse]
  
     # -- Calculate % contra choice change for each session and store data for left and right hemisphere photostim sessions separately -- #
-    for row in dfThisMouse.itertuples():
-        session = row['session']+'a'
+    for ind,row in dfThisMouse.iterrows():
+        session = str(row['session'])+'a'
         stimHemi = row['stim_hemi'] # 1=Left, 2=Right
 
         bdata = behavioranalysis.load_many_sessions(mouse,[session])
@@ -43,11 +43,11 @@ for mouse in np.unique(tuningDf.animalName):
             choiceRightStim = choiceRight[trialsEachType[:,stimLabels.index('laser_left')]]
 
             percentContraChoiceControl = sum(choiceRightControl&validTrialsControl)/sum(validTrialsControl)
-            percentContraChoiceStim = sum(choiceRightLeftStim&validTrialsStim)/sum(validTrialsStim)
-            percentChangeContraChoice = percentContraChoiceLeftStim-percentContraChoiceControl
+            percentContraChoiceStim = sum(choiceRightStim&validTrialsStim)/sum(validTrialsStim)
+            percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
             resultsDict[mouse+'leftHemiStim'].append(percentChangeContraChoice)
  
-       elif stimHemi == 2: #This is a session where the right hemisphere is stimulated
+        elif stimHemi == 2: #This is a session where the right hemisphere is stimulated
             validTrialsControl = valid[trialsEachType[:,stimLabels.index('no_laser')]]
             validTrialsStim = valid[trialsEachType[:,stimLabels.index('laser_right')]]
             choiceLeft = choice==bdata.labels['choice']['left']
@@ -59,7 +59,7 @@ for mouse in np.unique(tuningDf.animalName):
             percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
             resultsDict[mouse+'rightHemiStim'].append(percentChangeContraChoice)
 
-outputDir = '/home/languo/data/mnt/figures_papers'
+outputDir = '/home/languo/data/mnt/figuresdata'
 outputFile = 'summary_photostim_percent_contra_choice_change.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, **resultsDict)
