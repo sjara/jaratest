@@ -1,6 +1,6 @@
 '''
 Generate and store intermediate data for plot showing frequency-selectivity of astr sound-responsive neurons (using tuning curve data). Includes data for raster and psth.
-Lan Guo20121220
+Lan Guo20161220
 '''
 
 import os
