@@ -241,7 +241,7 @@ def read_min_trial_file_return_dict(minTrialFilename):
 
 
 if __name__ == '__main__':
-    CASE = 3
+    CASE = 5
     if CASE == 0:
         switchingMice = ['test059','test017','test089','adap020']
         #switchingMice = ['adap020']
@@ -288,16 +288,16 @@ if __name__ == '__main__':
             minTrialDict = read_min_trial_file_return_dict(minTrialFilename) 
 
             #elif 'movement' in filename:
-            movementIFilename = os.path.join(processedDir,'modIndex_LvsR_movement_0.05to0.15sec_window_'+mouseName)
+            movementIFilename = os.path.join(processedDir,'modIndex_LvsR_movement_0.05to0.15sec_window_'+mouseName+'.txt')
             #if 'modIndex' in filename:
             if os.path.isfile(movementIFilename):
                 movementIDf = read_movement_modI_return_Df(movementIFilename)
-                dfs.append([movementIDf])
-            movementSFilename = os.path.join(processedDir,'modSig_LvsR_movement_0.05to0.15sec_window_'+mouseName)
+                dfs.append(movementIDf)
+            movementSFilename = os.path.join(processedDir,'modSig_LvsR_movement_0.05to0.15sec_window_'+mouseName+'.txt')
             #elif 'modSig' in filename:
             if os.path.isfile(movementSFilename):
                 movementSDf = read_movement_modS_return_Df(movementSFilename)
-                dfs.append([movementSDf])
+                dfs.append(movementSDf)
 
             #--Joining all the resulting dataFrames on 'behavSession' column --#
             dfThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['behavSession','tetrode','cluster'],how='inner'), dfs)
@@ -305,12 +305,12 @@ if __name__ == '__main__':
             allMiceDfs.append(dfThisMouse)
 
         dfAllSwitchingMouse = pd.concat(allMiceDfs, ignore_index=True) 
-
-        dfAllSwitchingMouse.to_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures.h5',key='switching')
+        
+        #dfAllSwitchingMouse.to_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_switching.h5',key='switching')
 
     if CASE == 1:
         # -- Plot mod index histogram with ISI,quality,maxZMidFreq filters, color significantly modulated cells differently -- #
-        dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures.h5',key='switching')
+        dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_switching.h5',key='switching')
 
         # -- Plot histogram of significantly modulated cells -- #
         import matplotlib.pyplot as plt
@@ -333,7 +333,7 @@ if __name__ == '__main__':
   
     if CASE == 2:
         # -- Plot mod index histogram with ISI,quality,maxZMidFreq,and *modulation direction* filters, color significantly modulated cells differently -- #
-        dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures.h5',key='switching')
+        dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_switching.h5',key='switching')
 
         # -- Plot histogram of significantly modulated cells -- #
         import matplotlib.pyplot as plt
@@ -364,7 +364,7 @@ if __name__ == '__main__':
         from jaratest.lan import test055_load_n_plot_billy_data_one_cell as plotter
         reload(plotter)
         
-        dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures.h5',key='switching')
+        dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_switching.h5',key='switching')
         
         # -- This parameter sets whether to check for modulation direction score -- #
         checkModDir = True
@@ -414,3 +414,34 @@ if __name__ == '__main__':
                 plt.figure()
                 plotter.plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True, binWidth=0.010)
                 plotter.save_report_plot(animal,date,tetrode,cluster,filePath,chartType='PSTH')
+    
+    if CASE == 4:
+        # -- Merge newly calculated modulation index (with test069) from dif windows and waveform (with script test071) with all cells all measures --#
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import os
+        
+        dfAllMeasures = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_switching.h5',key='switching')
+
+        allMiceDfs = []
+        for animal in np.unique(dfAllMeasures['animalName']):
+            dfThisMouse = dfAllMeasures.loc[dfAllMeasures['animalName'] == animal].reset_index()
+            dfWaveThisMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/{}_switching_waveforms.h5'.format(animal),key=animal+'_switching')
+            dfModThisMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/newMod/{}_switching_modulation.h5'.format(animal),key='switching')
+            dfs = [dfThisMouse,dfModThisMouse,dfWaveThisMouse]
+            #dfs = [dfThisMouse,dfWaveThisMouse]
+            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','behavSession','tetrode','cluster'],how='inner'), dfs)
+            allMiceDfs.append(dfAllThisMouse)
+        
+        dfAllSwitchingMouse = pd.concat(allMiceDfs, ignore_index=True)
+        dfAllSwitchingMouse.to_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_extra_mod_waveform_switching.h5', key='switching')
+        #when saving to hdf, using (format='table',data_columns=True) is slower but enable on disk queries
+    
+    if CASE == 5:
+        # -- Add 'script' field to database to indicate which script generated it -- #
+        import pandas as pd
+        import os
+        dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_extra_mod_waveform_switching.h5', key='switching')
+        scriptFullPath = os.path.realpath(__file__)
+        dfAllSwitchingMouse['script'] = scriptFullPath
+        dfAllSwitchingMouse.to_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_extra_mod_waveform_switching.h5', key='switching')

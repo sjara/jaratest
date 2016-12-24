@@ -1,7 +1,16 @@
 '''
-Generate and store intermediate data for plot showing frequency-selectivity of astr sound-responsive neurons (using tuning curve data). Includes data for raster and psth.
+Generate and store intermediate data for plot showing frequency-selectivity of astr sound-responsive neurons (using tuning curve data). Data for raster and psth are saved separately. 
+For raster data, output contains spikeTimestamps, eventOnsetTimes, freqEachTrial.
+For psth data, output contains spikeCountMat, timeVec, freqEachTrial.
+
 Lan Guo20161220
 '''
+
+### To DO 
+
+# In the filename of the npz should include tetrode and cluster e.g. T6_c2
+# save the script name that generates the npz in the npz file, in the field called 'script' (using os.path.realpath(__file__)
+# Save the manually set params such as timeRange in npz file
 
 import os
 import sys
@@ -12,18 +21,22 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 from jaratest.lan import test055_load_n_plot_billy_data_one_cell as loader
 
-# -- Mount behavior and ephys data for psycurve and switching mice -- #
-BEHAVDIR_MOUNTED = '/home/languo/data/mnt/jarahubdata'
-EPHYSDIR_MOUNTED = '/home/languo/data/jarastorephys'
+timeRange = [-0.5,1]
+binWidth = 0.010
+scriptFullPath = os.path.realpath(__file__)
 
-if not os.path.ismount(BEHAVDIR_MOUNTED):
-    os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ /home/languo/data/mnt/jarahubdata')
+# -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
+BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
+EPHYS_PATH = settings.EPHYS_PATH_REMOTE
 
-if not os.path.ismount(EPHYSDIR_MOUNTED):
-    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ /home/languo/data/jarastorephys')
+if not os.path.ismount(BEHAVIOR_PATH):
+    os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
+
+if not os.path.ismount(EPHYS_PATH):
+    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
 
 
-# -- Select an example cell -- #
+# -- Select an example cell from allcells file -- #
 cellParams = {'firstParam':'test059',
               'behavSession':'20150624a',
               'tetrode':1,
@@ -40,7 +53,7 @@ cellIndex = allcells.cellDB.findcell(**cellParams)
 thisCell = allcells.cellDB[cellIndex]
 
 ### Get events, spikes, and behav data from mounted drives ###
-(eventOnsetTimes, spikeTimestamps, bdata) = loader.load_remote_tuning_data(thisCell,BEHAVDIR_MOUNTED,EPHYSDIR_MOUNTED)
+(eventOnsetTimes, spikeTimestamps, bdata) = loader.load_remote_tuning_data(thisCell,BEHAVIOR_PATH,EPHYS_PATH)
 
 # -- Calculate and store intermediate data for tuning raster -- #
 freqEachTrial = bdata['currentFreq']
@@ -56,11 +69,10 @@ if len(possibleIntensity) != 1:
     eventOnsetTimes = eventOnsetTimes[trialsThisIntensity]
 
 ### Save data ###    
-outputDir = '/home/languo/data/mnt/figuresdata'
-outputFile = 'example_freq_tuning_raster_{}_{}.npz'.format(thisCell.animalName, thisCell.behavSession)
+outputDir = settings.FIGURESDATA
+outputFile = 'example_freq_tuning_raster_{}_{}_T{}_c{}.npz'.format(thisCell.animalName, thisCell.behavSession, thisCell.tetrode,thisCell.cluster)
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes,
-    freqEachTrial=freqEachTrial)
+np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes, freqEachTrial=freqEachTrial, script=scriptFullPath, **cellParams)
 
 
 # -- Calculate and store intermediate data for tuning psth -- #
@@ -74,7 +86,7 @@ timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
 ### Save data ###
-outputDir = '/home/languo/data/mnt/figuresdata'
-outputFile = 'example_freq_tuning_psth_{}_{}.npz'.format(thisCell.animalName, thisCell.behavSession)
+outputDir = settings.FIGURESDATA
+outputFile = 'example_freq_tuning_psth_{}_{}_T{}_c{}.npz'.format(thisCell.animalName, thisCell.behavSession,thisCell.tetrode,thisCell.cluster)
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachFreq=trialsEachFreq)
+np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachFreq=trialsEachFreq, timeRange=timeRange, binWidth=binWidth, script=scriptFullPath, **cellParams)

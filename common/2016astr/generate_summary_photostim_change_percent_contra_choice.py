@@ -8,11 +8,16 @@ Lan Guo 20161220
 import os
 import numpy as np
 import pandas as pd
+from jaratoolbox import settings
 from jaratoolbox import behavioranalysis
 
+scriptFullPath = os.path.realpath(__file__)
+
 # -- Load the photostim experiments database -- #
-databaseFile = '/home/languo/data/behavior_reports/photostim_response_freq_summary.csv'
-tuningDf = pd.read_csv(databaseFile)
+tuingFilePath = settings.FIGURESDATA
+tuningFileName = 'photostim_response_freq_summary.csv'
+tuningFullPath = os.path.join(tuingFilePath,tuningFileName)
+tuningDf = pd.read_csv(tuningFullPath)
 
 resultsDict = {}
 
@@ -42,8 +47,8 @@ for mouse in np.unique(tuningDf.animalName):
             choiceRightControl = choiceRight[trialsEachType[:,stimLabels.index('no_laser')]]
             choiceRightStim = choiceRight[trialsEachType[:,stimLabels.index('laser_left')]]
 
-            percentContraChoiceControl = sum(choiceRightControl&validTrialsControl)/sum(validTrialsControl)
-            percentContraChoiceStim = sum(choiceRightStim&validTrialsStim)/sum(validTrialsStim)
+            percentContraChoiceControl = sum(choiceRightControl&validTrialsControl)/float(sum(validTrialsControl))
+            percentContraChoiceStim = sum(choiceRightStim&validTrialsStim)/float(sum(validTrialsStim))
             percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
             resultsDict[mouse+'leftHemiStim'].append(percentChangeContraChoice)
  
@@ -54,12 +59,12 @@ for mouse in np.unique(tuningDf.animalName):
             choiceLeftControl = choiceLeft[trialsEachType[:,stimLabels.index('no_laser')]]
             choiceLeftStim = choiceLeft[trialsEachType[:,stimLabels.index('laser_right')]]
 
-            percentContraChoiceControl = sum(choiceLeftControl&validTrialsControl)/sum(validTrialsControl)
-            percentContraChoiceStim = sum(choiceLeftStim&validTrialsStim)/sum(validTrialsStim)
+            percentContraChoiceControl = sum(choiceLeftControl&validTrialsControl)/float(sum(validTrialsControl))
+            percentContraChoiceStim = sum(choiceLeftStim&validTrialsStim)/float(sum(validTrialsStim))
             percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
             resultsDict[mouse+'rightHemiStim'].append(percentChangeContraChoice)
 
 outputDir = '/home/languo/data/mnt/figuresdata'
 outputFile = 'summary_photostim_percent_contra_choice_change.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, **resultsDict)
+np.savez(outputFullPath, script=scriptFullPath, **resultsDict)

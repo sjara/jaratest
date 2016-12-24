@@ -8,11 +8,15 @@ import numpy as np
 import pandas as pd
 from jaratoolbox import settings
 
-# -- Mount ephys data for psycurve mice -- #
-EPHYSDIR_MOUNTED = '/home/languo/data/jarastorephys'
+scriptFullPath = os.path.realpath(__file__)
+goodQualityList = [1,6]
+maxZthreshold = 3
 
-if not os.path.ismount(EPHYSDIR_MOUNTED):
-    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ /home/languo/data/jarastorephys')
+# -- Access mounted ephys data for psycurve mice -- #
+EPHYS_MOUNTED = settings.EPHYS_PATH_REMOTE
+
+if not os.path.ismount(EPHYS_MOUNTED):
+    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_MOUNTED))
 
 ################ -- Function to read file containing maximal Z score for each frequency presented in the psychometric curve task, store data in a dataframe  -- #####################
 ### This function is modified from a function with the same name in test068_read_psychometric_measurement_txtfiles.py to include maxZ score for all frequencies. ###
@@ -54,6 +58,7 @@ def read_sound_maxZ_file_psychometric_return_Df(maxZFilename):
     for behavSession in maxZDict.keys():
         thisSessionDf = pd.DataFrame({'behavSession':np.tile(behavSession,numCellsPerSession),'tetrode':np.repeat(range(1,9),12),'cluster':np.tile(range(1,13),8)})
         allFreqsSorted = sorted(int(freq) for freq in maxZDict[behavSession].keys()) #has to turn string (dic keys) to int for sorting by frequency!
+        #thisSessionDf['freqs'] = allFreqsSorted,numCellsPerSession)
         #maxZAllFreqs = np.zeros((numCellsPerSession,len(allFreqsSorted))) #initialize ndarray for all cells and all 6 frequencies in the psychometric task, some sessions may not have all 6 so those values will be zero
         for indf,freq in enumerate(allFreqsSorted):
             maxZThisFreq = maxZDict[behavSession][str(freq)] #has to turn the freq back to str
@@ -91,7 +96,7 @@ for mouseName in psychometricMice:
     cellQualityDf = read_allcells_quality_depth(allcellsFileName)
 
     # - Directory storing all computed measurements in txt files -- #
-    processedDir = os.path.join(EPHYSDIR_MOUNTED,mouseName+'_processed')
+    processedDir = os.path.join(EPHYS_MOUNTED,mouseName+'_processed')
     #measurementFiles = [os.path.join(processedDir, f) for f in os.listdir(processedDir) if os.path.isfile(os.path.join(processedDir, f))]
     dfs = []
     dfs.append(cellQualityDf)
@@ -105,6 +110,7 @@ for mouseName in psychometricMice:
     allMiceDfs.append(dfThisMouse)
 
 dfAllPsychometricMouseSound = pd.concat(allMiceDfs, ignore_index=True)
+dfAllPsychometricMouseSound['script'] = scriptFullPath
 
 ### Save dataframe ###
 outputDir = '/home/languo/data/mnt/figuresdata'
@@ -113,18 +119,18 @@ outputFullPath = os.path.join(outputDir,outputFile)
 dfAllPsychometricMouseSound.to_hdf(outputFullPath,key='psychometric')
 
 
-# -- Generate counts of 'responsive' cell (based on maxZ) for each frequency presented in the psychometric curve task. Do this separately for each mouse. -- #
+# -- Generate counts of 'responsive' cell (based on maxZ) of good quality for each frequency presented in the psychometric curve task. Do this separately for each mouse. -- #
 #maxNumOfFreqs = 6
 allMiceFreqSelDict = {}
 for thisMouseDf in allMiceDfs:
-    goodCells = thisMouseDf.loc[thisMouseDf.cellQuality.isin([1,6])]
+    goodCells = thisMouseDf.loc[thisMouseDf.cellQuality.isin(goodQualityList)]
     maxZcolnames = sorted([col for col in goodCells.columns if 'maxZ' in col]) #Get a list of column names containing maxZ scores, sorted so that lower frequencies come first
     #numOfFreqs = len(maxZcolnames)
     #if numOfFreqs > maxNumOfFreqs:
         #maxNumOfFreqs = numOfFreqs
     numResponsiveCellsAllFreqs = []
     for colname in maxZcolnames:
-        numResponsiveCells = sum(np.abs(goodCells[colname].astype('float')) > 3)
+        numResponsiveCells = sum(np.abs(goodCells[colname].astype('float')) > maxZthreshold)
         numResponsiveCellsAllFreqs.append(numResponsiveCells)
     allMiceFreqSelDict[thisMouseDf.animalName[0]] = numResponsiveCellsAllFreqs
 
@@ -132,4 +138,4 @@ for thisMouseDf in allMiceDfs:
 outputDir = '/home/languo/data/mnt/figuresdata'
 outputFile = 'summary_freq_selectivity_all_psycurve_mice.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, **allMiceFreqSelDict)
+np.savez(outputFullPath, script=scriptFullPath, maxZthreshold=maxZthreshold, goodCellQuality=goodQualityList, **allMiceFreqSelDict)

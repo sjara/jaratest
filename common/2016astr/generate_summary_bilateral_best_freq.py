@@ -7,6 +7,9 @@ import os
 import numpy as np
 import pandas as pd
 from jaratoolbox import settings
+reload(settings)
+
+scriptFullPath = os.path.realpath(__file__)
 
 # Psycurve frequencies used in 2afc task: d1pi014:7.3-16.3kHz, d1pi015:6.2-19.2kHz, d1pi016:mostly 7-22kHz; 6 frequencies were used in the task
 numFreqs = 6
@@ -23,10 +26,13 @@ freqBoundaryEachAnimal = {'d1pi014':boundary014,
                           'd1pi016':boundary016}
 
 # -- Load database containing quantifications of tuning -- #
-tuningFilename = '/home/languo/data/behavior_reports/photostim_response_freq_summary.csv'
-tuning_df = pd.read_csv(tuningFilename)
+tuingFilePath = settings.FIGURESDATA
+tuningFileName = 'photostim_response_freq_summary.csv'
+tuningFullPath = os.path.join(tuingFilePath,tuningFileName)
+tuning_df = pd.read_csv(tuningFullPath)
 
-resultsDict = {}
+resultsDict = dict(freqs014=freqs014, freqs015=freqs015, freqs016=freqs015, boundary014=boundary014, boundary015=boundary015, boundary016=boundary016, tuningDatabase=tuningFileName, script=scriptFullPath)
+
 ### Recalculate 'most_responsive_freq' as log2 distance to psycurve boundary ###
 for animal in freqBoundaryEachAnimal.keys():
     tuning_df.loc[tuning_df['animalName']==animal,'most_responsive_freq'] = np.log2(tuning_df.loc[tuning_df['animalName']==animal,'most_responsive_freq'])-np.log2(freqBoundaryEachAnimal[animal]) 

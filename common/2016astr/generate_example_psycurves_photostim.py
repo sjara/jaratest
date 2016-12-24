@@ -8,6 +8,9 @@ import pypsignifit as psi
 import os
 from jaratoolbox import behavioranalysis
 
+
+scriptFullPath = os.path.realpath(__file__)
+
 # -- Example psycurve under photostim of left hemisphere -- #
 animal = 'd1pi015'
 session = '20160829a'
@@ -58,7 +61,7 @@ for stimType in range(nStimTypes):
 outputDir = '/home/languo/data/mnt/figuresdata'
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, **psycurveDict)
+np.savez(outputFullPath, animal='d1pi015', session='20160829a', script=scriptFullPath,**psycurveDict)
 
 
 # -- Example psycurve under photostim of right hemisphere -- #
@@ -111,5 +114,5 @@ for stimType in range(nStimTypes):
 outputDir = '/home/languo/data/mnt/figuresdata'
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, **psycurveDict)
+np.savez(outputFullPath, animal='d1pi016', session='20160803a',script=scriptFullPath, **psycurveDict)
 

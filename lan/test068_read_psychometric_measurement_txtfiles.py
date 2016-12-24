@@ -69,7 +69,7 @@ def read_sound_maxZ_file_psychometric_return_Df(maxZFilename):
     numCellsPerSession = 96
 
     for behavSession in maxZDict.keys():
-        allFreqsSorted = sorted(int(maxZ) for maxZ in maxZDict[behavSession].keys()) #has to turn string (dic keys) to int for sorting by frequency!
+        allFreqsSorted = sorted(int(freq) for freq in maxZDict[behavSession].keys()) #has to turn string (dic keys) to int for sorting by frequency!
         maxZAllFreqs = np.zeros((numCellsPerSession,len(allFreqsSorted))) #initialize ndarray for all cells and all 6 frequencies in the psychometric task, some sessions may not have all 6 so those values will be zero
         for indf,freq in enumerate(allFreqsSorted):
             maxZThisFreq = maxZDict[behavSession][str(freq)] #has to turn the freq back to str
@@ -225,8 +225,12 @@ def read_min_trial_file_return_dict(minTrialFilename):
 
 
 if __name__ == '__main__':
-    CASE = 1
+    CASE = 5
     if CASE == 0:
+        import os
+
+        wavefrom = True #Have generated all waveform data
+        
         psychometricMice = ['adap013','adap017','adap015','test053','test055']
         #psychometricMice = ['adap013']
         
@@ -273,16 +277,16 @@ if __name__ == '__main__':
             minTrialDict = read_min_trial_file_return_dict(minTrialFilename) 
 
             #elif 'movement' in filename:
-            movementIFilename = os.path.join(processedDir,'modIndex_LvsR_movement_0.05to0.15sec_window_'+mouseName)
+            movementIFilename = os.path.join(processedDir,'modIndex_LvsR_movement_0.05to0.15sec_window_'+mouseName+'.txt')
             #if 'modIndex' in filename:
             if os.path.isfile(movementIFilename):
                 movementIDf = read_movement_modI_return_Df(movementIFilename)
-                dfs.append([movementIDf])
-            movementSFilename = os.path.join(processedDir,'modSig_LvsR_movement_0.05to0.15sec_window_'+mouseName)
+                dfs.append(movementIDf)
+            movementSFilename = os.path.join(processedDir,'modSig_LvsR_movement_0.05to0.15sec_window_'+mouseName+'.txt')
             #elif 'modSig' in filename:
             if os.path.isfile(movementSFilename):
                 movementSDf = read_movement_modS_return_Df(movementSFilename)
-                dfs.append([movementSDf])
+                dfs.append(movementSDf)
 
             #--Joining all the resulting dataFrames on 'behavSession' column --#
             dfThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['behavSession','tetrode','cluster'],how='inner'), dfs)
@@ -290,6 +294,7 @@ if __name__ == '__main__':
             allMiceDfs.append(dfThisMouse)
 
         dfAllPsychometricMouse = pd.concat(allMiceDfs, ignore_index=True) 
+        dfAllPsychometricMouse['script']= os.path.realpath(__file__)
 
         dfAllPsychometricMouse.to_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_psychometric.h5',key='psychometric')
 
@@ -378,7 +383,7 @@ if __name__ == '__main__':
         from jaratest.lan import test055_load_n_plot_billy_data_one_cell as plotter
         reload(plotter)
         
-        dfAllPsychometricMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures.h5',key='switching')
+        dfAllPsychometricMouse = pd.read_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_psychometric.h5',key='psychometric')
         
         # -- This parameter sets whether to check for modulation direction score -- #
         checkModDir = True
@@ -428,3 +433,14 @@ if __name__ == '__main__':
                 plt.figure()
                 plotter.plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=True, binWidth=0.010)
                 plotter.save_report_plot(animal,date,tetrode,cluster,filePath,chartType='PSTH')
+
+    if CASE == 5:
+        # -- Add 'script' field to database to indicate which script generated it -- #
+
+        import pandas as pd
+        import os
+        
+        dfAllPsychometricMouse = pd.read_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_psychometric.h5',key='psychometric')
+        scriptFullPath = os.path.realpath(__file__)
+        dfAllPsychometricMouse['script'] = scriptFullPath
+        dfAllPsychometricMouse.to_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_psychometric.h5',key='psychometric')
