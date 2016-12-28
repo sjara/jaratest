@@ -15,6 +15,35 @@ from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
+# -- These example cells I picked manually from jarauser@jarahub/data/reports/billy/20160818_billys_lastest_reports/2016_billy_lan_paper/20160728_psycurve_centerFreq_soundResponse_modulation_figure/modulation --#
+cellParamsList = []
+exampleCell = {'firstParam':'adap017',
+              'behavSession':'20160321a',
+              'tetrode':1,
+              'cluster':8}
+cellParamsList.append(exampleCell)
+exampleCell = {'firstParam':'adap017',
+              'behavSession':'20160411a',
+              'tetrode':3,
+              'cluster':10}
+cellParamsList.append(exampleCell)
+exampleCell = {'firstParam':'test053',
+              'behavSession':'20150615a',
+              'tetrode':5,
+               'cluster':7}
+cellParamsList.append(exampleCell)
+exampleCell = {'firstParam':'test055',
+              'behavSession':'20150303a',
+              'tetrode':4,
+               'cluster':7}
+cellParamsList.append(exampleCell)
+exampleCell = {'firstParam':'test055',
+              'behavSession':'20150316a',
+              'tetrode':3,
+               'cluster':2}
+cellParamsList.append(exampleCell)
+
+####################################################################################
 
 scriptFullPath = os.path.realpath(__file__)
 timeRange = [-0.5,1]
@@ -35,103 +64,99 @@ if not os.path.ismount(EPHYS_PATH):
 
 
 # -- Select an example cell from allcells file -- #
-cellParams = {'firstParam':'',
-              'behavSession':'a',
-              'tetrode':,
-              'cluster':}
+for cellParams in cellParamsList:
+    mouseName = cellParams['firstParam']
 
-mouseName = cellParams['firstParam']
-    
-allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
-sys.path.append(settings.ALLCELLS_PATH)
-allcells = importlib.import_module(allcellsFileName)
+    allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
+    sys.path.append(settings.ALLCELLS_PATH)
+    allcells = importlib.import_module(allcellsFileName)
 
-### Using cellDB methode to find the index of this cell in the cellDB ###
-cellIndex = allcells.cellDB.findcell(**cellParams)
-oneCell = allcells.cellDB[cellIndex]
+    ### Using cellDB methode to find the index of this cell in the cellDB ###
+    cellIndex = allcells.cellDB.findcell(**cellParams)
+    oneCell = allcells.cellDB[cellIndex]
 
 
-## Get behavior data associated with 2afc session ###
-behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
-behavFile = os.path.join(BEHAVIOR_PATH,oneCell.animalName,behavFileName)
-bdata = loadbehavior.BehaviorData(behavFile,readmode='full')
- 
-
-### Get events data ###
-fullEventFilename=os.path.join(EPHYS_PATH, oneCell.animalName, oneCell.ephysSession, 'all_channels.events')
-eventData = loadopenephys.Events(fullEventFilename)
-##### Get event onset times #####
-eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
+    ## Get behavior data associated with 2afc session ###
+    behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
+    behavFile = os.path.join(BEHAVIOR_PATH,oneCell.animalName,behavFileName)
+    bdata = loadbehavior.BehaviorData(behavFile,readmode='full')
 
 
-### GEt spike data of just this cluster ###
-spikeFilename = os.path.join(EPHYS_PATH,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
-spikeData = loadopenephys.DataSpikes(spikeFilename)
-spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
-clustersDir = os.path.join(EPHYS_PATH,oneCell.animalName,oneCell.ephysSession)+'_kk'
-clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(oneCell.tetrode))
-clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
-spikeData.timestamps = spikeData.timestamps[clusters==oneCell.cluster]
-spikeData.samples = spikeData.samples[clusters==oneCell.cluster, :, :]
-spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
-# FIXME: This assumes the gain is the same for all channels and records
-spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
-#spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
-spikeTimestamps = spikeData.timestamps
-
-# -- Check to see if ephys has skipped trials, if so remove trials from behav data -- #
-eventOnsetTimes=np.array(eventData.timestamps)
-soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
-soundOnsetTimeEphys = eventOnsetTimes[soundOnsetEvents]
-soundOnsetTimeBehav = bdata['timeTarget']
-
-# Find missing trials
-missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
-# Remove missing trials
-bdata.remove_trials(missingTrials)
+    ### Get events data ###
+    fullEventFilename=os.path.join(EPHYS_PATH, oneCell.animalName, oneCell.ephysSession, 'all_channels.events')
+    eventData = loadopenephys.Events(fullEventFilename)
+    ##### Get event onset times #####
+    eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
 
 
-# -- Select trials to plot from behavior file -- #
-possibleFreq = np.unique(bdata['targetFrequency'])
-numFreqs = len(possibleFreq)
-rightward = bdata['choice']==bdata.labels['choice']['right']
-leftward = bdata['choice']==bdata.labels['choice']['left']
+    ### GEt spike data of just this cluster ###
+    spikeFilename = os.path.join(EPHYS_PATH,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
+    spikeData = loadopenephys.DataSpikes(spikeFilename)
+    spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
+    clustersDir = os.path.join(EPHYS_PATH,oneCell.animalName,oneCell.ephysSession)+'_kk'
+    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(oneCell.tetrode))
+    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
+    spikeData.timestamps = spikeData.timestamps[clusters==oneCell.cluster]
+    spikeData.samples = spikeData.samples[clusters==oneCell.cluster, :, :]
+    spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
+    # FIXME: This assumes the gain is the same for all channels and records
+    spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
+    #spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
+    spikeTimestamps = spikeData.timestamps
 
-# -- Select trials of middle frequency to plot -- #
-middleFreqs = [possibleFreq[numFreqs/2-1], possibleFreq[numFreqs/2]] #selects middle frequencies, using int division resulting in int property. MAY FAIL IN THE FUTURE
-#pdb.set_trace()
-for middleFreq in middleFreqs:
-    oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
-
-    trialsToUseRight = rightward & oneFreq
-    trialsToUseLeft = leftward & oneFreq
-    trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
-    colorEachCond = [colorsDict['left'],colorsDict['right']]
-
-
-    # -- Calculate eventOnsetTimes aligned to sound onset -- #
+    # -- Check to see if ephys has skipped trials, if so remove trials from behav data -- #
     eventOnsetTimes=np.array(eventData.timestamps)
     soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
-    soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+    soundOnsetTimeEphys = eventOnsetTimes[soundOnsetEvents]
+    soundOnsetTimeBehav = bdata['timeTarget']
 
-    # -- Calculate arrays for plotting raster -- #
-    (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
-    spikesanalysis.eventlocked_spiketimes(spikeTimestamps,soundOnsetTimes,timeRange)
-
-
-    # -- Save raster intermediate data -- #    
-    outputDir = settings.FIGURESDATA
-    outputFile = 'example_psycurve_{}Hz_soundaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
-    outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+    # Find missing trials
+    missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
+    # Remove missing trials
+    bdata.remove_trials(missingTrials)
 
 
-    # -- Calculate additional arrays for plotting psth -- #
-    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
-    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+    # -- Select trials to plot from behavior file -- #
+    possibleFreq = np.unique(bdata['targetFrequency'])
+    numFreqs = len(possibleFreq)
+    rightward = bdata['choice']==bdata.labels['choice']['right']
+    leftward = bdata['choice']==bdata.labels['choice']['left']
 
-    # -- Save psth intermediate data -- #
-    outputDir = settings.FIGURESDATA
-    outputFile = 'example_psycurve_{}_Hz_soundaligned_psth_{}_{}_T{}_c{}.npz'.format( middleFreq, oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
-    outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+    # -- Select trials of middle frequency to plot -- #
+    middleFreqs = [possibleFreq[numFreqs/2-1], possibleFreq[numFreqs/2]] #selects middle frequencies, using int division resulting in int property. MAY FAIL IN THE FUTURE
+    #pdb.set_trace()
+    for middleFreq in middleFreqs:
+        oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
+
+        trialsToUseRight = rightward & oneFreq
+        trialsToUseLeft = leftward & oneFreq
+        trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
+        colorEachCond = [colorsDict['left'],colorsDict['right']]
+
+
+        # -- Calculate eventOnsetTimes aligned to sound onset -- #
+        eventOnsetTimes=np.array(eventData.timestamps)
+        soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
+        soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+
+        # -- Calculate arrays for plotting raster -- #
+        (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+        spikesanalysis.eventlocked_spiketimes(spikeTimestamps,soundOnsetTimes,timeRange)
+
+
+        # -- Save raster intermediate data -- #    
+        outputDir = settings.FIGURESDATA
+        outputFile = 'example_psycurve_{}Hz_soundaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
+        outputFullPath = os.path.join(outputDir,outputFile)
+        np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+
+
+        # -- Calculate additional arrays for plotting psth -- #
+        timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+
+        # -- Save psth intermediate data -- #
+        outputDir = settings.FIGURESDATA
+        outputFile = 'example_psycurve_{}_Hz_soundaligned_psth_{}_{}_T{}_c{}.npz'.format( middleFreq, oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
+        outputFullPath = os.path.join(outputDir,outputFile)
+        np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)

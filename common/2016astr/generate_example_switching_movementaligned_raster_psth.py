@@ -131,9 +131,9 @@ else:
 # -- Calculate eventOnsetTimes aligned to movement onset (CenterOut events) -- #
 eventOnsetTimes=np.array(eventData.timestamps)
 soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
-EventOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
 diffTimes=bdata['timeCenterOut']-bdata['timeTarget']
-movementOnsetTimes+=diffTimes
+movementOnsetTimes = soundOnsetTimes+diffTimes
 
 # -- Calculate arrays for plotting raster -- #
 (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
