@@ -71,6 +71,17 @@ ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 
 
+# -- Panel: another panel --
+ax2 = plt.subplot(gs[1,:-1])
+plt.plot(np.random.randn(20),np.random.randn(20),'o-',ms=8,color='0.75',mfc='b',mec='w')
+extraplots.boxoff(plt.gca())
+extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+plt.xlabel('Time (s)', fontsize=fontSizeLabels)
+plt.ylabel('Distance (m)', fontsize=fontSizeLabels)
+ax2.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
+
+
 plt.show()
 '''
 '''
