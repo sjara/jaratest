@@ -20,6 +20,7 @@ from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 from jaratest.lan import test055_load_n_plot_billy_data_one_cell as loader
+import figparams
 
 timeRange = [-0.5,1]
 binWidth = 0.010
@@ -69,7 +70,7 @@ if len(possibleIntensity) != 1:
     eventOnsetTimes = eventOnsetTimes[trialsThisIntensity]
 
 ### Save data ###    
-outputDir = settings.FIGURESDATA
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_freq_tuning_raster_{}_{}_T{}_c{}.npz'.format(thisCell.animalName, thisCell.behavSession, thisCell.tetrode,thisCell.cluster)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes, freqEachTrial=freqEachTrial, script=scriptFullPath, **cellParams)
@@ -86,7 +87,7 @@ timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
 ### Save data ###
-outputDir = settings.FIGURESDATA
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_freq_tuning_psth_{}_{}_T{}_c{}.npz'.format(thisCell.animalName, thisCell.behavSession,thisCell.tetrode,thisCell.cluster)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachFreq=trialsEachFreq, timeRange=timeRange, binWidth=binWidth, script=scriptFullPath, **cellParams)

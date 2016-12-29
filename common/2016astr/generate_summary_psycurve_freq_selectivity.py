@@ -7,6 +7,7 @@ import os
 import numpy as np
 import pandas as pd
 from jaratoolbox import settings
+import figparams
 
 scriptFullPath = os.path.realpath(__file__)
 goodQualityList = [1,6]
@@ -113,7 +114,7 @@ dfAllPsychometricMouseSound = pd.concat(allMiceDfs, ignore_index=True)
 dfAllPsychometricMouseSound['script'] = scriptFullPath
 
 ### Save dataframe ###
-outputDir = '/home/languo/data/mnt/figuresdata'
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'all_freqs_maxZ_all_psycurve_mice.h5'
 outputFullPath = os.path.join(outputDir,outputFile)
 dfAllPsychometricMouseSound.to_hdf(outputFullPath,key='psychometric')
@@ -135,7 +136,7 @@ for thisMouseDf in allMiceDfs:
     allMiceFreqSelDict[thisMouseDf.animalName[0]] = numResponsiveCellsAllFreqs
 
 ### Save data ###
-outputDir = '/home/languo/data/mnt/figuresdata'
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_freq_selectivity_all_psycurve_mice.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, script=scriptFullPath, maxZthreshold=maxZthreshold, goodCellQuality=goodQualityList, **allMiceFreqSelDict)

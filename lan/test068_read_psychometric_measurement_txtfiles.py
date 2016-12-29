@@ -225,7 +225,7 @@ def read_min_trial_file_return_dict(minTrialFilename):
 
 
 if __name__ == '__main__':
-    CASE = 5
+    CASE = 6
     if CASE == 0:
         import os
 
@@ -444,3 +444,26 @@ if __name__ == '__main__':
         scriptFullPath = os.path.realpath(__file__)
         dfAllPsychometricMouse['script'] = scriptFullPath
         dfAllPsychometricMouse.to_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_psychometric.h5',key='psychometric')
+
+    if CASE == 6:
+        # -- Merge separately calculated waveform (with script test071) with all cells all measures --#
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import os
+        
+        dfAllMeasures = pd.read_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_psychometric.h5',key='psychometric')
+
+        allMiceDfs = []
+        for animal in np.unique(dfAllMeasures['animalName']):
+            dfThisMouse = dfAllMeasures.loc[dfAllMeasures['animalName'] == animal].reset_index()
+            dfWaveThisMouse = pd.read_hdf('/home/languo/data/ephys/psychometric_summary_stats/{}_psychometric_waveforms.h5'.format(animal),key=animal+'_psychometric')
+            dfWaveThisMouse.drop('script', axis=1, inplace=True) #Get rid of the 'script' column in the waveform df so that don't have duplicate 'script' columns
+
+            dfs = [dfThisMouse,dfWaveThisMouse]
+            
+            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','behavSession','tetrode','cluster'],how='inner'), dfs)
+            allMiceDfs.append(dfAllThisMouse)
+        
+        dfAllPsychometricMouse = pd.concat(allMiceDfs, ignore_index=True)
+        dfAllPsychometricMouse.to_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_waveform_psychometric.h5', key='psychometric')
+        #when saving to hdf, using (format='table',data_columns=True) is slower but enable on disk queries

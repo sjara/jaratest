@@ -14,7 +14,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
-
+import figparams
 
 scriptFullPath = os.path.realpath(__file__)
 timeRange = [-0.5,1]
@@ -121,7 +121,7 @@ for middleFreq in middleFreqs:
 
 
     # -- Save raster intermediate data -- #    
-    outputDir = settings.FIGURESDATA
+    outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_psycurve_{}Hz_movementaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
     np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
@@ -132,7 +132,7 @@ for middleFreq in middleFreqs:
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
     # -- Save psth intermediate data -- #
-    outputDir = settings.FIGURESDATA
+    outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_psycurve_{}Hz_movementaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
     np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
