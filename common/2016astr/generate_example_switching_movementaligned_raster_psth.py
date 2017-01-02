@@ -14,7 +14,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
-
+import figparams
 
 scriptFullPath = os.path.realpath(__file__)
 timeRange = [-0.5,1]
@@ -141,10 +141,10 @@ spikesanalysis.eventlocked_spiketimes(spikeTimestamps,movementOnsetTimes,timeRan
 
 
 # -- Save raster intermediate data -- #    
-outputDir = settings.FIGURESDATA
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, timeRange=timeRange, colorForLowBlock=colorsDict['lowBlock'], colorForHighBlock=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)
+np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes,spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, timeRange=timeRange, colorForLowBlock=colorsDict['lowBlock'], colorForHighBlock=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)
 
 
 # -- Calculate additional arrays for plotting psth -- #
@@ -152,7 +152,7 @@ timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     
 # -- Save psth intermediate data -- #
-outputDir = settings.FIGURESDATA
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_movement_sel_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, script=scriptFullPath, colorForLowBlock=colorsDict['lowBlock'], colorForHighBlock=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)

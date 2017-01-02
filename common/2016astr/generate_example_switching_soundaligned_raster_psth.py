@@ -153,7 +153,7 @@ for cellParams in cellParamsList:
 
     # -- Save raster intermediate data -- #    
     outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-    outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
+    outputFile = 'example_switching_midfreq_soundaligned_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
     np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, timeRange=timeRange, colorForLowBlock=colorsDict['lowBlock'], colorForHighBlock=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)
 
@@ -164,6 +164,6 @@ for cellParams in cellParamsList:
 
     # -- Save psth intermediate data -- #
     outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-    outputFile = 'example_movement_sel_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
+    outputFile = 'example_switching_midfreq_soundaligned_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
     np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, script=scriptFullPath, colorForLowBlock=colorsDict['lowBlock'], colorForHighBlock=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)
