@@ -15,19 +15,30 @@ reload(videoanalysis)
 import figparams
 
 # -- Select which processing stages to perform --
-DETECT_STIMULUS = 1
+DEFINE_STIM_COORDS = 0
+DETECT_STIMULUS = 0
 TRACK_COLORS = 0
-CALCULATE_HEAD_ANGLE = 0
+CALCULATE_HEAD_ANGLE = 1
 
-if 1:
+MOUSE = 2
+if MOUSE==0:
     subject = 'd1pi013'
-    session = '20160519-5'
+    session = '20160519-5'  # DMStr Both sides 
     figuredataFilename = 'example_head_angle_dmstr.npz'
-else:
+    stimCoords = [ [[280, 70], [300, 80]], [[535, 65], [550, 75]] ]
+    stimThreshold = 20
+elif MOUSE==1:
     subject = 'd1pi014'
-    session = '20161021--2'
+    session = '20161021--2'  # AStr Left side
     figuredataFilename = 'example_head_angle_astr.npz'
-   
+    stimCoords = [ [[260, 50], [280, 60]] ]
+    stimThreshold = 30
+elif MOUSE==2:
+    subject = 'd1pi014'
+    session = '20161021--3'  # AStr Right side
+    figuredataFilename = 'example_head_angle_astr.npz'
+    stimCoords = [ [[520, 80], [545, 95]] ]
+    stimThreshold = 30
     
 videoPath = settings.VIDEO_PATH
 filenameOnly = subject+'_'+session+'.mkv'
@@ -42,26 +53,36 @@ ctrackFilename = 'colortrack_{0}_{1}.npz'.format(subject,session)
 ctrackFullPath = os.path.join(outputDir,ctrackFilename)
 figuredataFullPath = os.path.join(outputDir,figuredataFilename)
 
+if DEFINE_STIM_COORDS:
+    vid = videoanalysis.DefineCoordinates(filename)
+           
 if DETECT_STIMULUS:
     # -- These coords were found using videoanalysis.DefineCoordinates() --
-    coords = [ [[280, 70], [300, 80]], [[535, 65], [550, 75]] ]
-    vid = videoanalysis.StimDetector(filename,coords)
+    vid = videoanalysis.StimDetector(filename,stimCoords)
     intensity = vid.measure()
-    np.savez(stimFullPath, subject=subject, session=session, coords=coords,
+    np.savez(stimFullPath, subject=subject, session=session, coords=stimCoords,
              stimIntensity=intensity, script=scriptFullPath)
     print 'Saved results to {}'.format(stimFullPath)
-    plt.clf(); plt.plot(intensity.T); plt.show()
+    plt.clf(); plt.plot(intensity.T,'.-'); plt.show()
              
 if TRACK_COLORS:
-    # -- These BRG color ranges were found by hand using the Linux gpick app --
-    limitsR = [[70, 170, 110],
+    # -- These HSV color ranges were found by hand using the Linux gpick app --
+    '''
+    limitsG = [[70, 170, 110],
                [150, 255, 150]]
-    limitsG = [[40, 20, 150],
+    limitsR = [[40, 20, 150],
                [90, 70, 255]]
     colorLimits = [limitsR,limitsG]
-    minPixels = 6  # Minimum number of pixels to detect a color area
+    '''
+    hsvLimitsG = [[45,  70,  70],
+                  [75, 255, 255]]
+    hsvLimitsR = [[170,  70,  70],
+                  [179, 255, 255]]
+    colorLimits = [hsvLimitsG,hsvLimitsR]
+
+    minArea = 40  # Minimum number of pixels to detect a color area
     vid = videoanalysis.ColorTracker(filename,colorLimits)
-    vid.process(minPixels=minPixels, lastFrame=None)
+    vid.process(minArea=minArea, lastFrame=None)
     vid.interpolate()
     np.savez(ctrackFullPath, subject=subject, session=session, colorLimits=colorLimits,
              colorCenter=vid.colorCenter, missedFrames=vid.missed, script=scriptFullPath)
@@ -96,19 +117,24 @@ if CALCULATE_HEAD_ANGLE:
     headAngle = np.unwrap(headAngleDiscont, discont=np.pi)
     headDiff = np.concatenate((np.diff(headAngle),[0]))
 
-    stimBool = stimIntensity>20
-
+    stimBool = stimIntensity>stimThreshold
+    nStim = stimBool.shape[0]
+    
     # -- Calculate overall averages --
-    deltaAngleStim1 = np.mean(headDiff[stimBool[0,:]])
-    deltaAngleStim2 = np.mean(headDiff[stimBool[1,:]])
-    deltaAngleNoStim = np.mean(headDiff[~stimBool[0,:] & ~stimBool[1,:]])
-
+    if nStim==2:
+        deltaAngleStim1 = np.mean(headDiff[stimBool[0,:]])
+        deltaAngleStim2 = np.mean(headDiff[stimBool[1,:]])
+        deltaAngleNoStim = np.mean(headDiff[~stimBool[0,:] & ~stimBool[1,:]])
+    elif nStim==1:
+        deltaAngleStim1 = np.mean(headDiff[stimBool[0,:]])
+        deltaAngleNoStim = np.mean(headDiff[~stimBool[0,:]])
+        
     dStim = np.diff(stimBool.astype(int),axis=1)
-    dStim = np.hstack(([[0],[0]],dStim)) # To ensure alignement when finding frames in a trial
-    firstFrameEachTrial = 2*[None]
-    lastFrameEachTrial = 2*[None]
-    avgDeltaAngleEachTrial = 2*[None]
-    nStim = dStim.shape[0]
+    dStim = np.hstack((np.zeros((nStim,1)),dStim)) # To ensure alignement when finding frames in a trial
+    firstFrameEachTrial = nStim*[None]
+    lastFrameEachTrial = nStim*[None]
+    avgDeltaAngleEachTrial = nStim*[None]
+    
     for stimInd in range(nStim):
         firstFrameEachTrial[stimInd] = np.flatnonzero(dStim[stimInd,:]>0)
         lastFrameEachTrial[stimInd] = np.flatnonzero(dStim[stimInd,:]<0)
@@ -140,6 +166,10 @@ if CALCULATE_HEAD_ANGLE:
 
     print 'Delta angle during stimulation:'
     print deltaAngleStim1
-    print deltaAngleStim2
+    if nStim>1:
+        print deltaAngleStim2
     print 'Delta angle no stims:'
     print deltaAngleNoStim
+
+    print 'Delta angle each trial'
+    print avgDeltaAngleEachTrial
