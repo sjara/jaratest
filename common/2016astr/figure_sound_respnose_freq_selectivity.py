@@ -16,7 +16,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'fig_sound_freq_selective' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
@@ -70,7 +70,8 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                labels=labels)
 
 plt.setp(pRaster, ms=msRaster)
-plt.xlabel('Time from sound onset',fontsize=fontSizeLabels)
+plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+plt.ylabel('Frequency (Hz)',fontsize=fontSizeLabels)
 plt.xlim(timeRangeSound[0],timeRangeSound[1])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
@@ -95,7 +96,7 @@ colorEachCond = [colormapTuning(x) for x in cm_subsection]
 
 extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-
+plt.axvline(x=0,linewidth=1, color='darkgrey')
 plt.xlim(timeRangeSound[0],timeRangeSound[1])
 plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
 plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels)

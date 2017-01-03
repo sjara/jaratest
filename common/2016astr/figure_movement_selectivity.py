@@ -17,7 +17,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'fig_movement_selective' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
