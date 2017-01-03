@@ -48,7 +48,7 @@ gs = gridspec.GridSpec(2, 4)
 gs.update(left=0.15, right=0.85, wspace=1, hspace=0.5)
 
 
-# -- Panel A: representative raster during movement from psychometric task -- #
+# -- Panel A: representative raster during movement from switching task -- #
 ax1 = plt.subplot(gs[0, 0:2])
 
 rasterFilename = 'example_movement_sel_raster_test059_20150629a_T2_c7.npz' 
@@ -63,16 +63,17 @@ timeRange = rasterExample['timeRange']
 
 pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                indexLimitsEachTrial,
-                                               timeRange,
-                                               trialsEachCond=trialsEachCond)
+                                               timeRange=timeRangeMovement,
+                                               trialsEachCond=trialsEachCond,
+                                               colorEachCond=colorEachCond)
 
 plt.setp(pRaster, ms=msRaster)
 plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
+#plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 
-# -- Panel A2: representative sound-evoked psth from tuning task -- #
+# -- Panel A2: representative psth during movement from switching task -- #
 ax2 = plt.subplot(gs[1,0:2])
 
 psthFilename = 'example_movement_sel_psth_test059_20150629a_T2_c7.npz' 
