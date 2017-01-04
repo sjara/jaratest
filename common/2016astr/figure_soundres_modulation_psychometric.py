@@ -17,7 +17,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'fig_choice_modulation_psychometric' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
@@ -148,17 +148,17 @@ plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels)
 # -- Panel C: summary distribution of psychometric modulation index -- #
 ax5 = plt.subplot(gs[0:,4:6])
 
-summaryFilename = 'summary__selectivity_all_good_cells.npz'
+summaryFilename = 'summary_psychometric_sound_modulation_good_cells_responsive_midfreq.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
 summary = np.load(summaryFullPath)
 
-sigModulated = summary['movementSelective']
-sigMI = summary['movementModI'][sigModulated]
-nonsigMI = summary['movementModI'][~sigModulated]
+sigModulated = summary['modulated']
+sigMI = summary['modulationIndex'][sigModulated]
+nonsigMI = summary['modulationIndex'][~sigModulated]
 plt.hist([sigMI,nonsigMI], bins=50, color=['k','darkgrey'], stacked=True)
 
-sig_patch = mpatches.Patch(color='k', label='Selective')
-nonsig_patch = mpatches.Patch(color='darkgrey', label='Not selective')
+sig_patch = mpatches.Patch(color='k', label='Modulated')
+nonsig_patch = mpatches.Patch(color='darkgrey', label='Not modulated')
 plt.legend(handles=[sig_patch,nonsig_patch])
 
 plt.axvline(x=0, linestyle='--',linewidth=1.5, color='k')
@@ -167,7 +167,7 @@ plt.xlabel('Modulation index', fontsize=fontSizeLabels)
 plt.ylabel('Number of cells', fontsize=fontSizeLabels)
 
 ax5.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-'''
+
 plt.show()
 
 if SAVE_FIGURE:
