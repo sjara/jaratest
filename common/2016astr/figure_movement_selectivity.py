@@ -105,7 +105,7 @@ summary = np.load(summaryFullPath)
 sigModulated = summary['movementSelective']
 sigMI = summary['movementModI'][sigModulated]
 nonsigMI = summary['movementModI'][~sigModulated]
-plt.hist([sigMI,nonsigMI], bins=50, color=['k','darkgrey'], stacked=True)
+plt.hist([sigMI,nonsigMI], bins=50, color=['k','darkgrey'],edgecolor='None',stacked=True)
 
 sig_patch = mpatches.Patch(color='k', label='Selective')
 nonsig_patch = mpatches.Patch(color='darkgrey', label='Not selective')

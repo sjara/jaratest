@@ -160,7 +160,7 @@ summary = np.load(summaryFullPath)
 sigModulated = summary['modulated']
 sigMI = summary['modulationIndex'][sigModulated]
 nonsigMI = summary['modulationIndex'][~sigModulated]
-plt.hist([sigMI,nonsigMI], bins=50, color=['k','darkgrey'], stacked=True)
+plt.hist([sigMI,nonsigMI], bins=50, color=['k','darkgrey'], edgecolor='None', stacked=True)
 
 sig_patch = mpatches.Patch(color='k', label='Modulated')
 nonsig_patch = mpatches.Patch(color='darkgrey', label='Not modulated')
