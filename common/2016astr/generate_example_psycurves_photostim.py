@@ -7,7 +7,8 @@ import numpy as np
 import pypsignifit as psi
 import os
 from jaratoolbox import behavioranalysis
-
+from jaratoolbox import settings
+import figparams
 
 scriptFullPath = os.path.realpath(__file__)
 
@@ -58,7 +59,7 @@ for stimType in range(nStimTypes):
         psycurveDict['fityval_{}'.format(stimLabels[stimType])] = fityval
         
         
-outputDir = '/home/languo/data/mnt/figuresdata'
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, animal='d1pi015', session='20160829a', script=scriptFullPath,**psycurveDict)
@@ -111,7 +112,7 @@ for stimType in range(nStimTypes):
         psycurveDict['fityval_{}'.format(stimLabels[stimType])] = fityval
         
         
-outputDir = '/home/languo/data/mnt/figuresdata'
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, animal='d1pi016', session='20160803a',script=scriptFullPath, **psycurveDict)

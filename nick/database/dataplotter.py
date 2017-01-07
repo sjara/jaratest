@@ -81,7 +81,7 @@ def plot_raster(spikeTimestamps,
         labels=labels, *args, **kwargs)
     #Set the marker size for better viewing
     plt.setp(pRaster, ms=ms)
-    
+
 def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1], binsize = 50, lw=2, *args, **kwargs):
     '''
     Function to accept spike timestamps, event onset times, and an optional sorting array and plot a
@@ -89,11 +89,11 @@ def plot_psth(spikeTimestamps, eventOnsetTimes, sortArray=[], timeRange=[-0.5,1]
 
     This function does not replicate functionality. It allows you to pass spike timestamps and event
     onset times, which are simple to get.
-    
+
     Args:
         binsize (float) = size of bins for PSTH in ms
-    '''   
-    binsize = binsize/1000.0 
+    '''
+    binsize = binsize/1000.0
     # If a sort array is supplied, find the trials that correspond to each value of the array
     if len(sortArray) > 0:
         trialsEachCond = behavioranalysis.find_trials_each_type(
@@ -289,7 +289,7 @@ def two_axis_heatmap(spikeTimestamps,
                                           ytickLabels=firstSortLabels,
                                           cbarLabel=cbarLabel,
                                           cmap=cmap)
-    return ax, cax, cbar
+    return ax, cax, cbar, spikeArray
 
 
 def one_axis_tc_or_rlf(spikeTimestamps,
@@ -345,9 +345,8 @@ def plot_array_as_heatmap(heatmapArray,
     if ylabel:
         ax.set_ylabel(ylabel)
 
-    cax = ax.imshow(heatmapArray,
-                    interpolation='none',
-                    aspect='auto',
+    cax = ax.pcolormesh(heatmapArray,
+                    vmin=0,
                     cmap=cmap)
     vmin, vmax = cax.get_clim()
     cbar = plt.colorbar(cax, format='%.1f')

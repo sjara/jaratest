@@ -18,7 +18,7 @@ def get_cell_info(cell):
     ephysDirs = [word.strip(string.punctuation) for word in cell['ephys'].split()]
     behavDirs = [word.strip(string.punctuation) for word in cell['behavior'].split()]
     sessType = [word.strip(string.punctuation) for word in cell['sessiontype'].split()]
-    
+
     tetrode = int(cell['tetrode'])
     cluster = int(cell['cluster'])
     bandIndex = [i for i, type in enumerate(sessType) if type == 'bandwidth']
@@ -46,7 +46,7 @@ def plot_bandwidth_report(cell):
     cellInfo = get_cell_info(cell)
     #pdb.set_trace()
     loader = dataloader.DataLoader(cell['subject'])
-    
+
     if len(cellInfo['laserIndex'])>0:
         laser = True
         gs = gridspec.GridSpec(13, 6)
@@ -56,11 +56,11 @@ def plot_bandwidth_report(cell):
     offset = 4*laser
     gs.update(left=0.15, right=0.85, top = 0.96, wspace=0.7, hspace=1.0)
 
-    plt.clf() 
+    plt.clf()
     bandIndex = cellInfo['bandIndex']
-    
+
     #plots separate reports for every bandwidth session per site
-    for index in bandIndex:      
+    for index in bandIndex:
          # -- plot bandwidth rasters --
         plt.clf()
         eventData = loader.get_session_events(cellInfo['ephysDirs'][index])
@@ -68,16 +68,16 @@ def plot_bandwidth_report(cell):
         eventOnsetTimes = loader.get_event_onset_times(eventData)
         spikeTimestamps = spikeData.timestamps
         timeRange = [-0.2, 1.5]
-        bandBData = loader.get_session_behavior(cellInfo['behavDirs'][index])  
+        bandBData = loader.get_session_behavior(cellInfo['behavDirs'][index])
         bandEachTrial = bandBData['currentBand']
         ampEachTrial = bandBData['currentAmp']
         charfreq = str(np.unique(bandBData['charFreq'])[0]/1000)
         modrate = str(np.unique(bandBData['modRate'])[0])
         numBands = np.unique(bandEachTrial)
         numAmps = np.unique(ampEachTrial)
-                
+
         firstSortLabels = ['{}'.format(band) for band in np.unique(bandEachTrial)]
-        secondSortLabels = ['Amplitude: {}'.format(amp) for amp in np.unique(ampEachTrial)]      
+        secondSortLabels = ['Amplitude: {}'.format(amp) for amp in np.unique(ampEachTrial)]
         spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond, firstSortLabels = bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial)
         colours = [np.tile(['#4e9a06','#8ae234'],len(numBands)/2+1), np.tile(['#5c3566','#ad7fa8'],len(numBands)/2+1)]
         for ind, secondArrayVal in enumerate(numAmps):
@@ -89,29 +89,29 @@ def plot_bandwidth_report(cell):
                                                             trialsEachCond=trialsThisSecondVal,
                                                             labels=firstSortLabels,
                                                             colorEachCond = colours[ind])
-            plt.setp(pRaster, ms=4)        
+            plt.setp(pRaster, ms=4)
             plt.title(secondSortLabels[ind])
             plt.ylabel('bandwidth (octaves)')
             if ind == len(np.unique(ampEachTrial)) - 1:
                 plt.xlabel("Time from sound onset (sec)")
-        
-               
+
+
         # -- plot Yashar plots for bandwidth data --
         plt.subplot(gs[5+offset:, 3:])
         spikeArray, errorArray, baseSpikeRate = band_select(spikeTimestamps, eventOnsetTimes, ampEachTrial, bandEachTrial, timeRange = [0.0, 1.0])
         band_select_plot(spikeArray, errorArray, baseSpikeRate, numBands, legend=True)
-                
-        # -- plot frequency tuning heat map -- 
+
+        # -- plot frequency tuning heat map --
         tuningBData = loader.get_session_behavior(cellInfo['behavDirs'][cellInfo['tuningIndex'][-1]])
         freqEachTrial = tuningBData['currentFreq']
         intEachTrial =  tuningBData['currentIntensity']
-                
+
         eventData = loader.get_session_events(cellInfo['ephysDirs'][cellInfo['tuningIndex'][-1]])
         spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][cellInfo['tuningIndex'][-1]], cellInfo['tetrode'], cluster=cellInfo['cluster'])
         eventOnsetTimes = loader.get_event_onset_times(eventData)
         spikeTimestamps = spikeData.timestamps
-        
-        plt.subplot(gs[2+offset:4+offset, 0:3])       
+
+        plt.subplot(gs[2+offset:4+offset, 0:3])
         dataplotter.two_axis_heatmap(spikeTimestamps=spikeTimestamps,
                                         eventOnsetTimes=eventOnsetTimes,
                                         firstSortArray=intEachTrial,
@@ -127,7 +127,7 @@ def plot_bandwidth_report(cell):
         plt.ylabel('Intensity (dB SPL)')
         plt.xlabel('Frequency (kHz)')
         plt.title('Frequency Tuning Curve')
-                
+
         # -- plot frequency tuning raster --
         plt.subplot(gs[0+offset:2+offset, 0:3])
         freqLabels = ["%.1f" % freq for freq in np.unique(freqEachTrial)/1000.0]
@@ -135,17 +135,17 @@ def plot_bandwidth_report(cell):
         plt.xlabel('Time from sound onset (sec)')
         plt.ylabel('Frequency (kHz)')
         plt.title('Frequency Tuning Raster')
-                
+
         # -- plot AM PSTH --
         amBData = loader.get_session_behavior(cellInfo['behavDirs'][cellInfo['amIndex'][-1]])
         rateEachTrial = amBData['currentFreq']
-        
+
         eventData = loader.get_session_events(cellInfo['ephysDirs'][cellInfo['amIndex'][-1]])
         spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][cellInfo['amIndex'][-1]], cellInfo['tetrode'], cluster=cellInfo['cluster'])
         eventOnsetTimes = loader.get_event_onset_times(eventData)
         spikeTimestamps = spikeData.timestamps
         timeRange = [-0.2, 1.5]
-        
+
         spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
                                                                                                     spikeTimestamps, eventOnsetTimes, timeRange)
         colourList = ['b', 'g', 'y', 'orange', 'r']
@@ -156,7 +156,7 @@ def plot_bandwidth_report(cell):
         plt.xlabel('Time from sound onset (sec)')
         plt.ylabel('Firing rate (Hz)')
         plt.title('AM PSTH')
-        
+
         # -- plot AM raster --
         plt.subplot(gs[0+offset:2+offset, 3:])
         rateLabels = ["%.0f" % rate for rate in np.unique(rateEachTrial)]
@@ -164,10 +164,10 @@ def plot_bandwidth_report(cell):
         plt.xlabel('Time from sound onset (sec)')
         plt.ylabel('Modulation Rate (Hz)')
         plt.title('AM Raster')
-        
+
         # -- plot laser pulse and laser train data (if available) --
         if laser:
-            # -- plot laser pulse raster -- 
+            # -- plot laser pulse raster --
             plt.subplot(gs[0:2, 0:3])
             eventData = loader.get_session_events(cellInfo['ephysDirs'][cellInfo['laserIndex'][-1]])
             spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][cellInfo['laserIndex'][-1]], cellInfo['tetrode'], cluster=cellInfo['cluster'])
@@ -177,14 +177,14 @@ def plot_bandwidth_report(cell):
             dataplotter.plot_raster(spikeTimestamps, eventOnsetTimes, timeRange=timeRange)
             plt.xlabel('Time from sound onset (sec)')
             plt.title('Laser Pulse Raster')
-            
+
             # -- plot laser pulse psth --
             plt.subplot(gs[2:4, 0:3])
             dataplotter.plot_psth(spikeTimestamps, eventOnsetTimes, timeRange = timeRange, binsize = 10)
             plt.xlabel('Time from sound onset (sec)')
             plt.ylabel('Firing Rate (Hz)')
             plt.title('Laser Pulse PSTH')
-            
+
             # -- didn't record laser trains for some earlier sessions --
             if len(cellInfo['laserTrainIndex']) > 0:
                 # -- plot laser train raster --
@@ -197,39 +197,39 @@ def plot_bandwidth_report(cell):
                 dataplotter.plot_raster(spikeTimestamps, eventOnsetTimes, timeRange=timeRange)
                 plt.xlabel('Time from sound onset (sec)')
                 plt.title('Laser Train Raster')
-                
+
                 # -- plot laser train psth --
                 plt.subplot(gs[2:4, 3:])
                 dataplotter.plot_psth(spikeTimestamps, eventOnsetTimes, timeRange = timeRange, binsize = 10)
                 plt.xlabel('Time from sound onset (sec)')
                 plt.ylabel('Firing Rate (Hz)')
                 plt.title('Laser Train PSTH')
-            
+
         # -- show cluster analysis --
         tsThisCluster, wavesThisCluster = load_cluster_waveforms(cellInfo)
-        
+
         # -- Plot ISI histogram --
         plt.subplot(gs[4+offset, 0:2])
         spikesorting.plot_isi_loghist(tsThisCluster)
         plt.ylabel('c%d'%cellInfo['cluster'],rotation=0,va='center',ha='center')
         plt.xlabel('')
-    
+
         # -- Plot waveforms --
         plt.subplot(gs[4+offset, 2:4])
         spikesorting.plot_waveforms(wavesThisCluster)
-    
+
         # -- Plot events in time --
         plt.subplot(gs[4+offset, 4:6])
         spikesorting.plot_events_in_time(tsThisCluster)
-    
-        plt.suptitle('{0}, {1}, {2}um, Tetrode {3}, Cluster {4}, {5}kHz, {6}Hz modulation'.format(cellInfo['subject'], 
-                                                                                                cellInfo['date'], 
-                                                                                                cellInfo['depth'], 
-                                                                                                cellInfo['tetrode'], 
-                                                                                                cellInfo['cluster'], 
-                                                                                                charfreq, 
+
+        plt.suptitle('{0}, {1}, {2}um, Tetrode {3}, Cluster {4}, {5}kHz, {6}Hz modulation'.format(cellInfo['subject'],
+                                                                                                cellInfo['date'],
+                                                                                                cellInfo['depth'],
+                                                                                                cellInfo['tetrode'],
+                                                                                                cellInfo['cluster'],
+                                                                                                charfreq,
                                                                                                 modrate))
-        
+
         fig_path = '/home/jarauser/Pictures'
         if len(bandIndex)>1:
             fig_name = '{0}_{1}_{2}um_TT{3}Cluster{4}Ind{5}.png'.format(cellInfo['subject'], cellInfo['date'], cellInfo['depth'], cellInfo['tetrode'], cellInfo['cluster'], index)
@@ -241,20 +241,20 @@ def plot_bandwidth_report(cell):
         fig.savefig(full_fig_path, format = 'png', bbox_inches='tight')
 
 
-def bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial, timeRange = [-0.2, 1.5]):          
+def bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial, timeRange = [-0.2, 1.5]):
     numBands = np.unique(bandEachTrial)
     numAmps = np.unique(ampEachTrial)
-            
+
     firstSortLabels = ['{}'.format(band) for band in numBands]
-            
-    trialsEachCond = behavioranalysis.find_trials_each_combination(bandEachTrial, 
-                                                                           numBands, 
-                                                                           ampEachTrial, 
+
+    trialsEachCond = behavioranalysis.find_trials_each_combination(bandEachTrial,
+                                                                           numBands,
+                                                                           ampEachTrial,
                                                                            numAmps)
     spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-                                                                                                        spikeTimestamps, 
+                                                                                                        spikeTimestamps,
                                                                                                         eventOnsetTimes,
-                                                                                                        timeRange) 
+                                                                                                        timeRange)
 
     return spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond, firstSortLabels
 
@@ -263,12 +263,12 @@ def band_select(spikeTimeStamps, eventOnsetTimes, amplitudes, bandwidths, timeRa
     numAmps = np.unique(amplitudes)
     spikeArray = np.zeros((len(numBands), len(numAmps)))
     errorArray = np.zeros_like(spikeArray)
-    trialsEachCond = behavioranalysis.find_trials_each_combination(bandwidths, 
-                                                                   numBands, 
-                                                                   amplitudes, 
+    trialsEachCond = behavioranalysis.find_trials_each_combination(bandwidths,
+                                                                   numBands,
+                                                                   amplitudes,
                                                                    numAmps)
     spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-                                                                                                        spikeTimeStamps, 
+                                                                                                        spikeTimeStamps,
                                                                                                         eventOnsetTimes,
                                                                                                         fullRange)
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
@@ -292,22 +292,22 @@ def band_select_plot(spikeArray, errorArray, baselineSpikeRate, bands, legend = 
     xrange = range(len(bands))
     plt.plot(xrange, baselineSpikeRate*(timeRange[1]-timeRange[0])*np.ones(len(bands)), color = '0.75', linewidth = 2)
     plt.plot(xrange, spikeArray[:,0].flatten(), '-o', color = '#4e9a06', linewidth = 3)
-    plt.fill_between(xrange, spikeArray[:,0].flatten() - errorArray[:,0].flatten(), 
+    plt.fill_between(xrange, spikeArray[:,0].flatten() - errorArray[:,0].flatten(),
                      spikeArray[:,0].flatten() + errorArray[:,0].flatten(), alpha=0.2, edgecolor = '#8ae234', facecolor='#8ae234')
     plt.plot(range(len(bands)), spikeArray[:,1].flatten(), '-o', color = '#5c3566', linewidth = 3)
-    plt.fill_between(xrange, spikeArray[:,1].flatten() - errorArray[:,1].flatten(), 
+    plt.fill_between(xrange, spikeArray[:,1].flatten() - errorArray[:,1].flatten(),
                      spikeArray[:,1].flatten() + errorArray[:,1].flatten(), alpha=0.2, edgecolor = '#ad7fa8', facecolor='#ad7fa8')
     ax = plt.gca()
     ax.set_xticklabels(bands)
     plt.xlabel('bandwidth (octaves)')
     plt.ylabel('Average num spikes')
-    if legend: 
+    if legend:
         patch1 = mpatches.Patch(color='#5c3566', label=labels[1])
         patch2 = mpatches.Patch(color='#4e9a06', label=labels[0])
         plt.legend(handles=[patch1, patch2], bbox_to_anchor=(0.95, 0.95), borderaxespad=0.)
     if title:
         plt.title(title)
-        
+
 def load_cluster_waveforms(cellInfo):
     oneTT = cms2.MultipleSessionsToCluster(cellInfo['subject'], cellInfo['ephysDirs'], cellInfo['tetrode'], '{}_{}um'.format(cellInfo['date'], cellInfo['depth']))
     oneTT.load_all_waveforms()
@@ -316,15 +316,11 @@ def load_cluster_waveforms(cellInfo):
     tsThisCluster = oneTT.timestamps[oneTT.clusters==cellInfo['cluster']]
     wavesThisCluster = oneTT.samples[oneTT.clusters==cellInfo['cluster']]
     return tsThisCluster, wavesThisCluster
-    
-        
+
+
 def suppression_stats(spikeArray, bands):
     peakLowAmp = max(spikeArray[1])
     peakLocLowAmp = bands[np.argmax(spikeArray[1])]
     peakHighAmp = max(spikeArray[0])
     peakLocHighAmp = bands[np.argmax(spikeArray[0])]
     return [[peakLowAmp, peakHighAmp], [peakLocLowAmp, peakLocHighAmp]]
-        
-    
-        
-

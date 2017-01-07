@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from jaratoolbox import settings
 reload(settings)
+import figparams
 
 scriptFullPath = os.path.realpath(__file__)
 
@@ -26,7 +27,7 @@ freqBoundaryEachAnimal = {'d1pi014':boundary014,
                           'd1pi016':boundary016}
 
 # -- Load database containing quantifications of tuning -- #
-tuingFilePath = settings.FIGURESDATA
+tuingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 tuningFileName = 'photostim_response_freq_summary.csv'
 tuningFullPath = os.path.join(tuingFilePath,tuningFileName)
 tuning_df = pd.read_csv(tuningFullPath)
@@ -41,7 +42,7 @@ for animal in freqBoundaryEachAnimal.keys():
 
 
 ### Save data ###
-outputDir = '/home/languo/data/mnt/figuresdata'
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_bilateral_best_freq.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, **resultsDict)

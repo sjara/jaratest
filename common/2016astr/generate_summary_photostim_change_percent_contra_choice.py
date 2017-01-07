@@ -10,11 +10,12 @@ import numpy as np
 import pandas as pd
 from jaratoolbox import settings
 from jaratoolbox import behavioranalysis
+import figparams
 
 scriptFullPath = os.path.realpath(__file__)
 
 # -- Load the photostim experiments database -- #
-tuingFilePath = settings.FIGURESDATA
+tuingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 tuningFileName = 'photostim_response_freq_summary.csv'
 tuningFullPath = os.path.join(tuingFilePath,tuningFileName)
 tuningDf = pd.read_csv(tuningFullPath)
@@ -64,7 +65,7 @@ for mouse in np.unique(tuningDf.animalName):
             percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
             resultsDict[mouse+'rightHemiStim'].append(percentChangeContraChoice)
 
-outputDir = '/home/languo/data/mnt/figuresdata'
+outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_photostim_percent_contra_choice_change.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, script=scriptFullPath, **resultsDict)
