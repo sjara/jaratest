@@ -80,8 +80,10 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
                         self.samples = np.concatenate([self.samples, samplesThisSession])
                         self.timestamps = np.concatenate([self.timestamps, timestampsThisSession])
                         self.recordingNumber = np.concatenate([self.recordingNumber, sessionVector])
-
-        self.nSpikes = len(self.timestamps)
+        if self.timestamps is not None:
+            self.nSpikes = len(self.timestamps)
+        if self.samples is None:
+            self.samples = np.zeros(0)
 
     def create_multisession_fet_files(self):
         if not os.path.exists(self.clustersDir):
