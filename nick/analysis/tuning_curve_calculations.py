@@ -28,8 +28,8 @@ site2.add_cluster(6, 2) #Unit with nice waveform and AM responses
 figdb.add_clusters(site2.clusterList) #This cell is now cell 10 in the db
 
 
-figure()
-thalTCax = subplot(111)
+plt.figure()
+thalTCax = plt.subplot(111)
 spikeData, eventData, behavData = loader.get_cluster_data(figdb[4], 'TuningCurve')
 spikeTimestamps = spikeData.timestamps
 eventOnsetTimes = loader.get_event_onset_times(eventData)
