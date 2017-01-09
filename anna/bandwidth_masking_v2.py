@@ -134,6 +134,8 @@ class Paradigm(templates.Paradigm2AFC):
                                                       ['no_laser','laser_onset1','laser_onset2',
                                                        'laser_onset3'], 
                                                       value=0, enabled=False, group='Current Trial')
+        self.params['laserOnset'] = paramgui.NumericParam('Trial laser onset',value=0.0,decimals=1,
+                                                        units='s', enabled=False, group='Current Trial')
         trialParams = self.params.layout_group('Current Trial')
 
         self.params['nValid'] = paramgui.NumericParam('N valid',value=0,
@@ -419,7 +421,7 @@ class Paradigm(templates.Paradigm2AFC):
         fractionNoLaser = 1-np.sum(fractionTrialsLaser)
         fractionTrials = np.append(fractionNoLaser,fractionTrialsLaser)
         trialTypeInd = np.random.choice(nOnsetsToUse+1, size=1, p=fractionTrials)[0]
-        self.params['trialType'].set_value(trialTypeInd)
+        self.params['laserTrialType'].set_value(trialTypeInd)
         if trialTypeInd>0:
             laserOutput = ['stim1']
         else:
