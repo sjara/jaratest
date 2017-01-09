@@ -586,7 +586,7 @@ class Paradigm(templates.Paradigm2AFC):
                 self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
                                   transitions={'Lin':'choiceLeft','Rin':'choiceRight',
                                                'Tup':'noChoice'},
-                                  outputsOff=stimOutput)
+                                  outputsOff=laserOutput)
             if correctSidePort=='Lin':
                 self.sm.add_state(name='choiceLeft', statetimer=0,
                                   transitions={'Tup':'reward'})
