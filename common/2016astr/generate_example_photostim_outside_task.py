@@ -1,8 +1,5 @@
 '''
-Script to generate example of change in head-angle after stimulation of dorso-medial str.
-
-NOTE:
-- Some parameters used here were calculated using videoanalysis.DefineCoordinates()
+Script to generate examples of change in head-angle after stimulation outside of the task.
 '''
 
 import os
@@ -14,38 +11,47 @@ from jaratoolbox import videoanalysis
 reload(videoanalysis)
 import figparams
 
+FIGNAME = 'photostim_outside_task'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+scriptFullPath = os.path.realpath(__file__)
+
 # -- Select which processing stages to perform --
 DEFINE_STIM_COORDS = 0
 DETECT_STIMULUS = 0
 TRACK_COLORS = 0
 CALCULATE_HEAD_ANGLE = 1
 
-MOUSE = 2
+MOUSE = 1
 if MOUSE==0:
     subject = 'd1pi013'
-    session = '20160519-5'  # DMStr Both sides 
+    session = '20160519-5'  # DMStr left,right sides 
     figuredataFilename = 'example_head_angle_dmstr.npz'
-    stimCoords = [ [[280, 70], [300, 80]], [[535, 65], [550, 75]] ]
-    stimThreshold = 20
+    #stimCoords = [ [[280, 70], [300, 80]], [[535, 65], [550, 75]] ]
+    #stimThreshold = 20
 elif MOUSE==1:
+    subject = 'd1pi013'
+    session = '20160523--6'  # AStr left,right sides 
+    figuredataFilename = 'example_head_angle_astr.npz'
+    #stimCoords = [ [[280, 70], [300, 80]], [[535, 65], [550, 75]] ]
+    #stimThreshold = 20
+'''
+elif MOUSE==2:
     subject = 'd1pi014'
     session = '20161021--2'  # AStr Left side
     figuredataFilename = 'example_head_angle_astr.npz'
     stimCoords = [ [[260, 50], [280, 60]] ]
     stimThreshold = 30
-elif MOUSE==2:
+elif MOUSE==3:
     subject = 'd1pi014'
     session = '20161021--3'  # AStr Right side
     figuredataFilename = 'example_head_angle_astr.npz'
     stimCoords = [ [[520, 80], [545, 95]] ]
     stimThreshold = 30
-    
+'''
+
 videoPath = settings.VIDEO_PATH
 filenameOnly = subject+'_'+session+'.mkv'
 filename = os.path.join(videoPath,subject,filenameOnly)
-
-outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME)
-scriptFullPath = os.path.realpath(__file__)
 
 stimFilename = 'stimtrack_{0}_{1}.npz'.format(subject,session)
 stimFullPath = os.path.join(outputDir,stimFilename)
@@ -53,6 +59,24 @@ ctrackFilename = 'colortrack_{0}_{1}.npz'.format(subject,session)
 ctrackFullPath = os.path.join(outputDir,ctrackFilename)
 figuredataFullPath = os.path.join(outputDir,figuredataFilename)
 
+
+headangleFilename = 'head_angle_{0}_{1}.npz'.format(subject,session)
+headangleFullPath = os.path.join(outputDir,headangleFilename)
+
+haFile = np.load(headangleFullPath)
+headAngle = haFile['headAngle']
+stimBool = haFile['stimBool']
+ax1 = plt.subplot(2,1,1)
+plt.plot(headAngle,'.-')
+plt.ylabel('Head angle')
+ax2 = plt.subplot(2,1,2,sharex=ax1)
+plt.plot(stimBool.T,'.-')
+plt.ylabel('Stim')
+#plt.xlim([900,1250])
+#plt.xlim([500,850])
+plt.show()
+
+'''
 if DEFINE_STIM_COORDS:
     vid = videoanalysis.DefineCoordinates(filename)
            
@@ -67,13 +91,6 @@ if DETECT_STIMULUS:
              
 if TRACK_COLORS:
     # -- These HSV color ranges were found by hand using the Linux gpick app --
-    '''
-    limitsG = [[70, 170, 110],
-               [150, 255, 150]]
-    limitsR = [[40, 20, 150],
-               [90, 70, 255]]
-    colorLimits = [limitsR,limitsG]
-    '''
     hsvLimitsG = [[45,  70,  70],
                   [75, 255, 255]]
     hsvLimitsR = [[170,  70,  70],
@@ -147,7 +164,7 @@ if CALCULATE_HEAD_ANGLE:
             avgDeltaAngleEachTrial[stimInd][indt] = np.mean(headDiff[framesThisTrial])
     
     np.savez(figuredataFullPath, subject=subject, session=session, headAngle=headAngle,
-             missedFrames=missedFrames, stimBool=stimBool,
+             missedFrames=missedFrames, stimBool=stimBool, avgDeltaAngleEachTrial=avgDeltaAngleEachTrial,
              firstFrameEachTrial=firstFrameEachTrial, lastFrameEachTrial=lastFrameEachTrial,
              script=scriptFullPath)
     print 'Saved results to {}'.format(figuredataFullPath)
@@ -173,3 +190,4 @@ if CALCULATE_HEAD_ANGLE:
 
     print 'Delta angle each trial'
     print avgDeltaAngleEachTrial
+'''
