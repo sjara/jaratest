@@ -731,7 +731,7 @@ class Paradigm(templates.Paradigm2AFC):
                         self.results['outcome'][trialIndex] = \
                             self.results.labels['outcome']['error']
                 # -- Check if it was a valid trial --
-                if self.sm.statesNameToIndex['waitForSidePoke'] in eventsThisTrial[:,2]:
+                if self.sm.statesNameToIndex['playNoiseStimulus'] in eventsThisTrial[:,2]:
                     self.params['nValid'].add(1)
                     self.results['valid'][trialIndex] = 1
 
