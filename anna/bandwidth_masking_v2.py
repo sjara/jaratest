@@ -422,8 +422,14 @@ class Paradigm(templates.Paradigm2AFC):
         fractionTrials = np.append(fractionNoLaser,fractionTrialsLaser)
         trialTypeInd = np.random.choice(nOnsetsToUse+1, size=1, p=fractionTrials)[0]
         self.params['laserTrialType'].set_value(trialTypeInd)
+        stimMode = self.params['stimMode'].get_string()
         if trialTypeInd>0:
-            laserOutput = ['stim1', 'stim2']
+            if stimMode == 'unilateral_left':
+                laserOutput = ['stim1']
+            elif stimMode == 'unilateral_right':
+                laserOutput = ['stim2']
+            elif stimMode == 'bilateral':
+                laserOutput = ['stim1', 'stim2']
         else:
             laserOutput = []
             
