@@ -134,6 +134,8 @@ class Paradigm(templates.Paradigm2AFC):
                                                       ['no_laser','laser_onset1','laser_onset2',
                                                        'laser_onset3'], 
                                                       value=0, enabled=False, group='Current Trial')
+        self.params['laserSide'] = paramgui.MenuParam('Laser side', ['none', 'left', 'right', 'bilateral'],
+                                                      value=0, enabled=False, group='Current Trial')
         self.params['laserOnset'] = paramgui.NumericParam('Trial laser onset',value=0.0,decimals=1,
                                                         units='s', enabled=False, group='Current Trial')
         trialParams = self.params.layout_group('Current Trial')
@@ -426,12 +428,28 @@ class Paradigm(templates.Paradigm2AFC):
         if trialTypeInd>0:
             if stimMode == 'unilateral_left':
                 laserOutput = ['stim1']
+                self.params['laserSide'].set_string('left')
             elif stimMode == 'unilateral_right':
                 laserOutput = ['stim2']
+                self.params['laserSide'].set_string('right')
             elif stimMode == 'bilateral':
                 laserOutput = ['stim1', 'stim2']
+                self.params['laserSide'].set_string('bilateral')
+            elif stimMode == 'mixed_unilateral':
+                possOutputs = [['stim1'], ['stim2']]
+                possSide = ['left', 'right']
+                sideThisTrial = np.random.choice(2)
+                laserOutput = possOutputs[sideThisTrial]
+                self.params['laserSide'].set_string(possSide[sideThisTrial])
+            elif stimMode == 'mixed_all':
+                possOutputs = [['stim1'], ['stim2'], ['stim1', 'stim2']]
+                possSide = ['left', 'right', 'bilateral']
+                sideThisTrial = np.random.choice(3)
+                laserOutput = possOutputs[sideThisTrial]
+                self.params['laserSide'].set_string(possSide[sideThisTrial])
         else:
             laserOutput = []
+            self.params['laserSide'].set_string('none')
             
         possibleLaserOnsets = [np.nan,
                                self.params['laserOnsetFromSoundOnset1'].get_value(),
