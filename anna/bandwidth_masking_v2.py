@@ -215,8 +215,6 @@ class Paradigm(templates.Paradigm2AFC):
         layoutCol3.addStretch()
         layoutCol3.addWidget(trialParams)
         layoutCol3.addStretch()
-        layoutCol3.addWidget(reportParams)
-        layoutCol3.addStretch()
         
         layoutCol4.addWidget(soundParams)
         layoutCol4.addStretch()
@@ -225,6 +223,8 @@ class Paradigm(templates.Paradigm2AFC):
         layoutCol4.addWidget(bandParams)
         layoutCol4.addStretch()
         layoutCol4.addWidget(noiseParams)
+        layoutCol4.addStretch()
+        layoutCol4.addWidget(reportParams)
         layoutCol4.addStretch()
 
         self.centralWidget.setLayout(layoutMain)
