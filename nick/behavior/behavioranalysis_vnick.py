@@ -531,7 +531,7 @@ def psycurve_fit_from_bdata(bdata, plotFits=True):
     minFreq = min(possibleFreq)
 
 
-    constraints = ( 'Uniform({}, {})'.format(lowerFreqConstraint, upperFreqConstraint), 'Uniform(0,5)' ,'Uniform(0,0.5)', 'Uniform(0,0.5)')
+    constraints = ( 'Uniform({}, {})'.format(lowerFreqConstraint, upperFreqConstraint), 'Uniform(0,5)' ,'Uniform(0,1)', 'Uniform(0,1)')
     # constraints = ( 'unconstrained', 'Uniform(0,2)' ,'Uniform(0,1)', 'Uniform(0,1)')
     estimate = extrastats.psychometric_fit(possibleFreq, nTrialsEachValue, nHitsEachValue, constraints)
 
@@ -550,7 +550,7 @@ def psycurve_fit_from_bdata(bdata, plotFits=True):
 
     return estimate
 
-def plot_psycurve_fit_and_data(bdata, plotColor):
+def plot_psycurve_fit_and_data(bdata, plotColor, linewidth=2, returnHandles=False):
     #Calculate the psychometric
     rightTrials = bdata['choice']==bdata.labels['choice']['right']
     freqEachTrial = bdata['targetFrequency']
@@ -591,11 +591,14 @@ def plot_psycurve_fit_and_data(bdata, plotColor):
         plt.xlabel('Frequency (kHz)')
 
 
-    ax.plot(fitxval, fityvals, color=plotColor, clip_on=False)
+    ax.plot(fitxval, fityvals, color=plotColor, clip_on=False, linewidth=linewidth)
     plt.ylim([0, 1])
     plt.ylabel('Fraction Rightward Trials')
 
-    return estimate
+    if returnHandles:
+        return pcaps, pbars, pdots
+    else:
+        return estimate
 
 def nice_psycurve_settings(ax, fitcolor=None, fontsize=20, lineweight=3, fitlineinds=[3]):
 

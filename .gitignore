@@ -3,6 +3,7 @@
 \#*
 .#*
 .emacs*
+.~*
 doc/_build
 
 # C extensions
