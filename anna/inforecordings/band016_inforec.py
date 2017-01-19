@@ -106,8 +106,8 @@ exp2.laserCalibration = {
     '3.5':3.25
 }
 
-exp2.add_site(500, tetrodes = [2,4])
-exp2.add_session('14-05-04', None, 'noisebursts', 'am_tuning_curve')
+#exp2.add_site(500, tetrodes = [2,4])
+#exp2.add_session('14-05-04', None, 'noisebursts', 'am_tuning_curve')
 
 exp2.add_site(600, tetrodes = [2,4,6,8])
 exp2.add_session('14-14-06', None, 'noisebursts', 'am_tuning_curve')

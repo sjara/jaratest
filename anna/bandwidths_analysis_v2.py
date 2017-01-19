@@ -230,7 +230,7 @@ def plot_bandwidth_report(cell):
                                                                                                 charfreq, 
                                                                                                 modrate))
         
-        fig_path = '/home/jarauser/Pictures'
+        fig_path = '/home/jarauser/Pictures/cell reports'
         if len(bandIndex)>1:
             fig_name = '{0}_{1}_{2}um_TT{3}Cluster{4}Ind{5}.png'.format(cellInfo['subject'], cellInfo['date'], cellInfo['depth'], cellInfo['tetrode'], cellInfo['cluster'], index)
         else:
