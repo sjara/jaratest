@@ -1,0 +1,14 @@
+band016: 2016-12-22
+
+probe: 7F29 (last-hope)
+
+Using last probe we have. Impedances are pretty high... (2-5 MOhms). Probe pretty far medial (only place all four shanks would fit), coated with DiI.
+
+At 500um, going down slow, see spikes on TT2 and 4.
+Spikes not sound responsive.
+
+Down to 600um, spikes on TT2,4,6,8.
+No sound response. (TT6 appears to respond to mouse's movement?)
+
+At 640um, TT2 and 4 so active that I think I might be in hippocampus.
+Surprisingly looks like a TT4 sound response.
