@@ -18,11 +18,7 @@ import figparams
 
 # -- These example cells I picked manually from jarauser@jarahub/data/reports/billy/20160818_billys_lastest_reports/2016_billy_lan_paper/20160728_psycurve_centerFreq_soundResponse_modulation_figure/modulation --#
 cellParamsList = []
-exampleCell = {'firstParam':'adap017',
-              'behavSession':'20160407a',
-              'tetrode':4,
-               'cluster':3}
-cellParamsList.append(exampleCell)
+
 exampleCell = {'firstParam':'adap017',
               'behavSession':'20160411a',
               'tetrode':3,
@@ -49,6 +45,14 @@ exampleCell = {'firstParam':'test055',
                'cluster':7} #Not modulated
 cellParamsList.append(exampleCell)
 
+'''
+## OLDER example now removed due to duplicate clusters
+exampleCell = {'firstParam':'adap017',
+              'behavSession':'20160407a',
+              'tetrode':4,
+               'cluster':3}
+cellParamsList.append(exampleCell)
+'''
 ####################################################################################
 
 scriptFullPath = os.path.realpath(__file__)
@@ -136,6 +140,7 @@ for cellParams in cellParamsList:
 
         trialsToUseRight = rightward & oneFreq
         trialsToUseLeft = leftward & oneFreq
+        condLabels = ['left choice', 'right choice']
         trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
         colorEachCond = [colorsDict['left'],colorsDict['right']]
 
@@ -154,7 +159,7 @@ for cellParams in cellParamsList:
         outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
         outputFile = 'example_psycurve_{}Hz_soundaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
         outputFullPath = os.path.join(outputDir,outputFile)
-        np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+        np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
 
 
         # -- Calculate additional arrays for plotting psth -- #
@@ -165,4 +170,4 @@ for cellParams in cellParamsList:
         outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
         outputFile = 'example_psycurve_{}Hz_soundaligned_psth_{}_{}_T{}_c{}.npz'.format( middleFreq, oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
         outputFullPath = os.path.join(outputDir,outputFile)
-        np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+        np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)

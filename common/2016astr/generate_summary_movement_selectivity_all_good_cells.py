@@ -15,6 +15,8 @@ import figparams
 
 scriptFullPath = os.path.realpath(__file__)
 qualityList = [1,6]
+ISIcutoff = 0.02
+removedDuplicates = True
 
 # -- Read in databases storing all measurements from psycurve and switching mice -- #
 switchingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
@@ -31,7 +33,13 @@ allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')
 ## Pooling all good cells from switcing task and psychometric curve task together ##
 dataToPlot = {'movementSelective':[],'movementModI':[],'animalName':[]}
 for ind,allcells in enumerate([allcells_switching,allcells_psychometric]):
-    allcells = allcells[allcells.cellQuality.isin(qualityList)] #just look at the good cells
+    goodcells = (allcells.cellQuality.isin(qualityList)) & (allcells.ISI <= ISIcutoff)
+    cellInStr =  (allcells.cellInStr==1)
+    keepAfterDupTest = allcells.keep_after_dup_test
+    if removedDuplicates:
+        allcells = allcells[goodcells & cellInStr & keepAfterDupTest]
+    else:
+        allcells = allcells[goodcells & cellInStr] #just look at the good cells THAT ARE IN STR
     sigMod = np.array((allcells.movementModS<=0.05), dtype=bool)
     dataToPlot['movementSelective'].extend(sigMod)
     dataToPlot['animalName'].extend(allcells.animalName)
@@ -39,6 +47,9 @@ for ind,allcells in enumerate([allcells_switching,allcells_psychometric]):
 
 ### Save data ###
 outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-outputFile = 'summary_movement_selectivity_all_good_cells.npz'
+if removedDuplicates:
+    outputFile = 'summary_movement_selectivity_all_good_cells_remove_dup.npz'
+else:
+    outputFile = 'summary_movement_selectivity_all_good_cells.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, sourcePsychometric=psychometricFilePath, sourceSwitching=switchingFilePath, goodCellQuality=qualityList, script=scriptFullPath, **dataToPlot)

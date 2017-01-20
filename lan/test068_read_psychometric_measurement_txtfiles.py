@@ -83,6 +83,7 @@ def read_sound_maxZ_file_psychometric_return_Df(maxZFilename):
 def read_ISI_violation_file_return_Df(ISIFilename):
     '''
     File format: file starts with behavSession line ('Behavior Session:behavSession\n'), followed by one line for the ISI violation percentage for all possible clusters in this session, separated by comman ','.
+    20170111 modified to make it resilient to repeated sessions (will not write the same session more than once to ISIDict).
     '''
     ISIFile = open(ISIFilename, 'r')
     behavSessionCount=0
@@ -92,12 +93,14 @@ def read_ISI_violation_file_return_Df(ISIFilename):
             line = line[3:]
         if (line.split(':')[0] == 'Behavior Session'):
             behavName = line.split(':')[1][:-1] 
-            behavSessionCount+=1
+        else:
+            ISIvalues = [float(x) for x in line.split(',')[0:-1]]
+        if not behavName in ISIDict['behavSession']:
             ISIDict['behavSession'].extend([behavName]*cellNumPerSession)
             ISIDict['tetrode'].extend(np.repeat(range(1,9),12))
             ISIDict['cluster'].extend(np.tile(range(1,13),8))
-        else:
-            ISIDict['ISI'].extend([float(x) for x in line.split(',')[0:-1]])
+            ISIDict['ISI'].extend(ISIvalues)
+            behavSessionCount+=1
     ISIFile.close()      
     ISIDf = pd.DataFrame(ISIDict)
     #print ISI[100:150]
@@ -225,14 +228,14 @@ def read_min_trial_file_return_dict(minTrialFilename):
 
 
 if __name__ == '__main__':
-    CASE = 6
+    CASE = 7
     if CASE == 0:
         import os
 
         wavefrom = True #Have generated all waveform data
         
         psychometricMice = ['adap013','adap017','adap015','test053','test055']
-        #psychometricMice = ['adap013']
+        #psychometricMice = ['adap015']
         
         allMiceDfs = []
 
@@ -467,3 +470,23 @@ if __name__ == '__main__':
         dfAllPsychometricMouse = pd.concat(allMiceDfs, ignore_index=True)
         dfAllPsychometricMouse.to_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_waveform_psychometric.h5', key='psychometric')
         #when saving to hdf, using (format='table',data_columns=True) is slower but enable on disk queries
+
+
+    if CASE == 7:
+        # -- Add information about whether a cell is in the striatum -- #
+        import pandas as pd
+        dfAllPsychometricMouse = pd.read_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_waveform_psychometric.h5', key='psychometric')
+        
+        dfStriatumRange = pd.read_csv('/home/languo/data/ephys/psychometric_summary_stats/billy_mice_striatum_range.csv')
+        dfAllPsychometricMouse['cellInStr'] = pd.Series()
+
+        for ind,row in dfStriatumRange.iterrows():
+            dfPsychometricThisMouse = dfAllPsychometricMouse.loc[dfAllPsychometricMouse['animalName']==row['animalName']]
+            dfPsychometricThisMouse['actualDepth'] = pd.Series()
+            for indS,rowS in dfPsychometricThisMouse.iterrows():
+                actualDepth = rowS['cellDepth']-row[str(rowS['tetrode'])]
+                dfPsychometricThisMouse.loc[indS,'actualDepth'] = actualDepth
+            #actualDepth = dfPsychometricThisMouse['cellDepth'].values.astype(float)-row[str(dfPsychometricThisMouse['tetrode'])]
+            dfAllPsychometricMouse['cellInStr'][dfAllPsychometricMouse['animalName']==row['animalName']] = ((dfPsychometricThisMouse['actualDepth'] >= row['strTop']) & (dfPsychometricThisMouse['actualDepth'] <= row['strBottom'])) 
+
+        dfAllPsychometricMouse.to_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_waveform_psychometric.h5', key='psychometric')

@@ -22,19 +22,22 @@ cellParamsList = [{'firstParam':'test089',
                    'behavSession':'20160124a',
                    'tetrode':4,
                    'cluster':6},
-                  {'firstParam':'test059',
-                   'behavSession':'20150624a',
-                   'tetrode':1,
-                   'cluster':2},
-                  {'firstParam':'test059',
-                   'behavSession':'20150624a',
-                   'tetrode':1,
-                   'cluster':7},
                   {'firstParam':'adap020',
                    'behavSession':'20160524a',
                    'tetrode':2,
                    'cluster':9}] #last cell not modulated, rest modulated
 
+'''
+# OLD examples removed due to duplicate
+{'firstParam':'test059',
+   'behavSession':'20150624a',
+   'tetrode':1,
+   'cluster':2},
+  {'firstParam':'test059',
+   'behavSession':'20150624a',
+   'tetrode':1,
+   'cluster':7},
+'''
 ####################################################################################
 
 scriptFullPath = os.path.realpath(__file__)
@@ -42,7 +45,7 @@ timeRange = [-0.5,1]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
-plotByBlock = False #Define whether to make the plots split by block
+plotByBlock = True #Define whether to make the plots split by block
 minBlockSize = 20 #Omit blocks with less than 20 trials
 colorsDict = {'lowBlock':'g', 'highBlock':'r'} 
 
