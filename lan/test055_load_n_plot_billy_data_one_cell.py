@@ -425,18 +425,18 @@ def plot_ave_wave_form_w_peak_times(oneCell):
     plt.axvline(peakTimes[1],ls='--',color='r')
     plt.axvline(peakTimes[0],ls='--',color='0.75')
     plt.axvline(peakTimes[2],ls='--',color='0.75')
-    return
+    
 
 
 
 if __name__ == '__main__':
     ### Params associated with the cell of interest ###
-    cellParams = {'behavSession':'20160418a',
-                  'tetrode':6,
-                  'cluster':8}
+    cellParams = {'behavSession':'20160124a',
+                  'tetrode':4,
+                  'cluster':6}
 
     ### Loading allcells file for a specified mouse ###
-    mouseName = 'adap020'
+    mouseName = 'test089'
     #allcellsFileName = 'allcells_'+mouseName
     allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
     sys.path.append(settings.ALLCELLS_PATH)
@@ -465,7 +465,7 @@ if __name__ == '__main__':
     plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,0.5],byBlock=True)
     save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,filePath,chartType='raster',figFormat='svg')
     plt.figure()
-    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,0.5],byBlock=False, binWidth=0.010)
+    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,0.5],byBlock=True, binWidth=0.010)
     save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,filePath,chartType='PSTH',figFormat='svg')
     #plt.figure()
     #plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=False)

@@ -121,14 +121,14 @@ dfAllPsychometricMouseSound.to_hdf(outputFullPath,key='psychometric')
 
 
 # -- Generate counts of 'responsive' cell (based on maxZ) of good quality for each frequency presented in the psychometric curve task. Do this separately for each mouse. -- #
-#maxNumOfFreqs = 6
+maxNumOfFreqs = 6
 allMiceFreqSelDict = {}
 for thisMouseDf in allMiceDfs:
     goodCells = thisMouseDf.loc[thisMouseDf.cellQuality.isin(goodQualityList)]
     maxZcolnames = sorted([col for col in goodCells.columns if 'maxZ' in col]) #Get a list of column names containing maxZ scores, sorted so that lower frequencies come first
-    #numOfFreqs = len(maxZcolnames)
-    #if numOfFreqs > maxNumOfFreqs:
-        #maxNumOfFreqs = numOfFreqs
+    numOfFreqs = len(maxZcolnames)
+    if numOfFreqs > maxNumOfFreqs:
+        maxNumOfFreqs = numOfFreqs
     numResponsiveCellsAllFreqs = []
     for colname in maxZcolnames:
         numResponsiveCells = sum(np.abs(goodCells[colname].astype('float')) > maxZthreshold)
@@ -139,4 +139,4 @@ for thisMouseDf in allMiceDfs:
 outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_freq_selectivity_all_psycurve_mice.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, script=scriptFullPath, maxZthreshold=maxZthreshold, goodCellQuality=goodQualityList, **allMiceFreqSelDict)
+np.savez(outputFullPath, script=scriptFullPath, maxZthreshold=maxZthreshold, goodCellQuality=goodQualityList, numOfFreqs=maxNumOfFreqs, psychometricMice=psychometricMice,  **allMiceFreqSelDict)

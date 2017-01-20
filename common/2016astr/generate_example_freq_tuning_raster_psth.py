@@ -38,56 +38,69 @@ if not os.path.ismount(EPHYS_PATH):
 
 
 # -- Select an example cell from allcells file -- #
-cellParams = {'firstParam':'test059',
-              'behavSession':'20150624a',
-              'tetrode':1,
-              'cluster':4}
+cellParamsList = [{'firstParam':'adap020',
+                   'behavSession':'20160420a',
+                   'tetrode':3,
+                   'cluster':5},
+                  {'firstParam':'test089',
+                   'behavSession':'20150804a',
+                   'tetrode':7,
+                   'cluster':9},
+                  {'firstParam':'test089',
+                   'behavSession':'20150911a',
+                   'tetrode':7,
+                   'cluster':7}]
 
-mouseName = cellParams['firstParam']
-    
-allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
-sys.path.append(settings.ALLCELLS_PATH)
-allcells = importlib.import_module(allcellsFileName)
+for cellParams in cellParamsList:
+    mouseName = cellParams['firstParam']
 
-### Using cellDB methode to find the index of this cell in the cellDB ###
-cellIndex = allcells.cellDB.findcell(**cellParams)
-thisCell = allcells.cellDB[cellIndex]
+    allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
+    sys.path.append(settings.ALLCELLS_PATH)
+    allcells = importlib.import_module(allcellsFileName)
 
-### Get events, spikes, and behav data from mounted drives ###
-(eventOnsetTimes, spikeTimestamps, bdata) = loader.load_remote_tuning_data(thisCell,BEHAVIOR_PATH,EPHYS_PATH)
+    ### Using cellDB methode to find the index of this cell in the cellDB ###
+    cellIndex = allcells.cellDB.findcell(**cellParams)
+    thisCell = allcells.cellDB[cellIndex]
 
-# -- Calculate and store intermediate data for tuning raster -- #
-freqEachTrial = bdata['currentFreq']
-intensityEachTrial = bdata['currentIntensity']
-possibleFreq = np.unique(freqEachTrial)
-possibleIntensity = np.unique(intensityEachTrial)
-if len(possibleIntensity) != 1:
-    intensity = 50  # 50dB is the stimulus intensity used in 2afc task
-    ###Just select the trials with a given intensity###
-    trialsThisIntensity = [intensityEachTrial==intensity]
-    freqEachTrial = freqEachTrial[trialsThisIntensity]
-    #intensityEachTrial = intensityEachTrial[trialsThisIntensity]
-    eventOnsetTimes = eventOnsetTimes[trialsThisIntensity]
+    ### Get events, spikes, and behav data from mounted drives ###
+    (eventOnsetTimes, spikeTimestamps, bdata) = loader.load_remote_tuning_data(thisCell,BEHAVIOR_PATH,EPHYS_PATH)
 
-possibleFreq = np.unique(freqEachTrial)
-trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
-timeRange = [-0.5,1]
-binWidth = 0.010
-(spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
-        spikesanalysis.eventlocked_spiketimes(spikeTimestamps,eventOnsetTimes,timeRange)
+    # -- Calculate and store intermediate data for tuning raster -- #
+    freqEachTrial = bdata['currentFreq']
+    intensityEachTrial = bdata['currentIntensity']
+    possibleFreq = np.unique(freqEachTrial)
+    possibleIntensity = np.unique(intensityEachTrial)
+    if len(possibleIntensity) != 1:
+        intensity = 50  # 50dB is the stimulus intensity used in 2afc task
+        ###Just select the trials with a given intensity###
+        trialsThisIntensity = [intensityEachTrial==intensity]
+        freqEachTrial = freqEachTrial[trialsThisIntensity]
+        #intensityEachTrial = intensityEachTrial[trialsThisIntensity]
+        eventOnsetTimes = eventOnsetTimes[trialsThisIntensity]
 
-### Save raster data ###    
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-outputFile = 'example_freq_tuning_raster_{}_{}_T{}_c{}.npz'.format(thisCell.animalName, thisCell.behavSession, thisCell.tetrode,thisCell.cluster)
-outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes, possibleFreq=possibleFreq, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, timeRange=timeRange,trialsEachFreq=trialsEachFreq, script=scriptFullPath, **cellParams)
+    possibleFreq = np.unique(freqEachTrial)
+    trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
+    timeRange = [-0.5,1]
+    binWidth = 0.010
+    (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+            spikesanalysis.eventlocked_spiketimes(spikeTimestamps,eventOnsetTimes,timeRange)
 
-# -- Calculate and store intermediate data for tuning psth -- #
-timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
-spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+    ### Save raster data ###    
+    outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+    outputFile = 'example_freq_tuning_raster_{}_{}_T{}_c{}.npz'.format(thisCell.animalName, thisCell.behavSession, thisCell.tetrode,thisCell.cluster)
+    outputFullPath = os.path.join(outputDir,outputFile)
+    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes, possibleFreq=possibleFreq, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, timeRange=timeRange,trialsEachFreq=trialsEachFreq, script=scriptFullPath, **cellParams)
 
-### Save psth data ###
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-outputFile = 'example_freq_tuning_psth_{}_{}_T{}_c{}.npz'.format(thisCell.animalName, thisCell.behavSession,thisCell.tetrode,thisCell.cluster)
-outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, possibleFreq=possibleFreq, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachFreq=trialsEachFreq, timeRange=timeRange, binWidth=binWidth, script=scriptFullPath, **cellParams)
+    # -- Calculate and store intermediate data for tuning psth -- #
+    freqScaleFactor = 3 #factor to reduce number of frequencies plotted by
+    possibleFreq = possibleFreq[1::freqScaleFactor] #select just a subset of frequencies to plot
+    trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
+
+    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+
+    ### Save psth data ###
+    outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+    outputFile = 'example_freq_tuning_psth_{}_{}_T{}_c{}.npz'.format(thisCell.animalName, thisCell.behavSession,thisCell.tetrode,thisCell.cluster)
+    outputFullPath = os.path.join(outputDir,outputFile)
+    np.savez(outputFullPath, possibleFreq=possibleFreq, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachFreq=trialsEachFreq, timeRange=timeRange, binWidth=binWidth, script=scriptFullPath, **cellParams)

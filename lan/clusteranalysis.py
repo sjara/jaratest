@@ -350,7 +350,7 @@ def print_reports_clusters(subject, sessions, tetrode, printer):
 
 if __name__=='__main__':
     ### Useful trick:   np.set_printoptions(linewidth=160)
-    CASE = 7
+    CASE = 8
     ANIMALS = ['adap017','adap013']
 
     if CASE==0:
@@ -743,32 +743,29 @@ if __name__=='__main__':
             
     
     elif CASE==7:
-        # -- Pick out cell pairs with correlation value above threshold, only include the cell that has higher maxZ value in 2afc task -- #subject = ANIMAL    
+        # -- For Switching Mice: Pick out cell pairs with correlation value above threshold, only include the cell that has higher maxZ value in 2afc task. Do this separately for within and cross session correlations. --    
+        
         import pdb
 
         corrThresh = 0.8
-        #switchingMice = ['test059','test089','test017','adap020']
-        switchingMice = ['adap020']
-        psychometricMice = ['test055','test053','adap013','adap015','adap017']
-        
+        switchingMice = ['test059','test089','test017','adap020']
+        #switchingMice = ['adap020']
+                
         # -- Import databases -- #
         switchingFilePath = os.path.join(settings.FIGURESDATA,STUDY_NAME)
         switchingFileName = 'all_cells_all_measures_extra_mod_waveform_switching.h5'
         switchingFullPath = os.path.join(switchingFilePath,switchingFileName)
         allcells_switching = pd.read_hdf(switchingFullPath,key='switching')
-
-        psychometricFilePath = os.path.join(settings.FIGURESDATA, STUDY_NAME)
-        psychometricFileName = 'all_cells_all_measures_waveform_psychometric.h5'
-        psychometricFullPath = os.path.join(psychometricFilePath,psychometricFileName)
-        allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')
         
         goodCorrFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values')
 
-        allCorrVals = np.array([]); allCorrLabs = np.array([])
-
+        #allCorrVals = np.array([]); allCorrLabs = np.array([])
+        allMiceDfs = []
         for animal in switchingMice:
-            excludeDf = allcells_switching[['animalName','behavSession','tetrode','cluster','maxZSoundHigh','maxZSoundMid','maxZSoundLow']]
-            excludeDf['maxSoundRes'] = np.max(np.abs(excludeDf[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
+            # Process one mouse at a time
+            dfThisMouse = allcells_switching.loc[allcells_switching['animalName'] == animal].reset_index()
+            excludeDf = dfThisMouse[['animalName','behavSession','tetrode','cluster']]
+            excludeDf['maxSoundRes'] = np.max(np.abs(dfThisMouse[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
             excludeDf['script'] = os.path.realpath(__file__)
             excludeDf['duplicate_self'] = 0
             excludeDf['duplicate_cross'] = 0
@@ -777,7 +774,7 @@ if __name__=='__main__':
             
             tetrodeNames = ['TT' + str(i) for i in range(1,9)]
             # -- Get all the cell pairs with correlation value over threshold -- #
-            # First go through the SELF (same session) correlations 
+            # First go through the SELF (same session) correlations; THE STRATEGY HERE IS TO POOL ALL DUPLICATE CELLS FROM THE SAME SESSION AND KEEP THE ONE WITH THE BIGGEST SOUND RESPONSE
             for tetrodeName in tetrodeNames:
                 filenameSelf = animal + '_' + tetrodeName +'_SELF_corr.npz'
                 fullFilenameSelf = os.path.join(goodCorrFolder, filenameSelf)
@@ -794,7 +791,6 @@ if __name__=='__main__':
                 for lab in sorted(corrLabsOverThreshSelf):
                     cell1,cell2 = lab.split(' x ')
                     behavSession = cell1.split('_')[0].replace('-','') + 'a'
-                    #pdb.set_trace()
                     if behavSession == behavSessionPre:
                         cellsThisSession.extend([cell1,cell2])
                     elif (behavSession != behavSessionPre) & (len(cellsThisSession) != 0):
@@ -811,7 +807,8 @@ if __name__=='__main__':
                     else:
                         cellsThisSession = [cell1,cell2]
                     behavSessionPre = behavSession
-                    
+
+                # -- Look at cross correlations and mark cells: whether they are duplicated cross sessions or not, and whether to keep them or not -- #    
                 filenameCross = animal + '_' + tetrodeName +'_CROSS_corr.npz'
                 fullFilenameCross = os.path.join(goodCorrFolder, filenameCross)
                 crossCorrDb = np.load(fullFilenameCross)
@@ -821,27 +818,168 @@ if __name__=='__main__':
                 corrValsOverThreshCross = corrValsCross[corrValsCross>=corrThresh]
                 corrLabsOverThreshCross = corrLabsCross[corrValsCross>=corrThresh]
                 
-                for lab in sorted(corrLabsOverThreshSelf):
+                for lab in sorted(corrLabsOverThreshCross):
+                    #pdb.set_trace()
                     cell1,cell2 = lab.split(' x ')
-                    for ind,cell in enumerate([cell1, cell2]):
-                        behavSession = cell.split('_')[0].replace('-','') + 'a'    
+                    cellInds = np.array([],dtype=int)
+                    for ind,cellstr in enumerate([cell1, cell2]):
+                        behavSession = cellstr.split('_')[0].replace('-','') + 'a'    
                         tetrode = int(tetrodeName[-1])
                         cluster = int(cellstr.split('_')[2][3:])
                         cell = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSession) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster==cluster)]
                         excludeDf.ix[cell.index,'duplicate_cross'] = 1
-                        soundRes = cell.maxSoundRes
-                        if ind == 0:
-                            sound1 = soundRes
-                        elif ind == 1:
-                            if sound1 < soundRes:
-                                excludeDf.ix[cell.index,'duplicate_cross'] = 1
+                        cellInds = np.append(cellInds, cell.index)
+                        
+                    soundResBothCells = excludeDf.iloc[cellInds]['maxSoundRes']
+                    cellToKeepInd = np.argmax(soundResBothCells)
+                    cellToDiscardInd = cellInds[cellInds != cellToKeepInd]
+                    # -- Assign value to 'duplicate_cross_keep' column: 1-keep, 0-no status, -1:discard -- #
+                    if excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] == 0: #cell with bigger sound response has not been compared before
+                        excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] = 1
+                        excludeDf.ix[cellToDiscardInd, 'duplicate_cross_keep'] = -1
+                    elif excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] in [1,-1]: #cell with bigger sound response previously determined to be kept or to be discarded, do not change its result
+                        excludeDf.ix[cellToDiscardInd, 'duplicate_cross_keep'] = -1
+
+            # -- Summarize all duplicate screening into one column deciding whether to keep a cell or not -- #
+            nonduplicate = (excludeDf.duplicate_self==0) & (excludeDf.duplicate_cross==0)
+            duplicateBoth = (excludeDf.duplicate_self==1) & (excludeDf.duplicate_cross==1)
+            duplicateSelfOnly = (excludeDf.duplicate_self==1) & (excludeDf.duplicate_cross==0)
+            duplicateCrossOnly = (excludeDf.duplicate_self==0) & (excludeDf.duplicate_cross==1)
+            duplicateBothKeep = duplicateBoth & (excludeDf.duplicate_self_keep==1) & (excludeDf.duplicate_cross_keep==1)
+            duplicateSelfOnlyKeep = duplicateSelfOnly & (excludeDf.duplicate_self_keep==1)
+            duplicateCrossOnlyKeep = duplicateCrossOnly & (excludeDf.duplicate_cross_keep==1)
+            duplicateAnyKeep = duplicateSelfOnlyKeep | duplicateCrossOnlyKeep | duplicateBothKeep
+            excludeDf['keep_after_dup_test'] = nonduplicate | duplicateAnyKeep
+
+            # -- Put excludeDf together with this animal's switching celldb -- #
+            dfs = [dfThisMouse,excludeDf]
+            
+            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','behavSession','tetrode','cluster'],how='inner'), dfs)                    
+            allMiceDfs.append(dfAllThisMouse)
+
+        dfAllSwitchingMouse = pd.concat(allMiceDfs, ignore_index=True)
+        dfAllSwitchingMouse.to_hdf(switchingFullPath, key='switching')
 
 
-                    outputDir = os.path.join(settings.EPHYS_PATH, 'cluster_analysis', subject)
-                    if not os.path.exists(outputDir):
-                        os.mkdir(outputDir)
+
 
     
+    elif CASE==8:
+        # -- For Psychometric Mice: Pick out cell pairs with correlation value above threshold, only include the cell that has higher maxZ value in 2afc task. Do this separately for within and cross session correlations. --    
+        
+        import pdb
+
+        corrThresh = 0.8
+        psychometricMice = ['test055','test053','adap013','adap015','adap017']
+        
+        # -- Import databases -- #
+        psychometricFilePath = os.path.join(settings.FIGURESDATA, STUDY_NAME)
+        psychometricFileName = 'all_cells_all_measures_waveform_psychometric.h5'
+        psychometricFullPath = os.path.join(psychometricFilePath,psychometricFileName)
+        allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')
+        
+        goodCorrFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values')
+        #allcells_psychometric = allcells_psychometric.drop('level_0',1)
+        allMiceDfs = []
+        for animal in psychometricMice:
+            # Process one mouse at a time
+            dfThisMouse = allcells_psychometric.loc[allcells_psychometric['animalName'] == animal].reset_index()
+            excludeDf = dfThisMouse[['animalName','behavSession','tetrode','cluster']]
+            ## !! PSYCHOMETRIC MAX SOUND RESPONSE BASED ON RESPONSE TO THE TWO MIDDLE FREQS !! ##
+            excludeDf['maxSoundRes'] = np.max(np.abs(dfThisMouse[['maxZSoundMid1','maxZSoundMid2']].values),axis=1)
+            excludeDf['script'] = os.path.realpath(__file__)
+            excludeDf['duplicate_self'] = 0
+            excludeDf['duplicate_cross'] = 0
+            excludeDf['duplicate_self_keep'] = 0
+            excludeDf['duplicate_cross_keep'] = 0
+            
+            tetrodeNames = ['TT' + str(i) for i in range(1,9)]
+            # -- Get all the cell pairs with correlation value over threshold -- #
+            # First go through the SELF (same session) correlations; THE STRATEGY HERE IS TO POOL ALL DUPLICATE CELLS FROM THE SAME SESSION AND KEEP THE ONE WITH THE BIGGEST SOUND RESPONSE
+            for tetrodeName in tetrodeNames:
+                filenameSelf = animal + '_' + tetrodeName +'_SELF_corr.npz'
+                fullFilenameSelf = os.path.join(goodCorrFolder, filenameSelf)
+                selfCorrDb = np.load(fullFilenameSelf)
+                tetrode = int(selfCorrDb['tetrode'])
+                corrValsSelf = selfCorrDb['allSelfCorrVals']
+                corrLabsSelf = selfCorrDb['allSelfCorrLabs']
+                corrValsOverThreshSelf = corrValsSelf[corrValsSelf>=corrThresh]
+                corrLabsOverThreshSelf = corrLabsSelf[corrValsSelf>=corrThresh]
+                
+                behavSessionList = [] #Keep a list of the sessions with clusters showing high self correlation 
+                behavSessionPre = ''
+                cellsThisSession = []
+                for lab in sorted(corrLabsOverThreshSelf):
+                    cell1,cell2 = lab.split(' x ')
+                    behavSession = cell1.split('_')[0].replace('-','') + 'a'
+                    if behavSession == behavSessionPre:
+                        cellsThisSession.extend([cell1,cell2])
+                    elif (behavSession != behavSessionPre) & (len(cellsThisSession) != 0):
+                        behavSessionList.append(behavSession)
+                        # -- Pick one cell out of all duplicates for the session -- #
+                        tetrode = int(tetrodeName[-1])
+                        clusterList = [int(cellstr.split('_')[2][3:]) for cellstr in cellsThisSession]
+                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSession) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))]
+                        excludeDf.ix[cells.index,'duplicate_self'] = 1
+                        #maxSoundResEachCell = np.max(np.abs(cells[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
+                        cellToKeepIndex = np.argmax(cells.maxSoundRes, axis=1)
+                        excludeDf.ix[cellToKeepIndex, 'duplicate_self_keep'] = 1
+                        cellsThisSession = [cell1,cell2]
+                    else:
+                        cellsThisSession = [cell1,cell2]
+                    behavSessionPre = behavSession
+
+                # -- Look at cross correlations and mark cells: whether they are duplicated cross sessions or not, and whether to keep them or not -- #    
+                filenameCross = animal + '_' + tetrodeName +'_CROSS_corr.npz'
+                fullFilenameCross = os.path.join(goodCorrFolder, filenameCross)
+                crossCorrDb = np.load(fullFilenameCross)
+                tetrode = int(crossCorrDb['tetrode'])
+                corrValsCross = crossCorrDb['allCrossCorrVals'] 
+                corrLabsCross = crossCorrDb['allCrossCorrLabs']
+                corrValsOverThreshCross = corrValsCross[corrValsCross>=corrThresh]
+                corrLabsOverThreshCross = corrLabsCross[corrValsCross>=corrThresh]
+                
+                for lab in sorted(corrLabsOverThreshCross):
+                    #pdb.set_trace()
+                    cell1,cell2 = lab.split(' x ')
+                    cellInds = np.array([],dtype=int)
+                    for ind,cellstr in enumerate([cell1, cell2]):
+                        behavSession = cellstr.split('_')[0].replace('-','') + 'a'    
+                        tetrode = int(tetrodeName[-1])
+                        cluster = int(cellstr.split('_')[2][3:])
+                        cell = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSession) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster==cluster)]
+                        excludeDf.ix[cell.index,'duplicate_cross'] = 1
+                        cellInds = np.append(cellInds, cell.index)
                         
+                    soundResBothCells = excludeDf.iloc[cellInds]['maxSoundRes']
+                    cellToKeepInd = np.argmax(soundResBothCells)
+                    cellToDiscardInd = cellInds[cellInds != cellToKeepInd]
+                    # -- Assign value to 'duplicate_cross_keep' column: 1-keep, 0-no status, -1:discard -- #
+                    if excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] == 0: #cell with bigger sound response has not been compared before
+                        excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] = 1
+                        excludeDf.ix[cellToDiscardInd, 'duplicate_cross_keep'] = -1
+                    elif excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] in [1,-1]: #cell with bigger sound response previously determined to be kept or to be discarded, do not change its result
+                        excludeDf.ix[cellToDiscardInd, 'duplicate_cross_keep'] = -1
+
+            # -- Summarize all duplicate screening into one column deciding whether to keep a cell or not -- #
+            nonduplicate = (excludeDf.duplicate_self==0) & (excludeDf.duplicate_cross==0)
+            duplicateBoth = (excludeDf.duplicate_self==1) & (excludeDf.duplicate_cross==1)
+            duplicateSelfOnly = (excludeDf.duplicate_self==1) & (excludeDf.duplicate_cross==0)
+            duplicateCrossOnly = (excludeDf.duplicate_self==0) & (excludeDf.duplicate_cross==1)
+            duplicateBothKeep = duplicateBoth & (excludeDf.duplicate_self_keep==1) & (excludeDf.duplicate_cross_keep==1)
+            duplicateSelfOnlyKeep = duplicateSelfOnly & (excludeDf.duplicate_self_keep==1)
+            duplicateCrossOnlyKeep = duplicateCrossOnly & (excludeDf.duplicate_cross_keep==1)
+            duplicateAnyKeep = duplicateSelfOnlyKeep | duplicateCrossOnlyKeep | duplicateBothKeep
+            excludeDf['keep_after_dup_test'] = nonduplicate | duplicateAnyKeep
+
+            # -- Put excludeDf together with this animal's psychometric celldb -- #
+            dfs = [dfThisMouse,excludeDf]
+            
+            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','behavSession','tetrode','cluster'],how='inner'), dfs)                    
+            allMiceDfs.append(dfAllThisMouse)
+
+        dfAllPsychometricMouse = pd.concat(allMiceDfs, ignore_index=True)
+        dfAllPsychometricMouse.to_hdf(psychometricFullPath, key='psychometric')
+                       
      
 
