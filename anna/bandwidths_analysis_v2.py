@@ -325,13 +325,17 @@ def suppression_stats(cell):
         bandIndex = cellInfo['bandIndex'][0] #only using first for multiple band sessions for now
     except IndexError:
         print "No bandwidth session"
-        return None, None
-    eventData = loader.get_session_events(cellInfo['ephysDirs'][bandIndex])
-    spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][bandIndex], cellInfo['tetrode'], cluster=cellInfo['cluster'])
+        return None, None, None
+    try:
+        eventData = loader.get_session_events(cellInfo['ephysDirs'][bandIndex])
+        spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][bandIndex], cellInfo['tetrode'], cluster=cellInfo['cluster'])
+        bandBData = loader.get_session_behavior(cellInfo['behavDirs'][bandIndex]) 
+    except IOError:
+        print "File does not exist"
+        return None, None, None
     eventOnsetTimes = loader.get_event_onset_times(eventData)
     spikeTimeStamps = spikeData.timestamps
     timeRange = [0.0, 1.0]
-    bandBData = loader.get_session_behavior(cellInfo['behavDirs'][bandIndex]) 
     bandEachTrial = bandBData['currentBand']
     ampEachTrial = bandBData['currentAmp']
     charFreq = np.unique(bandBData['charFreq'])[0]
