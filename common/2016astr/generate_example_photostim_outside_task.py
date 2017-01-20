@@ -1,5 +1,8 @@
 '''
 Script to generate examples of change in head-angle after stimulation outside of the task.
+
+You first need to create head_angle_SUBJECT_SESSION.npz files using script:
+generate_summary_photostim_outside_task.py
 '''
 
 import os
@@ -15,179 +18,107 @@ FIGNAME = 'photostim_outside_task'
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 scriptFullPath = os.path.realpath(__file__)
 
-# -- Select which processing stages to perform --
-DEFINE_STIM_COORDS = 0
-DETECT_STIMULUS = 0
-TRACK_COLORS = 0
-CALCULATE_HEAD_ANGLE = 1
+paneldataFilename = 'example_photostim_outside_task.npz'
+paneldataFullPath = os.path.join(outputDir,paneldataFilename)
 
-MOUSE = 1
-if MOUSE==0:
-    subject = 'd1pi013'
-    session = '20160519-5'  # DMStr left,right sides 
-    figuredataFilename = 'example_head_angle_dmstr.npz'
-    #stimCoords = [ [[280, 70], [300, 80]], [[535, 65], [550, 75]] ]
-    #stimThreshold = 20
-elif MOUSE==1:
-    subject = 'd1pi013'
-    session = '20160523--6'  # AStr left,right sides 
-    figuredataFilename = 'example_head_angle_astr.npz'
-    #stimCoords = [ [[280, 70], [300, 80]], [[535, 65], [550, 75]] ]
-    #stimThreshold = 20
-'''
-elif MOUSE==2:
-    subject = 'd1pi014'
-    session = '20161021--2'  # AStr Left side
-    figuredataFilename = 'example_head_angle_astr.npz'
-    stimCoords = [ [[260, 50], [280, 60]] ]
-    stimThreshold = 30
-elif MOUSE==3:
-    subject = 'd1pi014'
-    session = '20161021--3'  # AStr Right side
-    figuredataFilename = 'example_head_angle_astr.npz'
-    stimCoords = [ [[520, 80], [545, 95]] ]
-    stimThreshold = 30
-'''
+allSessions = []
+allSessions.append({'subject':'d1pi013', 'session':'20160519-5', 'stimRegion':'frontStr',
+                    'sampleRangeLeft':[1050,1250], 'sampleRangeRight':[916,1116], 'offset':-4})
+allSessions.append({'subject':'d1pi013', 'session':'20160523--6', 'stimRegion':'backStr',
+                    'sampleRangeLeft':[661,861], 'sampleRangeRight':[493,693], 'offset':3})
+stimSamples = [73,109] ### HARDCODED: this is the time of the stimulus in the chosen range
 
-videoPath = settings.VIDEO_PATH
-filenameOnly = subject+'_'+session+'.mkv'
-filename = os.path.join(videoPath,subject,filenameOnly)
+#[910,1250]
+#[487,850]
 
-stimFilename = 'stimtrack_{0}_{1}.npz'.format(subject,session)
-stimFullPath = os.path.join(outputDir,stimFilename)
-ctrackFilename = 'colortrack_{0}_{1}.npz'.format(subject,session)
-ctrackFullPath = os.path.join(outputDir,ctrackFilename)
-figuredataFullPath = os.path.join(outputDir,figuredataFilename)
-
-
-headangleFilename = 'head_angle_{0}_{1}.npz'.format(subject,session)
-headangleFullPath = os.path.join(outputDir,headangleFilename)
-
-haFile = np.load(headangleFullPath)
-headAngle = haFile['headAngle']
-stimBool = haFile['stimBool']
-ax1 = plt.subplot(2,1,1)
-plt.plot(headAngle,'.-')
+plt.clf()
+ax1 = plt.subplot(2,2,1)
+plt.hold(1)
 plt.ylabel('Head angle')
-ax2 = plt.subplot(2,1,2,sharex=ax1)
-plt.plot(stimBool.T,'.-')
+ax2 = plt.subplot(2,2,3,sharex=ax1)
+plt.hold(1)
 plt.ylabel('Stim')
-#plt.xlim([900,1250])
-#plt.xlim([500,850])
+ax3 = plt.subplot(2,2,2)
+plt.hold(1)
+plt.ylabel('Head angle')
+ax4 = plt.subplot(2,2,4,sharex=ax3)
+plt.hold(1)
+plt.ylabel('Stim')
+
+headAngleEachCond = []
+stimBoolEachCond = []
+stimSideEachCond = []
+stimRegionEachCond = []
+for inds,oneSession in enumerate(allSessions):
+    subject = oneSession['subject']
+    session = oneSession['session']
+    sampleRangeLeft = oneSession['sampleRangeLeft']
+    sampleRangeRight = oneSession['sampleRangeRight']
+    samplesLeft = range(*sampleRangeLeft)
+    samplesRight = range(*sampleRangeRight)
+    headangleFilename = 'head_angle_{0}_{1}.npz'.format(subject,session)
+    headangleFullPath = os.path.join(outputDir,headangleFilename)
+    
+    haFile = np.load(headangleFullPath)
+    headAngle = haFile['headAngle']
+    stimBool = haFile['stimBool']
+    headAngleEachCond.append(headAngle[samplesLeft]-oneSession['offset'])
+    stimBoolEachCond.append(stimBool[:,samplesLeft])
+    stimSideEachCond.append('left')
+    stimRegionEachCond.append(oneSession['stimRegion'])
+
+    headAngleEachCond.append(headAngle[samplesRight]-oneSession['offset'])
+    stimBoolEachCond.append(stimBool[:,samplesRight])
+    stimSideEachCond.append('right')
+    stimRegionEachCond.append(oneSession['stimRegion'])
+
+    SHOW_FULLSESSION = 0
+    if SHOW_FULLSESSION:
+        plt.clf()
+        plt.hold(1)
+        ax1 = plt.subplot(2,1,1)
+        plt.plot(headAngle,'.-')
+        plt.ylabel('Head angle')
+        ax2 = plt.subplot(2,1,2,sharex=ax1)
+        plt.plot(stimBool.T,'.-')
+        plt.ylabel('Stim')
+        plt.show()
+        plt.waitforbuttonpress()
+
+stimSideEachCond = np.array(stimSideEachCond)
+stimRegionEachCond = np.array(stimRegionEachCond)
+
+plt.axes(ax1)
+thisCond = np.flatnonzero((stimSideEachCond=='left') & (stimRegionEachCond=='frontStr'))[0]
+plt.plot(headAngleEachCond[thisCond],'.-')
+thisCond = np.flatnonzero((stimSideEachCond=='left') & (stimRegionEachCond=='backStr'))[0]
+plt.plot(headAngleEachCond[thisCond],'.-')
+
+plt.axes(ax2)
+thisCond = np.flatnonzero((stimSideEachCond=='left') & (stimRegionEachCond=='frontStr'))[0]
+plt.plot(stimBoolEachCond[thisCond][0,:],'.-')
+thisCond = np.flatnonzero((stimSideEachCond=='left') & (stimRegionEachCond=='backStr'))[0]
+plt.plot(stimBoolEachCond[thisCond][0,:],'.-')
+
+plt.axes(ax3)
+thisCond = np.flatnonzero((stimSideEachCond=='right') & (stimRegionEachCond=='frontStr'))[0]
+plt.plot(headAngleEachCond[thisCond],'.-')
+thisCond = np.flatnonzero((stimSideEachCond=='right') & (stimRegionEachCond=='backStr'))[0]
+plt.plot(headAngleEachCond[thisCond],'.-')
+
+plt.axes(ax4)
+thisCond = np.flatnonzero((stimSideEachCond=='right') & (stimRegionEachCond=='frontStr'))[0]
+plt.plot(stimBoolEachCond[thisCond][1,:],'.-')
+thisCond = np.flatnonzero((stimSideEachCond=='right') & (stimRegionEachCond=='backStr'))[0]
+plt.plot(stimBoolEachCond[thisCond][1,:],'.-')
+
 plt.show()
 
-'''
-if DEFINE_STIM_COORDS:
-    vid = videoanalysis.DefineCoordinates(filename)
-           
-if DETECT_STIMULUS:
-    # -- These coords were found using videoanalysis.DefineCoordinates() --
-    vid = videoanalysis.StimDetector(filename,stimCoords)
-    intensity = vid.measure()
-    np.savez(stimFullPath, subject=subject, session=session, coords=stimCoords,
-             stimIntensity=intensity, script=scriptFullPath)
-    print 'Saved results to {}'.format(stimFullPath)
-    plt.clf(); plt.plot(intensity.T,'.-'); plt.show()
-             
-if TRACK_COLORS:
-    # -- These HSV color ranges were found by hand using the Linux gpick app --
-    hsvLimitsG = [[45,  70,  70],
-                  [75, 255, 255]]
-    hsvLimitsR = [[170,  70,  70],
-                  [179, 255, 255]]
-    colorLimits = [hsvLimitsG,hsvLimitsR]
 
-    minArea = 40  # Minimum number of pixels to detect a color area
-    vid = videoanalysis.ColorTracker(filename,colorLimits)
-    vid.process(minArea=minArea, lastFrame=None)
-    vid.interpolate()
-    np.savez(ctrackFullPath, subject=subject, session=session, colorLimits=colorLimits,
-             colorCenter=vid.colorCenter, missedFrames=vid.missed, script=scriptFullPath)
-    print 'Saved results to {}'.format(ctrackFullPath)
-    plt.clf()
-    plt.hold(1)
-    plt.plot(vid.colorCenter[0,:,:].T,'.-')
-    plt.plot(vid.colorCenter[1,:,:].T,'.-')
-    plt.hold(0)
-    plt.show()
-
-if CALCULATE_HEAD_ANGLE:
-    try:
-        colortrack = np.load(ctrackFullPath)
-    except IOError:
-        print 'ERROR: You first need to create the color-track file using this script.'
-        raise
-    try:
-        stimtrack = np.load(stimFullPath)
-    except IOError:
-        print 'ERROR: You first need to create the stim-detection file using this script.'
-        raise
-
-    colorCenter = colortrack['colorCenter']
-    missedFrames = colortrack['missedFrames']
-    stimIntensity = stimtrack['stimIntensity']
-
-    headVector = colorCenter[0,:,:]-colorCenter[1,:,:]
-    nSamples = headVector.shape[1]
-
-    headAngleDiscont = np.arctan2(headVector[1,:],headVector[0,:])
-    headAngle = np.unwrap(headAngleDiscont, discont=np.pi)
-    headDiff = np.concatenate((np.diff(headAngle),[0]))
-
-    stimBool = stimIntensity>stimThreshold
-    nStim = stimBool.shape[0]
-    
-    # -- Calculate overall averages --
-    if nStim==2:
-        deltaAngleStim1 = np.mean(headDiff[stimBool[0,:]])
-        deltaAngleStim2 = np.mean(headDiff[stimBool[1,:]])
-        deltaAngleNoStim = np.mean(headDiff[~stimBool[0,:] & ~stimBool[1,:]])
-    elif nStim==1:
-        deltaAngleStim1 = np.mean(headDiff[stimBool[0,:]])
-        deltaAngleNoStim = np.mean(headDiff[~stimBool[0,:]])
-        
-    dStim = np.diff(stimBool.astype(int),axis=1)
-    dStim = np.hstack((np.zeros((nStim,1)),dStim)) # To ensure alignement when finding frames in a trial
-    firstFrameEachTrial = nStim*[None]
-    lastFrameEachTrial = nStim*[None]
-    avgDeltaAngleEachTrial = nStim*[None]
-    
-    for stimInd in range(nStim):
-        firstFrameEachTrial[stimInd] = np.flatnonzero(dStim[stimInd,:]>0)
-        lastFrameEachTrial[stimInd] = np.flatnonzero(dStim[stimInd,:]<0)
-
-        nTrials = len(firstFrameEachTrial[stimInd])
-        avgDeltaAngleEachTrial[stimInd] = np.empty(nTrials)
-        for indt in range(nTrials):
-            framesThisTrial = range(firstFrameEachTrial[stimInd][indt],
-                                    lastFrameEachTrial[stimInd][indt])
-            avgDeltaAngleEachTrial[stimInd][indt] = np.mean(headDiff[framesThisTrial])
-    
-    np.savez(figuredataFullPath, subject=subject, session=session, headAngle=headAngle,
-             missedFrames=missedFrames, stimBool=stimBool, avgDeltaAngleEachTrial=avgDeltaAngleEachTrial,
-             firstFrameEachTrial=firstFrameEachTrial, lastFrameEachTrial=lastFrameEachTrial,
-             script=scriptFullPath)
-    print 'Saved results to {}'.format(figuredataFullPath)
+np.savez(paneldataFullPath, allSessions=allSessions, stimSamples=stimSamples,
+         stimSideEachCond=stimSideEachCond, stimRegionEachCond=stimRegionEachCond,
+         headAngleEachCond=headAngleEachCond, stimBoolEachCond=stimBoolEachCond,
+         script=scriptFullPath)
+print 'Saved results to {}'.format(paneldataFullPath)
 
 
-    plt.clf()
-    plt.hold(1)
-
-    ax1 = plt.subplot(2,1,1)
-    plt.plot(headAngle,'.-')
-    plt.ylabel('Head angle')
-    ax2 = plt.subplot(2,1,2,sharex=ax1)
-    plt.plot(stimIntensity.T,'.-')
-    plt.ylabel('Stim')
-    plt.show()
-
-    print 'Delta angle during stimulation:'
-    print deltaAngleStim1
-    if nStim>1:
-        print deltaAngleStim2
-    print 'Delta angle no stims:'
-    print deltaAngleNoStim
-
-    print 'Delta angle each trial'
-    print avgDeltaAngleEachTrial
-'''
