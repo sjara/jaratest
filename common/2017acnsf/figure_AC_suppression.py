@@ -57,7 +57,7 @@ baseSpikeRate = sdata['baseSpikeRate']
 plt.clf()
 
 gs = gridspec.GridSpec(4, 4)
-gs.update(left=0.12, right=0.95, wspace=1, hspace=0.25)
+gs.update(left=0.14, right=0.95, bottom=0.12, wspace=1, hspace=0.25)
 
 
 ax1 = plt.subplot(gs[0:2, :-2])
@@ -70,7 +70,7 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                 colorEachCond=np.tile(['#5c3566','#ad7fa8'],len(bandEachTrial)/2+1))
 plt.setp(pRaster, ms=4)
 extraplots.boxoff(plt.gca())
-plt.xlabel('Time from stimulus onset (s)', fontsize=fontSizeLabels)
+#plt.xlabel('Time from sound onset (s)', fontsize=fontSizeLabels)
 plt.ylabel('Bandwidth\n(octaves)', fontsize=fontSizeLabels)
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.xlabel('')
@@ -90,13 +90,14 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
 plt.setp(pRaster, ms=4)
 extraplots.boxoff(plt.gca())
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-plt.xlabel('Time from stimulus onset (s)', fontsize=fontSizeLabels)
+plt.xlabel('Time from sound onset (s)', fontsize=fontSizeLabels)
 plt.ylabel('Bandwidth\n(octaves)', fontsize=fontSizeLabels)
 ax2.set_xticks(np.arange(0,1.5,0.5))
 ax2.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 
 ax3 = plt.subplot(gs[0:3, -2:])
+#ax3 = plt.axes() # [left, bottom, width, height]
 stimDuration = 1.0        ### FIXME: Hardcoded!!!
 
 #spikeArray, errorArray, baseSpikeRate = band_select(spikeTimestamps, eventOnsetTimes, ampEachTrial, bandEachTrial, timeRange = [0,1])
@@ -104,7 +105,7 @@ stimDuration = 1.0        ### FIXME: Hardcoded!!!
 
 #band_select_plot(spikeArray, errorArray, baselineSpikeRate, bands, legend = False, labels = ['50 dB SPL', '70 dB SPL'], timeRange = [0,1], title=None)
 bands = np.unique(bandEachTrial)
-labels = ['54 dB-SPL', '66 dB-SPL']
+labels = ['54 dB', '66 dB']  # dB-SPL
 timeRange = timeRange = [0,1]
 plt.hold(True)
 xrange = range(len(bands))
@@ -119,7 +120,7 @@ ax = plt.gca()
 ax.set_xticklabels(bands)
 patch1 = mpatches.Patch(color='#5c3566', label=labels[1])
 patch2 = mpatches.Patch(color='#4e9a06', label=labels[0])
-plt.legend(handles=[patch1, patch2], bbox_to_anchor=(0.95, 0.95), borderaxespad=0, prop={'size':11})
+plt.legend(handles=[patch1, patch2], bbox_to_anchor=(0.95, 0.95), borderaxespad=0, prop={'size':14})
 
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 extraplots.boxoff(ax3)
