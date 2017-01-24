@@ -20,8 +20,8 @@ scriptFullPath = os.path.realpath(__file__)
 DEFINE_STIM_COORDS = 0
 DETECT_STIMULUS = 0
 TRACK_COLORS = 0
-CALCULATE_HEAD_ANGLE = 1
-SAVE_ALL_TOGETHER = 0
+CALCULATE_HEAD_ANGLE = 0
+SAVE_ALL_TOGETHER = 1
 
 allSessions = []
 oneSession = {'subject':'d1pi011', 'session':'20160609--4', 'stimThreshold':40, 'stimSide':'left,right',
@@ -48,44 +48,44 @@ oneSession = {'subject':'d1pi013', 'session':'20160523--6', 'stimThreshold':20, 
 allSessions.append(oneSession)
 
 oneSession = {'subject':'d1pi014', 'session':'20161021--2', 'stimThreshold':30, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[260, 50], [280, 60]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[260, 50], [280, 60]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi014', 'session':'20161021--3', 'stimThreshold':30, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[520, 80], [545, 95]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[520, 80], [545, 95]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi014', 'session':'20161021--4', 'stimThreshold':30, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[275, 85], [290, 95]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[275, 85], [290, 95]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi014', 'session':'20161021--5', 'stimThreshold':30, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[520, 80], [545, 95]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[520, 80], [545, 95]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi014', 'session':'20161109--2', 'stimThreshold':40, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[278, 50], [302, 66]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[278, 50], [302, 66]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi014', 'session':'20161109--3', 'stimThreshold':40, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[539, 50], [560, 62]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[539, 50], [560, 62]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi014', 'session':'20161109--2', 'stimThreshold':40, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[278, 50], [302, 66]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[278, 50], [302, 66]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi014', 'session':'20161109--3', 'stimThreshold':40, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[539, 50], [560, 62]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[539, 50], [560, 62]] ]}
 allSessions.append(oneSession)
 
 oneSession = {'subject':'d1pi016', 'session':'20160729--2', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[279, 81], [299, 92]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[279, 81], [299, 92]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi016', 'session':'20160729--3', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[534, 76], [549, 85]] ]}
+              'stimRegion':'backStr', 'stimCoords':[ [[534, 76], [549, 85]] ]}
 allSessions.append(oneSession)
 
 # -- These two don't process for some reason (but videos are fine according to mplayer) --
 oneSession = {'subject':'d1pi015', 'session':'20160804--2', 'stimThreshold':0, 'stimSide':'left',
-              'stimCoords':[ [[267, 72], [283, 83]] ]}
-allSessions.append(oneSession)
+              'stimRegion':'backStr', 'stimCoords':[ [[267, 72], [283, 83]] ]}
+#allSessions.append(oneSession)
 oneSession = {'subject':'d1pi015', 'session':'20160804--3', 'stimThreshold':0, 'stimSide':'right',
-              'stimCoords':[ [[519, 74], [534, 81]] ]}
-allSessions.append(oneSession)
+              'stimRegion':'backStr', 'stimCoords':[ [[519, 74], [534, 81]] ]}
+#allSessions.append(oneSession)
 
 '''
 oneSession = {'subject':'', 'session':'', 'stimThreshold':,
@@ -109,12 +109,12 @@ oneSession = {'subject':'d1pi013', 'session':'20160511--10', 'stimThreshold':40,
 
 
 if not SAVE_ALL_TOGETHER:
-    for indSession in range(17): #[16]:
-        subject = allSessions[indSession]['subject']
-        session = allSessions[indSession]['session']
-        stimCoords = allSessions[indSession]['stimCoords']
-        stimThreshold = allSessions[indSession]['stimThreshold']
-        stimSide = allSessions[indSession]['stimSide']
+    for indSession,oneSession in enumerate([allSessions[1]]): #allSessions: #[allSessions[16]]:
+        subject = oneSession['subject']
+        session = oneSession['session']
+        stimCoords = oneSession['stimCoords']
+        stimThreshold = oneSession['stimThreshold']
+        stimSide = oneSession['stimSide']
 
         print '==== Processing {0} {1} ===='.format(subject,session)
 
@@ -252,11 +252,13 @@ if SAVE_ALL_TOGETHER:
     subjects = []
     sessions = []
     stimSides = []
+    stimRegions = []
     deltaAngleEachTrialEachSession = []
-    for indSession in range(17):
-        subject = allSessions[indSession]['subject']
-        session = allSessions[indSession]['session']
-        stimSide = allSessions[indSession]['stimSide']
+    for indSession,oneSession in enumerate(allSessions):
+        subject = oneSession['subject']
+        session = oneSession['session']
+        stimSide = oneSession['stimSide']
+        stimRegion = oneSession['stimRegion']
         print '==== Loading data from {0} {1} ===='.format(subject,session)
 
         headangleFilename = 'head_angle_{0}_{1}.npz'.format(subject,session)
@@ -271,9 +273,11 @@ if SAVE_ALL_TOGETHER:
             subjects.append(subject)
             sessions.append(session)
             stimSides.append(oneStimLabel)
+            stimRegions.append(stimRegion)
             deltaAngleEachTrialEachSession.append(avgDeltaAngleEachTrial[indstim,:])
 
-    np.savez(summaryFullPath, subjects=subjects, sessions=sessions, stimSides=stimSides,
-             deltaAngleEachTrialEachSession=deltaAngleEachTrialEachSession, script=scriptFullPath)
+    np.savez(summaryFullPath, subject=subjects, session=sessions, stimSide=stimSides,
+             stimRegion=stimRegions, deltaAngleEachTrial=deltaAngleEachTrialEachSession,
+             script=scriptFullPath)
     print 'Saved results to {}'.format(summaryFullPath)
     
