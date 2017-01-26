@@ -17,6 +17,9 @@ maxZThreshold = 3
 ISIcutoff = 0.02
 removedDuplicates = True
 
+FIGNAME = 'soundres_modulation_switching'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
 # -- Read in databases storing all measurements from switching mice -- #
 switchingFilePath = os.path.join(settings.FIGURESDATA,figparams.STUDY_NAME)
 switchingFileName = 'all_cells_all_measures_extra_mod_waveform_switching.h5'
@@ -33,9 +36,9 @@ sigMod = np.array((allcells.modSig<=0.05), dtype=bool)
 dataToPlot = {'modulated':sigMod,'modulationIndex':allcells.modIndex,'animalName':allcells.animalName}
 
 ### Save data ###
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_switching_sound_modulation_all_good_cells_remove_dup.npz'
-outputFullPath = os.path.join(outputDir,outputFile)
+outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFullPath, sourceSwitching=switchingFilePath, goodCellQuality=qualityList, ISIcutoff=ISIcutoff, removedDuplicates=removedDuplicates, script=scriptFullPath, **dataToPlot)
 
 
@@ -46,7 +49,7 @@ sigMod = np.array((allcellsResponsive.modSig<=0.05) & (allcellsResponsive.modDir
 dataToPlot = {'modulated':sigMod,'modulationIndex':allcellsResponsive.modIndex,'animalName':allcellsResponsive.animalName}
 
 ### Save data ###
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_switching_sound_modulation_good_cells_responsive_midfreq_remove_dup.npz'
-outputFullPath = os.path.join(outputDir,outputFile)
+outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFullPath, sourceSwitching=switchingFilePath, maxZThreshold=maxZThreshold, goodCellQuality=qualityList, ISIcutoff=ISIcutoff, removedDuplicates=removedDuplicates, script=scriptFullPath, **dataToPlot)

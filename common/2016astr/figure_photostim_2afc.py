@@ -9,15 +9,19 @@ from jaratoolbox import extraplots
 from jaratoolbox import settings
 import matplotlib.gridspec as gridspec
 import matplotlib
+import matplotlib.lines as mlines
 import figparams
+
+FIGNAME = 'photostim_2afc'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
-dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
+outputDir = '/home/languo/tmp/'
 figFilename = 'plots_photostim_2afc' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [8,6]
@@ -122,12 +126,21 @@ right015 = summary['d1pi015rightHemiStim']
 right016 = summary['d1pi016rightHemiStim']
 
 for ind,leftData in enumerate([left014,left015,left016]):
-    ax5.scatter(np.repeat(1+0.2*(ind-1),len(leftData)), leftData, marker=SHAPESEACHANIMAL[ind], color=PHOTOSTIMCOLORS['laser_left'], label='mouse {}'.format(ind+1))
+    ax5.scatter(np.repeat(1+0.2*(ind-1),len(leftData)), leftData, marker=SHAPESEACHANIMAL[ind], color=PHOTOSTIMCOLORS['laser_left'], edgecolors="black")
+#, label='mouse {}'.format(ind+1))
     
 for ind,rightData in enumerate([right014,right015,right016]):
-    ax5.scatter(np.repeat(2+0.2*(ind-1),len(rightData)), rightData, marker=SHAPESEACHANIMAL[ind], color=PHOTOSTIMCOLORS['laser_right'])
+    ax5.scatter(np.repeat(2+0.2*(ind-1),len(rightData)), rightData, marker=SHAPESEACHANIMAL[ind], color=PHOTOSTIMCOLORS['laser_right'], edgecolors="black")
 
-ax5.legend(scatterpoints=1, markerscale=0.5, loc='upper right', labelspacing=0.1, fontsize=fontSizeTicks, frameon=False)
+# -- Add shapes as legend -- #
+lines=[]
+for ind,shape in enumerate(SHAPESEACHANIMAL):
+    line = mlines.Line2D([], [], color='white', marker=shape, markerfacecolor='white', markeredgecolor='black')
+    lines.append(line)
+plt.legend(lines, ('Mouse1','Mouse2','Mouse3'), numpoints=1, markerscale=0.7, loc='upper right', labelspacing=0.1, fontsize=fontSizeTicks, frameon=False)
+
+
+#ax5.legend(scatterpoints=1, markerscale=0.5, loc='upper right', labelspacing=0.1, fontsize=fontSizeTicks, frameon=False)
 #loc=9, bbox_to_anchor=(0.5, 1.2), ncol=3, columnspacing=0.1
 
 xlim = [0.3,2.7]

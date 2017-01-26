@@ -12,13 +12,16 @@ from scipy import stats
 import matplotlib
 import figparams
 
+FIGNAME = 'sound_freq_selectivity'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
-dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
+outputDir = '/home/languo/tmp/'
 figFilename = 'figure_sound_freq_selectivity' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [8,6]

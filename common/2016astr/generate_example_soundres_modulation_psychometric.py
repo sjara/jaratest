@@ -35,6 +35,7 @@ exampleCell = {'firstParam':'adap017',
               'tetrode':3,
               'cluster':10}
 cellParamsList.append(exampleCell)
+'''
 exampleCell = {'firstParam':'test053',
               'behavSession':'20150615a',
               'tetrode':5,
@@ -50,6 +51,7 @@ exampleCell = {'firstParam':'adap017',
               'tetrode':4,
                'cluster':9}
 cellParamsList.append(exampleCell)
+'''
 exampleCell = {'firstParam':'test055',
               'behavSession':'20150313a',
               'tetrode':4,

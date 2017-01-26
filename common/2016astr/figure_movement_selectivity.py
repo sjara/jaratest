@@ -12,15 +12,18 @@ import matplotlib
 import figparams
 import matplotlib.patches as mpatches
 
+FIGNAME = 'movement_selectivity'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
 removedDuplicates = True
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
-dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
+outputDir = '/home/languo/tmp/'
 if removedDuplicates:
     figFilename = 'figure_movement_selectivity_remove_dup' # Do not include extension
 else:
