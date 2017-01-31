@@ -157,7 +157,7 @@ class Paradigm(templates.Paradigm2AFC):
                                                          ['0','1','2','3'],
                                                          value=1, group='Laser Stimulation')
         # -- Percent trials each laser type. Remaining trials will be no laser.
-        self.params['fractionTrialsEachLaserMode'] = paramgui.NumericParam('Fraction trials each type',value=0.25,
+        self.params['fractionTrialsLaser'] = paramgui.NumericParam('Fraction trials with laser',value=0.25,
                                                             units='',group='Laser Stimulation')
 
         self.params['stimMode'] = paramgui.MenuParam('Stimulation Mode',
@@ -407,10 +407,11 @@ class Paradigm(templates.Paradigm2AFC):
         
         # -- Define the type of trial to present --
         nOnsetsToUse = int(self.params['nOnsetsToUse'].get_string())
-        fractionTrialsEachLaserMode = self.params['fractionTrialsEachLaserMode'].get_value()
-        fractionTrialsLaser = np.tile(fractionTrialsEachLaserMode,nOnsetsToUse)
-        fractionNoLaser = 1-np.sum(fractionTrialsLaser)
-        fractionTrials = np.append(fractionNoLaser,fractionTrialsLaser)
+        fractionTrialsLaser = self.params['fractionTrialsLaser'].get_value()
+        fractionTrialsEachLaserOnset = np.tile(1.0*fractionTrialsLaser/nOnsetsToUse,nOnsetsToUse)
+        print fractionTrialsEachLaserOnset
+        fractionNoLaser = 1-fractionTrialsLaser
+        fractionTrials = np.append(fractionNoLaser,fractionTrialsEachLaserOnset)
         trialTypeInd = np.random.choice(nOnsetsToUse+1, size=1, p=fractionTrials)[0]
         self.params['laserTrialType'].set_value(trialTypeInd)
         stimMode = self.params['stimMode'].get_string()
