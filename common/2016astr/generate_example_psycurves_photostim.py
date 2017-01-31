@@ -10,6 +10,12 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
 
+
+FIGNAME = 'photostim_2afc'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+if not os.path.exists(outputDir):
+    os.mkdir(outputDir)
+
 scriptFullPath = os.path.realpath(__file__)
 
 # -- Example psycurve under photostim of left hemisphere -- #
@@ -58,8 +64,7 @@ for stimType in range(nStimTypes):
         psycurveDict['fitxval_{}'.format(stimLabels[stimType])] = fitxval
         psycurveDict['fityval_{}'.format(stimLabels[stimType])] = fityval
         
-        
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, animal='d1pi015', session='20160829a', script=scriptFullPath,**psycurveDict)
@@ -112,7 +117,7 @@ for stimType in range(nStimTypes):
         psycurveDict['fityval_{}'.format(stimLabels[stimType])] = fityval
         
         
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, animal='d1pi016', session='20160803a',script=scriptFullPath, **psycurveDict)

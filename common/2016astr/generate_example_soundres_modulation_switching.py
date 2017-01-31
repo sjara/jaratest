@@ -15,17 +15,36 @@ from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
+reload(figparams)
+
+FIGNAME = 'soundres_modulation_switching'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
+if not os.path.exists(dataDir):
+    os.mkdir(dataDir)
+
+colorsDict = {'lowBlock':figparams.colp['MidFreqL'], 
+              'highBlock':figparams.colp['MidFreqR']} 
+
 
 # -- These example cells I picked manually from jarauser@jarahub/data/reports/billy/20160818_billys_lastest_reports/2016_billy_lan_paper/20160615_switching_modulation_examples_figure7/Best_quality_ISI-2_ZVal-3/sound_modulation --#
 
 cellParamsList = [{'firstParam':'test089',
                    'behavSession':'20160124a',
                    'tetrode':4,
-                   'cluster':6},
+                   'cluster':6}, #modulated
+                  {'firstParam':'test059',
+                   'behavSession':'20150624a',
+                   'tetrode':1,
+                   'cluster':2}, #modulated, duplicate
+                  {'firstParam':'test059',
+                   'behavSession':'20150624a',
+                   'tetrode':1,
+                   'cluster':7}, #modulated, duplicate
                   {'firstParam':'adap020',
                    'behavSession':'20160524a',
                    'tetrode':2,
-                   'cluster':9}] #last cell not modulated, rest modulated
+                   'cluster':9}] #last cell not modulated
 
 '''
 # OLD examples removed due to duplicate
@@ -39,7 +58,6 @@ cellParamsList = [{'firstParam':'test089',
    'cluster':7},
 '''
 ####################################################################################
-
 scriptFullPath = os.path.realpath(__file__)
 timeRange = [-0.5,1]
 binWidth = 0.010
@@ -47,7 +65,6 @@ EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
 plotByBlock = True #Define whether to make the plots split by block
 minBlockSize = 20 #Omit blocks with less than 20 trials
-colorsDict = {'lowBlock':'g', 'highBlock':'r'} 
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
@@ -123,7 +140,7 @@ for cellParams in cellParamsList:
     #pdb.set_trace()
     oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
     correctOneFreq = oneFreq  & correct 
-
+    
     if plotByBlock:
         bdata.find_trials_each_block()
         trialsEachBlock = bdata.blocks['trialsEachBlock']
@@ -159,10 +176,10 @@ for cellParams in cellParamsList:
 
 
     # -- Save raster intermediate data -- #    
-    outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+    #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_switching_midfreq_soundaligned_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
-    outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, indexLimitsEachTrial=indexLimitsEachTrial,spikeTimesFromEventOnset=spikeTimesFromEventOnset, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, timeRange=timeRange, colorForLowBlock=colorsDict['lowBlock'], colorForHighBlock=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)
+    outputFullPath = os.path.join(dataDir,outputFile)
+    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, indexLimitsEachTrial=indexLimitsEachTrial,spikeTimesFromEventOnset=spikeTimesFromEventOnset, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, timeRange=timeRange, colorMidFreqL=colorsDict['lowBlock'], colorMidFreqR=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)
 
 
     # -- Calculate additional arrays for plotting psth -- #
@@ -170,7 +187,7 @@ for cellParams in cellParamsList:
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
     # -- Save psth intermediate data -- #
-    outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+    #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_switching_midfreq_soundaligned_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
-    outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, script=scriptFullPath, colorForLowBlock=colorsDict['lowBlock'], colorForHighBlock=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)
+    outputFullPath = os.path.join(dataDir,outputFile)
+    np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, plotByBlock=plotByBlock, minBlockSize=minBlockSize, script=scriptFullPath, colorMidFreqL=colorsDict['lowBlock'], colorMidFreqR=colorsDict['highBlock'], frequencyPloted=middleFreq, **cellParams)

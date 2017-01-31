@@ -16,6 +16,9 @@ fontSizePanel = 16
 
 colp = {}
 colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
+colp['MidFreqR'] = cp.TangoPalette['Chameleon3']
+colp['MidFreqL'] = cp.TangoPalette['ScarletRed1']
+
 
 '''
 # To avoid converting text to paths
@@ -25,8 +28,7 @@ matplotlib.rcParams['axes.color_cycle'] = ???
 
 colp = {}
 colp['LowFreq'] = cp.TangoPalette['Orange2']
-colp['MidFreqR'] = cp.TangoPalette['Chameleon3']
-colp['MidFreqL'] = cp.TangoPalette['ScarletRed1']
+
 colp['HighFreq'] = cp.TangoPalette['SkyBlue2']
 
 

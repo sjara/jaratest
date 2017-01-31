@@ -13,6 +13,9 @@ import pandas as pd
 from jaratoolbox import settings
 import figparams
 
+FIGNAME = 'movement_selectivity'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
 scriptFullPath = os.path.realpath(__file__)
 qualityList = [1,6]
 ISIcutoff = 0.02
@@ -46,7 +49,7 @@ for ind,allcells in enumerate([allcells_switching,allcells_psychometric]):
     dataToPlot['movementModI'].extend(allcells.movementModI)
 
 ### Save data ###
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 if removedDuplicates:
     outputFile = 'summary_movement_selectivity_all_good_cells_remove_dup.npz'
 else:

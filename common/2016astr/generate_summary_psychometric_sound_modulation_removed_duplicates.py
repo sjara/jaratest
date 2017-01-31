@@ -11,11 +11,19 @@ import pandas as pd
 from jaratoolbox import settings
 import figparams
 
+
+FIGNAME = 'soundres_modulation_psychometric'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
+if not os.path.exists(dataDir):
+    os.mkdir(dataDir)
+
 scriptFullPath = os.path.realpath(__file__)
 qualityList = [1,6]
 maxZThreshold = 3
 removedDuplicates = True
 ISIcutoff = 0.02
+
 
 # -- Read in databases storing all measurements from switching mice -- #
 psychometricFilePath = os.path.join(settings.FIGURESDATA,figparams.STUDY_NAME)
@@ -37,9 +45,9 @@ sigMod = np.array((modSigStrongerSoundRes <= 0.05), dtype=bool)
 dataToPlot = {'modulated':sigMod,'modulationIndex':modIStrongerSoundRes}
 
 ### Save data ###
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_psychometric_sound_modulation_all_good_cells_remove_dup.npz'
-outputFullPath = os.path.join(outputDir,outputFile)
+outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFullPath, sourcePsychometric=psychometricFilePath, goodCellQuality=qualityList, script=scriptFullPath,  ISIcutoff=ISIcutoff, removedDuplicates=removedDuplicates, **dataToPlot)
 
 
@@ -54,7 +62,7 @@ sigMod = np.array((modSigStrongerSoundRes <= 0.05), dtype=bool)
 dataToPlot = {'modulated':sigMod,'modulationIndex':modIStrongerSoundRes}
 
 ### Save data ###
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_psychometric_sound_modulation_good_cells_responsive_midfreq_remove_dup.npz'
-outputFullPath = os.path.join(outputDir,outputFile)
+outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFullPath, sourcePsychometric=psychometricFilePath, maxZThreshold=maxZThreshold, goodCellQuality=qualityList, ISIcutoff=ISIcutoff, removedDuplicates=removedDuplicates, script=scriptFullPath, **dataToPlot)
