@@ -363,8 +363,6 @@ class Paradigm(templates.Paradigm2AFC):
                                       nextTrial)
 
     def set_state_matrix(self,nextCorrectChoice):
-        print self.sm.statesIndexToName#.keys()
-        print self.sm
         self.sm.reset_transitions()
         laserDuration = self.params['laserDuration'].get_value()
         self.sm.set_extratimer('laserTimer', duration=laserDuration)
@@ -407,15 +405,17 @@ class Paradigm(templates.Paradigm2AFC):
         
         # -- Define the type of trial to present --
         nOnsetsToUse = int(self.params['nOnsetsToUse'].get_string())
-        fractionTrialsLaser = self.params['fractionTrialsLaser'].get_value()
-        fractionTrialsEachLaserOnset = np.tile(1.0*fractionTrialsLaser/nOnsetsToUse,nOnsetsToUse)
-        print fractionTrialsEachLaserOnset
-        fractionNoLaser = 1-fractionTrialsLaser
-        fractionTrials = np.append(fractionNoLaser,fractionTrialsEachLaserOnset)
-        trialTypeInd = np.random.choice(nOnsetsToUse+1, size=1, p=fractionTrials)[0]
-        self.params['laserTrialType'].set_value(trialTypeInd)
-        stimMode = self.params['stimMode'].get_string()
+        if nOnsetsToUse != 0:
+            fractionTrialsLaser = self.params['fractionTrialsLaser'].get_value()
+            fractionTrialsEachLaserOnset = np.tile(1.0*fractionTrialsLaser/nOnsetsToUse,nOnsetsToUse)
+            fractionNoLaser = 1-fractionTrialsLaser
+            fractionTrials = np.append(fractionNoLaser,fractionTrialsEachLaserOnset)
+            trialTypeInd = np.random.choice(nOnsetsToUse+1, size=1, p=fractionTrials)[0]
+            self.params['laserTrialType'].set_value(trialTypeInd)
+        else:
+            trialTypeInd = 0
         if trialTypeInd>0:
+            stimMode = self.params['stimMode'].get_string()
             if stimMode == 'unilateral_left':
                 laserOutput = ['stim1']
                 self.params['laserSide'].set_string('left')
@@ -597,22 +597,21 @@ class Paradigm(templates.Paradigm2AFC):
                                       transitions={'Lin':'choiceLeft','Rin':'choiceRight', 'laserTimer':'laserOff',
                                                    'Tup':'noChoice'})
                 elif laserOnset <= 0:
-                    self.sm.add_state(name='delayPeriodBeforeLaser', statetimer=delayToTarget+laserOnset,
+                    self.sm.add_state(name='delayPeriod', statetimer=delayToTarget+laserOnset,
                                       transitions={'Tup':'laserOn','Cout':'waitForCenterPoke'})
                     if laserOnset+laserDuration <= 0:
                         # Can use just state transitions if entire laser duration is before sound, 
                         # but triggering extratimer anyway to make sure default extratimer doesn't mess stuff up
-                        self.sm.add_state(name='laserOn', statetimer=laserDuration, transitions={'Tup':'delayPeriodWithLaser'},
+                        self.sm.add_state(name='laserOn', statetimer=laserDuration, 
+                                      transitions={'Tup':'delayPeriodAfterLaser','Cout':'waitForCenterPoke'},
                                       outputsOn=laserOutput, trigger=['laserTimer'])
-                        self.sm.add_state(name='delayPeriodWithLaser', statetimer=laserDuration,
-                                      transitions={'Tup':'delayPeriod','Cout':'waitForCenterPoke'})
-                        self.sm.add_state(name='delayPeriod', statetimer=-laserOnset-laserDuration,
+                        self.sm.add_state(name='delayPeriodAfterLaser', statetimer=-laserOnset-laserDuration,
                                       transitions={'Tup':'playNoiseStimulus','Cout':'waitForCenterPoke'},
                                       outputsOff=laserOutput)
                     else: 
-                        self.sm.add_state(name='laserOn', statetimer=0, transitions={'Tup':'delayPeriod'},
+                        self.sm.add_state(name='laserOn', statetimer=0, transitions={'Tup':'delayPeriodAfterLaser'},
                                       outputsOn=laserOutput, trigger=['laserTimer'])
-                        self.sm.add_state(name='delayPeriod', statetimer=-laserOnset,
+                        self.sm.add_state(name='delayPeriodAfterLaser', statetimer=-laserOnset,
                                       transitions={'Tup':'playNoiseStimulus','Cout':'waitForCenterPoke'})
                     self.sm.add_state(name='playNoiseStimulus', statetimer=0,
                                       transitions={'Tup':'playToneStimulus'},
