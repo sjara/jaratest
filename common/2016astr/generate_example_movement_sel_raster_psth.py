@@ -1,9 +1,9 @@
 '''
-Generate and store intermediate data for plot showing movement-onset-aligned firing activity of astr neurons recorded in psychometric curve task, only trials of the two middle frequencies are plotted. Data for raster and psth are saved separately. 
+Generate and store intermediate data for plot showing movement-aligned firing activity of astr neurons recorded in switching task, only middle frequency is plotted. Data for raster and psth are saved separately. 
 For raster data, output contains spikeTimestamps, eventOnsetTimes, freqEachTrial.
 For psth data, output contains spikeCountMat, timeVec, freqEachTrial.
 
-Lan Guo20161226
+Lan Guo20161223
 '''
 import os
 import sys
@@ -16,12 +16,19 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
 
+FIGNAME = 'movement_selectivity'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
+if not os.path.exists(outputDir):
+    os.mkdir(outputDir)
+
 scriptFullPath = os.path.realpath(__file__)
 timeRange = [-0.5,1]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
-colorsDict = {'left':'g', 'right':'r'} 
+
+colorsDict = {'left':'r', 'right':'g'} 
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
@@ -35,10 +42,10 @@ if not os.path.ismount(EPHYS_PATH):
 
 
 # -- Select an example cell from allcells file -- #
-cellParams = {'firstParam':'',
-              'behavSession':'a',
-              'tetrode':,
-              'cluster':}
+cellParams = {'firstParam':'test059',
+              'behavSession':'20150629a',
+              'tetrode':2,
+              'cluster':7}
 
 mouseName = cellParams['firstParam']
     
@@ -54,7 +61,7 @@ oneCell = allcells.cellDB[cellIndex]
 ## Get behavior data associated with 2afc session ###
 behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
 behavFile = os.path.join(BEHAVIOR_PATH,oneCell.animalName,behavFileName)
-bdata = loadbehavior.BehaviorData(behavFile,readmode='full')
+bdata = loadbehavior.FlexCategBehaviorData(behavFile,readmode='full')
  
 
 ### Get events data ###
@@ -94,45 +101,45 @@ bdata.remove_trials(missingTrials)
 # -- Select trials to plot from behavior file -- #
 possibleFreq = np.unique(bdata['targetFrequency'])
 numFreqs = len(possibleFreq)
+
+# -- Select trials of middle frequency to plot, determine whether to plot by block -- #
+middleFreq = possibleFreq[numFreqs/2] #selects middle frequency, using int division resulting in int property. MAY FAIL IN THE FUTURE
+#pdb.set_trace()
+oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
 rightward = bdata['choice']==bdata.labels['choice']['right']
 leftward = bdata['choice']==bdata.labels['choice']['left']
 
-# -- Select trials of middle frequency to plot -- #
-middleFreqs = [possibleFreq[numFreqs/2-1], possibleFreq[numFreqs/2]] #selects middle frequencies, using int division resulting in int property. MAY FAIL IN THE FUTURE
-#pdb.set_trace()
-for middleFreq in middleFreqs:
-    oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
+trialsToUseRight = rightward & oneFreq
+trialsToUseLeft = leftward & oneFreq
+condLabels = ['go left', 'go right']
+trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
+colorEachCond = [colorsDict['left'],colorsDict['right']]
 
-    trialsToUseRight = rightward & oneFreq
-    trialsToUseLeft = leftward & oneFreq
-    trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
-    colorEachCond = [colorsDict['left'],colorsDict['right']]
+# -- Calculate eventOnsetTimes aligned to movement onset (CenterOut events) -- #
+eventOnsetTimes=np.array(eventData.timestamps)
+soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
+soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+diffTimes=bdata['timeCenterOut']-bdata['timeTarget']
+movementOnsetTimes = soundOnsetTimes+diffTimes
 
-    # -- Calculate eventOnsetTimes aligned to sound onset -- #
-    eventOnsetTimes=np.array(eventData.timestamps)
-    soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
-    soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
-    diffTimes = bdata['timeCenterOut']-bdata['timeTarget']
-    movementOnsetTimes = soundOnsetTimes+diffTimes
-
-    # -- Calculate arrays for plotting raster -- #
-    (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
-    spikesanalysis.eventlocked_spiketimes(spikeTimestamps,movementOnsetTimes,timeRange)
+# -- Calculate arrays for plotting raster -- #
+(spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+spikesanalysis.eventlocked_spiketimes(spikeTimestamps,movementOnsetTimes,timeRange)
 
 
-    # -- Save raster intermediate data -- #    
-    outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-    outputFile = 'example_psycurve_{}Hz_movementaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
-    outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+# -- Save raster intermediate data -- #    
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
+outputFullPath = os.path.join(outputDir,outputFile)
+np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
 
 
-    # -- Calculate additional arrays for plotting psth -- #
-    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
-    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
-
-    # -- Save psth intermediate data -- #
-    outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-    outputFile = 'example_psycurve_{}Hz_movementaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
-    outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+# -- Calculate additional arrays for plotting psth -- #
+timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+    
+# -- Save psth intermediate data -- #
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+outputFile = 'example_movement_sel_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
+outputFullPath = os.path.join(outputDir,outputFile)
+np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], script=scriptFullPath, frequencyPloted=middleFreq, **cellParams)

@@ -1,8 +1,8 @@
 import sys; sys.path.append('/home/jarauser/data')
 import os
-from jaratest.anna.inforecordings import band015_inforec as inforec
+from jaratest.anna.inforecordings import band016_inforec as inforec
 from jaratest.nick.ephysExperiments import clusterManySessions_v2 as cms
-reload(cms)
+reload(inforec)
 import pandas
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,4 +39,4 @@ for experiment in inforec.experiments:
                 clusterDict.update({'nSpikes': len(oneTT.timestamps[oneTT.clusters==cluster])})
                 db = db.append(clusterDict, ignore_index=True)
 
-db.to_csv('/home/jarauser/src/jaratest/anna/analysis/band015_celldb.csv')
+db.to_csv('/home/jarauser/src/jaratest/anna/analysis/band016_celldb.csv')

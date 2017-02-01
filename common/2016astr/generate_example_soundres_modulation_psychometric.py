@@ -16,18 +16,26 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
 
+
+FIGNAME = 'soundres_modulation_psychometric'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
+if not os.path.exists(dataDir):
+    os.mkdir(dataDir)
+
+#colorsDict = {'left':'g', 'right':'r'} 
+colorsDict = {'colorL':figparams.colp['MidFreqL'], 
+              'colorR':figparams.colp['MidFreqR']} 
+
 # -- These example cells I picked manually from jarauser@jarahub/data/reports/billy/20160818_billys_lastest_reports/2016_billy_lan_paper/20160728_psycurve_centerFreq_soundResponse_modulation_figure/modulation --#
 cellParamsList = []
-exampleCell = {'firstParam':'adap017',
-              'behavSession':'20160407a',
-              'tetrode':4,
-               'cluster':3}
-cellParamsList.append(exampleCell)
+
 exampleCell = {'firstParam':'adap017',
               'behavSession':'20160411a',
               'tetrode':3,
               'cluster':10}
 cellParamsList.append(exampleCell)
+'''
 exampleCell = {'firstParam':'test053',
               'behavSession':'20150615a',
               'tetrode':5,
@@ -43,12 +51,21 @@ exampleCell = {'firstParam':'adap017',
               'tetrode':4,
                'cluster':9}
 cellParamsList.append(exampleCell)
+'''
 exampleCell = {'firstParam':'test055',
               'behavSession':'20150313a',
               'tetrode':4,
                'cluster':7} #Not modulated
 cellParamsList.append(exampleCell)
 
+'''
+## OLDER example now removed due to duplicate clusters
+exampleCell = {'firstParam':'adap017',
+              'behavSession':'20160407a',
+              'tetrode':4,
+               'cluster':3}
+cellParamsList.append(exampleCell)
+'''
 ####################################################################################
 
 scriptFullPath = os.path.realpath(__file__)
@@ -56,7 +73,6 @@ timeRange = [-0.5,1]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
-colorsDict = {'left':'g', 'right':'r'} 
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
@@ -136,8 +152,9 @@ for cellParams in cellParamsList:
 
         trialsToUseRight = rightward & oneFreq
         trialsToUseLeft = leftward & oneFreq
+        condLabels = ['left choice', 'right choice']
         trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
-        colorEachCond = [colorsDict['left'],colorsDict['right']]
+        colorEachCond = [colorsDict['colorL'],colorsDict['colorR']]
 
 
         # -- Calculate eventOnsetTimes aligned to sound onset -- #
@@ -151,10 +168,10 @@ for cellParams in cellParamsList:
 
 
         # -- Save raster intermediate data -- #    
-        outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+        #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
         outputFile = 'example_psycurve_{}Hz_soundaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
-        outputFullPath = os.path.join(outputDir,outputFile)
-        np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+        outputFullPath = os.path.join(dataDir,outputFile)
+        np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['colorL'], colorRightTrials=colorsDict['colorR'], frequencyPloted=middleFreq, **cellParams)
 
 
         # -- Calculate additional arrays for plotting psth -- #
@@ -162,7 +179,7 @@ for cellParams in cellParamsList:
         spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
         # -- Save psth intermediate data -- #
-        outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+        #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
         outputFile = 'example_psycurve_{}Hz_soundaligned_psth_{}_{}_T{}_c{}.npz'.format( middleFreq, oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
-        outputFullPath = os.path.join(outputDir,outputFile)
-        np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+        outputFullPath = os.path.join(dataDir,outputFile)
+        np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['colorL'], colorRightTrials=colorsDict['colorR'], frequencyPloted=middleFreq, **cellParams)

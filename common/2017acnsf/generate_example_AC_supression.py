@@ -36,7 +36,7 @@ behavDirs = [word.strip(string.punctuation) for word in cell['behavior'].split()
 sessType = [word.strip(string.punctuation) for word in cell['sessiontype'].split()]
 bandIndex = sessType.index('bandwidth')
 
-def bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial, timeRange = [-0.2, 1.5]):          
+def bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial, timeRange = [-0.5, 1.5]):          
     from jaratoolbox import behavioranalysis
     from jaratoolbox import spikesanalysis
     numBands = np.unique(bandEachTrial)

@@ -12,14 +12,22 @@ import matplotlib
 import figparams
 import matplotlib.patches as mpatches
 
+FIGNAME = 'movement_selectivity'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
+removedDuplicates = True
+
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
-dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
-figFilename = 'fig_movement_selective' # Do not include extension
+outputDir = '/home/languo/tmp/'
+if removedDuplicates:
+    figFilename = 'figure_movement_selectivity_remove_dup' # Do not include extension
+else:
+    figFilename = 'figure_movement_selectivity' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [8,6]
 
@@ -35,7 +43,7 @@ downsampleFactorPsth = 1
 
 #colormapMovement =  
 
-labelPosX = [0.07, 0.5]   # Horiz position for panel labels
+labelPosX = [0.07, 0.47]   # Horiz position for panel labels
 labelPosY = [0.9]    # Vert position for panel labels
 
 MOVEMENTCOLORS = {'left':'red', 'right':'green'}
@@ -57,6 +65,7 @@ rasterExample =np.load(rasterFullPath)
 
 trialsEachCond = rasterExample['trialsEachCond']
 colorEachCond = rasterExample['colorEachCond']
+condLabels = rasterExample['condLabels']
 spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
 indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
 timeRange = rasterExample['timeRange']
@@ -68,7 +77,8 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                colorEachCond=colorEachCond)
 
 plt.setp(pRaster, ms=msRaster)
-plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
+plt.xlabel('Time from movement onset (s)', fontsize=fontSizeLabels)
+plt.ylabel('Trials', fontsize=fontSizeLabels)
 #plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
@@ -87,7 +97,12 @@ timeVec = psthExample['timeVec']
 binWidth = psthExample['binWidth']
 timeRange = psthExample['timeRange']
 
-extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+
+for ind,line in enumerate(pPSTH):
+    plt.setp(line, label=condLabels[ind])
+plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.axvline(x=0,linewidth=1, color='darkgrey')
 plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
@@ -98,7 +113,10 @@ plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels)
 # -- Panel B: summary distribution of movement modulation index -- #
 ax3 = plt.subplot(gs[0:,2:4])
 
-summaryFilename = 'summary_movement_selectivity_all_good_cells.npz'
+if removedDuplicates:
+    summaryFilename = 'summary_movement_selectivity_all_good_cells_remove_dup.npz'
+else:
+    summaryFilename = 'summary_movement_selectivity_all_good_cells.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
 summary = np.load(summaryFullPath)
 
@@ -109,7 +127,7 @@ plt.hist([sigMI,nonsigMI], bins=50, color=['k','darkgrey'],edgecolor='None',stac
 
 sig_patch = mpatches.Patch(color='k', label='Selective')
 nonsig_patch = mpatches.Patch(color='darkgrey', label='Not selective')
-plt.legend(handles=[sig_patch,nonsig_patch])
+plt.legend(handles=[sig_patch,nonsig_patch], loc='upper left', fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2, ncol=2, columnspacing=0.5)
 
 plt.axvline(x=0, linestyle='--',linewidth=1.5, color='k')
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)

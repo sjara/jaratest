@@ -1,0 +1,24 @@
+band016: 2016-12-12
+
+probe: 7752 (three-dots)
+
+Recording from right AC, middle of craniotomy. Mouse had picked sylgard out of left well AGAIN, cortex dried out, recording from other well while I try to restore left craniotomy with saline. Probes coated with DiI.
+
+At 500um, probes initially flexed going in. Stopped flexing once we put agar in. Still going slow just to be safe.
+
+At 530um, shitty spikes on TT6.
+
+At 660um, decent spikes on TT6, shitty ones on TT2.
+
+At 690um, TT6 and TT2 spikes are nicer, plus something on TT4 and 5.
+No laser response.
+
+At 720um, really nice TT6 spike.
+Laser off response.
+
+At 850, mediocre spikes on TT2,4,6.
+No laser response.
+
+At 910um, the legend of the mediocre spikes continues.
+Weak laser response on TT6. Kind of looks like a sound off response on TT6? Also TT2 is sound responsive.
+TT6 likes 18kHz, 16Hz mod. Laser response still there.

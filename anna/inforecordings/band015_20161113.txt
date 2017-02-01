@@ -52,3 +52,4 @@ Some kind of laser response on TT4. Lowering spike threshold and trying again.
 ...I lowered the threshold so much there's a response on EVERY tetrode. Raising threshold!
 TT2,3,4 have best laser responses.
 Some really spooky noise on TT7/8... hope shank is OK!
+TT2,3,4 all seem to like 15kHz, 64Hz mod.

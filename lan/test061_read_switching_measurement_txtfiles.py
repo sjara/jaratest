@@ -241,7 +241,7 @@ def read_min_trial_file_return_dict(minTrialFilename):
 
 
 if __name__ == '__main__':
-    CASE = 5
+    CASE = 6
     if CASE == 0:
         switchingMice = ['test059','test017','test089','adap020']
         #switchingMice = ['adap020']
@@ -444,4 +444,24 @@ if __name__ == '__main__':
         dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_extra_mod_waveform_switching.h5', key='switching')
         scriptFullPath = os.path.realpath(__file__)
         dfAllSwitchingMouse['script'] = scriptFullPath
+        dfAllSwitchingMouse.to_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_extra_mod_waveform_switching.h5', key='switching')
+    
+
+    if CASE == 6:
+        # -- Add information about whether a cell is in the striatum -- #
+        import pandas as pd
+        dfAllSwitchingMouse = pd.read_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_extra_mod_waveform_switching.h5', key='switching')
+        
+        dfStriatumRange = pd.read_csv('/home/languo/data/ephys/switching_summary_stats/billy_mice_striatum_range.csv')
+        dfAllSwitchingMouse['cellInStr'] = pd.Series()
+
+        for ind,row in dfStriatumRange.iterrows():
+            dfSwitchingThisMouse = dfAllSwitchingMouse.loc[dfAllSwitchingMouse['animalName']==row['animalName']]
+            dfSwitchingThisMouse['actualDepth'] = pd.Series()
+            for indS,rowS in dfSwitchingThisMouse.iterrows():
+                actualDepth = rowS['cellDepth']-row[str(rowS['tetrode'])]
+                dfSwitchingThisMouse.loc[indS,'actualDepth'] = actualDepth
+            #actualDepth = dfSwitchingThisMouse['cellDepth'].values.astype(float)-row[str(dfSwitchingThisMouse['tetrode'])]
+            dfAllSwitchingMouse['cellInStr'][dfAllSwitchingMouse['animalName']==row['animalName']] = ((dfSwitchingThisMouse['actualDepth'] >= row['strTop']) & (dfSwitchingThisMouse['actualDepth'] <= row['strBottom'])) 
+
         dfAllSwitchingMouse.to_hdf('/home/languo/data/ephys/switching_summary_stats/all_cells_all_measures_extra_mod_waveform_switching.h5', key='switching')

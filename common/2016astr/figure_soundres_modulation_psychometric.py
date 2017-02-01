@@ -12,14 +12,25 @@ import matplotlib
 import figparams
 import matplotlib.patches as mpatches
 
+FIGNAME = 'soundres_modulation_psychometric'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
+removedDuplicates = True
+
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
-dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+
+colorsDict = {'colorL':figparams.colp['MidFreqL'], 
+              'colorR':figparams.colp['MidFreqR']} 
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
-figFilename = 'fig_choice_modulation_psychometric' # Do not include extension
+outputDir = '/home/languo/tmp/'
+if removedDuplicates:
+    figFilename = 'figure_choice_modulation_psychometric_remove_dup'
+else:
+    figFilename = 'figure_choice_modulation_psychometric' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [8,6]
 
@@ -33,19 +44,15 @@ smoothWinSizePsth = 3
 lwPsth = 2
 downsampleFactorPsth = 1
 
-#colormapSound =  
-
-labelPosX = [0.07, 0.35, 0.65]   # Horiz position for panel labels
+labelPosX = [0.07, 0.35, 0.6]   # Horiz position for panel labels
 labelPosY = [0.9]    # Vert position for panel labels
-
-#COLORMAP = {'leftTrials':'red', 'rightTrials':'green'}
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 6)
-gs.update(left=0.15, right=0.85, wspace=1, hspace=0.5)
+gs.update(left=0.15, right=0.85, wspace=1.5, hspace=0.5)
 
 
 # -- Panel A: representative sound-evoked raster from psychometric task, Modulated-- #
@@ -81,6 +88,7 @@ psthFilename = 'example_psycurve_11607Hz_soundaligned_psth_adap017_20160411a_T3_
 psthFullPath = os.path.join(dataDir, psthFilename)
 psthExample =np.load(psthFullPath)
 
+condLabels = psthExample['condLabels']
 trialsEachCond = psthExample['trialsEachCond']
 colorEachCond = psthExample['colorEachCond']
 spikeCountMat = psthExample['spikeCountMat']
@@ -88,7 +96,8 @@ timeVec = psthExample['timeVec']
 binWidth = psthExample['binWidth']
 timeRange = psthExample['timeRange']
 
-extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.axvline(x=0,linewidth=1, color='darkgrey')
 plt.xlim(timeRangeSound[0],timeRangeSound[1])
@@ -130,6 +139,7 @@ psthFilename = 'example_psycurve_9781Hz_soundaligned_psth_test055_20150313a_T4_c
 psthFullPath = os.path.join(dataDir, psthFilename)
 psthExample =np.load(psthFullPath)
 
+condLabels = psthExample['condLabels']
 trialsEachCond = psthExample['trialsEachCond']
 colorEachCond = psthExample['colorEachCond']
 spikeCountMat = psthExample['spikeCountMat']
@@ -137,7 +147,12 @@ timeVec = psthExample['timeVec']
 binWidth = psthExample['binWidth']
 timeRange = psthExample['timeRange']
 
-extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+
+for ind,line in enumerate(pPSTH):
+    plt.setp(line, label=condLabels[ind])
+plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.axvline(x=0,linewidth=1, color='darkgrey')
 plt.xlim(timeRangeSound[0],timeRangeSound[1])
@@ -148,7 +163,10 @@ plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels)
 # -- Panel C: summary distribution of psychometric modulation index -- #
 ax5 = plt.subplot(gs[0:,4:6])
 
-summaryFilename = 'summary_psychometric_sound_modulation_good_cells_responsive_midfreq.npz'
+if removedDuplicates:
+    summaryFilename = 'summary_psychometric_sound_modulation_good_cells_responsive_midfreq_remove_dup.npz'
+else:
+    summaryFilename = 'summary_psychometric_sound_modulation_good_cells_responsive_midfreq.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
 summary = np.load(summaryFullPath)
 
@@ -159,14 +177,14 @@ plt.hist([sigMI,nonsigMI], bins=50, edgecolor='None', color=['k','darkgrey'], st
 
 sig_patch = mpatches.Patch(color='k', label='Modulated')
 nonsig_patch = mpatches.Patch(color='darkgrey', label='Not modulated')
-plt.legend(handles=[sig_patch,nonsig_patch])
+plt.legend(handles=[sig_patch,nonsig_patch], loc='upper center', fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2)
 
 plt.axvline(x=0, linestyle='--',linewidth=1.5, color='k')
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.xlabel('Modulation index', fontsize=fontSizeLabels)
 plt.ylabel('Number of cells', fontsize=fontSizeLabels)
 
-ax5.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax5.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 plt.show()
 
