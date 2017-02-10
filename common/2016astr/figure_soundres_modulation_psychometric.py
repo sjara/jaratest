@@ -12,19 +12,25 @@ import matplotlib
 import figparams
 import matplotlib.patches as mpatches
 
+FIGNAME = 'soundres_modulation_psychometric'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
 removedDuplicates = True
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
-dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+
+colorsDict = {'colorL':figparams.colp['MidFreqL'], 
+              'colorR':figparams.colp['MidFreqR']} 
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
+outputDir = '/home/languo/tmp/'
 if removedDuplicates:
-    figFilename = 'fig_choice_modulation_psychometric_remove_dup'
+    figFilename = 'figure_choice_modulation_psychometric_remove_dup'
 else:
-    figFilename = 'fig_choice_modulation_psychometric' # Do not include extension
+    figFilename = 'figure_choice_modulation_psychometric' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [8,6]
 
@@ -38,12 +44,8 @@ smoothWinSizePsth = 3
 lwPsth = 2
 downsampleFactorPsth = 1
 
-#colormapSound =  
-
-labelPosX = [0.07, 0.35, 0.65]   # Horiz position for panel labels
+labelPosX = [0.07, 0.35, 0.6]   # Horiz position for panel labels
 labelPosY = [0.9]    # Vert position for panel labels
-
-#COLORMAP = {'leftTrials':'red', 'rightTrials':'green'}
 
 fig = plt.gcf()
 fig.clf()
@@ -182,7 +184,7 @@ extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.xlabel('Modulation index', fontsize=fontSizeLabels)
 plt.ylabel('Number of cells', fontsize=fontSizeLabels)
 
-ax5.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax5.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 plt.show()
 

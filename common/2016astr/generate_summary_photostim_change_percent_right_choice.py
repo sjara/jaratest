@@ -12,6 +12,10 @@ from jaratoolbox import settings
 from jaratoolbox import behavioranalysis
 import figparams
 
+FIGNAME = 'photostim_2afc'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+if not os.path.exists(outputDir):
+    os.mkdir(outputDir)
 scriptFullPath = os.path.realpath(__file__)
 
 # -- Load the photostim experiments database -- #
@@ -65,7 +69,7 @@ for mouse in np.unique(tuningDf.animalName):
             percentChangeRightChoice = percentRightChoiceStim-percentRightChoiceControl
             resultsDict[mouse+'rightHemiStim'].append(percentChangeRightChoice)
 
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_photostim_percent_right_choice_change.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, script=scriptFullPath, **resultsDict)

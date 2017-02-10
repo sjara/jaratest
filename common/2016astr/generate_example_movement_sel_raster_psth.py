@@ -16,6 +16,12 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
 
+FIGNAME = 'movement_selectivity'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+
+if not os.path.exists(outputDir):
+    os.mkdir(outputDir)
+
 scriptFullPath = os.path.realpath(__file__)
 timeRange = [-0.5,1]
 binWidth = 0.010
@@ -122,7 +128,7 @@ spikesanalysis.eventlocked_spiketimes(spikeTimestamps,movementOnsetTimes,timeRan
 
 
 # -- Save raster intermediate data -- #    
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
@@ -133,7 +139,7 @@ timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     
 # -- Save psth intermediate data -- #
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_movement_sel_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], script=scriptFullPath, frequencyPloted=middleFreq, **cellParams)

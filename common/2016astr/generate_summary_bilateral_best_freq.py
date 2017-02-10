@@ -10,6 +10,8 @@ from jaratoolbox import settings
 reload(settings)
 import figparams
 
+FIGNAME = 'sound_freq_selectivity'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 scriptFullPath = os.path.realpath(__file__)
 
 # Psycurve frequencies used in 2afc task: d1pi014:7.3-16.3kHz, d1pi015:6.2-19.2kHz, d1pi016:mostly 7-22kHz; 6 frequencies were used in the task
@@ -42,7 +44,7 @@ for animal in freqBoundaryEachAnimal.keys():
 
 
 ### Save data ###
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_bilateral_best_freq.npz'
-outputFullPath = os.path.join(outputDir,outputFile)
+outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFullPath, **resultsDict)
