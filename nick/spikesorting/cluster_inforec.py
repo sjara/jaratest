@@ -17,7 +17,7 @@ import pandas
 
 class ClusterInforec(object):
 
-    def __init__(self, inforecPath, dbPath):
+    def __init__(self, inforecPath):
 
         self.dbPath = dbPath
         self.filepath = filepath
