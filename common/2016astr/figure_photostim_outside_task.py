@@ -68,7 +68,7 @@ if PANELS[0]:
     frontStrColor = figparams.cp.TangoPalette['ScarletRed1']
     yLims = np.array([-3,3])
     xbar = (stimSamples[1]-stimSamples[0]) / STIM_DURATION
-    ybar = 45 * (np.pi/180)  # From radians to degrees
+    ybar = 45 * (np.pi/180)  # From degrees to radians
     stimYpos = 2.8
     
     plt.axes(ax1)
@@ -93,7 +93,7 @@ if PANELS[0]:
     plt.text(np.mean(stimSamples),stimYpos+0.2, 'Right', ha='center',va='bottom', clip_on=False, fontsize=fontSizeLabels+2)
     plt.ylim(yLims)
     plt.axis('off')
-    leg = plt.legend(['Front striatum','Back striatum'], loc='lower center', frameon=False, labelspacing=0.2)
+    leg = plt.legend(['Anterior striatum','Posterior striatum'], loc='lower center', frameon=False, labelspacing=0.2)
     leg.set_frame_on(False)
 
 
@@ -130,13 +130,15 @@ if PANELS[1]:
             thisMarker = markerEachSubject[indSubject]
             nSamples = len(deltaHeadAngle[inds])
             xvals = np.tile(xPos[indc]+0.2*indSubject,nSamples)
-            plt.plot(xvals,deltaHeadAngle[inds],'o',marker=markerEachSubject[indSubject],mfc='none',color='k')
+            yvals = (180/np.pi) * deltaHeadAngle[inds] # From radians to degrees
+            plt.plot(xvals,yvals,'o',marker=markerEachSubject[indSubject],mfc='none',color='k')
             print '{0} - {1}'.format(subject[inds],xLabels[indc])
             print np.mean(deltaHeadAngle[inds])
             
     plt.axhline(0,color='0.5',ls='--')
     extraplots.boxoff(ax3)
     plt.xlim([-1,5])
+    plt.ylabel('Change in head angle (deg)')
     
     #leftDeltaHeadAngle = allDeltaHeadAngle[stimSide=='left']
     #rightDeltaHeadAngle = allDeltaHeadAngle[stimSide=='right']

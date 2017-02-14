@@ -109,7 +109,7 @@ oneSession = {'subject':'d1pi013', 'session':'20160511--10', 'stimThreshold':40,
 
 
 if not SAVE_ALL_TOGETHER:
-    for indSession,oneSession in enumerate([allSessions[1]]): #allSessions: #[allSessions[16]]:
+    for indSession,oneSession in enumerate(allSessions): #allSessions: #[allSessions[16]]:
         subject = oneSession['subject']
         session = oneSession['session']
         stimCoords = oneSession['stimCoords']
@@ -205,6 +205,7 @@ if not SAVE_ALL_TOGETHER:
             firstFrameEachTrial = nStim*[None]
             lastFrameEachTrial = nStim*[None]
             avgDeltaAngleEachTrial = nStim*[None]
+            totalDeltaAngleEachTrial = nStim*[None]
 
             for stimInd in range(nStim):
                 firstFrameEachTrial[stimInd] = np.flatnonzero(dStim[stimInd,:]>0)
@@ -212,13 +213,16 @@ if not SAVE_ALL_TOGETHER:
 
                 nTrials = len(firstFrameEachTrial[stimInd])
                 avgDeltaAngleEachTrial[stimInd] = np.empty(nTrials)
+                totalDeltaAngleEachTrial[stimInd] = np.empty(nTrials)
                 for indt in range(nTrials):
                     framesThisTrial = range(firstFrameEachTrial[stimInd][indt],
                                             lastFrameEachTrial[stimInd][indt])
                     avgDeltaAngleEachTrial[stimInd][indt] = np.mean(headDiff[framesThisTrial])
+                    totalDeltaAngleEachTrial[stimInd][indt] = np.sum(headDiff[framesThisTrial])
 
             np.savez(headangleFullPath, subject=subject, session=session, headAngle=headAngle,
                      missedFrames=missedFrames, stimBool=stimBool, avgDeltaAngleEachTrial=avgDeltaAngleEachTrial,
+                     totalDeltaAngleEachTrial=totalDeltaAngleEachTrial,
                      firstFrameEachTrial=firstFrameEachTrial, lastFrameEachTrial=lastFrameEachTrial,
                      stimSide=stimSide, script=scriptFullPath)
             print 'Saved results to {}'.format(headangleFullPath)
@@ -267,6 +271,7 @@ if SAVE_ALL_TOGETHER:
         haFile = np.load(headangleFullPath)
 
         avgDeltaAngleEachTrial = haFile['avgDeltaAngleEachTrial']
+        totalDeltaAngleEachTrial = haFile['totalDeltaAngleEachTrial']
         stimLabels = stimSide.split(',')
 
         for indstim, oneStimLabel in enumerate(stimLabels):
@@ -274,7 +279,7 @@ if SAVE_ALL_TOGETHER:
             sessions.append(session)
             stimSides.append(oneStimLabel)
             stimRegions.append(stimRegion)
-            deltaAngleEachTrialEachSession.append(avgDeltaAngleEachTrial[indstim,:])
+            deltaAngleEachTrialEachSession.append(totalDeltaAngleEachTrial[indstim,:])
 
     np.savez(summaryFullPath, subject=subjects, session=sessions, stimSide=stimSides,
              stimRegion=stimRegions, deltaAngleEachTrial=deltaAngleEachTrialEachSession,
