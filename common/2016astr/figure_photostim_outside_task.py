@@ -129,7 +129,7 @@ if PANELS[1]:
             indSubject = np.flatnonzero(possibleSubjects==subject[inds])[0]
             thisMarker = markerEachSubject[indSubject]
             nSamples = len(deltaHeadAngle[inds])
-            xvals = np.tile(xPos[indc]+0.2*indSubject,nSamples)
+            xvals = np.tile(xPos[indc]+0.1*indSubject,nSamples)
             yvals = (180/np.pi) * deltaHeadAngle[inds] # From radians to degrees
             plt.plot(xvals,yvals,'o',marker=markerEachSubject[indSubject],mfc='none',color='k')
             print '{0} - {1}'.format(subject[inds],xLabels[indc])

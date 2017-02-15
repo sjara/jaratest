@@ -72,6 +72,14 @@ oneSession = {'subject':'d1pi014', 'session':'20161109--3', 'stimThreshold':40, 
               'stimRegion':'backStr', 'stimCoords':[ [[539, 50], [560, 62]] ]}
 allSessions.append(oneSession)
 
+# -- Videos for d1pi015, nFrames does not give an accurate number of frames.
+oneSession = {'subject':'d1pi015', 'session':'20160804--2', 'stimThreshold':40, 'stimSide':'left',
+              'stimRegion':'backStr', 'stimCoords':[ [[267, 72], [283, 83]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi015', 'session':'20160804--3', 'stimThreshold':40, 'stimSide':'right',
+              'stimRegion':'backStr', 'stimCoords':[ [[519, 74], [534, 81]] ]}
+allSessions.append(oneSession)
+
 oneSession = {'subject':'d1pi016', 'session':'20160729--2', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'backStr', 'stimCoords':[ [[279, 81], [299, 92]] ]}
 allSessions.append(oneSession)
@@ -79,13 +87,20 @@ oneSession = {'subject':'d1pi016', 'session':'20160729--3', 'stimThreshold':20, 
               'stimRegion':'backStr', 'stimCoords':[ [[534, 76], [549, 85]] ]}
 allSessions.append(oneSession)
 
-# -- These two don't process for some reason (but videos are fine according to mplayer) --
-oneSession = {'subject':'d1pi015', 'session':'20160804--2', 'stimThreshold':0, 'stimSide':'left',
-              'stimRegion':'backStr', 'stimCoords':[ [[267, 72], [283, 83]] ]}
+
+
+##############
+oneSession = {'subject':'d1pi022', 'session':'20170214--6', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[277, 50], [294, 60]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170214--5', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[277, 50], [294, 60]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170213--1', 'stimThreshold':0, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[532, 29], [551, 36]] ]}
+allSessions.append(oneSession)
 #allSessions.append(oneSession)
-oneSession = {'subject':'d1pi015', 'session':'20160804--3', 'stimThreshold':0, 'stimSide':'right',
-              'stimRegion':'backStr', 'stimCoords':[ [[519, 74], [534, 81]] ]}
-#allSessions.append(oneSession)
+#allSessions = [oneSession]
 
 '''
 oneSession = {'subject':'', 'session':'', 'stimThreshold':,
@@ -110,6 +125,7 @@ oneSession = {'subject':'d1pi013', 'session':'20160511--10', 'stimThreshold':40,
 
 if not SAVE_ALL_TOGETHER:
     for indSession,oneSession in enumerate(allSessions): #allSessions: #[allSessions[16]]:
+        #for indSession,oneSession in enumerate(allSessions[16:17]):
         subject = oneSession['subject']
         session = oneSession['session']
         stimCoords = oneSession['stimCoords']
@@ -158,9 +174,17 @@ if not SAVE_ALL_TOGETHER:
                      colorCenter=vid.colorCenter, missedFrames=vid.missed, script=scriptFullPath)
             print 'Saved results to {}'.format(ctrackFullPath)
             plt.clf()
+            plt.subplot2grid([1,4],[0,0],colspan=3)
             plt.hold(1)
             plt.plot(vid.colorCenter[0,:,:].T,'.-')
             plt.plot(vid.colorCenter[1,:,:].T,'.-')
+            plt.ylabel('X and Y position')
+            plt.xlabel('Frame')
+            plt.hold(0)
+            plt.subplot2grid([1,4],[0,3],colspan=1)
+            plt.hold(1)
+            plt.plot(vid.colorCenter[0,0,:],vid.colorCenter[0,1,:],'.-',color='r')
+            plt.plot(vid.colorCenter[1,0,:],vid.colorCenter[1,1,:],'.-',color='b')
             plt.hold(0)
             plt.show()
 
