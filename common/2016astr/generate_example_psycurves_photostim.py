@@ -67,12 +67,12 @@ for stimType in range(nStimTypes):
 #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, animal='d1pi015', session='20160829a', script=scriptFullPath,**psycurveDict)
+np.savez(outputFullPath, animal=animal, session=session, script=scriptFullPath,**psycurveDict)
 
 
 # -- Example psycurve under photostim of right hemisphere -- #
-animal = 'd1pi016'
-session = '20160803a'
+animal = 'd1pi015'
+session = '20160817a'
 
 bdata = behavioranalysis.load_many_sessions(animal,[session])
 targetFrequency=bdata['targetFrequency']
@@ -120,5 +120,5 @@ for stimType in range(nStimTypes):
 #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'example_photostim_psycurve_{0}_{1}.npz'.format(animal, session)
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, animal='d1pi016', session='20160803a',script=scriptFullPath, **psycurveDict)
+np.savez(outputFullPath, animal=animal, session=session,script=scriptFullPath, **psycurveDict)
 

@@ -12,6 +12,7 @@ import matplotlib
 import figparams
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
+import scipy.stats as stats
 
 FIGNAME = 'soundres_modulation_switching'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
@@ -33,12 +34,13 @@ if removedDuplicates:
 else:
     figFilename = 'plots_modulation_switching'
 
-figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [8,6]
+figFormat = 'png' # 'pdf' or 'svg'
+figSize = [12,8]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
+labelDis = 0.1
 
 timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -49,7 +51,7 @@ downsampleFactorPsth = 1
 #colormapSound =  
 
 labelPosX = [0.07, 0.46]   # Horiz position for panel labels
-labelPosY = [0.9, 0.45]    # Vert position for panel labels
+labelPosY = [0.9, 0.46]    # Vert position for panel labels
 
 #COLORMAP = {'leftTrials':'red', 'rightTrials':'green'}
 
@@ -57,20 +59,24 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(4, 4)
-gs.update(left=0.15, right=0.85, wspace=1, hspace=1)
+gs = gridspec.GridSpec(2, 2)
+gs.update(left=0.15, right=0.85, wspace=0.3, hspace=0.3)
+
+gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.1)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,0], hspace=0.1)
 
 
 # -- Panel A: schematic of switching task-- #
-ax1 = plt.subplot(gs[0:2, 0:2])
+#ax1 = plt.subplot(gs[0:2, 0:2])
+ax1 = plt.subplot(gs[0, 0])
 plt.axis('off')
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 
-# -- Panel B: representative sound-evoked raster from switching task, Modulated-- #
-ax2 = plt.subplot(gs[0, 2:4])
+# -- Panel B: representative sound-evoked raster from switching task, Not modulated-- #
+ax2 = plt.subplot(gs00[0:2, 0:])
 
-rasterFilename = 'example_switching_midfreq_soundaligned_raster_test089_20160124a_T4_c6.npz' 
+rasterFilename = 'example_switching_midfreq_soundaligned_raster_adap020_20160524a_T2_c9.npz' 
 rasterFullPath = os.path.join(dataDir, rasterFilename)
 rasterExample =np.load(rasterFullPath)
 
@@ -87,16 +93,17 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                colorEachCond=colorEachCond)
 
 plt.setp(pRaster, ms=msRaster)
-plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) 
-plt.ylabel('Trials',fontsize=fontSizeLabels)
+#plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) 
+ax2.axes.xaxis.set_ticklabels([])
+plt.ylabel('Trials',fontsize=fontSizeLabels, labelpad=labelDis)
 #plt.xlim(timeRangeSound[0],timeRangeSound[1])
 ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 
-# -- Panel B2: representative sound-evoked psth from switching task, Modulated -- #
-ax3 = plt.subplot(gs[1, 2:4])
-
-psthFilename = 'example_switching_midfreq_soundaligned_psth_test089_20160124a_T4_c6.npz' 
+# -- Panel B2: representative sound-evoked psth from switching task, Not modulated -- #
+#ax3 = plt.subplot(gs[1, 2:4])
+ax3 = plt.subplot(gs00[2:, :])
+psthFilename = 'example_switching_midfreq_soundaligned_psth_adap020_20160524a_T2_c9.npz' 
 psthFullPath = os.path.join(dataDir, psthFilename)
 psthExample =np.load(psthFullPath)
 
@@ -117,13 +124,13 @@ extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.axvline(x=0,linewidth=1, color='darkgrey')
 plt.xlim(timeRangeSound[0],timeRangeSound[1])
 plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels)
+plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
 
 
-# -- Panel C: representative sound-evoked raster from switching task, Not modulated -- #
-ax4 = plt.subplot(gs[2, 0:2])
-
-rasterFilename = 'example_switching_midfreq_soundaligned_raster_adap020_20160524a_T2_c9.npz' 
+# -- Panel C: representative sound-evoked raster from switching task, modulated -- #
+#ax4 = plt.subplot(gs[2, 0:2])
+ax4 = plt.subplot(gs01[0:2, 0:])
+rasterFilename = 'example_switching_midfreq_soundaligned_raster_test089_20160124a_T4_c6.npz' 
 rasterFullPath = os.path.join(dataDir, rasterFilename)
 rasterExample =np.load(rasterFullPath)
 
@@ -141,16 +148,17 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                fillWidth=None,labels=None)
 
 plt.setp(pRaster, ms=msRaster)
-plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-plt.ylabel('Trials',fontsize=fontSizeLabels)
+#plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+ax4.axes.xaxis.set_ticklabels([])
+plt.ylabel('Trials',fontsize=fontSizeLabels, labelpad=labelDis)
 #plt.xlim(timeRangeSound[0],timeRangeSound[1])
 ax4.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 
-# -- Panel C2: representative sound-evoked psth from switching task, Not modulated -- #
-ax5 = plt.subplot(gs[3, 0:2])
-
-psthFilename = 'example_switching_midfreq_soundaligned_psth_adap020_20160524a_T2_c9.npz' 
+# -- Panel C2: representative sound-evoked psth from switching task, modulated -- #
+#ax5 = plt.subplot(gs[3, 0:2])
+ax5 = plt.subplot(gs01[2:, 0:])
+psthFilename = 'example_switching_midfreq_soundaligned_psth_test089_20160124a_T4_c6.npz' 
 psthFullPath = os.path.join(dataDir, psthFilename)
 psthExample =np.load(psthFullPath)
 
@@ -168,12 +176,12 @@ extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.axvline(x=0,linewidth=1, color='darkgrey')
 plt.xlim(timeRangeSound[0],timeRangeSound[1])
 plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels)
+plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
 
 
 # -- Panel D: summary distribution of switching modulation index -- #
-ax6 = plt.subplot(gs[2:,2:4])
-
+#ax6 = plt.subplot(gs[2:,2:4])
+ax6 = plt.subplot(gs[1,1])
 colorMod = 'black'
 colorNotMod = 'darkgrey'
 
@@ -196,7 +204,7 @@ plt.legend(handles=[sig_patch,nonsig_patch], fontsize=fontSizeTicks, frameon=Fal
 plt.axvline(x=0, linestyle='--',linewidth=1.5, color='k')
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.xlabel('Modulation index', fontsize=fontSizeLabels)
-plt.ylabel('Number of cells', fontsize=fontSizeLabels)
+plt.ylabel('Number of cells', fontsize=fontSizeLabels, labelpad=labelDis)
 
 ax6.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
@@ -205,3 +213,6 @@ plt.show()
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
+# -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
+(T, pVal) = stats.wilcoxon(summary['modulationIndex'])
+print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal

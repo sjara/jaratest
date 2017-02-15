@@ -24,7 +24,7 @@ SAVE_FIGURE = 1
 outputDir = '/home/languo/tmp/'
 figFilename = 'figure_sound_freq_selectivity' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [8,6]
+figSize = [10,6]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -51,7 +51,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 6)
-gs.update(left=0.15, right=0.85, wspace=2.5, hspace=0.5)
+gs.update(left=0.15, right=0.85, wspace=2.5, hspace=0.2)
 
 
 # -- Panel A: representative sound-evoked raster from tuning task -- #
@@ -67,7 +67,6 @@ spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
 indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
 timeRange = rasterExample['timeRange']
 labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-
 pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                indexLimitsEachTrial,
                                                timeRange,
@@ -95,6 +94,7 @@ binWidth = psthExample['binWidth']
 timeRange = psthExample['timeRange']
 possibleFreq = psthExample['possibleFreq']
 numFreqs = len(possibleFreq)
+labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
 cm_subsection = np.linspace(0.0, 1.0, numFreqs)
 colorEachCond = [colormapTuning(x) for x in cm_subsection] 
@@ -146,7 +146,6 @@ spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
 indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
 timeRange = rasterExample['timeRange']
 labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-
 pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                indexLimitsEachTrial,
                                                timeRange,
@@ -174,6 +173,7 @@ binWidth = psthExample['binWidth']
 timeRange = psthExample['timeRange']
 possibleFreq = psthExample['possibleFreq']
 numFreqs = len(possibleFreq)
+labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
 cm_subsection = np.linspace(0.0, 1.0, numFreqs)
 colorEachCond = [colormapTuning(x) for x in cm_subsection] 
@@ -242,3 +242,8 @@ plt.show()
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
+
+# -- Statistic test for comparing left versus right hemi tuning -- #
+import scipy.stats as stats
+(x,pvalue) = stats.ranksums(leftData,rightData)
+print 'all three mice left vs right hemi best freq\n p value:', pvalue

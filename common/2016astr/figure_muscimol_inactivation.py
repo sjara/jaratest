@@ -15,9 +15,9 @@ FIGNAME = 'muscimol_inactivation'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
-figFilename = 'fig_muscimol_inactivation' # Do not include extension
-figFormat = 'svg' # 'pdf' or 'svg'
+outputDir = '/home/languo/tmp/'
+figFilename = 'plots_muscimol_inactivation' # Do not include extension
+figFormat = 'png' # 'pdf' or 'svg'
 figSize = [8, 6]
 
 fontSizeLabels = figparams.fontSizeLabels

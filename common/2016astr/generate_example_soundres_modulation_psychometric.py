@@ -73,6 +73,7 @@ timeRange = [-0.5,1]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
+paradigm = '2afc'
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
@@ -99,7 +100,7 @@ for cellParams in cellParamsList:
 
 
     ## Get behavior data associated with 2afc session ###
-    behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
+    behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,paradigm,oneCell.behavSession)
     behavFile = os.path.join(BEHAVIOR_PATH,oneCell.animalName,behavFileName)
     bdata = loadbehavior.BehaviorData(behavFile,readmode='full')
 

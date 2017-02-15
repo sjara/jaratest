@@ -11,11 +11,12 @@ import matplotlib.gridspec as gridspec
 import matplotlib
 import figparams
 import matplotlib.patches as mpatches
+import scipy.stats as stats
 
 FIGNAME = 'movement_selectivity'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
-removedDuplicates = True
+#removedDuplicates = True
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
@@ -24,12 +25,15 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 SAVE_FIGURE = 1
 outputDir = '/home/languo/tmp/'
+'''
 if removedDuplicates:
     figFilename = 'figure_movement_selectivity_remove_dup' # Do not include extension
 else:
     figFilename = 'figure_movement_selectivity' # Do not include extension
+'''
+figFilename = 'figure_movement_selectivity'
 figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [8,6]
+figSize = [8,5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -53,7 +57,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 4)
-gs.update(left=0.15, right=0.85, wspace=1, hspace=0.5)
+gs.update(left=0.15, right=0.85, wspace=1, hspace=0.2)
 
 
 # -- Panel A: representative raster during movement from switching task -- #
@@ -77,7 +81,7 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                colorEachCond=colorEachCond)
 
 plt.setp(pRaster, ms=msRaster)
-plt.xlabel('Time from movement onset (s)', fontsize=fontSizeLabels)
+#plt.xlabel('Time from movement onset (s)', fontsize=fontSizeLabels)
 plt.ylabel('Trials', fontsize=fontSizeLabels)
 #plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
@@ -113,10 +117,14 @@ plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels)
 # -- Panel B: summary distribution of movement modulation index -- #
 ax3 = plt.subplot(gs[0:,2:4])
 
+'''
 if removedDuplicates:
     summaryFilename = 'summary_movement_selectivity_all_good_cells_remove_dup.npz'
 else:
     summaryFilename = 'summary_movement_selectivity_all_good_cells.npz'
+'''
+summaryFilename = 'summary_movement_selectivity_psychometric.npz'
+#summaryFilename = 'summary_movement_selectivity_switching.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
 summary = np.load(summaryFullPath)
 
@@ -124,10 +132,17 @@ sigModulated = summary['movementSelective']
 sigMI = summary['movementModI'][sigModulated]
 nonsigMI = summary['movementModI'][~sigModulated]
 plt.hist([sigMI,nonsigMI], bins=50, color=['k','darkgrey'],edgecolor='None',stacked=True)
+numSig = len(sigMI)
+numSigNeg = sum(sigMI<0)
+numSigPos = sum(sigMI>0)
+print numSig, ' cells were significantly modulated by movement direction, that is ', np.mean(sigModulated)*100, '% of total good cells recorded in the striatum.'
+print 'Out of the movement direction selective cells,', numSigNeg, ' cells were more active when moving to the contralaterral side (left). That is {}%.'.format(100*numSigNeg/float(numSig))
 
+'''
 sig_patch = mpatches.Patch(color='k', label='Selective')
 nonsig_patch = mpatches.Patch(color='darkgrey', label='Not selective')
 plt.legend(handles=[sig_patch,nonsig_patch], loc='upper left', fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2, ncol=2, columnspacing=0.5)
+'''
 
 plt.axvline(x=0, linestyle='--',linewidth=1.5, color='k')
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -141,3 +156,6 @@ plt.show()
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
+# -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
+(T, pVal) = stats.wilcoxon(summary['movementModI'])
+print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal
