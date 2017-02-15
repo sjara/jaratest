@@ -93,24 +93,30 @@ thisCond = np.flatnonzero((stimSideEachCond=='left') & (stimRegionEachCond=='fro
 plt.plot(headAngleEachCond[thisCond],'.-')
 thisCond = np.flatnonzero((stimSideEachCond=='left') & (stimRegionEachCond=='backStr'))[0]
 plt.plot(headAngleEachCond[thisCond],'.-')
+plt.grid(True)
+plt.title('{0} {1}'.format(subject,session))
 
 plt.axes(ax2)
 thisCond = np.flatnonzero((stimSideEachCond=='left') & (stimRegionEachCond=='frontStr'))[0]
 plt.plot(stimBoolEachCond[thisCond][0,:],'.-')
 thisCond = np.flatnonzero((stimSideEachCond=='left') & (stimRegionEachCond=='backStr'))[0]
 plt.plot(stimBoolEachCond[thisCond][0,:],'.-')
+plt.grid(True)
 
 plt.axes(ax3)
 thisCond = np.flatnonzero((stimSideEachCond=='right') & (stimRegionEachCond=='frontStr'))[0]
 plt.plot(headAngleEachCond[thisCond],'.-')
 thisCond = np.flatnonzero((stimSideEachCond=='right') & (stimRegionEachCond=='backStr'))[0]
 plt.plot(headAngleEachCond[thisCond],'.-')
+plt.grid(True)
+plt.title('{0} {1}'.format(subject,session))
 
 plt.axes(ax4)
 thisCond = np.flatnonzero((stimSideEachCond=='right') & (stimRegionEachCond=='frontStr'))[0]
 plt.plot(stimBoolEachCond[thisCond][1,:],'.-')
 thisCond = np.flatnonzero((stimSideEachCond=='right') & (stimRegionEachCond=='backStr'))[0]
 plt.plot(stimBoolEachCond[thisCond][1,:],'.-')
+plt.grid(True)
 
 plt.show()
 
