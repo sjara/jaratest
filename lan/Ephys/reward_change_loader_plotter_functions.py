@@ -5,6 +5,7 @@ Lan Guo 2017-02-15
 '''
 import os
 import numpy as np
+import pdb
 import matplotlib.pyplot as plt
 from jaratoolbox import settings
 from jaratoolbox import loadbehavior
@@ -24,7 +25,7 @@ colorDictRC = {'leftMoreLowFreq':'g',
                'sameRewardLowFreq':'y',
                'leftMoreHighFreq':'r',
                'rightMoreHighFreq':'b',
-               'sameRewardHighfreq':'darkgrey'}
+               'sameRewardHighFreq':'darkgrey'}
 
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
@@ -122,25 +123,36 @@ def plot_tuning_raster(animal, ephysSession, behavSession, tetrode, cluster, int
     #print len(intensityEachTrial),len(eventOnsetTimes),len(spikeTimestamps)
 
     freqLabels = ['{0:.1f}'.format(freq/1000.0) for freq in possibleFreq]
-    intensityLabels = ['{:.0f} dB'.format(intensity) for intensity in possibleIntensity]        
-    xlabel="Time from sound onset (sec)"
-    #plotTitle = ephysSession+'tuning with chords'
-    plotTitle = 'Tt'+str(tetrode)+'c'+str(cluster)+' tuning with 50dB chords'
+    #intensityLabels = ['{:.0f} dB'.format(intensity) for intensity in possibleIntensity]        
+    
     ### FIXME: this is a bad hack for when ephys is one trial more than behavior file ###
     if len(eventOnsetTimes)==len(intensityEachTrial)+1:
         eventOnsetTimes=eventOnsetTimes[:-1]
     #print len(intensityEachTrial),len(eventOnsetTimes),len(spikeTimestamps)
-   
-    #plt.figure()
-    dataplotter.plot_raster(spikeTimestamps,
+    
+    trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
+    
+    (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+            spikesanalysis.eventlocked_spiketimes(spikeTimestamps,eventOnsetTimes,timeRange)
+    
+    pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                   indexLimitsEachTrial,
+                                                   timeRange,
+                                                   trialsEachCond=trialsEachFreq,
+                                                   labels=freqLabels)
+    plt.xlabel('Time from sound onset')
+    plt.xlim(timeRange[0]+0.1,timeRange[1])
+    plotTitle = 'Tt'+str(tetrode)+'c'+str(cluster)+' tuning with 50dB chords'  
+    plt.title(plotTitle,fontsize=10)
+
+'''
+dataplotter.plot_raster(spikeTimestamps,
                             eventOnsetTimes,
                             sortArray=freqEachTrial,
                             timeRange=timeRange,
                             ms=1,
                             labels=freqLabels)
-    plt.xlabel('Time from sound onset')
-    plt.xlim(timeRange[0]+0.1,timeRange[1])
-    plt.title(plotTitle,fontsize=10)
+'''
     
 
 def load_n_remove_missing_trials_2afc_behav(animal, behavSession, ephysSession, tetrode, cluster):
@@ -212,10 +224,11 @@ def get_trials_each_cond_reward_change(animal, behavSession, ephysSession, tetro
             correctTrialsEachBlock = correctTrialsEachBlock[:,:-1]
             numBlocks -= 1
         trialsEachCond = correctTrialsEachBlock
-        currentBlockLabelEachBlock = trialsEachBlock & currentBlock[:,np.newaxis]
-        colorEachCond = np.empty(numBlocks)
-        for blockNum in numBlocks:
-            currentBlockLabel = currentBlockLabelEachBlock[:,blockNum][0]
+        
+        colorEachCond = np.empty(numBlocks, dtype=object)
+        #pdb.set_trace()
+        for blockNum in range(numBlocks):
+            currentBlockLabel = currentBlock[trialsEachBlock[:,blockNum]][0]
             if freqToPlot == 'low':
                 if currentBlockLabel == bdata.labels['currentBlock']['same_reward']:
                     colorEachCond[blockNum] = colorCondDict['sameRewardLowFreq']
@@ -242,7 +255,7 @@ def get_trials_each_cond_reward_change(animal, behavSession, ephysSession, tetro
         if freqToPlot == 'low':
             colorEachCond = [colorCondDict['sameRewardLowFreq'],colorCondDict['leftMoreLowFreq'],colorCondDict['rightMoreLowFreq']]
         elif freqToPlot == 'high':
-            colorEachCond = [colorCondDict['sameRewardHighfreq'],colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
+            colorEachCond = [colorCondDict['sameRewardHighFreq'],colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
 
     return trialsEachCond, colorEachCond
 
@@ -365,7 +378,7 @@ def plot_reward_change_raster(animal, behavSession, ephysSession, tetrode, clust
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.ylabel('Trials')
     plt.xlim(timeRange[0]+0.1,timeRange[-1])
-    plt.title('{0}_TT{1}_c{2}_{3}'.format(behavSession,tetrode,cluster,alignment),fontsize=10)
+    plt.title('{0}_T{1}c{2}_{3}_{4}freq'.format(behavSession,tetrode,cluster,alignment,freqToPlot),fontsize=10)
    
 
 def plot_reward_change_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010, freqToPlot='low', byBlock=False, colorCondDict=colorDictRC, smoothWinSize=3):
