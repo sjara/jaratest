@@ -87,17 +87,42 @@ oneSession = {'subject':'d1pi016', 'session':'20160729--3', 'stimThreshold':20, 
               'stimRegion':'backStr', 'stimCoords':[ [[534, 76], [549, 85]] ]}
 allSessions.append(oneSession)
 
-
-
-##############
 oneSession = {'subject':'d1pi022', 'session':'20170214--6', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[277, 50], [294, 60]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170214--5', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[277, 50], [294, 60]] ]}
 allSessions.append(oneSession)
-oneSession = {'subject':'d1pi022', 'session':'20170213--1', 'stimThreshold':0, 'stimSide':'right',
+
+oneSession = {'subject':'d1pi022', 'session':'20170213--1', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[532, 29], [551, 36]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170213--2', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[266, 26], [285, 39]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170213--3', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[266, 26], [285, 39]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170213--4', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[532, 29], [551, 36]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170214--1', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[547, 52], [561, 59]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170214--2', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[547, 52], [561, 59]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170214--3', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[547, 52], [561, 59]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170214--4', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[277, 48], [294, 59]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170214--5', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[277, 48], [294, 59]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170214--5', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[277, 48], [294, 59]] ]}
 allSessions.append(oneSession)
 #allSessions.append(oneSession)
 #allSessions = [oneSession]
@@ -157,6 +182,7 @@ if not SAVE_ALL_TOGETHER:
                      stimIntensity=intensity, script=scriptFullPath)
             print 'Saved results to {}'.format(stimFullPath)
             plt.clf(); plt.plot(intensity.T,'.-'); plt.show()
+            plt.pause(0.05)
 
         if TRACK_COLORS:
             # -- These HSV color ranges were found by hand using the Linux gpick app --
@@ -187,6 +213,7 @@ if not SAVE_ALL_TOGETHER:
             plt.plot(vid.colorCenter[1,0,:],vid.colorCenter[1,1,:],'.-',color='b')
             plt.hold(0)
             plt.show()
+            plt.pause(0.05)
 
         if CALCULATE_HEAD_ANGLE:
             try:
@@ -262,6 +289,7 @@ if not SAVE_ALL_TOGETHER:
             plt.plot(stimIntensity.T,'.-')
             plt.ylabel('Stim')
             plt.show()
+            plt.pause(0.05)
 
             print 'Delta angle during stimulation:'
             print deltaAngleStim1
