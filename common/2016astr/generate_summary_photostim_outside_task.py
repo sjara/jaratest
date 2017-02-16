@@ -124,8 +124,35 @@ allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170214--5', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[277, 48], [294, 59]] ]}
 allSessions.append(oneSession)
-#allSessions.append(oneSession)
-#allSessions = [oneSession]
+oneSession = {'subject':'d1pi022', 'session':'20170216--1', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[532, 43], [543, 51]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170216--2', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[532, 43], [543, 51]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170216--3', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[532, 43], [543, 51]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170216--4', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[532, 43], [543, 51]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170216--5', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170216--6', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170216--7', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
+allSessions.append(oneSession)
+oneSession = {'subject':'d1pi022', 'session':'20170216--8', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
+allSessions.append(oneSession)
+
+'''
+allSessions = [oneSession]
+'''
+
 
 '''
 oneSession = {'subject':'', 'session':'', 'stimThreshold':,
