@@ -56,13 +56,13 @@ for tetrode in site.tetrodes:
         gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,2], hspace=0.1)
         
         ax1 = plt.subplot(gs[0, 0])
-        rcfuncs.load_n_plot_tuning_raster(animal, tuningEphysThisSite, tuningBehavThisSite, tetrode, cluster, intensity=50, timeRange = [-0.5,1])
+        rcfuncs.plot_tuning_raster(animal, tuningEphysThisSite, tuningBehavThisSite, tetrode, cluster, intensity=50, timeRange = [-0.5,1])
         
         ax2 = plt.subplot(gs00[0:2, :])
-        rcfuncs.plot_reward_change_raster(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='low', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
+        rcfuncs.plot_reward_change_raster(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='both', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
         
         ax3 = plt.subplot(gs00[2, :])
-        rcfuncs.plot_reward_change_psth(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='low', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
+        rcfuncs.plot_reward_change_psth(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='both', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
 
         ax4 = plt.subplot(gs01[0:2, :])
         rcfuncs.plot_reward_change_raster(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='both', byBlock=True, alignment='center-out', timeRange=[-0.3,0.4], binWidth=0.010)
