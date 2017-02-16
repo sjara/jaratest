@@ -442,7 +442,7 @@ def plot_movement_response_raster(animal, behavSession, ephysSession, tetrode, c
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.ylabel('Trials')
     plt.xlim(timeRange[0]+0.1,timeRange[-1])
-    plt.title('{0}_T{1}c{2}_{3}_movement_response'.format(behavSession,tetrode,cluster,alignment,fontsize=10)
+    plt.title('{0}_T{1}c{2}_{3}_movement_response'.format(behavSession,tetrode,cluster,alignment),fontsize=10)
    
 
 def plot_movement_response_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010, colorCondDict=colorDictMovement, smoothWinSize=3):
@@ -469,7 +469,6 @@ def plot_movement_response_psth(animal, behavSession, ephysSession, tetrode, clu
     # -- Add legend -- #
     left_patch = mpatches.Patch(color=colorCondDict['left'], label='move to left')
     right_patch = mpatches.Patch(color=colorCondDict['right'], label='move to right')
-    
     plt.legend(handles=[left_patch,right_patch], loc='upper center', fontsize=10, frameon=False, labelspacing=0.1, handlelength=0.2)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.xlabel('Time from {0} onset (s)'.format(alignment))
