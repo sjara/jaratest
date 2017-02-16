@@ -27,6 +27,11 @@ colorDictRC = {'leftMoreLowFreq':'g',
                'rightMoreHighFreq':'b',
                'sameRewardHighFreq':'darkgrey'}
 
+
+colorDictMovement = {'left':'g',
+                     'right':'r'}
+
+
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
 
@@ -310,7 +315,7 @@ def get_trials_each_cond_reward_change(animal, behavSession, ephysSession, tetro
 '''
 
 
-def get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment, timeRange, binWidth):
+def get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment, timeRange):
     '''
     Function to generate the intermediate data needed to plot raster and psth for reward_change_freq_dis task. 
     :param arg1: A string of the file name of the 2afc curve behavior session.
@@ -355,11 +360,11 @@ spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
     return spikeTimesFromEventOnset,indexLimitsEachTrial
 
 
-def plot_reward_change_raster(animal, behavSession, ephysSession, tetrode, cluster, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010, freqToPlot='low', byBlock=False, colorCondDict=colorDictRC):
+def plot_reward_change_raster(animal, behavSession, ephysSession, tetrode, cluster, alignment='sound', timeRange=[-0.3,0.4], freqToPlot='low', byBlock=False, colorCondDict=colorDictRC):
     '''
     Function to plot reward change raster.
     '''
-    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment, timeRange, binWidth)
+    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment, timeRange)
 
     if freqToPlot == 'low' or freqToPlot=='high':
         trialsEachCond, colorEachCond = get_trials_each_cond_reward_change(animal, behavSession, ephysSession, tetrode, cluster, freqToPlot=freqToPlot, byBlock=byBlock, colorCondDict=colorCondDict)
@@ -385,7 +390,7 @@ def plot_reward_change_psth(animal, behavSession, ephysSession, tetrode, cluster
     '''
     Function to plot reward change psth.
     '''
-    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment, timeRange, binWidth)
+    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment, timeRange)
     
     if freqToPlot == 'low' or freqToPlot=='high':
         trialsEachCond, colorEachCond = get_trials_each_cond_reward_change(animal, behavSession, ephysSession, tetrode, cluster, freqToPlot=freqToPlot, byBlock=byBlock, colorCondDict=colorCondDict)
@@ -405,11 +410,67 @@ def plot_reward_change_psth(animal, behavSession, ephysSession, tetrode, cluster
     #plt.subplot2grid((3,1), (2, 0))
     extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSize,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=3,downsamplefactor=1)
     # -- Add legend -- #
-    low_leftmore_patch = mpatches.Patch(color=colorDictRC['leftMoreLowFreq'], label='low leftmore')
-    low_rightmore_patch = mpatches.Patch(color=colorDictRC['rightMoreLowFreq'], label='low rightmore')
-    high_leftmore_patch = mpatches.Patch(color=colorDictRC['leftMoreHighFreq'], label='high leftmore')
-    high_rightmore_patch = mpatches.Patch(color=colorDictRC['rightMoreHighFreq'], label='high rightmore')
+    low_leftmore_patch = mpatches.Patch(color=colorCondDict['leftMoreLowFreq'], label='low leftmore')
+    low_rightmore_patch = mpatches.Patch(color=colorCondDict['rightMoreLowFreq'], label='low rightmore')
+    high_leftmore_patch = mpatches.Patch(color=colorCondDict['leftMoreHighFreq'], label='high leftmore')
+    high_rightmore_patch = mpatches.Patch(color=colorCondDict['rightMoreHighFreq'], label='high rightmore')
     plt.legend(handles=[low_leftmore_patch,low_rightmore_patch, high_leftmore_patch,high_rightmore_patch], loc='upper center', fontsize=10, frameon=False, labelspacing=0.1, handlelength=0.2)
+    plt.axvline(x=0,linewidth=1, color='darkgrey')
+    plt.xlabel('Time from {0} onset (s)'.format(alignment))
+    plt.ylabel('Firing rate (spk/sec)')
+    plt.xlim(timeRange[0]+0.1,timeRange[-1])
+
+
+def plot_movement_response_raster(animal, behavSession, ephysSession, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5], colorCondDict=colorDictMovement):
+    '''
+    Function to plot activity during movement as raster.
+    '''
+    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment, timeRange)
+    
+    bdata = load_n_remove_missing_trials_2afc_behav(animal, behavSession, ephysSession, tetrode, cluster)
+    # -- Select trials to plot from behavior file -- #
+    rightward = bdata['choice']==bdata.labels['choice']['right']
+    leftward = bdata['choice']==bdata.labels['choice']['left']
+
+    condLabels = ['go left', 'go right']
+    trialsEachCond = np.c_[leftward,rightward] 
+    colorEachCond = [colorCondDict['left'],colorCondDict['right']]
+
+    # -- Plot raster -- #
+    #plt.subplot2grid((3,1), (0, 0), rowspan=2)
+    extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,fillWidth=None,labels=None)
+    plt.axvline(x=0,linewidth=1, color='darkgrey')
+    plt.ylabel('Trials')
+    plt.xlim(timeRange[0]+0.1,timeRange[-1])
+    plt.title('{0}_T{1}c{2}_{3}_movement_response'.format(behavSession,tetrode,cluster,alignment,fontsize=10)
+   
+
+def plot_movement_response_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010, colorCondDict=colorDictMovement, smoothWinSize=3):
+    '''
+    Function to plot activity during movement as psth.
+    '''
+    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, tetrode, cluster, alignment, timeRange)
+    
+    bdata = load_n_remove_missing_trials_2afc_behav(animal, behavSession, ephysSession, tetrode, cluster)
+    # -- Select trials to plot from behavior file -- #
+    rightward = bdata['choice']==bdata.labels['choice']['right']
+    leftward = bdata['choice']==bdata.labels['choice']['left']
+
+    condLabels = ['go left', 'go right']
+    trialsEachCond = np.c_[leftward,rightward] 
+    colorEachCond = [colorCondDict['left'],colorCondDict['right']]
+
+    # -- Plot PSTH -- #
+    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+    smoothWinSize = smoothWinSize
+    #plt.subplot2grid((3,1), (2, 0))
+    extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSize,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=3,downsamplefactor=1)
+    # -- Add legend -- #
+    left_patch = mpatches.Patch(color=colorCondDict['left'], label='move to left')
+    right_patch = mpatches.Patch(color=colorCondDict['right'], label='move to right')
+    
+    plt.legend(handles=[left_patch,right_patch], loc='upper center', fontsize=10, frameon=False, labelspacing=0.1, handlelength=0.2)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.xlabel('Time from {0} onset (s)'.format(alignment))
     plt.ylabel('Firing rate (spk/sec)')
