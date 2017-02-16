@@ -12,8 +12,8 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import behavioranalysis
 from jaratoolbox import spikesanalysis
 from jaratoolbox import extraplots
-from jaratest.nick.database import dataloader_v2 as dataloader
-from jaratest.nick.database import dataplotter
+#from jaratest.nick.database import dataloader_v2 as dataloader
+#from jaratest.nick.database import dataplotter
 import matplotlib.patches as mpatches
 
 EPHYS_PATH = settings.EPHYS_PATH
@@ -47,10 +47,49 @@ def set_clusters_from_file(animal, session, tetrode):
         clusterList = np.fromfile(clusterFile,dtype='int32',sep=' ')[1:]
         return clusterList
 
-
-def load_n_plot_tuning_raster(animal, ephysSession, behavSession, tetrode, cluster, intensity=50, timeRange = [-0.5,1]):
+def load_event_data(animal, ephysSession):
+    fullEventFilename=os.path.join(EPHYS_PATH, animal, ephysSession, 'all_channels.events')
+    eventData = loadopenephys.Events(fullEventFilename)
+    eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
+    return eventData
+    
+def load_spike_data(animal, ephysSession, tetrode, cluster):
     '''
-    Function to load the ephys, behavior data and plot a tuning raster. 
+    Function to load spike data of just one isolated cluster. 
+    '''
+    spikeFilename = os.path.join(EPHYS_PATH,animal,ephysSession, 'Tetrode{}.spikes'.format(tetrode))
+    spikeData = loadopenephys.DataSpikes(spikeFilename)
+    spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
+    clustersDir = os.path.join(EPHYS_PATH,animal,ephysSession)+'_kk'
+    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(tetrode))
+    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
+    spikeData.timestamps = spikeData.timestamps[clusters==cluster]
+    spikeData.samples = spikeData.samples[clusters==cluster, :, :]
+    spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
+    # FIXME: This assumes the gain is the same for all channels and records
+    spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
+    return spikeData
+
+def load_behavior_basic(animal, behavSession):
+    '''
+    Load behavior using the basic BehaviorData class of loadbehavior module.
+    '''
+    behavFullPath = os.path.join(BEHAVIOR_PATH, animal, behavSession) 
+    bData = loadbehavior.BehaviorData(behavFullPath)
+    return bData
+
+def load_behavior_flexcat(animal, behavSession):
+    '''
+    Load behavior using the FlexCategBehaviorData class of loadbehavior module.
+    '''
+    behavFullPath = os.path.join(BEHAVIOR_PATH, animal, behavSession) 
+    bData = loadbehavior.FlexCategBehaviorData(behavFullPath)
+    return bData
+
+
+def plot_tuning_raster(animal, ephysSession, behavSession, tetrode, cluster, intensity=50, timeRange = [-0.5,1]):
+    '''
+    Function to plot a tuning raster sorted by frequency. 
     :param arg1: A string of the file name of the tuning curve ephys session.
     :param arg2: A string of the file name of the tuning curve behavior session.
     :param arg3: An int in range(1,9) for tetrode number.
@@ -59,12 +98,14 @@ def load_n_plot_tuning_raster(animal, ephysSession, behavSession, tetrode, clust
     :param arg6: A list of floats for the start and the end of the time period around sound-onset to plot raster.
     '''
     
-    loader = dataloader.DataLoader(animal)
-    bdata = loader.get_session_behavior(behavSession)
-    eventData = loader.get_session_events(ephysSession)
-    spikeData = loader.get_session_spikes(ephysSession, tetrode, cluster)
-    eventOnsetTimes = loader.get_event_onset_times(eventData)
+    bdata = load_behavior_basic(animal,behavSession)
+    
+    spikeData = load_spike_data(animal, ephysSession, tetrode, cluster)
     spikeTimestamps = spikeData.timestamps
+    eventData = load_event_data(animal, ephysSession)
+    eventOnsetTimes = np.array(eventData.timestamps)
+    soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
+    eventOnsetTimes = eventOnsetTimes[soundOnsetEvents]
     
     freqEachTrial = bdata['currentFreq']
     intensityEachTrial = bdata['currentIntensity']
@@ -111,11 +152,10 @@ def load_n_remove_missing_trials_2afc_behav(animal, behavSession, ephysSession, 
     :param arg4: An int in range(1,9) for cluster number.
     :return: bData object with missing trials removed in all fields
     '''
-    behavFullPath = os.path.join(BEHAVIOR_PATH, animal, behavSession) 
-    bData = loadbehavior.FlexCategBehaviorData(behavFullPath) #need extra methods
-    fullEventFilename=os.path.join(EPHYS_PATH, animal, ephysSession, 'all_channels.events')
-    eventData = loadopenephys.Events(fullEventFilename)
-    eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
+    bData = load_behavior_flexcat(animal, behavSession) #need extra methods
+    
+    eventData = load_event_data(animal,ephysSession)
+    
     eventOnsetTimes=np.array(eventData.timestamps)
     soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
     soundOnsetTimeEphys = eventOnsetTimes[soundOnsetEvents]
@@ -172,6 +212,41 @@ def get_trials_each_cond_reward_change(animal, behavSession, ephysSession, tetro
             correctTrialsEachBlock = correctTrialsEachBlock[:,:-1]
             numBlocks -= 1
         trialsEachCond = correctTrialsEachBlock
+        currentBlockLabelEachBlock = trialsEachBlock & currentBlock[:,np.newaxis]
+        colorEachCond = np.empty(numBlocks)
+        for blockNum in numBlocks:
+            currentBlockLabel = currentBlockLabelEachBlock[:,blockNum][0]
+            if freqToPlot == 'low':
+                if currentBlockLabel == bdata.labels['currentBlock']['same_reward']:
+                    colorEachCond[blockNum] = colorCondDict['sameRewardLowFreq']
+                elif currentBlockLabel == bdata.labels['currentBlock']['more_left']:
+                    colorEachCond[blockNum] = colorCondDict['leftMoreLowFreq'] 
+                elif currentBlockLabel == bdata.labels['currentBlock']['more_right']:   
+                    colorEachCond[blockNum] = colorCondDict['rightMoreLowFreq']
+            elif freqToPlot == 'high':
+                if currentBlockLabel == bdata.labels['currentBlock']['same_reward']:
+                    colorEachCond[blockNum] = colorCondDict['sameRewardHighFreq']
+                elif currentBlockLabel == bdata.labels['currentBlock']['more_left']:
+                    colorEachCond[blockNum] = colorCondDict['leftMoreHighFreq'] 
+                elif currentBlockLabel == bdata.labels['currentBlock']['more_right']:   
+                    colorEachCond[blockNum] = colorCondDict['rightMoreHighFreq']
+
+    else:
+        blockTypes = [bdata.labels['currentBlock']['same_reward'],bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']]
+        trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
+        oneFreqCorrectBlockSameReward = correctOneFreq&trialsEachType[:,0]
+        oneFreqCorrectBlockMoreLeft = correctOneFreq&trialsEachType[:,1]
+        oneFreqCorrectBlockMoreRight = correctOneFreq&trialsEachType[:,2]
+        
+        trialsEachCond = np.c_[oneFreqCorrectBlockSameReward,oneFreqCorrectBlockMoreLeft,oneFreqCorrectBlockMoreRight]
+        if freqToPlot == 'low':
+            colorEachCond = [colorCondDict['sameRewardLowFreq'],colorCondDict['leftMoreLowFreq'],colorCondDict['rightMoreLowFreq']]
+        elif freqToPlot == 'high':
+            colorEachCond = [colorCondDict['sameRewardHighfreq'],colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
+
+    return trialsEachCond, colorEachCond
+
+'''  
 
         if bdata['automationMode'][0]==bdata.labels['automationMode']['same_left_right']:
             if freqToPlot == 'low':
@@ -188,22 +263,7 @@ def get_trials_each_cond_reward_change(animal, behavSession, ephysSession, tetro
                 colorEachCond = numBlocks*[colorCondDict['leftMoreLowFreq'],colorCondDict['rightMoreLowFreq']]
             if freqToPlot == 'high':
                 colorEachCond = numBlocks*[colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
-
-    else:
-        blockTypes = [bdata.labels['currentBlock']['same_reward'],bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']]
-        trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
-        oneFreqCorrectBlockSameReward = correctOneFreq&trialsEachType[:,0]
-        oneFreqCorrectBlockMoreLeft = correctOneFreq&trialsEachType[:,1]
-        oneFreqCorrectBlockMoreRight = correctOneFreq&trialsEachType[:,2]
-        trialsEachCond = np.c_[oneFreqCorrectBlockSameReward,oneFreqCorrectBlockMoreLeft,oneFreqCorrectBlockMoreRight]
-        if freqToPlot == 'low':
-            colorEachCond = [colorCondDict['sameRewardLowFreq'],colorCondDict['leftMoreLowFreq'],colorCondDict['rightMoreLowFreq']]
-        elif freqToPlot == 'high':
-            colorEachCond = [colorCondDict['sameRewardHighfreq'],colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
-
-    return trialsEachCond, colorEachCond
-
-'''
+     
 # -- When plotting all 3 frequencies will not be plotting by block, just plot by type of block (low_boundary vs high_boundary) -- #
     elif freqToPlot == 'both':
         lowFreq = possibleFreq[0]
@@ -254,24 +314,9 @@ def get_intermediate_data_for_raster_psth(animal, behavSession, ephysSession, te
     bdata = load_n_remove_missing_trials_2afc_behav(animal, behavSession, ephysSession, tetrode, cluster)
     
     ### Get events data ###
-    fullEventFilename=os.path.join(EPHYS_PATH, animal, ephysSession, 'all_channels.events')
-    eventData = loadopenephys.Events(fullEventFilename)
-    ##### Get event onset times #####
-    eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
-
-    ### GEt spike data of just this cluster ###
-    spikeFilename = os.path.join(EPHYS_PATH,animal,ephysSession, 'Tetrode{}.spikes'.format(tetrode))
-    spikeData = loadopenephys.DataSpikes(spikeFilename)
-    spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
-    clustersDir = os.path.join(EPHYS_PATH,animal,ephysSession)+'_kk'
-    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(tetrode))
-    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
-    spikeData.timestamps = spikeData.timestamps[clusters==cluster]
-    spikeData.samples = spikeData.samples[clusters==cluster, :, :]
-    spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
-    # FIXME: This assumes the gain is the same for all channels and records
-    spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
-    #spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
+    eventData = load_event_data(animal, ephysSession)
+    
+    spikeData = load_spike_data(animal, ephysSession, tetrode, cluster)
     spikeTimestamps = spikeData.timestamps
 
     eventOnsetTimes = np.array(eventData.timestamps)
@@ -346,11 +391,7 @@ def plot_reward_change_psth(animal, behavSession, ephysSession, tetrode, cluster
     smoothWinSize = smoothWinSize
     #plt.subplot2grid((3,1), (2, 0))
     extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSize,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=3,downsamplefactor=1)
-    '''
-    for ind,line in enumerate(pPSTH):
-        plt.setp(line, label=condLabels[ind])
-    plt.legend(loc='upper right', fontsize=8, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
-    '''
+    # -- Add legend -- #
     low_leftmore_patch = mpatches.Patch(color=colorDictRC['leftMoreLowFreq'], label='low leftmore')
     low_rightmore_patch = mpatches.Patch(color=colorDictRC['rightMoreLowFreq'], label='low rightmore')
     high_leftmore_patch = mpatches.Patch(color=colorDictRC['leftMoreHighFreq'], label='high leftmore')
