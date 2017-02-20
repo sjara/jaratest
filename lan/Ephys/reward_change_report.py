@@ -55,44 +55,56 @@ for tetrode in site.tetrodes:
     numClusters = np.unique(clusterList)
     for cluster in numClusters:
         plt.figure(figsize=(18,12))
-        gs = gridspec.GridSpec(2,3)
+        gs = gridspec.GridSpec(3,3)
         gs.update(left=0.1, right=0.9, wspace=0.3, hspace=0.3)
         gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.1)
         gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,1], hspace=0.1)
         gs02 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,2], hspace=0.1)
         gs03 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,2], hspace=0.1)
         gs04 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,0], hspace=0.1)
-        #Tuning raster
+        # Tuning raster
         ax1 = plt.subplot(gs[0, 0])
         rcfuncs.plot_tuning_raster(animal, tuningEphysThisSite, tuningBehavThisSite, tetrode, cluster, intensity=50, timeRange = [-0.5,1])
         
-        #Sound-aligned low freq
+        # Sound-aligned low freq
         ax2 = plt.subplot(gs00[0:2, :])
         rcfuncs.plot_reward_change_raster(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='low', byBlock=True, alignment='sound', timeRange=[-0.3,0.4])
         ax3 = plt.subplot(gs00[2, :])
         rcfuncs.plot_reward_change_psth(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='low', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
-        #Cout-aligned low freq
+        # Cout-aligned low freq
         ax4 = plt.subplot(gs01[0:2, :])
         rcfuncs.plot_reward_change_raster(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='low', byBlock=True, alignment='center-out', timeRange=[-0.3,0.5])
         ax5 = plt.subplot(gs01[2, :])
         rcfuncs.plot_reward_change_psth(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='low', byBlock=True, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010)
         
-        #Sound-aligned high freq
+        # Sound-aligned high freq
         ax6 = plt.subplot(gs02[0:2, :])
         rcfuncs.plot_reward_change_raster(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='high', byBlock=True, alignment='sound', timeRange=[-0.3,0.4])
         ax7 = plt.subplot(gs02[2, :])
         rcfuncs.plot_reward_change_psth(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='high', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
-        #Cout-aligned high freq
+        # Cout-aligned high freq
         ax8 = plt.subplot(gs03[0:2, :])
         rcfuncs.plot_reward_change_raster(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='high', byBlock=True, alignment='center-out', timeRange=[-0.3,0.5])
         ax9 = plt.subplot(gs03[2, :])
         rcfuncs.plot_reward_change_psth(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, freqToPlot='high', byBlock=True, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010)
-
+        
+        # Plot movement-related response, includes all valid trials (correct&incorrect)
         ax10 = plt.subplot(gs04[0:2, :])
         rcfuncs.plot_movement_response_raster(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5])
         ax11 = plt.subplot(gs04[2, :])
         rcfuncs.plot_movement_response_psth(animal, rcBehavThisSite, rcEphysThisSite, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010)
-
+        
+        # Plot spike quality summary graphs
+        ax12 = plt.subplot(gs[2, 0])
+        rcfuncs.plot_waveform_each_cluster(animal, rcEphysThisSite, tetrode, cluster)
+        
+        ax13 = plt.subplot(gs[2, 1])
+        rcfuncs.plot_projections_each_cluster(animal, rcEphysThisSite, tetrode, cluster)
+        
+        ax14 = plt.subplot(gs[2, 2])
+        rcfuncs.plot_events_in_time_each_cluster(animal, rcEphysThisSite, tetrode, cluster)
+        
+        # Save figure
         figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
         figFullPath = os.path.join(outputDir, figname)
         plt.savefig(figFullPath)
