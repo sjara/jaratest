@@ -533,4 +533,23 @@ def plot_movement_response_psth(animal, behavSession, ephysSession, tetrode, clu
     plt.ylabel('Firing rate (spk/sec)')
     plt.xlim(timeRange[0]+0.1,timeRange[-1])
 
+def plot_noisebursts_response_raster(animal, ephysSession, tetrode, cluster, alignment='sound', timeRange=[-0.1, 0.3]):
+    '''
+    Function to plot noisebursts along with waveforms for each cluster to distinguish cell responses and noise.
+    '''
+    eventData = load_event_data(animal, ephysSession)
+    
+    spikeData = load_spike_data(animal, ephysSession, tetrode, cluster)
+    spikeTimestamps = spikeData.timestamps
 
+    eventOnsetTimes = np.array(eventData.timestamps)
+    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+        spikeTimestamps, eventOnsetTimes, timeRange)
+    # -- Plot raster -- #
+    plt.subplot(1,1,2)
+    extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange,trialsEachCond=[],fillWidth=None,labels=None)
+    plt.ylabel('Trials')
+    plt.subplot(1,2,2)
+    wavesThisCluster = spikeData.samples
+    spikesorting.plot_waveforms(wavesThisCluster)
+    plt.title('{0} T{1}C{2} noisebursts'.format(behavSession,tetrode,cluster,alignment),fontsize=10)
