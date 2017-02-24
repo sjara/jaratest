@@ -100,7 +100,7 @@ def plot_waveform_each_cluster(animal, ephysSession, tetrode, cluster):
     spikesorting.plot_waveforms(wavesThisCluster)
 
 
-def plot_projections_each_cluste(animal, ephysSession, tetrode, cluster):
+def plot_projections_each_cluster(animal, ephysSession, tetrode, cluster):
     '''Function to plot the projection cloud of a given cluster.
     :param arg1: String containing animal name.
     :param arg2: A string of the name of the ephys session, this is the full filename, in {date}_XX-XX-XX format. 
@@ -112,7 +112,7 @@ def plot_projections_each_cluste(animal, ephysSession, tetrode, cluster):
     spikesorting.plot_projections(wavesThisCluster)
 
 
-def plot_events_in_time_each_cluste(animal, ephysSession, tetrode, cluster):
+def plot_events_in_time_each_cluster(animal, ephysSession, tetrode, cluster):
     '''Function to plot the average firing rate over time for a cluster in a recording session.
     :param arg1: String containing animal name.
     :param arg2: A string of the name of the ephys session, this is the full filename, in {date}_XX-XX-XX format. 
