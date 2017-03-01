@@ -24,6 +24,7 @@ CALCULATE_HEAD_ANGLE = 0
 SAVE_ALL_TOGETHER = 1
 
 allSessions = []
+# All sessions were using continuous laser pulse at 1mW
 oneSession = {'subject':'d1pi011', 'session':'20160609--4', 'stimThreshold':40, 'stimSide':'left,right',
               'stimRegion':'frontStr', 'stimCoords':[ [[275, 50], [290, 60]], [[530, 50], [545, 60]] ]}
 allSessions.append(oneSession)
@@ -49,10 +50,10 @@ allSessions.append(oneSession)
 
 oneSession = {'subject':'d1pi014', 'session':'20161021--2', 'stimThreshold':30, 'stimSide':'left',
               'stimRegion':'backStr', 'stimCoords':[ [[260, 50], [280, 60]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi014', 'session':'20161021--3', 'stimThreshold':30, 'stimSide':'right',
               'stimRegion':'backStr', 'stimCoords':[ [[520, 80], [545, 95]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi014', 'session':'20161021--4', 'stimThreshold':30, 'stimSide':'left',
               'stimRegion':'backStr', 'stimCoords':[ [[275, 85], [290, 95]] ]}
 allSessions.append(oneSession)
@@ -61,14 +62,15 @@ oneSession = {'subject':'d1pi014', 'session':'20161021--5', 'stimThreshold':30, 
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi014', 'session':'20161109--2', 'stimThreshold':40, 'stimSide':'left',
               'stimRegion':'backStr', 'stimCoords':[ [[278, 50], [302, 66]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi014', 'session':'20161109--3', 'stimThreshold':40, 'stimSide':'right',
               'stimRegion':'backStr', 'stimCoords':[ [[539, 50], [560, 62]] ]}
-allSessions.append(oneSession)
-oneSession = {'subject':'d1pi014', 'session':'20161109--2', 'stimThreshold':40, 'stimSide':'left',
+#allSessions.append(oneSession) # 0.5mW
+#### Repeated sessions 20161109--2 & 20161109--3 here before ####
+oneSession = {'subject':'d1pi014', 'session':'20161109--4', 'stimThreshold':40, 'stimSide':'left',
               'stimRegion':'backStr', 'stimCoords':[ [[278, 50], [302, 66]] ]}
 allSessions.append(oneSession)
-oneSession = {'subject':'d1pi014', 'session':'20161109--3', 'stimThreshold':40, 'stimSide':'right',
+oneSession = {'subject':'d1pi014', 'session':'20161109--5', 'stimThreshold':40, 'stimSide':'right',
               'stimRegion':'backStr', 'stimCoords':[ [[539, 50], [560, 62]] ]}
 allSessions.append(oneSession)
 
@@ -92,14 +94,14 @@ oneSession = {'subject':'d1pi022', 'session':'20170214--6', 'stimThreshold':20, 
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170214--5', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[277, 50], [294, 60]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 
 oneSession = {'subject':'d1pi022', 'session':'20170213--1', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[532, 29], [551, 36]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170213--2', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[266, 26], [285, 39]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170213--3', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[266, 26], [285, 39]] ]}
 allSessions.append(oneSession)
@@ -108,28 +110,28 @@ oneSession = {'subject':'d1pi022', 'session':'20170213--4', 'stimThreshold':20, 
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170214--1', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[547, 52], [561, 59]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170214--2', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[547, 52], [561, 59]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170214--3', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[547, 52], [561, 59]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170214--4', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[277, 48], [294, 59]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170214--5', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[277, 48], [294, 59]] ]}
-allSessions.append(oneSession)
-oneSession = {'subject':'d1pi022', 'session':'20170214--5', 'stimThreshold':20, 'stimSide':'left',
+#allSessions.append(oneSession) # 0.5mW
+oneSession = {'subject':'d1pi022', 'session':'20170214--6', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[277, 48], [294, 59]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170216--1', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[532, 43], [543, 51]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170216--2', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[532, 43], [543, 51]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170216--3', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[532, 43], [543, 51]] ]}
 allSessions.append(oneSession)
@@ -138,16 +140,18 @@ oneSession = {'subject':'d1pi022', 'session':'20170216--4', 'stimThreshold':20, 
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170216--5', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170216--6', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
-allSessions.append(oneSession)
+#allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170216--7', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170216--8', 'stimThreshold':20, 'stimSide':'left',
               'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
 allSessions.append(oneSession)
+
+
 
 '''
 allSessions = [oneSession]
