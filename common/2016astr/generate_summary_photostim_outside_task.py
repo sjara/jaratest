@@ -151,6 +151,12 @@ oneSession = {'subject':'d1pi022', 'session':'20170216--8', 'stimThreshold':20, 
               'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
 allSessions.append(oneSession)
 
+# ADD SESSIONS: There are more sessions for d1pi022
+
+
+oneSession = {'subject':'d1pi023', 'session':'201702', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession)
 
 
 '''
