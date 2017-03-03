@@ -196,6 +196,56 @@ oneSession = {'subject':'d1pi023', 'session':'20170226--8', 'stimThreshold':20, 
               'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 allSessions.append(oneSession)
 
+oneSession = {'subject':'d1pi023', 'session':'20170301--1', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+#allSessions.append(oneSession) # 0.5mW
+oneSession = {'subject':'d1pi023', 'session':'20170301--2', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession) 
+oneSession = {'subject':'d1pi023', 'session':'20170301--3', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession)
+
+oneSession = {'subject':'d1pi023', 'session':'20170301--4', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+#allSessions.append(oneSession) # 0.5mW
+oneSession = {'subject':'d1pi023', 'session':'20170301--5', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession) 
+oneSession = {'subject':'d1pi023', 'session':'20170301--6', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession)
+
+
+oneSession = {'subject':'d1pi023', 'session':'20170303--1', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+#allSessions.append(oneSession) # 0.5mW
+oneSession = {'subject':'d1pi023', 'session':'20170303--2', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession) 
+oneSession = {'subject':'d1pi023', 'session':'20170303--3', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession)
+
+oneSession = {'subject':'d1pi023', 'session':'20170303--4', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+#allSessions.append(oneSession) # 0.5mW
+oneSession = {'subject':'d1pi023', 'session':'20170303--5', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession) 
+oneSession = {'subject':'d1pi023', 'session':'20170303--6', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+allSessions.append(oneSession)
+
+oneSession = {'subject':'d1pi023', 'session':'20170303--7', 'stimThreshold':20, 'stimSide':'left',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+#allSessions.append(oneSession) # 0.5mW
+
+oneSession = {'subject':'d1pi023', 'session':'20170303--8', 'stimThreshold':20, 'stimSide':'right',
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+#allSessions.append(oneSession) # 0.5mW
+
+
 
 '''
 allSessions = [oneSession]
