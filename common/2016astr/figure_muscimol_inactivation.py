@@ -209,7 +209,7 @@ import numpy as np
 from scipy import stats
 
 ##SATS
-dataFn = '/home/nick/data/jarahubdata/figuresdata/2016astr/muscimol_inactivation/muscimol_frac_correct_summary.npz'
+dataFn = os.path.join(dataDir, 'muscimol_frac_correct_summary.npz')
 
 dataObj = np.load(dataFn)
 
@@ -219,9 +219,14 @@ conditions = dataObj['conditions']
 
 #data(subject, session, condition)
 
+print "\n\nWilcoxon rank-sum test of fraction correct for 4 saline sessions versus 4 muscimol sessions, each mouse."
+
 for indSubject in range(5):
     subDataSal = data[indSubject, :, 0]
     subDataMus = data[indSubject, :, 1]
 
-    print indSubject
+    print '\nMouse {}'.format(indSubject)
+    print 'Saline frac correct: {}'.format(subDataSal)
+    print 'Muscimol frac correct: {}'.format(subDataMus)
     print stats.ranksums(subDataSal, subDataMus)
+
