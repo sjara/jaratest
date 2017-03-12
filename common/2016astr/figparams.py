@@ -24,6 +24,10 @@ colp['MidFreqL'] = cp.TangoPalette['ScarletRed1']
 
 colp['muscimol'] = cp.TangoPalette['Orange2']
 
+colp['stimLeft'] = cp.TangoPalette['ScarletRed1']
+colp['stimRight'] = cp.TangoPalette['Chameleon3']
+
+
 #7570B3 - blupurp
 #E7298A  - pink
 #D95F02  - orange

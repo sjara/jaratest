@@ -136,6 +136,7 @@ if PANELS[1]:
     #subjectsBackStr = np.unique(np.array(subject)[stimRegion=='backStr'])
     meanEachCondEachSubject = [[],[],[],[]]
     plt.hold(1)
+    plt.axhline(0,color='0.5',ls='--')
     for indc, sessionsThisCond in enumerate(eachCond):
         subjectsThisCond = np.unique(np.array(subject)[sessionsThisCond])
         colorThisCond = colorEachCond[indc]
@@ -144,23 +145,24 @@ if PANELS[1]:
             sessionsThisSubject = sessionsThisCond & (subject==oneSubject)
             samples = (180/np.pi) * np.concatenate(deltaHeadAngle[sessionsThisSubject])# From radians to degrees
             samples = samples[:maxSamplesToInclude]
-            #xvals = np.tile(xPos[indc]+0.1*indSubject,len(samples))
-            #plt.plot(xvals,samples,'o',marker=markerEachSubject[indSubject],mfc='none',color='k')
+            xvals = np.tile(xPos[indc]+0.1*indSubject-0.2,len(samples))
+            plt.plot(xvals,samples,'o',marker=markerEachSubject[indSubject],mfc='none',mec='0.75', zorder=-1,clip_on=False)
             meanVal = np.mean(samples)
             seVal = np.std(samples)/np.sqrt(len(samples))
             meanEachCondEachSubject[indc].append(meanVal)
-            [pline,pcap,pbar] = plt.errorbar(xPos[indc]+0.1*indSubject-0.2, meanVal, seVal, color=colorThisCond)
+            #[pline,pcap,pbar] = plt.errorbar(xPos[indc]+0.1*indSubject-0.2, meanVal, seVal, color=colorThisCond)
             pmark = plt.plot(xPos[indc]+0.1*indSubject-0.2, meanVal,markerThisCond,mfc=colorThisCond,mec='None')
-    plt.axhline(0,color='0.5',ls='--')
     extraplots.boxoff(ax3)
     plt.ylabel('Change in angle (deg)')
     ax3.set_yticks(np.arange(-200,300,100))
-    plt.ylim([-200,200])
+    #plt.ylim([-200,200])
+    plt.ylim(300*np.array([-1,1]))
     plt.xlim([-0.7,4.5])
     ax3.axes.get_xaxis().set_visible(False)
     ax3.spines['bottom'].set_visible(False)
-    extraplots.significance_stars([xPos[0],xPos[1]], 220, 20, starSize=8, gapFactor=0.2)
-    extraplots.significance_stars([xPos[2],xPos[3]], 220, 20, starSize=8, gapFactor=0.2)
+    signifYpos = 300 #220
+    extraplots.significance_stars([xPos[0],xPos[1]], signifYpos, 20, starSize=8, gapFactor=0.2)
+    extraplots.significance_stars([xPos[2],xPos[3]], signifYpos, 20, starSize=8, gapFactor=0.2)
     plt.text(np.mean(xPos[0:2]), -250, 'Left', ha='center', fontsize=fontSizeLabels+2)
     plt.text(np.mean(xPos[2:4]), -250, 'Right', ha='center', fontsize=fontSizeLabels+2)
     plt.show()

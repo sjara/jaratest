@@ -127,7 +127,7 @@ if 0 in panelsToPlot:
 
         pdots = ax1.plot(logPossibleValues,
                          100*fractionHitsEachValue,
-                         'o', mec='None', mfc=color,
+                         'o', ms=6, mec='None', mfc=color,
                          clip_on=False)
 
         plt.setp(pcaps, color=color)
@@ -139,7 +139,7 @@ if 0 in panelsToPlot:
         #ax1.set_xticklabels(freqLabels)
         #ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
 
-        pp, = ax1.plot(fitxval, 100*fityvals, color=color, lw = 2, clip_on=False)
+        pp, = ax1.plot(fitxval, 100*fityvals, color=color, lw=2, clip_on=False)
         plotHandles.append(pp)
 
     ax1.annotate('B', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
