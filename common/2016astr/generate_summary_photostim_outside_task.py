@@ -17,9 +17,9 @@ outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNA
 scriptFullPath = os.path.realpath(__file__)
 
 # -- Select which processing stages to perform --
-DEFINE_STIM_COORDS = 0
+DEFINE_STIM_COORDS = 0 
 DETECT_STIMULUS = 0
-TRACK_COLORS = 0
+TRACK_COLORS = DETECT_STIMULUS
 CALCULATE_HEAD_ANGLE = 0
 SAVE_ALL_TOGETHER = 1
 
@@ -145,76 +145,78 @@ oneSession = {'subject':'d1pi022', 'session':'20170216--8', 'stimThreshold':20, 
               'stimRegion':'frontStr', 'stimCoords':[ [[264, 44], [279, 52]] ]}
 allSessions.append(oneSession)
 
+'''
 oneSession = {'subject':'d1pi022', 'session':'20170226--1', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[,], [,]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170226--2', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[,], [,]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170226--3', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[,], [,]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170226--4', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[,], [,]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170226--5', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[,], [,]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170226--6', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[,], [,]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi022', 'session':'20170226--7', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[,], [,]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi022', 'session':'20170226--8', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[,], [,]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 allSessions.append(oneSession)
-
+'''
 
 oneSession = {'subject':'d1pi023', 'session':'20170226--1', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[250,58], [265,66]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi023', 'session':'20170226--2', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[250,58], [265,66]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi023', 'session':'20170226--3', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[250,58], [265,66]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi023', 'session':'20170226--4', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[250,58], [265,66]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi023', 'session':'20170226--5', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[519,56], [533,61]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi023', 'session':'20170226--6', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[519,56], [533,61]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi023', 'session':'20170226--7', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[519,56], [533,61]] ]}
 allSessions.append(oneSession)
 oneSession = {'subject':'d1pi023', 'session':'20170226--8', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[519,56], [533,61]] ]}
 allSessions.append(oneSession)
 
 oneSession = {'subject':'d1pi023', 'session':'20170301--1', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[271,53], [284,59]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi023', 'session':'20170301--2', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[271,53], [284,59]] ]}
 allSessions.append(oneSession) 
 oneSession = {'subject':'d1pi023', 'session':'20170301--3', 'stimThreshold':20, 'stimSide':'left',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[271,53], [284,59]] ]}
 allSessions.append(oneSession)
 
 oneSession = {'subject':'d1pi023', 'session':'20170301--4', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[541,52], [554,57]] ]}
 #allSessions.append(oneSession) # 0.5mW
 oneSession = {'subject':'d1pi023', 'session':'20170301--5', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[541,52], [554,57]] ]}
 allSessions.append(oneSession) 
 oneSession = {'subject':'d1pi023', 'session':'20170301--6', 'stimThreshold':20, 'stimSide':'right',
-              'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
+              'stimRegion':'frontStr', 'stimCoords':[ [[541,52], [554,57]] ]}
 allSessions.append(oneSession)
+'''
 
 
 oneSession = {'subject':'d1pi023', 'session':'20170303--1', 'stimThreshold':20, 'stimSide':'left',
@@ -244,10 +246,14 @@ oneSession = {'subject':'d1pi023', 'session':'20170303--7', 'stimThreshold':20, 
 oneSession = {'subject':'d1pi023', 'session':'20170303--8', 'stimThreshold':20, 'stimSide':'right',
               'stimRegion':'frontStr', 'stimCoords':[ [[0,0], [0,0]] ]}
 #allSessions.append(oneSession) # 0.5mW
-
+'''
 
 
 '''
+oneSession = {'subject':'d1pi014', 'session':'20161109--4', 'stimThreshold':40, 'stimSide':'left',
+              'stimRegion':'backStr', 'stimCoords':[ [[278, 50], [302, 66]] ]}
+oneSession = {'subject':'d1pi014', 'session':'20161109--5', 'stimThreshold':40, 'stimSide':'right',
+              'stimRegion':'backStr', 'stimCoords':[ [[539, 50], [560, 62]] ]}
 allSessions = [oneSession]
 '''
 
@@ -274,8 +280,8 @@ oneSession = {'subject':'d1pi013', 'session':'20160511--10', 'stimThreshold':40,
 
 
 if not SAVE_ALL_TOGETHER:
-    for indSession,oneSession in enumerate(allSessions): #allSessions: #[allSessions[16]]:
-        #for indSession,oneSession in enumerate(allSessions[16:17]):
+    #for indSession,oneSession in enumerate(allSessions): #allSessions: #[allSessions[16]]:
+    for indSession,oneSession in enumerate([allSessions[-1]]):
         subject = oneSession['subject']
         session = oneSession['session']
         stimCoords = oneSession['stimCoords']

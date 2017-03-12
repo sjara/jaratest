@@ -19,7 +19,7 @@ import matplotlib.gridspec as gridspec
 
 import matplotlib
 matplotlib.rcParams['font.family'] = 'Helvetica'
-matplotlib.rcParams['svg.fonttype'] = 'none'  # To
+matplotlib.rcParams['svg.fonttype'] = 'none'
 
 
 SAVE_FIGURE = 1
