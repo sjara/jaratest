@@ -15,10 +15,10 @@ FIGNAME = 'muscimol_inactivation'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
 SAVE_FIGURE = 1
-outputDir = '/home/languo/tmp/'
+outputDir = '/tmp/'
 figFilename = 'plots_muscimol_inactivation' # Do not include extension
-figFormat = 'png' # 'pdf' or 'svg'
-figSize = [8, 6]
+figFormat = 'pdf' # 'pdf' or 'svg'
+figSize = [7, 5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -30,6 +30,8 @@ labelPosY = [1]    # Vert position for panel labels
 fontSizeLabels = 12
 fontSizeTicks = 12
 fontSizePanel = 16
+
+muscimolColor = figparams.colp['muscimol']
 
 animalNumbers = {'adap021':'Mouse 1',
                  'adap023':'Mouse 2',
@@ -96,7 +98,7 @@ if 0 in panelsToPlot:
     salData = np.load(salFullPath)
 
     dataToPlot = [musData, salData]
-    curveColors = ['r', 'k']
+    curveColors = [muscimolColor, 'k']
 
     for indCond, condData in enumerate(dataToPlot):
 
@@ -118,41 +120,47 @@ if 0 in panelsToPlot:
         lowerWhisker = fractionHitsEachValue-ciHitsEachValue[0,:]
 
         (pline, pcaps, pbars) = ax1.errorbar(logPossibleValues,
-                                             fractionHitsEachValue,
-                                             yerr = [lowerWhisker, upperWhisker],
+                                             100*fractionHitsEachValue,
+                                             yerr = [100*lowerWhisker, 100*upperWhisker],
                                              color=color, fmt=None, clip_on=False)
 
         pdots = ax1.plot(logPossibleValues,
-                         fractionHitsEachValue,
-                         'o',mec=color,mfc='none',
+                         100*fractionHitsEachValue,
+                         'o', mec='None', mfc=color,
                          clip_on=False)
 
         plt.setp(pcaps, color=color)
         plt.setp(pbars, color=color)
         # plt.setp(pdots, mar=color)
 
-        ax1.set_xticks(logPossibleValues)
-        freqLabels = ['{:.03}'.format(x) for x in possibleValues/1000.0]
-        ax1.set_xticklabels(freqLabels)
-        ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
+        #ax1.set_xticks(logPossibleValues)
+        #freqLabels = ['{:.03}'.format(x) for x in possibleValues/1000.0]
+        #ax1.set_xticklabels(freqLabels)
+        #ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
 
-        ax1.plot(fitxval, fityvals, color=color, clip_on=False)
-        ax1.set_ylim([0, 1])
-        ax1.set_ylabel('Fraction\nrightward trials', fontsize=fontSizeLabels)
-        extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-
-        ax1.set_yticks([0, 0.5, 1])
+        ax1.plot(fitxval, 100*fityvals, color=color, lw = 2, clip_on=False)
 
     ax1.annotate('B', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
                  fontsize=fontSizePanel, fontweight='bold')
 
     extraplots.boxoff(ax1)
 
-    xticks = ax1.get_xticks()
-    newXtickLabels = np.logspace(xticks[0], xticks[-1], 3, base=2)
+    #xticks = ax1.get_xticks()
+    #newXtickLabels = np.logspace(xticks[0], xticks[-1], 3, base=2)
+    #ax1.set_xticks(np.log2(np.array(newXtickLabels)))
+    #ax1.set_xticklabels(['{:.3}'.format(x/1000.0) for x in newXtickLabels])
 
-    ax1.set_xticks(np.log2(np.array(newXtickLabels)))
-    ax1.set_xticklabels(['{:.3}'.format(x/1000.0) for x in newXtickLabels])
+    xTicks = np.array([6,11,19])
+    ax1.set_xticks(np.log2(xTicks*1000))
+    freqLabels = ['{:d}'.format(x) for x in xTicks]
+    ax1.set_xticklabels(freqLabels)
+    ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
+    ax1.set_xlim([fitxval[0],fitxval[-1]])
+    
+    ax1.set_ylim([0, 100])
+    ax1.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    ax1.set_yticks([0, 50, 100])
 
 # #Panel: Summary bar plots for each animal
 if 1 in panelsToPlot:
@@ -169,10 +177,10 @@ if 1 in panelsToPlot:
     #dataMat(subject, session, condition)
     ind = np.arange(len(subjects))
     width = 0.35
-    condColors = ['k', 'r']
+    condColors = ['k', muscimolColor]
 
-    shiftAmt = width*0.05
-    # shiftAmt = 0
+    #shiftAmt = width*0.05
+    shiftAmt = 0
 
     #FIXME: Hardcoded number of points per animal here
     pointShift = np.array([-shiftAmt, shiftAmt, -shiftAmt, shiftAmt])
@@ -181,25 +189,31 @@ if 1 in panelsToPlot:
         for indCond, condition in enumerate(conditions):
             sessionsThisCondThisSubject = dataMat[indSubject, :, indCond]
             ax2.plot(np.zeros(len(sessionsThisCondThisSubject)) + (indSubject + 0.5*width + indCond*width) + pointShift,
-                    sessionsThisCondThisSubject, marker='o', linestyle='none', mec=condColors[indCond], mfc='none')
+                     100*sessionsThisCondThisSubject, marker='o', linestyle='none', mec=condColors[indCond], mfc='none',
+                     clip_on=False)
             ax2.hold(1)
 
-    rects1 = ax2.bar(ind, dataMat[:, :, 0].mean(1)-0.5, width, bottom=0.5, edgecolor='k', facecolor='w')
-    rects2 = ax2.bar(ind+width+0.015, dataMat[:, :, 1].mean(1)-0.5, width, bottom=0.5, edgecolor='r', facecolor='w')
+    rects1 = ax2.bar(ind, 100*(dataMat[:, :, 0].mean(1)-0.5), width, bottom=50, edgecolor='k', facecolor='w', lw=2)
+    rects2 = ax2.bar(ind+width, 100*(dataMat[:, :, 1].mean(1)-0.5), width, bottom=50, edgecolor=muscimolColor, facecolor='w', lw=2)
 
     ax2.set_xticks(ind + width)
     ax2.set_xticklabels(np.arange(6)+1, fontsize=fontSizeLabels)
     ax2.set_xlabel('Mouse', fontsize=fontSizeLabels)
-    ax2.axhline(y=0.5, color='0.5', linestyle='-')
-    ax2.set_ylim([0.45, 1])
-    ax2.set_xlim([ind[0]-0.5*width, ind[-1]+2.5*width ])
-    ax2.set_ylabel('Fraction correct', fontsize=fontSizeLabels)
-    ax2.set_yticks([0.5, 1])
+    ax2.axhline(y=50, color='k', linestyle='-')
+    ax2.set_ylim([48, 100])
+    ax2.set_xlim([ind[0]-0.75*width, ind[-1]+2.5*width ])
+    ax2.set_ylabel('Correct trials (%)', fontsize=fontSizeLabels)
+    ax2.set_yticks([50, 75, 100])
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(ax2)
     ax2.annotate('C', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction', fontsize=fontSizePanel, fontweight='bold')
 
+    #ax2.axes.get_xaxis().set_visible(False)
+    ax2.spines['bottom'].set_visible(False)
+    [t.set_visible(False) for t in ax2.get_xticklines()]
+
+    
 plt.show()
 
 if SAVE_FIGURE:

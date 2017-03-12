@@ -19,6 +19,8 @@ colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
 colp['MidFreqR'] = cp.TangoPalette['Chameleon3']
 colp['MidFreqL'] = cp.TangoPalette['ScarletRed1']
 
+colp['muscimol'] = cp.TangoPalette['Orange2']
+
 
 '''
 # To avoid converting text to paths
