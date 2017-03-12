@@ -66,7 +66,7 @@ for inds,subject in enumerate(animalList):
 
     
     #if inds==0:
-    plt.title('[{0}] Delay-to-go = {1:0.2}s'.format(animalList[inds],delayToGoSignal))
+    plt.title('[{0}] Delay-to-go = {1:0.2}s'.format(animalList[inds],float(delayToGoSignal)))
     plt.draw()
     plt.show()
 
