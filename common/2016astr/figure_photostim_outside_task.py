@@ -40,8 +40,8 @@ labelPosY = [0.9, 0.48]    # Vert position for panel labels
 STIM_DURATION = 1.5 # HARDCODED (in seconds)
 
 laserColor = figparams.colp['blueLaser']
-backStrColor = figparams.cp.TangoPalette['Chameleon3']
-frontStrColor = figparams.cp.TangoPalette['ScarletRed1']
+backStrColor = figparams.colp['backStrColor']
+frontStrColor = figparams.colp['frontStrColor']
 
 fig = plt.gcf()
 fig.clf()

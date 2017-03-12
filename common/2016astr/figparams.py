@@ -16,11 +16,18 @@ fontSizePanel = 16
 
 colp = {}
 colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
+colp['frontStrColor'] = cp.TangoPalette['Chameleon3']
+colp['backStrColor'] = cp.TangoPalette['Plum2']
+
 colp['MidFreqR'] = cp.TangoPalette['Chameleon3']
 colp['MidFreqL'] = cp.TangoPalette['ScarletRed1']
 
 colp['muscimol'] = cp.TangoPalette['Orange2']
 
+#7570B3 - blupurp
+#E7298A  - pink
+#D95F02  - orange
+#BCBD22  - olive
 
 '''
 # To avoid converting text to paths

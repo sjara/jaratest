@@ -17,16 +17,11 @@ import scipy.stats as stats
 FIGNAME = 'photostim_2afc'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
-matplotlib.rcParams['font.family'] = 'Helvetica'
-matplotlib.rcParams['svg.fonttype'] = 'none'  # To
-
-#dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-
 SAVE_FIGURE = 1
-outputDir = '/home/languo/tmp/'
+outputDir = '/tmp/'
 figFilename = 'plots_photostim_2afc' # Do not include extension
-figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [8,6]
+figFormat = 'pdf' # 'pdf' or 'svg'
+figSize = [7,5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
