@@ -163,8 +163,8 @@ if PANELS[1]:
     signifYpos = 300 #220
     extraplots.significance_stars([xPos[0],xPos[1]], signifYpos, 20, starSize=8, gapFactor=0.2)
     extraplots.significance_stars([xPos[2],xPos[3]], signifYpos, 20, starSize=8, gapFactor=0.2)
-    plt.text(np.mean(xPos[0:2]), -250, 'Left', ha='center', fontsize=fontSizeLabels+2)
-    plt.text(np.mean(xPos[2:4]), -250, 'Right', ha='center', fontsize=fontSizeLabels+2)
+    plt.text(np.mean(xPos[0:2]), -signifYpos, 'Left', ha='center', fontsize=fontSizeLabels+2)
+    plt.text(np.mean(xPos[2:4]), -signifYpos, 'Right', ha='center', fontsize=fontSizeLabels+2)
     plt.show()
 
     
