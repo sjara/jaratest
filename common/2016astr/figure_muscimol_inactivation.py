@@ -99,7 +99,8 @@ if 0 in panelsToPlot:
 
     dataToPlot = [musData, salData]
     curveColors = [muscimolColor, 'k']
-
+    plotHandles = []
+    
     for indCond, condData in enumerate(dataToPlot):
 
         plt.hold(1)
@@ -138,7 +139,8 @@ if 0 in panelsToPlot:
         #ax1.set_xticklabels(freqLabels)
         #ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
 
-        ax1.plot(fitxval, 100*fityvals, color=color, lw = 2, clip_on=False)
+        pp, = ax1.plot(fitxval, 100*fityvals, color=color, lw = 2, clip_on=False)
+        plotHandles.append(pp)
 
     ax1.annotate('B', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
                  fontsize=fontSizePanel, fontweight='bold')
@@ -161,6 +163,10 @@ if 0 in panelsToPlot:
     ax1.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     ax1.set_yticks([0, 50, 100])
+
+    leg = ax1.legend([plotHandles[1],plotHandles[0]], ['Saline','Muscimol'], loc='upper left', frameon=False,
+                     labelspacing=0.1, handlelength=1.5, handletextpad=0.2, borderaxespad=0.1, fontsize=12)
+    
 
 # #Panel: Summary bar plots for each animal
 if 1 in panelsToPlot:
