@@ -127,7 +127,7 @@ if PANELS[0]:
 # -- Panel C: another representative photostim psycurves -- #
 ax4 = plt.subplot(gs[1,2:])
 if PANELS[1]:
-    rightExampleFilename = 'example_photostim_psycurve_d1pi015_20160817a.npz'
+    rightExampleFilename = 'example_photostim_psycurve_d1pi015_20160901a.npz'
     rightExampleFullPath = os.path.join(dataDir,rightExampleFilename)
     rightExample = np.load(rightExampleFullPath)
 
