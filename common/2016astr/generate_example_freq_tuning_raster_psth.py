@@ -55,6 +55,10 @@ cellParamsList = [{'firstParam':'test053',
                   {'firstParam':'test055',
                    'behavSession':'20150307a',
                    'tetrode':4,
+                   'cluster':3},
+                  {'firstParam':'adap017',
+                   'behavSession':'20160317a',
+                   'tetrode':5,
                    'cluster':3}]
 
 for cellParams in cellParamsList:
@@ -98,9 +102,9 @@ for cellParams in cellParamsList:
     np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes, possibleFreq=possibleFreq, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, timeRange=timeRange,trialsEachFreq=trialsEachFreq, script=scriptFullPath, **cellParams)
 
     # -- Calculate and store intermediate data for tuning psth -- #
-    freqScaleFactor = 3 #factor to reduce number of frequencies plotted by
-    possibleFreq = possibleFreq[1::freqScaleFactor] #select just a subset of frequencies to plot
-    trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
+    #freqScaleFactor = 3 #factor to reduce number of frequencies plotted by
+    #possibleFreq = possibleFreq[1::freqScaleFactor] #select just a subset of frequencies to plot
+    #trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
 
     timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)

@@ -59,6 +59,10 @@ cellParamsList = [{'firstParam':'test053',
                   {'firstParam':'test055',
                    'behavSession':'20150307a',
                    'tetrode':4,
+                   'cluster':3},
+                  {'firstParam':'adap017',
+                   'behavSession':'20160317a',
+                   'tetrode':5,
                    'cluster':3}]
 
 for cellParams in cellParamsList:
