@@ -48,9 +48,10 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 3)
-gs.update(left=0.12, right=0.95, wspace=.1, hspace=0.3)
+gs.update(left=0.15, right=0.98, top=0.95, bottom=0.05, wspace=.1, hspace=0.3)
+#gs.update(left=0.12, right=0.95, wspace=.1, hspace=0.3)
 gsC = gridspec.GridSpec(2, 3) # Another one is needed to adjust panel C
-gsC.update(left=0.18, right=0.95, wspace=.1, hspace=0.3)
+gsC.update(left=0.18, right=0.95, top=0.95, bottom=0.05, wspace=.1, hspace=0.3)
 
 # -- Panel: example of change in head angle --
 ax1 = plt.subplot(gs[0, 1])
@@ -161,8 +162,8 @@ if PANELS[1]:
     ax3.axes.get_xaxis().set_visible(False)
     ax3.spines['bottom'].set_visible(False)
     signifYpos = 300 #220
-    extraplots.significance_stars([xPos[0],xPos[1]], signifYpos, 20, starSize=8, gapFactor=0.2)
-    extraplots.significance_stars([xPos[2],xPos[3]], signifYpos, 20, starSize=8, gapFactor=0.2)
+    extraplots.significance_stars([xPos[0],xPos[1]], signifYpos, 20, starSize=10, gapFactor=0.2, color='0.5')
+    extraplots.significance_stars([xPos[2],xPos[3]], signifYpos, 20, starSize=10, gapFactor=0.2, color='0.5')
     plt.text(np.mean(xPos[0:2]), -signifYpos, 'Left', ha='center', fontsize=fontSizeLabels+2)
     plt.text(np.mean(xPos[2:4]), -signifYpos, 'Right', ha='center', fontsize=fontSizeLabels+2)
     plt.show()

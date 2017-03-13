@@ -29,8 +29,8 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 labelDis = 0.1
-labelPosX = [0.07, 0.45]   # Horiz position for panel labels
-labelPosY = [0.9, 0.45]    # Vert position for panel labels
+labelPosX = [0.02, 0.54]   # Horiz position for panel labels
+labelPosY = [0.95, 0.48]    # Vert position for panel labels
 
 PHOTOSTIMCOLORS = {'no_laser':'k',
                    'laser_left':figparams.colp['stimLeft'],
@@ -45,7 +45,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 4)
-gs.update(left=0.15, right=0.85, wspace=1.5, hspace=0.7)
+gs.update(left=0.12, right=0.98, top=0.95, bottom=0.1, wspace=1.8, hspace=0.15)
 
 
 # -- Panel A: schematic of 2afc task -- #
@@ -61,22 +61,38 @@ ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fo
 '''
 
 # -- Panel B: representative photostim psycurves -- #
+#ax3 = plt.subplot(gs[1,0])
+ax3 = plt.subplot(gs[0,2:])
 if PANELS[0]:
-    #ax3 = plt.subplot(gs[1,0])
-    ax3 = plt.subplot(gs[0,2:])
     leftExampleFilename = 'example_photostim_psycurve_d1pi015_20160829a.npz'
     leftExampleFullPath = os.path.join(dataDir,leftExampleFilename)
     leftExample = np.load(leftExampleFullPath)
 
     possibleValues = leftExample['possibleValues']
-    pHandles = []
+    plotHandles = []
     for stimType in ['no_laser','laser_left']:
         fractionHitsEachValue = leftExample['fractionHitsEachValue_'+stimType]
         ciHitsEachValue = leftExample['ciHitsEachValue_'+stimType]
+        upperWhisker = ciHitsEachValue[1,:]-fractionHitsEachValue
+        lowerWhisker = fractionHitsEachValue-ciHitsEachValue[0,:]
+        fitxvals = leftExample['fitxval_'+stimType]
+        fityvals = leftExample['fityval_'+stimType]
+        logPossibleValues = np.log2(leftExample['possibleValues'])
 
+        plt.hold(True)
+        (pline, pcaps, pbars) = ax3.errorbar(logPossibleValues,
+                                             100*fractionHitsEachValue,
+                                             yerr = [100*lowerWhisker, 100*upperWhisker],
+                                             ecolor=PHOTOSTIMCOLORS[stimType], fmt=None, clip_on=False)
+        pdots = ax3.plot(logPossibleValues, 100*fractionHitsEachValue, 'o', ms=6, mec='None',
+                         mfc=PHOTOSTIMCOLORS[stimType], clip_on=False)
+        pfit, = ax3.plot(fitxvals, 100*fityvals, color=PHOTOSTIMCOLORS[stimType], lw=2, clip_on=False)
+        plotHandles.append(pfit)
+
+        '''
         (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue,
                                                                     ciHitsEachValue,xTickPeriod=1)
-        pHandles.append(pline)
+        plotHandles.append(pline)
         plt.setp((pline, pcaps, pbars), color=PHOTOSTIMCOLORS[stimType])
         plt.setp(pline, label=stimType)
         plt.setp(pline,lw=2)
@@ -84,34 +100,62 @@ if PANELS[0]:
         plt.hold(True)
         plt.setp(pdots, mfc=PHOTOSTIMCOLORS[stimType], mec=PHOTOSTIMCOLORS[stimType])
         plt.hold(True)
+        '''
 
-    plt.legend(pHandles, ['No stim','Left stim'], loc='lower right', labelspacing=0.1,
-               fontsize=fontSizeTicks, handlelength=1.5, handletextpad=0.2, borderaxespad=0.1, frameon=False)
-    #extraplots.boxoff(ax3)
-
-    plt.xlabel('Frequency (kHz)',fontsize=fontSizeLabels, labelpad=labelDis)
-    plt.ylabel('Rightward trials (%)',fontsize=fontSizeLabels, labelpad=labelDis)
+    extraplots.boxoff(ax3)
+    #labelDis = 0.1
+    plt.xlim([fitxvals[0],fitxvals[-1]])
+    xTicks = np.array([6,11,19])
+    ax3.set_xticks(np.log2(xTicks*1000))
+    freqLabels = ['{:d}'.format(x) for x in xTicks]
+    ax3.set_xticklabels(freqLabels)
+    ax3.set_xticklabels('')
+    #plt.xlabel('Frequency (kHz)',fontsize=fontSizeLabels)  # labelpad=labelDis
+   
+    ax3.set_ylim([0, 100])
+    ax3.set_yticks([0, 50, 100])
+    plt.ylabel('Rightward trials (%)',fontsize=fontSizeLabels) # labelpad=labelDis
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+
+    plt.legend(plotHandles, ['No stim','Left stim'], loc='lower right', labelspacing=0.1,
+               fontsize=fontSizeTicks, handlelength=1.5, handletextpad=0.2, borderaxespad=0.0, frameon=False)
+
     #ax3.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
     ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 
 # -- Panel C: another representative photostim psycurves -- #
+ax4 = plt.subplot(gs[1,2:])
 if PANELS[1]:
-    ax4 = plt.subplot(gs[1,:2])
     rightExampleFilename = 'example_photostim_psycurve_d1pi015_20160817a.npz'
     rightExampleFullPath = os.path.join(dataDir,rightExampleFilename)
     rightExample = np.load(rightExampleFullPath)
 
     possibleValues = rightExample['possibleValues']
-    pHandles = []
+    plotHandles = []
     for stimType in ['no_laser','laser_right']:
         fractionHitsEachValue = rightExample['fractionHitsEachValue_'+stimType]
         ciHitsEachValue = rightExample['ciHitsEachValue_'+stimType]
+        upperWhisker = ciHitsEachValue[1,:]-fractionHitsEachValue
+        lowerWhisker = fractionHitsEachValue-ciHitsEachValue[0,:]
+        fitxvals = rightExample['fitxval_'+stimType]
+        fityvals = rightExample['fityval_'+stimType]
+        logPossibleValues = np.log2(rightExample['possibleValues'])
 
+        plt.hold(True)
+        (pline, pcaps, pbars) = ax4.errorbar(logPossibleValues,
+                                             100*fractionHitsEachValue,
+                                             yerr = [100*lowerWhisker, 100*upperWhisker],
+                                             ecolor=PHOTOSTIMCOLORS[stimType], fmt=None, clip_on=False)
+        pdots = ax4.plot(logPossibleValues, 100*fractionHitsEachValue, 'o', ms=6, mec='None',
+                         mfc=PHOTOSTIMCOLORS[stimType], clip_on=False)
+        pfit, = ax4.plot(fitxvals, 100*fityvals, color=PHOTOSTIMCOLORS[stimType], lw=2, clip_on=False)
+        plotHandles.append(pfit)
+        
+        '''
         (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue,
                                                                     ciHitsEachValue,xTickPeriod=1)
-        pHandles.append(pline)
+        plotHandles.append(pline)
         plt.setp((pline, pcaps, pbars), color=PHOTOSTIMCOLORS[stimType])
         plt.setp(pline, label=stimType)
         plt.setp(pline,lw=2)
@@ -119,21 +163,31 @@ if PANELS[1]:
         plt.hold(True)
         plt.setp(pdots, mfc=PHOTOSTIMCOLORS[stimType], mec=PHOTOSTIMCOLORS[stimType])
         plt.hold(True)
+        '''
 
-    plt.legend(scatterpoints=1, loc='upper left', labelspacing=0.1, fontsize=fontSizeTicks, frameon=False)
-    plt.legend(pHandles, ['No stim','Right stim'], loc='upper left', labelspacing=0.1,
-               fontsize=fontSizeTicks, handlelength=1.5, handletextpad=0.2, borderaxespad=0.1, frameon=False)
-    labelDis = 0.1
-    plt.xlabel('Frequency (kHz)',fontsize=fontSizeLabels, labelpad=labelDis)
-    plt.ylabel('Rightward trials (%)',fontsize=fontSizeLabels, labelpad=labelDis)
+    extraplots.boxoff(ax4)
+    #labelDis = 0.1
+    plt.xlim([fitxvals[0],fitxvals[-1]])
+    xTicks = np.array([6,11,19])
+    ax4.set_xticks(np.log2(xTicks*1000))
+    freqLabels = ['{:d}'.format(x) for x in xTicks]
+    ax4.set_xticklabels(freqLabels)
+    plt.xlabel('Frequency (kHz)',fontsize=fontSizeLabels)  # labelpad=labelDis
+   
+    ax4.set_ylim([0, 100])
+    ax4.set_yticks([0, 50, 100])
+    plt.ylabel('Rightward trials (%)',fontsize=fontSizeLabels) # labelpad=labelDis
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 
-    ax4.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+    plt.legend(plotHandles, ['No stim','Right stim'], loc='upper left', labelspacing=0.1,
+               fontsize=fontSizeTicks, handlelength=1.5, handletextpad=0.2, borderaxespad=0.0, frameon=False)
+
+    #ax4.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 
 # -- Panel D: summary for effect of photostim on performance -- #
+ax5 = plt.subplot(gs[1,:2])
 if PANELS[2]:
-    ax5 = plt.subplot(gs[1,2:])
     #summaryFilename = 'summary_photostim_percent_contra_choice_change.npz'
     summaryFilename = 'summary_photostim_percent_right_choice_change.npz'
     summaryFullPath = os.path.join(dataDir,summaryFilename)
@@ -211,17 +265,19 @@ if PANELS[2]:
     plt.xlim(xlim)
     plt.ylim(ylim)
     xticks = [1,2]
-    xticklabels = ['Left', 'Right']
+    xticklabels = ['Left\nstim', 'Right\nstim']
     plt.xticks(xticks, xticklabels, fontsize=fontSizeTicks)
     labelDis = 0.1
-    plt.xlabel('Photostimulation', fontsize=fontSizeLabels, labelpad=labelDis)
-    plt.ylabel('Rightward bias (%)\n stim - control', fontsize=fontSizeLabels, labelpad=labelDis)
-    ax5.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+    #plt.xlabel('Photostimulation', fontsize=fontSizeLabels) # labelpad=labelDis
+    plt.ylabel('Rightward bias (%)\n stim - control', fontsize=fontSizeLabels) # labelpad=labelDis
+    ax5.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
     extraplots.boxoff(ax5)
     ax5.spines['bottom'].set_visible(False)
     [t.set_visible(False) for t in ax5.get_xticklines()]
 
+    extraplots.significance_stars([1,2], 52, 3, starSize=10, gapFactor=0.12, color='0.5')
+    
     #(T, leftpVal) = stats.wilcoxon(leftStimChange)
     #(T, rightpVal) = stats.wilcoxon(rightStimChange)
     #print 'p value for change in percent rightward in left hemi photostim is: ', leftpVal,  '\np value for change in percent rightward in left hemi photostim is: ', rightpVal

@@ -52,7 +52,7 @@ fig.set_facecolor('w')
 panelsToPlot=[0, 1]
 
 gs = gridspec.GridSpec(2, 2)
-gs.update(left=0.15, right=0.95, bottom=0.15, wspace=0.5, hspace=0.5)
+gs.update(left=0.15, right=0.98, top=0.95, bottom=0.1, wspace=0.5, hspace=0.5)
 ax0 = plt.subplot(gs[:, 0])
 ax1 = plt.subplot(gs[0, 1])
 ax2 = plt.subplot(gs[1, 1])
@@ -114,8 +114,8 @@ if 0 in panelsToPlot:
 
         xRange = logPossibleValues[-1]-logPossibleValues[1]
 
-        fitxval = np.linspace(logPossibleValues[0]-0.1*xRange,logPossibleValues[-1]+0.1*xRange,40)
-        fityvals = extrastats.psychfun(fitxval, *estimate)
+        fitxvals = np.linspace(logPossibleValues[0]-0.1*xRange,logPossibleValues[-1]+0.1*xRange,40)
+        fityvals = extrastats.psychfun(fitxvals, *estimate)
 
         upperWhisker = ciHitsEachValue[1,:]-fractionHitsEachValue
         lowerWhisker = fractionHitsEachValue-ciHitsEachValue[0,:]
@@ -123,24 +123,18 @@ if 0 in panelsToPlot:
         (pline, pcaps, pbars) = ax1.errorbar(logPossibleValues,
                                              100*fractionHitsEachValue,
                                              yerr = [100*lowerWhisker, 100*upperWhisker],
-                                             color=color, fmt=None, clip_on=False)
+                                             ecolor=color, fmt=None, clip_on=False)
 
-        pdots = ax1.plot(logPossibleValues,
-                         100*fractionHitsEachValue,
-                         'o', ms=6, mec='None', mfc=color,
+        pdots = ax1.plot(logPossibleValues, 100*fractionHitsEachValue, 'o', ms=6, mec='None', mfc=color,
                          clip_on=False)
-
-        plt.setp(pcaps, color=color)
-        plt.setp(pbars, color=color)
-        # plt.setp(pdots, mar=color)
 
         #ax1.set_xticks(logPossibleValues)
         #freqLabels = ['{:.03}'.format(x) for x in possibleValues/1000.0]
         #ax1.set_xticklabels(freqLabels)
         #ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
 
-        pp, = ax1.plot(fitxval, 100*fityvals, color=color, lw=2, clip_on=False)
-        plotHandles.append(pp)
+        pfit, = ax1.plot(fitxvals, 100*fityvals, color=color, lw=2, clip_on=False)
+        plotHandles.append(pfit)
 
     ax1.annotate('B', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
                  fontsize=fontSizePanel, fontweight='bold')
@@ -157,7 +151,7 @@ if 0 in panelsToPlot:
     freqLabels = ['{:d}'.format(x) for x in xTicks]
     ax1.set_xticklabels(freqLabels)
     ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
-    ax1.set_xlim([fitxval[0],fitxval[-1]])
+    ax1.set_xlim([fitxvals[0],fitxvals[-1]])
     
     ax1.set_ylim([0, 100])
     ax1.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
