@@ -20,7 +20,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 #dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
-PANELS = [1,0,0,0] # Which panels to plot
+PANELS = [1,1,1,1] # Which panels to plot
 
 SAVE_FIGURE = 0
 outputDir = '/tmp/'
@@ -52,18 +52,19 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 4)
+gs = gridspec.GridSpec(2, 5)
 gs.update(left=0.1, right=0.9, wspace=0.35, hspace=0.2)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,0], hspace=0.2)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,1], hspace=0.2)
 gs02 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,2], hspace=0.2)
+gs03 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,3], hspace=0.2)
 
 # -- Panel A: representative sound-evoked raster and psth from tuning task -- #
 ax1 = plt.subplot(gs00[0:2,:])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[0]:
-    rasterFilename = 'example_freq_tuning_raster_test089_20150911a_T7_c7.npz' 
+    rasterFilename = 'example_freq_tuning_raster_adap017_20160317a_T5_c3.npz' 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
 
@@ -89,7 +90,7 @@ if PANELS[0]:
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
 
     ax2 = plt.subplot(gs00[2,:])
-    psthFilename = 'example_freq_tuning_psth_test089_20150911a_T7_c7.npz' 
+    psthFilename = 'example_freq_tuning_psth_adap017_20160317a_T5_c3.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample = np.load(psthFullPath)
 
@@ -176,9 +177,63 @@ if PANELS[1]:
     plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
 
 
-# -- Panel C: example of sound-evoked raster and psth from 2afc task -- #
+# -- Panel C: example of sound-evoked raster and psth from 2afc task (cell in A) -- #
 ax5 = plt.subplot(gs02[0:2,:])
 ax5.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+if PANELS[2]:
+    rasterFilename = 'example_freq_tuning_2afc_raster_adap017_20160317a_T5_c3.npz' 
+    rasterFullPath = os.path.join(dataDir, rasterFilename)
+    rasterExample =np.load(rasterFullPath)
+
+    possibleFreq = rasterExample['possibleFreq']
+    trialsEachCond = rasterExample['trialsEachFreq']
+    spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
+    indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
+    timeRange = rasterExample['timeRange']
+    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+    pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                   indexLimitsEachTrial,
+                                                   timeRange,
+                                                   trialsEachCond=trialsEachCond,
+                                                   labels=labels)
+
+    plt.setp(pRaster, ms=msRaster)
+    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+    plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels, labelpad=labelDis)
+    plt.xlim(timeRangeSound[0],timeRangeSound[1])
+
+    ax6 = plt.subplot(gs02[2,:])
+
+    psthFilename = 'example_freq_tuning_2afc_psth_adap017_20160317a_T5_c3.npz' 
+    psthFullPath = os.path.join(dataDir, psthFilename)
+    psthExample =np.load(psthFullPath)
+
+    trialsEachCond = psthExample['trialsEachFreq']
+    spikeCountMat = psthExample['spikeCountMat']
+    timeVec = psthExample['timeVec']
+    binWidth = psthExample['binWidth']
+    timeRange = psthExample['timeRange']
+    possibleFreq = psthExample['possibleFreq']
+    numFreqs = len(possibleFreq)
+    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+
+    cm_subsection = np.linspace(0.0, 1.0, numFreqs)
+    colorEachCond = [colormapTuning(x) for x in cm_subsection] 
+
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+    for ind,line in enumerate(pPSTH):
+        plt.setp(line, label=labels[ind])
+    plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.axvline(x=0,linewidth=1, color='darkgrey')
+    plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+    plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
+
+
+# -- Panel D: another example of sound-evoked raster and psth from 2afc task (cell in B) -- #
+ax6 = plt.subplot(gs03[0:2,:])
+ax6.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
     rasterFilename = 'example_freq_tuning_2afc_raster_test055_20150307a_T4_c3.npz' 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
@@ -201,7 +256,7 @@ if PANELS[2]:
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
 
-    ax6 = plt.subplot(gs02[2,:])
+    ax7 = plt.subplot(gs03[2,:])
 
     psthFilename = 'example_freq_tuning_2afc_psth_test055_20150307a_T4_c3.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
@@ -230,10 +285,9 @@ if PANELS[2]:
     plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
 
 
-
-# -- Panel D: summary of freq selectivity in 2afc task -- #
-ax7 = plt.subplot(gs[:, 3])
-ax7.annotate('D', xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+# -- Panel E: summary of freq selectivity in 2afc task -- #
+ax8 = plt.subplot(gs[:, 4])
+ax8.annotate('D', xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[3]:
     alphaLevel = 0.05
     numFreqs = 16
