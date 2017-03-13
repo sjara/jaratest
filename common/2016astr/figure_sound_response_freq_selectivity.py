@@ -39,7 +39,7 @@ downsampleFactorPsth = 1
 
 colormapTuning = matplotlib.cm.winter 
 
-labelPosX = [0.07, 0.35, 0.6]   # Horiz position for panel labels
+labelPosX = [0.07, 0.27, 0.47, 0.67]   # Horiz position for panel labels
 labelPosY = [0.9]    # Vert position for panel labels
 
 PHOTOSTIMCOLORS = {'no_laser':'k', 'laser_left':'red', 'laser_right':'green'}
@@ -50,91 +50,15 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 6)
-gs.update(left=0.15, right=0.85, wspace=2.5, hspace=0.2)
+gs = gridspec.GridSpec(2, 4)
+gs.update(left=0.1, right=0.9, wspace=0.35, hspace=0.2)
 
+gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,0], hspace=0.2)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,1], hspace=0.2)
+gs02 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,2], hspace=0.2)
 
-# -- Panel A: representative sound-evoked raster from tuning task -- #
-ax1 = plt.subplot(gs[0, 0:2])
-
-rasterFilename = 'example_freq_tuning_raster_adap020_20160420a_T3_c5.npz' 
-rasterFullPath = os.path.join(dataDir, rasterFilename)
-rasterExample =np.load(rasterFullPath)
-
-possibleFreq = rasterExample['possibleFreq']
-trialsEachCond = rasterExample['trialsEachFreq']
-spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
-indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-timeRange = rasterExample['timeRange']
-labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
-                                               indexLimitsEachTrial,
-                                               timeRange,
-                                               trialsEachCond=trialsEachCond,
-                                               labels=labels)
-
-plt.setp(pRaster, ms=msRaster)
-plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
-plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels, labelpad=labelDis)
-plt.xlim(timeRangeSound[0],timeRangeSound[1])
-ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-
-
-# -- Panel A2: representative sound-evoked psth from tuning task -- #
-ax2 = plt.subplot(gs[1,0:2])
-
-psthFilename = 'example_freq_tuning_psth_adap020_20160420a_T3_c5.npz' 
-psthFullPath = os.path.join(dataDir, psthFilename)
-psthExample =np.load(psthFullPath)
-
-trialsEachCond = psthExample['trialsEachFreq']
-spikeCountMat = psthExample['spikeCountMat']
-timeVec = psthExample['timeVec']
-binWidth = psthExample['binWidth']
-timeRange = psthExample['timeRange']
-possibleFreq = psthExample['possibleFreq']
-numFreqs = len(possibleFreq)
-labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-
-cm_subsection = np.linspace(0.0, 1.0, numFreqs)
-colorEachCond = [colormapTuning(x) for x in cm_subsection] 
-
-pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-
-for ind,line in enumerate(pPSTH):
-    plt.setp(line, label=labels[ind])
-plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
-
-extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-plt.axvline(x=0,linewidth=1, color='darkgrey')
-plt.xlim(timeRangeSound[0],timeRangeSound[1])
-plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
-plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
-
-
-'''
-# -- Panel B: summary of sound freq selectivity during psychometric curve task -- #
-ax3 = plt.subplot(gs[0:,2:4])
-psycurveSumFilename = 'summary_freq_selectivity_all_psycurve_mice.npz' 
-psycurveSumFullPath = os.path.join(dataDir, psycurveSumFilename)
-psycurveSum =np.load(psycurveSumFullPath)
-
-psycurveMice = psycurveSum['psychometricMice']
-numOfFreqs = psycurveSum['numOfFreqs']
-allFreqs = range(numOfFreqs)
-cellProportion = np.empty((len(psycurveMice),numOfFreqs))
-for ind,mouse in enumerate(psycurveMice):
-    cellProportionThisMouse = psycurveSum[mouse]/sum(psycurveSum[mouse]).astype('float')*100
-    cellProportion[ind,:] = cellProportionThisMouse
-
-for indf in allFreqs:
-    x = np.repeat(indf+1,len(psycurveMice))
-    y = cellProportion[:,indf]
-    ax3.scatter(x,y)
-'''
-
-# -- Panel B: another example of sound-evoked raster and psth from tuning task -- #
-ax3 = plt.subplot(gs[0, 2:4])
+# -- Panel A: representative sound-evoked raster and psth from tuning task -- #
+ax1 = plt.subplot(gs00[0:2,:])
 
 rasterFilename = 'example_freq_tuning_raster_test089_20150911a_T7_c7.npz' 
 rasterFullPath = os.path.join(dataDir, rasterFilename)
@@ -156,13 +80,124 @@ plt.setp(pRaster, ms=msRaster)
 plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
 plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels, labelpad=labelDis)
 plt.xlim(timeRangeSound[0],timeRangeSound[1])
+ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
-ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-
-
-ax4 = plt.subplot(gs[1,2:4])
+ax2 = plt.subplot(gs00[2,:])
 
 psthFilename = 'example_freq_tuning_psth_test089_20150911a_T7_c7.npz' 
+psthFullPath = os.path.join(dataDir, psthFilename)
+psthExample =np.load(psthFullPath)
+
+trialsEachCond = psthExample['trialsEachFreq']
+spikeCountMat = psthExample['spikeCountMat']
+timeVec = psthExample['timeVec']
+binWidth = psthExample['binWidth']
+timeRange = psthExample['timeRange']
+possibleFreq = psthExample['possibleFreq']
+numFreqs = len(possibleFreq)
+labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+
+cm_subsection = np.linspace(0.0, 1.0, numFreqs)
+colorEachCond = [colormapTuning(x) for x in cm_subsection] 
+
+pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+
+for ind,line in enumerate(pPSTH):
+    plt.setp(line, label=labels[ind])
+plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+
+extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+plt.axvline(x=0,linewidth=1, color='darkgrey')
+plt.xlim(timeRangeSound[0],timeRangeSound[1])
+plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
+
+# -- Panel B: another example of sound-evoked raster and psth from tuning task -- #
+ax3 = plt.subplot(gs01[0:2,:])
+
+rasterFilename = 'example_freq_tuning_raster_test055_20150307a_T4_c3.npz' 
+rasterFullPath = os.path.join(dataDir, rasterFilename)
+rasterExample =np.load(rasterFullPath)
+
+possibleFreq = rasterExample['possibleFreq']
+trialsEachCond = rasterExample['trialsEachFreq']
+spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
+indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
+timeRange = rasterExample['timeRange']
+labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                               indexLimitsEachTrial,
+                                               timeRange,
+                                               trialsEachCond=trialsEachCond,
+                                               labels=labels)
+
+plt.setp(pRaster, ms=msRaster)
+plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels, labelpad=labelDis)
+plt.xlim(timeRangeSound[0],timeRangeSound[1])
+ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
+ax4 = plt.subplot(gs01[2,:])
+
+psthFilename = 'example_freq_tuning_psth_test055_20150307a_T4_c3.npz' 
+psthFullPath = os.path.join(dataDir, psthFilename)
+psthExample =np.load(psthFullPath)
+
+trialsEachCond = psthExample['trialsEachFreq']
+spikeCountMat = psthExample['spikeCountMat']
+timeVec = psthExample['timeVec']
+binWidth = psthExample['binWidth']
+timeRange = psthExample['timeRange']
+possibleFreq = psthExample['possibleFreq']
+numFreqs = len(possibleFreq)
+labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+
+cm_subsection = np.linspace(0.0, 1.0, numFreqs)
+colorEachCond = [colormapTuning(x) for x in cm_subsection] 
+
+pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+
+for ind,line in enumerate(pPSTH):
+    plt.setp(line, label=labels[ind])
+plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+
+extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+plt.axvline(x=0,linewidth=1, color='darkgrey')
+plt.xlim(timeRangeSound[0],timeRangeSound[1])
+plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
+
+
+# -- Panel C: example of sound-evoked raster and psth from 2afc task -- #
+ax5 = plt.subplot(gs02[0:2,:])
+
+rasterFilename = 'example_freq_tuning_2afc_raster_test055_20150307a_T4_c3.npz' 
+rasterFullPath = os.path.join(dataDir, rasterFilename)
+rasterExample =np.load(rasterFullPath)
+
+possibleFreq = rasterExample['possibleFreq']
+trialsEachCond = rasterExample['trialsEachFreq']
+spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
+indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
+timeRange = rasterExample['timeRange']
+labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                               indexLimitsEachTrial,
+                                               timeRange,
+                                               trialsEachCond=trialsEachCond,
+                                               labels=labels)
+
+plt.setp(pRaster, ms=msRaster)
+plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels, labelpad=labelDis)
+plt.xlim(timeRangeSound[0],timeRangeSound[1])
+
+ax5.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
+
+ax6 = plt.subplot(gs02[2,:])
+
+psthFilename = 'example_freq_tuning_2afc_psth_test055_20150307a_T4_c3.npz' 
 psthFullPath = os.path.join(dataDir, psthFilename)
 psthExample =np.load(psthFullPath)
 
@@ -189,53 +224,37 @@ plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDi
 plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
 
 
-# -- Panel C: summary left vs right hemi best frequency (from photostim mice) -- #
-ax5 = plt.subplot(gs[0:,4:6])
 
-summaryFilename = 'summary_bilateral_best_freq.npz'
+# -- Panel D: summary of freq selectivity in 2afc task -- #
+ax7 = plt.subplot(gs[:, 3])
+alphaLevel = 0.05
+numFreqs = 16
+bonferroniCorrectedAlphaLevel = alphaLevel/numFreqs
+
+summaryFilename = 'summary_2afc_best_freq_maxZ_psychometric.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
 summary = np.load(summaryFullPath)
 
-left014 = summary['d1pi014_left']
-left015 = summary['d1pi015_left']
-left016 = summary['d1pi016_left']
-right014 = summary['d1pi014_right']
-right015 = summary['d1pi015_right']
-right016 = summary['d1pi016_right']
+cellSelectorBoolArray = summary['cellSelectorBoolArray']
+bestFreqEachCell = summary['bestFreqEachCell'][cellSelectorBoolArray]
+#bestFreqEachCell = bestFreqEachCell[bestFreqEachCell!=0]
+maxZscoreEachCell = summary['maxZscoreEachCell'][cellSelectorBoolArray]
+#maxZscoreEachCell = maxZscoreEachCell[maxZscoreEachCell!=0]
+responseIndEachCell = summary['responseIndEachCell'][cellSelectorBoolArray]
+###############################################################################
+#sigSoundResponse = (summary['pValSoundResponseEachCell'][cellSelectorBoolArray] <= alphaLevel)
+#freqSelective = (summary['pValSoundResponseEachCell'][cellSelectorBoolArray] <= alphaLevel) & (summary['freqSelectivityEachCell'][cellSelectorBoolArray] <= alphaLevel)
+freqSelective = summary['freqSelectivityEachCell'][cellSelectorBoolArray] <= alphaLevel
+###############################################################################
 
-#for ind,leftData in enumerate([left014,left015,left016]):
-    #ax4.plot(np.repeat(1+0.2*(ind-1),len(leftData)), leftData, marker=SHAPESEACHANIMAL[ind], mfc=PHOTOSTIMCOLORS['laser_left'], ls='None')
-    
-#for ind,rightData in enumerate([right014,right015,right016]):
-    #ax4.plot(np.repeat(2+0.2*(ind-1),len(rightData)), rightData, marker=SHAPESEACHANIMAL[ind], mfc=PHOTOSTIMCOLORS['laser_right'], ls='None')
-
-leftData = np.r_[left014,left015,left016]
-kdeLeft = stats.gaussian_kde(leftData)
-densityLeft = kdeLeft(leftData)
-xleft = 1 + densityLeft * (np.random.rand(*leftData.shape) - 0.5) 
-#xleft = 1+0.3*(np.random.rand(*leftData.shape)-0.5)
-ax5.plot(xleft, leftData, marker='o', mfc=PHOTOSTIMCOLORS['laser_left'], ls='None', alpha=0.7)
-
-rightData = np.r_[right014,right015,right016]
-kdeRight = stats.gaussian_kde(rightData)
-densityRight = kdeRight(rightData)
-xright = 2 + densityRight * (np.random.rand(*rightData.shape) - 0.5) 
-#xright = 2+0.3*(np.random.rand(*rightData.shape)-0.5)
-ax5.plot(xright, rightData, marker='o', mfc=PHOTOSTIMCOLORS['laser_right'], ls='None', alpha=0.7)
-
-xlim = [0.3,2.7]
-ylim = [-2, 2]
-plt.axhline(y=0, linestyle='--',linewidth=1.5, color='k')
-plt.xlim(xlim)
-plt.ylim(ylim)
-xticks = [1,2]
-xticklabels = ['left', 'right']
-plt.xticks(xticks, xticklabels, fontsize=fontSizeTicks)
-
-labelDis = 0.1
-plt.xlabel('Recording hemisphere', fontsize=fontSizeLabels, labelpad=labelDis)
-plt.ylabel('Log2(most responsive frequency - psychometric boundary)', fontsize=fontSizeLabels,labelpad=labelDis)
-ax5.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+plt.hist((responseIndEachCell[freqSelective],responseIndEachCell[~freqSelective]), color=['k','None'], bins=20)
+#plt.xticks([0, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000], ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
+plt.xlabel('Sound response index')
+plt.ylabel('Number of cells')
+sig_patch = mpatches.Patch(color='k', label='Frequency selective')
+nonsig_patch = mpatches.Patch(facecolor='None', edgecolor='k', label='Not frequency selective')
+plt.legend(handles=[sig_patch,nonsig_patch], loc='upper center', fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2)
+ax7.annotate('D', xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 plt.show()
 
@@ -243,7 +262,10 @@ if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
 
-# -- Statistic test for comparing left versus right hemi tuning -- #
-import scipy.stats as stats
-(x,pvalue) = stats.ranksums(leftData,rightData)
-print 'all three mice left vs right hemi best freq\n p value:', pvalue
+# -- Statistic test for  -- #
+numCells = sum(cellSelectorBoolArray)
+numFreqSelCells = sum(freqSelective.astype(int))
+print 100*float(numFreqSelCells)/numCells, '%', numFreqSelCells, 'out of', numCells, 'in 2afc psycurve task show frequency selectivity (one-way ANOVA)'
+print 'median response index:', np.mean(responseIndEachCell[~np.isnan(responseIndEachCell)]) #These is one nan value
+
+print sum((responseIndEachCell < 0).astype(int)), 'cells showed decreased activity;', sum((responseIndEachCell > 0).astype(int)), 'cells showed increased activity'

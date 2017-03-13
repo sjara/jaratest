@@ -72,7 +72,7 @@ np.savez(outputFullPath, animal=animal, session=session, script=scriptFullPath,*
 
 # -- Example psycurve under photostim of right hemisphere -- #
 animal = 'd1pi015'
-session = '20160817a'
+session = '20160901a'
 
 bdata = behavioranalysis.load_many_sessions(animal,[session])
 targetFrequency=bdata['targetFrequency']

@@ -66,8 +66,8 @@ responseIndEachCell = summary['responseIndEachCell'][cellSelectorBoolArray]
 # -- summary stats about sound responsiveness (rank sum test significant) and frequency selectivity (ANOVA test significant) -- #
 sigSoundResponse = (summary['pValSoundResponseEachCell'][cellSelectorBoolArray] <= bonferroniCorrectedAlphaLevel)
 # Only consider whether frequency selective if sigSoundResponsive!
-freqSelective =(summary['pValSoundResponseEachCell'][cellSelectorBoolArray] <= bonferroniCorrectedAlphaLevel) & (summary['freqSelectivityEachCell'][cellSelectorBoolArray] <= alphaLevel)
-
+#freqSelective =(summary['pValSoundResponseEachCell'][cellSelectorBoolArray] <= bonferroniCorrectedAlphaLevel) & (summary['freqSelectivityEachCell'][cellSelectorBoolArray] <= alphaLevel)
+freqSelective = (summary['freqSelectivityEachCell'][cellSelectorBoolArray] <= alphaLevel)
 # -- Get movement and sound modulation index for psychometric cells -- #
 goodcells_psychometric = allcells_psychometric[cellSelectorBoolArray]
 

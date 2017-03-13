@@ -42,9 +42,9 @@ cellParamsList = [{'firstParam':'test089',
                    'tetrode':1,
                    'cluster':7}, #modulated, duplicate
                   {'firstParam':'adap020',
-                   'behavSession':'20160524a',
+                   'behavSession':'20160526a',
                    'tetrode':2,
-                   'cluster':9}] #last cell not modulated
+                   'cluster':9}] #not modulated
 
 '''
 # OLD examples removed due to duplicate
@@ -59,7 +59,7 @@ cellParamsList = [{'firstParam':'test089',
 '''
 ####################################################################################
 scriptFullPath = os.path.realpath(__file__)
-timeRange = [-0.5,1]
+timeRange = [-0.2,0.4]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0

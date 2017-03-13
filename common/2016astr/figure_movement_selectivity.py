@@ -132,11 +132,6 @@ sigModulated = summary['movementSelective']
 sigMI = summary['movementModI'][sigModulated]
 nonsigMI = summary['movementModI'][~sigModulated]
 plt.hist([sigMI,nonsigMI], bins=50, color=['k','darkgrey'],edgecolor='None',stacked=True)
-numSig = len(sigMI)
-numSigNeg = sum(sigMI<0)
-numSigPos = sum(sigMI>0)
-print numSig, ' cells were significantly modulated by movement direction, that is ', np.mean(sigModulated)*100, '% of total good cells recorded in the striatum.'
-print 'Out of the movement direction selective cells,', numSigNeg, ' cells were more active when moving to the contralaterral side (left). That is {}%.'.format(100*numSigNeg/float(numSig))
 
 '''
 sig_patch = mpatches.Patch(color='k', label='Selective')
@@ -153,9 +148,18 @@ ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fo
 
 plt.show()
 
-if SAVE_FIGURE:
-    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
-
 # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
+numCells = len(sigModulated)
+numSig = len(sigMI)
+numSigNeg = sum(sigMI<0)
+numSigPos = sum(sigMI>0)
+print numSig, ' cells were significantly modulated by movement direction, that is ', np.mean(sigModulated)*100, '% of', numCells, 'total good cells recorded in the striatum.'
+print 'Out of the movement direction selective cells,', numSigNeg, ' cells were more active when moving to the contralaterral side (left). That is {}% of total cells.'.format(100*numSigNeg/float(numCells))
+print 'median of movemewnt modulation index is', np.mean(summary['movementModI'])
 (T, pVal) = stats.wilcoxon(summary['movementModI'])
 print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal
+
+
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
