@@ -244,11 +244,11 @@ if PANELS[0]:
     extraplots.boxoff(plt.gca())
     #plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
 
-# -- Panel D: another example of sound-evoked raster and psth from 2afc task (cell in B) -- #
+# -- Panel D: another example of sound-evoked raster and psth from 2afc task (sound-suppressed) -- #
 ax6 = plt.subplot(gs01[0:3,:])
 ax6.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
-    rasterFilename = 'example_freq_tuning_2afc_raster_test055_20150307a_T4_c3.npz' 
+    rasterFilename = 'example_freq_tuning_2afc_raster_adap017_20160405a_T3_c7.npz' #test055_20150307a_T5_c3 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
 
@@ -275,7 +275,7 @@ if PANELS[1]:
 
     ax7 = plt.subplot(gs01[3,:])
 
-    psthFilename = 'example_freq_tuning_2afc_psth_test055_20150307a_T4_c3.npz' 
+    psthFilename = 'example_freq_tuning_2afc_psth_adap017_20160405a_T3_c7.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
@@ -361,7 +361,7 @@ if PANELS[2]:
     print 100*float(numFreqSelCells)/numCells, '%', numFreqSelCells, 'out of', numCells, 'in 2afc psycurve task show frequency selectivity (one-way ANOVA)'
     print 'median response index:', np.mean(responseIndEachCell[~np.isnan(responseIndEachCell)]) #These is one nan value
 
-    print sum((responseIndEachCell < 0).astype(int)), 'cells showed decreased activity;', sum((responseIndEachCell > 0).astype(int)), 'cells showed increased activity'
+    print sum((responseIndEachCell < 0).astype(int)), 'cells showed decreased activity;', sum((responseIndEachCell > 0).astype(int)), 'cells showed increased activity;', sum((responseIndEachCell == 0).astype(int)), 'cells had unchanged activity during sound'
 
     
 plt.show()

@@ -49,21 +49,21 @@ if not os.path.ismount(EPHYS_PATH):
 
 # -- Select an example cell from allcells file -- #
 cellParamsList = [{'firstParam':'test053',
-                   'behavSession':'20150625a',
+                   'behavSession':'20150615a',
                    'tetrode':5,
-                   'cluster':3},
-                  {'firstParam':'test055',
-                   'behavSession':'20150313a',
-                   'tetrode':8,
-                   'cluster':5},
+                   'cluster':7}, #strong sharp response to low freqs
+                  {'firstParam':'adap017',
+                   'behavSession':'20160405a',
+                   'tetrode':3,
+                   'cluster':7}, #suppressed in tuning&2afc
                   {'firstParam':'test055',
                    'behavSession':'20150307a',
                    'tetrode':4,
-                   'cluster':3},
+                   'cluster':3}, #similar sharp response in tuning&2afc
                   {'firstParam':'adap017',
                    'behavSession':'20160317a',
                    'tetrode':5,
-                   'cluster':3}]
+                   'cluster':3}] #sustained strong response to mid freqs
 
 for cellParams in cellParamsList:
     mouseName = cellParams['firstParam']

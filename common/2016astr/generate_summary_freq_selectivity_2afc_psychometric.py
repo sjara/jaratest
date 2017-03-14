@@ -15,6 +15,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 import scipy.stats as stats
+import pdb
 
 FIGNAME = '2afc_Z_score_psychometric'
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
@@ -24,7 +25,7 @@ scriptFullPath = os.path.realpath(__file__)
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
 baseRange = [-0.1, 0] # time range of baseline period
-binEdges = [0, 0.1] # time range of sound period
+responseRange = [0, 0.1] # time range of sound period
 timeRange = [-0.2,0.2]
 qualityList = [1,6]
 ISIcutoff = 0.02
@@ -120,13 +121,15 @@ for ind,cell in cellsToPlot.iterrows(): #This ind is the index with reference to
     responseEachFreq = []
     responseInds = []
     for freq in possibleFreq:
-        oneFreqTrials = bdata['targetFrequency'] == freq
+        # -- Only use valid trials of one frequency to estimate response index -- #
+        oneFreqTrials = (bdata['targetFrequency'] == freq) & bdata['valid'].astype('bool')
         oneFreqSoundOnsetTimes = soundOnsetTimes[oneFreqTrials]
         (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
             spikesanalysis.eventlocked_spiketimes(spikeTimestamps,oneFreqSoundOnsetTimes,timeRange)
-        # Generate the spkCountMatrix where each row is one trial, each column is a time bin to count spikes in, in this case only one time bin for baseline or sound period
+        # Generate the spkCountMatrix where each row is one trial, each column is a time bin to count spikes in, in this case one time bin for baseline and one time bin for sound period
+        #pdb.set_trace()
         nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,baseRange) 
-        nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,binEdges)
+        nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,responseRange)
         print nspkBase.shape, nspkResp.shape
                 
         # Calculate response index (S-B)/(S+B) where S and B are ave response during the sound window and baseline window, respectively
@@ -135,15 +138,17 @@ for ind,cell in cellsToPlot.iterrows(): #This ind is the index with reference to
         responseEachFreq.append(nspkResp) #Store response to each stim frequency (all trials) in a list
         print 'ave firing rate for baseline and sound periods are', np.mean(nspkBase), np.mean(nspkResp), 'response index is', responseIndex
 
-        # Calculate statistic using ranksums test (reusing function from spikesanalysis)
-        [zStat,pValue,maxZ] = spikesanalysis.response_score(spikeTimesFromEventOnset,indexLimitsEachTrial,baseRange,binEdges) #computes z score for each bin. zStat is array of z scores. maxZ is maximum value of z in timeRange; in this case only one bin so only one Z score
-        zScores.append(maxZ)
+        #[zStat,pValue,maxZ] = spikesanalysis.response_score(spikeTimesFromEventOnset,indexLimitsEachTrial,baseRange,responseRange) #computes z score for each bin. zStat is array of z scores. maxZ is maximum value of z in timeRange; in this case only one bin so only one Z score
+        # Calculate statistic using ranksums test 
+        zStat,pValue = stats.ranksums(nspkResp, nspkBase)
+        print zStat, pValue
+        zScores.append(zStat)
         pVals.append(pValue)
     
     #?? Use correction for multiple comparisons(n comparisons where n=number of frequencies presented) here, then store whether a cell is significantly 'responsive' or not ??
 
     indMaxZ = np.argmax(np.abs(zScores))
-    maxZscore = zScores[indMaxZ]
+    maxZscore = zScores[indMaxZ] 
     bestFreq = possibleFreq[indMaxZ]
     pVal = pVals[indMaxZ]
     responseIndMaxZ = responseInds[indMaxZ] #Take the response index for the freq with the biggest absolute response
@@ -160,4 +165,4 @@ if not os.path.exists(outputDir):
 
 outputFile = 'summary_2afc_best_freq_maxZ_psychometric.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, bestFreqEachCell=bestFreqEachCell, maxZscoreEachCell=maxZscoreEachCell, pValSoundResponseEachCell=pValSoundResponseEachCell, responseIndEachCell=responseIndEachCell, freqSelectivityEachCell=freqSelectivityEachCell, cellSelectorBoolArray=cellSelector, baselineWindow=baseRange, soundWindow=binEdges, paradigm=paradigm, script=scriptFullPath)
+np.savez(outputFullPath, bestFreqEachCell=bestFreqEachCell, maxZscoreEachCell=maxZscoreEachCell, pValSoundResponseEachCell=pValSoundResponseEachCell, responseIndEachCell=responseIndEachCell, freqSelectivityEachCell=freqSelectivityEachCell, cellSelectorBoolArray=cellSelector, baselineWindow=baseRange, soundWindow=responseRange, paradigm=paradigm, script=scriptFullPath)
