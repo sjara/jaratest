@@ -17,7 +17,7 @@ from jaratoolbox import behavioranalysis
 import scipy.stats as stats
 import pdb
 
-FIGNAME = '2afc_Z_score_psychometric'
+FIGNAME = 'sound_freq_selectivity'
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
 paradigm = '2afc'
