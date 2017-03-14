@@ -23,8 +23,8 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 #dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
-SAVE_FIGURE = 1
-outputDir = '/home/languo/tmp/'
+SAVE_FIGURE = 0
+outputDir = '/tmp/'
 '''
 if removedDuplicates:
     figFilename = 'figure_movement_selectivity_remove_dup' # Do not include extension

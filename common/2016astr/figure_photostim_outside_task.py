@@ -22,7 +22,7 @@ PANELS = [1,1] # Which panels to plot
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_photostim_outside_task' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [7,5]
 
 maxSamplesToInclude = 10
