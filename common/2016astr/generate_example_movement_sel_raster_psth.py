@@ -42,104 +42,113 @@ if not os.path.ismount(EPHYS_PATH):
 
 
 # -- Select an example cell from allcells file -- #
-cellParams = {'firstParam':'test059',
-              'behavSession':'20150629a',
-              'tetrode':2,
-              'cluster':7}
+cellParamsList = [{'firstParam':'test059',
+                   'behavSession':'20150629a',
+                   'tetrode':2,
+                   'cluster':7},
+                  {'firstParam':'test055',
+                   'behavSession':'20150313a',
+                   'tetrode':7,
+                   'cluster':6}, #more responsive to right
+                  {'firstParam':'adap017',
+                   'behavSession':'20160330a',
+                   'tetrode':4,
+                   'cluster':11}] #more responsive to left
 
-mouseName = cellParams['firstParam']
-    
-allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
-sys.path.append(settings.ALLCELLS_PATH)
-allcells = importlib.import_module(allcellsFileName)
+for cellParams in cellParamsList:
+    mouseName = cellParams['firstParam']
 
-### Using cellDB methode to find the index of this cell in the cellDB ###
-cellIndex = allcells.cellDB.findcell(**cellParams)
-oneCell = allcells.cellDB[cellIndex]
+    allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
+    sys.path.append(settings.ALLCELLS_PATH)
+    allcells = importlib.import_module(allcellsFileName)
 
-
-## Get behavior data associated with 2afc session ###
-behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
-behavFile = os.path.join(BEHAVIOR_PATH,oneCell.animalName,behavFileName)
-bdata = loadbehavior.FlexCategBehaviorData(behavFile,readmode='full')
- 
-
-### Get events data ###
-fullEventFilename=os.path.join(EPHYS_PATH, oneCell.animalName, oneCell.ephysSession, 'all_channels.events')
-eventData = loadopenephys.Events(fullEventFilename)
-##### Get event onset times #####
-eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
+    ### Using cellDB methode to find the index of this cell in the cellDB ###
+    cellIndex = allcells.cellDB.findcell(**cellParams)
+    oneCell = allcells.cellDB[cellIndex]
 
 
-### GEt spike data of just this cluster ###
-spikeFilename = os.path.join(EPHYS_PATH,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
-spikeData = loadopenephys.DataSpikes(spikeFilename)
-spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
-clustersDir = os.path.join(EPHYS_PATH,oneCell.animalName,oneCell.ephysSession)+'_kk'
-clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(oneCell.tetrode))
-clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
-spikeData.timestamps = spikeData.timestamps[clusters==oneCell.cluster]
-spikeData.samples = spikeData.samples[clusters==oneCell.cluster, :, :]
-spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
-# FIXME: This assumes the gain is the same for all channels and records
-spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
-#spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
-spikeTimestamps = spikeData.timestamps
-
-# -- Check to see if ephys has skipped trials, if so remove trials from behav data -- #
-eventOnsetTimes=np.array(eventData.timestamps)
-soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
-soundOnsetTimeEphys = eventOnsetTimes[soundOnsetEvents]
-soundOnsetTimeBehav = bdata['timeTarget']
-
-# Find missing trials
-missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
-# Remove missing trials
-bdata.remove_trials(missingTrials)
+    ## Get behavior data associated with 2afc session ###
+    behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
+    behavFile = os.path.join(BEHAVIOR_PATH,oneCell.animalName,behavFileName)
+    bdata = loadbehavior.FlexCategBehaviorData(behavFile,readmode='full')
 
 
-# -- Select trials to plot from behavior file -- #
-possibleFreq = np.unique(bdata['targetFrequency'])
-numFreqs = len(possibleFreq)
-
-# -- Select trials of middle frequency to plot, determine whether to plot by block -- #
-middleFreq = possibleFreq[numFreqs/2] #selects middle frequency, using int division resulting in int property. MAY FAIL IN THE FUTURE
-#pdb.set_trace()
-oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
-rightward = bdata['choice']==bdata.labels['choice']['right']
-leftward = bdata['choice']==bdata.labels['choice']['left']
-
-trialsToUseRight = rightward & oneFreq
-trialsToUseLeft = leftward & oneFreq
-condLabels = ['go left', 'go right']
-trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
-colorEachCond = [colorsDict['left'],colorsDict['right']]
-
-# -- Calculate eventOnsetTimes aligned to movement onset (CenterOut events) -- #
-eventOnsetTimes=np.array(eventData.timestamps)
-soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
-soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
-diffTimes=bdata['timeCenterOut']-bdata['timeTarget']
-movementOnsetTimes = soundOnsetTimes+diffTimes
-
-# -- Calculate arrays for plotting raster -- #
-(spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
-spikesanalysis.eventlocked_spiketimes(spikeTimestamps,movementOnsetTimes,timeRange)
+    ### Get events data ###
+    fullEventFilename=os.path.join(EPHYS_PATH, oneCell.animalName, oneCell.ephysSession, 'all_channels.events')
+    eventData = loadopenephys.Events(fullEventFilename)
+    ##### Get event onset times #####
+    eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
 
 
-# -- Save raster intermediate data -- #    
-#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
-outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+    ### GEt spike data of just this cluster ###
+    spikeFilename = os.path.join(EPHYS_PATH,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
+    spikeData = loadopenephys.DataSpikes(spikeFilename)
+    spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
+    clustersDir = os.path.join(EPHYS_PATH,oneCell.animalName,oneCell.ephysSession)+'_kk'
+    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(oneCell.tetrode))
+    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
+    spikeData.timestamps = spikeData.timestamps[clusters==oneCell.cluster]
+    spikeData.samples = spikeData.samples[clusters==oneCell.cluster, :, :]
+    spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
+    # FIXME: This assumes the gain is the same for all channels and records
+    spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
+    #spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
+    spikeTimestamps = spikeData.timestamps
+
+    # -- Check to see if ephys has skipped trials, if so remove trials from behav data -- #
+    eventOnsetTimes=np.array(eventData.timestamps)
+    soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
+    soundOnsetTimeEphys = eventOnsetTimes[soundOnsetEvents]
+    soundOnsetTimeBehav = bdata['timeTarget']
+
+    # Find missing trials
+    missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
+    # Remove missing trials
+    bdata.remove_trials(missingTrials)
 
 
-# -- Calculate additional arrays for plotting psth -- #
-timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
-spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
-    
-# -- Save psth intermediate data -- #
-#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-outputFile = 'example_movement_sel_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
-outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], script=scriptFullPath, frequencyPloted=middleFreq, **cellParams)
+    # -- Select trials to plot from behavior file -- #
+    possibleFreq = np.unique(bdata['targetFrequency'])
+    numFreqs = len(possibleFreq)
+
+    # -- Select trials of middle frequency to plot, determine whether to plot by block -- #
+    middleFreq = possibleFreq[numFreqs/2] #selects middle frequency, using int division resulting in int property. MAY FAIL IN THE FUTURE
+    #pdb.set_trace()
+    oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
+    rightward = bdata['choice']==bdata.labels['choice']['right']
+    leftward = bdata['choice']==bdata.labels['choice']['left']
+
+    trialsToUseRight = rightward & oneFreq
+    trialsToUseLeft = leftward & oneFreq
+    condLabels = ['go left', 'go right']
+    trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
+    colorEachCond = [colorsDict['left'],colorsDict['right']]
+
+    # -- Calculate eventOnsetTimes aligned to movement onset (CenterOut events) -- #
+    eventOnsetTimes=np.array(eventData.timestamps)
+    soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
+    soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+    diffTimes=bdata['timeCenterOut']-bdata['timeTarget']
+    movementOnsetTimes = soundOnsetTimes+diffTimes
+
+    # -- Calculate arrays for plotting raster -- #
+    (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+    spikesanalysis.eventlocked_spiketimes(spikeTimestamps,movementOnsetTimes,timeRange)
+
+
+    # -- Save raster intermediate data -- #    
+    #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+    outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
+    outputFullPath = os.path.join(outputDir,outputFile)
+    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+
+
+    # -- Calculate additional arrays for plotting psth -- #
+    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+
+    # -- Save psth intermediate data -- #
+    #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+    outputFile = 'example_movement_sel_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
+    outputFullPath = os.path.join(outputDir,outputFile)
+    np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], script=scriptFullPath, frequencyPloted=middleFreq, **cellParams)

@@ -48,3 +48,8 @@ plt.show()
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+# -- Stats -- #
+#rho, pVal = stats.spearmanr(tuningToPlot, biasToPlot)
+rho, pVal = stats.pearsonr(tuningToPlot, biasToPlot)
+print 'correlation value is', rho, 'p Value is', pVal
