@@ -20,8 +20,8 @@ scriptFullPath = os.path.realpath(__file__)
 DEFINE_STIM_COORDS = 0 
 DETECT_STIMULUS = 0
 TRACK_COLORS = DETECT_STIMULUS
-CALCULATE_HEAD_ANGLE = 0
-SAVE_ALL_TOGETHER = 1
+CALCULATE_HEAD_ANGLE = 1
+SAVE_ALL_TOGETHER = 0
 
 allSessions = []
 # All sessions were using continuous laser pulse at 1mW
@@ -293,8 +293,9 @@ if not SAVE_ALL_TOGETHER:
         stimCoords = oneSession['stimCoords']
         stimThreshold = oneSession['stimThreshold']
         stimSide = oneSession['stimSide']
-
-        print '==== Processing {0} {1} ===='.format(subject,session)
+        stimRegion = oneSession['stimRegion']
+        
+        print '==== Processing {0} {1} {2} {3} ===='.format(subject,session,stimRegion,stimSide)
 
         videoPath = settings.VIDEO_PATH
         filenameOnly = subject+'_'+session+'.mkv'
