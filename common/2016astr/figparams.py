@@ -19,8 +19,8 @@ colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
 colp['frontStrColor'] = cp.TangoPalette['Chameleon3']
 colp['backStrColor'] = cp.TangoPalette['Plum2']
 
-colp['MidFreqR'] = cp.TangoPalette['Chameleon3']
-colp['MidFreqL'] = cp.TangoPalette['ScarletRed1']
+colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
+colp['MidFreqL'] = cp.TangoPalette['Chameleon3']
 
 colp['muscimol'] = cp.TangoPalette['Orange2']
 

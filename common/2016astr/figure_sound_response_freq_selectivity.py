@@ -25,7 +25,7 @@ PANELS = [1,1,1] # Which panels to plot
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'figure_sound_freq_selectivity' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [10,3.5]
 
 fontSizeLabels = figparams.fontSizeLabels
@@ -298,8 +298,9 @@ if PANELS[1]:
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    plt.ylim([0,10])
-    plt.yticks([0,10])
+    yLims = [0,16]
+    plt.ylim(yLims)
+    plt.yticks(yLims)
     extraplots.boxoff(plt.gca())
     #plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
 
@@ -345,10 +346,13 @@ if PANELS[2]:
     #plt.legend(handles=[sig_patch,nonsig_patch], loc='upper center', fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2)
     '''
     plt.hold(True)
-    binsEdges = np.linspace(-1,1,18)
-    plt.hist(responseIndEachCell, bins=binsEdges, color='0.75')
-    plt.hist(responseIndEachCell[freqSelective], bins=binsEdges, color='k')
+    binsEdges = np.linspace(-1,1,20)
+    #plt.hist(responseIndEachCell, bins=binsEdges, color='0.75')
+    #plt.hist(responseIndEachCell[freqSelective], bins=binsEdges, color='k')
+    plt.hist([responseIndEachCell[freqSelective],responseIndEachCell[~freqSelective]], bins=binsEdges, color=['k','darkgrey'],
+             edgecolor='None',stacked=True)
     
+    plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     plt.xlabel('Sound response index',fontsize=fontSizeLabels)
     plt.ylabel('Number of cells',fontsize=fontSizeLabels)
 
