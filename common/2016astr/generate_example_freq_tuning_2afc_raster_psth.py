@@ -63,7 +63,11 @@ cellParamsList = [{'firstParam':'test053',
                   {'firstParam':'adap017',
                    'behavSession':'20160317a',
                    'tetrode':5,
-                   'cluster':3}] #sustained strong response to mid freqs
+                   'cluster':3},#sustained strong response to mid freqs
+                  {'firstParam':'adap015',
+                   'behavSession':'20160205a',
+                   'tetrode':6,
+                   'cluster':5}]#suppressed in tuning&2afc 
 
 for cellParams in cellParamsList:
     mouseName = cellParams['firstParam']
