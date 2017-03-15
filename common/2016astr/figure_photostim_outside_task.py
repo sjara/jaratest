@@ -146,19 +146,19 @@ if PANELS[1]:
             sessionsThisSubject = sessionsThisCond & (subject==oneSubject)
             samples = (180/np.pi) * np.concatenate(deltaHeadAngle[sessionsThisSubject])# From radians to degrees
             samples = samples[:maxSamplesToInclude]
-            xvals = np.tile(xPos[indc]+0.1*indSubject-0.2,len(samples))
+            xvals = np.tile(xPos[indc]+0.1*indSubject-0.1,len(samples))
             plt.plot(xvals,samples,'o',marker=markerEachSubject[indSubject],mfc='none',mec='0.75', zorder=-1,clip_on=False)
             meanVal = np.mean(samples)
             seVal = np.std(samples)/np.sqrt(len(samples))
             meanEachCondEachSubject[indc].append(meanVal)
             #[pline,pcap,pbar] = plt.errorbar(xPos[indc]+0.1*indSubject-0.2, meanVal, seVal, color=colorThisCond)
-            pmark = plt.plot(xPos[indc]+0.1*indSubject-0.2, meanVal,markerThisCond,mfc=colorThisCond,mec='None')
+            pmark = plt.plot(xPos[indc]+0.1*indSubject-0.1, meanVal,markerThisCond,mfc=colorThisCond,mec='None')
     extraplots.boxoff(ax3)
     plt.ylabel('Change in angle (deg)')
     ax3.set_yticks(np.arange(-200,300,100))
     #plt.ylim([-200,200])
     plt.ylim(300*np.array([-1,1]))
-    plt.xlim([-0.7,4.5])
+    plt.xlim([-0.7,4.1])
     ax3.axes.get_xaxis().set_visible(False)
     ax3.spines['bottom'].set_visible(False)
     signifYpos = 300 #220
