@@ -223,7 +223,7 @@ if PANELS[2]:
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Modulation index', fontsize=fontSizeLabels)
-    plt.ylabel('Number of cells', fontsize=fontSizeLabels, labelpad=labelDis)
+    plt.ylabel('Number of cells', fontsize=fontSizeLabels) #, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
 plt.show()
