@@ -229,3 +229,34 @@ exp6.add_session('16-41-48', 'c', 'am', 'am_tuning_curve')
 exp6.add_session('17-00-23', None, 'laserpulse2', 'am_tuning_curve')
 exp6.add_session('17-02-47', None, 'lasertrain2', 'am_tuning_curve')
 exp6.add_session('17-05-48', 'd', 'tc', 'am_tuning_curve') #Woke mouse at 540 trials
+
+exp7 = celldatabase.Experiment(subject,
+                               '2017-03-16',
+                               brainarea='rightThal',
+                               info='extraLateralDiD') #probe facing medial.
+experiments.append(exp7)
+exp7.add_site(3512, tetrodes=range(1, 9))
+exp7.add_session('14-32-29', None, 'laserpulse', 'am_tuning_curve') #artifacts from the laser for sure
+
+exp7.add_site(3670, tetrodes=range(1, 9))
+exp7.add_session('14-37-23', None, 'laserpulse', 'am_tuning_curve')
+exp7.add_session('14-38-47', None, 'lasertrain', 'am_tuning_curve')
+exp7.add_session('14-40-39', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3707, tetrodes=range(1, 9))
+exp7.add_session('14-43-59', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('14-45-19', None, 'laserpulse', 'am_tuning_curve')
+exp7.add_session('14-47-14', None, 'lasertrain', 'am_tuning_curve')
+exp7.add_session('14-50-54', 'a', 'am', 'am_tuning_curve')
+exp7.add_session('15-05-59', 'b', 'tc', 'am_tuning_curve')
+exp7.add_session('15-38-20', None, 'laserpulse2', 'am_tuning_curve')
+exp7.add_session('15-39-44', None, 'lasertrain2', 'am_tuning_curve')
+
+exp7.add_site(3800, tetrodes=range(1, 9))
+exp7.add_session('15-45-57', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('15-47-35', None, 'laserpulse', 'am_tuning_curve')
+exp7.add_session('15-49-33', None, 'lasertrain', 'am_tuning_curve')
+exp7.add_session('15-53-18', 'c', 'am', 'am_tuning_curve')
+exp7.add_session('16-13-51', 'd', 'tc', 'am_tuning_curve')
+exp7.add_session('16-46-39', None, 'laserpulse2', 'am_tuning_curve')
+exp7.add_session('16-49-08', None, 'lasertrain2', 'am_tuning_curve')
