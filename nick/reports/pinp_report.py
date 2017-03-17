@@ -11,12 +11,14 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import extraplots
 
 from jaratest.nick.database import dataplotter
+reload(dataplotter)
 
 #Define the gridspec for the report
 
 def plot_pinp_report(cell, saveDir):
     plt.clf()
     gs = gridspec.GridSpec(9, 6)
+    gs.update(left=0.15, right=0.95, bottom=0.15, wspace=1, hspace=1)
 
     #Laser pulse raster
     ax0 = plt.subplot(gs[0:2, 0:3])
@@ -66,14 +68,13 @@ def plot_pinp_report(cell, saveDir):
 
     #TC heatmap
     ax5 = plt.subplot(gs[6:8, 0:3])
-    if spikeData.timestamps is not None:
-        try:
-            dataplotter.two_axis_heatmap(spikeData.timestamps,
-                                        eventOnsetTimes,
-                                        firstSortArray = bdata['currentIntensity'],
-                                        secondSortArray = bdata['currentFreq'])
-        except:
-            print 'TC heatmap error'
+    dataplotter.two_axis_heatmap(spikeData.timestamps,
+                                eventOnsetTimes,
+                                firstSortArray = bdata['currentIntensity'],
+                                    secondSortArray = bdata['currentFreq'],
+                                    flipFirstAxis=False,
+                                    firstSortLabels= np.unique(bdata['currentIntensity']),
+                                    secondSortLabels = ['{:.3}'.format(freq/1000.) for freq in np.unique(bdata['currentFreq'])])
 
     #Sorted am raster
     ax6 = plt.subplot(gs[4:6, 3:6])
@@ -125,10 +126,13 @@ def plot_pinp_report(cell, saveDir):
     fig = plt.gcf()
     fig.set_size_inches(8.5, 11)
 
-    figName = 'exp{}site{}tetrode{}c{}.png'.format(int(cell['experimentInd']),
-                                                   int(cell['siteInd']),
+    figName = 'exp{}site{}_TT{}c{}.png'.format(int(cell['indExperiment']),
+                                                   int(cell['indSite']),
                                                    int(cell['tetrode']),
                                                    int(cell['cluster']))
+
+    plt.suptitle(figName[:-4])
+
     figPath = os.path.join(saveDir, figName)
     plt.savefig(figPath)
 

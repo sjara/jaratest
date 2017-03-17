@@ -1,14 +1,12 @@
 import sys; sys.path.append('/home/nick/src')
-from jaratoolbox import celldatabase
+from jaratoolbox import celldatabase as celldb
+reload(celldb)
 
-
-subject = 'test098'
-experiments=[]
+test098 = celldb.InfoRecording('test098')
 
 ## First experiment, 2016-07-26 ##
 ## Pipette is loaded with 0.25mg/ml muscimol
-exp0 = celldatabase.Experiment(subject, '2016-07-26')
-experiments.append(exp0)
+exp0 = test098.add_experiment('2016-07-26')
 exp0.add_site(3100)
 
 # First baseline session
@@ -32,8 +30,7 @@ exp0.add_session('14-52-07', 'j', 'noisebursts', 'am_tuning_curve')
 ## Second experiment, 2016-07-28 ##
 ## Pipette loaded with 0.125mg/ml muscimol
 
-exp1 = celldatabase.Experiment(subject, '2016-07-28')
-experiments.append(exp1)
+exp1 = test098.add_experiment('2016-07-28')
 exp1.add_site(3200)
 
 # First baseline session

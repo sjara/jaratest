@@ -1,82 +1,44 @@
+import os
+from jaratoolbox import settings
+import numpy as np
+import pandas
+import imp
 
-    def site_cluster_correlation(self, experiment, site, tetrode, cmap='jet'):
-        #Has to load the waves for each cluster across all the sessions of the site
-        ## Waves have to be aligned and flattened
+def generate_cell_database(inforecPath):
+    '''
+    Iterates over all sites in an inforec and builds a cell database
+    Args:
+        inforecPath (str): absolute path to the inforec file
+    Returns:
+        db (pandas.DataFrame): the cell database
+    '''
 
-        siteObj = self.inforec.experiments[experiment].sites[site]
+    inforec = imp.load_source('module.name', inforecPath)
+    db = pandas.DataFrame()
+    for indExperiment, experiment in enumerate(inforec.experiments):
+        for indSite, site in enumerate(experiment.sites):
+            clusterDir = 'multisession_exp{}site{}'.format(indExperiment, indSite)
+            for tetrode in site.tetrodes:
+                clusterStatsFn = 'Tetrode{}_stats.npz'.format(tetrode)
+                clusterStatsFullPath = os.path.join(settings.EPHYS_PATH,
+                                                    inforec.subject,
+                                                    clusterDir,
+                                                    clusterStatsFn)
+                if not os.path.isfile(clusterStatsFullPath):
+                    raise NotClusteredYetError("Experiment {} Site {} Tetrode {} is not clustered".format(indExperiment, indSite, tetrode))
+                clusterStats = np.load(clusterStatsFullPath)
 
-        idString = 'exp{}site{}'.format(experiment, site)
-
-        #Use cms to load all the waveforms
-        oneTT = cms.MultipleSessionsToCluster(siteObj.subject,
-                                              siteObj.session_ephys_dirs(),
-                                              tetrode,
-                                              idString)
-
-        oneTT.load_all_waveforms()
-        oneTT.set_clusters_from_file()
-
-        # import ipdb; ipdb.set_trace()
-
-        reportDir = 'multisession_{}'.format(idString)
-        reportFn = '{}.png'.format(tetrode)
-        reportFull = os.path.join(settings.EPHYS_PATH, siteObj.subject, reportDir, reportFn)
-
-        reportImage = mpimg.imread(reportFull)
-
-        plt.figure()
-        plt.imshow(reportImage)
-        plt.show()
-
-        clustersPerTetrode = 12
-        wavesize = 160
-
-        allWaveforms = np.empty((clustersPerTetrode, wavesize))
-
-        for indc in range(clustersPerTetrode):
-            # print 'Estimating average waveform for {0} T{1}c{2}'.format(ephysSession,tetrode,indc+1)
-
-            # DONE: get waveforms for one cluster
-            #Add 1 to the cluster index because clusters start from 1
-            waveforms = oneTT.samples[oneTT.clusters==indc+1, :, :]
-
-            alignedWaveforms = spikesorting.align_waveforms(waveforms)
-            meanWaveforms = np.mean(alignedWaveforms,axis=0)
-            allWaveforms[indc,:] = meanWaveforms.flatten()
-
-
-        ccSelf = clusteranalysis.row_corrcoeff(allWaveforms, allWaveforms)
-
-        ccSelf = np.tril(ccSelf, k=-1)
-
-        plt.figure()
-        plt.imshow(ccSelf,clim=[0,1], cmap=cmap ,interpolation='nearest')
-        plt.axis('image')
-        plt.colorbar()
-        plt.draw()
-
-        return ccSelf
-# Copied from cluster_inforec class for now
-            #TODO: 
-            if addToDB:
-                for cluster in np.unique(oneTT.clusters):
+                for indc, cluster in enumerate(clusterStats['clusters']):
                     clusterDict = {'tetrode':tetrode,
-                                   'cluster':cluster}
-                    clusterDict.update(siteObj.cluster_info())
+                                   'cluster':cluster,
+                                   'indExperiment':indExperiment,
+                                   'indSite':indSite,
+                                   'inforecPath':inforecPath,
+                                   'nSpikes':clusterStats['nSpikes'][indc],
+                                   'isiViolations':clusterStats['isiViolations'][indc]}
+                    clusterDict.update(site.cluster_info())
+                    db = db.append(clusterDict, ignore_index=True)
+    return db
 
-                    clusterTimestamps = oneTT.timestamps[oneTT.clusters==cluster]
-
-                    nspikes = len(clusterTimestamps)
-
-                    ISI = np.diff(clusterTimestamps)
-                    if len(ISI)==0:  # Hack in case there is only one spike
-                        ISI = np.array(10)
-                    isiViolations = np.mean(ISI<2e-3) # Assumes ISI in usec
-
-                    clusterDict.update({'nspikes':nspikes,
-                                        'isiViolations':isiViolations})
-
-                    clusterDict.update({'experimentInd':experiment,
-                                        'siteInd':site})
-
-                    self.db = self.db.append(clusterDict, ignore_index=True)
+class NotClusteredYetError(Exception):
+    pass
