@@ -1,0 +1,18 @@
+10:57:16 - Mouse in box on 3% iso
+
+The goal for today is to find more sound-responsive cells and record from them. We will administer CNO and record for at least one hour after we inject. The previous injection site is (0,0), and yesterday I recorded from (250um, 0). Today I will go to (250, -250). 
+11:01:17 - Mouse in box on 1.5%
+11:16:33 - Mouse off anaesthesia, electrodes at 750um
+11:28:06 - Mouse is awake, moving toward 2500
+11:30:12 - Rustling in the distance around 1500um, some fluctuations that did not show clear AP waveforms but sounded like LFP traces of cells
+11:49:34 - I have a nice cell on TT3 that is sound responsive, I am going to do the experiment here. (2765um) 
+11:50:36 - Recording experimental session. The filename is 2014-08-20_11-51-58
+12:08:31 - Injected CNO at 18mins 05seconds
+12:23:45 - Added saline to the wells at 33mins 10sec
+12:38:36 - Added saline at 48mins 25sec
+12:55:06 - Added saline to the wells at 65mins 0sec
+13:10:22 - Added saline at 80mins 10 secs
+13:26:14 - Added saline at 95mins 50sec
+13:41:51 - Added saline to the wells at 111mins 40 secs
+13:45:00 - I am going to stop the recording at 118 mins. THis will give us 100mins of post-CNO data. 
+14:03:59 - Mouse back in cage

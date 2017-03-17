@@ -1,0 +1,50 @@
+I am recording at the same A-P level as the original injection point, as far lateral as is possible with the current craniotomy. This corresponds to coordinates (in relation to the original injection site) of roughly (-100, 0). 
+
+11:37:01 - The mouse is awake from anaesthesia, electrodes are at 800um. There is a lot of damage immediatly medial to the injection site from all of the recordings that we have been doing, and I think the electrodes are bending slightly medially because of the lower amount of resistance. However, I am going to insert the electrodes and look for signals near 2700um. If I cannot find any, I will continue deeper. I will test sound responses at each stop. I am waiting here for the brain to settle. 
+
+11:44:59 - I hear activity at 1037, no spikes yet. 
+11:54:59 - Spikes on TT3 at 3056um. I tested sound responses (2014-08-25_11-52-32), and the spikes looked like they might be weakly responsive. I am going to move a little bit farther and see if there are better signals. 
+11:57:43 - Moved to 3152, which is abou the limit of how far I can go with this array without driving the polyamide tubes into the cortex. I am testing again for sound responses (2014-08-25_11-59-12). 
+12:00:12 - There are no sound responses here. 
+12:02:30 - I think I should do the experiment here anyway...
+12:05:27 - Ok I am waiting 10 mins to see if the cell stays around. 
+12:18:10 - The cell is still here. I think I should do the experiment because we are close to the area where we think the virus may be expressing. The problem is that the cells do not respond to stimuli. I will take data and then cluster the data to see if the cell reduces its firing rate. 
+
+13:20:30 - I removed the mouse and prepared to do a recording in the left well with DiI on the electrodes. OUt goal is to travel to a place where we think we know where we are, and then section the brain to see if the DiI will allow us to visualize the actual electrode tract. 
+
+13:32:54 - Mouse is off anaesthesia, the electrodes are at 800um from the surface of the tissue in the location of the original craniotomy and injection. I am going to wait here for the brain to settle  and then continue. 
+13:35:03 - I am a bit worried that if I wait for a long time the DiI will move off of the electrodes and into the tissue. So, I am going to move down. 
+13:37:39 - Nothing near 1000um, currently at 1081um. 
+13:38:29 - Nothing near 1400um. 
+13:41:38 - Nothing near 2000um. CUrrently at 2060um. 
+13:42:37 - Currently at 2500um. Nothing. Anywhere. Either this area is completely killed, which is a total possibility given the number of times we have recorded here, or the DiI is reducing the ability of the tetrodes to collect signals. 
+13:47:50 - There is nothing here. I am going to go to 2750um and hold there for at least 10 mins if I am not seeing anything, and then withdraw the electrodes. This could tell us how far away we are from the target site.
+13:53:46 - I am at 2800um and there is nothing here. I am going to let the electrodes sit here for 10-15mins.14:04:57 - I am going to remove the electrodes and prepare to do an insertion in the Right well. 
+
+14:25:19 -  I have prepared the Right well, recoated the electrodes with DiI, and inserted the electrodes to a depth f 850um in the location of the injection (just anterior and lateral of the center of the craniotomy. I am leaving this right now to allow the brain to settle.  
+14:38:55 - I have noisy signals at 1386um on TT3. 
+15:05:31 - No signals, currently at 2156um. 
+15:08:02 - Noisy spikes with messy waveforms on TT3 and 4 at 2480um. 
+15:21:25 - SIgnals persisted until 2750, then were gone. 
+15:24:55 - Silence all the way to 3200um. 
+15:31:38 - Silence to 3350um, which is too far. I am going to remove the electrodes and do another penetration as far from this one as I can. 
+
+15:47:05 - I removed the electrodes, cut them again, applied more DiI, and re-inserted them at the medial margin of the craniotomy, very slightly posterior of the first insertion point. I am currently at 1183um and there are some signals on TT4. 
+15:51:37 - Spikes on TT4 at 1324um. 
+15:52:34 - signals on all 4 tetrodes at 1414um. 
+15:53:12 - Signals go away by 1650um.
+15:54:17 - Signals on TT4 at 1905um, some noisy signals on TT3. Also a spike on TT2. 
+15:55:23 - Signals mostly go away by 2150um. 
+15:58:41 - Some spikes on TT3 and 4 at 2514um. 
+16:11:33 - I ahve good signals on TT4, they do not respond to sounds. However, I am at 2631 which is within the depth of the injections. 
+16:13:51 - Moved to 2700 in search of more signals. I dont really trust the the other electrodes are as good though. 
+16:16:45 - Much better signals at 2850. 
+16:22:01 - I am at 2900um and the signals on T4 are huge. I am recording the experiment. THe baseline is recording now, 2014-08-2516-23-28
+16:32:55 - I messed up by recording 10 mins of baseline without playing sounds. I am restarting the experiment, 2014-08-25_16-33-38
+16:50:46 - OPened the door at 731 trials. 
+16:53:50 - Closed the door and restarted the sounds. 
+17:37:46 - Added saline to the wells, stopping the sounds when the door was open. 
+17:54:59 - Added saline
+18:10:25 - I am stopping the experiment. The total time elapsed since injection is 1hour25mins. 
+
+
