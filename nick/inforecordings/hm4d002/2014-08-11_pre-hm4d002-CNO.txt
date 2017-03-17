@@ -1,0 +1,26 @@
+Mouse weight 25.6g
+
+16:59:12 - Mouse in box on 3% isoflurane
+17:19:56 - Mouse in rig, electrodes at 350um, isoflurane removed. 
+17:26:21 - First spikes seen/heard on TT3 at 850um
+17:29:05 - quiet all he way to 1700um, spikes on TT3. 
+17:53:27 - Spikes on both TT2 and 3 at 2888um. 
+18:04:09 - I have spikes on all four tetrodes at 3137um. The spikes on TT2 nou look the largest and have huge positive deflections. There are continuous spikes on T1, and sporadic spikes on TT3 and 4. 
+18:26:28 - I am recording the first baseline recording. I have been holding at 3137um for 20mins, and I have spikes on all of my electrodes. TT1 and 4 have the most activity. TT2 has constant cells of small magnitude, and TT4 has occasional large-magnitude spikes. 
+18:29:31 - Done recording, waiting for 3mins
+18:35:47 - Done recording second baseline, one minute until third baseline. After third baseline, I will inject CNO withoug administering anaesthesia. 
+#########COMMENT: There is no reference for the spikes.
+18:37:49 - I overshot my 3 minute waiting period - It was actuially 3min and 26sec. Recording baseline 3
+18:44:10 - Injecting CNO without anaesthesia is difficult because the mouse kicks with the unrestrained foot. I anaesthetized him lightly with isoflurane to be able to inject the CNO.
+18:45:26 - Mouse is awake 
+18:46:42 - Recording CNO1
+18:51:59 - Recording CNO2
+18:54:04 - The mouse has been shivering. With no reference, these shivers will show up on the spikes. We should try to sort the spikes and see if this reduces the amount of noise. 
+18:55:23 - THere seem to be a lot more spikes on TT3 than there were before I injected CNO. 
+19:29:26 - I am starting to ge more noise; the wells may be running out of saline. I see no difference in spiking activiry between TT1 and 4, but TT2 and 3 seem to be firing less. It is a little hard to tell with the increase in noise. I think tat I should do one more ewcording and then remove the electroddes. 
+19:31:09 - THere is an increase in spiking activity when the mouse starts to run. 
+19:32:23 - Recording last session for today. The mouse has not been running during any recording session so far. AS I type this, the mouse begins to run. So much for that. There was a 15-sec burst of running. 
+19:33:23 - More running. 
+19:34:28 - Done recording. I am removing the electrodes. 
+
+

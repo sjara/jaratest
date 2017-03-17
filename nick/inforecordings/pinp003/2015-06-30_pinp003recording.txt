@@ -1,0 +1,196 @@
+Experimenter: Lan and Nick
+
+Laser calibration:
+1mw: 1.90
+1.5mW: 2.10
+2mW: 2.30
+2.5mW: 2.50
+3mW: 2.72
+
+Impedance test (in kilo oms):
+Tetrode3: 189, 75.0, 73.5, 234
+Tetrode4: 159, 73.7, 74.7, 322
+Tetrode5: 179, 224, 265, 394
+Tetrode6: 145, 243, 152, 213
+
+1144hrs - electrodes are at 1228um from the surface. The durface looks pretty good, with minimal white growth. 
+
+1150hrs - driving down, at 1800um hearing high frequency noise (may be in hippocampus)
+
+11:54hrs - drive down to 3017um, let it rest for 10mins
+
+12:00hrs - at 3100um, tested noise response, 30 trials - no obvious response
+
+12:05hrs - at 3150um, testing noise response, 30 trials - no obvious response
+
+12:08hrs - at 3200um, testing noise response, 50 trials - no obvious response
+
+12:12hrs - at 3250um, testing noise response, 50 trials (0.3 noise amp) - weak response, try 0.4 noise amp, still weak. 
+
+12:16hrs - move to 3300um, test noise response at 0.4 amp - a bit stronger response.
+
+########################### Site 1  #############################
+12:19hrs - move to 3325um, test noise response at 0.4amp - got sound responses
+12:21hrs - test laser response, use 2.5mW laser power, do 100 trials. file = 2015-06-30_12-21-34
+possible synaptic laser response. 
+12:25hrs - test noise response again, at 0.4amp, 100 trials, file = 2015-06-30_12-25-12
+
+12:29hrs - laser train, 100 trials, at 2.5mW. file = 2015-06-30_12-28-19. looks like synaptic responses
+
+12:32hrs - tuning curve, 640 trials, file = 2015-06-30_12-32-31. behavior file identifier = 'a'
+rsync data from rig1 to jarahub, use exp.get_behavior to syn to ephys1, then run tc_heapmap
+
+12:48hrs - present characteristic frequency 7-8kHz, 2 frequencies, at 70dB. 100 trials. file = 2015-06-30_1246-58
+
+12:51hrs - laser pulst at 3mW, 100 trials. file = 2015-06-30_12-50-43
+
+12:54hrs - laser pulst at 1mW, 100 trials. file = 2015-06-30_12-53-09
+
+#######################################################################
+
+
+12:58hrs - move to 3375um 
+
+13:01hrs - test noise response, amp 0.3 file = 2015-06-30_13-01-03, no response
+
+13:04hrs - at 3420um, test noise response at 0.3 amp, 100 trials, hearing spikes. file = 2015-06-30_13-03-29. very weak resonse, high frequency units
+13:07hrs - test noise response at 0.4amp, 50 trials. no response.
+
+13:08hrs - at 3470um, Tt6 have some high frequency units. test noise response at 0.4 amp. 50 trials, no obvious response.
+
+13:11hrs - at 3525um, test noise response at 0.4 amp, 50 trials. no response.
+
+13:14hrs - at 3600um, test noise resopnse at 0.3 amp. 50 trials. no response.
+
+13:16hrs - at 3670um, test noise response at 0.3amp, 50 trials, weak response.
+13:18hrs - retest noise response at 0.4amp. 50 trials, weak response.
+
+13:19hrs - test laser response at 2.5mW, 100 trials. file = 2015-06-30_13-18-49. very weak possible response,
+13:22hrs - test laser train at 2.5mW, 100 trials. Very poor response, possibly no response at all. Moving on. 
+
+############################Site 2 ###################################
+
+13:27hrs - at 3725um, test noise response at 0.3amp, file = 2015-06-30_13-27-10. see response
+
+13:29hrs - testing laser pulst at 2.5mW, 100 trials, file  = 2015-06-30_13-28-52, see response
+
+13:32hrs - retest noise response at 0.4amp, 100 trials. file = 2015-06-30_13-31-18. nice response
+
+13:34hrs - laser train. 100 trials. file = 2015-06-30_13-33-37, weak to no response
+
+13:39hrs - laser pulse at 3.0mW. file = 2015-06-30_13-38-03, no response. keep moving
+
+################################################## Site 3
+13:40hrs - at 3775um
+
+13:43hrs - test noise response at 0.3amp, 50 trials. file = 2015-06-30_13-42-22. see response
+
+13:44hrs - test laser pulse at 2.5mW, 100 trials. file = 2015-06-30_13-44-15. Laser responsive. 
+
+13:47hrs - testing responses to laser trains. file = 2015-06-30_13-46-30
+Weakly responsive. 
+
+Tuning curve. File = 2015-06-30_13-50-36. behav file identifier = 'b'. THere are spikes on both TT3 and TT6
+
+
+BF looks like it is between 8-9kHz, so we will present that for another 100 trials. file = 2015-06-30_14-04-53
+good responses
+
+Collecting responses to laser pulses at 3mW. file = 2015-06-30_14-07-45
+better laser responses. COllecting laser trains at 3mW. file = 2015-06-30_14-10-47
+
+Responses look like indirect activation. 
+
+Collecting responses to laser pulses at 1mW. file = 2015-06-30_14-14-56
+
+################################################### Site 4 #########################3
+
+
+MOving 50um and waiting 2min for the electrodes to stabilize. 
+
+14:21hrs- testing noise response at 0.3amp, 60 trials
+CLear sound responses. Testing response to laser pulses at 2.5mW. file = 2015-06-30_14-21-48 clear laser response
+
+14:25hrs- retest noise response, 0.3amp, 100 trials. file = 2015-06-30_14-24-29. clear sound response
+
+14:27hrs - test laser train at 2.5mW, 100 trials. file = 2015-06-30_14-26-46. see laser response, looks like some direct activation, possible indirect activation too.
+
+14:31hrs - tuning cur
+ve. file = 2015-06-30_14-30-24
+behav file identifier = 'c'
+
+Presenting 8000-9000Hz for 100 trials at 70dB, file = 2015-06-30_14-43-14
+
+Presenting laser pulses at 3mW for 100 trials. FIle = 2015-06-30_14-46-08
+
+LAser pulses at 1mW, 100 trials. File = 2015-06-30_14-48-26
+
+############################################ Site 5 #################################3
+14:51hrs- At 3875um, let it rest for 2min
+
+14:54hrs- test noise response at 0.3amp, 100 trials, file = 2015-06-30_14-54-11. see good sound response
+
+14:58hrs- test laser pulse response at 2.5mW, 100 trials. file = 2015-06-30_14-57-06. clear laser response
+
+15:00hrs- test laser train at 2.5mW. 100 trials. file = 2015-06-30_14-59-21. see laser response.
+
+15:04hrs- tuning curve. file = 2015-06-30_15-03-22
+behav file identifier = 'd'
+
+Presenting 6000-7000Hz for 100 trials at 70dB. file = 2015-06-30_15-16-21
+
+Presenting laser pulses at 3mW. file = 2015-06-30_15-18-39
+Presenting laser pulses at 1mW. FIle = 2015-06-30_15-20-58
+
+############################ Site 6 ##########################
+
+15:25hrs - move to 3925um
+
+15:29hrs - test sound response, noise 0.3amp, 100 trials. clear sound response in TT3 and TT6
+
+15:31hrs - test laser pulse at 2.5mW, 100 trials, file = 2015-06-30_15-30-36. see laser response on TT6, TT3 very faint, maybe some response.
+
+15:34hrs - laser train at 2.5mW, 100 trials. file = 2015-06-30_15-33-02
+
+15:37hrs - tuning curve. file = 2015-06-30_15-36-46.  Behav file identifier = 'e'
+
+BF between 8 and 9 kHz, presenting for 100 trials at 70dB. file = 2015-06-30_15-51-29
+
+Presenting laser pulses at 3mW. File = 2015-06-30_15-54-13
+
+Presenting laser pulses at 1mW. File = 2015-06-30_15-56-19
+
+####################################Site 7 #################################
+16:00hrs - at 3975um, waited 2mins
+
+16:02hrs- test noise response, 0.3amp, 100 trials. file = 2015-06-30_16-01-48. clear sound response in TT6 and TT3
+
+16:05hrs - laser pulse at 2.5mW, 100 trials. file = 2015-06-30_16-04-17. weak laser response in TT6 and TT3
+
+16:08hrs- laser train at 2.5mW, 100 trials. file = 2015-06-30_16-06-40. looks like direct responses in TT3 and TT6 
+
+16:10hrs- tuning curve. file = 2015-06-30_16-10-28. Behav file identifier = 'f'
+
+BF between 5 and 7 kHz, presenting 100 trials at 70dB. file = 2015-06-30_16-25-53
+
+Presenting laser pulses at 3mW. file = 2015-06-30_16-29-36
+May have stopped the behavior before the ephys, I was confused. 
+
+
+Presenting laser pulses at 1mW. file = 2015-06-30_16-31-34
+
+1645hrs - moved to 4025um, waited 2 mins. 
+
+Apikes on TT3, presenting noise bursts. File = 2015-06-30_16-45-16
+Good sound responses on TT3 and TT6. Presenting laser pulses at 2.5mW. file = 2015-06-30_16-48-00
+LAser responses on TT3 and TT6. Presenting trains of pulses, file = 2015-06-30_16-50-51
+
+Good responses. recording tuning curve, file = 2015-06-30_16-56-14
+behavior file = 'g'
+
+BF is around 8.1kHz, presenting 7-8kHz for 100 trials at 70 dB. file = 2015-06-30_17-09-09
+
+
+Presenting laser pulses at 3mW. file = 2015-06-30_17-12-29
+
+Presenting 1mW laser pulses. file = 2015-06-30_17-15-02

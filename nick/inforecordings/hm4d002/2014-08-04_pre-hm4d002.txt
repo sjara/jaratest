@@ -1,0 +1,33 @@
+2014-08-04
+First recording from [[hm4d002]]
+
+I am testing the new tetrode array that I will be using to record from [[hm4d002]]. The electrode impedences are as follows:
+*TT1: 185, 379, 81.1, 81.9
+*TT2: 236, 134, 161, 163
+*TT3: 152, 286, 270, 178
+*TT4: 266, 126, 178, 191
+
+*Spatial layout:
+**TT2 - 0um
+**TT3 and 4 - 100um
+**TT1 - 150um
+
+For today, we are going to be making sure the brain surface looks ok and then attempting to go to the MGB. I know that the sites of the previous injections are just lateral and anterior from the centers of the wells. These injections were at -3.2mm from bregma and 2mm from the midline. Based on my previous injections of DiI, I estimated the coordinates of the MGB to be -3.0mm from bregma and 2.1mm from the midline. This means that I should aim slightly more anterior and more lateral than the sites of the previous injections. 
+
+15:06:51 - Mouse on anaesthesia at 3%
+15:12:26 - Mouse moved to rig, anaesthesia lowered to 1.5%
+15:37:49 - Removing anaesthesia, tetrodes at 990um from surface of tissue
+15:49:56 - Mouse is awake. Moving to 1500 um by 100 um intervals
+15:52:34 - Some spikes on TT2, wide waveforms
+16:05:36 - Moving away from huge spikes near 1600um. Now at 1700, smaller signals on TT1 and some large signals on TT2 still
+
+16:25:01 - Recording 2014-08-04_16-25-54 at 2378um playing 10msec bursts of white noise. The mouse is attempting to move a lot during the recording, which could introduce a lot of noise. The mouse is not used to being in the recording rig, and is more uneasy in the dark. 
+16:39:43 - 2439 um, spikes on TT2. No clear activity locked to sounds.
+16:44:23 Recording 2014-08-14_16-45-35 at 2439 um palying 100msec bursts of white noise. -- Increased spikes after 100msec
+17:10:18 - Spikes on TT1 at 2750um. Recording 2014-08-04_17-11-30
+17:28:34 - Recorded 2014-08-04_17-25-04, cells on TT1, loss activity on TT2 after the burst of noise
+17:53:39 - Recording 2014-08-04_17-54-34 at 3250um while playing 10msec bursts of white noise. Some Spikes on TT2
+17:58:53 - We think that there are sound responses on TT2. THere is a lot of activity with a latency of about 15msec
+18:03:44 - We are recording 2014-08-04_18-04-45 presenting Chords (100msec). 3250um.
+18:33:44 - We ran into an issue lining up the events and had to use a potentially dangerous fix. However, the resulting plot suggests that these cells may be rsponsive to sound. We need to analyze the data in more detail to see what went wrond with the alignment. 
+18:35:10 - I am removing the electrodes. 

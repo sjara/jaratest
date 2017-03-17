@@ -90,17 +90,26 @@ if __name__=='__main__':
     # plt.savefig('/tmp/{}_muscimolPlot20161212.png'.format(animal))
 
     #Fluorescent muscimol 1.25 ticks at 0.5mg/ml
-    plt.figure()
-    animal = 'adap033'
-    muscimolSessions = ['20161207a']
-    salineSessions = ['20161205a']
-    muscimol_plot(animal, muscimolSessions, salineSessions)
-    plt.savefig('/tmp/{}_fluorescentMus_1.25ticks.png'.format(animal))
+    # plt.figure()
+    # animal = 'adap033'
+    # muscimolSessions = ['20161207a']
+    # salineSessions = ['20161205a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+    # plt.savefig('/tmp/{}_fluorescentMus_1.25ticks.png'.format(animal))
+
+    # #Fluorescent muscimol 2.5 ticks at 0.5mg/ml
+    # plt.figure()
+    # animal = 'adap033'
+    # muscimolSessions = ['20161208a']
+    # salineSessions = ['20161205a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+    # plt.savefig('/tmp/{}_fluorescentMus_2.5ticks.png'.format(animal))
+
 
     #Fluorescent muscimol 2.5 ticks at 0.5mg/ml
     plt.figure()
-    animal = 'adap033'
-    muscimolSessions = ['20161208a']
-    salineSessions = ['20161205a']
+    animal = 'adap034'
+    muscimolSessions = ['20170115a']
+    salineSessions = ['20170114a']
     muscimol_plot(animal, muscimolSessions, salineSessions)
-    plt.savefig('/tmp/{}_fluorescentMus_2.5ticks.png'.format(animal))
+    plt.savefig('/tmp/{}_FCM_4ticks.png'.format(animal))

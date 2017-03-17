@@ -33,7 +33,12 @@ cellParamsList = []
 exampleCell = {'firstParam':'adap017',
               'behavSession':'20160411a',
               'tetrode':3,
-              'cluster':10}
+              'cluster':10} #modulated
+cellParamsList.append(exampleCell)
+exampleCell = {'firstParam':'adap017',
+              'behavSession':'20160414a',
+              'tetrode':4,
+               'cluster':9} #modulated, sustained
 cellParamsList.append(exampleCell)
 '''
 exampleCell = {'firstParam':'test053',
@@ -57,7 +62,11 @@ exampleCell = {'firstParam':'test055',
               'tetrode':4,
                'cluster':7} #Not modulated
 cellParamsList.append(exampleCell)
-
+exampleCell = {'firstParam':'adap017',
+              'behavSession':'20160317a',
+              'tetrode':5,
+               'cluster':3} #Not modulated, sustained
+cellParamsList.append(exampleCell)
 '''
 ## OLDER example now removed due to duplicate clusters
 exampleCell = {'firstParam':'adap017',
@@ -69,7 +78,7 @@ cellParamsList.append(exampleCell)
 ####################################################################################
 
 scriptFullPath = os.path.realpath(__file__)
-timeRange = [-0.5,1]
+timeRange = [-0.2,0.4]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
@@ -170,7 +179,7 @@ for cellParams in cellParamsList:
 
         # -- Save raster intermediate data -- #    
         #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-        outputFile = 'example_psycurve_{}Hz_soundaligned_raster_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
+        outputFile = 'example_psycurve_soundaligned_raster_{}Hz_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
         outputFullPath = os.path.join(dataDir,outputFile)
         np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['colorL'], colorRightTrials=colorsDict['colorR'], frequencyPloted=middleFreq, **cellParams)
 
@@ -181,6 +190,6 @@ for cellParams in cellParamsList:
 
         # -- Save psth intermediate data -- #
         #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-        outputFile = 'example_psycurve_{}Hz_soundaligned_psth_{}_{}_T{}_c{}.npz'.format( middleFreq, oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
+        outputFile = 'example_psycurve_soundaligned_psth_{}Hz_{}_{}_T{}_c{}.npz'.format( middleFreq, oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
         outputFullPath = os.path.join(dataDir,outputFile)
         np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, colorLeftTrials=colorsDict['colorL'], colorRightTrials=colorsDict['colorR'], frequencyPloted=middleFreq, **cellParams)

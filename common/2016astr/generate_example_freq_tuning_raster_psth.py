@@ -28,7 +28,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 if not os.path.exists(dataDir):
     os.mkdir(dataDir)
 
-timeRange = [-0.5,1]
+timeRange = [-0.2,0.4]
 binWidth = 0.010
 scriptFullPath = os.path.realpath(__file__)
 
@@ -44,18 +44,22 @@ if not os.path.ismount(EPHYS_PATH):
 
 
 # -- Select an example cell from allcells file -- #
-cellParamsList = [{'firstParam':'adap020',
-                   'behavSession':'20160420a',
-                   'tetrode':3,
+cellParamsList = [{'firstParam':'test053',
+                   'behavSession':'20150625a',
+                   'tetrode':5,
+                   'cluster':3},
+                  {'firstParam':'test055',
+                   'behavSession':'20150313a',
+                   'tetrode':8,
                    'cluster':5},
-                  {'firstParam':'test089',
-                   'behavSession':'20150804a',
-                   'tetrode':7,
-                   'cluster':9},
-                  {'firstParam':'test089',
-                   'behavSession':'20150911a',
-                   'tetrode':7,
-                   'cluster':7}]
+                  {'firstParam':'test055',
+                   'behavSession':'20150307a',
+                   'tetrode':4,
+                   'cluster':3},
+                  {'firstParam':'adap017',
+                   'behavSession':'20160317a',
+                   'tetrode':5,
+                   'cluster':3}]
 
 for cellParams in cellParamsList:
     mouseName = cellParams['firstParam']
@@ -98,9 +102,9 @@ for cellParams in cellParamsList:
     np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes, possibleFreq=possibleFreq, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, timeRange=timeRange,trialsEachFreq=trialsEachFreq, script=scriptFullPath, **cellParams)
 
     # -- Calculate and store intermediate data for tuning psth -- #
-    freqScaleFactor = 3 #factor to reduce number of frequencies plotted by
-    possibleFreq = possibleFreq[1::freqScaleFactor] #select just a subset of frequencies to plot
-    trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
+    #freqScaleFactor = 3 #factor to reduce number of frequencies plotted by
+    #possibleFreq = possibleFreq[1::freqScaleFactor] #select just a subset of frequencies to plot
+    #trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
 
     timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
