@@ -24,6 +24,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 colorsDict = {'colorL':figparams.colp['MidFreqL'], 
               'colorR':figparams.colp['MidFreqR']} 
+timeRange = [-0.3,0.5]
 
 #dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
@@ -39,15 +40,15 @@ else:
 '''
 figFilename = 'plots_modulation_switching'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [12,8]
+figSize = [7,5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 labelDis = 0.1
 
-labelPosX = [0.1, 0.46]   # Horiz position for panel labels
-labelPosY = [0.9, 0.46]    # Vert position for panel labels
+labelPosX = [0.02, 0.54]   # Horiz position for panel labels
+labelPosY = [0.95, 0.48]    # Vert position for panel labels
 
 #COLORMAP = {'leftTrials':'red', 'rightTrials':'green'}
 
@@ -56,7 +57,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 2)
-gs.update(left=0.15, right=0.85, wspace=0.3, hspace=0.3)
+gs.update(left=0.12, right=0.98, top=0.95, bottom=0.1, wspace=0.3, hspace=0.3)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.1)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,1], hspace=0.1)
@@ -87,7 +88,7 @@ if PANELS[0]:
     colorEachCond = rasterExample['colorEachCond']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
+    #timeRange = rasterExample['timeRange']
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
@@ -116,7 +117,7 @@ if PANELS[0]:
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
-    timeRange = psthExample['timeRange']
+    #timeRange = psthExample['timeRange']
 
     extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
@@ -126,7 +127,7 @@ if PANELS[0]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    #plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlim(timeRange)
     yLims = [0,40]
     plt.ylim(yLims)
     plt.yticks(yLims)
@@ -148,7 +149,7 @@ if PANELS[1]:
     colorEachCond = rasterExample['colorEachCond']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
+    #timeRange = rasterExample['timeRange']
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
@@ -178,14 +179,14 @@ if PANELS[1]:
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
-    timeRange = psthExample['timeRange']
+    #timeRange = psthExample['timeRange']
 
     extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     #plt.legend()
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    #plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlim(timeRange)
     yLims = [0,20]
     plt.ylim(yLims)
     plt.yticks(yLims)

@@ -59,7 +59,7 @@ cellParamsList = [{'firstParam':'test089',
 '''
 ####################################################################################
 scriptFullPath = os.path.realpath(__file__)
-timeRange = [-0.2,0.4]
+timeRange = [-0.5,1]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0

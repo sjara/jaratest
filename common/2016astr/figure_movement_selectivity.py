@@ -62,11 +62,11 @@ gs = gridspec.GridSpec(4, 3)
 gs.update(left=0.1, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
 
 
-# -- Panel A: representative raster during movement from switching task -- #
+# -- Panel A: representative raster during movement  -- #
 ax1 = plt.subplot(gs[0:3, 0])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
-rasterFilename = 'example_movement_sel_raster_adap017_20160330a_T4_c11.npz' #test059_20150629a_T2_c7
+rasterFilename = 'example_movement_sel_raster_adap017_20160330a_T4_c11.npz' #adap013_20160406a_T8_c4  #test059_20150629a_T2_c7
 rasterFullPath = os.path.join(dataDir, rasterFilename)
 rasterExample =np.load(rasterFullPath)
 
@@ -91,11 +91,11 @@ ax1.set_xticklabels([])
 #plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
 
 
-# -- Panel A2: representative psth during movement from switching task -- #
+# -- Panel A2: representative psth during movement  -- #
 #ax2 = plt.subplot(gs[3,0], sharex=ax1)
 ax2 = plt.subplot(gs[3,0])
 
-psthFilename = 'example_movement_sel_psth_adap017_20160330a_T4_c11.npz' #test059_20150629a_T2_c7 
+psthFilename = 'example_movement_sel_psth_adap017_20160330a_T4_c11.npz' #adap013_20160406a_T8_c4  #test059_20150629a_T2_c7 
 psthFullPath = os.path.join(dataDir, psthFilename)
 psthExample =np.load(psthFullPath)
 
@@ -125,7 +125,7 @@ plt.yticks(yLims)
 plt.xticks(np.arange(-0.2,0.6,0.2))
 extraplots.boxoff(plt.gca())
 
-# -- Panel B: Another representative raster during movement from switching task -- #
+# -- Panel B: Another representative raster during movement, more responsive to ipsilateral movement-- #
 ax1 = plt.subplot(gs[0:3, 1])
 ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
@@ -154,7 +154,7 @@ ax1.set_xticklabels([])
 #plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
 
 
-# -- Panel B2: representative psth during movement from switching task -- #
+# -- Panel B2: representative psth during movement  -- #
 #ax2 = plt.subplot(gs[3,0], sharex=ax1)
 ax2 = plt.subplot(gs[3,1])
 

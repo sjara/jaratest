@@ -25,6 +25,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 colorsDict = {'colorL':figparams.colp['MidFreqL'], 
               'colorR':figparams.colp['MidFreqR']} 
+timeRange = [-0.3,0.5]
 
 # -- Select example cells here -- #
 exampleModulatedSharp = '11607Hz_adap017_20160411a_T3_c10'
@@ -43,24 +44,24 @@ if removedDuplicates:
 else:
     figFilename = 'plots_choice_modulation_psychometric' # Do not include extension
 '''
-figFilename = 'figure_choice_modulation_psychometric'
+figFilename = 'figure_modulation_psychometric'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [12,4]
+figSize = [7,3.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
-labelDis = 0.1
+#labelDis = 0.1
 
-labelPosX = [0.1, 0.37, 0.62]   # Horiz position for panel labels
-labelPosY = [0.9, 0.46]    # Vert position for panel labels
+labelPosX = [0.05, 0.4, 0.7]   # Horiz position for panel labels
+labelPosY = [0.9]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.15, right=0.85, wspace=0.3, hspace=0.3)
+gs.update(left=0.12, right=0.98, bottom=0.15, wspace=0.45, hspace=0.1)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,0], hspace=0.1)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.1)
@@ -94,7 +95,7 @@ if PANELS[0]:
     colorEachCond = rasterExample['colorEachCond']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
+    #timeRange = rasterExample['timeRange']
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
@@ -125,7 +126,7 @@ if PANELS[0]:
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
-    timeRange = psthExample['timeRange']
+    #timeRange = psthExample['timeRange']
 
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
@@ -134,9 +135,9 @@ if PANELS[0]:
     yLims = [0,100]
     plt.ylim(yLims)
     plt.yticks(yLims)
-    #plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlim(timeRange)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels,labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
 
@@ -153,7 +154,7 @@ if PANELS[1]:
     colorEachCond = rasterExample['colorEachCond']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
+    #timeRange = rasterExample['timeRange']
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
@@ -184,7 +185,7 @@ if PANELS[1]:
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
-    timeRange = psthExample['timeRange']
+    #timeRange = psthExample['timeRange']
 
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
@@ -194,12 +195,12 @@ if PANELS[1]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    #plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlim(timeRange)
     yLims = [0,25]
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
 # -- Panel D: summary distribution of psychometric modulation index -- #

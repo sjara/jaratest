@@ -195,14 +195,14 @@ if PANELS[0]:
     trialsEachCond = rasterExample['trialsEachFreq']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
+    #timeRange = rasterExample['timeRange']
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
     colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
-                                                   timeRange,
+                                                   timeRangeSound,
                                                    trialsEachCond=trialsEachCond,
                                                    colorEachCond=colorEachFreq,
                                                    labels=labels)
@@ -236,7 +236,7 @@ if PANELS[0]:
         plt.setp(line, label=labels[ind])
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlim(timeRangeSound)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylim([0,80])
@@ -256,14 +256,14 @@ if PANELS[1]:
     trialsEachCond = rasterExample['trialsEachFreq']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
+    #timeRange = rasterExample['timeRange']
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
     colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
-                                                   timeRange,
+                                                   timeRangeSound,
                                                    trialsEachCond=trialsEachCond,
                                                    colorEachCond=colorEachFreq,
                                                    labels=labels)
@@ -295,7 +295,7 @@ if PANELS[1]:
         plt.setp(line, label=labels[ind])
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlim(timeRangeSound)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis
     yLims = [0,10]
