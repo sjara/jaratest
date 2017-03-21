@@ -26,9 +26,13 @@ if len(sys.argv)>1:
 else:
     tetrode = 3
     
-subject = 'gosi004'
+#subject = 'gosi004'
 #ephysSession = '2017-02-11_15-46-30'
-ephysSession = '2017-02-11_15-54-13'
+#ephysSession = '2017-02-11_15-54-13'
+
+subject = 'd1pi015'
+ephysSession = '2016-08-07_16-48-07'
+
 srate = 30000.0
 
 '''
