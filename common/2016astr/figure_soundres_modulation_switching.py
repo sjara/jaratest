@@ -194,7 +194,7 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-# -- Panel D: summary distribution of switching modulation index -- #
+# -- Panel D: summary distribution of switching modulation index, total cells is good cells in striatum (nonduplicate) that are responsive to mid freq -- #
 #ax6 = plt.subplot(gs[2:,2:4])
 ax6 = plt.subplot(gs[1,0])
 ax6.annotate('D', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
@@ -233,5 +233,6 @@ if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
 # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
+print 'Total number of good cells responsive to mid frequency is:', len(sigModulated), '\nNumber of cells significantly modulated is:', sum(sigModulated)
 (T, pVal) = stats.wilcoxon(summary['modulationIndex'])
 print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal

@@ -239,5 +239,6 @@ if SAVE_FIGURE:
 
 
 # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
+print 'Total number of good cells responsive to mid frequency is:', len(sigModulated), '\nNumber of cells significantly modulated is:', sum(sigModulated)
 (T, pVal) = stats.wilcoxon(summary['modulationIndex'])
 print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal
