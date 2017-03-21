@@ -126,6 +126,7 @@ if PANELS[0]:
 
 # -- Panel C: another representative photostim psycurves -- #
 ax4 = plt.subplot(gs[1,2:])
+ax4.annotate('C', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     rightExampleFilename = 'example_photostim_psycurve_d1pi015_20160901a.npz'
     rightExampleFullPath = os.path.join(dataDir,rightExampleFilename)
@@ -187,6 +188,7 @@ if PANELS[1]:
 
 # -- Panel D: summary for effect of photostim on performance -- #
 ax5 = plt.subplot(gs[1,:2])
+ax5.annotate('D', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
     #summaryFilename = 'summary_photostim_percent_contra_choice_change.npz'
     summaryFilename = 'summary_photostim_percent_right_choice_change.npz'
@@ -224,13 +226,14 @@ if PANELS[2]:
     print 'd1pi016 p value for bias resulting from left vs right hemi stim is: {}'.format(lvrpVal016)
 
     # -- Select the first 10 sessions from each hemi each mouse so that they have equal number of sessions -- #
-    left014 = left014[:11]
-    left015 = left015[:11]
-    left016 = left016[:11]
-    right014 = right014[:11]
-    right015 = right015[:11]
-    right016 = right016[:11]
-
+    maxSessionNum = 10
+    left014 = left014[:maxSessionNum]
+    left015 = left015[:maxSessionNum]
+    left016 = left016[:maxSessionNum]
+    right014 = right014[:maxSessionNum]
+    right015 = right015[:maxSessionNum]
+    right016 = right016[:maxSessionNum]
+    print 'Only plotting the first {} sessions in the summary panel.'.format(maxSessionNum) 
     ax5.axhline(y=0, color='k', linestyle='-')
     np.random.seed(7) #2
     for animal,leftData in zip(['d1pi014','d1pi015','d1pi016'],[left014,left015,left016]):
@@ -270,8 +273,7 @@ if PANELS[2]:
     labelDis = 0.1
     #plt.xlabel('Photostimulation', fontsize=fontSizeLabels) # labelpad=labelDis
     plt.ylabel('Rightward bias (%)\n stim - control', fontsize=fontSizeLabels) # labelpad=labelDis
-    ax5.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-
+    
     extraplots.boxoff(ax5)
     ax5.spines['bottom'].set_visible(False)
     [t.set_visible(False) for t in ax5.get_xticklines()]

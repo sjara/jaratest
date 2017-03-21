@@ -195,7 +195,9 @@ if 1 in panelsToPlot:
 
     rects1 = ax2.bar(ind, 100*(dataMat[:, :, 0].mean(1)-0.5), width, bottom=50, edgecolor='k', facecolor='w', lw=2)
     rects2 = ax2.bar(ind+width, 100*(dataMat[:, :, 1].mean(1)-0.5), width, bottom=50, edgecolor=muscimolColor, facecolor='w', lw=2)
-
+    for i in ind:
+        extraplots.significance_stars([i+0.5*width,i+1.5*width], 95, 2, starSize=10, gapFactor=0.2, color='0.5')
+    
     ax2.set_xticks(ind + width)
     ax2.set_xticklabels(np.arange(6)+1, fontsize=fontSizeLabels)
     ax2.set_xlabel('Mouse', fontsize=fontSizeLabels)
