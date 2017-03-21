@@ -1,0 +1,137 @@
+The first thing I am doing is recording the laser output with and without the filter. I have just cleaned the fiber by immersing it in water and then using a kimwipe piece held with forceps. 
+
+Max Output - Display says 60.2mW
+Fiber output without filter: 16.5mW
+With filter: 0.174mW
+
+Intermediate output: Display says 28.4mW
+Fiber output without filter: 8.1mW
+With filter: 90.0uW
+
+Low output: Display says 4.1mW
+Fiber output without filter: 1.2mW
+With filter: 5.5uW
+
+The optimal range on the dial for this laser seems to be from 3 to 7. 
+
+Dial at 3, display says 11.1mW
+Fiber output without filter: 3.5mW
+With filter: 30.9uW
+
+Dial at 4, display says 19.9mW
+Fiber output without filter: 5.72mW
+With filter: 63.0uW
+
+Dial at 5, display says 27.5
+Fiber output without filter: 8.02mW
+With filter: 86.3uW
+
+Dial at 6, display says 36.7mW
+Fiber output without filter: 10.14mW
+with filter: 114.9uW
+
+Dial at 7, display says 45.8mW
+Fiber output without filter: 12.44mW
+With filter: 139.5uw
+
+
+
+The next goal is to cut the tetrodes and measure the impedence. The tetrodes currently extend about 825um past the end of the fiber, and they should not extend more than 500um. Additionally, it may be beneficial to cut the tetrodes at an angle. 
+
+The tetrodes were cut to all the same length. They now extend past the end of the optical fiber by 325um. 
+
+TT3: 199, 173, 305, 215
+TT4: 130, 35, 35, 121
+TT5: 213, 133, 90, 90
+TT6: 408, 229, 161, 179
+
+
+RECORDING - The laser is at 1.2mW
+
+1306hrs - Lowered electrodes slowly to 885 from the surface. No sign of visually-evoked or laser-evoked responses. No spikes. 
+1320hrs - At 1023um, no spikes or responses to the laser. 
+
+1325hrs - at1135um, there are some tiny spikes. I am recording laser responses. file=2015-06-19_13-26-22
+There are totally laser-evoked responses here. Presenting 3 0.01sec pulses at 1.2mW. ISI=1.2sec. We did 260 trials. 
+
+I am now presenting longer laser pulses. Stim suration = 0.1sec, ISI = 1.2sec Power=1.2mW (4.1 on the dial)
+File = 2015-06-19_13-35-05 
+
+I am testing to see if there are sound responses. File = 2015-06-19_13-40-04
+There are no sound responses, but we do hear whooshing when we flash the light over the contralateral eye. 
+
+THis is all good news. I am going to keep moving.
+
+1347hrs - MOved to 1180, we see excelent cells on TT4 that clearly respond to the laser. Recording laser stim. File = 2015-06-19_13-47-16
+
+At the end of this file I am going to stop the laser protocol and then flash the flashlight to see if we can elict some non-laser-evoked spiking in the neurons as well. 
+ Stopped the laser after 160 trials. I am opening the door and flashing the flashlight now. 
+Opening the door and flashing increased the number of spikes on the tetrode significantly. Hopefully we can compare this activity to the laser-evoked activity. 
+
+I am going to present longer laser bursts now. 0.1sec pulses with 1.2sec isi. File = 2015-06-19_13-55-35
+We might be losing the cells because there is not a lot of activity now. 
+Now it looks like the evoked activity is on tetrode 5, and the activity on tetrode 4 is weaker. Recorded 103 trials. 
+There might be some direct and synaptic activation going on in this recording. 
+
+I am opening the door to check the saline before testing for sound responses. File = 2015-06-19_14-00-47
+Recorded 200 trials. 
+
+
+1409hrs - at1357um, we have gotten away from the cells that we were recording. There is not an obvious response to the laser anymore (just by listening). We do not hear or see any spikes. 
+
+1411hrs - At 1389 we hear some strange choppy sounds. Possibly interneurons or axons? Testing laser responses (0.01sec bursts, 1.2sec isi, 1.2mW at tip, 4.1mW on the dial). File = 2015-06-19_14-11-39
+
+There are laser responses for sure. There are both low-latency responses and longer latency responses. There are good cells on TT4 and 5
+Presenting 150 trials. 
+
+Recording responses to longer laser pulses. 0.1sec stim, 1.2sec isi. File = 2015-06-19_14-16-42
+Recording sound responses. File = 2015-06-19_14-23-03. 0.1sec bursts of noise, 0.9sec isi, 0.1amp
+
+
+1455hrs - at 1943um we bothered a lot of cells at once. Large spikes from many cells. 
+
+1500hrs - at 2061um there are many large spikes on TT4 and 5. Recording sound responses. File = 2015-06-19_14-59-15. 0.1sec bursts with 0.9sec isi
+No responses yet
+
+There are many large spikes in this area, higher frequency as well. 
+
+1526hrs - at 2401um, spikes on TT5 and 6 mostly, opssible sound responses. We are recording noise bursts. File = 2015-06-19_15-25-51
+
+No obvious responses yet
+
+1530hrs - at 2502 we lost some of the large cells and things became much quieter. There are still some cells on TT3
+
+1531hrs - at 2502, possible sound responses. Testing. FIle = 2015-06-19_15-31-51
+
+
+1538hrs - around 2600um things got very quiet. Still quiet at 2744
+
+1540hrs - at 2753 we found cells again. Good waveforms on TT4, testing for sound responss. File = 2015-06-19_15-39-25
+No obvious responses yet. 
+
+
+
+1600hrs - We have very little clearence left between the end of the cannula and the side of the well. There are cells on TT5 and 6, testing sound responses. File = 2015-06-19_15-59-53
+No obvious responses. 
+
+1610hrs - at 3050um, There are good spikes on TT6 that might be sound responsive. Testing with noise, 0.1sec bursts, 0.9sec isi, 0.2 amp. 
+File = 105-06-19_16-09-08
+No obvious response
+
+1615hrs - 3098um - Spikes on TT3 that might be sound responsive. Testing with 0.2amp noise bursts. 
+No obvious responses.
+
+1633hrs - 3299um, some spikes on TT4 that make a squeaking noise. Testing sound responsiveness. File = 2015-06-19_16-31-55
+ 
+1640hrs - 3438um, spikes on TT4. Testing for sound responses, File = 2015-06-19_16-40-20
+No Responses
+
+
+1647hrs - 3571um, spikes on TT4. Testing for sound responses, file = 2015-06-19_16-46-29
+No responses
+
+Some laser responses File = 2015-06-19_16-58-05
+still at 3571um. No sound responses. 
+
+
+at 3429um, saw some laser responses. Recording sound responses, File = 2015-06-19_17-07-19

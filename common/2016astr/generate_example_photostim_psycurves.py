@@ -38,20 +38,27 @@ nStimTypes = len(stimTypes)
 psycurveDict = {}
 for stimType in range(nStimTypes):
     if np.any(trialsEachType[:,stimType]):
+        print 'Analyzing {0}_{1} {2}'.format(animal,session,stimLabels[stimType])
         # -- Calculate and store psychometric curve points -- #
         targetFrequencyThisBlock = targetFrequency[trialsEachType[:,stimType]]    
         validThisBlock = valid[trialsEachType[:,stimType]]
         choiceRightThisBlock = choiceRight[trialsEachType[:,stimType]]
         (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue)=\
-    behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)
+            behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)
         psycurveDict['possibleValues'] = possibleValues
         psycurveDict['fractionHitsEachValue_{}'.format(stimLabels[stimType])] = fractionHitsEachValue
         psycurveDict['ciHitsEachValue_{}'.format(stimLabels[stimType])] = ciHitsEachValue
         psycurveDict['nTrialsEachValue_{}'.format(stimLabels[stimType])] = nTrialsEachValue
         psycurveDict['nHitsEachValue_{}'.format(stimLabels[stimType])] = nHitsEachValue
         # -- Fit psycurve and store fitted values -- #
-        constraints = None
+        #constraints = None
         logPossibleValues = np.log2(possibleValues)
+        lowerFreqConstraint = logPossibleValues[0]
+        upperFreqConstraint = logPossibleValues[-1]
+        constraints = ( 'Uniform({}, {})'.format(lowerFreqConstraint, upperFreqConstraint),
+                        'Uniform(0,5)' ,
+                        'Uniform(0,1)',
+                        'Uniform(0,1)')
         data = np.c_[logPossibleValues,nHitsEachValue,nTrialsEachValue]
         # linear core 'ab': (x-a)/b; logistic sigmoid: 1/(1+np.exp(-(xval-alpha)/beta))
         psyCurveInference = psi.BootstrapInference(data,sample=False, sigmoid='logistic', core='ab',priors=constraints, nafc=1)
@@ -72,7 +79,7 @@ np.savez(outputFullPath, animal=animal, session=session, script=scriptFullPath,*
 
 # -- Example psycurve under photostim of right hemisphere -- #
 animal = 'd1pi015'
-session = '20160817a'
+session = '20160901a'
 
 bdata = behavioranalysis.load_many_sessions(animal,[session])
 targetFrequency=bdata['targetFrequency']
@@ -90,20 +97,27 @@ nStimTypes = len(stimTypes)
 psycurveDict = {}
 for stimType in range(nStimTypes):
     if np.any(trialsEachType[:,stimType]):
+        print 'Analyzing {0}_{1} {2}'.format(animal,session,stimLabels[stimType])
         # -- Calculate and store psychometric curve points -- #
         targetFrequencyThisBlock = targetFrequency[trialsEachType[:,stimType]]    
         validThisBlock = valid[trialsEachType[:,stimType]]
         choiceRightThisBlock = choiceRight[trialsEachType[:,stimType]]
         (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue)=\
-    behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)
+             behavioranalysis.calculate_psychometric(choiceRightThisBlock,targetFrequencyThisBlock,validThisBlock)
         psycurveDict['possibleValues'] = possibleValues
         psycurveDict['fractionHitsEachValue_{}'.format(stimLabels[stimType])] = fractionHitsEachValue
         psycurveDict['ciHitsEachValue_{}'.format(stimLabels[stimType])] = ciHitsEachValue
         psycurveDict['nTrialsEachValue_{}'.format(stimLabels[stimType])] = nTrialsEachValue
         psycurveDict['nHitsEachValue_{}'.format(stimLabels[stimType])] = nHitsEachValue
         # -- Fit psycurve and store fitted values -- #
-        constraints = None
+        #constraints = None
         logPossibleValues = np.log2(possibleValues)
+        lowerFreqConstraint = logPossibleValues[0]
+        upperFreqConstraint = logPossibleValues[-1]
+        constraints = ( 'Uniform({}, {})'.format(lowerFreqConstraint, upperFreqConstraint),
+                        'Uniform(0,5)' ,
+                        'Uniform(0,1)',
+                        'Uniform(0,1)')
         data = np.c_[logPossibleValues,nHitsEachValue,nTrialsEachValue]
         # linear core 'ab': (x-a)/b; logistic sigmoid: 1/(1+np.exp(-(xval-alpha)/beta))
         psyCurveInference = psi.BootstrapInference(data,sample=False, sigmoid='logistic', core='ab',priors=constraints, nafc=1)

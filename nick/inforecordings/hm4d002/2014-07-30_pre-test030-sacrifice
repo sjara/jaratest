@@ -1,0 +1,30 @@
+09:09:56 - we are going to insert the tetrodes to roughly 2500, look for large cells, and then anaesthetize the mouse and lesion the brain before sacrificing. 
+09:48:26 - Anaesthesia on 3%
+10:13:06 - Anaesthesia reduced to 1.5%
+10:17:05 - Anaesthesia turned off, mouse still on 100% oxygen so that the mask does not have to be removed from the face. 
+10:29:18 - Held at 2000um untile mouse was awake. Now moving by 100um until I see cells. 
+10:42:40 - Did not see any cells until 3150um. 
+10:46:12 - Cell on TT2, small magnitude, fires quickly and constantly. 
+10:49:17 - I am able to disconnect the headstage and reconnect it without losing the cells.
+10:57:33 - The Tetrode called TT1 on the board corresponds to channels 9-12, TT2 corresponds to 13-16, TT3 corresponds to 17-20, and TT4 corresponds to 21-24.
+11:16:19 - We removed the electrodes to determine which physical pis on the EIB are represented by the different channels in openEphys. We have now re-inserted the electrodes and are at 700um. Advancing by 100um until we find spiking cells. The array is near the center of the Right craniotomy. 
+11:26:15 - I found a cell on TT4 that I think responds to visual stimuli @1580um
+11:51:37 - I have a giant cell on TT4 at 3100um. There is also a smaller signal on TT1. I am recording Spikes ref TT3 and LFPs filteres 10-6000Hz with no reference. 2014-07-31_11-54-18
+11:53:50 - COMMENT - There is occasionally a break in the audio while recording. It has happened to me twice, with the most recent time just after this note timestamp. I am not sure whether this affects the data or if it is only an audio bug. 
+11:57:30 - I am turning on the anaesthesia at 3%
+11:58:48 - Turning anaesthesia back off. The cells we saw were gone very quickly after the onset of anaesthesia, and we are not sure whether the animal moved them or if the difference is due to the anaesthesia. 
+12:02:29 - Recording 2014-07-30_12-03-45 and turning anaesthesia back to 3% at 1min from start of recording. The animal is kicking violently as soon as the anaesthesia is tuned on.
+12:04:16 - THe large spikes are gone, but there are some small spikes that remain on TT4. 
+12:05:08 - There are no more spikes on TT4. We will record a total of 4mins. 
+12:06:17 - THe animal is completely anaesthetized and not moving. 
+12:06:47 - Total length of recording is 4mins 17sec.
+12:07:04 - The animal is breathing at a rate of 2bps. 
+12:07:36 - I see sporadic, small magnitude spikes on TT4. 
+12:24:42 - We attempted to lesion through TT4 using both the well as a ground and the tounge as a ground. We attempted to lesion using the well ground twice for 10 seconds each, and the toungue ground once for ten seconds. We then reconnected the headstage and removed the anaesthesia. Once the animal wakes up, we will move further. 
+12:48:31 - The mouse is now fully awake. I no longer see cells on TT4, which could either mean that our lesion worked or that the electrodes moved inside the brain during the anaesthesia changes or the lesioning process. 
+12:50:11 - I am going to continue moving. I estimate that the MGB will be about 1000um farther, or 4100um total from 0. If we see signals there, we will attempt to evaluate sund responsiveness. If we do not, I am going to move past that point and try to find hippocampus-like signals again. 
+12:57:24 - The screw on the tetrode array is impacting the pile of dental acrylic that surrounds the headbar attachment. I do not think that I can move any farther. 
+13:06:33 - I manually backed the screw off, which I believe did not affect the position of the bottom of the ube holding the electrodes. While this may have altered the location of the electrodes in the brain, I can now continue to move. I am going to do so, although the vertical bar attached to the skull is th next obstacle. I believe I have about a mm of cleatence between the top of the vertical bar the the bottom of the recording array. I need to design a better array for use with the micromanipulator. 
+13:13:49 - I have spikes on TT4, medium magnitude. 4070um. 
+13:14:16 - Spikes on TT4 are firiing rapidly. 
+13:23:37 - I see cells on TT4 at 4242um, Recording 2014-07-30_13-25-28 while playing 20msec bursts of white noise at 0.8 amp. The spikes on TT4 look clean but I cannot tell whether or not they look locked to the stimulus. The audio stream is still breaking up sporadically, it may be linked to the tecording. 

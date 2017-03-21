@@ -3,7 +3,7 @@ from jaratoolbox import celldatabase
 subject = 'pinp005'
 experiments = []
 
-exp0 = celldatabase.Experiment(subject, '2015-08-05')
+exp0 = celldatabase.Experiment(subject, '2015-08-05', brainarea='cortex')
 experiments.append(exp0)
 
 # site1=rd.add_site(depth=1135, tetrodes=[ 3 ])
@@ -40,7 +40,7 @@ exp0.add_session('00-17-11', 'h', 'TuningCurveLower', 'laser_tuning_curve', date
 exp0.add_session('00-20-17', None, 'LaserTrain', 'laser_tuning_curve', date='2015-08-06')
 exp0.add_session('00-24-39', 'i', 'TuningCurveHigher', 'laser_tuning_curve', date='2015-08-06') #Another 160 trials at 70dB to get a better TC for TT4 - it has a very high threshold
 
-exp1 = celldatabase.Experiment(subject, '2015-08-10')
+exp1 = celldatabase.Experiment(subject, '2015-08-10', brainarea='cortex')
 experiments.append(exp1)
 
 # site1 = rd.add_site(depth = 1399, tetrodes = [3, 6])

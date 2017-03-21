@@ -32,7 +32,7 @@ goodcells = (allcells_switching.cellQuality.isin(qualityList)) & (allcells_switc
 cellsInStr = allcells_switching.cellInStr==1
 keepAfterDupTest = allcells_switching.keep_after_dup_test
 allcells = allcells_switching[goodcells & cellsInStr & keepAfterDupTest] #just look at the good cells THAT ARE IN STR 
-sigMod = np.array((allcells.modSig<=0.05), dtype=bool)
+sigMod = np.array((allcells.modSig<=0.05) & (allcells.modDir>=1), dtype=bool) 
 dataToPlot = {'modulated':sigMod,'modulationIndex':allcells.modIndex,'animalName':allcells.animalName}
 
 ### Save data ###

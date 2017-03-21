@@ -45,6 +45,7 @@ for indf in range(nFrames):
     imshow(newimg)
     draw()
     show()
+    waitforbuttonpress()
 
 
 

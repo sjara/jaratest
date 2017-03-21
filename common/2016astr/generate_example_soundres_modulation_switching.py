@@ -42,9 +42,9 @@ cellParamsList = [{'firstParam':'test089',
                    'tetrode':1,
                    'cluster':7}, #modulated, duplicate
                   {'firstParam':'adap020',
-                   'behavSession':'20160524a',
+                   'behavSession':'20160526a',
                    'tetrode':2,
-                   'cluster':9}] #last cell not modulated
+                   'cluster':9}] #not modulated
 
 '''
 # OLD examples removed due to duplicate
