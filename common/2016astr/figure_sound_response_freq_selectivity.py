@@ -195,14 +195,14 @@ if PANELS[0]:
     trialsEachCond = rasterExample['trialsEachFreq']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
+    #timeRange = rasterExample['timeRange']
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
     colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
-                                                   timeRange,
+                                                   timeRangeSound,
                                                    trialsEachCond=trialsEachCond,
                                                    colorEachCond=colorEachFreq,
                                                    labels=labels)
@@ -236,7 +236,7 @@ if PANELS[0]:
         plt.setp(line, label=labels[ind])
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlim(timeRangeSound)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylim([0,80])
@@ -248,7 +248,7 @@ if PANELS[0]:
 ax6 = plt.subplot(gs01[0:3,:])
 ax6.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
-    rasterFilename = 'example_freq_tuning_2afc_raster_adap017_20160405a_T3_c7.npz' #test055_20150307a_T5_c3 
+    rasterFilename = 'example_freq_tuning_2afc_raster_adap015_20160205a_T6_c5.npz'#adap017_20160405a_T3_c7 #test055_20150307a_T5_c3 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
 
@@ -256,14 +256,14 @@ if PANELS[1]:
     trialsEachCond = rasterExample['trialsEachFreq']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
+    #timeRange = rasterExample['timeRange']
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
     colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
-                                                   timeRange,
+                                                   timeRangeSound,
                                                    trialsEachCond=trialsEachCond,
                                                    colorEachCond=colorEachFreq,
                                                    labels=labels)
@@ -275,7 +275,7 @@ if PANELS[1]:
 
     ax7 = plt.subplot(gs01[3,:])
 
-    psthFilename = 'example_freq_tuning_2afc_psth_adap017_20160405a_T3_c7.npz' 
+    psthFilename = 'example_freq_tuning_2afc_psth_adap015_20160205a_T6_c5.npz' #adap017_20160405a_T3_c7
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
@@ -295,10 +295,10 @@ if PANELS[1]:
         plt.setp(line, label=labels[ind])
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.xlim(timeRangeSound)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    yLims = [0,16]
+    yLims = [0,10]
     plt.ylim(yLims)
     plt.yticks(yLims)
     extraplots.boxoff(plt.gca())

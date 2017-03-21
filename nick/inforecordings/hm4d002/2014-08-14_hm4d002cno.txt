@@ -1,0 +1,25 @@
+The goal for today's experiment is to get cells on multiple tetrodes between 2500 and 2800um, which is where we think the cells are expressing the virus. We will inject CNO and wait for a while to see whether or not it is affecting the cells. 
+
+10:40:50 - Mouse is waking up, electrdes at 732um. 
+11:00:29 - Lots of spikes on TT3 aqt 921, balloon noises like cells dying. No clear visual response, but possible. 
+11:02:54 - Occasional spikes between 950 and 1110um, messy waveforms
+11:04:33 - CLose to cells (sounds like), some balloon noises but no clear spikes between 1110 and 1300um
+11:05:31 - Small magnitude spikes on TT3 at 1385um. 
+11:06:43 - Quiet to 1560um
+11:07:32 - Small spikes on TT3 at 1610um, expecially when running. 
+11:08:19 - Larger magnitude cells near 1750um, TT3
+11:11:54 - Spikes on TT3 at 2380um. I am close to where I want to be. 
+11:15:30 - At 2800um, still cells on TT3 only. I am going to wait for 10 mins for things to stabilize before I do anything else. 
+11:17:01 - PIcking up a spike on TT2
+11:18:07 - Picking up larger spikes on TT3
+11:24:32 - THe spikes on TT3 are getting larger. I am tempted to move a little more and try to pick them up on other electrodes as well. 
+11:27:51 - 3032um. The spikes on TT3 have gotten larger and more numerous, and there is a little more activity on TT2. I am going to wait here and see what happens. 
+11:34:54 - At least 2, possibly 3 or more large-magnitude cells on TT3. Still not much on the others, except for a few small-magnitude spikes on TT2. Since I have multiple good cells, I am going to wait and record here. I am not sure whether or not I will be able to find the cells again if I keep moving. I will wait another few minutes before starting with a baseline. 
+11:38:36 - Ok starting with baseline. 
+11:44:37 - After the first baseline recording I had to add saline to the wells. I will still inject after the third baseline recording. THe mouse is running during the second baseline recording, and the firing rate seems higher. THere are now more cellls on TT2 s well, and the waveforms are larger. 
+11:46:34 - THese recordings reference TT1 (Elec. 9) THis might mean that some of the spikes files will be empty and we will need to use a try loop in the code to skip them. 
+11:49:47- I'm going to try to do an IP injection without using isoflurane this time.
+11:50:34 - I am using a waterbath to bring the CNO up to body temperature. I am going to try to inject 500ul (double what we usually inject). 
+11:58:31 - I just injected 500ul IP. This means that the animal recieved 500ug of CNO, or roughly 20mg/kg. THere was some leakage from the injection site. I started the fourth recording on time, about 1min after injection. 
+12:01:38 - Based on the clusters for TT3, I believe that I did not cause movement of the recording site or the tetrode array while injecting. 
+13:18:42 - I am recording the last CNO trial for today. I think that the cells with the large waveforms did reduce their firing, but I could also have lost them. I see sporadic large-magnitude spikes, although most spikes now are much smaller. The spikes on TT2 look very similar to when we started. 

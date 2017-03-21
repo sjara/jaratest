@@ -28,7 +28,7 @@ FIGNAME = 'sound_freq_selectivity'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
-timeRange = [-0.2,0.4]
+timeRange = [-0.5,0.8]
 binWidth = 0.010
 scriptFullPath = os.path.realpath(__file__)
 paradigm = '2afc'
@@ -63,7 +63,11 @@ cellParamsList = [{'firstParam':'test053',
                   {'firstParam':'adap017',
                    'behavSession':'20160317a',
                    'tetrode':5,
-                   'cluster':3}] #sustained strong response to mid freqs
+                   'cluster':3},#sustained strong response to mid freqs
+                  {'firstParam':'adap015',
+                   'behavSession':'20160205a',
+                   'tetrode':6,
+                   'cluster':5}]#suppressed in tuning&2afc 
 
 for cellParams in cellParamsList:
     mouseName = cellParams['firstParam']

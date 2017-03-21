@@ -1,8 +1,8 @@
 '''
-Generate and store intermediate data for plot showing movement-aligned firing activity of astr neurons recorded in switching task, only middle frequency is plotted. Data for raster and psth are saved separately. 
+Generate and store intermediate data for plot showing movement-aligned firing activity of astr neurons recorded in psychometric/switching task. Data for raster and psth are saved separately. 
 For raster data, output contains spikeTimestamps, eventOnsetTimes, freqEachTrial.
 For psth data, output contains spikeCountMat, timeVec, freqEachTrial.
-
+Trials from all frequencies that have either a valid left or right choice are plotted
 Lan Guo20161223
 '''
 import os
@@ -45,15 +45,23 @@ if not os.path.ismount(EPHYS_PATH):
 cellParamsList = [{'firstParam':'test059',
                    'behavSession':'20150629a',
                    'tetrode':2,
-                   'cluster':7},
+                   'cluster':7}, #more responsive to left
                   {'firstParam':'test055',
                    'behavSession':'20150313a',
                    'tetrode':7,
                    'cluster':6}, #more responsive to right
                   {'firstParam':'adap017',
+                   'behavSession':'20160317a',
+                   'tetrode':1,
+                   'cluster':6}, #more responsive to right, not so much different though
+                  {'firstParam':'adap013',
+                   'behavSession':'20160406a',
+                   'tetrode':8,
+                   'cluster':4}, #more responsive to left
+                  {'firstParam':'adap017',
                    'behavSession':'20160330a',
                    'tetrode':4,
-                   'cluster':11}] #more responsive to left
+                   'cluster':11}]  #more responsive to left
 
 for cellParams in cellParamsList:
     mouseName = cellParams['firstParam']
@@ -108,18 +116,20 @@ for cellParams in cellParamsList:
 
 
     # -- Select trials to plot from behavior file -- #
-    possibleFreq = np.unique(bdata['targetFrequency'])
-    numFreqs = len(possibleFreq)
+    #possibleFreq = np.unique(bdata['targetFrequency'])
+    #numFreqs = len(possibleFreq)
 
     # -- Select trials of middle frequency to plot, determine whether to plot by block -- #
-    middleFreq = possibleFreq[numFreqs/2] #selects middle frequency, using int division resulting in int property. MAY FAIL IN THE FUTURE
+    #middleFreq = possibleFreq[numFreqs/2] #selects middle frequency, using int division resulting in int property. MAY FAIL IN THE FUTURE
     #pdb.set_trace()
-    oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
+    #oneFreq = bdata['targetFrequency'] == middleFreq #vector for selecing trials presenting this frequency
     rightward = bdata['choice']==bdata.labels['choice']['right']
     leftward = bdata['choice']==bdata.labels['choice']['left']
 
-    trialsToUseRight = rightward & oneFreq
-    trialsToUseLeft = leftward & oneFreq
+    #trialsToUseRight = rightward & oneFreq
+    #trialsToUseLeft = leftward & oneFreq
+    trialsToUseRight = rightward
+    trialsToUseLeft = leftward
     condLabels = ['go left', 'go right']
     trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
     colorEachCond = [colorsDict['left'],colorsDict['right']]
@@ -140,7 +150,7 @@ for cellParams in cellParamsList:
     #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], frequencyPloted=middleFreq, **cellParams)
+    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) #frequencyPloted=middleFreq,
 
 
     # -- Calculate additional arrays for plotting psth -- #
@@ -151,4 +161,4 @@ for cellParams in cellParamsList:
     #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_movement_sel_psth_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession,oneCell.tetrode,oneCell.cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], script=scriptFullPath, frequencyPloted=middleFreq, **cellParams)
+    np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], script=scriptFullPath, **cellParams) #frequencyPloted=middleFreq,

@@ -1,0 +1,175 @@
+I made new tetrodes this morning and attached them to a new optical fiber that was installed by santiago. The fiber now extends 6mm past the end of the cannula, and the tetrodes extend past that.
+
+I then calibrated the speakers. The last two frequencies in the calibration set were not able to output at 60db SPL (with the voltage less than 0.5). The voltage for these two settings is at 0.5. 
+
+I need to calibrate the laser and test the electrode impedence. 
+
+Laser calibration
+
+1.79 on dial, 2.3 on display, 1.08mW output
+2.01 on dial, 3.5 on display, 1.96mW output
+2.19 on dial, 5.0 on display, 2.99mW output
+
+
+TT3 and TT6 are longest and the same length
+TT4 and TT5 are the same length and 250um shorter than the others. 
+
+Impedence measurementes
+TT3 198, 71.8, 71,7, 244
+TT4 170, 81.3, 81.3, 311
+TT5 209, 298, 272, 397
+TT6 136, 260, 152, 192
+
+1431hrs - Mouse is on the rig and awake. Tetrodes are in the brain at 876um from the surface of the tissue. There has been some tissue growth, so our depths will probably be shallow. Fast spikes on TT6
+
+Moved to 1145um, some spikes on TT3. Fast spiking like the previous ones. New spikes on TT6 that respond to visual stimuli. 
+
+Moved to 1507um. There are spikes on TT5. Monitoring the channel, seems like it responds to visual stimuli. 
+
+
+Strange clicking sounds from the ephys system. Large fast spikes that appear on all of the channels. 
+
+1448hrs - at 2010um from the surface, No spikes but still strange noisy clicks. 
+
+1452hrs - at 2584um. No spikes. 
+
+1533hrs - at 3382um, spikes on TT6 that display possible sound responses. File = 2015-06-22_15-29-06
+
+
+Testing laser responses (train stimulus) File = 2015-06-22_15-33-51
+No obvious response
+
+1540hrs - at 3400um. Spikes on TT6, sound responsive. File = 2015-06-22_15-36-35
+0.1sec white noise bursts at 0.2amp 230 trials
+
+
+Testing laser train responses. File = 2015-06-22_15-41-25
+0.01sec laaser pulses, 5Hz, 5 of them per train, 1sec isi, 1mW at fiber tip
+
+POssible laser responses. Testing with laser pulses. File = 2015-06-22_15-45-13
+0.1sec pulses, 0.9sec isi, 1mW
+possible laser responses. Testing with a tuning curve. 
+
+16 frequencies between 2kHz and 30kHz, 4 intensities between 40 and 70dB, 0.1sec tones, 0.8sec isi, 10 reps of each. (640 trials needed.)
+
+I can hear some of the frequencies when they are presented. THis could be because the saline in the wells is getting low. I wshould consider using agar. I am going to let this protocol run without messing with the mouse for fear of losing the cells. However, I should make sure the wells are full in the future before starting a protocol. 
+
+686 trials total, 11min recording. ephys file = 2015-06-22_15-49-20
+behavior file = pinp003_laser_tuning_curve_20150622a.h5
+
+
+
+1609hrs, at 3435um. Large spikes on TT6 that sound like they are responsive to the noise bursts. Testing. File = 2015-06-22_16-08-22
+Same cells as before? THere is plenty of saline in the wells this time. 
+CLearly sound responsive. 
+
+Testing responses to laser pulses. File = 2015-06-22_16-11-46
+No clear laser responses. Will keep moving. 
+
+1617hrs - at 3529um, cells that seem like they may be responsive to both sounds and the laser. Recording responses to noise bursts. File = 2015-06-22_16-16-21
+
+Very sound responsive. Recording responses to the laser. File = 2015-06-22_16-19-24
+
+Not much going on in response to the long pulses. Trying shorter trains of pulses. FIle = 2015-06-22_16-22-22
+
+No obvious laser responses
+
+
+1628hrs, at 3558um. Testing laser train responses. File = 2015-06-22_16-27-38. No obvious responses
+
+1635hrs, at 3654um. Testing sound responses. File = 2015-06-22_16-34-30. No obvious sound responses. 
+
+1641hrs, at 3656um. Testing sound responses. File = 2015-06-22_16-40-12. Looks weakly sound responsive. 
+Testing laser responses (pulse) file = 2015-06-22_16-44-48. Not laser responsive. 
+
+
+1656hrs - at 3656um. Tested responses to a train of laser pulses (2015-06-22_16-51-09). This site looks like it is weakly responsive, althought the most obvious increase in activity comes at the 0.2sec mark. 
+Testing sound responses. file = 2015-06-22_16-55-49. 
+The site look weakly sound responsive. 
+Testing responses to longer laser pulse. File = 2015-06-22_17-01-22
+Not obviously laser responsive. 
+
+
+1708hrs - 3706um - Cells on TT6 that seem laser and sound responsive. testing sound responses. File = 2015-06-22_17-07-17
+Weakly responsive. 
+Testing Laser pulse response. File = 2015-06-22_17-11-11
+Not obviously responsive. Testing responses to trains. File = 2015-06-22_17-15-05
+No obvious responses. 
+
+1719hrs - 3780um. Cells on TT6. Testing sound responses, file = 2015-06-22_17-18-54
+Clearly Sound responsive. Testing laser train responses, file = 2015-06-22_17-21-40
+No clear response. Testing laser pulses instead. file = 2015-06-22_17-23-25
+No response. 
+
+1728hrs - 3807um. Cells on TT6, testing for laser pulse responses. No obvious responses. 
+
+1735hrs - 3881um. Testing for response to laser train. file = 2015-06-22_17-34-25
+No obvious response. Recording response to noise bursts. File = 2015-06-22_17-40-50
+Sound Responsive. Recording responses to laser pulses. File = 2015-06-22_17-45-02
+
+Recording tuning curve. You can hear some of the stimuli through the rig speaker - we still have some noise problems to fix. 
+Ephys File = 2015-06-22_17-49-29
+Behavior File = pinp003_laser_tuning_curve_20150622b.h5
+Referencing channel 10 in spike channel map
+
+1805hrs - 3931um. Cells that appear to be laser responsive on TT6 - testing with pulses. File = 2015-06-22_18-04-11
+
+1811hrs - 3960um. Testing responses to laser train. File = 2015-06-22_18-10-11
+No obvious response. 
+
+1813hrs - 4051um. No sound responses. May be past the thalamus. 
+
+Backing up to 3400 at this point. I will look for responses one more time. 
+
+No responses. I am removing the tetrodes. I am going to re-insert them and go back to 3400 a bit more medial and anterior. 
+
+
+1823hrs - Re-inserted the tetrodes more anterior. Went to 3764 on Slow-high setting, no stopping until 3400. Evaluating sound responses. file = 2015-06-22_18-22-14
+Sound Responsive. 
+Testing responses to laser train. File = 2015-06-22_18-29-36
+
+
+1840 - 3764um Recording laser train with 3mW laser. Obvious laser responses. Recording more trials File = 2015-06-22_18-39-21
+VERY GOOD LASER RESPONSES at 3mW
+
+Recording sound responses with 0.4amp
+100msec bursts every 1.9sec
+File = 2015-06-22_18-44-39
+
+
+Not much response to the loud sounds. Testing quieter sounds
+Amp=0.1, 100msec bursts, 0.9sec isi
+File = 2015-06-22_18-49-47
+Not much response to the softer sounds. 
+
+Re-doing the 0.2amp tuning curve. 0.9isi, 100msec bursts. File = 2015-06-22_18-52-28
+
+Tuning curve
+Ephys file = 2015-06-22_18-57-35
+Behavior = pinp003_laser_tuning_curve_20150622c.h5
+
+We think that the cell responds most to 7kHz-8.5kHz, so we are presenting these two frequencies for more trials. File = 2015-06-22_19-43-42
+Behavdata=pinp003_laser_tuning_curve_20150622d.h5
+
+Excellent sound responses
+
+Recording 100msec laser pulses. FIle = 2015-06-22_19-52-23
+3mW laser
+One locked spike per trial and then a silencing effect
+
+Recording 100msec laser pulses with 2mW laser. file = 2015-06-22_19-57-14
+
+Recording 100msec laser pulses with 1mW laser. File = 2015-06-22_19-59-48
+
+Recording faster laser trains (stim onset async = 0.05sec) with 3mW laser intensity
+file = 2015-06-22_20-07-44
+
+Recording laser train 3mW 0.2 soa file = 2015-06-22_20-11-12
+
+Recording laser train 3mW with 0.2soa again to get more trials. file = 2015-06-22_20-11-12
+
+Recording laser train 3mW with 0.1soa file = 2015-06-22_20-20-18
+
+Recording laser train 3mW with 0.05soa file = 2015-06-22_20-25-00
+
+Recording laser train 3mW with 0.03soa file = 2015-06-22_20-28-18

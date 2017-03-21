@@ -65,8 +65,9 @@ np.savez(outputFullPath, **resultsDict)
 
 # -- Plot hist -- #
 plt.figure()
-responseTimesToPlot = allRespTimes[~np.isnan(allRespTimes)] 
-plt.hist(responseTimesToPlot, bins=100)
+responseTimesToPlot = 1000*allRespTimes[~np.isnan(allRespTimes)] 
+plt.hist(responseTimesToPlot, bins=1000)
+plt.xlabel('response time (ms)')
 plt.show()
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
