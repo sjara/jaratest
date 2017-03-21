@@ -354,12 +354,11 @@ def suppression_stats(cell):
     freqEachTrial = tuningBData['currentFreq']
     atBestFreq = at_best_freq(spikeTimeStamps, eventOnsetTimes, charFreq, freqEachTrial)
     if len(cellInfo['laserIndex'])>0:
-        laserIndex = cellInfo['laserIndex'][-1]
-        eventData = loader.get_session_events(cellInfo['ephysDirs'][laserIndex])
-        spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][laserIndex], cellInfo['tetrode'], cluster=cellInfo['cluster'])
+        eventData = loader.get_session_events(cellInfo['ephysDirs'][cellInfo['laserIndex'][-1]])
+        spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][cellInfo['laserIndex'][-1]], cellInfo['tetrode'], cluster=cellInfo['cluster'])
         eventOnsetTimes = loader.get_event_onset_times(eventData)
         spikeTimestamps = spikeData.timestamps
-        laserResponse = laser_response(spikeTimeStamps, eventOnsetTimes)
+        laserResponse = laser_response(spikeTimestamps, eventOnsetTimes)
     else:
         laserResponse = False
     return suppressionStats, atBestFreq, laserResponse
@@ -374,7 +373,7 @@ def at_best_freq(spikeTimeStamps, eventOnsetTimes, charFreq, frequencies, timeRa
                                                                                                         eventOnsetTimes,
                                                                                                         fullRange)
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
-    baseTimeRange = [timeRange[1]+0.1, fullRange[1]]
+    baseTimeRange = [timeRange[1]+0.2, fullRange[1]]
     baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseTimeRange)
     baselineSpikeRate = np.mean(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
     baselineSpikeSDev = np.std(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
@@ -394,25 +393,31 @@ def at_best_freq(spikeTimeStamps, eventOnsetTimes, charFreq, frequencies, timeRa
             atBestFreq = True
     return atBestFreq
 
-def laser_response(spikeTimeStamps, eventOnsetTimes, timeRange=[0.0, 0.1], fullRange=[0.0, 0.7]):
+def laser_response(spikeTimeStamps, eventOnsetTimes, timeRange=[0.0, 0.1], baseRange=[0.5, 0.6]):
     spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-                                                                                                        spikeTimeStamps, 
-                                                                                                        eventOnsetTimes,
-                                                                                                        fullRange)
-    baseTimeRange = [timeRange[1]+0.1, fullRange[1]]
-    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseTimeRange)
-    baselineSpikeRate = np.mean(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
-    baselineSpikeSDev = np.std(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
+        spikeTimeStamps, eventOnsetTimes, [min(timeRange),max(baseRange)])
+    zStatsEachRange,pValueEachRange,maxZvalue = spikesanalysis.response_score(spikeTimesFromEventOnset, indexLimitsEachTrial, baseRange, timeRange)
+    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseRange)
+    baselineSpikeRate = np.mean(baseSpikeCountMat)/(baseRange[1]-baseRange[0])
     laserSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
     laserSpikeRate = np.mean(laserSpikeCountMat)/(timeRange[1]-timeRange[0])
-    return (laserSpikeRate > (baselineSpikeRate + 2*baselineSpikeSDev))
+    return (laserSpikeRate > baselineSpikeRate and pValueEachRange[0] < 0.00001)
     
 def compute_suppression_stats(spikeArray, bands):
-    SSLowAmp = (max(spikeArray[:,1])-spikeArray[:,1][-1])/max(spikeArray[:,1])
-    peakLocLowAmp = bands[np.argmax(spikeArray[:,1])]
-    SSHighAmp = (max(spikeArray[:,0])-spikeArray[:,0][-1])/max(spikeArray[:,0])
-    peakLocHighAmp = bands[np.argmax(spikeArray[:,0])]
-    return [SSLowAmp, SSHighAmp, peakLocLowAmp, peakLocHighAmp]
+    if np.shape(spikeArray)[1] > 1:
+        SSLowAmp = (max(spikeArray[:,1])-spikeArray[:,1][-1])/max(spikeArray[:,1])
+        peakLocLowAmp = bands[np.argmax(spikeArray[:,1])]
+        SSHighAmp = (max(spikeArray[:,0])-spikeArray[:,0][-1])/max(spikeArray[:,0])
+        peakLocHighAmp = bands[np.argmax(spikeArray[:,0])]
+        peakSpikeRateLowAmp = max(spikeArray[:,1])
+        peakSpikeRateHighAmp = max(spikeArray[:,0])
+        return [SSLowAmp, SSHighAmp, peakLocLowAmp, peakLocHighAmp, peakSpikeRateLowAmp, peakSpikeRateHighAmp]
+    else:
+        spikeArray = np.ndarray.flatten(spikeArray)
+        SSHighAmp = (max(spikeArray)-spikeArray[-1])/max(spikeArray)
+        peakLocHighAmp = bands[np.argmax(spikeArray)]
+        peakSpikeRateHighAmp = max(spikeArray)
+        return [None, SSHighAmp, None, peakLocHighAmp, None, peakSpikeRateHighAmp]
         
     
         

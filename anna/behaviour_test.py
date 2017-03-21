@@ -23,20 +23,35 @@ def rsync_all_behaviour(subjects):
     for subject in subjects:
         rsync_behavior(subject)
 
-def behav_stats(animalName, session, paradigm='2afc'):
-    loader = dataloader.DataLoader(animalName)
-    behavFile = loadbehavior.path_to_behavior_data(animalName,paradigm,session)
-    behavData = loader.get_session_behavior(behavFile)
-    correct = behavData['outcome']==behavData.labels['outcome']['correct']
-    early = behavData['outcome']==behavData.labels['outcome']['invalid']
-    valid = behavData['valid'].astype(bool)
+def behav_stats(animal, sessions, paradigm='2afc'):
+    loader = dataloader.DataLoader(animal)
+    nValid = 0
+    nCorrect = 0
+    for session in sessions:
+        behavFile = loadbehavior.path_to_behavior_data(animal,paradigm,session)
+        behavData = loader.get_session_behavior(behavFile)
+        correct = behavData['outcome']==behavData.labels['outcome']['correct']
+        valid = behavData['valid'].astype(bool)
+        nValid += len(valid)
+        nCorrect += len(correct[correct==True])
+    return nValid, nCorrect
     
-    nValid = len(valid)
-    nCorrect = len(correct[correct==True])
-    #performance = nCorrect.astype(float)/nValid.astype(float)
-    print 'Valid: ' + str(nValid)
-    print 'Correct: ' + str(nCorrect)
-    #print performance
+def behav_laser_stats(animal, sessions, paradigm='2afc'):
+    loader = dataloader.DataLoader(animal)
+    nValid = [0,0]
+    nCorrect = [0,0]
+    for session in sessions:
+        behavFile = loadbehavior.path_to_behavior_data(animal,paradigm,session)
+        behavData = loader.get_session_behavior(behavFile)
+        laserTrials = np.where(behavData['laserSide']!=0)
+        conTrials = np.where(behavData['laserSide']==0)
+        correct = behavData['outcome']==behavData.labels['outcome']['correct']
+        valid = behavData['valid'].astype(bool)
+        nValid[0] += len(valid[conTrials])
+        nValid[1] += len(valid[laserTrials])
+        nCorrect[0] += np.sum(correct[conTrials])
+        nCorrect[1] += np.sum(correct[laserTrials])
+    return nValid, nCorrect
 
 def plot_dynamics(behavData,winsize=40,fontsize=12):
     '''
@@ -105,7 +120,7 @@ def band_discrim_byside(behavData):
     plt.xticks([0,1], labels)
     plt.legend(handles=patches, borderaxespad=0.3,prop={'size':12}, loc='best')
     
-def band_SNR_laser_psychometric(animal, sessions, paradigm='2afc', xlabel=True, ylabel=True):
+def band_SNR_laser_psychometric(animal, sessions, trialTypes='laserSide', paradigm='2afc', xlabel=True, ylabel=True):
     loader = dataloader.DataLoader(animal)
     validPerSNR = None
     rightPerSNR = None
@@ -115,9 +130,9 @@ def band_SNR_laser_psychometric(animal, sessions, paradigm='2afc', xlabel=True, 
         ax = plt.gca()
         ax.cla()
         possibleSNRs = np.unique(behavData['currentSNR'])
-        laserTrialTypes = np.unique(behavData['laserSide'])
+        laserTrialTypes = np.unique(behavData[trialTypes])
         trialsEachCond = behavioranalysis.find_trials_each_combination(behavData['currentSNR'], possibleSNRs, 
-                                                                        behavData['laserSide'], laserTrialTypes)
+                                                                        behavData[trialTypes], laserTrialTypes)
         valid = behavData['valid'].astype(bool)
         rightChoice = behavData['choice']==behavData.labels['choice']['right']
         if validPerSNR is None:
@@ -131,9 +146,9 @@ def band_SNR_laser_psychometric(animal, sessions, paradigm='2afc', xlabel=True, 
                 rightThisSNR = np.sum(trialsThisSNR.astype(int)[rightChoice])
                 validPerSNR[las,inds] += validThisSNR
                 rightPerSNR[las,inds] += rightThisSNR
-    return validPerSNR, rightPerSNR, possibleSNRs
+    return validPerSNR, rightPerSNR, possibleSNRs, laserTrialTypes
     
-def plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs, colour = 'k'):
+def plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs, colour = 'k', xlabel=True, ylabel=True):
     from statsmodels.stats.proportion import proportion_confint
     import pdb
     performance = []
@@ -147,8 +162,10 @@ def plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs, colour = 'k'):
         lower.append(performance[-1]-100.0*CIthisSNR[0])
     plt.plot(np.arange(len(possibleSNRs)), performance, marker='o', color=colour, lw=3, ms=10)
     plt.errorbar(np.arange(len(possibleSNRs)), performance, yerr = [lower, upper],color=colour)
-    plt.ylabel("% rightward")
-    plt.xlabel('SNR (dB)')
+    if ylabel:
+        plt.ylabel("% rightward", fontsize=16)
+    if xlabel:
+        plt.xlabel('SNR (dB)', fontsize=16)
     plt.xticks(np.arange(len(possibleSNRs)), possibleSNRs)
     plt.ylim((0,100))
     
@@ -168,7 +185,7 @@ def band_SNR_psychometric(animal, sessions, paradigm = '2afc'):
             rightPerSNR = np.zeros(len(possibleSNRs))
         for inds in range(len(possibleSNRs)):
             trialsThisSNR = trialsEachCond[:,inds]
-            validThisSNR = np.sum(trialsThisSNR.astype(int)[valid])
+            validThisSNR = np.sum(trialsThisSNR.astype(int)[valid]) 
             rightThisSNR = np.sum(trialsThisSNR.astype(int)[rightChoice])
             validPerSNR[inds] += validThisSNR
             rightPerSNR[inds] += rightThisSNR
@@ -219,7 +236,7 @@ def time_differences(animal, sessions, paradigm = '2afc', triggers = ['Cin', 'Co
             stop = stop.astype(int)
         startTime = eventTime[start]
         stopTime = eventTime[stop]
-        #pdb.set_trace()
+        pdb.set_trace()
         diffThisSess = stopTime-startTime
         if timeDiff is None:
             timeDiff = diffThisSess
@@ -230,12 +247,14 @@ def time_differences(animal, sessions, paradigm = '2afc', triggers = ['Cin', 'Co
 def time_differences_by_trial(animal, sessions, sortBy, paradigm = '2afc', triggers = ['Cin', 'Cout']):
     loader = dataloader.DataLoader(animal)
     timeDiff = []
+    import pdb
     for ind,session in enumerate(sessions):
-        if len(sessions)>1:
-            timeDiffThisSess = []
         behavFile = loadbehavior.path_to_behavior_data(animal,paradigm,session)
         behavData = loader.get_session_behavior(behavFile)
         possibleSort = np.unique(behavData[sortBy])
+        if ind == 0:
+            for sort in range(len(possibleSort)):
+                timeDiff.append([])
         trialsEachCond = behavioranalysis.find_trials_each_type(behavData[sortBy], possibleSort)
         eventCode = np.array(behavData.events['eventCode'])
         eventTime = behavData.events['eventTime']
@@ -254,35 +273,33 @@ def time_differences_by_trial(animal, sessions, sortBy, paradigm = '2afc', trigg
             if len(trialsThisCond) > len(trialEnd):
                 trialsThisCond = trialsThisCond[:-1]
             trialEndThisCond = trialEnd[trialsThisCond]
-            startThisCond = np.zeros(len(trialsThisCond))
-            stopThisCond = np.zeros(len(trialsThisCond))
+            startThisCond = np.zeros(sum(trialsThisCond))
+            stopThisCond = np.zeros(sum(trialsThisCond))
+            #pdb.set_trace()
             for i in range(len(trialEndThisCond)):
                 startThisCond[i] = max(j for j in start if j < trialEndThisCond[i])
-                stopThisCond[i] = max(k for k in stop if k < trialEndThisCond[i])
+                stopThisCond[i] = min(k for k in stop if k > startThisCond[i])
             startThisCond = startThisCond.astype(int)
             stopThisCond = stopThisCond.astype(int)
             startTime = eventTime[startThisCond]
             stopTime = eventTime[stopThisCond]
             diffThisCond = stopTime - startTime
-            if len(sessions) == 1:
-                timeDiff.append(diffThisCond)
-            else:
-                timeDiffThisSess.append(diffThisCond)
-        if len(sessions) > 1:
-            timeDiff.append(timeDiffThisSess)
+            #pdb.set_trace()
+            timeDiff[ind].extend(diffThisCond)
     return timeDiff, possibleSort
 
 if __name__ == '__main__':
     import pdb
     SAVE = 0
-    CASE = 5
+    CASE = 8
     paradigm = '2afc'
     if CASE < 3:
-        animalNames = ['band011', 'band012']
-        #animalNames = ['band017', 'band018', 'band019','band020']
-        session = ['20170120a']
+        #animalNames = ['band011']#, 'band012']
+       #animalNames = ['band011', 'band012', 'band017','band020']
+        animalNames = ['band017']
+        session = ['20170110a']
         for ind,animal in enumerate(animalNames):
-            plt.subplot(2,2,ind+1)
+            #plt.subplot(2,2,ind+1)
             loader = dataloader.DataLoader(animal)
             behavFile = loadbehavior.path_to_behavior_data(animal,paradigm,session[0])
             behavData = loader.get_session_behavior(behavFile)
@@ -301,7 +318,7 @@ if __name__ == '__main__':
             elif CASE==2:
                 validPerSNR, rightPerSNR, possibleSNRs = band_SNR_psychometric(animal, session)
                 plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs)
-            plt.title(animal)
+            #plt.title(animal)
         plt.suptitle(session[0])
     if CASE == 3:
         animal = 'band006'
@@ -340,36 +357,56 @@ if __name__ == '__main__':
         plt.xlabel('SNR (dB)')
         plt.title(animal)
     if CASE == 4.5:
-        animal = 'band008'
+        animal = 'band006'
         sessions = ['20161130a','20161201a','20161202a','20161203a','20161204a','20161205a', '20161206a', '20161207a']
-        musDiff, possibleSNRs = time_differences_by_trial(animal, sessions[1::2], 'currentSNR', triggers = ['Cin','Cout'])
-        salDiff, possibleSNRs = time_differences_by_trial(animal, sessions[::2], 'currentSNR', triggers = ['Cin','Cout'])
+        musDiff, possibleSNRs = time_differences_by_trial(animal, sessions[1::2], 'currentSNR', triggers = ['playNoiseStimulus','Cout'])
+        salDiff, possibleSNRs = time_differences_by_trial(animal, sessions[::2], 'currentSNR', triggers = ['playNoiseStimulus','Cout'])
         meanReactionMus = np.zeros(len(possibleSNRs))
         meanReactionSal = np.zeros(len(possibleSNRs))
         for SNR in range(len(possibleSNRs)):
-            reactionsThisSNRMus = [item[SNR] for item in musDiff]
-            reactionsThisSNRSal = [item[SNR] for item in salDiff]
-            reactionsThisSNRMus = tuple(reactionsThisSNRMus)
-            reactionsThisSNRMus = np.concatenate(reactionsThisSNRMus)
+            reactionsThisSNRMus = musDiff[SNR]
             meanReactionMus[SNR] = np.mean(reactionsThisSNRMus)
-            reactionsThisSNRSal = tuple(reactionsThisSNRSal)
-            reactionsThisSNRSal = np.concatenate(reactionsThisSNRSal)
+            reactionsThisSNRSal = salDiff[SNR]
             meanReactionSal[SNR] = np.mean(reactionsThisSNRSal)
-            pdb.set_trace()
         plt.plot(np.arange(len(possibleSNRs)), meanReactionSal, marker='o', color = 'k', lw=3, ms=10)
         plt.plot(np.arange(len(possibleSNRs)), meanReactionMus, marker='o', color = 'r', lw=3, ms=10)
-        plt.ylabel('Reaction time (s)')
+        plt.ylabel('withdrawal time from sound start (s)')
         plt.xlabel('SNR (dB)')
         plt.xticks(np.arange(len(possibleSNRs)), possibleSNRs)
         plt.ylim(bottom=0)
         plt.title(animal)
     if CASE == 5:
-        animal = 'band013'
-        #sessions = ['20170111a','20170112a', '20170115a']
-        #sessions = ['20170113a', '20170116a']
-        sessions = ['20170119a','20170120a']
-        colours = ['k','r','y','b']
-        sides = ['none', 'left', 'right', 'bilateral']
+        animal = 'band020'
+        #sessions = ['20170111a','20170112a', '20170115a'] #13 bilateral laser
+        #sessions = ['20170113a', '20170116a'] #13 controls
+        #sessions = ['20170119a','20170120a','20170121a','20170122a','20170123a','20170124a','20170125a'] #13 bilateral + unilateral
+        #sessions = ['20170127a','20170128a','20170129a'] #100ms with sound
+        #sessions = ['20170130a','20170131a'] #100ms, 50ms delay from sound
+        sessions = ['20170302a','20170303a']
+        #colours = ['k','r','y','b']
+        #sides = ['none', 'left', 'right', 'bilateral']
+        colours = ['k', 'b']
+        sides = ['none', 'bilateral']
+        patches = []
+        
+        validPerSNR, rightPerSNR, possibleSNRs = band_SNR_laser_psychometric(animal, sessions)
+        for las in range(len(validPerSNR)):
+            plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
+            patches.append(mpatches.Patch(color=colours[las], label=sides[las]))
+        plt.legend(handles=patches, borderaxespad=0.3,prop={'size':12}, loc='best')
+        plt.title(animal)
+    if CASE == 5.5:
+        animal = 'band012'
+        #sessions = ['20170121a','20170122a'] #5mW
+        #sessions = ['20170123a'] #10mW
+        #sessions = ['20170124a','20170127a','20170129a'] # 12.5mW
+        #sessions = ['20170125a','20170128a', '20170130a'] # 12.5mW control
+        #sessions = ['20170131a','20170201a','20170202a','20170203a','20170204a','20170205a','20170206a']
+        sessions = ['20170207a']
+        #colours = ['k','r','y','g']
+        #sides = ['none', 'left','right', 'bilateral']
+        colours = ['k','g']
+        sides = ['none','bilateral']
         patches = []
         validPerSNR, rightPerSNR, possibleSNRs = band_SNR_laser_psychometric(animal, sessions)
         for las in range(len(validPerSNR)):
@@ -386,21 +423,121 @@ if __name__ == '__main__':
         plt.legend(loc='upper right')
         plt.xlabel('withdrawal time (s)')
         plt.title(animal)
+    if CASE == 6.6:
+        #animal = 'band013'
+        #sessions = ['20170111a','20170112a', '20170115a']
+        #sessions = ['20170119a','20170120a','20170121a','20170122a','20170123a','20170124a','20170125a']
+        #animal = 'band012'
+        #sessions = ['20170131a','20170201a','20170202a','20170203a','20170204a','20170205a','20170206a']
+        animal = 'band020'
+        sessions = ['20170228a','20170226a','20170224a','20170222a']
+        withdrawal = time_differences_by_trial(animal, sessions, 'laserSide', triggers = ['playNoiseStimulus','Cout'])
+        data = [withdrawal[0][0], withdrawal[0][1]]
+        bins = np.linspace(0, 0.5, 50)
+        plt.hist(data, bins, alpha=0.7, label=['none', 'bilateral'], color=['k','b'],histtype='step', lw=3)
+        plt.legend(loc='upper right')
+        plt.xlabel('withdrawal time from sound start (s)')
+        plt.title(animal)
+    if CASE == 6.7:
+        animal = 'band017'
+        sessions = ['20170228a','20170226a','20170224a','20170222a']
+        withdrawal = time_differences_by_trial(animal, sessions, 'laserSide', triggers = ['playNoiseStimulus','Cout'])
+        sessions = ['20170301a','20170227a','20170225a','20170223a']
+        withdrawal2 = time_differences_by_trial(animal, sessions, 'laserSide', triggers = ['playNoiseStimulus','Cout'])
+        data = [withdrawal[0][1], withdrawal2[0][1]]
+        bins = np.linspace(0, 0.5, 50)
+        plt.hist(data, bins, alpha=0.7, label=['laser', 'control'], color=['b','r'],histtype='step', lw=3)
+        plt.legend(loc='upper right')
+        plt.xlabel('withdrawal time from sound start (s)')
+        plt.title(animal)
     if CASE == 7:
         animal = 'band013'
-        sessions = ['20170111a','20170112a']
+        sessions = ['20170111a','20170112a','20170115a']
         diff, possibleSNRs = time_differences_by_trial(animal, sessions, 'currentSNR', triggers = ['playNoiseStimulus','Cout'])
         meanReaction = np.zeros(len(possibleSNRs))
         for SNR in range(len(possibleSNRs)):
-            reactionsThisSNR = [item[SNR] for item in diff]
-            reactionsThisSNR = tuple(reactionsThisSNR)
-            reactionsThisSNR = np.concatenate(reactionsThisSNR)
+            reactionsThisSNR = diff[SNR]
             meanReaction[SNR] = np.mean(reactionsThisSNR)
         plt.plot(np.arange(len(possibleSNRs)), meanReaction, marker='o', lw=3, ms=10)
         plt.ylabel('Reaction time (s)')
         plt.xlabel('SNR (dB)')
         plt.xticks(np.arange(len(possibleSNRs)), possibleSNRs)
         plt.ylim(bottom=0)
+    if CASE == 8:
+        animals = ['band018','band019']
+        #sessions = ['20170223a','20170224a','20170225a','20170226a','20170227a','20170228a'] #diff noise amps
+        #sessions = ['20170304a','20170305a','20170306a','20170307a','20170308a','20170309a','20170310a'] #2 bands
+        sessions = ['20170313a','20170314a','20170315a'] #3 bands
+        colours = ['b', 'r', 'k']
+        for num,animal in enumerate(animals):
+            plt.subplot(1,2,num+1)
+            patches = []
+            validPerSNR, rightPerSNR, possibleSNRs, conditions = band_SNR_laser_psychometric(animal, sessions, trialTypes='currentBand')
+            for las in range(len(validPerSNR)):
+                plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
+                patches.append(mpatches.Patch(color=colours[las], label=conditions[las]))
+            plt.legend(handles=patches, borderaxespad=0.3,prop={'size':12}, loc='best')
+            plt.title(animal)
+    if CASE == 9:
+        animal = 'band012'
+        sessions = ['20170223a', '20170222a', '20170217a', '20170216a', '20170215a']
+        colours = ['r', 'g', 'b', 'k']
+        sides = ['-100 ms', '0 ms', '100 ms', 'no laser']
+        patches = []
+        validPerSNR, rightPerSNR, possibleSNRs = band_SNR_laser_psychometric(animal, sessions, trialTypes='laserOnset')
+        for las in range(len(validPerSNR)):
+            plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
+            patches.append(mpatches.Patch(color=colours[las], label=sides[las]))
+        plt.legend(handles=patches, borderaxespad=0.3,prop={'size':12}, loc='best')
+        plt.title(animal)
+    if CASE == 10:
+        animal = 'band017'
+        sessions = ['20170228a','20170226a','20170224a','20170222a']
+        plt.subplot(1,2,1)
+        validPerSNR, rightPerSNR, possibleSNRs, laserCond = band_SNR_laser_psychometric(animal, sessions)
+        colours = ['k','b']
+        for las in range(len(validPerSNR)):
+            plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
+        plt.title('laser')
+        sessions = ['20170301a','20170227a','20170225a','20170223a']
+        plt.subplot(1,2,2)
+        validPerSNR, rightPerSNR, possibleSNRs, laserCond = band_SNR_laser_psychometric(animal, sessions)
+        colours = ['k','b']
+        for las in range(len(validPerSNR)):
+            plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
+        plt.title('control')
+        plt.suptitle(animal)
+    if CASE == 10.5:
+        animal = 'band017'
+        sessions = ['20170222a','20170223a','20170224a','20170225a','20170226a','20170227a','20170228a','20170301a']
+        for ind,session in enumerate(sessions):
+            plt.subplot(4,2,ind+1)
+            validPerSNR, rightPerSNR, possibleSNRs, laserCond = band_SNR_laser_psychometric(animal, [session])
+            colours = ['k','b']
+            xlabel = (ind>5)
+            ylabel = (ind%2==0)
+            for las in range(len(validPerSNR)):
+                plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las], xlabel=xlabel, ylabel=ylabel)
+        plt.suptitle(animal)
+    if CASE == 11:
+        #animals = ['band017','band020']
+        animals = ['band011','band012']
+        #sessions = ['20170307a', '20170314a'] #1.5 mW ChR2
+        sessions = ['20170312a', '20170313a'] #1 mW ChR2
+        #sessions = ['20170312a', '20170313a', '20170320a'] #10mW Arch
+        #sessions = ['20170314a','20170315a'] #15 mW Arch
+        #sessions = ['20170318a', '20170319a', '20170320a'] #0.5mW ChR2
+        #sessions = ['20170315a','20170321a'] #3 mW ChR2
+        #sessions = ['20170321'] # 5mW Arch
+        colours = ['k','g']
+        for ind,animal in enumerate(animals):
+            plt.subplot(1,2,ind+1)
+            validPerSNR, rightPerSNR, possibleSNRs, conditions = band_SNR_laser_psychometric(animal, sessions)
+            for las in range(len(validPerSNR)):
+                plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
+            plt.title(animal)
+        plt.suptitle('10 mW', fontsize=20)
+        
     if SAVE:
         fig = plt.gcf()
         fig.set_size_inches(20, 10)

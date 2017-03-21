@@ -15,7 +15,7 @@ from jaratest.nick.database import dataplotter
 reload(dataplotter)
 
 SAMPLING_RATE=30000.0
-CELL_NUM = 270
+CELL_NUM = 170
 
 db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/band002_celldb.csv')
 cell = db.loc[CELL_NUM]

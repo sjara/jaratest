@@ -21,9 +21,9 @@ from taskontrol.plugins import templates
 reload(templates)
 from taskontrol.plugins import performancedynamicsplot
 
-from jaratest.anna import test002_tone_am_client as soundclient
+from taskontrol.plugins import soundclient
 from taskontrol.plugins import speakercalibration
-from jaratest.nick.tests import test059_noise_calibration as noisecalibration
+from taskontrol.plugins import speakernoisecalibration as noisecalibration
 import time
 
 LONGTIME = 100
@@ -84,18 +84,18 @@ class Paradigm(templates.Paradigm2AFC):
         
         
         self.params['threshMode'] = paramgui.MenuParam('Threshold Mode',
-                                                         ['max_only','uniform'],
+                                                         ['max_only','linear','exponential'],
                                                          value=0,group='Threshold detection parameters')
         # -- tone intensity refers to difference between tone and masking noise --
-        self.params['minToneInt'] = paramgui.NumericParam('Minimum tone intensity',value=2, decimals=0,
+        self.params['minSNR'] = paramgui.NumericParam('Minimum signal to noise',value=2, decimals=1,
                                                         units='dB',group='Threshold detection parameters')
-        self.params['maxToneInt'] = paramgui.NumericParam('Maximum tone intensity',value=20,decimals=0,
+        self.params['maxSNR'] = paramgui.NumericParam('Maximum signal to noise',value=20,decimals=0,
                                                         units='dB',group='Threshold detection parameters')
-        self.params['toneStep'] = paramgui.NumericParam('Tone Step', value=2, decimals=0, units='dB', group='Threshold detection parameters')
+        self.params['numSNRs'] = paramgui.NumericParam('Number of SNRs', value=2, decimals=0, units='dB', group='Threshold detection parameters')
         threshParams = self.params.layout_group('Threshold detection parameters')
 
 
-        self.params['bandMode'] = paramgui.MenuParam('Bandwidth Mode', ['white_only', 'uniform'], value=0, group='Bandwidth parameters')
+        self.params['bandMode'] = paramgui.MenuParam('Bandwidth Mode', ['white_only', 'max_only', 'uniform'], value=0, group='Bandwidth parameters')
         self.params['minBand'] = paramgui.NumericParam('Minimum bandwidth',value=0.25,decimals=2,
                                                         units='octaves',group='Bandwidth parameters')
         self.params['maxBand'] = paramgui.NumericParam('Maximum bandwidth',value=4.0,decimals=2,
@@ -128,8 +128,8 @@ class Paradigm(templates.Paradigm2AFC):
                                                         units='octaves', enabled=False, group='Current Trial')
         self.params['currentNoiseAmp'] = paramgui.NumericParam('Trial noise power',value=0.0,decimals=0,
                                                         units='dB', enabled=False, group='Current Trial')
-        self.params['currentToneInt'] = paramgui.NumericParam('Trial tone intensity',value=0.0,decimals=0,
-                                                        units='octaves', enabled=False, group='Current Trial')
+        self.params['currentSNR'] = paramgui.NumericParam('Trial SNR',value=0.0,decimals=1,
+                                                        units='dB', enabled=False, group='Current Trial')
         trialParams = self.params.layout_group('Current Trial')
 
         self.params['nValid'] = paramgui.NumericParam('N valid',value=0,
@@ -246,16 +246,14 @@ class Paradigm(templates.Paradigm2AFC):
         noiseCal = noisecalibration.Calibration(rigsettings.NOISE_CALIBRATION)
         toneFreq = self.params['toneFreq'].get_value()
         noiseAmp = noiseCal.find_amplitude(1, noiseInt).mean()
-        if toneInt==0:
-            if np.isinf(band):
-                s1 = {'type':'AM', 'modRate': modRate, 'duration':stimDur, 'amplitude': noiseAmp}
-            else:
-                s1 = {'type':'band_AM', 'modRate': modRate, 'frequency': toneFreq, 'octaves': band, 'duration': stimDur, 'amplitude': noiseAmp}
+        if np.isinf(band):
+            s1 = {'type':'AM', 'modFrequency': modRate, 'duration':stimDur, 'amplitude': noiseAmp}
         else:
-            toneAmp = spkCal.find_amplitude(toneFreq, noiseAmp+toneInt).mean() 
-            s1 = {'type':'tone_band_am', 'frequency': toneFreq, 'octaves': band, 'modRate': modRate, 
-                  'duration':stimDur, 'amplitude': noiseAmp, 'toneAmp': toneAmp}
+            s1 = {'type':'band_AM', 'modRate': modRate, 'frequency': toneFreq, 'octaves': band, 'duration': stimDur, 'amplitude': noiseAmp}
+        toneAmp = spkCal.find_amplitude(toneFreq, noiseInt+toneInt).mean()
+        s2 = {'type':'tone', 'frequency': toneFreq, 'duration':stimDur, 'amplitude': toneAmp}
         self.soundClient.set_sound(1,s1)
+        self.soundClient.set_sound(2,s2)
 
 
     def prepare_next_trial(self, nextTrial):
@@ -290,18 +288,31 @@ class Paradigm(templates.Paradigm2AFC):
         threshMode = self.params['threshMode'].get_string()
         if threshMode=='max_only':
             if nextCorrectChoice==self.results.labels['rewardSide']['left']:
-                currentToneInt = 0
+                currentToneInt = -np.inf
             elif nextCorrectChoice==self.results.labels['rewardSide']['right']:
-                currentToneInt = self.params['maxToneInt'].get_value()
-        elif threshMode=='uniform': 
+                currentToneInt = self.params['maxSNR'].get_value()
+        elif threshMode=='linear': 
             if nextCorrectChoice==self.results.labels['rewardSide']['left']:
-                currentToneInt = 0
+                currentToneInt = -np.inf
             elif nextCorrectChoice==self.results.labels['rewardSide']['right']:
-                toneStep = self.params['toneStep'].get_value()
-                allToneInts = np.arange(self.params['minToneInt'].get_value(), self.params['maxToneInt'].get_value()+toneStep, toneStep)
-                currentToneInt = np.random.choice(allToneInts)
+                numSNRs = self.params['numSNRs'].get_value()
+                minSNR = self.params['minSNR'].get_value()
+                maxSNR = self.params['maxSNR'].get_value()
+                allSNRs = np.linspace(minSNR, maxSNR, numSNRs)
+                currentToneInt = np.random.choice(allSNRs)
+        elif threshMode=='exponential':
+            if nextCorrectChoice==self.results.labels['rewardSide']['left']:
+                currentToneInt = -np.inf
+            elif nextCorrectChoice==self.results.labels['rewardSide']['right']:
+                numSNRs = self.params['numSNRs'].get_value()
+                minSNR = self.params['minSNR'].get_value()
+                maxSNR = self.params['maxSNR'].get_value()
+                allSNRs = np.logspace(np.log2(minSNR), np.log2(maxSNR), numSNRs, base=2.0)
+                currentToneInt = np.random.choice(allSNRs)
         if self.params['bandMode'].get_string()=='white_only':
             currentBand = np.inf
+        elif self.params['bandMode'].get_string()=='max_only':
+            currentBand = self.params['maxBand'].get_value()
         else:
             numBands = self.params['numBands'].get_value()
             minBand = self.params['minBand'].get_value()
@@ -317,7 +328,7 @@ class Paradigm(templates.Paradigm2AFC):
             currentNoiseAmp = np.random.choice(allNoiseAmps)
         self.params['currentBand'].set_value(currentBand)
         self.params['currentNoiseAmp'].set_value(currentNoiseAmp)
-        self.params['currentToneInt'].set_value(currentToneInt)
+        self.params['currentSNR'].set_value(currentToneInt)
         self.prepare_target_sound(currentBand, currentNoiseAmp, currentToneInt)
         self.prepare_punish_sound()
 
@@ -337,7 +348,8 @@ class Paradigm(templates.Paradigm2AFC):
     def set_state_matrix(self,nextCorrectChoice):
         self.sm.reset_transitions()
 
-        soundID = 1  # The appropriate sound has already been prepared and sent to server with ID=1
+        noiseID = 1  # The appropriate sound has already been prepared and sent to server with ID=1
+        toneID = 2
         targetDuration = self.params['targetDuration'].get_value()
         if rigsettings.OUTPUTS.has_key('outBit1'):
             trialStartOutput = ['outBit1'] # Sync signal for trial-start.
@@ -382,11 +394,13 @@ class Paradigm(templates.Paradigm2AFC):
                               transitions={'Tup':'waitForCenterPoke'},
                               outputsOn=trialStartOutput)
             self.sm.add_state(name='waitForCenterPoke', statetimer=1,
-                              transitions={'Tup':'playStimulus'})
-            self.sm.add_state(name='playStimulus', statetimer=targetDuration,
-                              transitions={'Tup':'reward'},
-                              outputsOn=stimOutput,serialOut=soundID,
+                              transitions={'Tup':'playNoiseStimulus'})
+            self.sm.add_state(name='playNoiseStimulus', statetimer=0,
+                              transitions={'Tup':'playToneStimulus'},
+                              outputsOn=stimOutput, serialOut=noiseID,
                               outputsOff=trialStartOutput)
+            self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
+                              transitions={'Tup':'reward'}, serialOut=toneID)
             self.sm.add_state(name='reward', statetimer=rewardDuration,
                               transitions={'Tup':'stopReward'},
                               outputsOn=[rewardOutput],
@@ -399,11 +413,13 @@ class Paradigm(templates.Paradigm2AFC):
                               transitions={'Tup':'waitForCenterPoke'},
                               outputsOn=trialStartOutput)
             self.sm.add_state(name='waitForCenterPoke', statetimer=LONGTIME,
-                              transitions={'Cin':'playStimulus',correctSidePort:'playStimulus'})
-            self.sm.add_state(name='playStimulus', statetimer=targetDuration,
-                              transitions={'Tup':'reward'},
-                              outputsOn=stimOutput,serialOut=soundID,
+                              transitions={'Cin':'playNoiseStimulus',correctSidePort:'playNoiseStimulus'})
+            self.sm.add_state(name='playNoiseStimulus', statetimer=0,
+                              transitions={'Tup':'playToneStimulus'},
+                              outputsOn=stimOutput,serialOut=noiseID,
                               outputsOff=trialStartOutput)
+            self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
+                              transitions={'Tup':'reward'}, serialOut=toneID)
             self.sm.add_state(name='reward', statetimer=rewardDuration,
                               transitions={'Tup':'stopReward'},
                               outputsOn=[rewardOutput],
@@ -416,11 +432,13 @@ class Paradigm(templates.Paradigm2AFC):
                               transitions={'Tup':'waitForCenterPoke'},
                               outputsOn=trialStartOutput)
             self.sm.add_state(name='waitForCenterPoke', statetimer=LONGTIME,
-                              transitions={'Cin':'playStimulus'})
-            self.sm.add_state(name='playStimulus', statetimer=targetDuration,
-                              transitions={'Tup':'reward'},
-                              outputsOn=stimOutput,serialOut=soundID,
+                              transitions={'Cin':'playNoiseStimulus'})
+            self.sm.add_state(name='playNoiseStimulus', statetimer=0,
+                              transitions={'Tup':'playToneStimulus'},
+                              outputsOn=stimOutput,serialOut=noiseID,
                               outputsOff=trialStartOutput)
+            self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
+                              transitions={'Tup':'reward'}, serialOut=toneID)
             self.sm.add_state(name='reward', statetimer=rewardDuration,
                               transitions={'Tup':'stopReward'},
                               outputsOn=[rewardOutput],
@@ -435,11 +453,13 @@ class Paradigm(templates.Paradigm2AFC):
             self.sm.add_state(name='waitForCenterPoke', statetimer=LONGTIME,
                               transitions={'Cin':'delayPeriod'})
             self.sm.add_state(name='delayPeriod', statetimer=delayToTarget,
-                              transitions={'Tup':'playStimulus','Cout':'waitForCenterPoke'})
-            self.sm.add_state(name='playStimulus', statetimer=LONGTIME,
-                              transitions={'Cout':'waitForSidePoke'},
-                              outputsOn=stimOutput, serialOut=soundID,
+                              transitions={'Tup':'playNoiseStimulus','Cout':'waitForCenterPoke'})
+            self.sm.add_state(name='playNoiseStimulus', statetimer=0,
+                              transitions={'Tup':'playToneStimulus'},
+                              outputsOn=stimOutput,serialOut=noiseID,
                               outputsOff=trialStartOutput)
+            self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
+                              transitions={'Cout':'waitForSidePoke', 'Tup':'waitForSidePoke'},serialOut=toneID)
             self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
                               transitions={'Lin':'choiceLeft','Rin':'choiceRight',
                                            'Tup':'noChoice'},
@@ -479,13 +499,15 @@ class Paradigm(templates.Paradigm2AFC):
             self.sm.add_state(name='waitForCenterPoke', statetimer=LONGTIME,
                               transitions={'Cin':'delayPeriod'})
             self.sm.add_state(name='delayPeriod', statetimer=delayToTarget,
-                              transitions={'Tup':'playStimulus','Cout':'waitForCenterPoke'})
+                              transitions={'Tup':'playNoiseStimulus','Cout':'waitForCenterPoke'})
             # Note that 'delayPeriod' may happen several times in a trial, so
             # trialStartOutput off here would only meaningful for the first time in the trial.
-            self.sm.add_state(name='playStimulus', statetimer=LONGTIME,
-                              transitions={'Cout':'waitForSidePoke'},
-                              outputsOn=stimOutput, serialOut=soundID,
+            self.sm.add_state(name='playNoiseStimulus', statetimer=0,
+                              transitions={'Tup':'playToneStimulus'},
+                              outputsOn=stimOutput, serialOut=noiseID,
                               outputsOff=trialStartOutput)
+            self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
+                              transitions={'Cout':'waitForSidePoke', 'Tup':'waitForSidePoke'}, serialOut=toneID)
             # NOTE: The idea of outputsOff here (in other paradigms) was to indicate the end
             #       of the stimulus. But in this paradigm the stimulus will continue to play.
             self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
@@ -549,7 +571,7 @@ class Paradigm(templates.Paradigm2AFC):
         # -- Otherwise evaluate times of important events --
         else:
             # -- Store time of stimulus --
-            targetStateID = self.sm.statesNameToIndex['playStimulus']
+            targetStateID = self.sm.statesNameToIndex['playNoiseStimulus']
             targetEventInd = np.flatnonzero(statesThisTrial==targetStateID)[0]
             self.results['timeTarget'][trialIndex] = eventsThisTrial[targetEventInd,0]
 
@@ -557,10 +579,10 @@ class Paradigm(templates.Paradigm2AFC):
             if outcomeModeString in ['on_next_correct','only_if_correct']:
                 seqCin = [self.sm.statesNameToIndex['waitForCenterPoke'],
                           self.sm.statesNameToIndex['delayPeriod'],
-                          self.sm.statesNameToIndex['playStimulus']]
+                          self.sm.statesNameToIndex['playNoiseStimulus']]
             elif outcomeModeString in ['simulated','sides_direct','direct']:
                 seqCin = [self.sm.statesNameToIndex['waitForCenterPoke'],
-                          self.sm.statesNameToIndex['playStimulus']]
+                          self.sm.statesNameToIndex['playNoiseStimulus']]
             else:
                 print 'CenterIn time cannot be calculated for this Outcome Mode.'
             seqPos = np.flatnonzero(utils.find_state_sequence(statesThisTrial,seqCin))
