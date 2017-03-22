@@ -61,7 +61,11 @@ cellParamsList = [{'firstParam':'test059',
                   {'firstParam':'adap017',
                    'behavSession':'20160330a',
                    'tetrode':4,
-                   'cluster':11}]  #more responsive to left
+                   'cluster':11}, #more responsive to left
+                  {'firstParam':'adap017',
+                   'behavSession':'20160328a',
+                   'tetrode':7,
+                   'cluster':9}]  #both sound and movement responsive
 
 for cellParams in cellParamsList:
     mouseName = cellParams['firstParam']

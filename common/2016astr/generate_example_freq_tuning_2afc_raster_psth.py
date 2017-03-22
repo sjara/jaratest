@@ -67,7 +67,11 @@ cellParamsList = [{'firstParam':'test053',
                   {'firstParam':'adap015',
                    'behavSession':'20160205a',
                    'tetrode':6,
-                   'cluster':5}]#suppressed in tuning&2afc 
+                   'cluster':5}, #suppressed in tuning&2afc 
+                  {'firstParam':'adap017',
+                   'behavSession':'20160328a',
+                   'tetrode':7,
+                   'cluster':9}] #both sound and movement responsive
 
 for cellParams in cellParamsList:
     mouseName = cellParams['firstParam']

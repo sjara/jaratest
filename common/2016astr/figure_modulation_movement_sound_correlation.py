@@ -6,6 +6,7 @@ import os
 import numpy as np
 import pandas as pd
 from jaratoolbox import settings
+from jaratoolbox import extraplots
 import figparams
 import matplotlib.pyplot as plt
 import scipy.stats as stats
@@ -59,16 +60,24 @@ movementSelectiveSwitching = (movementModSig_switching <= 0.05)
 soundModSwitching = (soundModSig_switching <= 0.05)
 
 # -- Plot scatter of movment modulation index vs sound modulation index for either task -- #
-plt.scatter(movementModI_psychometric, soundModI_psychometric)
+plt.figure()
+plt.plot(movementModI_psychometric, soundModI_psychometric, marker='o', linestyle='none', mec='grey', mfc='none')
 plt.xlabel('movment modulation index')
 plt.ylabel('modulation index of sound response by choice')
 plt.title('Psychometric task')
+plt.xlim([-1.1,1.1])
+plt.ylim([-1.1,1.1])
+extraplots.boxoff(plt.gca())
 
-plt.scatter(movementModI_switching, soundModI_switching)
+
+plt.figure()
+plt.plot(movementModI_switching, soundModI_switching, marker='o', linestyle='none', mec='grey', mfc='none')
 plt.xlabel('movment modulation index')
 plt.ylabel('modulation index of sound response by choice')
 plt.title('Switching task')
-
+plt.xlim([-1.1,1.1])
+plt.ylim([-1.1,1.1])
+extraplots.boxoff(plt.gca())
 plt.show()
 
 # -- Stats -- # 
