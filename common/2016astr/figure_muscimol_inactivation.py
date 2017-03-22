@@ -57,13 +57,11 @@ ax0 = plt.subplot(gs[:, 0])
 ax1 = plt.subplot(gs[0, 1])
 ax2 = plt.subplot(gs[1, 1])
 
-
-
 ## Panel: Space for the brain slice diagram, with legend
-
-ax0.set_axis_off()
 outsideCoords = [-1,-1]
+ax0.set_axis_off()
 
+ax0.hold(True)
 ax0.plot(outsideCoords, 'kD', label=animalNumbers['adap021'])
 ax0.plot(outsideCoords, 'ks', label=animalNumbers['adap023'])
 ax0.plot(outsideCoords, 'k>', label=animalNumbers['adap028'])
@@ -103,7 +101,6 @@ if 0 in panelsToPlot:
     
     for indCond, condData in enumerate(dataToPlot):
 
-        plt.hold(1)
         color = curveColors[indCond]
 
         logPossibleValues = condData['logPossibleValues']
@@ -120,6 +117,7 @@ if 0 in panelsToPlot:
         upperWhisker = ciHitsEachValue[1,:]-fractionHitsEachValue
         lowerWhisker = fractionHitsEachValue-ciHitsEachValue[0,:]
 
+        ax1.hold(True)
         (pline, pcaps, pbars) = ax1.errorbar(logPossibleValues,
                                              100*fractionHitsEachValue,
                                              yerr = [100*lowerWhisker, 100*upperWhisker],
@@ -196,7 +194,7 @@ if 1 in panelsToPlot:
     rects1 = ax2.bar(ind, 100*(dataMat[:, :, 0].mean(1)-0.5), width, bottom=50, edgecolor='k', facecolor='w', lw=2)
     rects2 = ax2.bar(ind+width, 100*(dataMat[:, :, 1].mean(1)-0.5), width, bottom=50, edgecolor=muscimolColor, facecolor='w', lw=2)
     for i in ind:
-        extraplots.significance_stars([i+0.5*width,i+1.5*width], 95, 2, starSize=10, gapFactor=0.2, color='0.5')
+        extraplots.significance_stars([i+0.5*width,i+1.5*width], 95, 1, starSize=6, gapFactor=0.4, color='0.5')
     
     ax2.set_xticks(ind + width)
     ax2.set_xticklabels(np.arange(6)+1, fontsize=fontSizeLabels)
