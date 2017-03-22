@@ -33,7 +33,7 @@ else:
 '''
 figFilename = 'figure_movement_selectivity'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,3.5]
+figSize = [10,3.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -47,8 +47,8 @@ downsampleFactorPsth = 1
 
 #colormapMovement =  
 
-labelPosX = [0.05, 0.4, 0.7]   # Horiz position for panel labels
-labelPosY = [0.9]    # Vert position for panel labels
+labelPosX = [0.015, 0.355, 0.68]   # Horiz position for panel labels
+labelPosY = [0.92]    # Vert position for panel labels
 
 #MOVEMENTCOLORS = {'left':figparams.colp['MidFreqL'], 'right':figparams.colp['MidFreqR']}
 MOVEMENTCOLORS = [figparams.colp['MidFreqL'],figparams.colp['MidFreqR']]
@@ -57,13 +57,17 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(4, 3)
-#gs.update(left=0.15, right=0.85, wspace=1, hspace=0.2)
-gs.update(left=0.1, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
+#gs = gridspec.GridSpec(4, 3)
+#gs.update(left=0.1, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
+gs = gridspec.GridSpec(1, 3)
+gs.update(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
+
+gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.1)
+gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.1)
 
 
 # -- Panel A: representative raster during movement  -- #
-ax1 = plt.subplot(gs[0:3, 0])
+ax1 = plt.subplot(gs00[0:3,:])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 rasterFilename = 'example_movement_sel_raster_adap017_20160330a_T4_c11.npz' #adap013_20160406a_T8_c4  #test059_20150629a_T2_c7
@@ -86,6 +90,7 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
 plt.setp(pRaster, ms=msRaster)
 #plt.xlabel('Time from movement onset (s)', fontsize=fontSizeLabels)
 #plt.ylabel('Trials', fontsize=fontSizeLabels)
+plt.ylabel('Trials grouped\nby choice', fontsize=fontSizeLabels)
 ax1.set_yticklabels([])
 ax1.set_xticklabels([])
 #plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
@@ -93,7 +98,8 @@ ax1.set_xticklabels([])
 
 # -- Panel A2: representative psth during movement  -- #
 #ax2 = plt.subplot(gs[3,0], sharex=ax1)
-ax2 = plt.subplot(gs[3,0])
+#ax2 = plt.subplot(gs[3,0])
+ax2 = plt.subplot(gs00[3,:])
 
 psthFilename = 'example_movement_sel_psth_adap017_20160330a_T4_c11.npz' #adap013_20160406a_T8_c4  #test059_20150629a_T2_c7 
 psthFullPath = os.path.join(dataDir, psthFilename)
@@ -118,7 +124,7 @@ extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.axvline(x=0,linewidth=1, color='darkgrey')
 plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
 plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels)
+plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels)
 yLims = [0,35]
 plt.ylim(yLims)
 plt.yticks(yLims)
@@ -126,7 +132,7 @@ plt.xticks(np.arange(-0.2,0.6,0.2))
 extraplots.boxoff(plt.gca())
 
 # -- Panel B: Another representative raster during movement, more responsive to ipsilateral movement-- #
-ax1 = plt.subplot(gs[0:3, 1])
+ax1 = plt.subplot(gs01[0:3,:])
 ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 rasterFilename = 'example_movement_sel_raster_test055_20150313a_T7_c6.npz' #test059_20150629a_T2_c7
@@ -148,7 +154,7 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
 
 plt.setp(pRaster, ms=msRaster)
 #plt.xlabel('Time from movement onset (s)', fontsize=fontSizeLabels)
-#plt.ylabel('Trials', fontsize=fontSizeLabels)
+plt.ylabel('Trials grouped\nby choice', fontsize=fontSizeLabels)
 ax1.set_yticklabels([])
 ax1.set_xticklabels([])
 #plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
@@ -156,7 +162,7 @@ ax1.set_xticklabels([])
 
 # -- Panel B2: representative psth during movement  -- #
 #ax2 = plt.subplot(gs[3,0], sharex=ax1)
-ax2 = plt.subplot(gs[3,1])
+ax2 = plt.subplot(gs01[3,:])
 
 psthFilename = 'example_movement_sel_psth_test055_20150313a_T7_c6.npz' #test059_20150629a_T2_c7 
 psthFullPath = os.path.join(dataDir, psthFilename)
@@ -181,7 +187,7 @@ extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.axvline(x=0,linewidth=1, color='darkgrey')
 plt.xlim(timeRangeMovement[0],timeRangeMovement[1])
 plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels)
+plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels)
 yLims = [0,15]
 plt.ylim(yLims)
 plt.yticks(yLims)

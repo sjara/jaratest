@@ -48,7 +48,7 @@ elif MODE==1:
     
 
 fullephysDir = os.path.join(settings.EPHYS_PATH,subject, ephysSession)
-event_filename = os.path.join(fullephysDir, 'all_channels.events')
+eventFilename = os.path.join(fullephysDir, 'all_channels.events')
 
 behavDataFileName = loadbehavior.path_to_behavior_data(subject,paradigm,behavSession)
 
@@ -57,8 +57,8 @@ freqEachTrial = bdata[freqKeyName]
 nTrials = len(freqEachTrial)
 
 # -- Load event data and convert event timestamps to ms --
-ev = loadopenephys.Events(event_filename) # load ephys data (like bdata structure)
-eventTimes = np.array(ev.timestamps)/SAMPLING_RATE # convert to seconds by dividing by sampling rate (Hz)
+ev = loadopenephys.Events(eventFilename)
+eventTimes = np.array(ev.timestamps)/SAMPLING_RATE
 evID = np.array(ev.eventID)
 evCh = np.array(ev.eventChannel)
 eventOnsetTimes = eventTimes[(evCh==0) & (evID==1)]
