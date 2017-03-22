@@ -40,7 +40,7 @@ else:
 '''
 figFilename = 'plots_modulation_switching'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,5]
+figSize = [7,7]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -102,6 +102,7 @@ if PANELS[0]:
     ax2.set_yticklabels([])
     ax2.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
     
 
@@ -131,8 +132,9 @@ if PANELS[0]:
     yLims = [0,40]
     plt.ylim(yLims)
     plt.yticks(yLims)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
 # -- Panel C: representative sound-evoked raster from switching task, modulated -- #
@@ -164,6 +166,7 @@ if PANELS[1]:
     ax4.set_yticklabels([])
     ax4.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels, labelpad=labelDis)
+    plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
 
 
@@ -190,8 +193,9 @@ if PANELS[1]:
     yLims = [0,20]
     plt.ylim(yLims)
     plt.yticks(yLims)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
 # -- Panel D: summary distribution of switching modulation index, total cells is good cells in striatum (nonduplicate) that are responsive to mid freq -- #
@@ -214,13 +218,16 @@ if PANELS[2]:
     sigModulated = summary['modulated']
     sigMI = summary['modulationIndex'][sigModulated]
     nonsigMI = summary['modulationIndex'][~sigModulated]
-    binsEdges = np.linspace(-1,1,30)
+    binsEdges = np.linspace(-1,1,20)
     plt.hist([sigMI,nonsigMI], bins=binsEdges, color=[colorMod,colorNotMod], edgecolor='None', stacked=True)
     '''
     sig_patch = mpatches.Patch(color=colorMod, label='Modulated')
     nonsig_patch = mpatches.Patch(color=colorNotMod, label='Not modulated')
     plt.legend(handles=[sig_patch,nonsig_patch], fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2)
     '''
+    yPosText = 0.95*plt.ylim()[1]
+    plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Modulation index', fontsize=fontSizeLabels)

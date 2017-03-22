@@ -40,22 +40,17 @@ lwPsth = 2
 downsampleFactorPsth = 1
 
 colormapTuning = matplotlib.cm.winter 
-#colormapTuning = matplotlib.cm.rainbow 
 
-#labelPosX = [0.07, 0.27, 0.47, 0.67]   # Horiz position for panel labels
 labelPosX = [0.015, 0.355, 0.68]   # Horiz position for panel labels
 labelPosY = [0.92]    # Vert position for panel labels
 
 PHOTOSTIMCOLORS = {'no_laser':'k', 'laser_left':'red', 'laser_right':'green'}
-
-#SHAPESEACHANIMAL = ['o','s','^']
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 3)
-#gs.update(left=0.1, right=0.9, wspace=0.35, hspace=0.2)
 gs.update(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.1)

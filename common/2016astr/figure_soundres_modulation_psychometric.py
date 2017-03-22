@@ -19,7 +19,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 removedDuplicates = True
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
-matplotlib.rcParams['svg.fonttype'] = 'none'  # To
+matplotlib.rcParams['svg.fonttype'] = 'none'
 
 #dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
@@ -32,7 +32,14 @@ exampleModulatedSharp = '11607Hz_adap017_20160411a_T3_c10'
 exampleModulatedSustained = '11990Hz_adap017_20160414a_T4_c9'
 exampleNonModSharp = '9781Hz_test055_20150313a_T4_c7'
 exampleNonModSustained = '12216Hz_adap017_20160317a_T5_c3'
-####################################
+if 1:
+    exampleModulated = exampleModulatedSharp
+    exampleNonMod = exampleNonModSharp
+else:
+    exampleModulated = exampleModulatedSustained
+    exampleNonMod = exampleNonModSustained
+   
+    
 
 PANELS = [1,1,1] # Which panels to plot
 
@@ -44,27 +51,27 @@ if removedDuplicates:
 else:
     figFilename = 'plots_choice_modulation_psychometric' # Do not include extension
 '''
-figFilename = 'figure_modulation_psychometric'
+figFilename = 'figure_soundres_modulation_psychometric'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,3.5]
+figSize = [10,3.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
 
-labelPosX = [0.05, 0.4, 0.7]   # Horiz position for panel labels
-labelPosY = [0.9]    # Vert position for panel labels
+labelPosX = [0.015, 0.355, 0.68]   # Horiz position for panel labels
+labelPosY = [0.92]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.12, right=0.98, bottom=0.15, wspace=0.45, hspace=0.1)
+gs.update(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,0], hspace=0.1)
-gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.1)
+gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.1)
+gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.1)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -83,11 +90,11 @@ ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fo
 '''
 
 # -- Panel B: representative sound-evoked raster from psychometric task, Not modulated -- #
-ax2 = plt.subplot(gs00[0:2, :])
+ax2 = plt.subplot(gs00[0:3, :])
 ax2.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
-    rasterFilename = 'example_psycurve_soundaligned_raster_{}.npz'.format(exampleNonModSharp) 
+    rasterFilename = 'example_psycurve_soundaligned_raster_{}.npz'.format(exampleNonMod) 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
 
@@ -110,13 +117,14 @@ if PANELS[0]:
     ax2.set_yticklabels([])
     ax2.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels,labelpad=labelDis)
+    plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
 
 
     # -- Panel B2: representative sound-evoked psth from psychometric task, Not modulated -- #
     #ax3 = plt.subplot(gs[1,2:4])
-    ax3 = plt.subplot(gs00[2, :])
-    psthFilename = 'example_psycurve_soundaligned_psth_{}.npz'.format(exampleNonModSharp)
+    ax3 = plt.subplot(gs00[3, :])
+    psthFilename = 'example_psycurve_soundaligned_psth_{}.npz'.format(exampleNonMod)
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
@@ -136,17 +144,21 @@ if PANELS[0]:
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRange)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #,labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
+    
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 
 # -- Panel C: representative sound-evoked raster from psychometric task, Modulated-- #
 #ax4 = plt.subplot(gs[0, 4:6])
-ax4 = plt.subplot(gs01[0:2, :])
+ax4 = plt.subplot(gs01[0:3, :])
 ax4.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
-    rasterFilename = 'example_psycurve_soundaligned_raster_{}.npz'.format(exampleModulatedSharp) 
+    rasterFilename = 'example_psycurve_soundaligned_raster_{}.npz'.format(exampleModulated) 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
 
@@ -168,14 +180,15 @@ if PANELS[1]:
     ax4.set_yticklabels([])
     ax4.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels, labelpad=labelDis)
+    plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
 
 
 
     # -- Panel C2: representative sound-evoked psth from psychometric task, Modulated -- #
     #ax5 = plt.subplot(gs[1,4:6])
-    ax5 = plt.subplot(gs01[2, :])
-    psthFilename = 'example_psycurve_soundaligned_psth_{}.npz'.format(exampleModulatedSharp)
+    ax5 = plt.subplot(gs01[3, :])
+    psthFilename = 'example_psycurve_soundaligned_psth_{}.npz'.format(exampleModulated)
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
@@ -189,9 +202,14 @@ if PANELS[1]:
 
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
+    '''
     for ind,line in enumerate(pPSTH):
         plt.setp(line, label=condLabels[ind])
     plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+    '''
+    #plt.legend()
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
@@ -199,8 +217,9 @@ if PANELS[1]:
     yLims = [0,25]
     plt.ylim(yLims)
     plt.yticks(yLims)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
 # -- Panel D: summary distribution of psychometric modulation index -- #
@@ -220,13 +239,18 @@ if PANELS[2]:
     sigModulated = summary['modulated']
     sigMI = summary['modulationIndex'][sigModulated]
     nonsigMI = summary['modulationIndex'][~sigModulated]
-    binsEdges = np.linspace(-1,1,30)
+    #binsEdges = np.linspace(-1,1,30)
+    binsEdges = np.linspace(-1,1,20)
     plt.hist([sigMI,nonsigMI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
     '''
     sig_patch = mpatches.Patch(color='k', label='Modulated')
     nonsig_patch = mpatches.Patch(color='darkgrey', label='Not modulated')
     plt.legend(handles=[sig_patch,nonsig_patch], loc='upper center', fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2)
     '''
+
+    yPosText = 0.95*plt.ylim()[1]
+    plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Modulation index', fontsize=fontSizeLabels)

@@ -222,6 +222,9 @@ nonsig_patch = mpatches.Patch(color='darkgrey', label='Not selective')
 plt.legend(handles=[sig_patch,nonsig_patch], loc='upper left', fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2, ncol=2, columnspacing=0.5)
 '''
 
+yPosText = 0.95*plt.ylim()[1]
+plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
+plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
 plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
