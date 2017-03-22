@@ -124,8 +124,13 @@ if PANELS[0]:
 
     left_line = mlines.Line2D([], [], color=colorsDict['colorL'], label='left choice')
     right_line = mlines.Line2D([], [], color=colorsDict['colorR'], label='right choice')
-    plt.legend(handles=[left_line, right_line], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+    #plt.legend(handles=[left_line, right_line], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+    plt.legend(['11 kHz = left','11 kHz = Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+               frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
+    print '***** WARNING *******  Are colors switched?  which one was the first block?'
+
+    
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.xlim(timeRange)
