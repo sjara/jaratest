@@ -25,6 +25,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'
 
 colorsDict = {'colorL':figparams.colp['MidFreqL'], 
               'colorR':figparams.colp['MidFreqR']} 
+soundColor = figparams.colp['sound']
 timeRange = [-0.3,0.5]
 
 # -- Select example cells here -- #
@@ -70,8 +71,8 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(1, 3)
 gs.update(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.1)
-gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.1)
+gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -141,6 +142,8 @@ if PANELS[0]:
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     yLims = [0,100]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRange)
@@ -215,6 +218,8 @@ if PANELS[1]:
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.xlim(timeRange)
     yLims = [0,25]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xticks(np.arange(-0.2,0.6,0.2))

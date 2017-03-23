@@ -35,7 +35,8 @@ labelDis = 0.1
 
 timeRangeSound = [-0.2, 0.4]
 msRaster = 2
-smoothWinSizePsth = 2
+smoothWinSizePsth1 = 1 #2
+smoothWinSizePsth2 = 3 #2
 lwPsth = 2
 downsampleFactorPsth = 1
 
@@ -45,6 +46,7 @@ labelPosX = [0.015, 0.355, 0.68]   # Horiz position for panel labels
 labelPosY = [0.92]    # Vert position for panel labels
 
 PHOTOSTIMCOLORS = {'no_laser':'k', 'laser_left':'red', 'laser_right':'green'}
+soundColor = figparams.colp['sound']
 
 fig = plt.gcf()
 fig.clf()
@@ -53,8 +55,8 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(1, 3)
 gs.update(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.1)
-gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.1)
+gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.15)
 
 
 # -- Panel C: example of sound-evoked raster and psth from 2afc task (cell in A) -- #
@@ -102,9 +104,7 @@ if PANELS[0]:
     numFreqs = len(possibleFreq)
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
-    #smoothWinSizePsth = 1
-
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth1,timeVec,
                                  trialsEachCond=trialsEachCond,colorEachCond=colorEachFreq,
                                  linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
     for ind,line in enumerate(pPSTH):
@@ -114,8 +114,11 @@ if PANELS[0]:
     plt.xlim(timeRangeSound)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    plt.ylim([0,80])
-    plt.yticks([0,80])
+    yLims = [0,80]
+    plt.ylim(yLims)
+    plt.yticks(yLims)
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     extraplots.boxoff(plt.gca())
     #plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
 
@@ -164,7 +167,7 @@ if PANELS[1]:
     numFreqs = len(possibleFreq)
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth2,timeVec,
                                  trialsEachCond=trialsEachCond,colorEachCond=colorEachFreq,
                                  linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
     for ind,line in enumerate(pPSTH):
@@ -175,6 +178,8 @@ if PANELS[1]:
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     yLims = [0,10]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     extraplots.boxoff(plt.gca())

@@ -52,6 +52,7 @@ labelPosY = [0.92]    # Vert position for panel labels
 
 #MOVEMENTCOLORS = {'left':figparams.colp['MidFreqL'], 'right':figparams.colp['MidFreqR']}
 MOVEMENTCOLORS = [figparams.colp['MidFreqL'],figparams.colp['MidFreqR']]
+soundColor = figparams.colp['sound']
 
 fig = plt.gcf()
 fig.clf()

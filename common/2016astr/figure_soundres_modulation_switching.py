@@ -9,10 +9,11 @@ from jaratoolbox import extraplots
 from jaratoolbox import settings
 import matplotlib.gridspec as gridspec
 import matplotlib
-import figparams
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 import scipy.stats as stats
+import figparams
+reload(figparams)
 
 FIGNAME = 'soundres_modulation_switching'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
@@ -24,6 +25,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
 colorsDict = {'colorL':figparams.colp['MidFreqL'], 
               'colorR':figparams.colp['MidFreqR']} 
+soundColor = figparams.colp['sound']
 timeRange = [-0.3,0.5]
 
 #dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
@@ -38,7 +40,7 @@ if removedDuplicates:
 else:
     figFilename = 'plots_modulation_switching'
 '''
-figFilename = 'plots_modulation_switching'
+figFilename = 'plots_soundres_modulation_switching'
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [7,7]
 
@@ -59,12 +61,12 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(2, 2)
 gs.update(left=0.12, right=0.98, top=0.95, bottom=0.1, wspace=0.3, hspace=0.3)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.1)
-gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,1], hspace=0.1)
+gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
-smoothWinSizePsth = 3
+smoothWinSizePsth = 2#3
 lwPsth = 2
 downsampleFactorPsth = 1
 
@@ -125,7 +127,7 @@ if PANELS[0]:
     left_line = mlines.Line2D([], [], color=colorsDict['colorL'], label='left choice')
     right_line = mlines.Line2D([], [], color=colorsDict['colorR'], label='right choice')
     #plt.legend(handles=[left_line, right_line], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
-    plt.legend(['11 kHz = left','11 kHz = Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.legend(['11 kHz = left','11 kHz = right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
                frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
     print '***** WARNING *******  Are colors switched?  which one was the first block?'
@@ -134,7 +136,9 @@ if PANELS[0]:
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.xlim(timeRange)
-    yLims = [0,40]
+    yLims = [0,50]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xticks(np.arange(-0.2,0.6,0.2))
@@ -194,8 +198,10 @@ if PANELS[1]:
     #plt.legend()
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
+    yLims = [0,25]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.xlim(timeRange)
-    yLims = [0,20]
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xticks(np.arange(-0.2,0.6,0.2))
