@@ -35,7 +35,7 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
-labelPosX = [0.07, 0.4, 0.7]   # Horiz position for panel labels
+labelPosX = [0.07, 0.4, 0.67]   # Horiz position for panel labels
 labelPosY = [0.9]    # Vert position for panel labels
 MOVEMENTCOLORS = [figparams.colp['MidFreqL'],figparams.colp['MidFreqR']]
 colormapTuning = matplotlib.cm.winter 
@@ -51,7 +51,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1,3)
-gs.update(left=0.15, right=0.95, wspace=0.4, hspace=0.1)
+gs.update(left=0.15, right=0.95,top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
 gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.1)
 gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.1)
 
@@ -218,8 +218,8 @@ movementSelectivePsychometric = (movementModSigEachCell <= alphaLevel)
 
 # -- Scatter plot of modulation index vs sound response index -- #
 plt.plot(responseIndEachCell, movementModIEachCell, marker='o', linestyle='none', mec='grey', mfc='none')
-plt.xlabel('sound response index')
-plt.ylabel('movement direction modulation index')
+plt.xlabel('Sound response index')
+plt.ylabel('Movement selectivity index')
 plt.xlim([-1.1,1.1])
 plt.ylim([-1.1,1.1])
 #plt.title('Psychometric task')

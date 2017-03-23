@@ -10,7 +10,31 @@ from jaratoolbox import extraplots
 import figparams
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+import matplotlib
+import matplotlib.gridspec as gridspec
 
+matplotlib.rcParams['font.family'] = 'Helvetica'
+matplotlib.rcParams['svg.fonttype'] = 'none'
+
+SAVE_FIGURE = 1
+outputDir = '/tmp/'
+figFilename = 'supp_sound_movement_modulation_corr' # Do not include extension
+figFormat = 'svg' # 'pdf' or 'svg'
+figSize = [7,3]
+
+fontSizeLabels = figparams.fontSizeLabels
+fontSizeTicks = figparams.fontSizeTicks
+fontSizePanel = figparams.fontSizePanel
+#labelDis = 0.1
+labelPosX = [0.07, 0.47]   # Horiz position for panel labels
+labelPosY = [0.9]
+
+fig = plt.gcf()
+fig.clf()
+fig.set_facecolor('w')
+
+gs = gridspec.GridSpec(1,2)
+gs.update(left=0.15, right=0.95,top=0.85, bottom=0.15, wspace=0.5, hspace=0.1)
 qualityList = [1,6]
 ISIcutoff = 0.02
 
@@ -59,22 +83,24 @@ soundModSig_switching = cellsToPlot_switching.modSig.values
 movementSelectiveSwitching = (movementModSig_switching <= 0.05)
 soundModSwitching = (soundModSig_switching <= 0.05)
 
-# -- Plot scatter of movment modulation index vs sound modulation index for either task -- #
-plt.figure()
+# -- Panel A: Plot scatter of movment modulation index vs sound modulation index for psychometric -- #
+ax1 = plt.subplot(gs[:,0])
+ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 plt.plot(movementModI_psychometric, soundModI_psychometric, marker='o', linestyle='none', mec='grey', mfc='none')
-plt.xlabel('movment modulation index')
-plt.ylabel('modulation index of sound response by choice')
-plt.title('Psychometric task')
+plt.xlabel('Movment modulation \nby direction',fontsize=fontSizeLabels)
+plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
+plt.title('Psychometric')
 plt.xlim([-1.1,1.1])
 plt.ylim([-1.1,1.1])
 extraplots.boxoff(plt.gca())
 
-
-plt.figure()
+# -- Panel B: Plot scatter of movment modulation index vs sound modulation index for switching -- #
+ax2 = plt.subplot(gs[:,1])
+ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 plt.plot(movementModI_switching, soundModI_switching, marker='o', linestyle='none', mec='grey', mfc='none')
-plt.xlabel('movment modulation index')
-plt.ylabel('modulation index of sound response by choice')
-plt.title('Switching task')
+plt.xlabel('Movment modulation \nby direction',fontsize=fontSizeLabels)
+plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
+plt.title('Switching')
 plt.xlim([-1.1,1.1])
 plt.ylim([-1.1,1.1])
 extraplots.boxoff(plt.gca())
@@ -88,3 +114,6 @@ rPsy, pValPsy = stats.spearmanr(movementModI_psychometric, soundModI_psychometri
 print '\nPsychometric task: Spearman correlation coefficient between sound response index and movement direction modulation index is:', rPsy, 'p value is:', pValPsy
 rSwi, pValSwi = stats.spearmanr(movementModI_switching, soundModI_switching)
 print '\nSwitching task: Spearman correlation coefficient between sound response index and movement direction modulation index is:', rSwi, 'p value is:', pValSwi
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
