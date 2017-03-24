@@ -58,7 +58,7 @@ np.savez(outputFullPath, sourceSwitching=switchingFilePath, maxZThreshold=maxZTh
 
 
 ## Plot only the good cells selective to movement direction ##
-movementSelective = allcells_switching.movementModS>=0.05
+movementSelective = allcells_switching.movementModS<=0.05
 allcellsMovementSel = allcells_switching[goodcells & cellsInStr & keepAfterDupTest & movementSelective] # good cells IN STR selective to movement direction
 sigMod = np.array((allcellsMovementSel['modSig_-0.1-0s_center-out']<=0.05) & (allcellsMovementSel['modDir_-0.1-0s_center-out']>=1), dtype=bool) 
 dataToPlot = {'modulated':sigMod,'modulationIndex':allcellsMovementSel.modIndex,'animalName':allcellsMovementSel.animalName}
