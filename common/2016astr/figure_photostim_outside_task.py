@@ -179,7 +179,11 @@ if PANELS[1]:
     (st,pval) = stats.ranksums(meanEachCondEachSubject[1],meanEachCondEachSubject[3])
     print 'Comparison BACK left vs right: p = {0:0.3}'.format(pval)
     
-    
+    meanContraFront = np.concatenate((np.abs(meanEachCondEachSubject[0]),meanEachCondEachSubject[2]))
+    meanContraBack = np.concatenate((np.abs(meanEachCondEachSubject[1]),meanEachCondEachSubject[3]))
+    print 'Mean head rotation to contralateral side for FRONT str stim is {}, SD is {}'.format(np.mean(meanContraFront), np.std(meanContraFront))
+    print 'Mean head rotation to contralateral side for BACK str stim is {}, SD is {}'.format(np.mean(meanContraBack), np.std(meanContraBack))
+
     '''
     for indc, oneCond in enumerate(eachCond):
         for inds in np.flatnonzero(oneCond):

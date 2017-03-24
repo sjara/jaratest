@@ -192,7 +192,7 @@ alphaLevel = 0.05
 #bonferroniCorrectedAlphaLevel = alphaLevel/numFreqs
 
 summaryFilename = 'summary_2afc_best_freq_maxZ_psychometric.npz'
-summaryFullPath = os.path.join(dataDir,'2afc_Z_score_psychometric', summaryFilename)
+summaryFullPath = os.path.join(dataDir,'sound_freq_selectivity', summaryFilename)
 summary = np.load(summaryFullPath)
 
 psychometricFileName = 'all_cells_all_measures_waveform_psychometric.h5'
