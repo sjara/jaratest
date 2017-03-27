@@ -232,11 +232,15 @@ if PANELS[2]:
     #plt.hist(responseIndEachCell[freqSelective], bins=binsEdges, color='k')
     plt.hist([responseIndEachCell[freqSelective],responseIndEachCell[~freqSelective]], bins=binsEdges, color=['k','darkgrey'],
              edgecolor='None',stacked=True)
-    
+
+    nCellsString = '{} cells'.format(sum(cellSelectorBoolArray))
+    nMiceString = '{} mice'.format(5)
+    plt.text(0.4, 65, nCellsString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.4, 60, nMiceString, ha='left',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     plt.xlabel('Sound response index',fontsize=fontSizeLabels)
     plt.ylabel('Number of cells',fontsize=fontSizeLabels)
-
+    
     plt.xlim([-1.01,1.01])
     extraplots.boxoff(ax8)
     
