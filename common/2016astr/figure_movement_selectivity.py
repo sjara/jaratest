@@ -226,6 +226,9 @@ plt.legend(handles=[sig_patch,nonsig_patch], loc='upper left', fontsize=fontSize
 yPosText = 0.95*plt.ylim()[1]
 plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
 plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
+#plt.text(0.4, 65, nCellsString, ha='left',fontsize=fontSizeLabels)
+#plt.text(0.4, 60, nMiceString, ha='left',fontsize=fontSizeLabels)
+
 plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)

@@ -90,11 +90,10 @@ plt.axis('off')
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 '''
 
-# -- Panel B: representative sound-evoked raster from psychometric task, Not modulated -- #
-ax2 = plt.subplot(gs00[0:3, :])
+ax2 = plt.subplot(gs01[0:3, :])
 ax2.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
-if PANELS[0]:
+if PANELS[1]:
     rasterFilename = 'example_psycurve_soundaligned_raster_{}.npz'.format(exampleNonMod) 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
@@ -123,8 +122,7 @@ if PANELS[0]:
 
 
     # -- Panel B2: representative sound-evoked psth from psychometric task, Not modulated -- #
-    #ax3 = plt.subplot(gs[1,2:4])
-    ax3 = plt.subplot(gs00[3, :])
+    ax3 = plt.subplot(gs01[3, :])
     psthFilename = 'example_psycurve_soundaligned_psth_{}.npz'.format(exampleNonMod)
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
@@ -156,9 +154,8 @@ if PANELS[0]:
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 
-# -- Panel C: representative sound-evoked raster from psychometric task, Modulated-- #
-#ax4 = plt.subplot(gs[0, 4:6])
-ax4 = plt.subplot(gs01[0:3, :])
+# -- Representative sound-evoked raster from psychometric task, Modulated-- #
+ax4 = plt.subplot(gs00[0:3, :])
 ax4.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     rasterFilename = 'example_psycurve_soundaligned_raster_{}.npz'.format(exampleModulated) 
@@ -190,7 +187,7 @@ if PANELS[1]:
 
     # -- Panel C2: representative sound-evoked psth from psychometric task, Modulated -- #
     #ax5 = plt.subplot(gs[1,4:6])
-    ax5 = plt.subplot(gs01[3, :])
+    ax5 = plt.subplot(gs00[3, :])
     psthFilename = 'example_psycurve_soundaligned_psth_{}.npz'.format(exampleModulated)
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
