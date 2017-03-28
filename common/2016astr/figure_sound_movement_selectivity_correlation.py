@@ -246,3 +246,18 @@ print '\nSpearman correlation coefficient between ABS(sound response index) and 
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+
+'''
+# Test whether we get correlation from noise when using abs()
+# It looks like using abs() does not increase correlation
+
+nSamples = 1000
+x=np.random.randn(nSamples)
+y=np.random.randn(nSamples)
+stats.spearmanr(x,y)
+stats.spearmanr(np.abs(x),np.abs(y))
+
+plot(x,y,'o',mfc='none')
+plot(np.abs(x),np.abs(y),'o',mfc='none')
+'''
