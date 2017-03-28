@@ -23,8 +23,9 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
 
-colorsDict = {'colorL':figparams.colp['MidFreqL'], 
-              'colorR':figparams.colp['MidFreqR']} 
+colorLeft = figparams.colp['MidFreqL']
+colorRight = figparams.colp['MidFreqR']
+
 soundColor = figparams.colp['sound']
 timeRange = [-0.3,0.5]
 
@@ -78,16 +79,16 @@ ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fo
 
 
 # -- Panel B: representative sound-evoked raster from switching task, Not modulated-- #
-ax2 = plt.subplot(gs00[0:2, 0:])
+ax2 = plt.subplot(gs01[0:2, 0:])
 ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
-    rasterFilename = 'example_switching_midfreq_soundaligned_raster_adap020_20160526a_T2_c9.npz' 
+    rasterFilename = 'example_switching_midfreq_soundaligned_raster_adap020_20160526a_T2_c9.npz'  # H-L-H blocks
     rasterFullPath = os.path.join(dataDir, rasterFilename)
-    rasterExample =np.load(rasterFullPath)
+    rasterExample = np.load(rasterFullPath)
 
     trialsEachCond = rasterExample['trialsEachCond']
-    colorEachCond = rasterExample['colorEachCond']
+    colorEachCond = [colorLeft, colorRight, colorLeft, colorRight] #rasterExample['colorEachCond']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
     #timeRange = rasterExample['timeRange']
@@ -110,28 +111,25 @@ if PANELS[0]:
 
     # -- Panel B2: representative sound-evoked psth from switching task, Not modulated -- #
     #ax3 = plt.subplot(gs[1, 2:4])
-    ax3 = plt.subplot(gs00[2:, :])
+    ax3 = plt.subplot(gs01[2:, :])
     psthFilename = 'example_switching_midfreq_soundaligned_psth_adap020_20160526a_T2_c9.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
     trialsEachCond = psthExample['trialsEachCond']
-    colorEachCond = psthExample['colorEachCond']
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
     #timeRange = psthExample['timeRange']
+    #colorEachCond = [colorLeft, colorRight, colorLeft, colorRight]
 
     extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
-    left_line = mlines.Line2D([], [], color=colorsDict['colorL'], label='left choice')
-    right_line = mlines.Line2D([], [], color=colorsDict['colorR'], label='right choice')
+    #left_line = mlines.Line2D([], [], color=colorsDict['colorL'], label='left choice')
+    #right_line = mlines.Line2D([], [], color=colorsDict['colorR'], label='right choice')
     #plt.legend(handles=[left_line, right_line], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
     plt.legend(['11 kHz = left','11 kHz = right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
                frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
-
-    print '***** WARNING *******  Are colors switched?  which one was the first block?'
-
     
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
@@ -143,21 +141,21 @@ if PANELS[0]:
     plt.yticks(yLims)
     plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
 # -- Panel C: representative sound-evoked raster from switching task, modulated -- #
 #ax4 = plt.subplot(gs[2, 0:2])
-ax4 = plt.subplot(gs01[0:2, 0:])
+ax4 = plt.subplot(gs00[0:2, 0:])
 ax4.annotate('C', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[1]:
-    rasterFilename = 'example_switching_midfreq_soundaligned_raster_test089_20160124a_T4_c6.npz' 
+    rasterFilename = 'example_switching_midfreq_soundaligned_raster_test089_20160124a_T4_c6.npz'   # H-L-H blocks
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
 
     trialsEachCond = rasterExample['trialsEachCond']
-    colorEachCond = rasterExample['colorEachCond']
+    colorEachCond = [colorLeft, colorRight, colorLeft, colorRight] #rasterExample['colorEachCond']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
     #timeRange = rasterExample['timeRange']
@@ -181,21 +179,25 @@ if PANELS[1]:
 
     # -- Panel C2: representative sound-evoked psth from switching task, modulated -- #
     #ax5 = plt.subplot(gs[3, 0:2])
-    ax5 = plt.subplot(gs01[2:, 0:])
+    ax5 = plt.subplot(gs00[2:, 0:])
     psthFilename = 'example_switching_midfreq_soundaligned_psth_test089_20160124a_T4_c6.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
     trialsEachCond = psthExample['trialsEachCond']
-    colorEachCond = psthExample['colorEachCond']
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
     #timeRange = psthExample['timeRange']
+    #colorEachCond = [colorLeft, colorRight, colorLeft, colorRight]
 
-    extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-
-    #plt.legend()
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+    # -- Place line for second block of trials at the top --
+    plt.setp(pPSTH[1],zorder=3)
+             
+    plt.legend(['11 kHz = left','11 kHz = right'], loc='upper right', bbox_to_anchor=(1, 1.1),
+               fontsize=fontSizeTicks, handlelength=0.2,
+               frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     yLims = [0,25]

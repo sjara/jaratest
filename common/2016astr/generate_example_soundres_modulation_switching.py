@@ -23,8 +23,8 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 if not os.path.exists(dataDir):
     os.mkdir(dataDir)
 
-colorsDict = {'lowBlock':figparams.colp['MidFreqL'], 
-              'highBlock':figparams.colp['MidFreqR']} 
+colorsDict = {'lowBlock':figparams.colp['MidFreqR'], 
+              'highBlock':figparams.colp['MidFreqL']} 
 
 
 # -- These example cells I picked manually from jarauser@jarahub/data/reports/billy/20160818_billys_lastest_reports/2016_billy_lan_paper/20160615_switching_modulation_examples_figure7/Best_quality_ISI-2_ZVal-3/sound_modulation --#
