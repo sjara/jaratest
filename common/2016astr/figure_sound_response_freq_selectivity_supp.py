@@ -17,7 +17,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To
-
+soundColor = figparams.colp['sound']
 #dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
 PANELS = [1,1] # Which panels to plot
@@ -26,7 +26,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'supp_figure_sound_freq_selectivity' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,3]
+figSize = [7,3.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -52,10 +52,10 @@ fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 2)
 #gs.update(left=0.1, right=0.9, wspace=0.35, hspace=0.2)
-gs.update(left=0.15, right=0.98, top=0.85, bottom=0.1, wspace=0.4, hspace=0.1)
+gs.update(left=0.1, right=0.98, top=0.9, bottom=0.05, wspace=0.4, hspace=0.2)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.1)
-gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.1)
+gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.15)
 
 
 # -- Panel A: representative sound-evoked raster and psth from tuning task -- #
@@ -86,7 +86,8 @@ if PANELS[0]:
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
-
+    plt.gca().set_xticklabels('')
+    
     ax2 = plt.subplot(gs00[2,:])
     psthFilename = 'example_freq_tuning_psth_adap017_20160317a_T5_c3.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
@@ -114,8 +115,15 @@ if PANELS[0]:
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    yLims = [0,80]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    plt.ylim(yLims)
+    plt.yticks(yLims)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     plt.ylabel('Firing rate \n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    extraplots.boxoff(plt.gca())
 
     
 # -- Panel B: another example of sound-evoked raster and psth from tuning task -- #
@@ -145,6 +153,7 @@ if PANELS[1]:
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.gca().set_xticklabels('')
 
     ax4 = plt.subplot(gs01[2,:])
 
@@ -172,8 +181,15 @@ if PANELS[1]:
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    yLims = [0,80]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    plt.ylim(yLims)
+    plt.yticks(yLims)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    plt.ylabel('Firing rate \n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.ylabel('Firing rate \n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    extraplots.boxoff(plt.gca())
     
 '''
 # -- Panel C: example of sound-evoked raster and psth from 2afc task (cell in A) -- #

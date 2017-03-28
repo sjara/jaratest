@@ -37,6 +37,7 @@ gs = gridspec.GridSpec(1,2)
 gs.update(left=0.15, right=0.95,top=0.85, bottom=0.15, wspace=0.5, hspace=0.1)
 qualityList = [1,6]
 ISIcutoff = 0.02
+maxZThreshold = 3
 
 # -- Read in databases storing all measurements from psycurve and switching mice -- #
 switchingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
@@ -53,9 +54,9 @@ allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')
 goodcells_psychometric = (allcells_psychometric.cellQuality.isin(qualityList)) & (allcells_psychometric.ISI <= ISIcutoff)
 cellInStr =  (allcells_psychometric.cellInStr==1)
 keepAfterDupTest = allcells_psychometric.keep_after_dup_test
-
-cellsToPlot_psychometric = allcells_psychometric[goodcells_psychometric & cellInStr & keepAfterDupTest]
-
+responsiveMidFreqs = (abs(allcells_psychometric.maxZSoundMid1)>=maxZThreshold) | (abs(allcells_psychometric.maxZSoundMid2)>=maxZThreshold)
+#cellsToPlot_psychometric = allcells_psychometric[goodcells_psychometric & cellInStr & keepAfterDupTest]
+cellsToPlot_psychometric = allcells_psychometric[goodcells_psychometric & cellInStr & keepAfterDupTest & responsiveMidFreqs]
 movementModI_psychometric = cellsToPlot_psychometric.movementModI.values
 movementModSig_psychometric = cellsToPlot_psychometric.movementModS.values
 
@@ -71,8 +72,10 @@ soundModPsychometric = (soundModSig_psychometric <= 0.05)
 goodcells_switching = (allcells_switching.cellQuality.isin(qualityList)) & (allcells_switching.ISI <= ISIcutoff)
 cellInStr =  (allcells_switching.cellInStr==1)
 keepAfterDupTest = allcells_switching.keep_after_dup_test
+responsiveMidFreqs = abs(allcells_switching.maxZSoundMid)>=maxZThreshold
 
-cellsToPlot_switching = allcells_switching[goodcells_switching & cellInStr & keepAfterDupTest]
+#cellsToPlot_switching = allcells_switching[goodcells_switching & cellInStr & keepAfterDupTest]
+cellsToPlot_switching = allcells_switching[goodcells_switching & cellInStr & keepAfterDupTest & responsiveMidFreqs]
 
 movementModI_switching = cellsToPlot_switching.movementModI.values
 movementModSig_switching = cellsToPlot_switching.movementModS.values
@@ -86,23 +89,23 @@ soundModSwitching = (soundModSig_switching <= 0.05)
 # -- Panel A: Plot scatter of movment modulation index vs sound modulation index for psychometric -- #
 ax1 = plt.subplot(gs[:,0])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-plt.plot(movementModI_psychometric, soundModI_psychometric, marker='o', linestyle='none', mec='grey', mfc='none')
+plt.plot(np.abs(movementModI_psychometric), np.abs(soundModI_psychometric), marker='o', linestyle='none', mec='grey', mfc='none')
 plt.xlabel('Movment modulation \nby direction',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Psychometric')
-plt.xlim([-1.1,1.1])
-plt.ylim([-1.1,1.1])
+plt.xlim([-0.1,1.1])
+plt.ylim([-0.1,1.1])
 extraplots.boxoff(plt.gca())
 
 # -- Panel B: Plot scatter of movment modulation index vs sound modulation index for switching -- #
 ax2 = plt.subplot(gs[:,1])
 ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-plt.plot(movementModI_switching, soundModI_switching, marker='o', linestyle='none', mec='grey', mfc='none')
+plt.plot(np.abs(movementModI_switching), np.abs(soundModI_switching), marker='o', linestyle='none', mec='grey', mfc='none')
 plt.xlabel('Movment modulation \nby direction',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Switching')
-plt.xlim([-1.1,1.1])
-plt.ylim([-1.1,1.1])
+plt.xlim([-0.1,1.1])
+plt.ylim([-0.1,1.1])
 extraplots.boxoff(plt.gca())
 plt.show()
 
@@ -110,8 +113,15 @@ plt.show()
 #numCellsPsy = len(cellsToPlot_psychometric)
 #numMovSelPsy = sum(movementSelectivePsychometric)
 #numSoundModPsy = sum(soundModPsychometric)
+print 'Number of cells for psychometric:', len(cellsToPlot_psychometric)
+print 'Number of cells for switching:', len(cellsToPlot_switching)
+rPsy, pValPsy = stats.spearmanr(np.abs(movementModI_psychometric), np.abs(soundModI_psychometric))
+print '\nUSING ABSOLUTE VALUES - Psychometric task: Spearman correlation coefficient between sound response index and movement direction modulation index is:', rPsy, 'p value is:', pValPsy
 rPsy, pValPsy = stats.spearmanr(movementModI_psychometric, soundModI_psychometric)
 print '\nPsychometric task: Spearman correlation coefficient between sound response index and movement direction modulation index is:', rPsy, 'p value is:', pValPsy
+
+rSwi, pValSwi = stats.spearmanr(np.abs(movementModI_switching), np.abs(soundModI_switching))
+print '\nUSING ABSOLUTE VALUES - Switching task: Spearman correlation coefficient between sound response index and movement direction modulation index is:', rSwi, 'p value is:', pValSwi
 rSwi, pValSwi = stats.spearmanr(movementModI_switching, soundModI_switching)
 print '\nSwitching task: Spearman correlation coefficient between sound response index and movement direction modulation index is:', rSwi, 'p value is:', pValSwi
 

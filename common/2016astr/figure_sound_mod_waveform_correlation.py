@@ -86,53 +86,52 @@ soundModSwitching = (soundModSig_switching <= 0.05)
 # -- Panel A: Plot scatter of movment modulation index vs sound modulation index for psychometric -- #
 ax1 = plt.subplot(gs[0,0])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-plt.plot(spkWidth_psychometric, soundModI_psychometric, marker='o', linestyle='none', mec='grey', mfc='none')
-plt.plot(spkWidth_psychometric[soundModPsychometric], soundModI_psychometric[soundModPsychometric], marker='o', linestyle='none', mec='red', mfc='none')
-plt.xlabel('Spike width (sec)',fontsize=fontSizeLabels)
+plt.plot(spkWidth_psychometric, np.abs(soundModI_psychometric), marker='o', linestyle='none', mec='grey', mfc='none')
+plt.plot(spkWidth_psychometric[soundModPsychometric], np.abs(soundModI_psychometric[soundModPsychometric]), marker='o', linestyle='none', mec='red', mfc='none')
+plt.xlabel('Spike width (ms)',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Psychometric')
 #plt.xlim([-1.1,1.1])
-plt.ylim([-1.1,1.1])
+plt.ylim([-0.1,1.1])
 extraplots.boxoff(plt.gca())
 
 # -- Panel B: Plot scatter of movment modulation index vs sound modulation index for switching -- #
 ax2 = plt.subplot(gs[0,1])
 ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-plt.plot(NatoKRatio_psychometric, soundModI_psychometric, marker='o', linestyle='none', mec='grey', mfc='none')
-plt.plot(NatoKRatio_psychometric[soundModPsychometric], soundModI_psychometric[soundModPsychometric], marker='o', linestyle='none', mec='red', mfc='none')
+plt.plot(NatoKRatio_psychometric, np.abs(soundModI_psychometric), marker='o', linestyle='none', mec='grey', mfc='none')
+plt.plot(NatoKRatio_psychometric[soundModPsychometric], np.abs(soundModI_psychometric[soundModPsychometric]), marker='o', linestyle='none', mec='red', mfc='none')
 plt.xlabel('Na peak to K peak ratio (log)',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Psychometric')
 #plt.xlim([0,])
 ax2.set_xscale("log")
 #plt.xticks
-plt.ylim([-1.1,1.1])
+plt.ylim([-0.1,1.1])
 extraplots.boxoff(plt.gca())
 
 # -- Panel C: Plot scatter of movment modulation index vs sound modulation index for psychometric -- #
 ax3 = plt.subplot(gs[1,0])
 ax3.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-plt.plot(spkWidth_switching, soundModI_switching, marker='o', linestyle='none', mec='grey', mfc='none')
-plt.plot(spkWidth_switching[soundModSwitching], soundModI_switching[soundModSwitching], marker='o', linestyle='none', mec='red', mfc='none')
-plt.xlabel('Spike width (sec)',fontsize=fontSizeLabels)
+plt.plot(spkWidth_switching, np.abs(soundModI_switching), marker='o', linestyle='none', mec='grey', mfc='none')
+plt.plot(spkWidth_switching[soundModSwitching], np.abs(soundModI_switching[soundModSwitching]), marker='o', linestyle='none', mec='red', mfc='none')
+plt.xlabel('Spike width (ms)',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Switching')
 #plt.xlim([-1.1,1.1])
-plt.ylim([-1.1,1.1])
+plt.ylim([-0.1,1.1])
 extraplots.boxoff(plt.gca())
 
 # -- Panel D: Plot scatter of movment modulation index vs sound modulation index for switching -- #
 ax4 = plt.subplot(gs[1,1])
 ax4.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-plt.plot(NatoKRatio_switching, soundModI_switching, marker='o', linestyle='none', mec='grey', mfc='none')
-plt.plot(NatoKRatio_switching[soundModSwitching], soundModI_switching[soundModSwitching], marker='o', linestyle='none', mec='red', mfc='none')
+plt.plot(NatoKRatio_switching, np.abs(soundModI_switching), marker='o', linestyle='none', mec='grey', mfc='none')
+plt.plot(NatoKRatio_switching[soundModSwitching], np.abs(soundModI_switching[soundModSwitching]), marker='o', linestyle='none', mec='red', mfc='none')
 plt.xlabel('Na peak to K peak ratio (log)',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Switching')
 #plt.xlim([-1.1,1.1])
 ax4.set_xscale("log")
-
-plt.ylim([-1.1,1.1])
+plt.ylim([-0.1,1.1])
 extraplots.boxoff(plt.gca())
 
 
@@ -142,14 +141,14 @@ plt.show()
 #numCellsPsy = len(cellsToPlot_psychometric)
 #numMovSelPsy = sum(movementSelectivePsychometric)
 #numSoundModPsy = sum(soundModPsychometric)
-rPsy1, pValPsy1 = stats.spearmanr(spkWidth_psychometric, soundModI_psychometric)
+rPsy1, pValPsy1 = stats.spearmanr(spkWidth_psychometric, np.abs(soundModI_psychometric))
 print '\nPsychometric task: Spearman correlation coefficient between sound response index and spike width is:', rPsy1, 'p value is:', pValPsy1
-rPsy2, pValPsy2 = stats.spearmanr(NatoKRatio_psychometric, soundModI_psychometric)
+rPsy2, pValPsy2 = stats.spearmanr(NatoKRatio_psychometric, np.abs(soundModI_psychometric))
 print '\nPsychometric task: Spearman correlation coefficient between sound response index and Na to K peak ratio is:', rPsy2, 'p value is:', pValPsy2
 
-rSwi, pValSwi = stats.spearmanr(spkWidth_switching, soundModI_switching)
+rSwi, pValSwi = stats.spearmanr(spkWidth_switching, np.abs(soundModI_switching))
 print '\nSwitching task: Spearman correlation coefficient between sound response index and spike width is:', rSwi, 'p value is:', pValSwi
-rSwi2, pValSwi2 = stats.spearmanr(NatoKRatio_switching, soundModI_switching)
+rSwi2, pValSwi2 = stats.spearmanr(NatoKRatio_switching, np.abs(soundModI_switching))
 print '\nSwitching task: Spearman correlation coefficient between sound response index and Na to K peak ratio is:', rSwi2, 'p value is:', pValSwi2
 
 if SAVE_FIGURE:
