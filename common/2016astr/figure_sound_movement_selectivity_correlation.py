@@ -217,7 +217,8 @@ movementModSigEachCell = goodcells_psychometric.movementModS.values
 movementSelectivePsychometric = (movementModSigEachCell <= alphaLevel)
 
 # -- Scatter plot of modulation index vs sound response index -- #
-plt.plot(responseIndEachCell, movementModIEachCell, marker='o', linestyle='none', mec='grey', mfc='none')
+#plt.plot(responseIndEachCell, movementModIEachCell, marker='o', linestyle='none', mec='grey', mfc='none')
+plt.plot(np.abs(responseIndEachCell), np.abs(movementModIEachCell), marker='o', linestyle='none', mec='grey', mfc='none')
 plt.xlabel('Sound response index')
 plt.ylabel('Movement selectivity index')
 plt.xlim([-1.1,1.1])
@@ -227,12 +228,21 @@ extraplots.boxoff(plt.gca())
 
 plt.show()
 
+nanCells = np.isnan(responseIndEachCell)|np.isnan(movementModIEachCell)
+
+print '****** WARNING ***** found {} cells with NaN response/movement index. They are removed from stats.'.format(np.sum(nanCells))
+responseIndEachCell = responseIndEachCell[~nanCells]
+movementModIEachCell = movementModIEachCell[~nanCells]
+
 # -- Stats -- #
 numCells = sum(cellSelectorBoolArray)
 numSoundMovementSelective = sum(freqSelective & movementSelectivePsychometric)
 print numSoundMovementSelective, 'cells out of', numCells, 'good cells were both selective to sound freq and movement direction during 2afc'
 r, pVal = stats.spearmanr(responseIndEachCell, movementModIEachCell)
 print '\nSpearman correlation coefficient between sound response index and movement direction modulation index is:', r, 'p value is:', pVal
+
+r, pVal = stats.spearmanr(np.abs(responseIndEachCell), np.abs(movementModIEachCell))
+print '\nSpearman correlation coefficient between ABS(sound response index) and ABS(movement direction modulation index) is:', r, 'p value is:', pVal
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
