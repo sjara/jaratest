@@ -24,7 +24,7 @@ from jaratest.lan import test055_load_n_plot_billy_data_one_cell as loader
 reload(loader)
 
 
-CASE = 1
+CASE = 3
 
 if CASE == 1:
     newTime=time.time(); print 'Elapsed time: {0:0.2f}  AFTER IMPORT'.format(newTime-zeroTime); zeroTime=newTime; sys.stdout.flush()  ### PROFILER
@@ -207,8 +207,8 @@ if CASE == 1:
                                 modSig = spikesanalysis.evaluate_modulation(spikeTimesFromEventOnset,indexLimitsEachTrial,countTimeRange,trialsEachCond)[1]
                                 modIndex = (spikeAvgRight - spikeAvgLeft)/(spikeAvgRight + spikeAvgLeft)
                             newTime=time.time(); print 'Elapsed time: {0:0.2f}  Calculated MOD INDEX & SIG'.format(newTime-zeroTime); zeroTime=newTime; sys.stdout.flush()  ### PROFILER
-                            modulationDict['modInd_Mid'.format(ind+1)+window].append(modIndex) 
-                            modulationDict['modSig_Mid'.format(ind+1)+window].append(modSig)
+                            modulationDict['modIndMid{}_'.format(ind+1)+window].append(modIndex) 
+                            modulationDict['modSigMid{}_'.format(ind+1)+window].append(modSig)
                             
 
             # Open the hdf file for appending data
@@ -237,3 +237,25 @@ if CASE == 2:
         scriptFullPath = os.path.realpath(__file__)
         modulationDf['script'] = scriptFullPath
         modulationDf.to_hdf(os.path.join(processedDir,file), key='psychometric')
+
+if CASE == 3:
+        # -- Merge newly calculated modulation index (with test085) from dif windows with all cells all measures --#
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import os
+        
+        dfAllMeasures = pd.read_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_waveform_psychometric.h5',key='psychometric')
+
+        allMiceDfs = []
+        for animal in np.unique(dfAllMeasures['animalName']):
+            dfThisMouse = dfAllMeasures.loc[dfAllMeasures['animalName'] == animal].reset_index()
+            
+            dfModThisMouse = pd.read_hdf('/home/languo/data/ephys/psychometric_summary_stats/newMod/{}_psychometric_modulation.h5'.format(animal),key='psychometric')
+            dfs = [dfThisMouse,dfModThisMouse]
+            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','behavSession','tetrode','cluster'],how='inner'), dfs)
+            allMiceDfs.append(dfAllThisMouse)
+        
+        dfAllPsychometricMouse = pd.concat(allMiceDfs, ignore_index=True)
+        dfAllPsychometricMouse.drop('level_0', 1, inplace=True)
+        dfAllPsychometricMouse.to_hdf('/home/languo/data/ephys/psychometric_summary_stats/all_cells_all_measures_extra_mod_waveform_psychometric.h5', key='psychometric')
+        #when saving to hdf, using (format='table',data_columns=True) is slower but enable on disk queries

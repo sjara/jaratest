@@ -30,7 +30,7 @@ timeRange = [-0.3,0.5]
 
 #dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
-PANELS = [0,0,1] # Which panels to plot
+PANELS = [1,1,1] # Which panels to plot
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -40,17 +40,17 @@ if removedDuplicates:
 else:
     figFilename = 'plots_modulation_switching'
 '''
-figFilename = 'plots_premovement_modulation_switching'
+figFilename = 'figure_premovement_modulation_switching'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,7]
+figSize = [10,3.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 labelDis = 0.1
 
-labelPosX = [0.02, 0.54]   # Horiz position for panel labels
-labelPosY = [0.95, 0.48]    # Vert position for panel labels
+labelPosX = [0.02, 0.35, 0.65]   # Horiz position for panel labels
+labelPosY = [0.95]    # Vert position for panel labels
 
 #COLORMAP = {'leftTrials':'red', 'rightTrials':'green'}
 
@@ -58,11 +58,11 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 2)
-gs.update(left=0.12, right=0.98, top=0.95, bottom=0.1, wspace=0.3, hspace=0.3)
+gs = gridspec.GridSpec(1, 3)
+gs.update(left=0.05, right=0.98, top=0.95, bottom=0.1, wspace=0.3, hspace=0.3)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.15)
-gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,1], hspace=0.15)
+gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,0], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -70,19 +70,13 @@ smoothWinSizePsth = 2#3
 lwPsth = 2
 downsampleFactorPsth = 1
 
-# -- Panel A: schematic of switching task-- #
-#ax1 = plt.subplot(gs[0:2, 0:2])
-ax1 = plt.subplot(gs[0, 0])
-plt.axis('off')
-ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-
 
 # -- Panel B: representative sound-evoked raster from switching task, Not modulated-- #
 ax2 = plt.subplot(gs00[0:2, 0:])
-ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax2.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
-    rasterFilename = 'example_switching_midfreq_soundaligned_raster_adap020_20160526a_T2_c9.npz' 
+    rasterFilename = 'example_switching_midfreq_movementaligned_raster_adap020_20160526a_T2_c9.npz' 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
 
@@ -111,7 +105,7 @@ if PANELS[0]:
     # -- Panel B2: representative sound-evoked psth from switching task, Not modulated -- #
     #ax3 = plt.subplot(gs[1, 2:4])
     ax3 = plt.subplot(gs00[2:, :])
-    psthFilename = 'example_switching_midfreq_soundaligned_psth_adap020_20160526a_T2_c9.npz' 
+    psthFilename = 'example_switching_midfreq_movementaligned_psth_adap020_20160526a_T2_c9.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
@@ -138,7 +132,7 @@ if PANELS[0]:
     plt.xlim(timeRange)
     yLims = [0,50]
     soundBarHeight = 0.1*yLims[-1]
-    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xticks(np.arange(-0.2,0.6,0.2))
@@ -149,10 +143,10 @@ if PANELS[0]:
 # -- Panel C: representative sound-evoked raster from switching task, modulated -- #
 #ax4 = plt.subplot(gs[2, 0:2])
 ax4 = plt.subplot(gs01[0:2, 0:])
-ax4.annotate('C', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax4.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[1]:
-    rasterFilename = 'example_switching_midfreq_soundaligned_raster_test089_20160124a_T4_c6.npz' 
+    rasterFilename = 'example_switching_midfreq_movementaligned_raster_test089_20160124a_T4_c6.npz' 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
 
@@ -182,7 +176,7 @@ if PANELS[1]:
     # -- Panel C2: representative sound-evoked psth from switching task, modulated -- #
     #ax5 = plt.subplot(gs[3, 0:2])
     ax5 = plt.subplot(gs01[2:, 0:])
-    psthFilename = 'example_switching_midfreq_soundaligned_psth_test089_20160124a_T4_c6.npz' 
+    psthFilename = 'example_switching_midfreq_movementaligned_psth_test089_20160124a_T4_c6.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
@@ -200,7 +194,7 @@ if PANELS[1]:
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     yLims = [0,25]
     soundBarHeight = 0.1*yLims[-1]
-    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.xlim(timeRange)
     plt.ylim(yLims)
     plt.yticks(yLims)
@@ -211,8 +205,8 @@ if PANELS[1]:
 
 # -- Panel D: summary distribution of switching modulation index, total cells is good cells in striatum (nonduplicate) that are responsive to mid freq -- #
 #ax6 = plt.subplot(gs[2:,2:4])
-ax6 = plt.subplot(gs[1,0])
-ax6.annotate('D', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax6 = plt.subplot(gs[0,2])
+ax6.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
     colorMod = 'black'
     colorNotMod = 'darkgrey'
