@@ -136,6 +136,9 @@ if PANELS[1]:
     #subjectsFrontStr = np.unique(np.array(subject)[stimRegion=='frontStr'])
     #subjectsBackStr = np.unique(np.array(subject)[stimRegion=='backStr'])
     meanEachCondEachSubject = [[],[],[],[]]
+    dataEachCondEachSubject = []
+    for inds in range(len(possibleSubjects)):
+        dataEachCondEachSubject.append([0,0,0,0])
     plt.hold(1)
     plt.axhline(0,color='0.5',ls='--')
     for indc, sessionsThisCond in enumerate(eachCond):
@@ -151,6 +154,9 @@ if PANELS[1]:
             meanVal = np.mean(samples)
             seVal = np.std(samples)/np.sqrt(len(samples))
             meanEachCondEachSubject[indc].append(meanVal)
+            subjectIndFromAll = list(possibleSubjects).index(oneSubject)
+            #print samples
+            dataEachCondEachSubject[subjectIndFromAll][indc] = samples
             #[pline,pcap,pbar] = plt.errorbar(xPos[indc]+0.1*indSubject-0.2, meanVal, seVal, color=colorThisCond)
             pmark = plt.plot(xPos[indc]+0.1*indSubject-0.1, meanVal,markerThisCond,mfc=colorThisCond,mec='None')
     extraplots.boxoff(ax3)
@@ -184,6 +190,18 @@ if PANELS[1]:
     print 'Mean head rotation to contralateral side for FRONT str stim is {}, SD is {}'.format(np.mean(meanContraFront), np.std(meanContraFront))
     print 'Mean head rotation to contralateral side for BACK str stim is {}, SD is {}'.format(np.mean(meanContraBack), np.std(meanContraBack))
 
+
+    # -- Analysis per subject --
+    print '*** WARNING ***: This only works if no subject has front and back'
+    for indSubject, oneSubject in enumerate(possibleSubjects):
+        condThisSubject = stimRegion[subject==oneSubject][0]
+        samplesThisSubject = dataEachCondEachSubject[indSubject]
+        if condThisSubject[:4] == 'back':
+            (st,pval) = stats.ranksums(samplesThisSubject[1],samplesThisSubject[3])
+        elif condThisSubject[:4] == 'fron':
+            (st,pval) = stats.ranksums(samplesThisSubject[0],samplesThisSubject[2])
+        print 'Comparison {0} {1}  left vs right: p = {2:0.3}'.format(oneSubject,condThisSubject,pval)
+    
     '''
     for indc, oneCond in enumerate(eachCond):
         for inds in np.flatnonzero(oneCond):
