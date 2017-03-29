@@ -111,3 +111,44 @@ exp2.add_session('16-22-04', 'd', 'am', 'am_tuning_curve')
 exp2.add_session('16-38-06', 'e', 'tc', 'am_tuning_curve')
 exp2.add_session('17-11-42', None, 'laserpulse2', 'am_tuning_curve')
 exp2.add_session('17-13-27', None, 'lasertrain2', 'am_tuning_curve')
+
+exp3 = celldatabase.Experiment(subject,
+                               '2017-03-28',
+                               brainarea='rightThal',
+                               info=['medialDiI', 'facingLateral'])
+experiments.append(exp3)
+
+exp3.add_site(3074, tetrodes=range(1, 9))
+exp3.add_session('13-00-11', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('13-02-00', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('13-03-19', None, 'lasertrain', 'am_tuning_curve')
+exp3.add_session('13-07-20', 'a', 'am', 'am_tuning_curve')
+exp3.add_session('13-24-53', 'b', 'tc', 'am_tuning_curve')
+exp3.add_session('13-56-13', None, 'laserpulse2', 'am_tuning_curve')
+exp3.add_session('13-57-45', None, 'lasertrain2', 'am_tuning_curve')
+
+# exp3.add_site(3210, tetrodes=range(1, 9))
+# exp3.add_session('14-18-25', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('14-19-34', None, 'laserpulse', 'am_tuning_curve')
+# exp3.add_session('14-20-46', None, 'lasertrain', 'am_tuning_curve')
+
+exp3.add_site(3210, tetrodes=range(1, 9))
+exp3.add_session('14-32-03', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('14-34-29', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('14-35-38', None, 'lasertrain', 'am_tuning_curve')
+# exp3.add_session('14-39-05', 'c', 'am', 'am_tuning_curve')
+exp3.add_session('14-55-03', 'd', 'tc', 'am_tuning_curve')
+exp3.add_session('15-27-31', None, 'laserpulse2', 'am_tuning_curve')
+exp3.add_session('15-28-39', None, 'lasertrain2', 'am_tuning_curve')
+exp3.add_session('15-37-30', 'e', 'am', 'am_tuning_curve')
+
+# exp3.add_site(3311, tetrodes=range(1, 9))
+# exp3.add_session('16-19-05', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('16-20-22', None, 'laserpulse', 'am_tuning_curve')
+# exp3.add_session('16-22-35', None, 'lasertrain', 'am_tuning_curve')
+
+exp3.add_site(3349, tetrodes=range(1, 9))
+exp3.add_session('16-29-21', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('16-30-40', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('16-32-28', None, 'laserpulse', 'am_tuning_curve')
+#Nothing here, stopping for the day
