@@ -72,8 +72,8 @@ for indCell, cell in pinp016db.iterrows():
     # plt.show()
     # plt.waitforbuttonpress()
 
-    baseRange = [0, 0.01]
-    responseRange = [0.2, 0.21]
+    baseRange = [0, 0.05]
+    responseRange = [0.2, 0.25]
     avgSpikesBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,baseRange).mean()
     avgSpikesResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,responseRange).mean()
 

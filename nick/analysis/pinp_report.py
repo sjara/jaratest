@@ -28,7 +28,6 @@ def get_cell_info(cell):
     tetrode = int(cell['tetrode'])
     cluster = int(cell['cluster'])
     noiseIndex = [i for i, type in enumerate(cell['sessiontype']) if type == 'noiseburst']
-    rlfIndex = [i for i, type in enumerate(cell['sessiontype']) if type == 'rlf']
     laserIndex = [i for i, type in enumerate(cell['sessiontype']) if type == 'laserpulse']
     laserTrainIndex = [i for i, type in enumerate(cell['sessiontype']) if type == 'lasertrain']
     tuningIndex = [i for i, type in enumerate(cell['sessiontype']) if type == 'tc']
@@ -37,7 +36,6 @@ def get_cell_info(cell):
                 'behavDirs': cell['behavior'],
                 'tetrode': tetrode,
                 'cluster': cluster,
-                'rlIndex': rlfIndex,
                 'noiseIndex': noiseIndex,
                 'laserIndex': laserIndex,
                 'laserTrainIndex': laserTrainIndex,
@@ -46,11 +44,11 @@ def get_cell_info(cell):
                 'subject': cell['subject'],
                 'date': cell['date'],
                 'depth': int(cell['depth']),
-                'experimentInd':int(cell['experimentInd']),
-                'siteInd':int(cell['siteInd'])}
+                'experimentInd':int(cell['indExperiment']),
+                'siteInd':int(cell['indSite'])}
     return cellInfo
 
-def plot_bandwidth_report(cell):
+def plot_pinp_report(cell, fig_path):
     cellInfo = get_cell_info(cell)
     #pdb.set_trace()
     loader = dataloader.DataLoader(cell['subject'])
@@ -201,80 +199,11 @@ def plot_bandwidth_report(cell):
 
     plt.suptitle('{0}, {1}, Experiment {2}, site {3}, Tetrode {4}, Cluster {5}'.format(*cellArgs))
 
-    fig_path = '/home/nick/data/database/pinp015/'
     fig_name = '{0}_{1}_exp{2}site{3}_TT{4}Cluster{5}.png'.format(*cellArgs)
     full_fig_path = os.path.join(fig_path, fig_name)
     fig = plt.gcf()
     fig.set_size_inches(20, 25)
     fig.savefig(full_fig_path, format = 'png', bbox_inches='tight')
-
-
-def bandwidth_raster_inputs(eventOnsetTimes, spikeTimestamps, bandEachTrial, ampEachTrial, timeRange = [-0.2, 1.5]):
-    numBands = np.unique(bandEachTrial)
-    numAmps = np.unique(ampEachTrial)
-
-    firstSortLabels = ['{}'.format(band) for band in numBands]
-
-    trialsEachCond = behavioranalysis.find_trials_each_combination(bandEachTrial,
-                                                                           numBands,
-                                                                           ampEachTrial,
-                                                                           numAmps)
-    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-                                                                                                        spikeTimestamps,
-                                                                                                        eventOnsetTimes,
-                                                                                                        timeRange)
-
-    return spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond, firstSortLabels
-
-def band_select(spikeTimeStamps, eventOnsetTimes, amplitudes, bandwidths, timeRange, fullRange = [0.0, 2.0]):
-    numBands = np.unique(bandwidths)
-    numAmps = np.unique(amplitudes)
-    spikeArray = np.zeros((len(numBands), len(numAmps)))
-    errorArray = np.zeros_like(spikeArray)
-    trialsEachCond = behavioranalysis.find_trials_each_combination(bandwidths,
-                                                                   numBands,
-                                                                   amplitudes,
-                                                                   numAmps)
-    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-                                                                                                        spikeTimeStamps,
-                                                                                                        eventOnsetTimes,
-                                                                                                        fullRange)
-    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
-    baseTimeRange = [timeRange[1]+0.5, fullRange[1]]
-    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseTimeRange)
-    baselineSpikeRate = np.mean(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
-    plt.hold(True)
-    for amp in range(len(numAmps)):
-        trialsThisAmp = trialsEachCond[:,:,amp]
-        for band in range(len(numBands)):
-            trialsThisBand = trialsThisAmp[:,band]
-            if spikeCountMat.shape[0] != len(trialsThisBand):
-                spikeCountMat = spikeCountMat[:-1,:]
-                print "FIXME: Using bad hack to make event onset times equal number of trials"
-            thisBandCounts = spikeCountMat[trialsThisBand].flatten()
-            spikeArray[band, amp] = np.mean(thisBandCounts)
-            errorArray[band,amp] = stats.sem(thisBandCounts)
-    return spikeArray, errorArray, baselineSpikeRate
-
-def band_select_plot(spikeArray, errorArray, baselineSpikeRate, bands, legend = False, labels = ['50 dB SPL', '70 dB SPL'], timeRange = [0,1], title=None):
-    xrange = range(len(bands))
-    plt.plot(xrange, baselineSpikeRate*(timeRange[1]-timeRange[0])*np.ones(len(bands)), color = '0.75', linewidth = 2)
-    plt.plot(xrange, spikeArray[:,0].flatten(), '-o', color = '#4e9a06', linewidth = 3)
-    plt.fill_between(xrange, spikeArray[:,0].flatten() - errorArray[:,0].flatten(),
-                     spikeArray[:,0].flatten() + errorArray[:,0].flatten(), alpha=0.2, edgecolor = '#8ae234', facecolor='#8ae234')
-    plt.plot(range(len(bands)), spikeArray[:,1].flatten(), '-o', color = '#5c3566', linewidth = 3)
-    plt.fill_between(xrange, spikeArray[:,1].flatten() - errorArray[:,1].flatten(),
-                     spikeArray[:,1].flatten() + errorArray[:,1].flatten(), alpha=0.2, edgecolor = '#ad7fa8', facecolor='#ad7fa8')
-    ax = plt.gca()
-    ax.set_xticklabels(bands)
-    plt.xlabel('bandwidth (octaves)')
-    plt.ylabel('Average num spikes')
-    if legend:
-        patch1 = mpatches.Patch(color='#5c3566', label=labels[1])
-        patch2 = mpatches.Patch(color='#4e9a06', label=labels[0])
-        plt.legend(handles=[patch1, patch2], bbox_to_anchor=(0.95, 0.95), borderaxespad=0.)
-    if title:
-        plt.title(title)
 
 def load_cluster_waveforms(cellInfo):
     idString = 'exp{}site{}'.format(cellInfo['experimentInd'],cellInfo['siteInd'])
@@ -286,99 +215,3 @@ def load_cluster_waveforms(cellInfo):
     wavesThisCluster = oneTT.samples[oneTT.clusters==cellInfo['cluster']]
     return tsThisCluster, wavesThisCluster
 
-def suppression_stats(cell):
-    cellInfo = get_cell_info(cell)
-    loader = dataloader.DataLoader(cell['subject'])
-
-    try:
-        bandIndex = cellInfo['bandIndex'][0] #only using first for multiple band sessions for now
-    except IndexError:
-        print "No bandwidth session"
-        return None, None, None
-    try:
-        eventData = loader.get_session_events(cellInfo['ephysDirs'][bandIndex])
-        spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][bandIndex], cellInfo['tetrode'], cluster=cellInfo['cluster'])
-        bandBData = loader.get_session_behavior(cellInfo['behavDirs'][bandIndex])
-    except IOError:
-        print "File does not exist"
-        return None, None, None
-    eventOnsetTimes = loader.get_event_onset_times(eventData)
-    spikeTimeStamps = spikeData.timestamps
-    timeRange = [0.0, 1.0]
-    bandEachTrial = bandBData['currentBand']
-    ampEachTrial = bandBData['currentAmp']
-    charFreq = np.unique(bandBData['charFreq'])[0]
-    numBands = np.unique(bandEachTrial)
-    numAmps = np.unique(ampEachTrial)
-
-    spikeArray, errorArray, baselineSpikeRate = band_select(spikeTimeStamps, eventOnsetTimes, ampEachTrial, bandEachTrial, timeRange)
-    suppressionStats = compute_suppression_stats(spikeArray, numBands)
-
-    tuningIndex = cellInfo['tuningIndex'][0]
-    tuningBData = loader.get_session_behavior(cellInfo['behavDirs'][tuningIndex])
-    eventData = loader.get_session_events(cellInfo['ephysDirs'][tuningIndex])
-    spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][tuningIndex], cellInfo['tetrode'], cluster=cellInfo['cluster'])
-    eventOnsetTimes = loader.get_event_onset_times(eventData)
-    spikeTimeStamps = spikeData.timestamps
-    freqEachTrial = tuningBData['currentFreq']
-    atBestFreq = at_best_freq(spikeTimeStamps, eventOnsetTimes, charFreq, freqEachTrial)
-    if len(cellInfo['laserIndex'])>0:
-        laserIndex = cellInfo['laserIndex'][-1]
-        eventData = loader.get_session_events(cellInfo['ephysDirs'][laserIndex])
-        spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][laserIndex], cellInfo['tetrode'], cluster=cellInfo['cluster'])
-        eventOnsetTimes = loader.get_event_onset_times(eventData)
-        spikeTimestamps = spikeData.timestamps
-        laserResponse = laser_response(spikeTimeStamps, eventOnsetTimes)
-    else:
-        laserResponse = False
-    return suppressionStats, atBestFreq, laserResponse
-
-def at_best_freq(spikeTimeStamps, eventOnsetTimes, charFreq, frequencies, timeRange=[0.0,0.1], fullRange = [0.0, 0.7]):
-    atBestFreq = False
-    numFreqs = np.unique(frequencies)
-    spikeArray = np.zeros(len(numFreqs))
-    trialsEachCond = behavioranalysis.find_trials_each_type(frequencies, numFreqs)
-    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-                                                                                                        spikeTimeStamps,
-                                                                                                        eventOnsetTimes,
-                                                                                                        fullRange)
-    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
-    baseTimeRange = [timeRange[1]+0.1, fullRange[1]]
-    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseTimeRange)
-    baselineSpikeRate = np.mean(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
-    baselineSpikeSDev = np.std(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
-    for freq in range(len(numFreqs)):
-        trialsThisFreq = trialsEachCond[:,freq]
-        if spikeCountMat.shape[0] != len(trialsThisFreq):
-            spikeCountMat = spikeCountMat[:-1,:]
-            print "FIXME: Using bad hack to make event onset times equal number of trials"
-        thisFreqCounts = spikeCountMat[trialsThisFreq].flatten()
-        spikeArray[freq] = np.mean(thisFreqCounts)/(timeRange[1]-timeRange[0])
-    bestFreqIndex = np.argmax(spikeArray)
-    minIndex = bestFreqIndex-1 if bestFreqIndex>0 else 0
-    maxIndex = bestFreqIndex+1 if bestFreqIndex<(len(numFreqs)-1) else len(numFreqs)-1
-    bestFreqs = [numFreqs[minIndex], numFreqs[maxIndex]]
-    if charFreq >= bestFreqs[0] and charFreq <= bestFreqs[1]:
-        if np.max(spikeArray) > (baselineSpikeRate + baselineSpikeSDev):
-            atBestFreq = True
-    return atBestFreq
-
-def laser_response(spikeTimeStamps, eventOnsetTimes, timeRange=[0.0, 0.1], fullRange=[0.0, 0.7]):
-    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-                                                                                                        spikeTimeStamps,
-                                                                                                        eventOnsetTimes,
-                                                                                                        fullRange)
-    baseTimeRange = [timeRange[1]+0.1, fullRange[1]]
-    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseTimeRange)
-    baselineSpikeRate = np.mean(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
-    baselineSpikeSDev = np.std(baseSpikeCountMat)/(baseTimeRange[1]-baseTimeRange[0])
-    laserSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
-    laserSpikeRate = np.mean(laserSpikeCountMat)/(timeRange[1]-timeRange[0])
-    return (laserSpikeRate > (baselineSpikeRate + 2*baselineSpikeSDev))
-
-def compute_suppression_stats(spikeArray, bands):
-    SSLowAmp = (max(spikeArray[:,1])-spikeArray[:,1][-1])/max(spikeArray[:,1])
-    peakLocLowAmp = bands[np.argmax(spikeArray[:,1])]
-    SSHighAmp = (max(spikeArray[:,0])-spikeArray[:,0][-1])/max(spikeArray[:,0])
-    peakLocHighAmp = bands[np.argmax(spikeArray[:,0])]
-    return [SSLowAmp, SSHighAmp, peakLocLowAmp, peakLocHighAmp]

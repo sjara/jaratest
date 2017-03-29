@@ -93,16 +93,17 @@ class DataLoader(object):
 
         #TODO: Why do we need this?
         #Make samples an empty array if there are no spikes
-        if not hasattr(spikeData, 'samples'):
+        if spikeData.samples is None:
             spikeData.samples = np.array([])
 
         #TODO: Make this an option
         #Convert the spike samples to mV
         spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
-        spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
+        if spikeData.gain is not None:
+            spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
 
         #Make timestamps an empty array if it does not exist
-        if not hasattr(spikeData, 'timestamps'):
+        if spikeData.timestamps is None:
             spikeData.timestamps = np.array([])
 
         #Convert the timestamps to seconds

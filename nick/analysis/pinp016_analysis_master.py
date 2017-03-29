@@ -20,10 +20,10 @@ subprocess.call(laserAnalysis)
 postAnalysisFn = '/home/nick/data/database/pinp016/pinp016_database_shape_laser.h5'
 pinp016db = pandas.read_hdf(postAnalysisFn, key='database')
 
+result = pinp016db.query('isiViolations<0.02 and shapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
+# result = pinp016db.query('isiViolations<0.02')
 
-result = pinp016db.query('isiViolations<0.02 and shapeQuality>2.5 and pulsePval<0.05 and trainRatio>0.8')
-
-fig_path = '/home/nick/data/database/pinp016/reports/'
+fig_path = '/home/nick/data/database/pinp016/reports_isi_shape_laser_train/'
 for indCell, cell in result.iterrows():
     plot_pinp_report(cell, fig_path)
 
