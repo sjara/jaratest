@@ -49,7 +49,7 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 labelDis = 0.1
 
-labelPosX = [0.02, 0.35, 0.65]   # Horiz position for panel labels
+labelPosX = [0.02, 0.35, 0.67]   # Horiz position for panel labels
 labelPosY = [0.95]    # Vert position for panel labels
 
 #COLORMAP = {'leftTrials':'red', 'rightTrials':'green'}
@@ -59,14 +59,14 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.05, right=0.98, top=0.95, bottom=0.1, wspace=0.3, hspace=0.3)
+gs.update(left=0.07, right=0.98, top=0.95, bottom=0.1, wspace=0.35, hspace=0.3)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,0], hspace=0.15)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
-smoothWinSizePsth = 2#3
+smoothWinSizePsth = 3
 lwPsth = 2
 downsampleFactorPsth = 1
 
@@ -98,7 +98,7 @@ if PANELS[0]:
     ax2.set_yticklabels([])
     ax2.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
+    plt.ylabel('Mid-freq correct \ntrials each block', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
     
 
@@ -163,7 +163,7 @@ if PANELS[1]:
     ax4.set_yticklabels([])
     ax4.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels, labelpad=labelDis)
-    plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
+    plt.ylabel('Mid-freq correct \ntrials each block', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
 
 
@@ -210,7 +210,8 @@ if PANELS[2]:
     colorMod = 'black'
     colorNotMod = 'darkgrey'
     
-    summaryFilename = 'summary_switching_premovement_modulation_good_cells_responsive_midfreq_remove_dup.npz'
+    #summaryFilename = 'summary_switching_premovement_modulation_good_cells_responsive_midfreq_remove_dup.npz'
+    summaryFilename = 'summary_switching_premovement_modulation_all_good_cells_remove_dup.npz'
     summaryFullPath = os.path.join(dataDir,summaryFilename)
     summary = np.load(summaryFullPath)
 
@@ -239,6 +240,6 @@ if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
 # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-print 'Total number of good cells responsive to mid frequency is:', len(sigModulated), '\nNumber of cells significantly modulated is:', sum(sigModulated)
+print 'Total number of good cells is:', len(sigModulated), '\nNumber of cells significantly modulated is:', sum(sigModulated)
 (T, pVal) = stats.wilcoxon(summary['modulationIndex'])
 print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal

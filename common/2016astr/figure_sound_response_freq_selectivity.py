@@ -252,6 +252,8 @@ if PANELS[2]:
 
     print sum((responseIndEachCell < 0).astype(int)), 'cells showed decreased activity;', sum((responseIndEachCell > 0).astype(int)), 'cells showed increased activity;', sum((responseIndEachCell == 0).astype(int)), 'cells had unchanged activity during sound'
 
+    (T, pVal) = stats.wilcoxon(responseIndEachCell[~np.isnan(responseIndEachCell)])
+    print 'Using the Wilcoxon signed-rank test, comparing the sound response index distribution to zero yielded a p value of', pVal
     
 plt.show()
 

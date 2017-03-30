@@ -37,7 +37,7 @@ gs = gridspec.GridSpec(2,2)
 gs.update(left=0.15, right=0.95,top=0.9, bottom=0.15, wspace=0.5, hspace=0.5)
 qualityList = [1,6]
 ISIcutoff = 0.02
-
+maxZThreshold = 3
 # -- Read in databases storing all measurements from psycurve and switching mice -- #
 switchingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 switchingFileName = 'all_cells_all_measures_extra_mod_waveform_switching.h5'
@@ -54,8 +54,9 @@ allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')
 goodcells_psychometric = (allcells_psychometric.cellQuality.isin(qualityList)) & (allcells_psychometric.ISI <= ISIcutoff)
 cellInStr =  (allcells_psychometric.cellInStr==1)
 keepAfterDupTest = allcells_psychometric.keep_after_dup_test
-
-cellsToPlot_psychometric = allcells_psychometric[goodcells_psychometric & cellInStr & keepAfterDupTest]
+responsiveMidFreqs = (abs(allcells_psychometric.maxZSoundMid1)>=maxZThreshold) | (abs(allcells_psychometric.maxZSoundMid2)>=maxZThreshold)
+#cellsToPlot_psychometric = allcells_psychometric[goodcells_psychometric & cellInStr & keepAfterDupTest]
+cellsToPlot_psychometric = allcells_psychometric[goodcells_psychometric & cellInStr & keepAfterDupTest & responsiveMidFreqs]
 
 spkWidth_psychometric = 1000*(cellsToPlot_psychometric.peakKTime - cellsToPlot_psychometric.peakCapTime).values
 NatoKRatio_psychometric = (np.abs(cellsToPlot_psychometric.peakNaAmp) / np.abs(cellsToPlot_psychometric.peakKAmp)).values
@@ -71,8 +72,9 @@ soundModPsychometric = (soundModSig_psychometric <= 0.05)
 goodcells_switching = (allcells_switching.cellQuality.isin(qualityList)) & (allcells_switching.ISI <= ISIcutoff)
 cellInStr =  (allcells_switching.cellInStr==1)
 keepAfterDupTest = allcells_switching.keep_after_dup_test
-
-cellsToPlot_switching = allcells_switching[goodcells_switching & cellInStr & keepAfterDupTest]
+responsiveMidFreqs = abs(allcells_switching.maxZSoundMid)>=maxZThreshold
+#cellsToPlot_switching = allcells_switching[goodcells_switching & cellInStr & keepAfterDupTest]
+cellsToPlot_switching = allcells_switching[goodcells_switching & cellInStr & keepAfterDupTest & responsiveMidFreqs]
 
 spkWidth_switching = 1000*(cellsToPlot_switching.peakKTime - cellsToPlot_switching.peakCapTime).values
 NatoKRatio_switching = (np.abs(cellsToPlot_switching.peakNaAmp) / np.abs(cellsToPlot_switching.peakKAmp)).values
@@ -92,7 +94,7 @@ plt.xlabel('Spike width (ms)',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Psychometric')
 #plt.xlim([-1.1,1.1])
-plt.ylim([-0.1,1.1])
+plt.ylim([-0.1,0.5])
 extraplots.boxoff(plt.gca())
 
 # -- Panel B: Plot scatter of movment modulation index vs sound modulation index for switching -- #
@@ -106,7 +108,7 @@ plt.title('Psychometric')
 #plt.xlim([0,])
 ax2.set_xscale("log")
 #plt.xticks
-plt.ylim([-0.1,1.1])
+plt.ylim([-0.1,0.5])
 extraplots.boxoff(plt.gca())
 
 # -- Panel C: Plot scatter of movment modulation index vs sound modulation index for psychometric -- #
@@ -118,7 +120,7 @@ plt.xlabel('Spike width (ms)',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Switching')
 #plt.xlim([-1.1,1.1])
-plt.ylim([-0.1,1.1])
+plt.ylim([-0.1,0.7])
 extraplots.boxoff(plt.gca())
 
 # -- Panel D: Plot scatter of movment modulation index vs sound modulation index for switching -- #
@@ -131,7 +133,7 @@ plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Switching')
 #plt.xlim([-1.1,1.1])
 ax4.set_xscale("log")
-plt.ylim([-0.1,1.1])
+plt.ylim([-0.1,0.7])
 extraplots.boxoff(plt.gca())
 
 
@@ -141,6 +143,8 @@ plt.show()
 #numCellsPsy = len(cellsToPlot_psychometric)
 #numMovSelPsy = sum(movementSelectivePsychometric)
 #numSoundModPsy = sum(soundModPsychometric)
+print 'Number of cells for psychometric:', len(cellsToPlot_psychometric)
+print 'Number of cells for switching:', len(cellsToPlot_switching)
 rPsy1, pValPsy1 = stats.spearmanr(spkWidth_psychometric, np.abs(soundModI_psychometric))
 print '\nPsychometric task: Spearman correlation coefficient between sound response index and spike width is:', rPsy1, 'p value is:', pValPsy1
 rPsy2, pValPsy2 = stats.spearmanr(NatoKRatio_psychometric, np.abs(soundModI_psychometric))

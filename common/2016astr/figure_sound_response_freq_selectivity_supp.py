@@ -146,11 +146,12 @@ if PANELS[1]:
                                                    indexLimitsEachTrial,
                                                    timeRange,
                                                    trialsEachCond=trialsEachCond,
-                                                   colorEachCond=colorEachCond,
-                                                   labels=labels)
+                                                   colorEachCond=colorEachCond)
+                                                   #labels=labels)
 
     plt.setp(pRaster, ms=msRaster)
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.yticks(possibleFreq[::3],labels[::3])
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
     plt.gca().set_xticklabels('')

@@ -94,7 +94,7 @@ plt.xlabel('Movment modulation \nby direction',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Psychometric')
 plt.xlim([-0.1,1.1])
-plt.ylim([-0.1,1.1])
+plt.ylim([-0.1,0.7])
 extraplots.boxoff(plt.gca())
 
 # -- Panel B: Plot scatter of movment modulation index vs sound modulation index for switching -- #
@@ -105,7 +105,7 @@ plt.xlabel('Movment modulation \nby direction',fontsize=fontSizeLabels)
 plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
 plt.title('Switching')
 plt.xlim([-0.1,1.1])
-plt.ylim([-0.1,1.1])
+plt.ylim([-0.1,0.7])
 extraplots.boxoff(plt.gca())
 plt.show()
 

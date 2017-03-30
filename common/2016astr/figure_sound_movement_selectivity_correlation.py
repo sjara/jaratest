@@ -43,6 +43,7 @@ colormapTuning = matplotlib.cm.winter
 timeRangeSound = [-0.2, 0.5]
 #timeRangeMovement = [-0.2, 0.4]
 msRaster = 2
+msRaster1 = 1
 smoothWinSizePsth = 2
 lwPsth = 2
 downsampleFactorPsth = 1
@@ -80,7 +81,7 @@ if PANELS[0]:
                                                    trialsEachCond=trialsEachCond,
                                                    colorEachCond=colorEachFreq,
                                                    labels=labels)
-    plt.setp(pRaster, ms=msRaster)
+    plt.setp(pRaster, ms=msRaster1)
     plt.setp(hcond,zorder=3)
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
@@ -112,7 +113,7 @@ if PANELS[0]:
     plt.xlim(timeRangeSound)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    yLims = [0,50]
+    yLims = [0,65]
     plt.ylim(yLims)
     plt.yticks(yLims)
     soundBarHeight = 0.1*yLims[-1]
@@ -143,7 +144,7 @@ if PANELS[1]:
                                                    trialsEachCond=trialsEachCond,
                                                    colorEachCond=colorEachFreq,
                                                    labels=labels)
-    plt.setp(pRaster, ms=msRaster)
+    plt.setp(pRaster, ms=msRaster1)
     plt.setp(hcond,zorder=3)
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
@@ -207,7 +208,7 @@ if PANELS[2]:
                                                    trialsEachCond=trialsEachCond,
                                                    colorEachCond=colorEachFreq,
                                                    labels=labels)
-    plt.setp(pRaster, ms=msRaster)
+    plt.setp(pRaster, ms=msRaster1)
     plt.setp(hcond,zorder=3)
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
