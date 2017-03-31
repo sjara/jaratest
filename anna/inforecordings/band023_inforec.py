@@ -144,3 +144,36 @@ exp4.add_session('16-24-03', 'i', 'AM', 'am_tuning_curve')
 exp4.add_session('16-31-32', 'j', 'bandwidth', 'bandwidth_am') #12kHz, 64Hz for TT1 cell
 exp4.add_session('16-52-55', 'k', 'bandwidth', 'bandwidth_am') #8kHz, 64Hz for TT3
 exp4.add_session('17-11-30', 'l', 'noiseAmps', 'am_tuning_curve')
+
+
+exp5 = celldatabase.Experiment(subject, '2017-03-27', brainarea='left_thalamus', info='posteriorDiI')
+experiments.append(exp5)
+
+exp5.add_site(3200, tetrodes = [1,2,3,4,6,7,8])
+exp5.add_session('10-15-14', None, 'noisebursts', 'am_tuning_curve') #very interesting responses on TT2 and 7
+exp5.add_session('10-18-14', 'a', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('10-29-00', 'b', 'AM', 'am_tuning_curve')
+exp5.add_session('10-36-05', 'c', 'bandwidth', 'bandwidth_am') #4kHz, 64Hz for larger peak of TT2 cluster
+exp5.add_session('10-54-29', 'd', 'noiseAmps', 'am_tuning_curve')
+
+exp5.add_site(3360, tetrodes = [1,2,3,4,5,7])
+exp5.add_session('11-03-38', None, 'noisebursts', 'am_tuning_curve')
+exp5.add_session('11-05-38', 'e', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('11-16-15', 'f', 'AM', 'am_tuning_curve')
+exp5.add_session('11-22-43', 'g', 'bandwidth', 'bandwidth_am') #17kHz, 64Hz for TT1 response, as well as TT2 trough
+exp5.add_session('11-41-30', 'h', 'noiseAmps', 'am_tuning_curve')
+
+exp5.add_site(3550, tetrodes = [1,2,3,4,5,6,7])
+exp5.add_session('11-51-01', None, 'noisebursts', 'am_tuning_curve') #some strong off responses
+exp5.add_session('11-53-00', 'i', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('12-05-04', 'j', 'AM', 'am_tuning_curve')
+exp5.add_session('12-11-59', 'k', 'bandwidth', 'bandwidth_am') #8kHz, 64Hz for big inhibitory TT1 response
+exp5.add_session('12-41-29', 'l', 'bandwidth', 'bandwidth_am') #5.5kHz, 64Hz for TT3
+exp5.add_session('13-01-36', 'm', 'noiseAmps', 'am_tuning_curve')
+
+exp5.add_site(3760, tetrodes = [2,4,5,7])
+exp5.add_session('13-19-10', None, 'noisebursts', 'am_tuning_curve')
+exp5.add_session('13-21-09', 'n', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('13-31-47', 'o', 'AM', 'am_tuning_curve')
+exp5.add_session('13-37-38', 'p', 'bandwidth', 'bandwidth_am') #7kHz, 64Hz for TT2
+exp5.add_session('14-06-17', 'q', 'noiseAmps', 'am_tuning_curve')
