@@ -152,3 +152,59 @@ exp3.add_session('16-29-21', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('16-30-40', None, 'laserpulse', 'am_tuning_curve')
 exp3.add_session('16-32-28', None, 'laserpulse', 'am_tuning_curve')
 #Nothing here, stopping for the day
+
+exp4 = celldatabase.Experiment(subject,
+                               '2017-03-30',
+                               brainarea='rightThal',
+                               info=['medialDiD', 'facingLateral'])
+experiments.append(exp4)
+
+#This site has long-latency laser responses that follow a fast train, but there is some strange jitter in the train that we should come back to. 
+# exp4.add_site(3404, tetrodes=[8])
+# exp4.add_session('14-01-20', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('14-03-03', None, 'laserpulse', 'am_tuning_curve')
+# exp4.add_session('14-06-31', None, 'lasertrain', 'am_tuning_curve')
+# exp4.add_session('14-12-43', None, 'lasertrain10Hz', 'am_tuning_curve')
+
+#Nothing
+# exp4.add_site(3455, tetrodes=range(1, 9))
+# exp4.add_session('14-24-41', None, 'noiseburst', 'am_tuning_curve')
+
+# exp4.add_site(3512, tetrodes=range(1, 9))
+# exp4.add_session('14-26-57', None, 'noiseburst', 'am_tuning_curve')
+
+# exp4.add_site(3567, tetrodes=range(1, 9))
+# exp4.add_session('14-28-40', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('14-30-04', None, 'laserpulse', 'am_tuning_curve')
+# #weirdo long latency laser responses
+
+# exp4.add_site(3621, tetrodes=range(1, 9))
+# exp4.add_session('14-32-22', None, 'noiseburst', 'am_tuning_curve')
+
+exp4.add_site(3703, tetrodes=range(1, 9))
+exp4.add_session('14-33-49', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('14-35-19', None, 'laserpulse', 'am_tuning_curve')
+# SUPER strange laser response. We need to find out where we are later when we do this histo. 
+
+exp4.add_site(3755, tetrodes=range(1, 9))
+exp4.add_session('14-44-22', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('14-45-56', None, 'laserpulse', 'am_tuning_curve')
+#Even longer latency to laser pulse response
+
+exp5 = celldatabase.Experiment(subject,
+                               '2017-03-31',
+                               brainarea='rightThal',
+                               info=['lateralDiI', 'facingLateral'])
+experiments.append(exp5)
+# exp5.add_site(3261, tetrodes=range(1, 9))
+# exp5.add_session('14-47-13', None, 'noiseburst', 'am_tuning_curve')
+
+# exp5.add_site(3360, tetrodes=range(1, 9))
+# exp5.add_session('14-51-03', None, 'noiseburst', 'am_tuning_curve')
+
+# exp5.add_site(3560, tetrodes=range(1, 9))
+# exp5.add_session('14-55-03', None, 'noiseburst', 'am_tuning_curve')
+
+exp5.add_site(3783, tetrodes=range(1, 9))
+exp5.add_session('15-00-13', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('15-02-02', None, 'noiseburst', 'am_tuning_curve') #long latency laser responses
