@@ -26,7 +26,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'supp_figure_sound_freq_selectivity' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,3.5]
+figSize = [7,4]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -83,13 +83,86 @@ if PANELS[0]:
                                                    labels=labels)
 
     plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+   
+    #plt.setp(ax1.get_yticklabels(), fontsize=fontSizeTicks-1)#rotation=-15, horizontalalignment='right')
+    locs, labels = plt.yticks()
+    plt.yticks([locs[0],locs[-1]],[labels[0],labels[-1]])
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     plt.xlim(timeRangeSound[0],timeRangeSound[1])
     plt.gca().set_xticklabels('')
     
     ax2 = plt.subplot(gs00[2,:])
     psthFilename = 'example_freq_tuning_psth_adap017_20160317a_T5_c3.npz' 
+    psthFullPath = os.path.join(dataDir, psthFilename)
+    psthExample = np.load(psthFullPath)
+
+    trialsEachCond = psthExample['trialsEachFreq']
+    spikeCountMat = psthExample['spikeCountMat']
+    timeVec = psthExample['timeVec']
+    binWidth = psthExample['binWidth']
+    timeRange = psthExample['timeRange']
+    possibleFreq = psthExample['possibleFreq']
+    numFreqs = len(possibleFreq)
+
+    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+    
+
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,
+                                 trialsEachCond=trialsEachCond,colorEachCond=colorEachFreq,
+                                 linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+    '''
+    for ind,line in enumerate(pPSTH):
+        plt.setp(line, label=labels[ind])
+    plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
+    '''
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.axvline(x=0,linewidth=1, color='darkgrey')
+    plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    yLims = [0,90]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    plt.ylim(yLims)
+    plt.yticks(yLims)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
+    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.ylabel('Firing rate \n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    extraplots.boxoff(plt.gca())
+
+    
+# -- Panel B: another example of sound-evoked raster and psth from tuning task -- #
+ax3 = plt.subplot(gs01[0:2,:])
+ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+if PANELS[1]:
+    rasterFilename = 'example_freq_tuning_raster_test053_20150625a_T5_c3.npz' 
+    rasterFullPath = os.path.join(dataDir, rasterFilename)
+    rasterExample =np.load(rasterFullPath)
+
+    possibleFreq = rasterExample['possibleFreq']
+    trialsEachCond = rasterExample['trialsEachFreq']
+    spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
+    indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
+    timeRange = timeRangeSound #rasterExample['timeRange']
+    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+    cm_subsection = np.linspace(1.0, 0.0, len(possibleFreq))
+    colorEachFreq = [colormapTuning(x) for x in cm_subsection] 
+
+    pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                   indexLimitsEachTrial,
+                                                   timeRange,
+                                                   trialsEachCond=trialsEachCond,
+                                                   colorEachCond=colorEachFreq,
+                                                   labels=labels)
+
+    plt.setp(pRaster, ms=msRaster)
+    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+    locs, labels = plt.yticks()
+    plt.yticks([locs[0],locs[-1]],[labels[0],labels[-1]])
+    plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.xlim(timeRangeSound[0],timeRangeSound[1])
+    plt.gca().set_xticklabels('')
+    
+    ax2 = plt.subplot(gs01[2,:])
+    psthFilename = 'example_freq_tuning_psth_test053_20150625a_T5_c3.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample = np.load(psthFullPath)
 
@@ -124,197 +197,6 @@ if PANELS[0]:
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     plt.ylabel('Firing rate \n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
-
-    
-# -- Panel B: another example of sound-evoked raster and psth from tuning task -- #
-ax3 = plt.subplot(gs01[0:2,:])
-ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-if PANELS[1]:
-    rasterFilename = 'example_freq_tuning_raster_test053_20150625a_T5_c3.npz' 
-    rasterFullPath = os.path.join(dataDir, rasterFilename)
-    rasterExample =np.load(rasterFullPath)
-
-    possibleFreq = rasterExample['possibleFreq']
-    trialsEachCond = rasterExample['trialsEachFreq']
-    spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
-    indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    timeRange = rasterExample['timeRange']
-    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-    cm_subsection = np.linspace(0.0, 1.0, numFreqs)
-    colorEachCond = [colormapTuning(x) for x in cm_subsection] 
-    pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
-                                                   indexLimitsEachTrial,
-                                                   timeRange,
-                                                   trialsEachCond=trialsEachCond,
-                                                   colorEachCond=colorEachCond)
-                                                   #labels=labels)
-
-    plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    plt.yticks(possibleFreq[::3],labels[::3])
-    plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    plt.xlim(timeRangeSound[0],timeRangeSound[1])
-    plt.gca().set_xticklabels('')
-
-    ax4 = plt.subplot(gs01[2,:])
-
-    psthFilename = 'example_freq_tuning_psth_test053_20150625a_T5_c3.npz' 
-    psthFullPath = os.path.join(dataDir, psthFilename)
-    psthExample =np.load(psthFullPath)
-
-    trialsEachCond = psthExample['trialsEachFreq']
-    spikeCountMat = psthExample['spikeCountMat']
-    timeVec = psthExample['timeVec']
-    binWidth = psthExample['binWidth']
-    timeRange = psthExample['timeRange']
-    possibleFreq = psthExample['possibleFreq']
-    numFreqs = len(possibleFreq)
-    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,
-                                 trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,
-                                 linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-    '''
-    for ind,line in enumerate(pPSTH):
-        plt.setp(line, label=labels[ind])
-    plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
-    '''
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.axvline(x=0,linewidth=1, color='darkgrey')
-    plt.xlim(timeRangeSound[0],timeRangeSound[1])
-    yLims = [0,80]
-    soundBarHeight = 0.1*yLims[-1]
-    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
-    plt.ylim(yLims)
-    plt.yticks(yLims)
-    plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    plt.ylabel('Firing rate \n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    extraplots.boxoff(plt.gca())
-    
-'''
-# -- Panel C: example of sound-evoked raster and psth from 2afc task (cell in A) -- #
-ax5 = plt.subplot(gs00[0:3,:])
-ax5.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-if PANELS[0]:
-    rasterFilename = 'example_freq_tuning_2afc_raster_adap017_20160317a_T5_c3.npz' 
-    rasterFullPath = os.path.join(dataDir, rasterFilename)
-    rasterExample =np.load(rasterFullPath)
-
-    possibleFreq = rasterExample['possibleFreq']
-    trialsEachCond = rasterExample['trialsEachFreq']
-    spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
-    indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    #timeRange = rasterExample['timeRange']
-    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-
-    colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
-
-    pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
-                                                   indexLimitsEachTrial,
-                                                   timeRangeSound,
-                                                   trialsEachCond=trialsEachCond,
-                                                   colorEachCond=colorEachFreq,
-                                                   labels=labels)
-    plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
-    plt.gca().set_xticklabels('')
-    plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    plt.xlim(timeRangeSound[0],timeRangeSound[1])
-
-    ax6 = plt.subplot(gs00[3,:])
-
-    psthFilename = 'example_freq_tuning_2afc_psth_adap017_20160317a_T5_c3.npz' 
-    psthFullPath = os.path.join(dataDir, psthFilename)
-    psthExample =np.load(psthFullPath)
-
-    trialsEachCond = psthExample['trialsEachFreq']
-    spikeCountMat = psthExample['spikeCountMat']
-    timeVec = psthExample['timeVec']
-    binWidth = psthExample['binWidth']
-    timeRange = psthExample['timeRange']
-    possibleFreq = psthExample['possibleFreq']
-    numFreqs = len(possibleFreq)
-    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-
-    #smoothWinSizePsth = 1
-
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,
-                                 trialsEachCond=trialsEachCond,colorEachCond=colorEachFreq,
-                                 linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-    for ind,line in enumerate(pPSTH):
-        plt.setp(line, label=labels[ind])
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.axvline(x=0,linewidth=1, color='darkgrey')
-    plt.xlim(timeRangeSound)
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    plt.ylim([0,80])
-    plt.yticks([0,80])
-    extraplots.boxoff(plt.gca())
-    #plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
-
-# -- Panel D: another example of sound-evoked raster and psth from 2afc task (sound-suppressed) -- #
-ax6 = plt.subplot(gs01[0:3,:])
-ax6.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-if PANELS[1]:
-    rasterFilename = 'example_freq_tuning_2afc_raster_adap015_20160205a_T6_c5.npz'#adap017_20160405a_T3_c7 #test055_20150307a_T5_c3 
-    rasterFullPath = os.path.join(dataDir, rasterFilename)
-    rasterExample =np.load(rasterFullPath)
-
-    possibleFreq = rasterExample['possibleFreq']
-    trialsEachCond = rasterExample['trialsEachFreq']
-    spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
-    indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    #timeRange = rasterExample['timeRange']
-    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-
-    colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
-
-    pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
-                                                   indexLimitsEachTrial,
-                                                   timeRangeSound,
-                                                   trialsEachCond=trialsEachCond,
-                                                   colorEachCond=colorEachFreq,
-                                                   labels=labels)
-    plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
-    plt.gca().set_xticklabels('')
-    plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    plt.xlim(timeRangeSound[0],timeRangeSound[1])
-
-    ax7 = plt.subplot(gs01[3,:])
-
-    psthFilename = 'example_freq_tuning_2afc_psth_adap015_20160205a_T6_c5.npz' #adap017_20160405a_T3_c7
-    psthFullPath = os.path.join(dataDir, psthFilename)
-    psthExample =np.load(psthFullPath)
-
-    trialsEachCond = psthExample['trialsEachFreq']
-    spikeCountMat = psthExample['spikeCountMat']
-    timeVec = psthExample['timeVec']
-    binWidth = psthExample['binWidth']
-    timeRange = psthExample['timeRange']
-    possibleFreq = psthExample['possibleFreq']
-    numFreqs = len(possibleFreq)
-    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
-
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,
-                                 trialsEachCond=trialsEachCond,colorEachCond=colorEachFreq,
-                                 linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-    for ind,line in enumerate(pPSTH):
-        plt.setp(line, label=labels[ind])
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.axvline(x=0,linewidth=1, color='darkgrey')
-    plt.xlim(timeRangeSound)
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    plt.ylabel('Firing rate\n(spk/sec)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    yLims = [0,10]
-    plt.ylim(yLims)
-    plt.yticks(yLims)
-    extraplots.boxoff(plt.gca())
-    #plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
-'''
-
 
 
 plt.show()

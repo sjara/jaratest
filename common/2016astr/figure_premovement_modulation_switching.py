@@ -28,9 +28,12 @@ colorsDict = {'colorL':figparams.colp['MidFreqR'],
 soundColor = figparams.colp['sound']
 timeRange = [-0.3,0.5]
 
+#premovementWinX = [-0.1,0,-0.1,0]
+premovementColor = 'grey'
+
 #dataDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 
-PANELS = [1,1,1] # Which panels to plot
+PANELS = [1,1,1,1] # Which panels to plot
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -42,14 +45,14 @@ else:
 '''
 figFilename = 'supp_premovement_modulation_switching'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [10,3.5]
+figSize = [13.5,3.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 labelDis = 0.1
 
-labelPosX = [0.02, 0.35, 0.67]   # Horiz position for panel labels
+labelPosX = [0.02, 0.26, 0.53, 0.76]   # Horiz position for panel labels
 labelPosY = [0.95]    # Vert position for panel labels
 
 #COLORMAP = {'leftTrials':'red', 'rightTrials':'green'}
@@ -58,11 +61,11 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.07, right=0.98, top=0.95, bottom=0.1, wspace=0.35, hspace=0.3)
+gs = gridspec.GridSpec(1, 4)
+gs.update(left=0.07, right=0.98, top=0.9, bottom=0.18, wspace=0.35, hspace=0.3)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,0], hspace=0.15)
-gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.15)
+gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,2], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,3], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -71,11 +74,98 @@ lwPsth = 2
 downsampleFactorPsth = 1
 
 
-# -- Panel B: representative sound-evoked raster from switching task, modulated-- #
-ax2 = plt.subplot(gs00[0:2, 0:])
-ax2.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-
+# -- Panel C: summary distribution of psychometric modulation index, total cells is good cells in striatum (nonduplicate) that are responsive to mid freq -- #
+#ax6 = plt.subplot(gs[2:,2:4])
+ax6 = plt.subplot(gs[0,0])
+ax6.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[0]:
+    colorMod = 'black'
+    colorNotMod = 'darkgrey'
+    
+    #summaryFilename = 'summary_switching_premovement_modulation_good_cells_responsive_midfreq_remove_dup.npz'
+    dataDirPsy = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME,'premovement_modulation_psychometric')
+    summaryFilename = 'summary_psychometric_premovement_modulation_all_good_cells_remove_dup.npz'
+    summaryFullPath = os.path.join(dataDirPsy,summaryFilename)
+    summary = np.load(summaryFullPath)
+
+    sigModulated = summary['modulated']
+    sigMI = summary['modulationIndex'][sigModulated]
+    nonsigMI = summary['modulationIndex'][~sigModulated]
+    
+    if np.any(np.isnan(nonsigMI)):
+        print 'Detected NaN in modulation index, will drop them for now.'
+        nonsigMI = nonsigMI[~np.isnan(nonsigMI)]
+    
+    # -- There are some modulation index with values of 1 or -1 due to lack of spikes in the trials going one direction (only one center freq trials were included, sometimes very few trials going to one direction)
+    # take values of 1 and -1 (if not significantly modulated) out of the plot, make them 0
+    nonsigMI[(nonsigMI == 1)|(nonsigMI == -1)] = 0
+
+    binsEdges = np.linspace(-1,1,20)
+    plt.hist([sigMI,nonsigMI], bins=binsEdges, color=[colorMod,colorNotMod], edgecolor='None', stacked=True)
+    '''
+    sig_patch = mpatches.Patch(color=colorMod, label='Modulated')
+    nonsig_patch = mpatches.Patch(color=colorNotMod, label='Not modulated')
+    plt.legend(handles=[sig_patch,nonsig_patch], fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2)
+    '''
+    yPosText = 0.95*plt.ylim()[1]
+    plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
+    plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.xlabel('Modulation index', fontsize=fontSizeLabels)
+    plt.ylabel('Number of cells', fontsize=fontSizeLabels) #, labelpad=labelDis)
+    extraplots.boxoff(plt.gca())
+    plt.title('Sound discrimination task')
+
+    # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
+    print 'Psychometric: Total number of good cells is:', len(sigModulated), '\nNumber of cells significantly modulated is:', sum(sigModulated)
+    (T, pVal) = stats.wilcoxon(summary['modulationIndex'])
+    print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal
+
+# -- Panel D: summary distribution of switching modulation index, total cells is good cells in striatum (nonduplicate) that are responsive to mid freq -- #
+#ax6 = plt.subplot(gs[2:,2:4])
+ax7 = plt.subplot(gs[0,1])
+ax7.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+if PANELS[1]:
+    colorMod = 'black'
+    colorNotMod = 'darkgrey'
+    
+    #summaryFilename = 'summary_switching_premovement_modulation_good_cells_responsive_midfreq_remove_dup.npz'
+    summaryFilename = 'summary_switching_premovement_modulation_all_good_cells_remove_dup.npz'
+    summaryFullPath = os.path.join(dataDir,summaryFilename)
+    summary = np.load(summaryFullPath)
+
+    sigModulated = summary['modulated']
+    sigMI = summary['modulationIndex'][sigModulated]
+    nonsigMI = summary['modulationIndex'][~sigModulated]
+    binsEdges = np.linspace(-1,1,20)
+    plt.hist([sigMI,nonsigMI], bins=binsEdges, color=[colorMod,colorNotMod], edgecolor='None', stacked=True)
+    '''
+    sig_patch = mpatches.Patch(color=colorMod, label='Modulated')
+    nonsig_patch = mpatches.Patch(color=colorNotMod, label='Not modulated')
+    plt.legend(handles=[sig_patch,nonsig_patch], fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2)
+    '''
+    yPosText = 0.95*plt.ylim()[1]
+    plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
+    plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.xlabel('Modulation index', fontsize=fontSizeLabels)
+    plt.ylabel('Number of cells', fontsize=fontSizeLabels) #, labelpad=labelDis)
+    extraplots.boxoff(plt.gca())
+    plt.title('Switching task')
+
+    # -- Stats
+    print 'Switching: Total number of good cells is:', len(sigModulated), '\nNumber of cells significantly modulated is:', sum(sigModulated)
+    (T, pVal) = stats.wilcoxon(summary['modulationIndex'])
+    print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal
+
+    
+# -- Panel C: representative sound-evoked raster from switching task, modulated-- #
+ax2 = plt.subplot(gs00[0:2, 0:])
+ax2.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
+if PANELS[2]:
     rasterFilename = 'example_switching_midfreq_movementaligned_raster_test089_20160124a_T4_c6.npz'
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
@@ -93,7 +183,7 @@ if PANELS[0]:
                                                    colorEachCond=colorEachCond)
 
     plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) 
+    #plt.xlabel('Time from movement initiation (s)',fontsize=fontSizeLabels) 
     #ax2.axes.xaxis.set_ticklabels('')
     ax2.set_yticklabels([])
     ax2.set_xticklabels([])
@@ -119,7 +209,6 @@ if PANELS[0]:
     extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     #print '***** WARNING *******  Are colors switched?  which one was the first block?'
-
     
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
@@ -130,16 +219,17 @@ if PANELS[0]:
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    plt.fill([-0.1,0,0,-0.1], [yLims[0],yLims[0],yLims[-1],yLims[-1]], ec='none', fc=premovementColor, alpha=0.3)
+    plt.xlabel('Time from movement initiation (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
 # -- Panel C: representative sound-evoked raster from switching task, not modulated -- #
 #ax4 = plt.subplot(gs[2, 0:2])
 ax4 = plt.subplot(gs01[0:2, 0:])
-ax4.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax4.annotate('D', xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
-if PANELS[1]:
+if PANELS[3]:
     rasterFilename = 'example_switching_midfreq_movementaligned_raster_adap020_20160526a_T2_c9.npz' 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample =np.load(rasterFullPath)
@@ -158,7 +248,7 @@ if PANELS[1]:
                                                    fillWidth=None,labels=None)
 
     plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    #plt.xlabel('Time from movement initiation (s)',fontsize=fontSizeLabels)
     #ax4.axes.xaxis.set_ticklabels('')
     ax4.set_yticklabels([])
     ax4.set_xticklabels([])
@@ -198,48 +288,17 @@ if PANELS[1]:
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    plt.fill([-0.1,0,0,-0.1], [yLims[0],yLims[0],yLims[-1],yLims[-1]], ec='none', fc=premovementColor, alpha=0.3)
+    plt.xlabel('Time from movement initiation (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-# -- Panel D: summary distribution of switching modulation index, total cells is good cells in striatum (nonduplicate) that are responsive to mid freq -- #
-#ax6 = plt.subplot(gs[2:,2:4])
-ax6 = plt.subplot(gs[0,2])
-ax6.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-if PANELS[2]:
-    colorMod = 'black'
-    colorNotMod = 'darkgrey'
-    
-    #summaryFilename = 'summary_switching_premovement_modulation_good_cells_responsive_midfreq_remove_dup.npz'
-    summaryFilename = 'summary_switching_premovement_modulation_all_good_cells_remove_dup.npz'
-    summaryFullPath = os.path.join(dataDir,summaryFilename)
-    summary = np.load(summaryFullPath)
 
-    sigModulated = summary['modulated']
-    sigMI = summary['modulationIndex'][sigModulated]
-    nonsigMI = summary['modulationIndex'][~sigModulated]
-    binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigMI,nonsigMI], bins=binsEdges, color=[colorMod,colorNotMod], edgecolor='None', stacked=True)
-    '''
-    sig_patch = mpatches.Patch(color=colorMod, label='Modulated')
-    nonsig_patch = mpatches.Patch(color=colorNotMod, label='Not modulated')
-    plt.legend(handles=[sig_patch,nonsig_patch], fontsize=fontSizeTicks, frameon=False, labelspacing=0.1, handlelength=0.2)
-    '''
-    yPosText = 0.95*plt.ylim()[1]
-    plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
-    plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.xlabel('Modulation index', fontsize=fontSizeLabels)
-    plt.ylabel('Number of cells', fontsize=fontSizeLabels) #, labelpad=labelDis)
-    extraplots.boxoff(plt.gca())
+
 
 plt.show()
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
-# -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-print 'Total number of good cells is:', len(sigModulated), '\nNumber of cells significantly modulated is:', sum(sigModulated)
-(T, pVal) = stats.wilcoxon(summary['modulationIndex'])
-print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal
+
