@@ -105,7 +105,8 @@ if PANELS[0]:
     ax2.set_yticklabels([])
     ax2.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels) #, labelpad=labelDis)
-    plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
+    #plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
+    plt.ylabel('Mid-freq correct\ntrials each block', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
     
 
@@ -173,7 +174,8 @@ if PANELS[1]:
     ax4.set_yticklabels([])
     ax4.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels, labelpad=labelDis)
-    plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
+    #plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
+    plt.ylabel('Mid-freq correct\ntrials each block', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
 
 
