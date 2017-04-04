@@ -28,8 +28,8 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
-labelPosX = [0.07, 0.49]   # Horiz position for panel labels
-labelPosY = [0.9, 0.5]
+labelPosX = [0.04, 0.49]   # Horiz position for panel labels
+labelPosY = [0.94, 0.5]
 
 fig = plt.gcf()
 fig.clf()
@@ -104,14 +104,15 @@ ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fo
 plt.plot(trough2peak_psychometric, np.abs(soundModI_psychometric), marker='o', linestyle='none', mec='grey', mfc='none')
 plt.plot(trough2peak_psychometric[soundModPsychometric], np.abs(soundModI_psychometric[soundModPsychometric]), marker='o', linestyle='none', mec='red', mfc='none')
 plt.xlabel('Trough to peak time (ms)',fontsize=fontSizeLabels)
-plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
+plt.ylabel('Sound modulation \nby choice (absolute value)',fontsize=fontSizeLabels)
 plt.title('Sound discrimination task')
 #plt.xlim([-1.1,1.1])
 #locs, labels = plt.xticks()
 #plt.xticks(locs, ('%.1f' %float(l) for l in labels))
 #ax1.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
 plt.xticks([0.1,0.2,0.3,0.4],['0.1','0.2','0.3','0.4'])
-plt.ylim([-0.1,0.4])
+plt.ylim([-0.05,0.4])
+plt.yticks([0, 0.1,0.2,0.3,0.4],['0','0.1','0.2','0.3','0.4'])
 extraplots.boxoff(plt.gca())
 
 # -- Panel B: Plot scatter of movment modulation index vs sound modulation index for switching -- #
@@ -120,12 +121,13 @@ ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fo
 plt.plot(trough2peakRatio_psychometric, np.abs(soundModI_psychometric), marker='o', linestyle='none', mec='grey', mfc='none')
 plt.plot(trough2peakRatio_psychometric[soundModPsychometric], np.abs(soundModI_psychometric[soundModPsychometric]), marker='o', linestyle='none', mec='red', mfc='none')
 plt.xlabel('Trough to peak ratio',fontsize=fontSizeLabels)
-plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
+plt.ylabel('Sound modulation \nby choice (absolute value)',fontsize=fontSizeLabels)
 plt.title('Sound discrimination task')
 #plt.xlim([0,])
 ax2.set_xscale("log")
 #plt.xticks
-plt.ylim([-0.1,0.4])
+plt.ylim([-0.05,0.4])
+plt.yticks([0,0.1,0.2,0.3,0.4],['0','0.1','0.2','0.3','0.4'])
 ax2.xaxis.set_ticks_position('bottom')
 extraplots.boxoff(plt.gca())
 
@@ -135,10 +137,11 @@ ax3.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fo
 plt.plot(trough2peak_switching, np.abs(soundModI_switching), marker='o', linestyle='none', mec='grey', mfc='none')
 plt.plot(trough2peak_switching[soundModSwitching], np.abs(soundModI_switching[soundModSwitching]), marker='o', linestyle='none', mec='red', mfc='none')
 plt.xlabel('Trough to peak time (ms)',fontsize=fontSizeLabels)
-plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
+plt.ylabel('Sound modulation \nby choice (absolute value)',fontsize=fontSizeLabels)
 plt.title('Switching task')
 #plt.xlim([-1.1,1.1])
-plt.ylim([-0.1,0.4])
+plt.ylim([-0.05,0.4])
+plt.yticks([0,0.1,0.2,0.3,0.4],['0','0.1','0.2','0.3','0.4'])
 plt.xticks([0.1,0.2,0.3,0.4],['0.1','0.2','0.3','0.4'])
 #ax3.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
 extraplots.boxoff(plt.gca())
@@ -149,11 +152,12 @@ ax4.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fo
 plt.plot(trough2peakRatio_switching, np.abs(soundModI_switching), marker='o', linestyle='none', mec='grey', mfc='none')
 plt.plot(trough2peakRatio_switching[soundModSwitching], np.abs(soundModI_switching[soundModSwitching]), marker='o', linestyle='none', mec='red', mfc='none')
 plt.xlabel('Trough to peak ratio',fontsize=fontSizeLabels)
-plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
+plt.ylabel('Sound modulation \nby choice (absolute value)',fontsize=fontSizeLabels)
 plt.title('Switching task')
 #plt.xlim([-1.1,1.1])
 ax4.set_xscale("log")
-plt.ylim([-0.1,0.4])
+plt.ylim([-0.05,0.4])
+plt.yticks([0,0.1,0.2,0.3,0.4],['0','0.1','0.2','0.3','0.4'])
 ax4.xaxis.set_ticks_position('bottom')
 extraplots.boxoff(plt.gca())
 
