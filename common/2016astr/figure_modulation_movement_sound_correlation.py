@@ -26,7 +26,7 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
-labelPosX = [0.07, 0.47]   # Horiz position for panel labels
+labelPosX = [0.04, 0.5]   # Horiz position for panel labels
 labelPosY = [0.9]
 
 fig = plt.gcf()
@@ -34,7 +34,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1,2)
-gs.update(left=0.15, right=0.95,top=0.85, bottom=0.15, wspace=0.5, hspace=0.1)
+gs.update(left=0.15, right=0.95,top=0.85, bottom=0.2, wspace=0.5, hspace=0.1)
 qualityList = [1,6]
 ISIcutoff = 0.02
 maxZThreshold = 3
@@ -86,26 +86,26 @@ soundModSig_switching = cellsToPlot_switching.modSig.values
 movementSelectiveSwitching = (movementModSig_switching <= 0.05)
 soundModSwitching = (soundModSig_switching <= 0.05)
 
-# -- Panel A: Plot scatter of movment modulation index vs sound modulation index for psychometric -- #
+# -- Panel A: Plot scatter of movement modulation index vs sound modulation index for psychometric -- #
 ax1 = plt.subplot(gs[:,0])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 plt.plot(np.abs(movementModI_psychometric), np.abs(soundModI_psychometric), marker='o', linestyle='none', mec='grey', mfc='none')
-plt.xlabel('Movment modulation \nby direction',fontsize=fontSizeLabels)
-plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
-plt.title('Psychometric')
-plt.xlim([-0.1,1.1])
-plt.ylim([-0.1,0.7])
+plt.xlabel('Movement modulation \nby direction',fontsize=fontSizeLabels)
+plt.ylabel('Sound modulation \nby choice (absolute value)',fontsize=fontSizeLabels)
+plt.title('Sound discrimination task')
+plt.xlim([-0.09,1.1])
+plt.ylim([-0.09,0.7])
 extraplots.boxoff(plt.gca())
 
-# -- Panel B: Plot scatter of movment modulation index vs sound modulation index for switching -- #
+# -- Panel B: Plot scatter of movement modulation index vs sound modulation index for switching -- #
 ax2 = plt.subplot(gs[:,1])
 ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 plt.plot(np.abs(movementModI_switching), np.abs(soundModI_switching), marker='o', linestyle='none', mec='grey', mfc='none')
-plt.xlabel('Movment modulation \nby direction',fontsize=fontSizeLabels)
-plt.ylabel('Sound modulation \nby choice',fontsize=fontSizeLabels)
-plt.title('Switching')
-plt.xlim([-0.1,1.1])
-plt.ylim([-0.1,0.7])
+plt.xlabel('Movement modulation \nby direction',fontsize=fontSizeLabels)
+plt.ylabel('Sound modulation \nby choice (absolute value)',fontsize=fontSizeLabels)
+plt.title('Switching task')
+plt.xlim([-0.09,1.1])
+plt.ylim([-0.09,0.7])
 extraplots.boxoff(plt.gca())
 plt.show()
 
