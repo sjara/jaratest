@@ -4,13 +4,15 @@ from jaratest.nick.database import dataloader_v2 as dataloader
 from scipy import stats
 from jaratoolbox import spikesanalysis
 
+defaultTCtype = 'tc'
+
 def tuning_curve_response(cell):
     '''
     Calculate max Z-score during the response period for each freq-inten combo in a TC
     '''
 
     try:
-        sessiontypeIndex = cell['sessiontype'].index('TuningCurve')
+        sessiontypeIndex = cell['sessiontype'].index(defaultTCtype)
     except ValueError: #The cell does not have this session type
         return None
 

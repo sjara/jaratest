@@ -32,6 +32,8 @@ from matplotlib import pyplot as plt
 
 #############################
 
+defaultAMtype = 'am'
+eventChannelToUse = 5 #Using the output of the stim detector for AM stuff
 
 
 def AM_vector_strength(spikeTimestamps, eventOnsetTimes, behavData, timeRange, ignoreBefore=0.03):
@@ -177,7 +179,7 @@ def am_dependence(cell, frArray=False):
     '''
 
     try:
-        sessiontypeIndex = cell['sessiontype'].index('AM')
+        sessiontypeIndex = cell['sessiontype'].index(defaultAMtype)
     except ValueError: #The cell does not have this session type
         return None
 
@@ -215,46 +217,35 @@ def am_dependence(cell, frArray=False):
         return r_value, spikeArray, possibleFreq
 
 def highest_significant_sync(cell):
-
     try:
-        sessiontypeIndex = cell['sessiontype'].index('AM')
+        sessiontypeIndex = cell['sessiontype'].index(defaultAMtype)
     except ValueError: #The cell does not have this session type
         return None
-
     #Initialize a data loader for this animal
     loader = dataloader.DataLoader(cell['subject'])
-
     #Get the behavior data
     behavData = loader.get_session_behavior(cell['behavior'][sessiontypeIndex])
-
     freqEachTrial = behavData['currentFreq']
     possibleFreq = np.unique(freqEachTrial)
-
     ephysDir = cell['ephys'][sessiontypeIndex]
     clusterSpikeData = loader.get_session_spikes(ephysDir, int(cell['tetrode']), cluster=int(cell['cluster']))
     clusterSpikeTimes = clusterSpikeData.timestamps
-
     #Get the events for this session and calculate onset times
     eventData = loader.get_session_events(ephysDir)
     eventOnsetTimes = loader.get_event_onset_times(eventData, minEventOnsetDiff=None)
-
     timeRange = [0, 0.5]
-
     trialsEachCond = behavioranalysis.find_trials_each_type(freqEachTrial, possibleFreq)
-
     vs_array, pval_array, ral_array = AM_vector_strength(clusterSpikeTimes, eventOnsetTimes, behavData, timeRange)
-
     if np.any(pval_array<0.05):
         highestSync = np.max(possibleFreq[pval_array<0.05])
     else:
         highestSync = 0
-
     return highestSync
 
 
 def plot_am_psth(cell):
     try:
-        sessiontypeIndex = cell['sessiontype'].index('AM')
+        sessiontypeIndex = cell['sessiontype'].index(defaultAMtype)
     except ValueError: #The cell does not have this session type
         return None
 
@@ -295,7 +286,7 @@ def plot_am_psth(cell):
 
 def plot_am_raster(cell):
     try:
-        sessiontypeIndex = cell['sessiontype'].index('AM')
+        sessiontypeIndex = cell['sessiontype'].index(defaultAMtype)
     except ValueError: #The cell does not have this session type
         return None
 
