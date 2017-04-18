@@ -89,9 +89,9 @@ exp1.add_session('15-34-07', 'g', 'tc', 'am_tuning_curve')
 exp1.add_session('16-06-06', 'h', 'am', 'am_tuning_curve')
 
 
-exp1.add_site(1136, tetrodes=range(2, 9))
-exp1.add_session('16-33-52', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('16-35-11', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_site(1136, tetrodes=range(2, 9))
+# exp1.add_session('16-33-52', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('16-35-11', None, 'noiseburst', 'am_tuning_curve')
 
 
 exp2 = celldatabase.Experiment(subject,
