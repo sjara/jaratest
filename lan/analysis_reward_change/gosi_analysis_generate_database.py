@@ -1,3 +1,10 @@
+'''
+This script generates a cells database for gosi mice recorded from the right auditory cortex in the reward change paradigm. The database includes basic information such as subject, date, behavior sessions, ephys sessions, sessiontype, tetrode, cluster, depth, brainarea recorded from, inforecPath etc. Also includes measurements calculated while clustering: 'clusterPeakAmplitudes', 'clusterPeakTimes', 'clusterSpikeSD', 'clusterSpikeShape', 'isiViolations', 'nSpikes'.
+Measurements calculated to reflect sound responsiveness from this script: 'tuningFreqs', 'tuningZscore', 'tuningPval', 'tuningRespIndex', 'tuningResp', 'behavFreqs', 'behavZscore', 'behavPval', 'behavRespIndex', 'behavResp'.
+The script is to be run after inforec file has been fully clustered. 
+Lan 2017-04-19
+'''
+
 from jaratoolbox import celldatabase
 from jaratoolbox import settings
 reload(settings)
@@ -23,26 +30,26 @@ soundTriggerChannel = 0
 
 
 if not os.path.isfile(databaseFullPath):
-    gosi008db = celldatabase.generate_cell_database(inforecFullPath)
-    gosi008db['animalName'] = animal
-    gosi008db.to_hdf(databaseFullPath, key=key)
+    gosidb = celldatabase.generate_cell_database(inforecFullPath)
+    gosidb['animalName'] = animal
+    gosidb.to_hdf(databaseFullPath, key=key)
 
 else:
-    gosi008db = pd.read_hdf(databaseFullPath, key=key)
+    gosidb = pd.read_hdf(databaseFullPath, key=key)
 
-    if not ('shapeQaulity' in gosi008db.columns):
+    if not ('shapeQaulity' in gosidb.columns):
         #Waveform analysis
-        allShapeQuality = np.empty(len(gosi008db))
-        for indCell, cell in gosi008db.iterrows():
+        allShapeQuality = np.empty(len(gosidb))
+        for indCell, cell in gosidb.iterrows():
             peakAmplitudes = cell['clusterPeakAmplitudes']
             spikeShapeSD = cell['clusterSpikeSD']
             shapeQuality = abs(peakAmplitudes[1]/spikeShapeSD.mean())
             allShapeQuality[indCell] = shapeQuality
         allShapeQuality[allShapeQuality==np.inf]=0
-        gosi008db['shapeQuality'] = allShapeQuality
-        gosi008db.to_hdf(databaseFullPath, key=key)
+        gosidb['shapeQuality'] = allShapeQuality
+        gosidb.to_hdf(databaseFullPath, key=key)
 
-    if not ('tuningZscore' in gosi008db.columns):
+    if not ('tuningZscore' in gosidb.columns):
         # -- Aalyse tuning curve and 2afc data -- #
         tuningDict = {'tuningFreqs':[],
                       'tuningZscore':[],
@@ -50,14 +57,14 @@ else:
                       'tuningRespIndex':[],
                       'tuningResp':[]}
         '''
-        tuningFreqs = np.empty(len(gosi008db))
-        tuningZscore = np.empty(len(gosi008db))
-        tuningPval = np.empty(len(gosi008db))
-        tuningRespIndex = np.empty(len(gosi008db))
-        tuningResp = np.empty(len(gosi008db))
+        tuningFreqs = np.empty(len(gosidb))
+        tuningZscore = np.empty(len(gosidb))
+        tuningPval = np.empty(len(gosidb))
+        tuningRespIndex = np.empty(len(gosidb))
+        tuningResp = np.empty(len(gosidb))
         '''
         
-        for indCell, cell in gosi008db.iterrows():
+        for indCell, cell in gosidb.iterrows():
             loader = dataloader.DataLoader(cell['subject'])
 
             # -- Analyse tuning curve data: calculate sound response Z score for each freq, store frequencies presented and corresponding Z scores -- #
@@ -151,25 +158,25 @@ else:
             tuningDict['tuningRespIndex'].append(responseInds)
             tuningDict['tuningResp'].append(responseEachFreq)
 
-        gosi008db['tuningFreqs'] = tuningDict['tuningFreqs']
-        gosi008db['tuningZscore'] = tuningDict['tuningZscore'] #tuningZscore
-        gosi008db['tuningPval'] = tuningDict['tuningPval'] #tuningPval
-        gosi008db['tuningRespIndex'] = tuningDict['tuningRespIndex'] #tuningRespIndex
-        gosi008db['tuningResp'] = tuningDict['tuningResp'] #tuningResp
-        gosi008db.to_hdf(databaseFullPath, key=key)
+        gosidb['tuningFreqs'] = tuningDict['tuningFreqs']
+        gosidb['tuningZscore'] = tuningDict['tuningZscore'] #tuningZscore
+        gosidb['tuningPval'] = tuningDict['tuningPval'] #tuningPval
+        gosidb['tuningRespIndex'] = tuningDict['tuningRespIndex'] #tuningRespIndex
+        gosidb['tuningResp'] = tuningDict['tuningResp'] #tuningResp
+        gosidb.to_hdf(databaseFullPath, key=key)
 
-    if not ('behavZscore' in gosi008db.columns):
+    if not ('behavZscore' in gosidb.columns):
         # -- Analyse 2afc data: calculate sound response Z score for each freq, store frequencies presented and corresponding Z scores -- #
-        #gosi008db = pd.read_hdf(databaseFullPath)
+        #gosidb = pd.read_hdf(databaseFullPath)
         behavDict = {'behavFreqs':[], 
                      'behavZscore':[],
                      'behavPval':[],
                      'behavRespIndex':[],
                      'behavResp':[]}
-        movementModI = np.zeros(len(gosi008db)) #default value 0
-        movementModS = np.ones(len(gosi008db)) #default value 1
+        movementModI = np.zeros(len(gosidb)) #default value 0
+        movementModS = np.ones(len(gosidb)) #default value 1
        
-        for indCell, cell in gosi008db.iterrows():
+        for indCell, cell in gosidb.iterrows():
             loader = dataloader.DataLoader(cell['subject'])
             sessiontype = 'behavior'  #2afc behavior
             session = cell['ephys'][cell['sessiontype'].index(sessiontype)]
@@ -290,14 +297,14 @@ else:
                 movementModI[indCell] = ((spikeAvgRightward - spikeAvgLeftward)/(spikeAvgRightward + spikeAvgLeftward))  
                 movementModS[indCell] = spikesanalysis.evaluate_modulation(spikeTimesFromEventOnset,indexLimitsEachTrial,movementTimeRange,trialsEachCond)[1]
 
-        gosi008db['behavFreqs'] =  behavDict['behavFreqs']
-        gosi008db['behavZscore'] = behavDict['behavZscore']
-        gosi008db['behavPval'] = behavDict['behavPval']
-        gosi008db['behavRespIndex'] = behavDict['behavRespIndex']
-        gosi008db['behavResp'] = behavDict['behavResp']
-        gosi008db['movementModI'] = movementModI
-        gosi008db['movementModS'] = movementModS
-        gosi008db.to_hdf(databaseFullPath, key=key)
+        gosidb['behavFreqs'] =  behavDict['behavFreqs']
+        gosidb['behavZscore'] = behavDict['behavZscore']
+        gosidb['behavPval'] = behavDict['behavPval']
+        gosidb['behavRespIndex'] = behavDict['behavRespIndex']
+        gosidb['behavResp'] = behavDict['behavResp']
+        gosidb['movementModI'] = movementModI
+        gosidb['movementModS'] = movementModS
+        gosidb.to_hdf(databaseFullPath, key=key)
 
 
 
