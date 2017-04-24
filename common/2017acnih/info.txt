@@ -1,0 +1,11 @@
+List of figs:
+- Show laser responses of photoidentified cells
+- Tuning of photoidentified inhibitory cell
+- Different cells showing different contextual modulation
+
+- Example cell being silenced by laser
+- Contextual modulation as control compared to modulation when inhibitory cell shut down
+
+- Plot showing animal's performance at task
+- Change in psychometric curve during inactivation: one for pharma, one for opto.
+- Change in peformance when silencing one cell type (excitatory?)
