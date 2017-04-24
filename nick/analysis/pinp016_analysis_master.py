@@ -62,8 +62,6 @@ for indCell, cell in pinp016db.iterrows():
 pinp016db['amRval'] = amRval
 pinp016db['highestSync'] = highestSync
 
-#Save the database
-pinp016db.to_hdf('/home/nick/data/database/pinp016/pinp016_database.h5', 'database')
 
 #Query the database and make reports
 soundResponsive = pinp016db.query('isiViolations<0.02 and shapeQuality>2 and noisePval<0.05')
@@ -156,3 +154,41 @@ soundLaserResponsive = soundResponsive.query('pulsePval<0.05 and trainRatio>0.8'
     # avgSpikesBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,baseRange).mean()
     # avgSpikesResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,responseRange).mean()
     # ratio = avgSpikesResp/avgSpikesBase
+
+q10s = []
+ixs = []
+tcType = 'tc'
+for index, cell in soundResponsive.iterrows():
+    loader = dataloader.DataLoader(cell['subject'])
+    try:
+        tuningindex = cell['sessiontype'].index(tcType)
+    except ValueError:
+        q10s.append(None)
+        continue
+    bdata = loader.get_session_behavior(cell['behavior'][tuningindex])
+    possibleFreq = np.unique(bdata['currentFreq'])
+    possibleInten = np.unique(bdata['currentIntensity'])
+    zvalArray = tuningfuncs.tuning_curve_response(cell)
+    tuner = tuningfuncs.TuningAnalysis(np.flipud(zvalArray), freqLabs = possibleFreq, intenLabs = possibleInten[::-1])
+    button = True
+    while button:
+        button = plt.waitforbuttonpress()
+    button = True
+    while button:
+        button = plt.waitforbuttonpress()
+    button = True
+    while button:
+        button = plt.waitforbuttonpress()
+    button = True
+    while button:
+        button = plt.waitforbuttonpress()
+    q10 = tuner.Q10
+    pinp016db.set_value(index, 'Q10', tuner.Q10)
+    pinp016db.set_value(index, 'bestFreq', tuner.bestFreq)
+    pinp016db.set_value(index, 'highFreq', tuner.highFreq)
+    pinp016db.set_value(index, 'lowFreq', tuner.lowFreq)
+    pinp016db.set_value(index, 'threshold', tuner.threshold)
+
+
+#Save the database
+pinp016db.to_hdf('/home/nick/data/database/pinp016/pinp016_database.h5', 'database')
