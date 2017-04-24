@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import bandwidths_analysis_v2 as bandan
+from jaratest.nick.database import dataloader_v2 as dataloader
+
 reload(bandan)
 
 def plot_scatter_with_histograms(xvals, yvals, colour='k', oneToOneLine=True, xlabel=None, ylabel=None, title=None):
@@ -83,16 +85,16 @@ def plot_categorical_scatter_with_mean(vals, categoryLabels, colours=None, xlabe
     
 
 if __name__ == '__main__':
-    CASE = 5
+    CASE = 1.5
     
     if CASE==0:    
-        db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/all_good_cells.csv',index_col=0)
+        db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/all_good_cells_v2.csv',index_col=0)
         #db = db[(db['clusterQuality']<3)]
         #db = db[(db['clusterQuality']>0)]
         db = db[(db['clusterQuality']==1)]
-        db.to_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats.csv')
+        db.to_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats_v2.csv')
     elif CASE==1:
-        db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats.csv',index_col=0)
+        db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats_v2.csv',index_col=0)
         db = db.reindex(columns=np.concatenate((db.columns.values,['atBestFreq','laserResponse','HighAmpSS','LowAmpSS','HighPeakLoc','LowPeakLoc','HighPeakSR','LowPeakSR'])))
         for indCell, cell in db.iterrows():
             print indCell
@@ -107,12 +109,19 @@ if __name__ == '__main__':
                     db.set_value(indCell, 'LowAmpSS', suppressionStats[0])
                     db.set_value(indCell, 'LowPeakLoc', suppressionStats[2])
                     db.set_value(indCell, 'LowPeakSR', suppressionStats[4])
-        db.to_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats.csv')
+        db.to_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats_v2.csv')
+    elif CASE==1.5:
+        db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats.csv',index_col=0)
+        db = db.reindex(columns=np.concatenate((db.columns.values,['charFreq'])))
+        for indCell, cell in db.iterrows():
+            suppressionStats, atBestFreq, laserResponse = bandan.suppression_stats(cell)
+            if suppressionStats is not None:
+                db.set_value(indCell, 'charFreq', atBestFreq[1])
+        db.to_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats_v3.csv')
     elif CASE==2:
-        db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats.csv')
-        cell=db.loc[526]
-        bandan.plot_bandwidth_report(cell)
-        suppressionStats, atBestFreq, laserResponse = bandan.suppression_stats(cell)
+        db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats_v2.csv')
+        for indCell, cell in db.iterrows():
+            bandan.plot_bandwidth_report_if_best(cell)
     elif CASE==3:
         db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats.csv')
         atBestFreq = np.array(db['atBestFreq'].tolist())
@@ -189,6 +198,13 @@ if __name__ == '__main__':
         
         print numLowLoc, numIntLoc, numHighLoc
         print len(bestCells[0])
+    elif CASE==6:
+        db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats.csv')
+        atBestFreq = np.array(db['atBestFreq'].tolist())
+        highSS = np.array(db['HighAmpSS'].tolist())
+        bestCells = np.where(atBestFreq==1)[0]
+        bestHighSS = highSS[bestCells]
+        bestPeakLoc = np.array(db['HighPeakLoc'].tolist())[bestCells]
         
         
         

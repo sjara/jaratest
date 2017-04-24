@@ -1,7 +1,7 @@
 import sys; sys.path.append('/home/jarauser/data')
 import os
-from jaratest.anna.inforecordings import band016_inforec as inforec
-from jaratest.nick.ephysExperiments import clusterManySessions_v2 as cms
+from jaratest.common.inforecordings import band025_inforec as inforec
+from jaratoolbox import spikesorting
 reload(inforec)
 import pandas
 import numpy as np
@@ -15,8 +15,8 @@ for experiment in inforec.experiments:
     for i,site in enumerate(experiment.sites):
         for tetrode in site.tetrodes:
             siteName = '{0}_{1}um'.format(site.date,site.depth)
-            oneTT = cms.MultipleSessionsToCluster(site.subject, site.session_ephys_dirs(), tetrode, siteName)
-            oneTT.load_all_waveforms()
+            oneTT = spikesorting.cluster_many_sessions(site.subject, site.session_ephys_dirs(), tetrode, siteName)
+            '''oneTT.load_all_waveforms()
             clusterFile = os.path.join(oneTT.clustersDir,'Tetrode%d.clu.1'%oneTT.tetrode)
 
             if os.path.isfile(clusterFile):
@@ -28,9 +28,9 @@ for experiment in inforec.experiments:
                     oneTT.set_clusters_from_file()
                     oneTT.save_single_session_clu_files() #Don't do this yet because it will overwrite
                 plt.clf()
-                oneTT.save_multisession_report()
+                oneTT.save_multisession_report()'''
                 
-            for cluster in np.unique(oneTT.clusters):
+            '''for cluster in np.unique(oneTT.clusters):
                 clusterDict=site.cluster_info()
                 clusterDict.update({'tetrode':tetrode, 'cluster':cluster})
                 isi = np.diff(oneTT.timestamps[oneTT.clusters==cluster])
@@ -39,4 +39,4 @@ for experiment in inforec.experiments:
                 clusterDict.update({'nSpikes': len(oneTT.timestamps[oneTT.clusters==cluster])})
                 db = db.append(clusterDict, ignore_index=True)
 
-db.to_csv('/home/jarauser/src/jaratest/anna/analysis/band016_celldb.csv')
+db.to_csv('/home/jarauser/src/jaratest/anna/analysis/band022_celldb.csv')'''

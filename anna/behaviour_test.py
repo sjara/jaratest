@@ -291,13 +291,13 @@ def time_differences_by_trial(animal, sessions, sortBy, paradigm = '2afc', trigg
 if __name__ == '__main__':
     import pdb
     SAVE = 0
-    CASE = 8
+    CASE = 2
     paradigm = '2afc'
     if CASE < 3:
         #animalNames = ['band011']#, 'band012']
        #animalNames = ['band011', 'band012', 'band017','band020']
-        animalNames = ['band017']
-        session = ['20170110a']
+        animalNames = ['band020']
+        session = ['20170414a','20170415a','20170416a']
         for ind,animal in enumerate(animalNames):
             #plt.subplot(2,2,ind+1)
             loader = dataloader.DataLoader(animal)
@@ -402,7 +402,7 @@ if __name__ == '__main__':
         #sessions = ['20170124a','20170127a','20170129a'] # 12.5mW
         #sessions = ['20170125a','20170128a', '20170130a'] # 12.5mW control
         #sessions = ['20170131a','20170201a','20170202a','20170203a','20170204a','20170205a','20170206a']
-        sessions = ['20170207a']
+        #sessions = ['20170207a']
         #colours = ['k','r','y','g']
         #sides = ['none', 'left','right', 'bilateral']
         colours = ['k','g']
@@ -466,8 +466,11 @@ if __name__ == '__main__':
     if CASE == 8:
         animals = ['band018','band019']
         #sessions = ['20170223a','20170224a','20170225a','20170226a','20170227a','20170228a'] #diff noise amps
-        #sessions = ['20170304a','20170305a','20170306a','20170307a','20170308a','20170309a','20170310a'] #2 bands
-        sessions = ['20170313a','20170314a','20170315a'] #3 bands
+        #sessions = ['20170304a','20170305a','20170306a']#2bands first three days
+        #sessions = ['20170307a','20170308a','20170309a','20170310a'] #2 bands
+        #sessions = ['20170313a','20170314a','20170315a'] #3 bands
+        sessions = ['20170316a','20170317a','20170318a','20170319a','20170320a','20170321a']
+        #colours = ['r','k']
         colours = ['b', 'r', 'k']
         for num,animal in enumerate(animals):
             plt.subplot(1,2,num+1)
@@ -491,18 +494,18 @@ if __name__ == '__main__':
         plt.legend(handles=patches, borderaxespad=0.3,prop={'size':12}, loc='best')
         plt.title(animal)
     if CASE == 10:
-        animal = 'band017'
+        animal = 'band011'
         sessions = ['20170228a','20170226a','20170224a','20170222a']
         plt.subplot(1,2,1)
         validPerSNR, rightPerSNR, possibleSNRs, laserCond = band_SNR_laser_psychometric(animal, sessions)
-        colours = ['k','b']
+        colours = ['k','g']
         for las in range(len(validPerSNR)):
             plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
         plt.title('laser')
         sessions = ['20170301a','20170227a','20170225a','20170223a']
         plt.subplot(1,2,2)
         validPerSNR, rightPerSNR, possibleSNRs, laserCond = band_SNR_laser_psychometric(animal, sessions)
-        colours = ['k','b']
+        colours = ['k','g']
         for las in range(len(validPerSNR)):
             plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
         plt.title('control')
@@ -521,24 +524,27 @@ if __name__ == '__main__':
         plt.suptitle(animal)
     if CASE == 11:
         #animals = ['band017','band020']
-        animals = ['band011','band012']
-        #sessions = ['20170307a', '20170314a'] #1.5 mW ChR2
-        sessions = ['20170312a', '20170313a'] #1 mW ChR2
-        #sessions = ['20170312a', '20170313a', '20170320a'] #10mW Arch
-        #sessions = ['20170314a','20170315a'] #15 mW Arch
+        animals = ['band011']#,'band012']
+        #sessions = ['20170307a', '20170314a', '20170324a'] #1.5 mW ChR2
+        #sessions = ['20170312a', '20170313a','20170323a'] #1 mW ChR2
+        sessions2 = ['20170312a', '20170313a', '20170320a'] #10mW Arch
+        sessions3 = ['20170314a','20170315a','20170324a'] #15 mW Arch
         #sessions = ['20170318a', '20170319a', '20170320a'] #0.5mW ChR2
-        #sessions = ['20170315a','20170321a'] #3 mW ChR2
-        #sessions = ['20170321'] # 5mW Arch
+        #sessions = ['20170315a','20170321a','20170322a'] #3 mW ChR2
+        sessions1 = ['20170321a','20170323a'] # 5mW Arch
         colours = ['k','g']
-        for ind,animal in enumerate(animals):
-            plt.subplot(1,2,ind+1)
-            validPerSNR, rightPerSNR, possibleSNRs, conditions = band_SNR_laser_psychometric(animal, sessions)
+        sessions = [sessions1, sessions2, sessions3]
+        animal = animals[0]
+        titles = ['5mW','10mW', '15mW']
+        for ind,session in enumerate(sessions):
+            plt.subplot(1,3,ind+1)
+            validPerSNR, rightPerSNR, possibleSNRs, conditions = band_SNR_laser_psychometric(animal, session)
             for las in range(len(validPerSNR)):
                 plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
-            plt.title(animal)
-        plt.suptitle('10 mW', fontsize=20)
+            plt.title(titles[ind])
+        plt.suptitle('band011', fontsize=20)
         
-    if SAVE:
+    if SAVE:                
         fig = plt.gcf()
         fig.set_size_inches(20, 10)
         fig_path = '/home/jarauser/Pictures/band_muscimol'

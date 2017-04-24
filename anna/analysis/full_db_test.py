@@ -1,23 +1,52 @@
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
+from jaratoolbox import celldatabase
 from jaratoolbox import spikesorting
+reload(celldatabase)
 import bandwidths_analysis_v2 as bandan
+reload(bandan)
 
-'''
-subjects = ['band002', 'band003', 'band004', 'band005', 'band015', 'band016']
+
+#subjects = ['band022','band023']
+currentdb = db = pd.read_hdf('/home/jarauser/src/jaratest/anna/analysis/all_clusters.h5','database',index_col=0)
 db = pd.DataFrame()
+subjects = ['band025']
 for subject in subjects:
-    db = db.append(pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/'+subject+'_celldb.csv',index_col=0),ignore_index=True)
-cells = db[db['isiViolations']<2.0]
-cells = cells.reindex(columns=np.concatenate((cells.columns.values,['clusterQuality'])))
-cells.to_csv('/home/jarauser/src/jaratest/anna/analysis/all_good_cells.csv')'''
+    inforec = '/home/jarauser/src/jaratest/common/inforecordings/{0}_inforec.py'.format(subject)
+    ci = spikesorting.ClusterInforec(inforec)
+    ci.cluster_all_experiments()
+    db = db.append(celldatabase.generate_cell_database(inforec),ignore_index=True)
+#db = db[db['isiViolations']<2.0]
+db = db.reindex(columns=np.concatenate((db.columns.values,['clusterQuality','atBestFreq','bestFreq'])))
 
-cells = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/all_good_cells.csv',index_col=0)
-plt.figure()
+for indCell, cell in db.iterrows():
+    peakAmplitudes = cell['clusterPeakAmplitudes']
+    spikeShapeSD = cell['clusterSpikeSD']
+    shapeQuality = abs(peakAmplitudes[1]/spikeShapeSD.mean())
+    db.set_value(indCell, 'clusterQuality', shapeQuality)
+    bestBand, atBestFreq, bestFreq = bandan.best_band_index(cell)
+    db.set_value(indCell, 'atBestFreq', atBestFreq)
+    if atBestFreq:
+        db.set_value(indCell, 'bestFreq', bestFreq)
+        suppressionStats, laserResponse = bandan.suppression_stats(cell, bestBand)
+        if suppressionStats is not None:
+            db.set_value(indCell, 'laserResponse', laserResponse)
+            db.set_value(indCell, 'HighAmpSS', suppressionStats[1])
+            db.set_value(indCell, 'HighPeakLoc', suppressionStats[3])
+            db.set_value(indCell, 'HighPeakSR', suppressionStats[5])
+            if suppressionStats[0] is not None:
+                db.set_value(indCell, 'LowAmpSS', suppressionStats[0])
+                db.set_value(indCell, 'LowPeakLoc', suppressionStats[2])
+                db.set_value(indCell, 'LowPeakSR', suppressionStats[4])
+#db.to_csv('/home/jarauser/src/jaratest/anna/analysis/all_clusters.csv')
+currentdb = currentdb.append(db)
+currentdb.to_hdf('/home/jarauser/src/jaratest/anna/analysis/all_clusters.h5', 'database')
 
-for indCell, cell in cells.iterrows():
-    if (cell['clusterQuality']==3):
+
+#manual assignment of cluster quality
+'''for indCell, cell in alldata.iterrows():
+    if pd.isnull(cell['clusterQuality']):
         fig = plt.gcf()
         plt.clf()
         cellInfo = bandan.get_cell_info(cell)
@@ -29,6 +58,6 @@ for indCell, cell in cells.iterrows():
             quality = input('Cluster '+ str(indCell)+' quality: ')
         except (SyntaxError):
             quality = input('Try again idiot: ')
-        cells.set_value(indCell, 'clusterQuality', int(quality))
-        cells.to_csv('/home/jarauser/src/jaratest/anna/analysis/all_good_cells.csv')
+        alldata.set_value(indCell, 'clusterQuality', int(quality))
+        alldata.to_csv('/home/jarauser/src/jaratest/anna/analysis/all_good_cells_v2.csv')'''
 

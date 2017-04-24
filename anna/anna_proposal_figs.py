@@ -24,7 +24,7 @@ fontSizeLabels = 12
 fontSizeTicks = 12
 fontSizePanel = 16
 
-FIG = 6
+FIG = 3
 
 if FIG == 1:
     db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/all_good_cells.csv')
@@ -92,7 +92,7 @@ elif FIG == 2:
     SOM_CELL = 304
     cells = [PV_CELL, SOM_CELL]
     
-    gs = gridspec.GridSpec(2,3, width_ratios=[2,1,1])
+    gs = gridspec.GridSpec(2,2)
     gs.update(left=0.15, right=0.85, wspace=0.3, hspace=0.3)
     
     labelPosX = [0.18, 0.47, 0.67]  # Horiz position for panel labels
@@ -105,11 +105,11 @@ elif FIG == 2:
         loader = dataloader.DataLoader(cell['subject'])
         
         
-        plt.subplot(gs[indCell,0])
-        tsThisCluster, wavesThisCluster = bandan.load_cluster_waveforms(cellInfo)
-        spikesorting.plot_waveforms(wavesThisCluster)
+        #plt.subplot(gs[indCell,0])
+        #tsThisCluster, wavesThisCluster = bandan.load_cluster_waveforms(cellInfo)
+        #spikesorting.plot_waveforms(wavesThisCluster)
         
-        plt.subplot(gs[indCell,1])
+        plt.subplot(gs[indCell,0])
         eventData = loader.get_session_events(cellInfo['ephysDirs'][cellInfo['laserIndex'][-1]])
         spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][cellInfo['laserIndex'][-1]], cellInfo['tetrode'], cluster=cellInfo['cluster'])
         eventOnsetTimes = loader.get_event_onset_times(eventData)
@@ -125,7 +125,7 @@ elif FIG == 2:
         plt.xlabel('Time from laser onset (sec)')
         plt.axvspan(0, 0.1, alpha=0.2, color='blue')
         
-        plt.subplot(gs[indCell, 2])
+        plt.subplot(gs[indCell, 1])
         bandIndex = cellInfo['bandIndex'][0]
         eventData = loader.get_session_events(cellInfo['ephysDirs'][bandIndex])
         spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][bandIndex], cellInfo['tetrode'], cluster=cellInfo['cluster'])
@@ -160,7 +160,7 @@ elif FIG == 2:
     plt.show()
 elif FIG == 3:
     from statsmodels.stats.proportion import proportion_confint
-    gs = gridspec.GridSpec(2,2)
+    gs = gridspec.GridSpec(1,2)
     gs.update(left=0.15, right=0.85, wspace=0.4, hspace=0.4)
     labelPosX = [0.08, 0.48]
     labelPosY = [0.92, 0.46]
@@ -182,7 +182,7 @@ elif FIG == 3:
         musValid, musCorrect = bt.behav_stats(animal, sessions[1::2])
         salAccuracy = 100.0*salCorrect/salValid
         musAccuracy = 100.0*musCorrect/musValid
-        plt.plot([1,2],[salAccuracy,musAccuracy], '-o', color='k', lw=2)
+        plt.plot([1,2],[salAccuracy,musAccuracy], '-o', color='k', lw=3, ms=10)
         salCI = np.array(proportion_confint(salCorrect, salValid, method = 'wilson'))
         musCI = np.array(proportion_confint(musCorrect, musValid, method = 'wilson'))
         upper = [(100.0*salCI[1]-salAccuracy),(100.0*musCI[1]-musAccuracy)]
@@ -192,10 +192,10 @@ elif FIG == 3:
     plt.ylim([50,100])
     ax = plt.gca()
     ax.set_xticks([1,2])
-    ax.set_xticklabels(['saline', 'muscimol'])
-    plt.ylabel('Accuracy (%)')
+    ax.set_xticklabels(['saline', 'muscimol'],fontsize=12)
+    plt.ylabel('Accuracy (%)',fontsize=16)
         
-    animal = 'band017'
+    '''animal = 'band017'
     sessions = ['20170228a','20170226a','20170224a','20170222a']
     plt.subplot(gs[1,0])
     validPerSNR, rightPerSNR, possibleSNRs = bt.band_SNR_laser_psychometric(animal, sessions)
@@ -222,12 +222,12 @@ elif FIG == 3:
     ax = plt.gca()
     ax.set_xticks([1,2])
     ax.set_xticklabels(['no laser', 'laser'])
-    plt.ylabel('Accuracy (%)')
+    plt.ylabel('Accuracy (%)')'''
     
     plt.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
     plt.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-    plt.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-    plt.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+    #plt.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+    #plt.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 elif FIG == 4:
     plt.clf()
     db = pd.read_csv('/home/jarauser/src/jaratest/anna/analysis/good_cells_stats.csv')
