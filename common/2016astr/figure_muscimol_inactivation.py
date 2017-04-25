@@ -18,7 +18,8 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_muscimol_inactivation' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7, 5]
+#figSize = [7, 5]
+figSize = [9.5, 2.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -51,6 +52,13 @@ fig.set_facecolor('w')
 
 panelsToPlot=[0, 1]
 
+gs = gridspec.GridSpec(1, 3)
+gs.update(left=0.09, right=0.98, top=0.92, bottom=0.18, wspace=0.5, hspace=0.1)
+ax0 = plt.subplot(gs[0, 0])
+ax1 = plt.subplot(gs[0, 1])
+ax2 = plt.subplot(gs[0, 2])
+
+'''
 gs = gridspec.GridSpec(2, 2)
 gs.update(left=0.15, right=0.98, top=0.95, bottom=0.1, wspace=0.5, hspace=0.5)
 ax0 = plt.subplot(gs[:, 0])
@@ -80,6 +88,9 @@ ax0.legend(bbox_to_anchor=(-0.35, 0),
            columnspacing=1.5,
            frameon=False)
 
+'''
+
+ax0.set_axis_off()
 ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
                 fontsize=fontSizePanel, fontweight='bold')
 
