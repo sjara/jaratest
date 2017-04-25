@@ -23,6 +23,7 @@ def get_cell_info(cell):
     tetrode = int(cell['tetrode'])
     cluster = int(cell['cluster'])
     bandIndex = [i for i, type in enumerate(sessType) if type == 'bandwidth']
+    laserBandIndex = [i for i, type in enumerate(sessType) if type == 'laserBandwidth']
     noiseIndex = [i for i, type in enumerate(sessType) if type == 'noisebursts']
     laserIndex = [i for i, type in enumerate(sessType) if type == 'laserPulse' or type == 'laserPulse2.5']
     laserTrainIndex = [i for i, type in enumerate(sessType) if type == 'laserTrain']
@@ -33,6 +34,7 @@ def get_cell_info(cell):
                 'tetrode': tetrode,
                 'cluster': cluster,
                 'bandIndex': bandIndex,
+                'laserBandIndex': laserBandIndex,
                 'noiseIndex': noiseIndex,
                 'laserIndex': laserIndex,
                 'laserTrainIndex': laserTrainIndex,
@@ -69,6 +71,60 @@ def plot_bandwidth_report_if_best(cell):
         bestIndex = bandAtBest.index(True)
         bandIndex = bandIndex[bestIndex]
         plot_bandwidth_report(cell, bandIndex)
+        
+def plot_laser_bandwidth_summary(cell, bandIndex):
+    cellInfo = get_cell_info(cell)
+    loader = dataloader.DataLoader(cell['subject'])
+    plt.clf()
+    gs = gridspec.GridSpec(2, 4)
+    eventData = loader.get_session_events(cellInfo['ephysDirs'][bandIndex])
+    spikeData = loader.get_session_spikes(cellInfo['ephysDirs'][bandIndex], cellInfo['tetrode'], cluster=cellInfo['cluster'])
+    eventOnsetTimes = loader.get_event_onset_times(eventData)
+    spikeTimestamps = spikeData.timestamps
+    timeRange = [-0.2, 1.5]
+    bandBData = loader.get_session_behavior(cellInfo['behavDirs'][bandIndex])  
+    bandEachTrial = bandBData['currentBand']
+    laserTrial = bandBData['laserTrial']
+    numBands = np.unique(bandEachTrial)
+    numLas = np.unique(laserTrial)
+            
+    firstSortLabels = ['{}'.format(band) for band in np.unique(bandEachTrial)]
+    secondSortLabels = ['no laser','laser']      
+    trialsEachCond = behavioranalysis.find_trials_each_combination(bandEachTrial, 
+                                                                           numBands, 
+                                                                           laserTrial, 
+                                                                           numLas)
+    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+                                                                                                        spikeTimestamps, 
+                                                                                                        eventOnsetTimes,
+                                                                                                        timeRange) 
+    colours = [np.tile(['0.25','0.6'],len(numBands)/2+1), np.tile(['#4e9a06','#8ae234'],len(numBands)/2+1)]
+    for ind, secondArrayVal in enumerate(numLas):
+        plt.subplot(gs[ind, 0:2])
+        trialsThisSecondVal = trialsEachCond[:, :, ind]
+        pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                        indexLimitsEachTrial,
+                                                        timeRange,
+                                                        trialsEachCond=trialsThisSecondVal,
+                                                        labels=firstSortLabels,
+                                                        colorEachCond = colours[ind])
+        plt.setp(pRaster, ms=4)        
+        #plt.title(secondSortLabels[ind])
+        plt.ylabel('bandwidth (octaves)')
+        if ind == len(numLas) - 1:
+            plt.xlabel("Time from sound onset (sec)")
+    
+           
+    # -- plot Yashar plots for bandwidth data --
+    plt.subplot(gs[0:, 2:])
+    spikeArray, errorArray, baseSpikeRate = band_select(spikeTimestamps, eventOnsetTimes, laserTrial, bandEachTrial, timeRange = [0.0, 1.0])
+    band_select_plot(spikeArray, errorArray, baseSpikeRate, numBands, legend=True, labels=secondSortLabels, linecolours=['0.25','#4e9a06'], errorcolours=['0.6','#8ae234'])
+    fig_path = '/home/jarauser/Pictures/cell reports'
+    fig_name = '{0}_{1}_{2}um_TT{3}Cluster{4}.svg'.format(cellInfo['subject'], cellInfo['date'], cellInfo['depth'], cellInfo['tetrode'], cellInfo['cluster'])
+    full_fig_path = os.path.join(fig_path, fig_name)
+    fig = plt.gcf()
+    fig.set_size_inches(16, 8)
+    fig.savefig(full_fig_path, format = 'svg', bbox_inches='tight')
 
 def plot_bandwidth_report(cell, bandIndex):
     cellInfo = get_cell_info(cell)
@@ -308,22 +364,22 @@ def band_select(spikeTimeStamps, eventOnsetTimes, amplitudes, bandwidths, timeRa
             errorArray[band,amp] = stats.sem(thisBandCounts)
     return spikeArray, errorArray, baselineSpikeRate
 
-def band_select_plot(spikeArray, errorArray, baselineSpikeRate, bands, legend = False, labels = ['50 dB SPL', '70 dB SPL'], timeRange = [0,1], title=None):
+def band_select_plot(spikeArray, errorArray, baselineSpikeRate, bands, legend = False, labels = ['50 dB SPL', '70 dB SPL'], linecolours = ['#4e9a06','#5c3566'], errorcolours = ['#8ae234','#ad7fa8'], timeRange = [0,1], title=None):
     xrange = range(len(bands))
     plt.plot(xrange, baselineSpikeRate*(timeRange[1]-timeRange[0])*np.ones(len(bands)), color = '0.75', linewidth = 2)
-    plt.plot(xrange, spikeArray[:,0].flatten(), '-o', color = '#4e9a06', linewidth = 3)
+    plt.plot(xrange, spikeArray[:,0].flatten(), '-o', color = linecolours[0], linewidth = 3)
     plt.fill_between(xrange, spikeArray[:,0].flatten() - errorArray[:,0].flatten(), 
-                     spikeArray[:,0].flatten() + errorArray[:,0].flatten(), alpha=0.2, edgecolor = '#8ae234', facecolor='#8ae234')
-    plt.plot(range(len(bands)), spikeArray[:,1].flatten(), '-o', color = '#5c3566', linewidth = 3)
+                     spikeArray[:,0].flatten() + errorArray[:,0].flatten(), alpha=0.2, edgecolor = errorcolours[0], facecolor=errorcolours[0])
+    plt.plot(range(len(bands)), spikeArray[:,1].flatten(), '-o', color = linecolours[1], linewidth = 3)
     plt.fill_between(xrange, spikeArray[:,1].flatten() - errorArray[:,1].flatten(), 
-                     spikeArray[:,1].flatten() + errorArray[:,1].flatten(), alpha=0.2, edgecolor = '#ad7fa8', facecolor='#ad7fa8')
+                     spikeArray[:,1].flatten() + errorArray[:,1].flatten(), alpha=0.2, edgecolor = errorcolours[1], facecolor=errorcolours[1])
     ax = plt.gca()
     ax.set_xticklabels(bands)
     plt.xlabel('bandwidth (octaves)')
     plt.ylabel('Average num spikes')
     if legend: 
-        patch1 = mpatches.Patch(color='#5c3566', label=labels[1])
-        patch2 = mpatches.Patch(color='#4e9a06', label=labels[0])
+        patch1 = mpatches.Patch(color=linecolours[1], label=labels[1])
+        patch2 = mpatches.Patch(color=linecolours[0], label=labels[0])
         plt.legend(handles=[patch1, patch2], bbox_to_anchor=(0.95, 0.95), borderaxespad=0.)
     if title:
         plt.title(title)
@@ -379,6 +435,8 @@ def best_band_index(cell):
     cellInfo = get_cell_info(cell)
     loader = dataloader.DataLoader(cell['subject'])
     bandIndex = cellInfo['bandIndex']
+    if len(bandIndex)==0:
+        bandIndex = cellInfo['laserBandIndex']
     charFreqs = []
     if len(bandIndex)==0:
         print "No bandwidth session"
