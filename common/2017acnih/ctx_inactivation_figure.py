@@ -13,6 +13,9 @@ from jaratoolbox import spikesanalysis
 import matplotlib.gridspec as gridspec
 import matplotlib
 
+
+PRINT_FIGURE = 1
+
 gs = gridspec.GridSpec(2,2)
 gs.update(left=0.15, right=0.85, wspace=0.4, hspace=0.4)
 labelPosX = [0.08, 0.48]
@@ -26,13 +29,17 @@ fontSizeLabels = 14
 fontSizeTicks = 12
 fontSizePanel = 16
 
+muscimolColor = cp.TangoPalette['Orange2']
+laserColor = cp.TangoPalette['Plum1']
+
+
 animal = 'band008'
 sessions = ['20161130a','20161201a','20161202a','20161203a','20161204a','20161205a', '20161206a', '20161207a']
 plt.subplot(gs[0,0])
 validPerSNR, rightPerSNR, possibleSNRs = bt.band_SNR_psychometric(animal, sessions[::2])
 bt.plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs)
 validPerSNR, rightPerSNR, possibleSNRs = bt.band_SNR_psychometric(animal, sessions[1::2])
-bt.plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs, colour='r')
+bt.plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs, colour=muscimolColor)
 plt.ylabel('% rightward choice', fontsize=fontSizeLabels)
 plt.xlabel('Signal to noise ratio (dB)', fontsize=fontSizeLabels)
 
@@ -53,18 +60,18 @@ plt.xlim([0.5,2.5])
 plt.ylim([50,100])
 ax = plt.gca()
 ax.set_xticks([1,2])
-ax.set_xticklabels(['saline', 'muscimol'],fontsize=fontSizeTicks)
+ax.set_xticklabels(['saline', 'muscimol'],fontsize=fontSizeLabels)
 plt.ylabel('Accuracy (%)',fontsize=fontSizeLabels)
     
 animal = 'band017'
 sessions = ['20170228a','20170226a','20170224a','20170222a']
 plt.subplot(gs[1,0])
 validPerSNR, rightPerSNR, possibleSNRs, laserTrialTypes = bt.band_SNR_laser_psychometric(animal, sessions)
-colours = ['k','b']
+colours = ['k',laserColor]
 for las in range(len(validPerSNR)):
     bt.plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, colour = colours[las])
-plt.ylabel('% rightward choice')
-plt.xlabel('Signal to noise ratio (dB)')
+plt.ylabel('% rightward choice', fontsize=fontSizeLabels)
+plt.xlabel('Signal to noise ratio (dB)', fontsize=fontSizeLabels)
    
 animals = ['band017', 'band020']
 plt.subplot(gs[1,1])
@@ -82,7 +89,7 @@ plt.xlim([0.5,2.5])
 plt.ylim([50,100])
 ax = plt.gca()
 ax.set_xticks([1,2])
-ax.set_xticklabels(['no laser', 'laser'],fontsize=fontSizeTicks)
+ax.set_xticklabels(['no laser', 'laser'],fontsize=fontSizeLabels)
 plt.ylabel('Accuracy (%)',fontsize=fontSizeLabels)
 
 plt.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
@@ -91,3 +98,11 @@ plt.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fo
 plt.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 plt.show()
+
+
+figFormat = 'svg'#'pdf' #'svg' 
+figFilename = 'ac_inactivation' # Do not include extension
+outputDir = '/tmp/'
+if PRINT_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, [10,8], outputDir)
+
