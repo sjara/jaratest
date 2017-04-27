@@ -1,0 +1,69 @@
+I need to go over every step in the analysis of my ephys data and make sure code 
+is reviewed, unit tested, and commented. I start by making a list of all modules
+and functions involved
+
+* To Do
+** DONE List workflow
+   CLOSED: [2017-04-27 Thu 11:42]
+
+* Write inforec file while recording
+** celldatabase                                                      :module:
+*** TODO list all classes used
+*** Experiment
+**** TODO Unfinished TODO items
+**** DONE Comment
+     CLOSED: [2017-04-27 Thu 12:10]
+**** TODO Unit test
+***** TODO Test adding sessions with different date
+*** Site
+**** TODO Comment
+**** TODO Unit test
+*** Session
+**** TODO Comment
+**** TODO Unit test
+** inforec file                                                      :manual:
+** comment out sites without full dataset                            :manual:
+
+* Cluster inforec file
+** spikesorting.ClusterInforec                                 :class:manual:
+*** spikesorting.cluster_many_sessions                          :func:called:
+**** spikesorting.MultipleSessionsToCluster                    :class:called:
+***** spikesorting.TetrodeToCluster                         :class:inherited:
+
+* Generate cell database
+** celldatabase.generate_cell_database                          :func:manual:
+
+* Calculate shape quality scores
+** TODO make a func for this
+
+* Calculate noise burst responses
+** TODO we also want to look at responses to other sounds
+** TODO make a function for this
+** eventresponse.event_response_score                  :func:manual:jaratest:
+
+* Calculate laser pulse response
+** TODO make a func for this
+** eventresponse.event_response_score                  :func:manual:jaratest:
+
+* Calculate laser train ratio
+** eventresponse.train_response_ratio                  :func:manual:jaratest:
+
+* Calculate AM statistics for each cell
+** am_funcs.am_dependence                          :func:manual:jaratest:bad:
+** am_funcs.higest_significant_sync                    :func:manual:jaratest:
+
+* Calculate frequency tuning properties                          :inprogress:
+
+* Manipulate the database
+** Query and select cells
+** Save and load databases
+*** TODO HDF5 files too large (multiple MB) why? Need diff format?
+
+* Plot reports of all cells
+** TODO list things we want reports to have
+See notes from last meeting with Santiago 2017-04-25
+** pinp_report.plot_pinp_report                    :func:manual:jaratest:bad:
+** Data loading/processing funcs in this module
+
+* Plot figures for paper                                         :inprogress:
+** Use some of the funcs from the poster analysis
