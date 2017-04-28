@@ -8,19 +8,17 @@ and functions involved
 
 * Write inforec file while recording
 ** celldatabase                                                      :module:
-*** TODO list all classes used
+*** DONE Unit test
+*** DONE list all classes used
 *** Experiment
-**** TODO Unfinished TODO items
+**** DONE Unfinished TODO items
 **** DONE Comment
      CLOSED: [2017-04-27 Thu 12:10]
-**** TODO Unit test
-***** TODO Test adding sessions with different date
+***** DONE Test adding sessions with different date
 *** Site
-**** TODO Comment
-**** TODO Unit test
+**** DONE Comment
 *** Session
-**** TODO Comment
-**** TODO Unit test
+**** DONE Comment
 ** inforec file                                                      :manual:
 ** comment out sites without full dataset                            :manual:
 
