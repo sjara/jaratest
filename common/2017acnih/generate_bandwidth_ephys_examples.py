@@ -9,7 +9,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
-reload(settings)
+from scipy import stats
 
 photoFigName = 'photoidentified_cells_bandwidth_tuning'
 SOMFigName = 'SOM_inactivation_bandwidth_tuning'
@@ -59,8 +59,16 @@ cellParamsList = [{'animal':'band004',
                    'tetrode':8,
                    'cluster':2}] #example cell showing same context mod, difference in gain with laser on (SOM-Arch) 
 
-for cell in cellParamsList:
+# --- prompts user to enter which cell they want (1-5) or 0 for all
+cellsToGenerate = input("Cell to generate? ")
+if cellsToGenerate == 0:
+    cellsToGenerate = range(5)
+else:
+    cellsToGenerate = [cellsToGenerate - 1]
+
+for indCell in cellsToGenerate:
     
+    cell = cellParamsList[indCell]
     # --- loads spike and event data for bandwidth ephys sessions ---
     ephysBaseDir = os.path.join(settings.EPHYS_PATH, cell['animal'])
     bandEphysSession = cell['bandwidthEphysSession']
@@ -125,6 +133,17 @@ for cell in cellParamsList:
     else:
         timeRange = [0.0, 1.0]
     bandSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, timeRange)
+    spikeArray = np.zeros((len(numBands), len(numSec)))
+    errorArray = np.zeros_like(spikeArray)
+    for thisSecVal in range(len(numSec)):
+        trialsThisSecVal = bandTrialsEachCond[:,:,thisSecVal]
+        for band in range(len(numBands)):
+            trialsThisBand = trialsThisSecVal[:,band]
+            if bandSpikeCountMat.shape[0] != len(trialsThisBand):
+                bandSpikeCountMat = bandSpikeCountMat[:-1,:]
+            thisBandCounts = bandSpikeCountMat[trialsThisBand].flatten()
+            spikeArray[band, thisSecVal] = np.mean(thisBandCounts)
+            errorArray[band, thisSecVal] = stats.sem(thisBandCounts) #error is standard error of the mean, can be changed in the future
     
     # --- load spike and event data for laser trials ---
     laserEphysSession = cell['laserEphysSession']
@@ -164,12 +183,14 @@ for cell in cellParamsList:
         outputFullPath = os.path.join(SOMDataDir,outputFile)
     else:
         outputFullPath = os.path.join(photoDataDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=bandSpikeTimestamps, eventOnsetTimes=bandEventOnsetTimes, spikeCountMat=bandSpikeCountMat, possibleBands=numBands, possibleSecondSort=numSec, firstSortLabels=firstSortLabels, secondSortLabels=secondSortLabels, spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset, indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,trialsEachCond=bandTrialsEachCond, **cell)
+    np.savez(outputFullPath, spikeTimestamps=bandSpikeTimestamps, eventOnsetTimes=bandEventOnsetTimes, spikeCountMat=bandSpikeCountMat, spikeArray=spikeArray, errorArray=errorArray, possibleBands=numBands, possibleSecondSort=numSec, firstSortLabels=firstSortLabels, secondSortLabels=secondSortLabels, spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset, indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,trialsEachCond=bandTrialsEachCond, **cell)
+    print outputFile + " saved"
 
     ### Save laser data ###
     if laserEphysSession is not None:
         outputFile = 'example_laser_response_{}_{}_T{}_c{}.npz'.format(cell['animal'], cell['date'], cell['tetrode'],cell['cluster'])
         outputFullPath = os.path.join(photoDataDir,outputFile)
         np.savez(outputFullPath, spikeTimesFromEventOnset=laserSpikeTimesFromEventOnset, indexLimitsEachTrial=laserIndexLimitsEachTrial, timeRange=laserTimeRange, **cell)
+        print outputFile + " saved"
 
     
