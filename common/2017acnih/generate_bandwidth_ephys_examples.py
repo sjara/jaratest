@@ -1,4 +1,13 @@
-''' Generate the intermediate ephys and behaviour data to plot rasters and tuning curves for bandwidth ephys sessions.'''
+'''
+Generate the intermediate ephys and behaviour data to plot rasters
+and tuning curves for bandwidth ephys sessions.
+
+Calling this script without parameters will generate data for all
+cells in cellParamsList below.
+
+To generate data for only a few cells, you can specify what cells to save:
+run generate_bandwidth_ephys_examples 0 2 3
+'''
 
 import os
 import sys
@@ -59,12 +68,14 @@ cellParamsList = [{'animal':'band004',
                    'tetrode':8,
                    'cluster':2}] #example cell showing same context mod, difference in gain with laser on (SOM-Arch) 
 
-# --- prompts user to enter which cell they want (1-5) or 0 for all
-cellsToGenerate = input("Cell to generate? ")
-if cellsToGenerate == 0:
-    cellsToGenerate = range(5)
+# -- Define which cells to process --
+args = sys.argv[1:]
+if len(args):
+    cellsToGenerate = [int(x) for x in args]
 else:
-    cellsToGenerate = [cellsToGenerate - 1]
+    cellsToGenerate = range(len(cellParamsList))
+print cellsToGenerate
+
 
 for indCell in cellsToGenerate:
     
