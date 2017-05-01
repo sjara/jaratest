@@ -8,6 +8,7 @@ Lan 2017-04-19
 from jaratoolbox import celldatabase
 from jaratoolbox import settings
 reload(settings)
+from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 import os
@@ -17,9 +18,14 @@ from jaratest.nick.database import dataloader_v2 as dataloader
 import numpy as np
 from scipy import stats
 
-animal = 'gosi008'
+animal = 'adap045'
 inforecFullPath = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(animal))
-databaseFullPath = os.path.join(settings.DATABASE_PATH, animal, '{}_database.h5'.format(animal))
+# -- Cluster and store stats, if have not already done so -- #
+ci = spikesorting.ClusterInforec(inforecFullPath)
+ci.cluster_all_experiments(recluster=False, maxClusters=12, maxPossibleClusters=12)
+
+'''
+databaseFullPath = os.path.join(settings.DATABASE_PATH, '{}_database.h5'.format(animal))
 key = 'reward_change'
 
 baseRange = [-0.1, 0] #Range of baseline period, in sec
@@ -56,13 +62,13 @@ else:
                       'tuningPval':[],
                       'tuningRespIndex':[],
                       'tuningResp':[]}
-        '''
-        tuningFreqs = np.empty(len(gosidb))
-        tuningZscore = np.empty(len(gosidb))
-        tuningPval = np.empty(len(gosidb))
-        tuningRespIndex = np.empty(len(gosidb))
-        tuningResp = np.empty(len(gosidb))
-        '''
+        
+        #tuningFreqs = np.empty(len(gosidb))
+        #tuningZscore = np.empty(len(gosidb))
+        #tuningPval = np.empty(len(gosidb))
+        #tuningRespIndex = np.empty(len(gosidb))
+        #tuningResp = np.empty(len(gosidb))
+        
         
         for indCell, cell in gosidb.iterrows():
             loader = dataloader.DataLoader(cell['subject'])
@@ -110,13 +116,13 @@ else:
                     tuningDict['tuningPval'].append(np.ones(numFreqs))
                     tuningDict['tuningRespIndex'].append(np.zeros(numFreqs))
                     tuningDict['tuningResp'].append(np.zeros(numFreqs))
-                    '''
-                    tuningFreqs[indCell] = possibleFreq
-                    tuningZscore[indCell] = np.zeros(numFreqs)
-                    tuningPval[indCell] = np.ones(numFreqs)
-                    tuningRespIndex[indCell] = np.zeros(numFreqs)
-                    tuningResp[indCell] = np.zeros(numFreqs)
-                    '''
+                    
+                    #tuningFreqs[indCell] = possibleFreq
+                    #tuningZscore[indCell] = np.zeros(numFreqs)
+                    #tuningPval[indCell] = np.ones(numFreqs)
+                    #tuningRespIndex[indCell] = np.zeros(numFreqs)
+                    #tuningResp[indCell] = np.zeros(numFreqs)
+                    
                     continue #skip all subsequent analysis if the two files did not recorded same number of trials
 
             # -- Calculate Z score of sound response for each frequency -- #
@@ -145,13 +151,7 @@ else:
                 zScores.append(zStat)
                 pVals.append(pValue)
 
-            '''
-            tuningFreqs[indCell] = possibleFreq
-            tuningZscore[indCell] = zScores
-            tuningPval[indCell] = pVals
-            tuningRespIndex[indCell] = responseInds
-            tuningResp[indCell] = responseEachFreq
-            '''
+            
             tuningDict['tuningFreqs'].append(possibleFreq)
             tuningDict['tuningZscore'].append(zScores)
             tuningDict['tuningPval'].append(pVals)
@@ -225,12 +225,12 @@ else:
                 behavDict['behavRespIndex'].append(np.zeros(numFreqs))
                 behavDict['behavResp'].append(np.zeros(numFreqs))
                 '''
-                rewardModI_sound = np.zeros(numFreqs)
-                rewardModS_sound = np.ones(numFreqs)
-                rewardModI_movement = np.zeros(numFreqs)
-                rewardModS_movement = np.ones(numFreqs) 
-                rewardModI_reward = np.zeros(numFreqs)
-                rewardModS_reward = np.ones(numFreqs) 
+                #rewardModI_sound = np.zeros(numFreqs)
+                #rewardModS_sound = np.ones(numFreqs)
+                #rewardModI_movement = np.zeros(numFreqs)
+                #rewardModS_movement = np.ones(numFreqs) 
+                #rewardModI_reward = np.zeros(numFreqs)
+                #rewardModS_reward = np.ones(numFreqs) 
                 '''
                 continue
 
@@ -306,7 +306,7 @@ else:
         gosidb['movementModS'] = movementModS
         gosidb.to_hdf(databaseFullPath, key=key)
 
-
+'''
 
 
 
