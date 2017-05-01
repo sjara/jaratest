@@ -66,7 +66,15 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2017-04-19_14-38-17',
                    'bandwidthBehavSession':'band025_bandwidth_am_20170419g.h5',
                    'tetrode':8,
-                   'cluster':2}] #example cell showing same context mod, difference in gain with laser on (SOM-Arch) 
+                   'cluster':2}, #example cell showing same context mod, difference in gain with laser on (SOM-Arch) 
+
+                   {'animal':'band025',
+                   'date': '2017-04-19',
+                   'laserEphysSession': None,
+                   'bandwidthEphysSession': '2017-04-19_14-38-17',
+                   'bandwidthBehavSession':'band025_bandwidth_am_20170419g.h5',
+                   'tetrode':4,
+                   'cluster':3}] #example cell suppressed by laser
 
 # -- Define which cells to process --
 args = sys.argv[1:]
@@ -138,11 +146,7 @@ for indCell in cellsToGenerate:
     
     
     # --- produce input for bandwidth tuning curve ---
-    # defining time range of sound presentation (100ms delay for SOM-Arch animal for laser)
-    if cell['animal']=='band025':
-        timeRange = [0.1,1.1] 
-    else:
-        timeRange = [0.0, 1.0]
+    timeRange = [0.0, 1.0]
     bandSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, timeRange)
     spikeArray = np.zeros((len(numBands), len(numSec)))
     errorArray = np.zeros_like(spikeArray)
