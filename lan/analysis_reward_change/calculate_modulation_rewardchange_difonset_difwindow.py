@@ -31,7 +31,7 @@ soundTriggerChannel = 0 # channel 0 is the sound presentation, 1 is the trial
 
 key = 'reward_change'
 
-CASE = 1
+CASE = 3
 
 if CASE == 1:
     #-- Calculate modulation index and significance with different onset and time window --#
@@ -48,7 +48,7 @@ if CASE == 1:
 
     for mouseName in mouseNameList:
         databaseFullPath = os.path.join(settings.DATABASE_PATH, mouseName, '{}_database.h5'.format(mouseName))
-        outFilename = '/var/tmp/{}_rewardchange_modulation.h5'.format(mouseName)
+        outFilename = '/var/tmp/{}_reward_change_modulation.h5'.format(mouseName)
         if os.path.isfile(outFilename):
             print 'Analysis for this mouse was saved before.'
             processed = pd.read_hdf(outFilename, key='reward_change')
@@ -279,31 +279,42 @@ if CASE == 2:
     import os
     import pandas as pd
 
-    processedDir = '/home/languo/data/ephys/reward_change_summary_stats/newMod/'
-    for file in os.listdir(processedDir):
-        modulationDf = pd.read_hdf(os.path.join(processedDir,file), key='reward_change')
-        scriptFullPath = os.path.realpath(__file__)
-        modulationDf['script'] = scriptFullPath
-        modulationDf.to_hdf(os.path.join(processedDir,file), key='reward_change')
+    mouseName = 'gosi008'
+    outFilename = '/var/tmp/{}_reward_change_modulation.h5'.format(mouseName)
+    #processedDir = '/home/languo/data/ephys/reward_change_summary_stats/newMod/'
+    #for file in os.listdir(processedDir):
+    modulationDf = pd.read_hdf(outFilename, key='reward_change')
+    scriptFullPath = os.path.realpath(__file__)
+    modulationDf['script'] = scriptFullPath
+    modulationDf.drop_duplicates(inplace=True)
+    modulationDf.to_hdf(outFilename, key='reward_change')
+
 
 if CASE == 3:
-        # -- Merge newly calculated modulation index (with test085) from dif windows with all cells all measures --#
+        # -- Merge newly calculated modulation index from dif windows with all cells all measures --#
         import numpy as np
         import matplotlib.pyplot as plt
         import os
-        
-        dfAllMeasures = pd.read_hdf('/home/languo/data/ephys/reward_change_summary_stats/all_cells_all_measures_waveform_reward_change.h5',key='reward_change')
 
-        allMiceDfs = []
-        for animal in np.unique(dfAllMeasures['subject']):
-            dfThisMouse = dfAllMeasures.loc[dfAllMeasures['subject'] == animal].reset_index()
-            
-            dfModThisMouse = pd.read_hdf('/home/languo/data/ephys/reward_change_summary_stats/newMod/{}_reward_change_modulation.h5'.format(animal),key='reward_change')
-            dfs = [dfThisMouse,dfModThisMouse]
-            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['subject','date','tetrode','cluster'],how='inner'), dfs)
-            allMiceDfs.append(dfAllThisMouse)
+        mouseName = 'gosi008'
+
+        databaseFullPath = os.path.join(settings.DATABASE_PATH, mouseName, '{}_database.h5'.format(mouseName))
+        outFilename = '/var/tmp/{}_reward_change_modulation.h5'.format(mouseName)
         
-        dfAllReward_ChangeMouse = pd.concat(allMiceDfs, ignore_index=True)
-        dfAllReward_ChangeMouse.drop('level_0', 1, inplace=True)
-        dfAllReward_ChangeMouse.to_hdf('/home/languo/data/ephys/reward_change_summary_stats/all_cells_all_measures_extra_mod_waveform_reward_change.h5', key='reward_change')
+        dfAllMeasures = pd.read_hdf(databaseFullPath,key='reward_change')
+
+        #allMiceDfs = []
+        #for mouseName in np.unique(dfAllMeasures['subject']):
+        dfThisMouse = dfAllMeasures.loc[dfAllMeasures['subject'] == mouseName].reset_index()
+            
+        dfModThisMouse = pd.read_hdf(outFilename, key='reward_change')
+        dfs = [dfThisMouse,dfModThisMouse]
+        dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['subject','date','tetrode','cluster'],how='inner'), dfs)
+        #dfAllThisMouse.drop('level_0', 1, inplace=True)
+        dfAllThisMouse.to_hdf(databaseFullPath, key='reward_change')
+        #allMiceDfs.append(dfAllThisMouse)
+        
+        #dfAllReward_ChangeMouse = pd.concat(allMiceDfs, ignore_index=True)
+        #dfAllReward_ChangeMouse.drop('level_0', 1, inplace=True)
+        #dfAllReward_ChangeMouse.to_hdf(, key='reward_change')
         #when saving to hdf, using (format='table',data_columns=True) is slower but enable on disk queries
