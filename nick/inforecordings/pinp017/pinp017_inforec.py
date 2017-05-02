@@ -83,11 +83,11 @@ exp2 = celldatabase.Experiment(subject,
                                info=['lateralDiI', 'facingLateral'])
 experiments.append(exp2)
 
-exp2.add_site(1350, tetrodes=[1, 2, 4, 5, 6, 7, 8])
-exp2.add_session('14-27-32', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('14-28-49', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('14-30-01', None, 'lasertrain', 'am_tuning_curve')
-exp2.add_session('14-42-04', 'a', 'minitc', 'am_tuning_curve')
+# exp2.add_site(1350, tetrodes=[1, 2, 4, 5, 6, 7, 8])
+# exp2.add_session('14-27-32', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('14-28-49', None, 'laserpulse', 'am_tuning_curve')
+# exp2.add_session('14-30-01', None, 'lasertrain', 'am_tuning_curve')
+# exp2.add_session('14-42-04', 'a', 'minitc', 'am_tuning_curve')
 
 exp2.add_site(1401, tetrodes=[1, 2, 4, 5, 6, 7, 8])
 exp2.add_session('15-07-17', None, 'noiseburst', 'am_tuning_curve')
@@ -98,10 +98,10 @@ exp2.add_session('15-30-05', 'c', 'tc', 'am_tuning_curve')
 exp2.add_session('16-01-57', None, 'laserpulse2', 'am_tuning_curve')
 exp2.add_session('16-03-20', None, 'lasertrain2', 'am_tuning_curve')
 
-exp2.add_site(1470, tetrodes=[1, 2, 4, 5, 6, 7, 8])
-exp2.add_session('16-08-12', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('16-09-41', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('16-10-47', None, 'lasertrain', 'am_tuning_curve')
+# exp2.add_site(1470, tetrodes=[1, 2, 4, 5, 6, 7, 8])
+# exp2.add_session('16-08-12', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('16-09-41', None, 'laserpulse', 'am_tuning_curve')
+# exp2.add_session('16-10-47', None, 'lasertrain', 'am_tuning_curve')
 
 exp2.add_site(1525, tetrodes=[1, 2, 4, 5, 6, 7, 8])
 exp2.add_session('16-15-34', None, 'noiseburst', 'am_tuning_curve')
@@ -147,10 +147,10 @@ exp3.add_session('15-37-30', 'e', 'am', 'am_tuning_curve')
 # exp3.add_session('16-20-22', None, 'laserpulse', 'am_tuning_curve')
 # exp3.add_session('16-22-35', None, 'lasertrain', 'am_tuning_curve')
 
-exp3.add_site(3349, tetrodes=range(1, 9))
-exp3.add_session('16-29-21', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('16-30-40', None, 'laserpulse', 'am_tuning_curve')
-exp3.add_session('16-32-28', None, 'laserpulse', 'am_tuning_curve')
+# exp3.add_site(3349, tetrodes=range(1, 9))
+# exp3.add_session('16-29-21', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('16-30-40', None, 'laserpulse', 'am_tuning_curve')
+# exp3.add_session('16-32-28', None, 'laserpulse', 'am_tuning_curve')
 #Nothing here, stopping for the day
 
 exp4 = celldatabase.Experiment(subject,
@@ -181,14 +181,14 @@ experiments.append(exp4)
 # exp4.add_site(3621, tetrodes=range(1, 9))
 # exp4.add_session('14-32-22', None, 'noiseburst', 'am_tuning_curve')
 
-exp4.add_site(3703, tetrodes=range(1, 9))
-exp4.add_session('14-33-49', None, 'noiseburst', 'am_tuning_curve')
-exp4.add_session('14-35-19', None, 'laserpulse', 'am_tuning_curve')
-# SUPER strange laser response. We need to find out where we are later when we do this histo. 
+# exp4.add_site(3703, tetrodes=range(1, 9))
+# exp4.add_session('14-33-49', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('14-35-19', None, 'laserpulse', 'am_tuning_curve')
+# # SUPER strange laser response. We need to find out where we are later when we do this histo. 
 
-exp4.add_site(3755, tetrodes=range(1, 9))
-exp4.add_session('14-44-22', None, 'noiseburst', 'am_tuning_curve')
-exp4.add_session('14-45-56', None, 'laserpulse', 'am_tuning_curve')
+# exp4.add_site(3755, tetrodes=range(1, 9))
+# exp4.add_session('14-44-22', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('14-45-56', None, 'laserpulse', 'am_tuning_curve')
 #Even longer latency to laser pulse response
 
 exp5 = celldatabase.Experiment(subject,
@@ -205,6 +205,6 @@ experiments.append(exp5)
 # exp5.add_site(3560, tetrodes=range(1, 9))
 # exp5.add_session('14-55-03', None, 'noiseburst', 'am_tuning_curve')
 
-exp5.add_site(3783, tetrodes=range(1, 9))
-exp5.add_session('15-00-13', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('15-02-02', None, 'noiseburst', 'am_tuning_curve') #long latency laser responses
+# exp5.add_site(3783, tetrodes=range(1, 9))
+# exp5.add_session('15-00-13', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_session('15-02-02', None, 'noiseburst', 'am_tuning_curve') #long latency laser responses

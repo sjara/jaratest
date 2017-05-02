@@ -171,7 +171,52 @@ def vectorstrength(events, period):
         phase = phase[0]
     return strength, phase
 
-def am_dependence(cell, frArray=False):
+# def am_dependence(cell, frArray=False):
+#     '''
+#     Calculate the average firing rate of a cell during the 0.5sec AM sound.
+#     Perform a linear regression on average firing rate and AM rate, and
+#     return the correlation coefficient for the regression.
+#     '''
+
+#     try:
+#         sessiontypeIndex = cell['sessiontype'].index(defaultAMtype)
+#     except ValueError: #The cell does not have this session type
+#         return None
+
+#     #Initialize a data loader for this animal
+#     loader = dataloader.DataLoader(cell['subject'])
+
+#     #Get the behavior data
+#     behavData = loader.get_session_behavior(cell['behavior'][sessiontypeIndex])
+#     freqEachTrial = behavData['currentFreq']
+
+#     possibleFreq = np.unique(freqEachTrial)
+
+#     ephysDir = cell['ephys'][sessiontypeIndex]
+#     clusterSpikeData = loader.get_session_spikes(ephysDir, int(cell['tetrode']), cluster=int(cell['cluster']))
+#     clusterSpikeTimes = clusterSpikeData.timestamps
+
+#     #Get the events for this session and calculate onset times
+#     eventData = loader.get_session_events(ephysDir)
+#     eventOnsetTimes = loader.get_event_onset_times(eventData, minEventOnsetDiff=None)
+
+#     timeRange = [0, 0.5]
+
+#     trialsEachCond = behavioranalysis.find_trials_each_type(freqEachTrial, possibleFreq)
+
+#     spikeArray = dataplotter.avg_spikes_in_event_locked_timerange_each_cond(clusterSpikeTimes,
+#                                                                             trialsEachCond,
+#                                                                             eventOnsetTimes,
+#                                                                             timeRange)
+
+#     slope, intercept, r_value, p_value, std_err = stats.linregress(spikeArray, possibleFreq)
+
+#     if not frArray:
+#         return r_value
+#     else:
+#         return r_value, spikeArray, possibleFreq
+
+def am_dependence(spikesEachTrial, rateEachTrial):
     '''
     Calculate the average firing rate of a cell during the 0.5sec AM sound.
     Perform a linear regression on average firing rate and AM rate, and

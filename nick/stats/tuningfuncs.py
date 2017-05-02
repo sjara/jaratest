@@ -94,6 +94,12 @@ class TuningAnalysis(object):
         self.statefuncs = [self.get_cf, self.get_low, self.get_high, self.die, self.dead]
         self.transitions = [1, 2, 3, 4]
 
+        self.threshold = None
+        self.highFreq = None
+        self.lowFreq = None
+        self.BW10 = None
+        self.bestFreq = None
+
     def draw_tc(self):
         # self.ax.cla()
         if self.thresh:
@@ -186,9 +192,48 @@ class TuningAnalysis(object):
     def die(self, x_idx, y_idx):
         plt.close(self.fig)
         if not self.setNone:
-            self.Q10 = self.bestFreq / (self.highFreq - self.lowFreq)
+            # self.Q10 = self.bestFreq / (self.highFreq - self.lowFreq)
+            self.BW10 = (self.highFreq - self.lowFreq) / self.bestFreq
         else:
-            self.Q10 = np.nan
+            self.BW10 = np.nan
 
     def dead(self):
         pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
