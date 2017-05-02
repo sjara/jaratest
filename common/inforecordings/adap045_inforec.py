@@ -57,3 +57,78 @@ exp0.add_session('18-56-45', 'j', 'tc', 'am_tuning_curve')
 
 #3350um, 3450um, 3500um, 3550um no obvious noise response, stop and pull up.
 
+
+
+exp1 = celldatabase.Experiment(subject,
+                               '2017-05-01',
+                               brainarea='leftAStr',
+                               info=['medialDiD', 'facingPosterior'])
+experiments.append(exp1)
+
+#2200, 2300, 2400, 2500 no noise response
+
+exp1.add_site(2550, tetrodes=[1,2,3,4,5,6])
+exp1.add_session('12-32-21', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, TT1 (most lateral) noise responsive
+exp1.add_session('12-34-29', 'a', 'tc', 'am_tuning_curve') #ref to chan11 in TT8, TT1 tuned, moving on. 
+
+#2650, 2750um no noise response
+exp1.add_site(2800, tetrodes=[1,2,3,4,5,6,7,8]) #at 2800um TTs 5&6 came on.
+exp1.add_session('13-06-05', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, TT5&6 offset responsive
+exp1.add_session('13-08-01', 'b', 'tc', 'am_tuning_curve') 
+
+#2900,3000,3100,3200,3300,3400,3500,3600, 3700um all very quiet
+
+
+
+exp2 = celldatabase.Experiment(subject,
+                               '2017-05-01',
+                               brainarea='rightAStr',
+                               info=['posteriorDiD', 'facingPosterior'])
+experiments.append(exp2)
+exp2.add_site(1954, tetrodes=[1,2,3,4,5,7,8]) #at 1800um TT1,2(medial),4 LFP very rhythmic
+exp2.add_session('14-06-28', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT1,2,4 responsive
+exp2.add_session('14-12-11', 'c', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2050, tetrodes=[1,2,3,4,5,6,8]) #TT2 LFP very rhythmic 
+exp2.add_session('14-31-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, TT1,2,4,6 responsive
+exp2.add_session('14-33-34', 'd', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2112, tetrodes=[1,2,3,4,5,6,8]) #TT2&4 LFP very rhythmic 
+exp2.add_session('14-54-53', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, TT1,2,4,6 responsive
+exp2.add_session('14-59-04', 'e', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2200, tetrodes=[1,2,3,4,5,6,8]) #TT2&4 LFP very rhythmic 
+exp2.add_session('15-19-05', None, 'noiseburst', 'am_tuning_curve') #ref to chan5 in TT7, TT1,2,3,4,6 weakly responsive
+exp2.add_session('15-22-04', 'f', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2300, tetrodes=[1,2,3,4,5,6,8]) #TT2&4 LFP very rhythmic 
+exp2.add_session('15-42-13', None, 'noiseburst', 'am_tuning_curve') #ref to chan5 in TT7, TT1,2,3,4,5,6 responsive
+exp2.add_session('15-44-17', 'g', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2400, tetrodes=[1,2,3,4,5,6,7,8]) #TT2&4&6 LFP very rhythmic 
+exp2.add_session('16-04-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan11/4 in TT8, allTTs responsive??
+exp2.add_session('16-12-25', 'h', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2600, tetrodes=[1,2,3,4,5,6,7,8]) #TT2&4&6 LFP very rhythmic 
+exp2.add_session('16-39-49', None, 'noiseburst', 'am_tuning_curve') #ref to chan11/4 in TT8, allTTs responsive??
+exp2.add_session('16-41-26', 'i', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2800, tetrodes=[1,2,3,4,5,6,7,8]) #TT1,2 LFP rhythmic 
+exp2.add_session('17-07-52', None, 'noiseburst', 'am_tuning_curve') #ref to chan2 in TT6
+exp2.add_session('17-09-48', 'j', 'tc', 'laser_tuning_curve') 
+
+exp2.add_site(2950, tetrodes=[1,2,3,4,5,6,7,8]) #TT1,2 LFP rhythmic 
+exp2.add_session('17-34-06', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6
+exp2.add_session('17-35-44', 'k', 'tc', 'am_tuning_curve') 
+
+#3000, 3100 very weak, inconsistent sound response. stop and pull up.
+
+
+exp3 = celldatabase.Experiment(subject,
+                               '2017-05-01',
+                               brainarea='leftAStr',
+                               info=['anteriorDiI', 'facingPosterior'])
+experiments.append(exp3)
+
+#2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600um, TT1&2 have sparse spikes that died away quickly, all the way down no sites were sound responsive
+
