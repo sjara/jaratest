@@ -72,7 +72,7 @@ exp1.add_session('12-32-21', None, 'noiseburst', 'am_tuning_curve') #ref to chan
 exp1.add_session('12-34-29', 'a', 'tc', 'am_tuning_curve') #ref to chan11 in TT8, TT1 tuned, moving on. 
 
 #2650, 2750um no noise response
-exp1.add_site(2800, tetrodes=[1,2,3,4,5,6,7,8]) #at 2800um TTs 5&6 came on.
+exp1.add_site(2810, tetrodes=[1,2,3,4,5,6,7,8]) #at 2800um TTs 5&6 came on.
 exp1.add_session('13-06-05', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, TT5&6 offset responsive
 exp1.add_session('13-08-01', 'b', 'tc', 'am_tuning_curve') 
 
@@ -123,7 +123,7 @@ exp2.add_session('17-35-44', 'k', 'tc', 'am_tuning_curve')
 
 #3000, 3100 very weak, inconsistent sound response. stop and pull up.
 
-
+'''
 exp3 = celldatabase.Experiment(subject,
                                '2017-05-01',
                                brainarea='leftAStr',
@@ -131,4 +131,58 @@ exp3 = celldatabase.Experiment(subject,
 experiments.append(exp3)
 
 #2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600um, TT1&2 have sparse spikes that died away quickly, all the way down no sites were sound responsive
+'''
 
+exp4 = celldatabase.Experiment(subject,
+                               '2017-05-02',
+                               brainarea='leftAStr',
+                               info=['posteriorDiI', 'facingPosterior'])
+experiments.append(exp4)
+
+exp4.add_site(1450, tetrodes=[1,2,6,7,8]) #TT8 LFP rhythmic
+exp4.add_session('13-03-22', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT8 (most medial) responsive
+exp4.add_session('13-06-12', 'a', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(1550, tetrodes=[6,7,8]) #TT8 LFP rhythmic
+exp4.add_session('13-26-33', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT8 (most medial) responsive
+exp4.add_session('13-28-26', 'b', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(1650, tetrodes=[1,5,6,7,8]) #TT8 LFP rhythmic
+exp4.add_session('13-47-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT6-8 responsive
+exp4.add_session('13-50-09', 'c', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(1750, tetrodes=[4,5,6,7,8]) #TT5-8 LFP rhythmic
+exp4.add_session('14-24-31', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT5-8 responsive
+exp4.add_session('14-26-24', 'd', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(1860, tetrodes=[4,5,6,7,8]) #TT4-8 LFP rhythmic
+exp4.add_session('14-47-18', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT5-8 responsive
+exp4.add_session('14-49-01', 'e', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(1950, tetrodes=[2,3,4,5,6,7,8]) #TT4-8 LFP rhythmic
+exp4.add_session('15-11-23', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT2-8 responsive
+exp4.add_session('15-13-09', 'f', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2050, tetrodes=[2,3,4,5,6,7,8]) #TT5-8 LFP rhythmic
+exp4.add_session('15-32-28', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT4-6 responsive
+exp4.add_session('15-34-24', 'g', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2150, tetrodes=[1,3,4,5,6,7,8]) #TT5-8 LFP rhythmic
+exp4.add_session('15-58-11', None, 'noiseburst', 'am_tuning_curve') #ref to chan26 in TT2, TT3-8 responsive
+exp4.add_session('16-00-04', 'h', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2250, tetrodes=[1,3,4,5,6,7,8]) #TT4-8 LFP rhythmic
+exp4.add_session('16-20-27', None, 'noiseburst', 'am_tuning_curve') #ref to chan26 in TT2, TT3-7 responsive
+exp4.add_session('16-23-30', 'i', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2350, tetrodes=[1,2,3,4,5,6,7]) #TT4-8 LFP rhythmic
+exp4.add_session('16-41-35', None, 'noiseburst', 'am_tuning_curve') #ref to chan4 in TT8, TT2-7 responsive
+exp4.add_session('16-44-25', 'j', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2450, tetrodes=[1,2,3,4,5,6,7]) #TT4-8 LFP rhythmic
+exp4.add_session('17-01-33', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, TT1-6 responsive
+exp4.add_session('17-03-15', 'k', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2600, tetrodes=[1,2,3,4,5,6,7]) #TT4-8 LFP rhythmic
+exp4.add_session('17-21-55', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, TT2-5 responsive
+exp4.add_session('17-23-19', 'l', 'tc', 'am_tuning_curve') 
