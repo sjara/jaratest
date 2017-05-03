@@ -21,13 +21,13 @@ matplotlib.rcParams['svg.fonttype'] = 'none'
 # copied this right out of Lan's scripts
 
 SAVE_FIGURE = 1
-outputDir = '/home/jarauser/tmp/'
-figFilename = 'figure_tuning_z_score_psychometric' # Do not include extension
+outputDir = '/tmp/'
+figFilename = 'photoidentified_bandwidth_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [8,6]
 
 fontSizeLabels = 12
-fontSizeTicks = 12
+fontSizeTicks = 10
 fontSizePanel = 16
 labelDis = 0.1
 labelPosX = [0.07, 0.45]   # Horiz position for panel labels
@@ -38,7 +38,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(3,3)
-gs.update(left=0.15, right=0.85, wspace=0.5, hspace=0.5)
+gs.update(left=0.1, right=0.9, wspace=0.5, hspace=0.5)
 
 
 cell_file_names = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz','band016_2016-12-11_T6_c6.npz']
@@ -52,7 +52,10 @@ for ind,cell in enumerate(cell_file_names):
     pRaster, hcond, zline = extraplots.raster_plot(laserData['spikeTimesFromEventOnset'],
                                                    laserData['indexLimitsEachTrial'],
                                                    laserData['timeRange'])
-    
+    plt.setp(pRaster,ms=2)
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.ylabel('Trials',fontsize=fontSizeLabels)
+    plt.xlabel('Time (sec)',fontsize=fontSizeLabels)
     
     bandFilename = 'example_bandwidth_tuning_'+cell
     bandDataFullPath = os.path.join(dataDir,bandFilename)
@@ -65,7 +68,11 @@ for ind,cell in enumerate(cell_file_names):
                                                    bandData['timeRange'],
                                                    trialsEachCond=bandData['trialsEachCond'][:,:,-1],
                                                    labels=bandData['firstSortLabels'])
-    
+    plt.setp(pRaster,ms=2)
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.ylabel('Bandwidth (oct)',fontsize=fontSizeLabels)
+    plt.xlabel('Time (sec)',fontsize=fontSizeLabels)
+
     # --- plot of bandwidth tuning ---
     spikeArray = bandData['spikeArray'][:,-1].flatten()
     errorArray = bandData['errorArray'][:,-1].flatten()
@@ -76,7 +83,11 @@ for ind,cell in enumerate(cell_file_names):
                          spikeArray + errorArray, alpha=0.2)
     ax = plt.gca()
     ax.set_xticklabels(bands)
-    plt.xlabel('bandwidth (octaves)')
-    plt.ylabel('Average num spikes')
+    plt.xlabel('Bandwidth (octaves)',fontsize=fontSizeLabels)
+    plt.ylabel('Average num spikes',fontsize=fontSizeLabels)
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 plt.show()
 
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
