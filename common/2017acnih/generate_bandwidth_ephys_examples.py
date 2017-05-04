@@ -52,6 +52,30 @@ cellParamsList = [{'animal':'band004',
                    'tetrode':6,
                    'cluster':6}, #example excitatory cell (non-SOM cell in SOM animal)
                   
+                  {'animal':'band002',
+                   'date': '2016-08-11',
+                   'laserEphysSession': None,
+                   'bandwidthEphysSession': '2016-08-11_10-14-24',
+                   'bandwidthBehavSession':'band002_bandwidth_am_20160811d.h5',
+                   'tetrode':4,
+                   'cluster':5}, #example excitatory cell (from wt animal)
+                  
+                  {'animal':'band002',
+                   'date': '2016-08-12',
+                   'laserEphysSession': None,
+                   'bandwidthEphysSession': '2016-08-12_12-27-34',
+                   'bandwidthBehavSession':'band002_bandwidth_am_20160812k.h5',
+                   'tetrode':6,
+                   'cluster':4}, #example excitatory cell (from wt animal)
+                  
+                  {'animal':'band003',
+                   'date': '2016-08-18',
+                   'laserEphysSession': None,
+                   'bandwidthEphysSession': '2016-08-18_14-48-21',
+                   'bandwidthBehavSession':'band003_bandwidth_am_20160818o.h5',
+                   'tetrode':6,
+                   'cluster':6},
+                  
                   {'animal':'band025',
                    'date': '2017-04-20',
                    'laserEphysSession': None,

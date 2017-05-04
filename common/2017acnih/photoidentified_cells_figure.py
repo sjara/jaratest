@@ -1,5 +1,6 @@
 ''' Create figure showing bandwidth tuning of photoidentified cells.'''
 import os
+import sys
 import numpy as np
 from matplotlib import pyplot as plt
 from jaratoolbox import colorpalette as cp
@@ -13,6 +14,16 @@ import matplotlib.patches as mpatches
 
 FIGNAME = 'photoidentified_cells_bandwidth_tuning'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', FIGNAME)
+
+# -- Define which excitatory cell to use --
+excitatoryCells = ['band016_2016-12-11_T6_c6.npz','band002_2016-08-11_T4_c5.npz','band002_2016-08-12_T6_c4.npz','band003_2016-08-18_T6_c6.npz']
+
+args = sys.argv[1:]
+if len(args):
+    cellToUse = excitatoryCells[int(args[0])]
+else:
+    cellToUse = excitatoryCells[0]
+print cellToUse
 
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
@@ -41,21 +52,24 @@ gs = gridspec.GridSpec(3,3)
 gs.update(left=0.1, right=0.9, wspace=0.5, hspace=0.5)
 
 
-cell_file_names = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz','band016_2016-12-11_T6_c6.npz']
+cell_file_names = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz',cellToUse]
 for ind,cell in enumerate(cell_file_names):
     laserFilename = 'example_laser_response_'+cell
     laserDataFullPath = os.path.join(dataDir,laserFilename)
-    laserData = np.load(laserDataFullPath)
+    try:
+        laserData = np.load(laserDataFullPath)
     
-    # --- raster plot of laser response ---
-    plt.subplot(gs[ind,0])
-    pRaster, hcond, zline = extraplots.raster_plot(laserData['spikeTimesFromEventOnset'],
+        # --- raster plot of laser response ---
+        plt.subplot(gs[ind,0])
+        pRaster, hcond, zline = extraplots.raster_plot(laserData['spikeTimesFromEventOnset'],
                                                    laserData['indexLimitsEachTrial'],
                                                    laserData['timeRange'])
-    plt.setp(pRaster,ms=2)
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.ylabel('Trials',fontsize=fontSizeLabels)
-    plt.xlabel('Time (sec)',fontsize=fontSizeLabels)
+        plt.setp(pRaster,ms=2)
+        extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+        plt.ylabel('Trials',fontsize=fontSizeLabels)
+        plt.xlabel('Time (sec)',fontsize=fontSizeLabels)
+    except:
+        pass
     
     bandFilename = 'example_bandwidth_tuning_'+cell
     bandDataFullPath = os.path.join(dataDir,bandFilename)
