@@ -35,7 +35,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'photoidentified_bandwidth_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [8,6]
+figSize = [10,6]
 
 fontSizeLabels = 12
 fontSizeTicks = 10
@@ -43,6 +43,7 @@ fontSizePanel = 16
 labelDis = 0.1
 labelPosX = [0.07, 0.45]   # Horiz position for panel labels
 labelPosY = [0.9, 0.45]    # Vert position for panel labels
+cellColor = 'k'
 
 fig = plt.gcf()
 fig.clf()
@@ -92,9 +93,9 @@ for ind,cell in enumerate(cell_file_names):
     errorArray = bandData['errorArray'][:,-1].flatten()
     bands = bandData['possibleBands']
     plt.subplot(gs[ind,2])
-    plt.plot(range(len(bands)), spikeArray, '-o', lw = 3)
+    plt.plot(range(len(bands)), spikeArray, '-o', lw = 3, color=cellColor)
     plt.fill_between(range(len(bands)), spikeArray - errorArray, 
-                         spikeArray + errorArray, alpha=0.2)
+                         spikeArray + errorArray, alpha=0.2, color=cellColor)
     ax = plt.gca()
     ax.set_xticklabels(bands)
     plt.xlabel('Bandwidth (octaves)',fontsize=fontSizeLabels)
