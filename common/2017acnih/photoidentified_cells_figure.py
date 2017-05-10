@@ -1,4 +1,11 @@
-''' Create figure showing bandwidth tuning of photoidentified cells.'''
+''' 
+Create figure showing bandwidth tuning of photoidentified cells.
+
+Laser trials: at least 100 trials of 100ms laser, average iti 0.8 seconds
+Bandwidth tuning: 30 trials each bandwidth, sound 1 sec long, average iti 1.5 seconds
+Center frequency determined with shortened tuning curve (16 freq, two intensities, best frequency one that elicits most spikes)
+AM rate selected as one eliciting highest spike rate and most consistent response
+'''
 import os
 import sys
 import numpy as np

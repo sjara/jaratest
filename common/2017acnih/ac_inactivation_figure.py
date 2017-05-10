@@ -1,3 +1,10 @@
+'''
+Generate plots showing effect of pharmacological and optogenetic inactivation of AC on signal extraction task.
+All psychometric curves are averaged over four sessions.
+Saline and muscimol days were alternated; laser trials were randomly interleaved with non-laser trials.
+Accuracy was calculated as 100*(correct trials)/(valid trials).
+'''
+
 from statsmodels.stats.proportion import proportion_confint
 import numpy as np
 import pandas as pd

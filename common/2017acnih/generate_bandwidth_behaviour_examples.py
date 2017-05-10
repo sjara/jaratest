@@ -1,4 +1,12 @@
-''' Generate the intermediate ephys and behaviour data to plot psychometric curves for bandwidth behaviour sessions.'''
+''' 
+Generate the intermediate ephys and behaviour data to plot psychometric curves for bandwidth behaviour sessions.
+
+All mice trained on bandwidth task where left=no tone, right=tone
+Right trials came in multiple SNRs, but total trials are balanced 50-50 for left and right
+Mice trained on multiple noise amplitudes, but for testing we only used noise whose average power level was 40dB
+Tone was at 8kHz (as middle of mouse hearing range), AM rate used was 8Hz, sound lasted 500ms
+For laser experiments, 25% of trials had bilateral laser, laser came on with sound and lasted 100ms after
+'''
 
 import os
 import sys
@@ -15,8 +23,8 @@ figName = 'ac_inactivation_behaviour'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', figName)
 
 muscimolAnimals = ['band006', 'band008', 'band010']
-muscimolSessions = ['20161130a', '20161202a', '20161204a', '20161206a']
-salineSessions = ['20161201a', '20161203a', '20161205a', '20161207a']
+salineSessions = ['20161130a', '20161202a', '20161204a', '20161206a']
+muscimolSessions = ['20161201a', '20161203a', '20161205a', '20161207a']
 
 PVAnimals = ['band017', 'band020']
 laserPVSessions = ['20170228a','20170226a','20170224a','20170222a']
