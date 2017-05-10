@@ -54,7 +54,7 @@ exp3.add_site(500, tetrodes=range(1, 9))
 exp3.add_session('14-08-34', None, 'noiseburst', 'laser_tuning_curve')
 exp3.add_session('14-12-47', 'a', 'tc', 'laser_tuning_curve')
 exp3.add_session('14-21-45', 'a', 'behavior', '2afc')
-exp3.add_session('14-37-13', None, 'behavior2', '2afc')
+exp3.add_session('14-37-13', None, 'behavior2', '2afc')#unplugged during behavior
 exp3.add_session('15-01-25', '4', 'behavior3', '2afc')
 
 
@@ -68,7 +68,7 @@ experiments.append(exp4)
 exp4.add_site(500, tetrodes=range(1, 9))
 exp4.add_session('12-30-17', None, 'noiseburst', 'laser_tuning_curve')
 exp4.add_session('12-35-55', 'a', 'tc', 'laser_tuning_curve')
-exp4.add_session('12-45-11', 'a', 'behavior', '2afc')
+exp4.add_session('12-45-11', 'a', 'behavior', '2afc')#unplugged during behavior
 
 
 exp5 = celldatabase.Experiment(subject,
@@ -356,7 +356,7 @@ exp26.add_site(860, tetrodes=range(1, 9))
 #exp26.add_session('17-05-33', None, 'noiseburst', 'laser_tuning_curve')#ref 27
 exp26.add_session('17-08-15', None, 'noiseburst', 'laser_tuning_curve')#ref 29
 exp26.add_session('17-10-34', 'a', 'tc', 'laser_tuning_curve')
-exp26.add_session('17-18-08', 'a', 'behavior', '2afc')
+exp26.add_session('17-18-08', 'a', 'behavior', '2afc')#unplugged during behavior
 
 exp27 = celldatabase.Experiment(subject,
                                '2017-03-05',
@@ -475,7 +475,7 @@ exp35.add_session('16-18-55', None, 'noiseburst', 'laser_tuning_curve')#rig 2, r
 exp35.add_session('16-37-55', None, 'noiseburst', 'laser_tuning_curve')#rig 3, ref=29
 exp35.add_session('16-45-20', 'a', 'tc', 'laser_tuning_curve')
 exp35.add_session('16-54-59', 'a', 'behavior', '2afc')
-'''
+
 
 exp36 = celldatabase.Experiment(subject,
                                '2017-03-14',
@@ -488,6 +488,7 @@ exp36.add_site(940, tetrodes=range(1, 9))
 exp36.add_session('17-17-20', None, 'noiseburst', 'laser_tuning_curve')# ref=29
 exp36.add_session('17-21-44', 'a', 'tc', 'laser_tuning_curve')
 exp36.add_session('17-29-14', 'a', 'behavior', '2afc')
+'''
 
 exp37 = celldatabase.Experiment(subject,
                                '2017-03-15',
@@ -501,7 +502,7 @@ exp37.add_session('15-15-43', None, 'noiseburst', 'laser_tuning_curve')# ref=29
 exp37.add_session('15-18-46', 'a', 'tc', 'laser_tuning_curve')
 exp37.add_session('15-26-11', 'a', 'behavior', '2afc')
 
-
+'''
 exp38 = celldatabase.Experiment(subject,
                                '2017-03-16',
                                brainarea='rightAC',
@@ -512,7 +513,8 @@ experiments.append(exp38)
 exp38.add_site(940, tetrodes=range(1, 9))
 exp38.add_session('14-34-40', None, 'noiseburst', 'laser_tuning_curve')# ref=29
 exp38.add_session('14-41-34', 'a', 'tc', 'laser_tuning_curve')
-exp38.add_session('14-50-42', 'a', 'behavior', '2afc')# Unplugged ~463 trials
+exp38.add_session('14-50-42', 'a', 'behavior', '2afc')# Unplugged during behavior ~463 trials
+'''
 
 exp39 = celldatabase.Experiment(subject,
                                '2017-03-17',
@@ -538,6 +540,7 @@ exp40.add_session('16-14-29', None, 'noiseburst', 'laser_tuning_curve')# ref=29
 exp40.add_session('16-17-33', 'a', 'tc', 'laser_tuning_curve')
 exp40.add_session('16-26-10', 'a', 'behavior', '2afc')
 
+
 exp41 = celldatabase.Experiment(subject,
                                '2017-03-19',
                                brainarea='rightAC',
@@ -550,6 +553,7 @@ exp41.add_session('15-36-50', None, 'noiseburst', 'laser_tuning_curve')# ref=29
 exp41.add_session('15-39-24', 'a', 'tc', 'laser_tuning_curve')#data didn't save
 exp41.add_session('15-52-25', 'b', 'tc', 'laser_tuning_curve')
 exp41.add_session('16-00-02', 'a', 'behavior', '2afc')
+
 
 exp42 = celldatabase.Experiment(subject,
                                '2017-03-20',
@@ -637,6 +641,7 @@ exp48.add_session('11-35-02', None, 'noiseburst', 'laser_tuning_curve')# ref=28
 exp48.add_session('11-41-04', 'a', 'tc', 'laser_tuning_curve')
 exp48.add_session('11-49-41', 'a', 'behavior', '2afc')
 
+'''
 exp49 = celldatabase.Experiment(subject,
                                '2017-04-02',
                                brainarea='rightAC',
@@ -650,7 +655,7 @@ exp49.add_session('16-16-08', None, 'noiseburst', 'laser_tuning_curve')# ref=16
 exp49.add_session('16-19-04', 'a', 'tc', 'laser_tuning_curve')# ref=16
 exp49.add_session('16-27-20', 'a', 'behavior', '2afc')
 
-'''
+
 exp50 = celldatabase.Experiment(subject,
                                '2017-04-03',
                                brainarea='rightAC',
@@ -661,7 +666,6 @@ experiments.append(exp50)
 exp50.add_site(1340, tetrodes=range(1, 9))
 exp50.add_session('14-46-17', None, 'noiseburst', 'laser_tuning_curve')#ref=29. Moved deeper prior to noiseburst, ran behavior with no ephys recording.
 '''
-
 
 exp51 = celldatabase.Experiment(subject,
                                '2017-04-04',
@@ -699,6 +703,7 @@ exp53.add_session('17-03-31', None, 'noiseburst', 'laser_tuning_curve')# ref=29
 exp53.add_session('17-07-33', 'a', 'tc', 'laser_tuning_curve')# ref=29
 exp53.add_session('17-14-48', 'a', 'behavior', '2afc')# 150 trials/block
 
+
 exp54 = celldatabase.Experiment(subject,
                                '2017-04-07',
                                brainarea='rightAC',
@@ -711,6 +716,7 @@ exp54.add_site(1500, tetrodes=range(1, 9))
 exp54.add_session('16-10-09', None, 'noiseburst', 'laser_tuning_curve')# ref=11
 exp54.add_session('16-13-08', 'a', 'tc', 'laser_tuning_curve')# ref=11
 exp54.add_session('16-25-58', 'a', 'behavior', '2afc')# 200 trials/block
+
 
 exp55 = celldatabase.Experiment(subject,
                                '2017-04-08',
@@ -750,6 +756,7 @@ exp57.add_session('18-21-31', None, 'noiseburst', 'laser_tuning_curve')# ref=11
 exp57.add_session('18-24-10', 'a', 'tc', 'laser_tuning_curve')# ref=11
 exp57.add_session('18-31-07', 'a', 'behavior', '2afc')# 200 trials/block
 
+'''
 exp58 = celldatabase.Experiment(subject,
                                '2017-04-11',
                                brainarea='rightAC',
@@ -762,7 +769,8 @@ exp58.add_site(1620, tetrodes=range(1, 9))
 exp58.add_session('16-50-15', None, 'noiseburst', 'laser_tuning_curve')# ref=11
 #exp58.add_session('16-53-03', 'a', 'tc', 'laser_tuning_curve')# ref=11 (bad noise disruption)
 exp58.add_session('19-12-25', 'a', 'tc', 'laser_tuning_curve')# ref=11
-exp58.add_session('19-18-53', 'a', 'behavior', '2afc')# 200 trials/block, unplugged at 580 trials
+exp58.add_session('19-18-53', 'a', 'behavior', '2afc')# 200 trials/block, unplugged during behavior at 580 trials
+'''
 
 exp59 = celldatabase.Experiment(subject,
                                '2017-04-12',
@@ -788,6 +796,7 @@ exp60.add_session('14-07-27', None, 'noiseburst', 'laser_tuning_curve')# ref=9
 exp60.add_session('14-10-46', 'a', 'tc', 'laser_tuning_curve')# ref=9
 exp60.add_session('14-19-13', 'a', 'behavior', '2afc')# 200 trials/block
 
+'''
 exp61 = celldatabase.Experiment(subject,
                                '2017-04-14',
                                brainarea='rightAC',
@@ -811,3 +820,28 @@ exp62.add_site(1700, tetrodes=range(1, 9))
 exp62.add_session('18-28-51', None, 'noiseburst', 'laser_tuning_curve')# ref=9
 exp62.add_session('18-32-12', 'a', 'tc', 'laser_tuning_curve')# ref=9
 exp62.add_session('18-39-26', 'a', 'behavior', '2afc')# 150 trials/block
+
+exp63 = celldatabase.Experiment(subject,
+                               '2017-04-18',
+                               brainarea='rightAC',
+                               info='')
+
+experiments.append(exp63)
+
+exp63.add_site(1700, tetrodes=range(1, 9))
+exp63.add_session('18-53-51', None, 'noiseburst', 'laser_tuning_curve')# ref=9
+exp63.add_session('18-56-43', 'a', 'tc', 'laser_tuning_curve')# ref=9
+exp63.add_session('19-05-02', 'a', 'behavior', '2afc')# 150 trials/block
+
+exp64 = celldatabase.Experiment(subject,
+                               '2017-04-19',
+                               brainarea='rightAC',
+                               info='')
+
+experiments.append(exp64)
+
+exp64.add_site(1700, tetrodes=range(1, 9))
+exp64.add_session('18-41-45', None, 'noiseburst', 'laser_tuning_curve')# ref=9
+exp64.add_session('18-44-34', 'a', 'tc', 'laser_tuning_curve')# ref=9
+exp64.add_session('18-52-26', 'a', 'behavior', '2afc')# 150 trials/block
+'''
