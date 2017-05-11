@@ -52,3 +52,29 @@ exp1.add_session('20-40-14', 'e', 'tc', 'am_tuning_curve')
 exp1.add_site(2784, tetrodes=range(1, 9))
 exp1.add_session('21-23-11', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('21-25-23', 'f', 'am', 'am_tuning_curve')
+
+exp2 = celldatabase.Experiment(subject,
+                               '2017-05-11',
+                               brainarea='rightAstr',
+                               info=['PosteriorDiI', 'facingPosterior'])
+experiments.append(exp2)
+
+# exp2.add_site(2001, tetrodes=range(1, 9))
+# exp2.add_session('13-06-06', None, 'noiseburst', 'am_tuning_curve')
+
+# exp2.add_site(2100, tetrodes=range(1, 9))
+# exp2.add_session('13-10-18', None, 'noiseburst', 'am_tuning_curve')
+
+# exp2.add_site(2153, tetrodes=range(1, 9))
+# exp2.add_session('13-33-26', None, 'noiseburst', 'am_tuning_curve')
+
+# exp2.add_site(2303, tetrodes=range(1, 9))
+# exp2.add_session('13-35-33', None, 'noiseburst', 'am_tuning_curve')
+
+# exp2.add_site(2731, tetrodes=range(1, 9))
+# exp2.add_session('13-47-34', None, 'noiseburst', 'am_tuning_curve')
+
+exp2.add_site(2766, tetrodes=range(1, 9))
+exp2.add_session('13-51-48', None, 'noiseburst', 'am_tuning_curve')
+
+# Went to 3250um, no more units, finishing the experiment
