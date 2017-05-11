@@ -12,7 +12,7 @@ exp0 = celldatabase.Experiment(subject,
                                info=['anteriorDiI', 'facingPosterior'])
 experiments.append(exp0)
 
-#1500, 1600, 1700, 1800, 1900, 2000 not sound responsive
+#1500, 1600, 1700, 1800, 1900, 2000, 2100 not sound responsive
 exp0.add_site(2150, tetrodes=[1,2,3,4,7,8])
 exp0.add_session('14-17-27', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT1-4 supressed by noise?
 exp0.add_session('14-21-33', 'a', 'tc', 'am_tuning_curve') #TT1-4 tuned roughly 8.1-12.1kHz
@@ -50,3 +50,46 @@ exp0.add_session('17-28-41', 'h', 'tc', 'am_tuning_curve') #TT3-8 tuned differen
 
 #Mouse kept trying to touch array with his paw, because saline kept dripping into his left eye. End experiment, reinforce left side guard
 
+
+exp1 = celldatabase.Experiment(subject,
+                               '2017-05-10',
+                               brainarea='leftAStr',
+                               info=['anterior-meidalDiD', 'facingPosterior'])
+experiments.append(exp1)
+
+#1500, 1700, 1800, 1900, 2000, 2050, 2100um not sound responsive
+exp1.add_site(2350, tetrodes=[2,3,4,5,6,7,8])
+exp1.add_session('13-27-51', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT6 sound responsive 
+exp1.add_session('13-30-09', 'a', 'tc', 'am_tuning_curve') #TT6 tuned low freq
+
+
+exp1.add_site(2420, tetrodes=[2,3,4,5,6,7,8])
+exp1.add_session('13-52-49', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT6 sound responsive 
+exp1.add_session('13-57-56', 'b', 'tc', 'am_tuning_curve') #TT6 tuned low freq
+
+
+exp1.add_site(2520, tetrodes=[1,2,3,4,5,6,8])
+#exp1.add_session('14-18-11', None, 'noiseburst', 'am_tuning_curve') #ref to chan6 in TT7, TT5&6 sound responsive 
+exp1.add_session('14-20-12', 'c', 'tc', 'am_tuning_curve') #4-TT6 tuned
+exp1.add_session('14-38-43', None, 'noiseburst', 'am_tuning_curve') #noise burst after tuning, TT4-6 sound responsive 
+
+exp1.add_site(2600, tetrodes=[2,3,4,5,6,7,8])
+#exp1.add_session('14-45-22', None, 'noiseburst', 'am_tuning_curve') #ref to chan21 in TT1, TT4,5&8 start to be sound responsive 
+exp1.add_session('14-48-55', 'd', 'tc', 'am_tuning_curve') #TT4,5,6,8 tuned
+exp1.add_session('15-04-50', None, 'noiseburst', 'am_tuning_curve') #ref to chan21 in TT1, TT4,5,6&8 sound responsive 
+
+exp1.add_site(2670, tetrodes=[2,3,4,5,6,7,8])
+exp1.add_session('15-10-06', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT(2),4,5,6,8 sound responsive 
+exp1.add_session('15-11-37', 'e', 'tc', 'am_tuning_curve') #TT4,5,6,8 tuned
+
+exp1.add_site(2740, tetrodes=[2,3,4,5,6,7,8])
+exp1.add_session('15-39-30', None, 'noiseburst', 'am_tuning_curve') #ref to chan27 in TT1, TT2,4,5,6,8 sound responsive 
+exp1.add_session('15-41-11', 'f', 'tc', 'am_tuning_curve') 
+
+exp1.add_site(2840, tetrodes=[2,3,4,5,6,7,8])
+exp1.add_session('16-05-29', None, 'noiseburst', 'am_tuning_curve') #ref to chan27 in TT1, TT3,4,5,6,7,8 sound responsive 
+exp1.add_session('16-07-44', 'g', 'tc', 'am_tuning_curve') 
+
+exp1.add_site(2940, tetrodes=[1,2,3,4,5,6,7,8])
+exp1.add_session('16-27-20', None, 'noiseburst', 'am_tuning_curve') #ref to chan31 in TT2, TT3,4,5,6,7,8 sound responsive 
+exp1.add_session('16-29-06', 'h', 'tc', 'am_tuning_curve') #TT4,5,6,8 tuned
