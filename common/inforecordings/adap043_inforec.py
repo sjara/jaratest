@@ -125,3 +125,35 @@ exp2.add_site(2870, tetrodes=[1,2,3,4,5,6,7,8])
 exp2.add_session('12-05-35', 'd', 'tc', 'am_tuning_curve') #TT6 tuned 
 exp2.add_session('12-20-54', None, 'noiseburst', 'am_tuning_curve')
 
+
+exp3 = celldatabase.Experiment(subject,
+                               '2017-05-12',
+                               brainarea='rightAStr',
+                               info=['anterior-medialDiD', 'facingPosterior'])
+experiments.append(exp3)
+
+#1800, 2000, 2100, 2150, 2200, 2250, 2300, 2350, 2400, 2450, 2500um not sound responsive
+exp3.add_site(2535, tetrodes=[1,2,3,4,6])
+exp3.add_session('10-42-03', None, 'noiseburst', 'am_tuning_curve') #ref to chan8 inTT5, TT2 sound responsive 
+exp3.add_session('10-43-57', 'a', 'tc', 'am_tuning_curve')
+
+#2570, 2640um not sound responsive
+exp3.add_site(2700, tetrodes=[1,2,3,4,6])
+exp3.add_session('11-18-18', None, 'noiseburst', 'am_tuning_curve') #ref to chan8 inTT5, TT2&4 sound responsive 
+exp3.add_session('11-21-58', 'b', 'tc', 'am_tuning_curve')
+
+exp3.add_site(2760, tetrodes=[2,3,4,5,6])
+exp3.add_session('11-41-45', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 inTT1, TT2&4 sound responsive 
+exp3.add_session('11-43-25', 'c', 'tc', 'am_tuning_curve')
+
+exp3.add_site(2830, tetrodes=[2,3,4,5,6])
+exp3.add_session('12-05-19', None, 'noiseburst', 'am_tuning_curve') #ref to chan21 inTT1, TT2,3,4 sound responsive 
+exp3.add_session('12-07-12', 'd', 'tc', 'am_tuning_curve')#a bit shorter since saline may have dried up and start to see noise 
+
+exp3.add_site(2915, tetrodes=[1,2,3,4,5,6])
+#exp3.add_session('12-26-17', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 inTT5, TT1,3,4 sound responsive 
+exp3.add_session('12-27-52', 'e', 'tc', 'am_tuning_curve')
+exp3.add_session('12-44-08', None, 'noiseburst', 'am_tuning_curve')
+
+
+
