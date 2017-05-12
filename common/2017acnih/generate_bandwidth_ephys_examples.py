@@ -42,7 +42,15 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2016-11-12_12-23-23',
                    'bandwidthBehavSession':'band015_bandwidth_am_20161112f.h5',
                    'tetrode':8,
-                   'cluster':4}, #example SOM cell                  
+                   'cluster':4}, #example SOM cell         
+                  
+                  {'animal':'band015',
+                   'date': '2016-11-12',
+                   'laserEphysSession': '2016-11-12_13-53-27',
+                   'bandwidthEphysSession': '2016-11-12_13-58-43',
+                   'bandwidthBehavSession':'band015_bandwidth_am_20161112l.h5',
+                   'tetrode':7,
+                   'cluster':4}, #bad example SOM cell (not tuned to center frequency)         
                   
                   {'animal':'band016',
                    'date': '2016-12-11',
