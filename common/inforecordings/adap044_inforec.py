@@ -78,3 +78,28 @@ exp1.add_site(3120, tetrodes=[1,2,3,4,5,6])
 exp1.add_session('16-46-38', 'i', 'tc', 'am_tuning_curve') 
 exp1.add_session('17-03-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, TT1-6 sound responsive 
 
+
+exp2 = celldatabase.Experiment(subject,
+                               '2017-05-18',
+                               brainarea='leftAStr',
+                               info=['medial-posteriorDiI', 'facingPosterior'])
+experiments.append(exp2)
+
+'''
+exp2.add_site(1700, tetrodes=[1,3,4,5,6,7,8]) #T7&8 LFP rhythmic
+exp2.add_session('13-50-58', None, 'noiseburst', 'am_tuning_curve') #ref to chan22 in TT2, TT7&8 sound responsive - may have been in cortex or hippocampus? 
+exp2.add_session('13-54-18', 'a', 'tc', 'am_tuning_curve') 
+'''
+#It's pretty quiet the whole way down for this penetration
+#1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500um not sound responsive
+exp2.add_site(2580, tetrodes=[1,2,3,4]) #T7&8 LFP not rhythmic now
+exp2.add_session('14-51-24', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, TT4 weakly sound responsive 
+exp2.add_session('14-54-19', 'b', 'tc', 'am_tuning_curve') 
+
+#exp2.add_site(2760, tetrodes=[1,2,3,4,5,6,7,8]) #T7&8 LFP not rhythmic now
+#exp2.add_session('15-34-45', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, TT2&4 weak sound responsive 
+#exp2.add_session('15-38-48', 'c', 'tc', 'am_tuning_curve') #no tuning, have lost the cell
+
+#kept going and test sound response every 50um or so. pretty quiet. went down to 3000um started to see more activity, but no sound response, end at 3400um.
+
+
