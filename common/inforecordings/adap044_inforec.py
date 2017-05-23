@@ -176,3 +176,38 @@ exp4.add_session('15-32-54', 'e', 'tc', 'am_tuning_curve')
 exp4.add_site(2850, tetrodes=[1,2,3,4,5,6])
 exp4.add_session('16-01-25', None, 'noiseburst', 'am_tuning_curve') #ref to chan15 in TT7, TT1-6 sound responsive 
 exp4.add_session('16-02-55', 'f', 'tc', 'am_tuning_curve') 
+
+
+exp5 = celldatabase.Experiment(subject,
+                               '2017-05-23',
+                               brainarea='leftAStr',
+                               info=['medialDiI', 'facingPosterior'])
+experiments.append(exp5)
+
+exp5.add_site(2320, tetrodes=[1,2,3,4,5,6,7,8])
+exp5.add_session('13-54-58', None, 'noiseburst', 'am_tuning_curve') #ref to chan7 in TT8, TT5 interesting offset response
+exp5.add_session('14-00-15', 'a', 'tc', 'am_tuning_curve') #may have lost some cell in TT5
+
+exp5.add_site(2470, tetrodes=[1,2,3,4,6,7,8])
+exp5.add_session('14-24-07', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT4&8 responsive
+exp5.add_session('14-25-48', 'b', 'tc', 'am_tuning_curve') #may have lost some cell in TT5
+
+exp5.add_site(2530, tetrodes=[1,2,3,4,6,7,8])
+exp5.add_session('14-50-43', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT2,3,4&8 responsive
+exp5.add_session('14-53-48', 'c', 'tc', 'am_tuning_curve') #may have lost some cell in TT5
+
+exp5.add_site(2620, tetrodes=[1,2,3,4,6,7,8])
+exp5.add_session('15-18-26', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT4,7&8 responsive
+exp5.add_session('15-19-57', 'd', 'tc', 'am_tuning_curve') #may have lost some cell in TT5
+
+exp5.add_site(2700, tetrodes=[1,2,3,4,6,7,8])
+exp5.add_session('15-48-16', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT4,7&8 responsive
+exp5.add_session('15-50-42', 'e', 'tc', 'am_tuning_curve') #may have lost some cell in TT5
+
+exp5.add_site(2800, tetrodes=[1,2,3,4,5,6,7,8])
+exp5.add_session('16-14-54', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT2-8 responsive
+exp5.add_session('16-19-51', 'f', 'tc', 'am_tuning_curve') #may have lost some cell in TT5
+
+exp5.add_site(2880, tetrodes=[1,2,3,4,5,6,7,8])
+exp5.add_session('16-38-44', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT2-8 responsive
+exp5.add_session('16-40-00', 'g', 'tc', 'am_tuning_curve') #may have lost some cell in TT5
