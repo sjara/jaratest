@@ -236,7 +236,6 @@ exp4.add_session('11-45-59', None, 'laserPulse', 'am_tuning_curve')
 exp4.add_session('11-47-27', None, 'noisebursts', 'am_tuning_curve')
 exp4.add_session('11-49-54', 'a', 'tuningCurve', 'am_tuning_curve')
 exp4.add_session('11-55-36', 'b', 'AM', 'am_tuning_curve')
-exp4.add_session('11-59-56', None, 'laserPulse', 'am_tuning_curve')
 exp4.add_session('12-02-13', None, 'laserTrain', 'am_tuning_curve')
 exp4.add_session('12-04-27', 'c', 'bandwidth', 'bandwidth_am') #7kHz, 64Hz
 exp4.add_session('12-26-37', 'd', 'noiseAmps', 'am_tuning_curve')

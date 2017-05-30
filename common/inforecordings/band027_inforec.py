@@ -210,3 +210,17 @@ exp3.add_session('15-20-30', None, 'laserPulse', 'am_tuning_curve')
 exp3.add_session('15-22-47', None, 'laserTrain', 'am_tuning_curve')
 exp3.add_session('15-24-47', 'o', 'bandwidth', 'bandwidth_am')
 exp3.add_session('15-44-36', 'p', 'noiseAmps', 'am_tuning_curve')
+
+
+exp4 = celldatabase.Experiment(subject, '2017-05-08', 'right_AC', info='posteriorlateralDiI')
+experiments.append(exp4)
+
+exp4.laserCalibration = {
+    '0.5':0.8,
+    '1.0':1.35,
+    '1.5':1.95,
+    '2.0':2.55,
+    '2.5':3.2,
+    '3.0':3.95,
+    '3.5':4.8
+}
