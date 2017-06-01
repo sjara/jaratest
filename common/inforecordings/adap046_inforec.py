@@ -46,6 +46,7 @@ exp0.add_site(2960, tetrodes=[1,2,3,4,5,6,7,8])
 exp0.add_session('16-23-41', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT1,3,4,6,8 response 
 exp0.add_session('16-26-17', 'h', 'tc', 'am_tuning_curve') 
 
+
 exp1 = celldatabase.Experiment(subject,
                                '2017-05-31',
                                brainarea='leftAStr',
@@ -69,3 +70,36 @@ exp1.add_session('14-13-57', 'c', 'tc', 'am_tuning_curve')
 #pretty quiet at and pass 3000um except the same very late offset response
 #exp1.add_site(3070, tetrodes=[1,2,3,4,5,6,7,8])
 #exp1.add_session('14-40-11', None, 'noiseburst', 'am_tuning_curve') #ref to chan32 in TT3, TT5-8 offset response 
+
+
+exp2 = celldatabase.Experiment(subject,
+                               '2017-06-01',
+                               brainarea='rightAStr',
+                               info=['posteriorDiD', 'facingPosterior'])
+experiments.append(exp2)
+
+exp2.add_site(2280, tetrodes=[3,4,5,6,7,8])
+exp2.add_session('12-46-02', None, 'noiseburst', 'am_tuning_curve') #ref to chan22 in TT2, TT4&7 responsive 
+exp2.add_session('12-47-35', 'a', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2350, tetrodes=[3,4,5,6,7,8])
+exp2.add_session('13-06-32', None, 'noiseburst', 'am_tuning_curve') #ref to chan22 in TT2, TT3&7 responsive 
+exp2.add_session('13-08-01', 'b', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2430, tetrodes=[3,4,5,6,7,8])
+exp2.add_session('13-26-14', None, 'noiseburst', 'am_tuning_curve') #ref to chan22 in TT2, TT5&6 responsive 
+exp2.add_session('13-28-01', 'c', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2510, tetrodes=[3,4,5,6,7,8])
+exp2.add_session('13-47-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT5&7 responsive 
+#exp2.add_session('13-51-26', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('13-52-57', 'd', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2600, tetrodes=[3,4,5,6,7,8])
+exp2.add_session('14-40-55', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT5&7 responsive 
+exp2.add_session('14-42-36', 'e', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2830, tetrodes=[3,4,5,6,7,8])
+exp2.add_session('15-47-40', None, 'noiseburst', 'am_tuning_curve') #ref to chan22 in TT2, TT3&7 weakly responsive 
+exp2.add_session('15-50-06', 'f', 'tc', 'am_tuning_curve') 
+
