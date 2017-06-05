@@ -103,3 +103,24 @@ exp2.add_site(2830, tetrodes=[3,4,5,6,7,8])
 exp2.add_session('15-47-40', None, 'noiseburst', 'am_tuning_curve') #ref to chan22 in TT2, TT3&7 weakly responsive 
 exp2.add_session('15-50-06', 'f', 'tc', 'am_tuning_curve') 
 
+
+exp3 = celldatabase.Experiment(subject,
+                               '2017-06-02',
+                               brainarea='leftAStr',
+                               info=['posteriorDiD', 'facingPosterior'])
+experiments.append(exp3)
+
+#1800, 2000, 2100, 2200, 2300, 2400, 2500, 2600um not sound responsive
+# very quiet the whole way down?! went all the way down to 3600um very little spiking and no sound response
+
+exp4 = celldatabase.Experiment(subject,
+                               '2017-06-05',
+                               brainarea='leftAStr',
+                               info=['posterior-medialDiI', 'facingPosterior'])
+experiments.append(exp4)
+
+exp4.add_site(2330, tetrodes=[7,8])
+exp4.add_session('14-32-02', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT7 sound responsive 
+exp4.add_session('14-34-30', 'a', 'tc', 'am_tuning_curve') 
+# went down to 3200um no more sound response
+
