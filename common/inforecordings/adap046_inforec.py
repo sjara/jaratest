@@ -124,3 +124,70 @@ exp4.add_session('14-32-02', None, 'noiseburst', 'am_tuning_curve') #ref to chan
 exp4.add_session('14-34-30', 'a', 'tc', 'am_tuning_curve') 
 # went down to 3200um no more sound response
 
+
+exp5 = celldatabase.Experiment(subject,
+                               '2017-06-06',
+                               brainarea='leftAStr',
+                               info=['medialDiD', 'facingPosterior'])
+experiments.append(exp5)
+
+#exp5.add_site(2270, tetrodes=[1,2,3,4])
+#exp5.add_session('14-32-45', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7,no obvious sound response
+#exp5.add_session('14-34-44', 'a', 'tc', 'am_tuning_curve') #Tuning with chord 6.2-19.2kHz, TT2 show tuned response
+#exp5.add_session('14-38-23', 'b', 'tc', 'am_tuning_curve') #no obvious tuning?!
+
+# went down to 3300um no sound response, at 3200um or so suddenly saw high spikes very active, may have gotten to amygdala??
+#exp5.add_site(3230, tetrodes=[1,2,3,4,5,6,7,8])
+#exp5.add_session('15-45-59', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, activity looked very different than before, large spikes a bit rhythmic, slightly suppressed by sound.
+
+
+exp6 = celldatabase.Experiment(subject,
+                               '2017-06-06',
+                               brainarea='leftAStr',
+                               info=['medial-anteriorDiI', 'facingPosterior'])
+experiments.append(exp6)
+exp6.add_site(2680, tetrodes=[1,2,3,4,5,6])
+#exp6.add_session('16-45-04', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, very slight sound suppression on TT1?
+exp6.add_session('16-47-55', 'c', 'tc', 'am_tuning_curve') #TT4 weird tuning?
+exp6.add_session('17-06-06', None, 'noiseburst', 'am_tuning_curve') #TT4 offset respnose?
+
+exp6.add_site(2910, tetrodes=[1,2,3,4,5])
+#exp6.add_session('17-34-03', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, TT4 sound responsive
+exp6.add_session('17-39-05', None, 'noiseburst', 'am_tuning_curve') #may have lost the very responsive cell, TT4 now only weakly sound responsive
+exp6.add_session('17-40-14', 'd', 'tc', 'am_tuning_curve') #TT4 weird tuning?
+
+
+exp7 = celldatabase.Experiment(subject,
+                               '2017-06-07',
+                               brainarea='leftAStr',
+                               info=['anteriorDiD', 'facingPosterior'])
+experiments.append(exp7)
+exp7.add_site(2490, tetrodes=[1,2,3,4,5,6])
+exp7.add_session('13-56-20', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, sound response on TT2,4,6
+exp7.add_session('13-58-02', 'a', 'tc', 'am_tuning_curve') 
+
+exp7.add_site(2560, tetrodes=[1,2,3,4,5,6])
+#exp7.add_session('14-16-21', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, sound response on TT4,5
+exp7.add_session('14-17-57', 'b', 'tc', 'am_tuning_curve') 
+exp7.add_session('14-34-48', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(2620, tetrodes=[1,2,3,4,5,6,8])
+exp7.add_session('14-38-29', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, sound response on TT1-4
+exp7.add_session('14-40-08', 'c', 'tc', 'am_tuning_curve')
+ 
+exp7.add_site(2690, tetrodes=[1,2,3,4,5,6,8])
+exp7.add_session('15-01-51', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, sound response on TT2-4
+exp7.add_session('15-30-07', 'd', 'tc', 'am_tuning_curve') 
+
+exp7.add_site(2750, tetrodes=[1,2,3,4,5,6])
+exp7.add_session('15-49-05', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, sound response on TT1-4
+exp7.add_session('15-51-18', 'e', 'tc', 'am_tuning_curve') 
+exp7.add_session('16-10-22', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(2810, tetrodes=[1,2,3,4,5,6,7,8])
+exp7.add_session('16-17-08', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, sound response on TT1-4
+exp7.add_session('16-20-38', 'f', 'tc', 'am_tuning_curve') 
+
+exp7.add_site(2900, tetrodes=[1,2,3,4,5,6,7,8])
+exp7.add_session('16-39-01', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, sound response on TT1-4
+exp7.add_session('16-40-50', 'g', 'tc', 'am_tuning_curve') 
