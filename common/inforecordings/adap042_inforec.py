@@ -38,7 +38,7 @@ exp0.add_session('15-21-50', 'c', 'tc', 'am_tuning_curve')
 exp1 = celldatabase.Experiment(subject,
                                '2017-06-12',
                                brainarea='leftAStr',
-                               info=['medial-posteriorDiI', 'facingPosterior'])
+                               info=['medialDiD', 'facingPosterior'])
 experiments.append(exp1)
 
 #1600um TT1(most lateral) sound responsive, very large spikes - possibly AC
@@ -71,3 +71,29 @@ exp1.add_site(2680, tetrodes=[1,2,3,4,5,6,7])
 exp1.add_session('18-00-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan4 in TT8, TT1-6 sound responsive
 exp1.add_session('18-02-47', 'g', 'tc', 'am_tuning_curve') 
 
+
+exp2 = celldatabase.Experiment(subject,
+                               '2017-06-13',
+                               brainarea='leftAStr',
+                               info=['medial-posteriorDiI', 'facingPosterior'])
+experiments.append(exp2)
+
+exp2.add_site(2240, tetrodes=[1,2,4,5,6,7,8])
+exp2.add_session('14-09-15', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT2 weakly sound responsive
+exp2.add_session('14-12-09', 'a', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2310, tetrodes=[1,2,3,4,5,7])
+exp2.add_session('14-29-01', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT1-4 sound responsive
+exp2.add_session('14-30-46', 'b', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2400, tetrodes=[1,2,3,4,7,8])
+exp2.add_session('14-54-10', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT1-4 sound responsive
+exp2.add_session('14-55-54', 'c', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2470, tetrodes=[1,2,3,4,5,7])
+exp2.add_session('15-15-47', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3 sound responsive
+exp2.add_session('15-17-58', 'd', 'tc', 'am_tuning_curve') 
+
+exp2.add_site(2550, tetrodes=[1,2,3,4,5,6,7,8])
+exp2.add_session('15-37-20', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3 sound responsive
+exp2.add_session('15-39-00', 'e', 'tc', 'am_tuning_curve') 
