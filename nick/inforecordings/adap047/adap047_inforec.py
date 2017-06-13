@@ -3,45 +3,45 @@ from jaratoolbox import celldatabase
 subject = 'adap047'
 experiments = []
 
-exp0 = celldatabase.Experiment(subject,
-                               '2017-06-02',
-                               brainarea='rightAstr',
-                               info=['middleDiI', 'facingPosterior'])
-experiments.append(exp0)
+# exp0 = celldatabase.Experiment(subject,
+#                                '2017-06-02',
+#                                brainarea='rightAstr',
+#                                info=['middleDiI', 'facingPosterior'])
+# experiments.append(exp0)
 
-#Mouse on the rig at 11:45, waiting 10 mins for brain to settle
+# #Mouse on the rig at 11:45, waiting 10 mins for brain to settle
 
-# exp0.add_site(1539, tetrodes=range(1, 9))
-# exp0.add_session('12-20-21', 'a', 'noiseburst', 'am_tuning_curve')
+# # exp0.add_site(1539, tetrodes=range(1, 9))
+# # exp0.add_session('12-20-21', 'a', 'noiseburst', 'am_tuning_curve')
+# # exp0.add_session('12-23-34', 'b', 'tc', 'am_tuning_curve')
+
+# #1800-2000um no sound response, pretty quiet
+# exp0.add_site(2000, tetrodes=range(1, 9))
+# exp0.add_session('12-49-17', None, 'noiseburst', 'am_tuning_curve')
 # exp0.add_session('12-23-34', 'b', 'tc', 'am_tuning_curve')
 
-#1800-2000um no sound response, pretty quiet
-exp0.add_site(2000, tetrodes=range(1, 9))
-exp0.add_session('12-49-17', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('12-23-34', 'b', 'tc', 'am_tuning_curve')
+# exp0.add_site(2058, tetrodes=range(1, 9))
+# exp0.add_session('13-00-13', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_session('13-02-04', 'c', 'tc', 'am_tuning_curve')
 
-exp0.add_site(2058, tetrodes=range(1, 9))
-exp0.add_session('13-00-13', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('13-02-04', 'c', 'tc', 'am_tuning_curve')
+# exp0.add_site(2114, tetrodes=range(1, 9))
+# exp0.add_session('13-51-39', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_session('13-54-35', 'd', 'tc', 'am_tuning_curve')
 
-exp0.add_site(2114, tetrodes=range(1, 9))
-exp0.add_session('13-51-39', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('13-54-35', 'd', 'tc', 'am_tuning_curve')
+# exp0.add_site(2180, tetrodes=range(1, 9))
+# exp0.add_session('14-17-23', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_session('14-19-31', 'e', 'tc', 'am_tuning_curve')
 
-exp0.add_site(2180, tetrodes=range(1, 9))
-exp0.add_session('14-17-23', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('14-19-31', 'e', 'tc', 'am_tuning_curve')
+# exp0.add_site(2381, tetrodes=range(1, 9))
+# exp0.add_session('14-42-17', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_session('14-44-45', 'f', 'tc', 'am_tuning_curve')
 
-exp0.add_site(2381, tetrodes=range(1, 9))
-exp0.add_session('14-42-17', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('14-44-45', 'f', 'tc', 'am_tuning_curve')
+# exp0.add_site(2482, tetrodes=range(1, 9))
+# exp0.add_session('15-08-43', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_session('15-10-58', 'g', 'tc', 'am_tuning_curve')
 
-exp0.add_site(2482, tetrodes=range(1, 9))
-exp0.add_session('15-08-43', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('15-10-58', 'g', 'tc', 'am_tuning_curve')
-
-exp0.add_site(2585, tetrodes=range(1, 9))
-exp0.add_session('15-38-03', None, 'noiseburst', 'am_tuning_curve') #No more sound response, done for the day
+# exp0.add_site(2585, tetrodes=range(1, 9))
+# exp0.add_session('15-38-03', None, 'noiseburst', 'am_tuning_curve') #No more sound response, done for the day
 # EXPERIMENT ABOVE COLLECTED WIth ONLY THE L SPEAKER ACTIVE
 
 
@@ -100,3 +100,36 @@ exp2.add_session('16-02-07', 'c', 'tc', 'am_tuning_curve')
 exp2.add_site(2325, tetrodes=range(1, 9))
 exp2.add_session('16-30-31', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('16-32-39', 'd', 'tc', 'am_tuning_curve')
+
+exp3 = celldatabase.Experiment(subject,
+                               '2017-06-13',
+                               brainarea='leftAstr',
+                               info=['anteriorDiD', 'facingPosterior'])
+experiments.append(exp3)
+
+#Mouse on the rig at 1:45p, waiting 10 mins for brain to settle
+
+exp3.add_site(2368, tetrodes=range(1, 9))
+exp3.add_session('11-07-15', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('11-10-17', 'a', 'tc', 'am_tuning_curve')
+
+exp3.add_site(2432, tetrodes=range(1, 9))
+exp3.add_session('11-30-14', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('11-32-12', 'b', 'tc', 'am_tuning_curve')
+
+# exp3.add_site(2709, tetrodes=range(1, 9))
+# exp3.add_session('12-07-09', None, 'noiseburst', 'am_tuning_curve') #No sound response up to here
+
+exp3.add_site(2709, tetrodes=range(1, 9))
+exp3.add_session('12-12-36', None, 'noiseburst', 'am_tuning_curve') #No sound response up to here
+
+exp3.add_site(2739, tetrodes=range(1, 9))
+exp3.add_session('12-15-37', None, 'noiseburst', 'am_tuning_curve')
+
+exp3.add_site(2763, tetrodes=range(1, 9))
+exp3.add_session('12-20-55', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('12-23-00', 'c', 'tc', 'am_tuning_curve')
+
+exp3.add_site(2830, tetrodes=range(1, 9))
+exp3.add_session('12-44-51', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('12-47-32', 'd', 'tc', 'am_tuning_curve') #No response really. I'm done here. 
