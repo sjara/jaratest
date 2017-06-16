@@ -53,7 +53,7 @@ experiments.append(exp1)
 
 #Mouse on the rig at 10:03, waiting 10 mins for brain to settle
 
-exp1.add_site(1938, tetrodes=range(1, 9))
+exp1.add_site(1938, tetrodes=range(1, 9)).remove_tetrodes(6)
 exp1.add_session('10-42-36', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('10-45-09', 'a', 'tc', 'am_tuning_curve')
 
@@ -61,19 +61,19 @@ exp1.add_session('10-45-09', 'a', 'tc', 'am_tuning_curve')
 # exp1.add_session('11-10-28', None, 'noiseburst', 'am_tuning_curve')
 # # exp1.add_session('10-45-09', 'a', 'tc', 'am_tuning_curve')
 
-exp1.add_site(2426, tetrodes=range(1, 9))
+exp1.add_site(2426, tetrodes=range(1, 9)).remove_tetrodes(3)
 exp1.add_session('11-16-50', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('11-19-17', 'b', 'tc', 'am_tuning_curve')
 
-exp1.add_site(2512, tetrodes=range(1, 9))
+exp1.add_site(2512, tetrodes=range(1, 9)).remove_tetrodes([1, 4])
 exp1.add_session('11-42-41', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('11-45-48', 'c', 'tc', 'am_tuning_curve')
 
-exp1.add_site(2610, tetrodes=range(1, 9))
+exp1.add_site(2610, tetrodes=range(1, 9)).remove_tetrodes(1)
 exp1.add_session('12-06-06', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('12-08-26', 'd', 'tc', 'am_tuning_curve')
 
-exp1.add_site(2681, tetrodes=range(1, 9))
+exp1.add_site(2681, tetrodes=range(1, 9)).remove_tetrodes([1, 3])
 exp1.add_session('12-43-50', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('12-46-16', 'e', 'tc', 'am_tuning_curve')
 
@@ -109,27 +109,27 @@ experiments.append(exp3)
 
 #Mouse on the rig at 1:45p, waiting 10 mins for brain to settle
 
-exp3.add_site(2368, tetrodes=range(1, 9))
+exp3.add_site(2368, tetrodes=range(1, 9)).remove_tetrodes([3, 4, 5])
 exp3.add_session('11-07-15', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('11-10-17', 'a', 'tc', 'am_tuning_curve')
 
-exp3.add_site(2432, tetrodes=range(1, 9))
+exp3.add_site(2432, tetrodes=range(1, 9)).remove_tetrodes([3, 4, 6, 7])
 exp3.add_session('11-30-14', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('11-32-12', 'b', 'tc', 'am_tuning_curve')
 
 # exp3.add_site(2709, tetrodes=range(1, 9))
 # exp3.add_session('12-07-09', None, 'noiseburst', 'am_tuning_curve') #No sound response up to here
 
-exp3.add_site(2709, tetrodes=range(1, 9))
-exp3.add_session('12-12-36', None, 'noiseburst', 'am_tuning_curve') #No sound response up to here
+# exp3.add_site(2709, tetrodes=range(1, 9))
+# exp3.add_session('12-12-36', None, 'noiseburst', 'am_tuning_curve') #No sound response up to here
 
-exp3.add_site(2739, tetrodes=range(1, 9))
-exp3.add_session('12-15-37', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_site(2739, tetrodes=range(1, 9))
+# exp3.add_session('12-15-37', None, 'noiseburst', 'am_tuning_curve')
 
-exp3.add_site(2763, tetrodes=range(1, 9))
+exp3.add_site(2763, tetrodes=range(1, 9)).remove_tetrodes([3, 4])
 exp3.add_session('12-20-55', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('12-23-00', 'c', 'tc', 'am_tuning_curve')
 
-exp3.add_site(2830, tetrodes=range(1, 9))
+exp3.add_site(2830, tetrodes=range(1, 9)).remove_tetrodes([1, 3, 4])
 exp3.add_session('12-44-51', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('12-47-32', 'd', 'tc', 'am_tuning_curve') #No response really. I'm done here. 
