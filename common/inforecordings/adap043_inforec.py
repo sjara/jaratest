@@ -9,7 +9,7 @@ experiments = []
 exp0 = celldatabase.Experiment(subject,
                                '2017-05-09',
                                brainarea='leftAStr',
-                               info=['anteriorDiI', 'facingPosterior'])
+                               info=['anteriorDiI', 'facingPosterior','medial:5,6,7,8','lateral:1,2,3,4'])
 experiments.append(exp0)
 
 #1500, 1600, 1700, 1800, 1900, 2000, 2100 not sound responsive
@@ -54,7 +54,7 @@ exp0.add_session('17-28-41', 'h', 'tc', 'am_tuning_curve') #TT3-8 tuned differen
 exp1 = celldatabase.Experiment(subject,
                                '2017-05-10',
                                brainarea='leftAStr',
-                               info=['anterior-meidalDiD', 'facingPosterior'])
+                               info=['anterior-meidalDiD', 'facingPosterior','medial:5,6,7,8','lateral:1,2,3,4'])
 experiments.append(exp1)
 
 #1500, 1700, 1800, 1900, 2000, 2050, 2100um not sound responsive
@@ -98,7 +98,7 @@ exp1.add_session('16-29-06', 'h', 'tc', 'am_tuning_curve') #TT4,5,6,8 tuned
 exp2 = celldatabase.Experiment(subject,
                                '2017-05-11',
                                brainarea='rightAStr',
-                               info=['anteriorDiI', 'facingPosterior'])
+                               info=['anteriorDiI', 'facingPosterior','medial:1,2,3,4','lateral:5,6,7,8'])
 experiments.append(exp2)
 
 #1800, 1900, 2000, 2050, 2100, 2200, 2300, 2350, 2400, 2450, 2500, 2550, 2600um not sound responsive
@@ -129,7 +129,7 @@ exp2.add_session('12-20-54', None, 'noiseburst', 'am_tuning_curve')
 exp3 = celldatabase.Experiment(subject,
                                '2017-05-12',
                                brainarea='rightAStr',
-                               info=['anterior-medialDiD','three-shanks','facingPosterior'])
+                               info=['anterior-medialDiD','three-shanks','facingPosterior','medial:None','lateral:None'])
 experiments.append(exp3)
 
 #1800, 2000, 2100, 2150, 2200, 2250, 2300, 2350, 2400, 2450, 2500um not sound responsive
@@ -159,7 +159,7 @@ exp3.add_session('12-44-08', None, 'noiseburst', 'am_tuning_curve')
 exp4 = celldatabase.Experiment(subject,
                                '2017-05-15',
                                brainarea='rightAStr',
-                               info=['anterior-medialDiD', 'four-shanks', 'facingPosterior'])
+                               info=['anterior-medialDiD', 'four-shanks', 'facingPosterior','medial:1,2,3,4','lateral:5,6,7,8'])
 experiments.append(exp4)
 
 #1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300um not sound responsive
