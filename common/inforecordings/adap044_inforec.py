@@ -9,7 +9,7 @@ experiments = []
 exp0 = celldatabase.Experiment(subject,
                                '2017-05-16',
                                brainarea='rightAStr',
-                               info=['medialDiI', 'facingPosterior'])
+                               info=['medialDiI', 'facingPosterior', 'medial:1,2','lateral:3,4,5,6'])
 experiments.append(exp0)
 
 #1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700um not sound responsive
@@ -36,7 +36,7 @@ exp0.add_session('16-54-07', 'd', 'tc', 'am_tuning_curve')
 exp1 = celldatabase.Experiment(subject,
                                '2017-05-17',
                                brainarea='rightAStr',
-                               info=['3/4posteriorDiD', 'facingPosterior'])
+                               info=['3/4posteriorDiD', 'facingPosterior','medial:1,2,3,4','lateral:5,6,7,8'])
 experiments.append(exp1)
 
 #1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300um not sound responsive
@@ -82,7 +82,7 @@ exp1.add_session('17-03-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan
 exp2 = celldatabase.Experiment(subject,
                                '2017-05-18',
                                brainarea='leftAStr',
-                               info=['posteriorDiI', 'facingPosterior'])
+                               info=['posteriorDiI', 'facingPosterior','medial:1,2,3,4', 'lateral:None'])
 experiments.append(exp2)
 
 '''
@@ -106,7 +106,7 @@ exp2.add_session('14-54-19', 'b', 'tc', 'am_tuning_curve')
 exp3 = celldatabase.Experiment(subject,
                                '2017-05-19',
                                brainarea='leftAStr',
-                               info=['medial-posteriorDiD', 'facingPosterior'])
+                               info=['medial-posteriorDiD', 'facingPosterior','medial:5,6','lateral:1,2,3,4'])
 experiments.append(exp3)
 
 
@@ -151,7 +151,7 @@ exp3.add_session('12-56-01', 'i', 'tc', 'am_tuning_curve')
 exp4 = celldatabase.Experiment(subject,
                                '2017-05-22',
                                brainarea='rightAStr',
-                               info=['medialposteriorDiI', 'facingPosterior'])
+                               info=['medialposteriorDiI', 'facingPosterior','medial:1,2,3,4','lateral:5,6,7,8'])
 experiments.append(exp4)
 
 exp4.add_site(2300, tetrodes=[1,2,3,4,5,6,8])
@@ -181,7 +181,7 @@ exp4.add_session('16-02-55', 'f', 'tc', 'am_tuning_curve')
 exp5 = celldatabase.Experiment(subject,
                                '2017-05-23',
                                brainarea='leftAStr',
-                               info=['medialDiI', 'facingPosterior'])
+                               info=['medialDiI', 'facingPosterior','medial:3,4,5,6', 'lateral:1,2'])
 experiments.append(exp5)
 
 exp5.add_site(2320, tetrodes=[1,2,3,4,5,6,7,8])
