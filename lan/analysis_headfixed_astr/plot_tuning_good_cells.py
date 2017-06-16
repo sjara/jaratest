@@ -18,13 +18,16 @@ tuningSessType = 'tc'
 databaseFullPath = os.path.join(settings.DATABASE_PATH, '{}_database.h5'.format(animal))
 key = 'head_fixed'
 qualityThreshold = 3 #2
-maxZThreshold = 3
+maxZThreshold = 2
 ISIcutoff = 0.02
 tuningIntensity = [60,50,40,30] #range(30,70,10)
 celldb = pd.read_hdf(databaseFullPath, key=key)
 
 goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{}'.format(ISIcutoff, qualityThreshold))
-goodRespCells = goodQualCells.loc[abs(goodQualCells.tuningZscore) >= maxZThreshold]
+maxZscore = goodQualCells.ZscoreEachIntensity.apply(lambda x : np.max(np.abs(x)))
+goodRespCells=goodQualCells[maxZscore >= maxZThreshold]
+
+#goodRespCells = goodQualCells.loc[abs(goodQualCells.tuningZscore) >= maxZThreshold]
 
 # -- Plot reports ONLY for sound responsive cells-- #
 for ind, cell in goodRespCells.iterrows():
