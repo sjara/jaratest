@@ -97,3 +97,35 @@ exp2.add_session('15-17-58', 'd', 'tc', 'am_tuning_curve')
 exp2.add_site(2550, tetrodes=[1,2,3,4,5,6,7,8])
 exp2.add_session('15-37-20', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3 sound responsive
 exp2.add_session('15-39-00', 'e', 'tc', 'am_tuning_curve') 
+
+
+exp3 = celldatabase.Experiment(subject,
+                               '2017-06-14',
+                               brainarea='rightAStr',
+                               info=['medialDiI', 'facingPosterior'])
+experiments.append(exp3)
+
+#1600, 1700um mostly seeing movement/startle-related response
+exp3.add_site(2070, tetrodes=[1,2,4,5,6,7,8])
+exp3.add_session('13-33-32', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT2 sound responsive
+exp3.add_session('13-35-07', 'a', 'tc', 'am_tuning_curve') 
+
+exp3.add_site(2130, tetrodes=[1,2,4,5,6,7,8])
+exp3.add_session('13-54-23', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT1-2 sound responsive
+exp3.add_session('13-56-07', 'b', 'tc', 'am_tuning_curve') 
+
+exp3.add_site(2200, tetrodes=[1,2,4,5,6,7,8])
+exp3.add_session('14-19-14', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT1-2,4-8 sound responsive
+exp3.add_session('14-22-05', 'c', 'tc', 'am_tuning_curve') 
+
+exp3.add_site(2270, tetrodes=[1,2,4,5,6,7,8])
+exp3.add_session('14-47-44', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT1-2,4-8 sound responsive
+exp3.add_session('14-50-42', 'd', 'tc', 'am_tuning_curve') 
+
+exp3.add_site(2340, tetrodes=[1,2,4,5,6,7,8])
+exp3.add_session('15-10-47', None, 'noiseburst', 'am_tuning_curve') #ref to chan25 in TT3, TT1-2,4-8 sound responsive
+exp3.add_session('15-17-29', 'e', 'tc', 'am_tuning_curve') 
+
+exp3.add_site(2410, tetrodes=[1,2,3,4,5,6,7,8])
+exp3.add_session('15-38-32', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT1-4 sound responsive
+exp3.add_session('15-40-11', 'f', 'tc', 'am_tuning_curve') 
