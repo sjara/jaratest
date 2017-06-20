@@ -9,7 +9,7 @@ experiments = []
 exp0 = celldatabase.Experiment(subject,
                                '2017-05-30',
                                brainarea='rightAStr',
-                               info=['medialDiI', 'facingPosterior'])
+                               info=['medialDiI', 'facingPosterior','medial:1,2,3,4', 'lateral:5,6,7,8'])
 experiments.append(exp0)
 
 #1700, 1800, 1900, 2000, 2100, 2200um not sound responsive
@@ -50,7 +50,7 @@ exp0.add_session('16-26-17', 'h', 'tc', 'am_tuning_curve')
 exp1 = celldatabase.Experiment(subject,
                                '2017-05-31',
                                brainarea='leftAStr',
-                               info=['medialDiI', 'facingPosterior'])
+                               info=['medialDiI', 'facingPosterior','medial:1,2,3,4', 'lateral:None'])
 experiments.append(exp1)
 
 #1800, 2000, 2100, 2200, 2300, 2400, 2500, 2600um not sound responsive
@@ -75,7 +75,7 @@ exp1.add_session('14-13-57', 'c', 'tc', 'am_tuning_curve')
 exp2 = celldatabase.Experiment(subject,
                                '2017-06-01',
                                brainarea='rightAStr',
-                               info=['posteriorDiD', 'facingPosterior'])
+                               info=['posteriorDiD', 'facingPosterior','medial:3,4', 'lateral:5,6,7,8'])
 experiments.append(exp2)
 
 exp2.add_site(2280, tetrodes=[3,4,5,6,7,8])
@@ -103,7 +103,8 @@ exp2.add_site(2830, tetrodes=[3,4,5,6,7,8])
 exp2.add_session('15-47-40', None, 'noiseburst', 'am_tuning_curve') #ref to chan22 in TT2, TT3&7 weakly responsive 
 exp2.add_session('15-50-06', 'f', 'tc', 'am_tuning_curve') 
 
-
+'''
+# -- 20170615 Histology shows this site too posterior -- #
 exp3 = celldatabase.Experiment(subject,
                                '2017-06-02',
                                brainarea='leftAStr',
@@ -113,6 +114,8 @@ experiments.append(exp3)
 #1800, 2000, 2100, 2200, 2300, 2400, 2500, 2600um not sound responsive
 # very quiet the whole way down?! went all the way down to 3600um very little spiking and no sound response
 
+
+# -- 20170615 Histology shows this site may be from hippocampus -- #
 exp4 = celldatabase.Experiment(subject,
                                '2017-06-05',
                                brainarea='leftAStr',
@@ -124,7 +127,7 @@ exp4.add_session('14-32-02', None, 'noiseburst', 'am_tuning_curve') #ref to chan
 exp4.add_session('14-34-30', 'a', 'tc', 'am_tuning_curve') 
 # went down to 3200um no more sound response
 
-
+# -- 20170615 Histology shows this site was in AStr, not sure why didnot get sound response -- #
 exp5 = celldatabase.Experiment(subject,
                                '2017-06-06',
                                brainarea='leftAStr',
@@ -139,12 +142,12 @@ experiments.append(exp5)
 # went down to 3300um no sound response, at 3200um or so suddenly saw high spikes very active, may have gotten to amygdala??
 #exp5.add_site(3230, tetrodes=[1,2,3,4,5,6,7,8])
 #exp5.add_session('15-45-59', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, activity looked very different than before, large spikes a bit rhythmic, slightly suppressed by sound.
-
+'''
 
 exp6 = celldatabase.Experiment(subject,
                                '2017-06-06',
                                brainarea='leftAStr',
-                               info=['medial-anteriorDiI', 'facingPosterior'])
+                               info=['medial-anteriorDiI', 'facingPosterior','medial:5,6,7,8', 'lateral:1,2,3,4'])
 experiments.append(exp6)
 exp6.add_site(2680, tetrodes=[1,2,3,4,5,6])
 #exp6.add_session('16-45-04', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, very slight sound suppression on TT1?
@@ -160,7 +163,7 @@ exp6.add_session('17-40-14', 'd', 'tc', 'am_tuning_curve') #TT4 weird tuning?
 exp7 = celldatabase.Experiment(subject,
                                '2017-06-07',
                                brainarea='leftAStr',
-                               info=['anteriorDiD', 'facingPosterior'])
+                               info=['anteriorDiD', 'facingPosterior','medial:5,6,7,8', 'lateral:1,2,3,4'])
 experiments.append(exp7)
 exp7.add_site(2490, tetrodes=[1,2,3,4,5,6])
 exp7.add_session('13-56-20', None, 'noiseburst', 'am_tuning_curve') #ref to chan12 in TT7, sound response on TT2,4,6
@@ -184,10 +187,10 @@ exp7.add_session('15-49-05', None, 'noiseburst', 'am_tuning_curve') #ref to chan
 exp7.add_session('15-51-18', 'e', 'tc', 'am_tuning_curve') 
 exp7.add_session('16-10-22', None, 'noiseburst', 'am_tuning_curve')
 
-exp7.add_site(2810, tetrodes=[1,2,3,4,5,6,7,8])
+exp7.add_site(2810, tetrodes=[1,2,3,4,5,6])
 exp7.add_session('16-17-08', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, sound response on TT1-4
 exp7.add_session('16-20-38', 'f', 'tc', 'am_tuning_curve') 
 
-exp7.add_site(2900, tetrodes=[1,2,3,4,5,6,7,8])
+exp7.add_site(2900, tetrodes=[1,2,3,4,5,6])
 exp7.add_session('16-39-01', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, sound response on TT1-4
 exp7.add_session('16-40-50', 'g', 'tc', 'am_tuning_curve') 

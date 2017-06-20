@@ -94,7 +94,7 @@ exp2.add_site(2470, tetrodes=[1,2,3,4,5,7])
 exp2.add_session('15-15-47', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3 sound responsive
 exp2.add_session('15-17-58', 'd', 'tc', 'am_tuning_curve') 
 
-exp2.add_site(2550, tetrodes=[1,2,3,4,5,6,7,8])
+exp2.add_site(2550, tetrodes=[1,2,3,4,5,7,8])
 exp2.add_session('15-37-20', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3 sound responsive
 exp2.add_session('15-39-00', 'e', 'tc', 'am_tuning_curve') 
 
