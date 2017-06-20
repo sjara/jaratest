@@ -129,3 +129,40 @@ exp3.add_session('15-17-29', 'e', 'tc', 'am_tuning_curve')
 exp3.add_site(2410, tetrodes=[1,2,3,4,5,6,7,8])
 exp3.add_session('15-38-32', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT1-4 sound responsive
 exp3.add_session('15-40-11', 'f', 'tc', 'am_tuning_curve') 
+
+
+exp4 = celldatabase.Experiment(subject,
+                               '2017-06-19',
+                               brainarea='rightAStr',
+                               info=['posteriorDiD', 'facingPosterior'])
+experiments.append(exp4)
+
+#1500, 1600 mostly seeing movement/startle-related response
+#1700, 1800um most lateral TT7/8 has sound response, probably AC, later disappeared
+exp4.add_site(2050, tetrodes=[2,3,4,5,6,7,8])
+exp4.add_session('15-28-22', None, 'noiseburst', 'am_tuning_curve') #ref to chan27 in TT1, TT8 sound responsive
+exp4.add_session('15-30-12', 'a', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2150, tetrodes=[2,3,4,5,6,7,8])
+exp4.add_session('15-48-06', None, 'noiseburst', 'am_tuning_curve') #ref to chan27 in TT1, TT4-8 sound responsive
+exp4.add_session('15-49-44', 'b', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2220, tetrodes=[1,2,3,4,5,7,8])
+exp4.add_session('16-11-28', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT2-4 sound responsive
+exp4.add_session('16-13-18', 'c', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2290, tetrodes=[1,2,3,4,7,8])
+exp4.add_session('16-34-32', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3&7 sound responsive
+exp4.add_session('16-35-54', 'd', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2355, tetrodes=[1,2,3,4,7,8])
+exp4.add_session('16-55-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3&7 sound responsive
+exp4.add_session('16-57-16', 'e', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2420, tetrodes=[1,2,3,4,5,6,7,8])
+exp4.add_session('17-16-13', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, TT2,3,4,6 sound responsive
+exp4.add_session('17-17-49', 'f', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2490, tetrodes=[1,2,3,4,5,6,7,8])
+exp4.add_session('17-37-21', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT2,3,4,6 sound responsive
+exp4.add_session('17-38-45', 'g', 'tc', 'am_tuning_curve') 
