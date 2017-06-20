@@ -32,6 +32,8 @@ else:
     cellToUse = excitatoryCells[0]
 print cellToUse
 
+cellFileNames = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz', cellToUse]
+
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
@@ -42,72 +44,96 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'photoidentified_bandwidth_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [10,6]
+figSize = [14,6]
 
-fontSizeLabels = 12
-fontSizeTicks = 10
+fontSizeLabels = 14 #12
+fontSizeTicks = 12 #10
 fontSizePanel = 16
 labelDis = 0.1
 labelPosX = [0.07, 0.45]   # Horiz position for panel labels
 labelPosY = [0.9, 0.45]    # Vert position for panel labels
-cellColor = 'k'
+cellColor = [cp.TangoPalette['Chameleon3'], cp.TangoPalette['ScarletRed1'], cp.TangoPalette['SkyBlue2']]
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(3,3)
-gs.update(left=0.1, right=0.9, wspace=0.5, hspace=0.5)
+
+# -- Load laser example --
+gs0 = gridspec.GridSpec(6,3)
+gs0.update(top=0.9, left=0.05, right=0.7, wspace=0.6, hspace=0.1)
+
+indc = 0
+laserFilename = 'example_laser_response_'+cellFileNames[indc]
+laserDataFullPath = os.path.join(dataDir,laserFilename)
+laserData = np.load(laserDataFullPath)
+
+# --- Raster plot of laser response ---
+axLaser = plt.subplot(gs0[0,0])
+nTrials = 30
+laserIndexLimitsEachTrial = laserData['indexLimitsEachTrial'][:,:nTrials]
+laserTimeRange = [-0.1,0.3]
+pRaster, hcond, zline = extraplots.raster_plot(laserData['spikeTimesFromEventOnset'],
+                                               laserIndexLimitsEachTrial,
+                                               laserTimeRange)
+axLaser.set_xticks([-0.1, 0, 0.1, 0.2, 0.3])
+axLaser.set_yticks([0,nTrials])
+plt.setp(pRaster, ms=3, color=cellColor[indc])
+plt.setp(hcond, visible=False)
+plt.setp(zline, visible=False)
+extraplots.boxoff(axLaser)
+extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+plt.ylabel('Trials',fontsize=fontSizeLabels)
+plt.xlabel('Time from laser onset (s)',fontsize=fontSizeLabels)
+
+#sys.exit()
 
 
-cell_file_names = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz',cellToUse]
-for ind,cell in enumerate(cell_file_names):
-    laserFilename = 'example_laser_response_'+cell
-    laserDataFullPath = os.path.join(dataDir,laserFilename)
-    try:
-        laserData = np.load(laserDataFullPath)
-    
-        # --- raster plot of laser response ---
-        plt.subplot(gs[ind,0])
-        pRaster, hcond, zline = extraplots.raster_plot(laserData['spikeTimesFromEventOnset'],
-                                                   laserData['indexLimitsEachTrial'],
-                                                   laserData['timeRange'])
-        plt.setp(pRaster,ms=2)
-        extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-        plt.ylabel('Trials',fontsize=fontSizeLabels)
-        plt.xlabel('Time (sec)',fontsize=fontSizeLabels)
-    except:
-        pass
+# -- Plots for each cell type --
+gs1 = gridspec.GridSpec(3,3)
+gs1.update(top=0.95, left=0.05, right=0.7, wspace=0.35, hspace=0.2)
+
+for indc,cell in enumerate(cellFileNames):
     
     bandFilename = 'example_bandwidth_tuning_'+cell
     bandDataFullPath = os.path.join(dataDir,bandFilename)
     bandData = np.load(bandDataFullPath)
+
     
-    # --- raster plot of sound response at different bandwidths ---
-    plt.subplot(gs[ind,1])
+    # --- Raster plot of sound response at different bandwidths ---
+    axRaster = plt.subplot(gs1[indc,1])
+    timeRange = [-0.2,1.3]
     pRaster, hcond, zline = extraplots.raster_plot(bandData['spikeTimesFromEventOnset'],
                                                    bandData['indexLimitsEachTrial'],
-                                                   bandData['timeRange'],
+                                                   timeRange,
                                                    trialsEachCond=bandData['trialsEachCond'][:,:,-1],
                                                    labels=bandData['firstSortLabels'])
-    plt.setp(pRaster,ms=2)
+    plt.setp(pRaster, ms=2, color=cellColor[indc])
+    axRaster.set_xticks([0,0.5,1])
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.ylabel('Bandwidth (oct)',fontsize=fontSizeLabels)
-    plt.xlabel('Time (sec)',fontsize=fontSizeLabels)
+    if indc==2:
+        axRaster.set_xlabel('Time (sec)',fontsize=fontSizeLabels)
+    else:
+        axRaster.set_xticklabels('')
 
-    # --- plot of bandwidth tuning ---
+        
+    # --- Plot of bandwidth tuning ---
     spikeArray = bandData['spikeArray'][:,-1].flatten()
     errorArray = bandData['errorArray'][:,-1].flatten()
     bands = bandData['possibleBands']
-    plt.subplot(gs[ind,2])
-    plt.plot(range(len(bands)), spikeArray, '-o', lw = 3, color=cellColor)
+    plt.subplot(gs1[indc,2])
+    plt.plot(range(len(bands)), spikeArray, '-o', ms=7, lw=3, color=cellColor[indc], mec=cellColor[indc])
     plt.fill_between(range(len(bands)), spikeArray - errorArray, 
-                         spikeArray + errorArray, alpha=0.2, color=cellColor)
-    ax = plt.gca()
-    ax.set_xticklabels(bands)
-    plt.xlabel('Bandwidth (octaves)',fontsize=fontSizeLabels)
-    plt.ylabel('Average num spikes',fontsize=fontSizeLabels)
+                         spikeArray + errorArray, alpha=0.2, color='0.5')
+    axCurve = plt.gca()
+    axCurve.set_xticklabels(bands)
+    plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    if indc==2:
+        axCurve.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
+    else:
+        axCurve.set_xticklabels('')
 plt.show()
 
 
