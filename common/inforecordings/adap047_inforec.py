@@ -133,3 +133,53 @@ exp3.add_session('12-23-00', 'c', 'tc', 'am_tuning_curve')
 exp3.add_site(2830, tetrodes=range(1, 9)).remove_tetrodes([1, 3, 4])
 exp3.add_session('12-44-51', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('12-47-32', 'd', 'tc', 'am_tuning_curve') #No response really. I'm done here. 
+
+exp4 = celldatabase.Experiment(subject,
+                               '2017-06-19',
+                               brainarea='rightAstr',
+                               info=['centralDiO', 'facingPosterior'])
+experiments.append(exp4)
+
+#I had to remove some tissue on top of the brain for the probes to go in. I hop that the estimate of surface is still good. It looked like the tissue I referenced against was below the surface of the skull, but by about as much as one skull thickness - so we are probably ok
+#Mouse on rig at 19:35, waiting 10 mins for tissue to settle.
+
+exp4.add_site(1941, tetrodes=range(1, 9))
+exp4.add_session('19-52-46', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('19-55-48', 'a', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2015, tetrodes=range(1, 9))
+exp4.add_session('20-29-43', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('20-32-53', 'b', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2107, tetrodes=range(1, 9))
+exp4.add_session('20-55-30', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('20-58-31', 'c', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2204, tetrodes=range(1, 9))
+exp4.add_session('21-28-57', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('21-32-41', 'd', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2303, tetrodes=range(1, 9))
+exp4.add_session('22-01-33', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('22-03-30', 'e', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2404, tetrodes=range(1, 9))
+exp4.add_session('22-33-16', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('22-35-32', 'f', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2505, tetrodes=range(1, 9))
+exp4.add_session('22-59-45', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('23-02-16', 'g', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2604, tetrodes=range(1, 9))
+exp4.add_session('23-25-53', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('23-28-25', 'h', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2707, tetrodes=range(1, 9))
+exp4.add_session('23-54-22', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('23-56-28', 'i', 'tc', 'am_tuning_curve')
+
+site = exp4.add_site(2812, tetrodes=range(1, 9))
+site.date = '2017-06-20'
+exp4.add_session('00-19-18', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('00-23-24', 'a', 'tc', 'am_tuning_curve')
