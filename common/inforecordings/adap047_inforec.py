@@ -184,3 +184,33 @@ site.remove_tetrodes(2)
 site.date = '2017-06-20'
 exp4.add_session('00-19-18', None, 'noiseburst', 'am_tuning_curve')
 exp4.add_session('00-23-24', 'a', 'tc', 'am_tuning_curve')
+
+exp5 = celldatabase.Experiment(subject,
+                               '2017-06-21',
+                               brainarea='leftAstr',
+                               info=['centralDiO', 'facingPosterior'])
+experiments.append(exp5)
+
+#I had to remove some tissue on top of the brain for the probes to go in. I hop that the estimate of surface is still good. It looked like the tissue I referenced against was below the surface of the skull, but by about as much as one skull thickness - so we are probably ok (This is copied but applies to this experiment as well)
+#
+
+exp5.add_site(2052, tetrodes=range(1, 9))
+exp5.add_session('23-00-10', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('23-02-32', 'a', 'tc', 'am_tuning_curve')
+
+exp5.add_site(2256, tetrodes=range(1, 9))
+exp5.add_session('23-25-01', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('23-28-01', 'b','tc', 'am_tuning_curve')
+
+exp5.add_site(2350, tetrodes=range(1, 9))
+exp5.add_session('23-50-43', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('23-52-51', 'c','tc', 'am_tuning_curve')
+
+site = exp5.add_site(2455, tetrodes=range(1, 9))
+site.date = '2017-06-22'
+exp5.add_session('00-12-03', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('00-14-00', 'a','tc', 'am_tuning_curve')
+
+site = exp5.add_site(2554, tetrodes=range(1, 9))
+site.date = '2017-06-22'
+exp5.add_session('00-34-21', None, 'noiseburst', 'am_tuning_curve') #No more sound response - done for the night
