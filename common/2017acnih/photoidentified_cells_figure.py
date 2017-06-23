@@ -106,6 +106,7 @@ if PANELS_TO_PLOT[1]:
         # --- Raster plot of sound response at different bandwidths ---
         axRaster = plt.subplot(gs1[indc,1])
         timeRange = [-0.2,1.3]
+        ####colorsEachCond = 
         pRaster, hcond, zline = extraplots.raster_plot(bandData['spikeTimesFromEventOnset'],
                                                        bandData['indexLimitsEachTrial'],
                                                        timeRange,
@@ -126,9 +127,10 @@ if PANELS_TO_PLOT[1]:
         errorArray = bandData['errorArray'][:,-1].flatten()
         bands = bandData['possibleBands']
         plt.subplot(gs1[indc,2])
-        plt.plot(range(len(bands)), spikeArray, '-o', ms=7, lw=3, color=cellColor[indc], mec=cellColor[indc])
+        plt.plot(range(len(bands)), spikeArray, '-o', ms=7, lw=3,
+                 color=cellColor[indc], mec=cellColor[indc], clip_on=False)
         plt.fill_between(range(len(bands)), spikeArray - errorArray, 
-                             spikeArray + errorArray, alpha=0.2, color='0.5')
+                         spikeArray + errorArray, alpha=0.2, color='0.5', edgecolor='none')
         axCurve = plt.gca()
         axCurve.set_xticklabels(bands)
         plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
@@ -137,6 +139,7 @@ if PANELS_TO_PLOT[1]:
             axCurve.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
         else:
             axCurve.set_xticklabels('')
+        extraplots.boxoff(axCurve)
 
 
 # -- Plot model curves --
@@ -151,7 +154,7 @@ if PANELS_TO_PLOT[2]:
     for indc,rates in enumerate(modelRates):
         axModel = plt.subplot(gs1[indc,3])
         #plt.plot(np.log2(modelBW), rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
-        plt.plot(modelBW, rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
+        plt.plot(modelBW, rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc], clip_on=True)
         #axModel.set_xticklabels(bands)
         plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
         extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -159,6 +162,7 @@ if PANELS_TO_PLOT[2]:
             axModel.set_xlabel('Bandwidth (oct???)',fontsize=fontSizeLabels)
         else:
             axModel.set_xticklabels('')
+        extraplots.boxoff(axModel)
 
 plt.show()
 

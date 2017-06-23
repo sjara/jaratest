@@ -20,7 +20,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'
 # copied this right out of Lan's scripts
 
 SAVE_FIGURE = 1
-outputDir = '/home/jarauser/tmp/'
+outputDir = '/tmp/'
 figFilename = 'figure_som_inactivation_bandwidth_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [8,6]
