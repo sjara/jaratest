@@ -166,3 +166,31 @@ exp4.add_session('17-17-49', 'f', 'tc', 'am_tuning_curve')
 exp4.add_site(2490, tetrodes=[1,2,3,4,5,6,7,8])
 exp4.add_session('17-37-21', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT2,3,4,6 sound responsive
 exp4.add_session('17-38-45', 'g', 'tc', 'am_tuning_curve') 
+
+
+exp5 = celldatabase.Experiment(subject,
+                               '2017-06-20',
+                               brainarea='leftAStr',
+                               info=['medialDiO', 'facingPosterior'])
+experiments.append(exp5)
+
+#1700, 1800, 1900um not sound responsive
+exp5.add_site(2040, tetrodes=[2,3,4,5,6,7,8])
+exp5.add_session('15-32-09', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT5 offset response 
+exp5.add_session('15-34-08', 'a', 'tc', 'am_tuning_curve') 
+
+exp5.add_site(2110, tetrodes=[1,2,3,4,5,7,8])
+exp5.add_session('15-54-04', None, 'noiseburst', 'am_tuning_curve') #ref to chan2 in TT6, TT1-5 offset response 
+exp5.add_session('15-55-51', 'b', 'tc', 'am_tuning_curve') 
+
+exp5.add_site(2190, tetrodes=[1,2,3,5,6,7,8])
+exp5.add_session('16-15-33', None, 'noiseburst', 'am_tuning_curve') #ref to chan20 in TT4, TT3&5 offset response 
+exp5.add_session('16-17-25', 'c', 'tc', 'am_tuning_curve') 
+
+exp5.add_site(2250, tetrodes=[1,2,3,4,5,7,8])
+exp5.add_session('16-36-35', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT2 responsive
+exp5.add_session('16-38-18', 'd', 'tc', 'am_tuning_curve') 
+
+exp5.add_site(2340, tetrodes=[1,2,3,4,5,7,8])
+exp5.add_session('16-59-23', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT2 responsive
+exp5.add_session('17-00-57', 'e', 'tc', 'am_tuning_curve') 
