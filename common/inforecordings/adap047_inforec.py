@@ -211,6 +211,6 @@ site.date = '2017-06-22'
 exp5.add_session('00-12-03', None, 'noiseburst', 'am_tuning_curve')
 exp5.add_session('00-14-00', 'a','tc', 'am_tuning_curve')
 
-site = exp5.add_site(2554, tetrodes=range(1, 9))
-site.date = '2017-06-22'
-exp5.add_session('00-34-21', None, 'noiseburst', 'am_tuning_curve') #No more sound response - done for the night
+#site = exp5.add_site(2554, tetrodes=range(1, 9))
+#site.date = '2017-06-22'
+#exp5.add_session('00-34-21', None, 'noiseburst', 'am_tuning_curve') #No more sound response - done for the night
