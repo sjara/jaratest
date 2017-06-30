@@ -9,7 +9,7 @@ experiments = []
 exp0 = celldatabase.Experiment(subject,
                                '2017-06-09',
                                brainarea='leftAStr',
-                               info=['3/4posteriorDiI', 'facingPosterior'])
+                               info=['3/4posteriorDiI', 'facingPosterior','medial:1,2', 'lateral:None'])
 experiments.append(exp0)
 
 '''
@@ -38,7 +38,7 @@ exp0.add_session('15-21-50', 'c', 'tc', 'am_tuning_curve')
 exp1 = celldatabase.Experiment(subject,
                                '2017-06-12',
                                brainarea='leftAStr',
-                               info=['medialDiD', 'facingPosterior'])
+                               info=['medialDiD', 'facingPosterior','medial:5,6', 'lateral:1,2,3,4'])
 experiments.append(exp1)
 
 #1600um TT1(most lateral) sound responsive, very large spikes - possibly AC
@@ -75,7 +75,7 @@ exp1.add_session('18-02-47', 'g', 'tc', 'am_tuning_curve')
 exp2 = celldatabase.Experiment(subject,
                                '2017-06-13',
                                brainarea='leftAStr',
-                               info=['medial-posteriorDiI', 'facingPosterior'])
+                               info=['medial-posteriorDiI', 'facingPosterior','medial:3,4,5,6', 'lateral:1,2'])
 experiments.append(exp2)
 
 exp2.add_site(2240, tetrodes=[1,2,4,5,6,7,8])
@@ -102,7 +102,7 @@ exp2.add_session('15-39-00', 'e', 'tc', 'am_tuning_curve')
 exp3 = celldatabase.Experiment(subject,
                                '2017-06-14',
                                brainarea='rightAStr',
-                               info=['medialDiI', 'facingPosterior'])
+                               info=['medialDiI', 'facingPosterior','medial:1,2', 'lateral:3,4'])
 experiments.append(exp3)
 
 #1600, 1700um mostly seeing movement/startle-related response
@@ -134,7 +134,8 @@ exp3.add_session('15-40-11', 'f', 'tc', 'am_tuning_curve')
 exp4 = celldatabase.Experiment(subject,
                                '2017-06-19',
                                brainarea='rightAStr',
-                               info=['posteriorDiD', 'facingPosterior'])
+                               info=['posteriorDiD', 'facingPosterior','medial:1,2,3,4', 'lateral:5,6'])
+
 experiments.append(exp4)
 
 #1500, 1600 mostly seeing movement/startle-related response
@@ -171,7 +172,7 @@ exp4.add_session('17-38-45', 'g', 'tc', 'am_tuning_curve')
 exp5 = celldatabase.Experiment(subject,
                                '2017-06-20',
                                brainarea='leftAStr',
-                               info=['medialDiO', 'facingPosterior'])
+                               info=['medialDiO', 'facingPosterior','medial:1,2,3,4', 'lateral:None'])
 experiments.append(exp5)
 
 #1700, 1800, 1900um not sound responsive

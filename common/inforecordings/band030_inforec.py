@@ -106,3 +106,66 @@ exp1.add_session('12-18-19', None, 'laserPulse', 'am_tuning_curve')
 exp1.add_session('12-20-51', None, 'laserPulse', 'am_tuning_curve')
 exp1.add_session('12-23-25', 'g', 'bandwidth', 'bandwidth_am')
 exp1.add_session('12-41-51', 'h', 'noiseAmps', 'am_tuning_curve')
+
+
+exp2 = celldatabase.Experiment(subject, '2017-06-23', 'right_AC', info='middleDiI')
+experiments.append(exp2)
+
+exp2.laserCalibration = {
+    '0.5':1.9,
+    '1.0':3.0,
+    '1.5':4.65,
+    '2.0':7.0
+}
+
+exp2.add_site(900, tetrodes=[1,2,3,4,6,8])
+exp2.add_session('13-56-25', None, 'laserPulse', 'am_tuning_curve')
+exp2.add_session('14-00-26', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('14-03-06', 'a', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('14-08-43', 'b', 'AM', 'am_tuning_curve')
+exp2.add_session('14-13-04', None, 'laserPulse', 'am_tuning_curve')
+exp2.add_session('14-15-58', None, 'laserTrain', 'am_tuning_curve')
+exp2.add_session('14-19-15', 'c', 'bandwidth', 'bandwidth_am')
+exp2.add_session('14-40-36', 'd', 'noiseAmps', 'am_tuning_curve')
+
+exp2.add_site(950, tetrodes=[1,2,3,4,6,8])
+exp2.add_session('14-51-05', None, 'laserPulse', 'am_tuning_curve')
+
+exp2.add_site(975, tetrodes=[1,2,3,4,6,8])
+exp2.add_session('14-59-03', None, 'laserPulse', 'am_tuning_curve')
+exp2.add_session('15-00-16', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('15-01-53', 'e', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('15-07-35', 'f', 'AM', 'am_tuning_curve')
+exp2.add_session('15-11-55', None, 'laserPulse', 'am_tuning_curve')
+exp2.add_session('15-14-05', None, 'laserTrain', 'am_tuning_curve')
+exp2.add_session('15-19-59', 'g', 'bandwidth', 'bandwidth_am')
+exp2.add_session('15-38-51', 'h', 'noiseAmps', 'am_tuning_curve')
+
+exp2.add_site(1050, tetrodes=[1,2,3,4,6,8])
+exp2.add_session('15-46-58', None, 'laserPulse', 'am_tuning_curve')
+
+exp2.add_site(1075, tetrodes=[1,2,3,4,6,8])
+exp2.add_session('15-53-25', None, 'laserPulse', 'am_tuning_curve')
+
+exp2.add_site(1100, tetrodes=[1,2,3,4,6,8])
+exp2.add_session('15-59-05', None, 'laserPulse', 'am_tuning_curve')
+
+exp2.add_site(1125, tetrodes=[1,2,3,4,6,8])
+exp2.add_session('16-04-06', None, 'laserPulse', 'am_tuning_curve')
+exp2.add_session('16-05-19', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('16-07-15', 'i', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('16-12-53', 'j', 'AM', 'am_tuning_curve')
+exp2.add_session('16-18-30', None, 'laserPulse', 'am_tuning_curve')
+exp2.add_session('16-20-43', None, 'laserTrain', 'am_tuning_curve')
+exp2.add_session('16-27-50', 'k', 'bandwidth', 'bandwidth_am')
+exp2.add_session('16-48-34', 'l', 'noiseAmps', 'am_tuning_curve')
+
+
+exp3 = celldatabase.Experiment(subject, '2017-06-26', 'right_AC', info='lateralDiD')
+experiments.append(exp3)
+
+exp3.laserCalibration = {
+    '0.5':2.6,
+    '1.0':4.7,
+    '1.5':7.9
+}
