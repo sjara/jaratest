@@ -18,6 +18,9 @@ import matplotlib.gridspec as gridspec
 import matplotlib
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
+matplotlib.rcParams['font.family'] = 'Helvetica'
+matplotlib.rcParams['svg.fonttype'] = 'none'
+
 
 FIGNAME = 'photoidentified_cells_bandwidth_tuning'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', FIGNAME)
@@ -36,11 +39,6 @@ print cellToUse
 
 cellFileNames = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz', cellToUse]
 
-
-matplotlib.rcParams['font.family'] = 'Helvetica'
-matplotlib.rcParams['svg.fonttype'] = 'none'
-
-# copied this right out of Lan's scripts
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -145,11 +143,17 @@ if PANELS_TO_PLOT[1]:
 # -- Plot model curves --
 if PANELS_TO_PLOT[2]:
     modelDataDir = './modeldata'
+    '''
     modelBW = np.loadtxt(os.path.join(modelDataDir,'bandwidths.dat'), delimiter=',')[:-1]
     modelRatesE = np.loadtxt(os.path.join(modelDataDir,'rates_E.dat'), delimiter=',')[:-1]
     modelRatesPV = np.loadtxt(os.path.join(modelDataDir,'rates_PV.dat'), delimiter=',')[:-1]
     modelRatesSOM = np.loadtxt(os.path.join(modelDataDir,'rates_SOM.dat'), delimiter=',')[:-1]
     modelRates = [modelRatesPV, modelRatesSOM, modelRatesE]
+    '''
+    import pandas as pd
+    modelData = pd.read_csv(os.path.join(modelDataDir,'SSNbandwidthTuning_regime1.csv'))
+    modelBW = modelData['BW(oct)']
+    modelRates = [modelData['y_PV'], modelData['y_SOM'], modelData['y_E']]
 
     for indc,rates in enumerate(modelRates):
         axModel = plt.subplot(gs1[indc,3])

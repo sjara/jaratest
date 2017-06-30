@@ -9,15 +9,16 @@ import matplotlib.gridspec as gridspec
 import matplotlib
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
+matplotlib.rcParams['font.family'] = 'Helvetica'
+matplotlib.rcParams['svg.fonttype'] = 'none'
+
 
 FIGNAME = 'SOM_inactivation_bandwidth_tuning'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', FIGNAME)
 
+PANELS_TO_PLOT = [1,1,1]
 
-matplotlib.rcParams['font.family'] = 'Helvetica'
-matplotlib.rcParams['svg.fonttype'] = 'none'
-
-# copied this right out of Lan's scripts
+filenameTuning = 'example_bandwidth_tuning_band025_2017-04-20_T6_c6.npz'
 
 SAVE_FIGURE = 1
 outputDir = '/home/jarauser/tmp/'
@@ -43,8 +44,7 @@ colours = [noLaserColour, laserColour]
 gs = gridspec.GridSpec(2,4)
 gs.update(left=0.15, right=0.85, wspace=0.5, hspace=0.5)
 
-filename = 'example_bandwidth_tuning_band025_2017-04-20_T6_c6.npz'
-dataFullPath = os.path.join(dataDir,filename)
+dataFullPath = os.path.join(dataDir,filenameTuning)
 data = np.load(dataFullPath)
 
 # --- raster plots of sound response with and without laser ---
