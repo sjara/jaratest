@@ -47,7 +47,7 @@ experiments = []
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-06-06',
-                               brainarea='rightAstr',
+                               brainarea='rightAStr',
                                info=['anteriorDiD', 'facingPosterior'])
 experiments.append(exp1)
 
@@ -79,7 +79,7 @@ exp1.add_session('12-46-16', 'e', 'tc', 'am_tuning_curve')
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-06-08',
-                               brainarea='leftAstr',
+                               brainarea='leftAStr',
                                info=['centralDiI', 'facingPosterior'])
 experiments.append(exp2)
 
@@ -103,7 +103,7 @@ exp2.add_session('16-32-39', 'd', 'tc', 'am_tuning_curve')
 
 exp3 = celldatabase.Experiment(subject,
                                '2017-06-13',
-                               brainarea='leftAstr',
+                               brainarea='leftAStr',
                                info=['anteriorDiD', 'facingPosterior'])
 experiments.append(exp3)
 
@@ -136,7 +136,7 @@ exp3.add_session('12-47-32', 'd', 'tc', 'am_tuning_curve') #No response really. 
 
 exp4 = celldatabase.Experiment(subject,
                                '2017-06-19',
-                               brainarea='rightAstr',
+                               brainarea='rightAStr',
                                info=['centralDiO', 'facingPosterior'])
 experiments.append(exp4)
 
@@ -187,7 +187,7 @@ exp4.add_session('00-23-24', 'a', 'tc', 'am_tuning_curve')
 
 exp5 = celldatabase.Experiment(subject,
                                '2017-06-21',
-                               brainarea='leftAstr',
+                               brainarea='leftAStr',
                                info=['centralDiO', 'facingPosterior'])
 experiments.append(exp5)
 
