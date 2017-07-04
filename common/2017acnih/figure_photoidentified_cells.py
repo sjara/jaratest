@@ -141,8 +141,8 @@ if PANELS_TO_PLOT[1]:
 
 
 # -- Plot model curves --
-if PANELS_TO_PLOT[2]:
-    modelDataDir = './modeldata'
+modelDataDir = './modeldata'
+if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
     '''
     modelBW = np.loadtxt(os.path.join(modelDataDir,'bandwidths.dat'), delimiter=',')[:-1]
     modelRatesE = np.loadtxt(os.path.join(modelDataDir,'rates_E.dat'), delimiter=',')[:-1]
