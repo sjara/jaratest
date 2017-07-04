@@ -115,7 +115,7 @@ if PANELS_TO_PLOT[1]:
         extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
         plt.ylabel('Bandwidth (oct)',fontsize=fontSizeLabels)
         if indc==2:
-            axRaster.set_xlabel('Time (sec)',fontsize=fontSizeLabels)
+            axRaster.set_xlabel('Time (s)',fontsize=fontSizeLabels)
         else:
             axRaster.set_xticklabels('')
 
@@ -138,16 +138,17 @@ if PANELS_TO_PLOT[1]:
         else:
             axCurve.set_xticklabels('')
         extraplots.boxoff(axCurve)
+        if indc==0:
+            plt.title('Mouse AC',fontsize=fontSizeLabels,fontweight='bold')
 
 
 # -- Plot model curves --
 modelDataDir = './modeldata'
 if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
     import pandas as pd
-
     modelDataFiles = ['SSNbandwidthTuning_regime1.csv','SSNbandwidthTuning_regime2.csv']
-
-    for indm,oneModelFile in enumerate(modelDataFiles):
+    titleStrings = ['Model 1', 'Model 2']
+    for indm, oneModelFile in enumerate(modelDataFiles):
         modelData = pd.read_csv(os.path.join(modelDataDir,oneModelFile))
         modelBW = modelData['BW(oct)']
         modelRates = [modelData['y_PV'], modelData['y_SOM'], modelData['y_E']]
@@ -155,7 +156,7 @@ if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
         for indc,rates in enumerate(modelRates):
             axModel = plt.subplot(gs1[indc,3+indm])
             #plt.plot(np.log2(modelBW), rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
-            plt.plot(modelBW, rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc], clip_on=True)
+            plt.plot(modelBW, rates, 'o-', lw=5, color=cellColor[indc], mec=cellColor[indc], clip_on=True)
             #axModel.set_xticklabels(bands)
             plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
             extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -163,6 +164,8 @@ if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
                 axModel.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
             else:
                 axModel.set_xticklabels('')
+            if indc==0:
+                plt.title(titleStrings[indm],fontsize=fontSizeLabels,fontweight='bold')
             extraplots.boxoff(axModel)
 
 plt.show()
