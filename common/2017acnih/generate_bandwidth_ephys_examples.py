@@ -179,7 +179,7 @@ for indCell in cellsToGenerate:
     
     # --- produce input for bandwidth tuning curve ---
     soundDuration = 1.0
-    print('FIXME: The sound duration is HARDCODED!')
+    print('WARNING! The sound duration is HARDCODED.')
     timeRange = [0.0, soundDuration]
     bandSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, timeRange)
     spikeArray = np.zeros((len(numBands), len(numSec))) # Average firing rate
