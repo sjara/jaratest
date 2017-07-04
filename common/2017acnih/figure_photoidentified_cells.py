@@ -25,7 +25,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'
 FIGNAME = 'photoidentified_cells_bandwidth_tuning'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', FIGNAME)
 
-PANELS_TO_PLOT = [1,1,1]
+PANELS_TO_PLOT = [1,1,1]  # [Laser, ExperimentalTuning, ModelTuning]
 
 # -- Define which excitatory cell to use --
 excitatoryCells = ['band016_2016-12-11_T6_c6.npz','band002_2016-08-11_T4_c5.npz','band002_2016-08-12_T6_c4.npz','band003_2016-08-18_T6_c6.npz']
@@ -88,8 +88,8 @@ if PANELS_TO_PLOT[0]:
     plt.xlabel('Time from laser onset (s)',fontsize=fontSizeLabels)
 
 
-gs1 = gridspec.GridSpec(3,4)
-gs1.update(top=0.95, left=0.05, right=0.98, wspace=0.35, hspace=0.2)
+gs1 = gridspec.GridSpec(3,5)
+gs1.update(top=0.95, left=0.1, right=0.98, wspace=0.35, hspace=0.2)
 
     
 # -- Plots for each cell type --
@@ -143,30 +143,27 @@ if PANELS_TO_PLOT[1]:
 # -- Plot model curves --
 modelDataDir = './modeldata'
 if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
-    '''
-    modelBW = np.loadtxt(os.path.join(modelDataDir,'bandwidths.dat'), delimiter=',')[:-1]
-    modelRatesE = np.loadtxt(os.path.join(modelDataDir,'rates_E.dat'), delimiter=',')[:-1]
-    modelRatesPV = np.loadtxt(os.path.join(modelDataDir,'rates_PV.dat'), delimiter=',')[:-1]
-    modelRatesSOM = np.loadtxt(os.path.join(modelDataDir,'rates_SOM.dat'), delimiter=',')[:-1]
-    modelRates = [modelRatesPV, modelRatesSOM, modelRatesE]
-    '''
     import pandas as pd
-    modelData = pd.read_csv(os.path.join(modelDataDir,'SSNbandwidthTuning_regime1.csv'))
-    modelBW = modelData['BW(oct)']
-    modelRates = [modelData['y_PV'], modelData['y_SOM'], modelData['y_E']]
 
-    for indc,rates in enumerate(modelRates):
-        axModel = plt.subplot(gs1[indc,3])
-        #plt.plot(np.log2(modelBW), rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
-        plt.plot(modelBW, rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc], clip_on=True)
-        #axModel.set_xticklabels(bands)
-        plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
-        extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-        if indc==2:
-            axModel.set_xlabel('Bandwidth (oct???)',fontsize=fontSizeLabels)
-        else:
-            axModel.set_xticklabels('')
-        extraplots.boxoff(axModel)
+    modelDataFiles = ['SSNbandwidthTuning_regime1.csv','SSNbandwidthTuning_regime2.csv']
+
+    for indm,oneModelFile in enumerate(modelDataFiles):
+        modelData = pd.read_csv(os.path.join(modelDataDir,oneModelFile))
+        modelBW = modelData['BW(oct)']
+        modelRates = [modelData['y_PV'], modelData['y_SOM'], modelData['y_E']]
+
+        for indc,rates in enumerate(modelRates):
+            axModel = plt.subplot(gs1[indc,3+indm])
+            #plt.plot(np.log2(modelBW), rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
+            plt.plot(modelBW, rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc], clip_on=True)
+            #axModel.set_xticklabels(bands)
+            plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
+            extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+            if indc==2:
+                axModel.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
+            else:
+                axModel.set_xticklabels('')
+            extraplots.boxoff(axModel)
 
 plt.show()
 
