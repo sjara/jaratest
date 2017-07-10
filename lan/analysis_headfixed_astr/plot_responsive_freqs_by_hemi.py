@@ -5,7 +5,7 @@ from jaratoolbox import settings
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import pdb
-animal = 'adap044'
+animal = 'adap041'
 #noiseburstSessType = 'noiseburst'
 #tuningSessType = 'tc'
 tuningIntensities = [40, 50, 60, 70]
@@ -14,7 +14,7 @@ plotAll = True
 databaseFullPath = os.path.join(settings.DATABASE_PATH, '{}_database.h5'.format(animal))
 key = 'head_fixed'
 qualityThreshold = 3 #2
-maxZThreshold = 3
+maxZThreshold = 2
 ISIcutoff = 0.02
 #tuningIntensity = [60,50,40,30] #range(30,70,10)
 celldb = pd.read_hdf(databaseFullPath, key=key)
