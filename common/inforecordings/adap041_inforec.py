@@ -16,7 +16,7 @@ exp0.add_site(2002, tetrodes=range(1, 9))
 exp0.add_session('13-51-08', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('13-53-42', 'a', 'tc', 'am_tuning_curve')
 
-exp0.add_site(2110, tetrodes=range(1, 9))
+exp0.add_site(2110, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 4])
 exp0.add_session('14-22-00', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('14-24-07', 'b', 'tc', 'am_tuning_curve')
 
@@ -24,11 +24,11 @@ exp0.add_site(2200, tetrodes=range(1, 9))
 exp0.add_session('14-52-26', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('14-54-58', 'c', 'tc', 'am_tuning_curve')
 
-exp0.add_site(2309, tetrodes=range(1, 9))
+exp0.add_site(2309, tetrodes=range(1, 9)).remove_tetrodes([2, 3, 4])
 exp0.add_session('15-18-11', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('15-27-19', 'd', 'tc', 'am_tuning_curve')
 
-exp0.add_site(2411, tetrodes=range(1, 9))
+exp0.add_site(2411, tetrodes=range(1, 9)).remove_tetrodes([4])
 exp0.add_session('15-52-17', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('15-56-28', 'e', 'tc', 'am_tuning_curve')
 
@@ -106,11 +106,11 @@ experiments.append(exp2)
 #Tetrodes at 1995um - had to remove some membrane from brain surface
 
 #No neurons down to 2741??
-exp2.add_site(2741, tetrodes=range(1, 9))
+exp2.add_site(2741, tetrodes=range(1, 9)).remove_tetrodes([2])
 exp2.add_session('20-24-33', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('20-27-15', 'b', 'tc', 'am_tuning_curve')
 
-exp2.add_site(2872, tetrodes=range(1, 9))
+exp2.add_site(2872, tetrodes=range(1, 9)).remove_tetrodes([1])
 exp2.add_session('21-03-04', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('21-05-00', 'c', 'tc', 'am_tuning_curve')
 
@@ -150,6 +150,7 @@ exp3.add_session('00-06-39', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('00-09-39', 'a', 'tc', 'am_tuning_curve')
 
 site = exp3.add_site(2502, tetrodes=range(1, 9))
+site.remove_tetrodes([7])
 site.date = '2017-07-10'
 exp3.add_session('00-39-30', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('00-41-25', 'b', 'tc', 'am_tuning_curve')
