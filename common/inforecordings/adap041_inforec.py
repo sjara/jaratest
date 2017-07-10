@@ -94,3 +94,67 @@ exp1.add_session('00-01-41', 'a', 'tc', 'am_tuning_curve')
 # site.date = '2017-07-09'
 # exp1.add_session('00-32-27', None, 'noiseburst', 'am_tuning_curve')
 #Nothing here, removing for the day
+
+
+exp2 = celldatabase.Experiment(subject,
+                               '2017-07-09',
+                               brainarea='rightAstr',
+                               info=['centralDiD', 'facingPosterior'])
+experiments.append(exp2)
+
+#Mouse on the rig at 1934hrs, waiting 10 mins for brain to settle
+#Tetrodes at 1995um - had to remove some membrane from brain surface
+
+#No neurons down to 2741??
+exp2.add_site(2741, tetrodes=range(1, 9))
+exp2.add_session('20-24-33', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('20-27-15', 'b', 'tc', 'am_tuning_curve')
+
+exp2.add_site(2872, tetrodes=range(1, 9))
+exp2.add_session('21-03-04', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('21-05-00', 'c', 'tc', 'am_tuning_curve')
+
+exp2.add_site(2955, tetrodes=range(1, 9))
+exp2.add_session('21-28-31', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('21-30-37', 'd', 'tc', 'am_tuning_curve')
+ #Getting worried about being in amygdala here. I am going to remove the trodes and do the other side of the brain tonight
+
+ #Looks like I may have made a zeroing error on the experiment above. When I removed the tetrodes, they came out at 1000um. So all distances above could be 1000um shallower than I recorded... I still can't do another penetration right now and say for sure where I am, so I will still move to the other side.
+
+
+
+exp3 = celldatabase.Experiment(subject,
+                               '2017-07-09',
+                               brainarea='leftAstr',
+                               info=['centralDiD', 'facingPosterior'])
+experiments.append(exp3)
+
+#Mouse on the rig at 2209hrs, waiting 10 mins for brain to settle
+#Tetrodes at 1995um - had to remove some membrane from brain surface
+
+exp3.add_site(2056, tetrodes=range(1, 9))
+exp3.add_session('22-20-35', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('22-22-44', 'e', 'tc', 'am_tuning_curve')
+
+exp3.add_site(2158, tetrodes=range(1, 9))
+exp3.add_session('22-52-49', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('22-54-49', 'f', 'tc', 'am_tuning_curve')
+
+exp3.add_site(2294, tetrodes=range(1, 9))
+exp3.add_session('23-30-35', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('23-32-37', 'g', 'tc', 'am_tuning_curve')
+
+site = exp3.add_site(2394, tetrodes=range(1, 9))
+site.date = '2017-07-10'
+exp3.add_session('00-06-39', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('00-09-39', 'a', 'tc', 'am_tuning_curve')
+
+site = exp3.add_site(2502, tetrodes=range(1, 9))
+site.date = '2017-07-10'
+exp3.add_session('00-39-30', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('00-41-25', 'b', 'tc', 'am_tuning_curve')
+
+site = exp3.add_site(2605, tetrodes=range(1, 9))
+site.date = '2017-07-10'
+exp3.add_session('01-10-31', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('01-12-47', 'c', 'tc', 'am_tuning_curve')
