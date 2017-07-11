@@ -158,3 +158,49 @@ site = exp3.add_site(2605, tetrodes=range(1, 9))
 site.date = '2017-07-10'
 exp3.add_session('01-10-31', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('01-12-47', 'c', 'tc', 'am_tuning_curve')
+
+exp4 = celldatabase.Experiment(subject,
+                               '2017-07-10',
+                               brainarea='rightAstr',
+                               info=['centralDiO', 'facingPosterior'])
+experiments.append(exp4)
+
+#Mouse on the rig at 2221hrs, waiting 10 mins for brain to settle
+#Tetrodes at 1974um. When I was positioning the ground wire it slipped and drove some distance into the opposite (left) craniotomy. I removed it right away. There is some bleeding that I need to watch carefully. It seems to be mostly under control for now though.
+
+exp4.add_site(2101, tetrodes=range(1, 9))
+exp4.add_session('22-49-18', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('22-51-46', 'd', 'tc', 'am_tuning_curve')
+
+# exp4.add_site(2190, tetrodes=range(1, 9))
+# exp4.add_session('23-35-15', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('23-37-41', 'e', 'tc', 'am_tuning_curve')
+
+exp4.add_site(2203, tetrodes=range(1, 9))
+exp4.add_session('23-57-27', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('23-59-46','f', 'tc', 'am_tuning_curve')
+
+site = exp4.add_site(2326, tetrodes=range(1, 9))
+site.date = '2017-07-11'
+exp4.add_session('00-25-09', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('00-27-08', 'a', 'tc', 'am_tuning_curve')
+
+site = exp4.add_site(2402, tetrodes=range(1, 9))
+site.date = '2017-07-11'
+exp4.add_session('00-54-08', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('00-56-19', 'b', 'tc', 'am_tuning_curve')
+
+site = exp4.add_site(2542, tetrodes=range(1, 9))
+site.date = '2017-07-11'
+exp4.add_session('01-31-02', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('01-33-12', 'c', 'tc', 'am_tuning_curve')
+
+site = exp4.add_site(2647, tetrodes=range(1, 9))
+site.date = '2017-07-11'
+exp4.add_session('01-55-41', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('01-58-04', 'd', 'tc', 'am_tuning_curve') #Mysterious problems at the end of the recording, and I think I left the beahvior running past the ephys - too many trials
+
+#I am needing to remove the electrodes to see what is the problem, so I will stop the recording on this side. 
+
+
+
