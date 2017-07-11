@@ -48,7 +48,7 @@ experiments = []
 exp1 = celldatabase.Experiment(subject,
                                '2017-06-06',
                                brainarea='rightAStr',
-                               info=['anteriorDiD', 'facingPosterior'])
+                               info=['anteriorDiD', 'facingPosterior', 'medial:None','lateral:1,2'])
 experiments.append(exp1)
 
 #Mouse on the rig at 10:03, waiting 10 mins for brain to settle
@@ -80,7 +80,7 @@ exp1.add_session('12-46-16', 'e', 'tc', 'am_tuning_curve')
 exp2 = celldatabase.Experiment(subject,
                                '2017-06-08',
                                brainarea='leftAStr',
-                               info=['centralDiI', 'facingPosterior'])
+                               info=['centralDiI', 'facingPosterior','medial:3,4,5,6,7,8', 'lateral:1,2'])
 experiments.append(exp2)
 
 #Mouse on the rig at 1:45p, waiting 10 mins for brain to settle
@@ -104,7 +104,7 @@ exp2.add_session('16-32-39', 'd', 'tc', 'am_tuning_curve')
 exp3 = celldatabase.Experiment(subject,
                                '2017-06-13',
                                brainarea='leftAStr',
-                               info=['anteriorDiD', 'facingPosterior'])
+                               info=['anteriorDiD', 'facingPosterior','medial:3,4,5,6,7,8', 'lateral:1,2'])
 experiments.append(exp3)
 
 #Mouse on the rig at 1:45p, waiting 10 mins for brain to settle
@@ -137,7 +137,7 @@ exp3.add_session('12-47-32', 'd', 'tc', 'am_tuning_curve') #No response really. 
 exp4 = celldatabase.Experiment(subject,
                                '2017-06-19',
                                brainarea='rightAStr',
-                               info=['centralDiO', 'facingPosterior'])
+                               info=['centralDiO', 'facingPosterior','medial:3,4,5,6','lateral:7,8'])
 experiments.append(exp4)
 
 #I had to remove some tissue on top of the brain for the probes to go in. I hop that the estimate of surface is still good. It looked like the tissue I referenced against was below the surface of the skull, but by about as much as one skull thickness - so we are probably ok
@@ -188,7 +188,7 @@ exp4.add_session('00-23-24', 'a', 'tc', 'am_tuning_curve')
 exp5 = celldatabase.Experiment(subject,
                                '2017-06-21',
                                brainarea='leftAStr',
-                               info=['centralDiO', 'facingPosterior'])
+                               info=['centralDiO', 'facingPosterior','medial:3,4,5,6,7,8', 'lateral:1,2'])
 experiments.append(exp5)
 
 #I had to remove some tissue on top of the brain for the probes to go in. I hop that the estimate of surface is still good. It looked like the tissue I referenced against was below the surface of the skull, but by about as much as one skull thickness - so we are probably ok (This is copied but applies to this experiment as well)
