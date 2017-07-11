@@ -11,7 +11,7 @@ reload(rcfuncs)
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 
-animal = 'adap043'
+animal = 'adap047'
 noiseburstSessType = 'noiseburst'
 tuningSessType = 'tc'
 
@@ -40,7 +40,7 @@ for ind, cell in goodRespCells.iterrows():
     date = cell.date
     depth = cell.depth
     brainArea = cell.brainarea
-    bestFreq = cell.tuningWeightedBestFreq
+    #bestFreq = cell.tuningWeightedBFEachIntensity
     figname = '{}_{}_{}_{}_T{}c{}'.format(animal,brainArea,depth,date,tetrode,cluster)     
     
     if os.path.exists(os.path.join(outputDir, figname)):
@@ -70,8 +70,8 @@ for ind, cell in goodRespCells.iterrows():
         for ind,intensity in enumerate(tuningIntensity):
             ax = plt.subplot(gs00[ind, :])
             rcfuncs.plot_tuning_raster(animal, tuningEphys, tuningBehav, tetrode, cluster, intensity=intensity, timeRange = [-0.35,0.75])
-            if ind == 0:
-                plt.title('weighted best freq:{}'.format(bestFreq))
+            #if ind == 0:
+                #plt.title('weighted best freq:{}'.format(bestFreq))
         plt.suptitle(figname)
         # Save figure
 

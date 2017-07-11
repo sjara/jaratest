@@ -19,9 +19,9 @@ import numpy as np
 from scipy import stats
 import imp
 
-animal = 'adap046'
+animal = 'adap041'
 inforecFullPath = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(animal))
-CASE = 3
+CASE = 2
 
 if CASE == 1:
     # -- Cluster inforec and store stats, if have not already done so -- #
