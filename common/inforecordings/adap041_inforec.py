@@ -220,25 +220,24 @@ experiments.append(exp5)
 #Mouse on the rig at 1209hrs, waiting 10 mins for brain to settle
 #Tetrodes at 1948um. When I was positioning the ground wire it slipped and drove some distance into the opposite (left) craniotomy. I removed it right away. There is some bleeding that I need to watch carefully. It seems to be mostly under control for now though.
 
-exp5.add_site(2723, tetrodes=range(1, 9)).remove_tetrodes([4])
+exp5.add_site(2723, tetrodes=range(1, 9))
 exp5.add_session('13-34-06', None, 'noiseburst', 'am_tuning_curve')
 exp5.add_session('13-43-20', 'a', 'tc', 'am_tuning_curve')
 
-exp5.add_site(2802, tetrodes=range(1, 9)).remove_tetrodes([4])
+exp5.add_site(2802, tetrodes=range(1, 9))
 exp5.add_session('14-07-09', None, 'noiseburst', 'am_tuning_curve')
 exp5.add_session('14-09-19', 'b', 'tc', 'am_tuning_curve')
 
-exp5.add_site(2891, tetrodes=range(1, 9)).remove_tetrodes([4])
+exp5.add_site(2891, tetrodes=range(1, 9))
 exp5.add_session('14-36-11', None, 'noiseburst', 'am_tuning_curve')
 exp5.add_session('14-38-10', 'c', 'tc', 'am_tuning_curve')
 
-exp5.add_site(3023, tetrodes=range(1, 9)).remove_tetrodes([4])
+exp5.add_site(3023, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 3, 4])
 exp5.add_session('15-04-12', None, 'noiseburst', 'am_tuning_curve') #No more sound response - I am done here for the day
 
-exp5.add_site(2834, tetrodes=range(1, 9)).remove_tetrodes([4])
+exp5.add_site(2834, tetrodes=range(1, 9)).remove_tetrodes([1, 4])
 exp5.add_session('15-22-10', None, 'noiseburst', 'am_tuning_curve') #On the way out I discovered some neurons
 exp5.add_session('15-24-06', 'd', 'tc', 'am_tuning_curve') #Why not?
 
-exp5.add_site(2641, tetrodes=range(1, 9)).remove_tetrodes([4])
-exp5.add_session('15-46-46', None, 'noiseburst', 'am_tuning_curve') #More neurons
-# exp5.add_session('15-24-06', 'd', 'tc', 'am_tuning_curve') #Why not?
+exp5.add_site(2641, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 3, 4])
+exp5.add_session('15-46-46', None, 'noiseburst', 'am_tuning_curve') #More neurons but not sound responsive, done for real now
