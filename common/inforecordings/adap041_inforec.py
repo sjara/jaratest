@@ -218,7 +218,7 @@ exp5 = celldatabase.Experiment(subject,
 experiments.append(exp5)
 
 #Mouse on the rig at 1209hrs, waiting 10 mins for brain to settle
-#Tetrodes at 1948um. When I was positioning the ground wire it slipped and drove some distance into the opposite (left) craniotomy. I removed it right away. There is some bleeding that I need to watch carefully. It seems to be mostly under control for now though.
+#Tetrodes at 1948um.
 
 exp5.add_site(2723, tetrodes=range(1, 9))
 exp5.add_session('13-34-06', None, 'noiseburst', 'am_tuning_curve')
@@ -241,3 +241,38 @@ exp5.add_session('15-24-06', 'd', 'tc', 'am_tuning_curve') #Why not?
 
 exp5.add_site(2641, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 3, 4])
 exp5.add_session('15-46-46', None, 'noiseburst', 'am_tuning_curve') #More neurons but not sound responsive, done for real now
+
+exp6 = celldatabase.Experiment(subject,
+                               '2017-07-18',
+                               brainarea='rightAstr',
+                               info=['posteriorDiD', 'facingPosterior'])
+
+experiments.append(exp6)
+
+#Mouse on the rig at 1241hrs, waiting 10 mins for brain to settle
+#Tetrodes at 2011um.
+exp6.add_site(2011, tetrodes=range(1, 9))
+exp6.add_session('12-55-53', None, 'noiseburst', 'am_tuning_curve')
+exp6.add_session('12-58-21', 'a', 'tc', 'am_tuning_curve')
+
+exp6.add_site(2097, tetrodes=range(1, 9))
+exp6.add_session('13-21-08', None, 'noiseburst', 'am_tuning_curve')
+exp6.add_session('13-23-27', 'b', 'tc', 'am_tuning_curve')
+
+exp6.add_site(2186, tetrodes=range(1, 9))
+exp6.add_session('13-48-57', None, 'noiseburst', 'am_tuning_curve')
+exp6.add_session('13-53-57', 'c', 'tc', 'am_tuning_curve')
+
+exp6.add_site(2290, tetrodes=range(1, 9))
+exp6.add_session('14-18-26', None, 'noiseburst', 'am_tuning_curve')
+exp6.add_session('14-20-40', 'd', 'tc', 'am_tuning_curve')
+
+exp6.add_site(2389, tetrodes=range(1, 9))
+exp6.add_session('14-42-57', None, 'noiseburst', 'am_tuning_curve')
+exp6.add_session('14-46-02', 'e', 'tc', 'am_tuning_curve')
+
+exp6.add_site(2492, tetrodes=range(1, 9))
+exp6.add_session('15-12-17', None, 'noiseburst', 'am_tuning_curve')
+exp6.add_session('15-14-16', 'f', 'tc', 'am_tuning_curve')
+
+#I have gone down to 2806 with no more responses, so I am going to stop recording on this penetration. 
