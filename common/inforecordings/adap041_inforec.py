@@ -255,7 +255,7 @@ exp6.add_site(2011, tetrodes=range(1, 9))
 exp6.add_session('12-55-53', None, 'noiseburst', 'am_tuning_curve')
 exp6.add_session('12-58-21', 'a', 'tc', 'am_tuning_curve')
 
-exp6.add_site(2097, tetrodes=range(1, 9))
+exp6.add_site(2097, tetrodes=range(1, 9)).remove_tetrodes([5])
 exp6.add_session('13-21-08', None, 'noiseburst', 'am_tuning_curve')
 exp6.add_session('13-23-27', 'b', 'tc', 'am_tuning_curve')
 
