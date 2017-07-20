@@ -286,7 +286,7 @@ experiments.append(exp7)
 
 #Mouse on the rig at 1434hrs, waiting 10 mins for brain to settle
 #Tetrodes at 1999um.
-exp7.add_site(1999, tetrodes=range(1, 9))
+exp7.add_site(1999, tetrodes=range(1, 9)).remove_tetrodes([5])
 exp7.add_session('14-50-39', None, 'noiseburst', 'am_tuning_curve')
 exp7.add_session('14-52-45', 'a', 'tc', 'am_tuning_curve')
 
