@@ -276,3 +276,37 @@ exp6.add_session('15-12-17', None, 'noiseburst', 'am_tuning_curve')
 exp6.add_session('15-14-16', 'f', 'tc', 'am_tuning_curve')
 
 #I have gone down to 2806 with no more responses, so I am going to stop recording on this penetration. 
+
+exp7 = celldatabase.Experiment(subject,
+                               '2017-07-19',
+                               brainarea='rightAstr',
+                               info=['posteriorDiO', 'facingPosterior'])
+
+experiments.append(exp7)
+
+#Mouse on the rig at 1434hrs, waiting 10 mins for brain to settle
+#Tetrodes at 1999um.
+exp7.add_site(1999, tetrodes=range(1, 9))
+exp7.add_session('14-50-39', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('14-52-45', 'a', 'tc', 'am_tuning_curve')
+
+exp7.add_site(2102, tetrodes=range(1, 9))
+exp7.add_session('15-15-57', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('15-18-00', 'b', 'tc', 'am_tuning_curve')
+
+exp7.add_site(2205, tetrodes=range(1, 9))
+exp7.add_session('15-40-34', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('15-43-03', 'c', 'tc', 'am_tuning_curve')
+
+exp7.add_site(2309, tetrodes=range(1, 9))
+exp7.add_session('16-05-40', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('16-08-14', 'd', 'tc', 'am_tuning_curve')
+
+exp7.add_site(2406, tetrodes=range(1, 9))
+exp7.add_session('16-32-49', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('16-34-47', 'e', 'tc', 'am_tuning_curve')
+
+exp7.add_site(2525, tetrodes=range(1, 9))
+exp7.add_session('16-52-56', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('16-55-00', 'f', 'tc', 'am_tuning_curve')
+#I am removing the electrodes for the day
