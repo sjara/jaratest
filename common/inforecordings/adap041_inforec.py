@@ -5,8 +5,8 @@ experiments = []
 
 exp0 = celldatabase.Experiment(subject,
                                '2017-07-07',
-                               brainarea='rightAstr',
-                               info=['anteriorDiI', 'facingPosterior'])
+                               brainarea='rightAStr',
+                               info=['anteriorDiI', 'facingPosterior','medial:1,2,3,4', 'lateral:5,6'])
 experiments.append(exp0)
 
 #Mouse on the rig at 1339hrs, waiting 10 mins for brain to settle
@@ -50,8 +50,8 @@ exp0.add_session('18-07-13', 'i', 'tc', 'am_tuning_curve')
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-07-08',
-                               brainarea='leftAstr',
-                               info=['anteriorDiI', 'facingPosterior'])
+                               brainarea='leftAStr',
+                               info=['anteriorDiI', 'facingPosterior','medial:7,8', 'lateral:3,4,5,6'])
 experiments.append(exp1)
 
 #Mouse on the rig at 2012hrs, waiting 10 mins for brain to settle
@@ -98,8 +98,8 @@ exp1.add_session('00-01-41', 'a', 'tc', 'am_tuning_curve')
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-07-09',
-                               brainarea='rightAstr',
-                               info=['centralDiD', 'facingPosterior'])
+                               brainarea='rightAStr',
+                               info=['centralDiD', 'facingPosterior', 'medial:None', 'lateral:None'])
 experiments.append(exp2)
 
 #Mouse on the rig at 1934hrs, waiting 10 mins for brain to settle
@@ -125,8 +125,8 @@ exp2.add_session('21-30-37', 'd', 'tc', 'am_tuning_curve')
 
 exp3 = celldatabase.Experiment(subject,
                                '2017-07-09',
-                               brainarea='leftAstr',
-                               info=['centralDiD', 'facingPosterior'])
+                               brainarea='leftAStr',
+                               info=['centralDiD', 'facingPosterior', 'medial:None', 'lateral:5,6,7,8'])
 experiments.append(exp3)
 
 #Mouse on the rig at 2209hrs, waiting 10 mins for brain to settle
@@ -160,10 +160,11 @@ site.date = '2017-07-10'
 exp3.add_session('01-10-31', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('01-12-47', 'c', 'tc', 'am_tuning_curve')
 
+
 exp4 = celldatabase.Experiment(subject,
                                '2017-07-10',
-                               brainarea='rightAstr',
-                               info=['centralDiO', 'facingPosterior'])
+                               brainarea='rightAStr',
+                               info=['centralDiO', 'facingPosterior','medial:1,2,3,4,5,6,7,8', 'lateral:None'])
 experiments.append(exp4)
 
 #Mouse on the rig at 2221hrs, waiting 10 mins for brain to settle
@@ -211,8 +212,8 @@ exp4.add_session('01-33-12', 'c', 'tc', 'am_tuning_curve')
 
 exp5 = celldatabase.Experiment(subject,
                                '2017-07-16',
-                               brainarea='rightAstr',
-                               info=['posteriorDiI', 'facingPosterior'])
+                               brainarea='rightAStr',
+                               info=['posteriorDiI', 'facingPosterior','medial:5,6', 'lateral:None'])
 #I broke shank 4 (TT7/8) off when I was applying the dye :(
 
 experiments.append(exp5)
@@ -232,20 +233,20 @@ exp5.add_site(2891, tetrodes=range(1, 9))
 exp5.add_session('14-36-11', None, 'noiseburst', 'am_tuning_curve')
 exp5.add_session('14-38-10', 'c', 'tc', 'am_tuning_curve')
 
-exp5.add_site(3023, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 3, 4])
-exp5.add_session('15-04-12', None, 'noiseburst', 'am_tuning_curve') #No more sound response - I am done here for the day
+#exp5.add_site(3023, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 3, 4])
+#exp5.add_session('15-04-12', None, 'noiseburst', 'am_tuning_curve') #No more sound response - I am done here for the day
 
 exp5.add_site(2834, tetrodes=range(1, 9)).remove_tetrodes([1, 4])
 exp5.add_session('15-22-10', None, 'noiseburst', 'am_tuning_curve') #On the way out I discovered some neurons
 exp5.add_session('15-24-06', 'd', 'tc', 'am_tuning_curve') #Why not?
 
-exp5.add_site(2641, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 3, 4])
-exp5.add_session('15-46-46', None, 'noiseburst', 'am_tuning_curve') #More neurons but not sound responsive, done for real now
+#exp5.add_site(2641, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 3, 4])
+#exp5.add_session('15-46-46', None, 'noiseburst', 'am_tuning_curve') #More neurons but not sound responsive, done for real now
 
 exp6 = celldatabase.Experiment(subject,
                                '2017-07-18',
-                               brainarea='rightAstr',
-                               info=['posteriorDiD', 'facingPosterior'])
+                               brainarea='rightAStr',
+                               info=['posteriorDiD', 'facingPosterior','medial:None','lateral:None'])
 
 experiments.append(exp6)
 
@@ -279,8 +280,8 @@ exp6.add_session('15-14-16', 'f', 'tc', 'am_tuning_curve')
 
 exp7 = celldatabase.Experiment(subject,
                                '2017-07-19',
-                               brainarea='rightAstr',
-                               info=['posteriorDiO', 'facingPosterior'])
+                               brainarea='rightAStr',
+                               info=['posteriorDiO', 'facingPosterior','medial:None','lateral:None'])
 
 experiments.append(exp7)
 
