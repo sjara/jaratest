@@ -7,12 +7,12 @@ import matplotlib.gridspec as gridspec
 import pdb
 
 
-animalLists = [['adap042', 'adap043'], ['adap044', 'adap046']]
+animalLists = [['adap041','adap042', 'adap043'], ['adap044', 'adap046','adap047']]
 labels = ['low_freq_go_left', 'low_freq_go_right']
 
 #plotAll = True
 normalized = False
-logscaled = True
+logscaled = False
 
 tuningIntensities = [40, 50, 60, 70]
 astrRegions = ['medial','lateral']
@@ -143,6 +143,10 @@ for intensity in tuningIntensities:
         print 'For {}db, the Kruskal-Wallis H-statistic for all groups is {}, p value is {}. \n'.format(intensity, Hstat, pVal) 
         figname = '{}dB all groups responsive freqs'.format(intensity)
     plt.title(figname)
+    #pbd.set_trace()
+    xExtends = plt.gca().get_xlim()
+    yExtends = plt.gca().get_ylim()
+    plt.text(0.5*sum(xExtends), 0.5*sum(yExtends), 'p value: {}'.format(pVal))
     figFullPath = os.path.join(outputDir, figname)
     plt.savefig(figFullPath, format='png')
 
@@ -171,6 +175,9 @@ for intensity in tuningIntensities:
         figname = '{}dB medial vs lateral astr responsive freqs \n'.format(intensity)
     
     plt.title(figname)
+    xExtends = plt.gca().get_xlim()
+    yExtends = plt.gca().get_ylim()
+    plt.text(0.5*sum(xExtends), 0.5*sum(yExtends), 'p value: {}'.format(pVal))
     figFullPath = os.path.join(outputDir, figname)
     plt.savefig(figFullPath, format='png')
 
@@ -198,6 +205,9 @@ for intensity in tuningIntensities:
         print 'For {}db, the Wilcoxon rank-sum Z-statistic for responsive frequencies found in left astr vs right astr is {}, p value is {}. \n'.format(intensity, zStats, pVal)
         figname = '{}dB left vs right hemisphere responsive freqs'.format(intensity)
     plt.title(figname)
+    xExtends = plt.gca().get_xlim()
+    yExtends = plt.gca().get_ylim()
+    plt.text(0.5*sum(xExtends), 0.5*sum(yExtends), 'p value: {}'.format(pVal))
     figFullPath = os.path.join(outputDir, figname)
     plt.savefig(figFullPath, format='png')
 
@@ -218,6 +228,12 @@ for intensity in tuningIntensities:
             elif 'low_freq_go_right' in name:
                 values.dropna().apply(lambda x: freqsRightLowGoRight.extend(x))
 
+    if logscaled:
+        freqsLeftLowGoLeft = np.log2(freqsLeftLowGoLeft)
+        freqsRightLowGoLeft = np.log2(freqsRightLowGoLeft)
+        freqsLeftLowGoRight = np.log2(freqsLeftLowGoRight)
+        freqsRightLowGoRight = np.log2(freqsRightLowGoRight)
+
     plt.figure()
     sns.distplot(freqsLeftLowGoLeft, label='leftAStr_low_go_left', color='g')
     sns.distplot(freqsRightLowGoLeft, label='rightAStr_low_go_left', color='r')
@@ -227,12 +243,23 @@ for intensity in tuningIntensities:
     
     plt.legend()
     #plt.show()
-    zStats, pVal = stats.ranksums(freqsLeftLowGoLeft, freqsRightLowGoLeft)
-    print 'For {}db in the low-freq-go-left contingency, the Wilcoxon rank-sum Z-statistic for responsive frequencies found in left astr vs right astr is {}, p value is {}. \n'.format(intensity, zStats, pVal)
-    zStats, pVal = stats.ranksums(freqsLeftLowGoRight, freqsRightLowGoRight)
-    print 'For {}db in the low-freq-go-right contingency, the Wilcoxon rank-sum Z-statistic for responsive frequencies found in left astr vs right astr is {}, p value is {}. \n'.format(intensity, zStats, pVal)
-    figname = '{}dB by diff contingency left vs right hemisphere responsive freqs'.format(intensity)
+    zStats1, pVal1 = stats.ranksums(freqsLeftLowGoLeft, freqsRightLowGoLeft)
+    zStats2, pVal2 = stats.ranksums(freqsLeftLowGoRight, freqsRightLowGoRight)
+    if logscaled:
+        print 'For {}db in the low-freq-go-left contingency, the Wilcoxon rank-sum Z-statistic for log responsive frequencies found in left astr vs right astr is {}, p value is {}. \n'.format(intensity, zStats, pVal)    
+        print 'For {}db in the low-freq-go-right contingency, the Wilcoxon rank-sum Z-statistic for log responsive frequencies found in left astr vs right astr is {}, p value is {}. \n'.format(intensity, zStats, pVal)
+        figname = '{}dB by diff contingency left vs right hemisphere log responsive freqs'.format(intensity)
+
+    else:
+        print 'For {}db in the low-freq-go-left contingency, the Wilcoxon rank-sum Z-statistic for responsive frequencies found in left astr vs right astr is {}, p value is {}. \n'.format(intensity, zStats, pVal)    
+        print 'For {}db in the low-freq-go-right contingency, the Wilcoxon rank-sum Z-statistic for responsive frequencies found in left astr vs right astr is {}, p value is {}. \n'.format(intensity, zStats, pVal)
+        figname = '{}dB by diff contingency left vs right hemisphere responsive freqs'.format(intensity)
+
     plt.title(figname)
+    xExtends = plt.gca().get_xlim()
+    yExtends = plt.gca().get_ylim()
+    plt.text(0.5*sum(xExtends), 0.5*sum(yExtends), 'p value for low-go-left: {}'.format(pVal1))
+    plt.text(0.5*sum(xExtends), 0.7*sum(yExtends), 'p value for low-go-right: {}'.format(pVal2))
     figFullPath = os.path.join(outputDir, figname)
     plt.savefig(figFullPath, format='png')
     
@@ -250,14 +277,26 @@ for intensity in tuningIntensities:
     for name, values in highFreqColsThisIntensity.iteritems():
         values.dropna().apply(lambda x: highFreqs.extend(x))
     
+    if logscaled:
+        lowFreqs = np.log2(lowFreqs)
+        highFreqs = np.log2(highFreqs)
+    
     plt.figure()
     sns.distplot(lowFreqs, label='low_freq_encoding_areas', color='g')
     sns.distplot(highFreqs, label='high_freq_encoding_areas', color='r')
     plt.legend()
     #plt.show()
     zStats, pVal = stats.ranksums(lowFreqs, highFreqs)
-    print 'For {}db, the Wilcoxon rank-sum Z-statistic for responsive frequencies found in low vs high frequency-encoding area is {}, p value is {}. \n'.format(intensity, zStats, pVal)
-    figname = '{}dB low vs high freq encoding areas'.format(intensity)
+
+    if logscaled:
+        print 'For {}db, the Wilcoxon rank-sum Z-statistic for log responsive frequencies found in low vs high frequency-encoding area is {}, p value is {}. \n'.format(intensity, zStats, pVal)
+        figname = '{}dB low vs high freq encoding areas_logscaled'.format(intensity)
+    else:
+        print 'For {}db, the Wilcoxon rank-sum Z-statistic for responsive frequencies found in low vs high frequency-encoding area is {}, p value is {}. \n'.format(intensity, zStats, pVal)
+        figname = '{}dB low vs high freq encoding areas'.format(intensity)
     plt.title(figname)
+    xExtends = plt.gca().get_xlim()
+    yExtends = plt.gca().get_ylim()
+    plt.text(0.5*sum(xExtends), 0.5*sum(yExtends), 'p value: {}'.format(pVal))
     figFullPath = os.path.join(outputDir, figname)
     plt.savefig(figFullPath, format='png')
