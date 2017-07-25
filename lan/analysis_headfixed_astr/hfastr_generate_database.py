@@ -21,7 +21,7 @@ import imp
 
 animal = 'adap041'
 inforecFullPath = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(animal))
-CASE = 2
+CASE = 3
 
 if CASE == 1:
     # -- Cluster inforec and store stats, if have not already done so -- #

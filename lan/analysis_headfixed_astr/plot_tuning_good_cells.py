@@ -11,7 +11,7 @@ reload(rcfuncs)
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 
-animal = 'adap047'
+animal = 'adap041'
 noiseburstSessType = 'noiseburst'
 tuningSessType = 'tc'
 
@@ -23,25 +23,25 @@ ISIcutoff = 0.02
 tuningIntensity = [60,50,40,30] #range(30,70,10)
 celldb = pd.read_hdf(databaseFullPath, key=key)
 
-goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{}'.format(ISIcutoff, qualityThreshold))
+goodQualCells = celldb.query("isiViolations<{} and shapeQuality>{} and astrRegion!='undetermined'".format(ISIcutoff, qualityThreshold))
 maxZscore = goodQualCells.ZscoreEachIntensity.apply(lambda x : np.max(np.abs(x)))
 goodRespCells=goodQualCells[maxZscore >= maxZThreshold]
 
 #goodRespCells = goodQualCells.loc[abs(goodQualCells.tuningZscore) >= maxZThreshold]
+outputDir = '/home/languo/data/ephys/head_fixed_astr/all_mice/responsive_cells'
+if not os.path.exists(outputDir):
+    os.mkdir(outputDir)
 
 # -- Plot reports ONLY for sound responsive cells-- #
 for ind, cell in goodRespCells.iterrows():
-    outputDir = '/home/languo/data/ephys/head_fixed_astr/{}/'.format(animal)
-    if not os.path.exists(outputDir):
-        os.mkdir(outputDir)
-    animal = cell.subject
     tetrode = int(cell.tetrode)
     cluster = int(cell.cluster)
     date = cell.date
     depth = cell.depth
     brainArea = cell.brainarea
+    astrRegion = cell.astrRegion
     #bestFreq = cell.tuningWeightedBFEachIntensity
-    figname = '{}_{}_{}_{}_T{}c{}'.format(animal,brainArea,depth,date,tetrode,cluster)     
+    figname = '{}_{}_{}_{}_{}_T{}c{}'.format(animal,brainArea,astrRegion, depth,date,tetrode,cluster)     
     
     if os.path.exists(os.path.join(outputDir, figname)):
         continue

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import pdb
 
-animal = 'adap042'
+animal = 'adap041'
 #noiseburstSessType = 'noiseburst'
 #tuningSessType = 'tc'
 tuningIntensities = [40, 50, 60, 70]
