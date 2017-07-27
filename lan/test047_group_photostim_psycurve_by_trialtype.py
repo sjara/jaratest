@@ -158,7 +158,7 @@ def psychfun(xval,alpha,beta,lamb,gamma):
 
 
 if __name__ == '__main__':
-    animals = ['d1pi014']
+    animals = ['adap048','adap056']
 
     if len(sys.argv)>1:
         sessions = sys.argv[1:]
