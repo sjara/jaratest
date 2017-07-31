@@ -178,9 +178,11 @@ for indCell in cellsToGenerate:
     
     
     # --- produce input for bandwidth tuning curve ---
-    timeRange = [0.0, 1.0]
+    soundDuration = 1.0
+    print('WARNING! The sound duration is HARDCODED.')
+    timeRange = [0.0, soundDuration]
     bandSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, timeRange)
-    spikeArray = np.zeros((len(numBands), len(numSec)))
+    spikeArray = np.zeros((len(numBands), len(numSec))) # Average firing rate
     errorArray = np.zeros_like(spikeArray)
     for thisSecVal in range(len(numSec)):
         trialsThisSecVal = bandTrialsEachCond[:,:,thisSecVal]
@@ -189,9 +191,10 @@ for indCell in cellsToGenerate:
             if bandSpikeCountMat.shape[0] != len(trialsThisBand):
                 bandSpikeCountMat = bandSpikeCountMat[:-1,:]
             thisBandCounts = bandSpikeCountMat[trialsThisBand].flatten()
-            spikeArray[band, thisSecVal] = np.mean(thisBandCounts)
-            errorArray[band, thisSecVal] = stats.sem(thisBandCounts) #error is standard error of the mean, can be changed in the future
+            spikeArray[band, thisSecVal] = np.mean(thisBandCounts)/soundDuration
+            errorArray[band, thisSecVal] = stats.sem(thisBandCounts)/soundDuration # Error is standard error of the mean
     
+            
     # --- load spike and event data for laser trials ---
     laserEphysSession = cell['laserEphysSession']
     if laserEphysSession is not None:
@@ -230,7 +233,11 @@ for indCell in cellsToGenerate:
         outputFullPath = os.path.join(SOMDataDir,outputFile)
     else:
         outputFullPath = os.path.join(photoDataDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=bandSpikeTimestamps, eventOnsetTimes=bandEventOnsetTimes, spikeCountMat=bandSpikeCountMat, spikeArray=spikeArray, errorArray=errorArray, possibleBands=numBands, possibleSecondSort=numSec, firstSortLabels=firstSortLabels, secondSortLabels=secondSortLabels, spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset, indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,trialsEachCond=bandTrialsEachCond, **cell)
+    np.savez(outputFullPath, spikeTimestamps=bandSpikeTimestamps, eventOnsetTimes=bandEventOnsetTimes,
+             spikeCountMat=bandSpikeCountMat, spikeArray=spikeArray, errorArray=errorArray,
+             possibleBands=numBands, possibleSecondSort=numSec, firstSortLabels=firstSortLabels,
+             secondSortLabels=secondSortLabels, spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset,
+             indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,trialsEachCond=bandTrialsEachCond, **cell)
     print outputFile + " saved"
 
     ### Save laser data ###

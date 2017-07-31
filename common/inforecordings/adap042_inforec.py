@@ -9,7 +9,7 @@ experiments = []
 exp0 = celldatabase.Experiment(subject,
                                '2017-06-09',
                                brainarea='leftAStr',
-                               info=['3/4posteriorDiI', 'facingPosterior'])
+                               info=['3/4posteriorDiI', 'facingPosterior','medial:1,2', 'lateral:None'])
 experiments.append(exp0)
 
 '''
@@ -38,7 +38,7 @@ exp0.add_session('15-21-50', 'c', 'tc', 'am_tuning_curve')
 exp1 = celldatabase.Experiment(subject,
                                '2017-06-12',
                                brainarea='leftAStr',
-                               info=['medialDiD', 'facingPosterior'])
+                               info=['medialDiD', 'facingPosterior','medial:5,6', 'lateral:1,2,3,4'])
 experiments.append(exp1)
 
 #1600um TT1(most lateral) sound responsive, very large spikes - possibly AC
@@ -75,7 +75,7 @@ exp1.add_session('18-02-47', 'g', 'tc', 'am_tuning_curve')
 exp2 = celldatabase.Experiment(subject,
                                '2017-06-13',
                                brainarea='leftAStr',
-                               info=['medial-posteriorDiI', 'facingPosterior'])
+                               info=['medial-posteriorDiI', 'facingPosterior','medial:3,4,5,6', 'lateral:1,2'])
 experiments.append(exp2)
 
 exp2.add_site(2240, tetrodes=[1,2,4,5,6,7,8])
@@ -102,7 +102,7 @@ exp2.add_session('15-39-00', 'e', 'tc', 'am_tuning_curve')
 exp3 = celldatabase.Experiment(subject,
                                '2017-06-14',
                                brainarea='rightAStr',
-                               info=['medialDiI', 'facingPosterior'])
+                               info=['medialDiI', 'facingPosterior','medial:1,2', 'lateral:3,4'])
 experiments.append(exp3)
 
 #1600, 1700um mostly seeing movement/startle-related response
@@ -129,3 +129,69 @@ exp3.add_session('15-17-29', 'e', 'tc', 'am_tuning_curve')
 exp3.add_site(2410, tetrodes=[1,2,3,4,5,6,7,8])
 exp3.add_session('15-38-32', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT1-4 sound responsive
 exp3.add_session('15-40-11', 'f', 'tc', 'am_tuning_curve') 
+
+
+exp4 = celldatabase.Experiment(subject,
+                               '2017-06-19',
+                               brainarea='rightAStr',
+                               info=['posteriorDiD', 'facingPosterior','medial:1,2,3,4', 'lateral:5,6'])
+
+experiments.append(exp4)
+
+#1500, 1600 mostly seeing movement/startle-related response
+#1700, 1800um most lateral TT7/8 has sound response, probably AC, later disappeared
+exp4.add_site(2050, tetrodes=[2,3,4,5,6,7,8])
+exp4.add_session('15-28-22', None, 'noiseburst', 'am_tuning_curve') #ref to chan27 in TT1, TT8 sound responsive
+exp4.add_session('15-30-12', 'a', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2150, tetrodes=[2,3,4,5,6,7,8])
+exp4.add_session('15-48-06', None, 'noiseburst', 'am_tuning_curve') #ref to chan27 in TT1, TT4-8 sound responsive
+exp4.add_session('15-49-44', 'b', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2220, tetrodes=[1,2,3,4,5,7,8])
+exp4.add_session('16-11-28', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT2-4 sound responsive
+exp4.add_session('16-13-18', 'c', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2290, tetrodes=[1,2,3,4,7,8])
+exp4.add_session('16-34-32', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3&7 sound responsive
+exp4.add_session('16-35-54', 'd', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2355, tetrodes=[1,2,3,4,7,8])
+exp4.add_session('16-55-46', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT3&7 sound responsive
+exp4.add_session('16-57-16', 'e', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2420, tetrodes=[1,2,3,4,5,6,7,8])
+exp4.add_session('17-16-13', None, 'noiseburst', 'am_tuning_curve') #ref to chan11 in TT8, TT2,3,4,6 sound responsive
+exp4.add_session('17-17-49', 'f', 'tc', 'am_tuning_curve') 
+
+exp4.add_site(2490, tetrodes=[1,2,3,4,5,6,7,8])
+exp4.add_session('17-37-21', None, 'noiseburst', 'am_tuning_curve') #ref to chan14 in TT5, TT2,3,4,6 sound responsive
+exp4.add_session('17-38-45', 'g', 'tc', 'am_tuning_curve') 
+
+
+exp5 = celldatabase.Experiment(subject,
+                               '2017-06-20',
+                               brainarea='leftAStr',
+                               info=['medialDiO', 'facingPosterior','medial:1,2,3,4', 'lateral:None'])
+experiments.append(exp5)
+
+#1700, 1800, 1900um not sound responsive
+exp5.add_site(2040, tetrodes=[2,3,4,5,6,7,8])
+exp5.add_session('15-32-09', None, 'noiseburst', 'am_tuning_curve') #ref to chan18 in TT1, TT5 offset response 
+exp5.add_session('15-34-08', 'a', 'tc', 'am_tuning_curve') 
+
+exp5.add_site(2110, tetrodes=[1,2,3,4,5,7,8])
+exp5.add_session('15-54-04', None, 'noiseburst', 'am_tuning_curve') #ref to chan2 in TT6, TT1-5 offset response 
+exp5.add_session('15-55-51', 'b', 'tc', 'am_tuning_curve') 
+
+exp5.add_site(2190, tetrodes=[1,2,3,5,6,7,8])
+exp5.add_session('16-15-33', None, 'noiseburst', 'am_tuning_curve') #ref to chan20 in TT4, TT3&5 offset response 
+exp5.add_session('16-17-25', 'c', 'tc', 'am_tuning_curve') 
+
+exp5.add_site(2250, tetrodes=[1,2,3,4,5,7,8])
+exp5.add_session('16-36-35', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT2 responsive
+exp5.add_session('16-38-18', 'd', 'tc', 'am_tuning_curve') 
+
+exp5.add_site(2340, tetrodes=[1,2,3,4,5,7,8])
+exp5.add_session('16-59-23', None, 'noiseburst', 'am_tuning_curve') #ref to chan3 in TT6, TT2 responsive
+exp5.add_session('17-00-57', 'e', 'tc', 'am_tuning_curve') 

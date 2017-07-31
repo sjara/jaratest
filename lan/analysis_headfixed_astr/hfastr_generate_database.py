@@ -19,7 +19,7 @@ import numpy as np
 from scipy import stats
 import imp
 
-animal = 'adap046'
+animal = 'adap041'
 inforecFullPath = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(animal))
 CASE = 3
 
