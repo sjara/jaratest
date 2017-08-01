@@ -22,7 +22,7 @@ intensityToPlot = 60 # The intensity that showed the most diff between 'medial' 
 #responsiveFreqs = {}
 
 # Tetrode to shank mappings
-ttsToShank = {'1': [1,2],
+ttsToShank = {'1':[1,2],
               '2':[3,4],
               '3':[5,6],
               '4':[7,8]}
@@ -92,6 +92,7 @@ for inda, brainArea in enumerate(np.unique(cellsToPlot.brainarea)):
         thisAnimal = thisArea.loc[thisArea.animalName == animal]
         experiments = np.unique(thisAnimal.indExperiment)
         numExps = len(experiments)
+        plt.gcf()
         fig, axes = plt.subplots(nrows=1, ncols=numExps, sharex=True, sharey='row')
         for inde,exp in enumerate(experiments):
             thisExp = thisAnimal.loc[thisAnimal.indExperiment == exp]
@@ -127,7 +128,6 @@ for inda, brainArea in enumerate(np.unique(cellsToPlot.brainarea)):
             figFullPath = os.path.join(outputDir, figname)
             plt.savefig(figFullPath, format='png')
 
-
 shanks = ['shank1','shank2','shank3','shank4']
 for indr, row in outputDf.iterrows():
     for shank in shanks:
@@ -136,13 +136,30 @@ for indr, row in outputDf.iterrows():
         else:
             row[shank+'_weightedFreq'] = np.NaN
 
+plt.gcf()
 plt.clf()
+increaseCount = 0
+decreaseCount = 0
 for indr, row in outputDf.iterrows():
     for pairOfShanks in [list(x) for x in itertools.combinations(['shank1_weightedFreq','shank2_weightedFreq','shank3_weightedFreq','shank4_weightedFreq'],2)]:
         pairOfFreqs = row[pairOfShanks].values.astype(float)
         if not np.isnan(pairOfFreqs).any():
             line = plt.plot([1,2],pairOfFreqs, 'o-', mfc='k', mec='none')
+            if pairOfFreqs[1] > pairOfFreqs[0]:
+                increaseCount += 1
+            elif pairOfFreqs[1] < pairOfFreqs[0]:
+                decreaseCount += 1
             plt.setp(line, color='k', linewidth=1.5)
 plt.xticks([1,2], ['left shank', 'right shank'])       
-plt.xlim([0.5,2.5]) 
-plt.show()
+plt.xlim([0.5,2.5])
+print 'number of pairs with increase:', increaseCount, 'number of pairs with decrease:', decreaseCount
+figname = 'responsive_freqs_left_vs_right_shank'
+figFullPath = os.path.join(outputDir, figname)
+plt.savefig(figFullPath, format='svg')
+#plt.show()
+
+
+outputDf['zThreshold'] = maxZThreshold
+outputDf['script'] = os.path.realpath(__file__)
+dfName = 'responsive_freqs_each_shank_by_exp_headfixed_astr.h5'
+outputDf.to_hdf(os.path.join(outputDir, dfName), key='headfixed')
