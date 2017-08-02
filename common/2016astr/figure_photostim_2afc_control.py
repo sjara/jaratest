@@ -27,25 +27,97 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 labelDis = 0.1
-labelPosX = [0.02, 0.54]   # Horiz position for panel labels
+labelPosX = [0.02, 0.5]   # Horiz position for panel labels
 labelPosY = [0.95, 0.95]    # Vert position for panel labels
+
+PHOTOSTIMCOLORS = {'no_laser':'k',
+                   'laser_left':figparams.colp['stimLeft'],
+                   'laser_right':figparams.colp['stimRight']}
+
+SHAPES = {'d1pi014':'s',
+          'd1pi015':'o',
+          'd1pi016':'^'}
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
-
+plt.hold(True)
 gs = gridspec.GridSpec(1, 2)
-gs.update(left=0.12, right=0.9, top=0.95, bottom=0.1, wspace=0.2, hspace=0.15)
+gs.update(left=0.1, right=0.95, top=0.95, bottom=0.1, wspace=0.25, hspace=0.15)
 
 
 # -- Panel A: L vs R hemi stim bias in d1pi and wildtype controls -- #
 ax1 = plt.subplot(gs[0, 0])
-plt.axis('off')
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+# -- Load d1pi data -- #
+summaryFilename = 'summary_photostim_percent_right_choice_change.npz'
+summaryFullPath = os.path.join(dataDir,summaryFilename)
+summary = np.load(summaryFullPath)
+
+left014 = summary['d1pi014leftHemiStim']
+left015 = summary['d1pi015leftHemiStim']
+left016 = summary['d1pi016leftHemiStim']
+right014 = summary['d1pi014rightHemiStim']
+right015 = summary['d1pi015rightHemiStim']
+right016 = summary['d1pi016rightHemiStim']
+
+# -- Select the first 10 sessions from each hemi each mouse so that they have equal number of sessions -- #
+maxSessionNum = 10
+left014 = left014[:maxSessionNum]
+left015 = left015[:maxSessionNum]
+left016 = left016[:maxSessionNum]
+right014 = right014[:maxSessionNum]
+right015 = right015[:maxSessionNum]
+right016 = right016[:maxSessionNum]
+print 'Only plotting the first {} sessions in the summary panel.'.format(maxSessionNum) 
+
+# -- Load control data -- #
+summaryFilename = 'summary_photostim_percent_right_choice_change.npz'
+summaryFullPath = os.path.join(dataDir,summaryFilename)
+summary = np.load(summaryFullPath)
+
+
+
+ax1.axhline(y=0, color='k', linestyle='-')
+np.random.seed(7) #2
+for animal,leftData in zip(['d1pi014','d1pi015','d1pi016'],[left014,left015,left016]):
+    randOffset = 0.3*(np.random.rand(len(leftData))-0.5)
+    ax1.plot(1+randOffset, 100*leftData, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
+
+for animal,rightData in zip(['d1pi014','d1pi015','d1pi016'],[right014,right015,right016]):
+    randOffset = 0.3*(np.random.rand(len(leftData))-0.5)
+    ax1.plot(2+randOffset, 100*rightData, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
+
+# -- Stats for summary panel in figure grouping all animals together -- #
+leftStimChange = np.concatenate((left014,left015,left016))
+rightStimChange = np.concatenate((right014,right015,right016))
+meanLeftStim = np.mean(leftStimChange)
+meanRightStim = np.mean(rightStimChange)
+ax1.plot(0.3*np.array([-1,1])+1, 100*np.tile(meanLeftStim,2), lw=3, color=PHOTOSTIMCOLORS['laser_left'])
+ax1.plot(0.3*np.array([-1,1])+2, 100*np.tile(meanRightStim,2), lw=3, color=PHOTOSTIMCOLORS['laser_right'])
+
+xlim = [0.5, 4.5]
+ylim = [-50, 50]
+plt.xlim(xlim)
+plt.ylim(ylim)
+xticks = [1,2,3,4]
+xticklabels = ['Left\nstim', 'Right\nstim','Ctrl\nleft stim', 'Ctrl\nright stim']
+plt.xticks(xticks, xticklabels, fontsize=fontSizeTicks)
+labelDis = 0.1
+#plt.xlabel('Photostimulation', fontsize=fontSizeLabels) # labelpad=labelDis
+plt.ylabel('Rightward bias (%)\n stim - control', fontsize=fontSizeLabels) # labelpad=labelDis
+
+extraplots.boxoff(ax1)
+ax1.spines['bottom'].set_visible(False)
+[t.set_visible(False) for t in ax1.get_xticklines()]
+
+extraplots.significance_stars([1,2], 48, 2, starSize=10, gapFactor=0.12, color='0.5')
+
 
 
 # -- Panel B: relationship between distance off from center and contralateral bias -- #
 ax2 = plt.subplot(gs[0,1])
+plt.hold(True)
 extraplots.boxoff(ax2)
 ax2.annotate('B', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
@@ -80,22 +152,36 @@ locationDict = {'0': {'d1pi014':left014,
                 '0.4': {'d1pi014':right014,
                         'd1pi016':left016}
                 }
-SHAPES = {'d1pi014':'s',
-          'd1pi015':'o',
-          'd1pi016':'^'}
 
+ax2.axhline(y=0, color='k', linestyle='-')
 np.random.seed(7)
+centerBias = []
+borderBias = []
 for key, valueDict in locationDict.items():
     for animal, value in valueDict.items():
+        if key == '0':
+            centerBias.extend(value)
+        elif key == '0.4':
+            borderBias.extend(value)
         randOffset = 0.1*(np.random.rand(len(value))-0.5)
         ax2.plot(float(key)+randOffset, 100*value, SHAPES[animal], mec='k', mfc='None')
+    
+meanCenterBias = np.mean(centerBias)
+meanBorderBias = np.mean(borderBias)
+ax2.plot(0.3*np.array([-0.5,0.5])+0, 100*np.tile(meanCenterBias,2), lw=2, color='k')
+ax2.plot(0.3*np.array([-0.5,0.5])+0.4, 100*np.tile(meanBorderBias,2), lw=2, color='k')
+
 ax2.set_xlim([-0.2, 0.6])
 ax2.set_xticks([0, 0.4])
-ax2.set_xticklabels(['center', 'border'])
+ax2.set_xticklabels(['Center', 'Border'])
 ax2.set_ylabel('Contra lateral bias: stim - control (%)')
 #plt.show()
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 
+# -- Stats -- #
+(Z, pVal) = stats.ranksums(centerBias, borderBias)
+print 'p value between center and border stim sites is {}'.format(pVal)
+extraplots.significance_stars([0,0.4], 48, 2, starSize=10, gapFactor=0.12, color='0.5')
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
