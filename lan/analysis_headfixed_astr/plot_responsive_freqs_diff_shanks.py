@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import pdb
 import itertools
+import scipy.stats as stats
 
 animalLists = ['adap042', 'adap043','adap044', 'adap046','adap047'] #adap041 did not have enough data
 
@@ -22,7 +23,7 @@ intensityToPlot = 60 # The intensity that showed the most diff between 'medial' 
 #responsiveFreqs = {}
 
 # Tetrode to shank mappings
-ttsToShank = {'1': [1,2],
+ttsToShank = {'1':[1,2],
               '2':[3,4],
               '3':[5,6],
               '4':[7,8]}
@@ -65,12 +66,12 @@ def selectFreqs(row):
     #print row.name, row.tuningFreqs.values
     #print row.name, responseEachFreqThisIntensity.loc[row.name].values
     freqs = tuple(row.tuningFreqs.values[responseEachFreqThisIntensity.loc[row.name].values])
-    print freqs
+    #print freqs
     return freqs
 
 def selectZscores(row):
     zScores = tuple(np.array(row.tuningZscoreEachIntEachFreq)[responseEachFreqThisIntensity.loc[row.name].values])
-    print zScores
+    #print zScores
     return zScores
 
 responsiveFreqsThisIntensity = pd.Series(dtype=object)
@@ -92,6 +93,7 @@ for inda, brainArea in enumerate(np.unique(cellsToPlot.brainarea)):
         thisAnimal = thisArea.loc[thisArea.animalName == animal]
         experiments = np.unique(thisAnimal.indExperiment)
         numExps = len(experiments)
+        plt.gcf()
         fig, axes = plt.subplots(nrows=1, ncols=numExps, sharex=True, sharey='row')
         for inde,exp in enumerate(experiments):
             thisExp = thisAnimal.loc[thisAnimal.indExperiment == exp]
@@ -107,15 +109,25 @@ for inda, brainArea in enumerate(np.unique(cellsToPlot.brainarea)):
                     print 'shank {} has these freqs:'.format(shank),len(freqsThisShank)
                     ax = axes[inde]
                     randOffset = 0.2*(np.random.rand(len(freqsThisShank))-0.5)
-                    ax.scatter(int(shank)+randOffset, freqsThisShank)
-                    ax.plot(0.2*np.array([-0.5,0.5])+int(shank), np.tile(np.mean(freqsThisShank),2), lw=1.5, color='grey')
+                    ax.scatter(int(shank)+randOffset, freqsThisShank, s=50)
+                    plt.hold('True')
+                    #ax.plot(0.2*np.array([-0.5,0.5])+int(shank), np.tile(np.mean(freqsThisShank),2), lw=1.5, color='grey')
+                    if np.any(zScoresThisShank):
+                        weightedFreq = sum(freqsThisShank*abs(zScoresThisShank))/sum(abs(zScoresThisShank))
+                        print 'weighted freq:',weightedFreq,'mean freq:',np.mean(freqsThisShank)
+                        ax.plot(0.3*np.array([-0.5,0.5])+int(shank), np.tile(weightedFreq, 2), lw=1.5, color='k')
+                    else:
+                        weightedFreq = np.NaN
+                    dictThisExp['shank{}_weightedFreq'.format(shank)] = weightedFreq
                     ax.set_xticks([1,2,3,4])
                     ax.set_xticklabels(['shank1', 'shank2', 'shank3', 'shank4'])
                     ax.set_title('Exp {}'.format(inde))
                     ax.set_xlim([0,5])
+                    
                 else:
                     dictThisExp['shank{}_freq'.format(shank)] = np.array([])
                     dictThisExp['shank{}_zScore'.format(shank)] = np.array([])
+                    dictThisExp['shank{}_weightedFreq'.format(shank)] = np.NaN
             outputDf = outputDf.append(dictThisExp, ignore_index=True)
             fig.set_tight_layout({'rect': [0.02, 0.02, 1, 0.95], 'w_pad': 0.06, 'h_pad': 0.05})  
             fig.text(0.5, 0.02, 'Experiments', ha='center', va='center')
@@ -127,7 +139,7 @@ for inda, brainArea in enumerate(np.unique(cellsToPlot.brainarea)):
             figFullPath = os.path.join(outputDir, figname)
             plt.savefig(figFullPath, format='png')
 
-
+'''
 shanks = ['shank1','shank2','shank3','shank4']
 for indr, row in outputDf.iterrows():
     for shank in shanks:
@@ -135,14 +147,96 @@ for indr, row in outputDf.iterrows():
             row[shank+'_weightedFreq'] = sum(row[shank+'_freq'].values * row[shank+'_zScore'].values)/sum(row[shank+'_zScore'].values)
         else:
             row[shank+'_weightedFreq'] = np.NaN
-
+'''
+# -- Plot using weighted mean freqs -- #
+plt.gcf()
 plt.clf()
-for indr, row in outputDf.iterrows():
+increaseCount = 0
+decreaseCount = 0
+medialFreqs = []
+lateralFreqs = []
+for indr, row in outputDf.iterrows():        
     for pairOfShanks in [list(x) for x in itertools.combinations(['shank1_weightedFreq','shank2_weightedFreq','shank3_weightedFreq','shank4_weightedFreq'],2)]:
         pairOfFreqs = row[pairOfShanks].values.astype(float)
         if not np.isnan(pairOfFreqs).any():
-            line = plt.plot([1,2],pairOfFreqs, 'o-', mfc='k', mec='none')
-            plt.setp(line, color='k', linewidth=1.5)
-plt.xticks([1,2], ['left shank', 'right shank'])       
-plt.xlim([0.5,2.5]) 
-plt.show()
+            if row.brainArea == 'leftAStr':
+                medialFreqs.append(pairOfFreqs[1])
+                lateralFreqs.append(pairOfFreqs[0])
+                line = plt.plot([1,0],pairOfFreqs, 'o-', mfc='k', mec='none')
+                if pairOfFreqs[1] > pairOfFreqs[0]:
+                    decreaseCount += 1
+                    plt.setp(line, color='blue', linewidth=1.5)
+                elif pairOfFreqs[1] < pairOfFreqs[0]:
+                    increaseCount += 1
+                    plt.setp(line, color='k', linewidth=1.5)
+            elif row.brainArea == 'rightAStr':
+                medialFreqs.append(pairOfFreqs[0])
+                lateralFreqs.append(pairOfFreqs[1])
+                line = plt.plot([0,1],pairOfFreqs, 'o-', mfc='k', mec='none')
+                if pairOfFreqs[1] > pairOfFreqs[0]:
+                    increaseCount += 1
+                    plt.setp(line, color='k', linewidth=1.5)
+                elif pairOfFreqs[1] < pairOfFreqs[0]:
+                    decreaseCount += 1
+                    plt.setp(line, color='blue', linewidth=1.5)
+plt.xticks([0,1], ['medial shank', 'lateral shank'])       
+plt.xlim([-0.5,1.5])
+print 'number of pairs with increase from medial to lateral:', increaseCount, 'number of pairs with decrease from medial to lateral:', decreaseCount
+figname = 'weighted_responsive_freqs_medial_vs_lateral_shank'
+plt.title(figname)
+figFullPath = os.path.join(outputDir, figname)
+plt.savefig(figFullPath, format='svg')
+#plt.show()
+z,pVal = stats.ranksums(medialFreqs, lateralFreqs)
+print 'p value for ranksums test between weighted medial shank frequencies and lateral shank frequencies is {}'.format(pVal)
+
+# -- Plot using mean freqs, also discarding sites with only one cell/freq -- #
+plt.gcf()
+plt.clf()
+increaseCount = 0
+decreaseCount = 0
+medialFreqs = []
+lateralFreqs = []
+for indr, row in outputDf.iterrows():        
+    for pairOfShanks in [list(x) for x in itertools.combinations(['shank1_freq','shank2_freq','shank3_freq','shank4_freq'],2)]:
+        pairOfFreqs = row[pairOfShanks].values
+        if (len(pairOfFreqs[0])>0) & (len(pairOfFreqs[1])>0):
+            if row.brainArea == 'leftAStr':
+                medialFreqs.extend(pairOfFreqs[1])
+                lateralFreqs.extend(pairOfFreqs[0])
+                meanMedialFreq = np.mean(pairOfFreqs[1])
+                meanLateralFreq = np.mean(pairOfFreqs[0])
+                line = plt.plot([0,1],[meanMedialFreq,meanLateralFreq], 'o-', mfc='k', mec='none')
+                if meanMedialFreq > meanLateralFreq:
+                    decreaseCount += 1
+                    plt.setp(line, color='blue', linewidth=1.5)
+                elif meanMedialFreq < meanLateralFreq:
+                    increaseCount += 1
+                    plt.setp(line, color='k', linewidth=1.5)
+            elif row.brainArea == 'rightAStr':
+                medialFreqs.extend(pairOfFreqs[0])
+                lateralFreqs.extend(pairOfFreqs[1])
+                meanMedialFreq = np.mean(pairOfFreqs[0])
+                meanLateralFreq = np.mean(pairOfFreqs[1])
+                line = plt.plot([0,1],[meanMedialFreq,meanLateralFreq], 'o-', mfc='k', mec='none')
+                if meanMedialFreq > meanLateralFreq:
+                    decreaseCount += 1
+                    plt.setp(line, color='blue', linewidth=1.5)
+                elif meanMedialFreq < meanLateralFreq:
+                    increaseCount += 1
+                    plt.setp(line, color='k', linewidth=1.5)
+plt.xticks([0,1], ['medial shank', 'lateral shank'])       
+plt.xlim([-0.5,1.5])
+print 'number of pairs with increase from medial to lateral:', increaseCount, 'number of pairs with decrease from medial to lateral:', decreaseCount
+figname = 'mean_responsive_freqs_medial_vs_lateral_shank'
+plt.title(figname)
+figFullPath = os.path.join(outputDir, figname)
+plt.savefig(figFullPath, format='svg')
+#plt.show()
+z,pVal = stats.ranksums(medialFreqs, lateralFreqs)
+print 'p value for ranksums test between mean medial shank frequencies and lateral shank frequencies is {}'.format(pVal)
+
+outputDf['zThreshold'] = maxZThreshold
+outputDf['script'] = os.path.realpath(__file__)
+dfName = 'responsive_freqs_each_shank_by_exp_headfixed_astr.h5'
+outputDf.to_hdf(os.path.join(outputDir, dfName), key='headfixed')
