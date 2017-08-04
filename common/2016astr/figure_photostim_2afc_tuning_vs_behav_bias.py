@@ -146,14 +146,16 @@ allFreqs = np.concatenate([allLeftFreqs, allRightFreqs])
 allBias = np.concatenate([allBiasLeftStim, allBiasRightStim])
 xVal = allFreqs[~np.isnan(allFreqs)]
 yVal = allBias[~np.isnan(allFreqs)]
-slope, intercept = np.polyfit(xVal, yVal, 1)
+slope, intercept, rVal, pVal, stdError = stats.linregress(xVal, yVal)
+print 'Using scipy.stats.linregress, the r value is {}, p value is {}'.format(rVal,pVal)
 xl = np.linspace(min(xVal), max(xVal), 20)
 yl = [slope*xx + intercept  for xx in xl]
 ax2.plot(xl, yl, '-k')
-r, pVal = stats.spearmanr(allFreqs[~np.isnan(allFreqs)], allBias[~np.isnan(allFreqs)])
+rValsp, pValsp = stats.spearmanr(allFreqs[~np.isnan(allFreqs)], allBias[~np.isnan(allFreqs)])
+print 'Using spearman correlation test, the r value is {}, p value is {}'.format(rValsp, pValsp)
 ax2.set_xlim([-1, 1])
 ax2.set_ylim([-50,55])
-ax2.text(-0.5,48, 'r = {}\np = {}'.format(r,pVal))
+ax2.text(-0.5,48, 'r = {}\np = {}'.format(rValsp,pValsp))
 #plt.show()
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 

@@ -136,6 +136,7 @@ plt.ylim(ylim)
 xticks = [1,2,3,4]
 xticklabels = ['Left\nstim', 'Control\nleft stim', 'Right\nstim', 'Control\nright stim']
 plt.xticks(xticks, xticklabels, fontsize=fontSizeTicks)
+plt.yticks(range(-40,60,10))
 labelDis = 0.1
 #plt.xlabel('Photostimulation', fontsize=fontSizeLabels) # labelpad=labelDis
 plt.ylabel('Rightward bias (%)\nstim - control', fontsize=fontSizeLabels) # labelpad=labelDis
@@ -216,7 +217,7 @@ ax2.set_ylabel('Contralateral bias (%)\n stim - control', fontsize=fontSizeLabel
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 extraplots.boxoff(ax2)
 ax2.spines['bottom'].set_visible(False)
-[t.set_visible(False) for t in ax1.get_xticklines()]
+[t.set_visible(False) for t in ax2.get_xticklines()]
 
 # -- Stats -- #
 (Z, pVal) = stats.ranksums(centerBias, borderBias)

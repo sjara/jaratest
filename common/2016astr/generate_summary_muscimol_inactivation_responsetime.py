@@ -12,7 +12,7 @@ FIGNAME = 'muscimol_inactivation'
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 scriptFullPath = os.path.realpath(__file__)
 
-summaryFilename = 'muscimol_reaction_time_summary.npz'
+summaryFilename = 'muscimol_response_time_summary.npz'
 summaryFullPath = os.path.join(outputDir,summaryFilename)
 
 
@@ -43,10 +43,8 @@ for indAnimal, animalName in enumerate(animalsToUse):
         sessions = animalSessionDict[conditions[indCond]]
         for indSession, session in enumerate(sessions):
             bdata = behavioranalysis.load_many_sessions(animalName, [session])
-            validTrials = bdata['valid'].astype(bool) & (bdata['choice']!=bdata.labels['choice']['none'])
-            #rtAll = bdata['timeCenterOut'] - bdata['timeTarget']
-            rtAll = bdata['timeSideIn'] - bdata['timeCenterOut'] 
-            rtValid = rtAll[validTrials]
+            rtAll = bdata['timeCenterOut'] - bdata['timeTarget']
+            rtValid = rtAll[bdata['valid']]
 
             dataDict.update({'{}all{}'.format(animalName, conditions[indCond]):rtAll,
                              '{}valid{}'.format(animalName, conditions[indCond]):rtValid})
