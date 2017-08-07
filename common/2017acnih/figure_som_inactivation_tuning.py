@@ -13,7 +13,7 @@ matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
 
 
-FIGNAME = 'SOM_inactivation_bandwidth_tuning'
+FIGNAME = 'som_inactivation_bandwidth_tuning'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', FIGNAME)
 
 PANELS_TO_PLOT = [1,1,1] # [ExperimentalRaster, ExperimentalTuning, ModelTuning]
@@ -22,9 +22,9 @@ filenameTuning = 'example_bandwidth_tuning_band025_2017-04-20_T6_c6.npz'
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_SOM_inactivation_bandwidth_tuning' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [14,4]
+figFilename = 'som_inactivation_bandwidth_tuning' # Do not include extension
+figFormat = 'svg' # 'pdf' or 'svg'
+figSize = [10,4]
 
 fontSizeLabels = 14
 fontSizeTicks = 12
@@ -37,51 +37,58 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-laserColour = ['#4e9a06','#8ae234']
-noLaserColour = ['0.25', '0.75']
-colours = [noLaserColour, laserColour]
+#laserColor = ['#4e9a06','#8ae234']
+#laserColor = ['#90C000','#B0F020']
+#laserColor = ['#9AB973','#AAD983']
+#laserColor = ['0.5','0.75']
+#noLaserColor = ['0.25', '0.75']
+laserColor = [cp.TangoPalette['Butter3'],cp.TangoPalette['Butter1']]
+noLaserColor = ['0', '0.75']
+colors = [noLaserColor, laserColor]
 
-gs = gridspec.GridSpec(2,4)
+gs = gridspec.GridSpec(2,3)
 gs.update(top=0.9, left=0.05, bottom=0.15, right=0.98, wspace=0.25, hspace=0.25)
 
 dataFullPath = os.path.join(dataDir,filenameTuning)
 data = np.load(dataFullPath)
 
+'''
 # --- Raster plots of sound response with and without laser ---
 if PANELS_TO_PLOT[0]:
     laserTrials = data['possibleSecondSort']
     for laser in laserTrials:
         plt.subplot(gs[laser,1])
-        colourEachCond = np.tile(colours[laser], len(data['possibleBands'])/2+1)
+        colorEachCond = np.tile(colors[laser], len(data['possibleBands'])/2+1)
         pRaster, hcond, zline = extraplots.raster_plot(data['spikeTimesFromEventOnset'],
                                                    data['indexLimitsEachTrial'],
                                                    data['timeRange'],
                                                    trialsEachCond=data['trialsEachCond'][:,:,laser],
                                                    labels=data['firstSortLabels'])
-        plt.setp(pRaster, ms=3, color=colours[laser][0])
+        plt.setp(pRaster, ms=3, color=colors[laser][0])
         plt.ylabel('Bandwidth (oct)')
     plt.xlabel('Time (s)')
+'''
 
 # --- Plot of bandwidth tuning with and without laser ---
 if PANELS_TO_PLOT[1]:
     spikeArray = data['spikeArray']
     errorArray = data['errorArray']
     bands = data['possibleBands']
-    axTuning = plt.subplot(gs[0:,2])
+    axTuning = plt.subplot(gs[0:,1])
     lines = []
     plt.hold(True)
     l2,=plt.plot(range(len(bands)), spikeArray[:,1].flatten(), '-o', clip_on=False,
-                 color = laserColour[0], mec = laserColour[0], linewidth = 3)
+                 color = laserColor[0], mec = laserColor[0], linewidth = 3)
     lines.append(l2)
     plt.fill_between(range(len(bands)), spikeArray[:,1].flatten() - errorArray[:,1].flatten(), 
                      spikeArray[:,1].flatten() + errorArray[:,1].flatten(),
-                     alpha=0.2, edgecolor = laserColour[1], facecolor=laserColour[1])
+                     alpha=0.2, edgecolor = laserColor[1], facecolor=laserColor[1])
     l1,=plt.plot(range(len(bands)), spikeArray[:,0].flatten(), '-o', clip_on=False,
-                 color = noLaserColour[0], mec = noLaserColour[0], linewidth = 3)
+                 color = noLaserColor[0], mec = noLaserColor[0], linewidth = 3)
     lines.append(l1)
     plt.fill_between(range(len(bands)), spikeArray[:,0].flatten() - errorArray[:,0].flatten(), 
                      spikeArray[:,0].flatten() + errorArray[:,0].flatten(),
-                     alpha=0.2, edgecolor = noLaserColour[1], facecolor=noLaserColour[1])
+                     alpha=0.2, edgecolor = noLaserColor[1], facecolor=noLaserColor[1])
     axTuning.set_xticklabels(bands)
     plt.xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
@@ -98,8 +105,8 @@ if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
     import pandas as pd
     modelDataFiles = ['SSNbandwidthTuning_regime1.csv']
 
-    colorEachCond = [noLaserColour[0], laserColour[0]]
-    axModel = plt.subplot(gs[0:,3])
+    colorEachCond = [noLaserColor[0], laserColor[0]]
+    axModel = plt.subplot(gs[0:,2])
     for indm, oneModelFile in enumerate(modelDataFiles):
         modelData = pd.read_csv(os.path.join(modelDataDir,oneModelFile))
         modelBW = modelData['BW(oct)']

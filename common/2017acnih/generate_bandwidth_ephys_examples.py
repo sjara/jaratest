@@ -21,7 +21,7 @@ from jaratoolbox import settings
 from scipy import stats
 
 photoFigName = 'photoidentified_cells_bandwidth_tuning'
-SOMFigName = 'SOM_inactivation_bandwidth_tuning'
+SOMFigName = 'som_inactivation_bandwidth_tuning'
 
 photoDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', photoFigName)
 SOMDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', SOMFigName)
@@ -35,6 +35,14 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthBehavSession':'band004_bandwidth_am_20160909f.h5',
                    'tetrode':6,
                    'cluster':4}, #example PV cell
+                  
+                  {'animal':'band004',
+                   'date': '2016-08-30',
+                   'laserEphysSession': '2016-08-30_13-59-33',
+                   'bandwidthEphysSession': '2016-08-30_14-26-48',
+                   'bandwidthBehavSession':'band004_bandwidth_am_20160830i.h5',
+                   'tetrode':4,
+                   'cluster':5}, #example PV cell         
                   
                   {'animal':'band015',
                    'date': '2016-11-12',
