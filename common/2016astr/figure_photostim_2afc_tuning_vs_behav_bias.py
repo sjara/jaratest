@@ -72,17 +72,21 @@ allRightFreqs = np.concatenate([right015Freqs, right016Freqs])
 
 plt.hold('True')
 randOffset = 0.3*(np.random.rand(len(allLeftFreqs))-0.5)
-ax1.plot(1+randOffset, allLeftFreqs, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
+#ax1.plot(1+randOffset, allLeftFreqs, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
+ax1.plot(1+randOffset, allLeftFreqs, 'o', mec='k', mfc='None')
 randOffset = 0.3*(np.random.rand(len(allRightFreqs))-0.5)
-ax1.plot(2+randOffset, allRightFreqs, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
+#ax1.plot(2+randOffset, allRightFreqs, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
+ax1.plot(2+randOffset, allRightFreqs, 'o', mec='k', mfc='None')
 
 meanLeftFreq = np.mean(allLeftFreqs)
 meanRightFreq = np.mean(allRightFreqs)
-ax1.plot(0.3*np.array([-1,1])+1, 100*np.tile(meanLeftFreq,2), lw=3, color=PHOTOSTIMCOLORS['laser_left'])
-ax1.plot(0.3*np.array([-1,1])+2, 100*np.tile(meanRightFreq,2), lw=3, color=PHOTOSTIMCOLORS['laser_right'])
+#ax1.plot(0.3*np.array([-1,1])+1, 100*np.tile(meanLeftFreq,2), lw=3, color=PHOTOSTIMCOLORS['laser_left'])
+ax1.plot(0.3*np.array([-1,1])+1, 100*np.tile(meanLeftFreq,2), lw=3, color='k')
+#ax1.plot(0.3*np.array([-1,1])+2, 100*np.tile(meanRightFreq,2), lw=3, color=PHOTOSTIMCOLORS['laser_right'])
+ax1.plot(0.3*np.array([-1,1])+2, 100*np.tile(meanRightFreq,2), lw=3, color='k')
 
 xlim = [0, 3]
-ylim = [-0.8, 1]
+ylim = [-1, 1]
 plt.xlim(xlim)
 plt.ylim(ylim)
 xticks = [1,2]
@@ -92,7 +96,7 @@ plt.ylabel('Preferred frequency to boundary (octaves)', fontsize=fontSizeLabels)
 extraplots.boxoff(ax1)
 z,pVal = stats.ranksums(allLeftFreqs, allRightFreqs)
 print 'Comparing frequencies encoded in left vs right hemi with ranksum test, p value is {}'.format(pVal)
-ax1.text(0.7, 0.9, 'p = {}'.format(pVal))
+ax1.text(1, 0.9, 'p = {:.3f}'.format(pVal))
 
 
 # -- Panel B: relationship between tuning freq of a photostim site and the resulting contralateral behavioral bias -- #
@@ -137,25 +141,41 @@ assert np.all(allFreqSessions==allBehavSessions), 'Sessions donot match up!'
 plt.hold('True')
 allBiasLeftStim = 100*np.concatenate([left014, left015])
 allBiasRightStim = 100*np.concatenate([right015, right016])
-ax2.plot(allLeftFreqs, allBiasLeftStim, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
-ax2.plot(allRightFreqs, allBiasRightStim, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
+#ax2.plot(allLeftFreqs, allBiasLeftStim, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
+ax2.plot(allLeftFreqs, allBiasLeftStim, 'o', mec='k', mfc='None')
+slopeLeft, interceptLeft, rValLeft, pValLeft, stdErrorLeft = stats.linregress(allLeftFreqs[~np.isnan(allLeftFreqs)], allBiasLeftStim[~np.isnan(allLeftFreqs)])
+xlLeft = np.linspace(min(allLeftFreqs), max(allLeftFreqs), 20)
+ylLeft = [slopeLeft*xx + interceptLeft  for xx in xlLeft]
+#ax2.plot(xlLeft, ylLeft, color=PHOTOSTIMCOLORS['laser_left'])
+
+#ax2.plot(allRightFreqs, allBiasRightStim, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
+ax2.plot(allRightFreqs, allBiasRightStim, 'o', mec='k', mfc='None')
+slopeRight, interceptRight, rValRight, pValRight, stdErrorRight = stats.linregress(allRightFreqs[~np.isnan(allRightFreqs)], allBiasRightStim[~np.isnan(allRightFreqs)])
+xlRight = np.linspace(min(allRightFreqs), max(allRightFreqs), 20)
+ylRight = [slopeRight*xx + interceptRight  for xx in xlRight]
+#ax2.plot(xlRight, ylRight, color=PHOTOSTIMCOLORS['laser_right'])
+
 ax2.set_xlabel('Preferred frequency to boundary (octaves)')
 ax2.set_ylabel('Bias to high freq (%)\nstim - control')
 
 allFreqs = np.concatenate([allLeftFreqs, allRightFreqs])
 allBias = np.concatenate([allBiasLeftStim, allBiasRightStim])
-xVal = allFreqs[~np.isnan(allFreqs)]
-yVal = allBias[~np.isnan(allFreqs)]
-slope, intercept, rVal, pVal, stdError = stats.linregress(xVal, yVal)
-print 'Using scipy.stats.linregress, the r value is {}, p value is {}'.format(rVal,pVal)
-xl = np.linspace(min(xVal), max(xVal), 20)
-yl = [slope*xx + intercept  for xx in xl]
-ax2.plot(xl, yl, '-k')
-rValsp, pValsp = stats.spearmanr(allFreqs[~np.isnan(allFreqs)], allBias[~np.isnan(allFreqs)])
-print 'Using spearman correlation test, the r value is {}, p value is {}'.format(rValsp, pValsp)
+allCellsWTuning = ~np.isnan(allFreqs)
+slopeAll, interceptAll, rValAll, pValAll, stdErrorAll = stats.linregress(allFreqs[allCellsWTuning], allBias[allCellsWTuning])
+print 'Using scipy.stats.linregress, the r value is {}, p value is {}'.format(rValAll,pValAll)
+xlAll = np.linspace(min(allFreqs), max(allFreqs), 20)
+ylAll = [slopeAll*xx + interceptAll  for xx in xlAll]
+ax2.plot(xlAll, ylAll, '-k')
+
+rValLeft, pValLeft = stats.spearmanr(allLeftFreqs[~np.isnan(allLeftFreqs)], allBiasLeftStim[~np.isnan(allLeftFreqs)])
+rValRight, pValRight = stats.spearmanr(allRightFreqs[~np.isnan(allRightFreqs)], allBiasRightStim[~np.isnan(allRightFreqs)])
+rValAll, pValAll = stats.spearmanr(allFreqs[~np.isnan(allFreqs)], allBias[~np.isnan(allFreqs)])
+print 'Using spearman correlation test, the r value for both hemi is {}, p value is {}.\nFor left hemi, the r value is {}, p value is {}.\nFor right hemi, the r value is {}, p value is {}.'.format(rValAll, pValAll, rValLeft, pValLeft, rValRight, pValRight)
 ax2.set_xlim([-1, 1])
 ax2.set_ylim([-50,55])
-ax2.text(-0.5,48, 'r = {}\np = {}'.format(rValsp,pValsp))
+ax2.text(-0.2,45, 'r = {:.3f}\np = {:.3f}'.format(rValAll,pValAll))
+#ax2.text(-0.5,22, 'left: r = {:.3f}\np = {:.3f}'.format(rValLeft,pValLeft))
+#ax2.text(-0.5,-25, 'right: r = {:.3f}\np = {:.3f}'.format(rValRight,pValRight))
 #plt.show()
 extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
 
