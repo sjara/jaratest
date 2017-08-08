@@ -1,5 +1,5 @@
 '''
-Quantify 2afc sound response data in psychometric mice. For all the non-duplicated good cells that are in the striatum, look at their psychometric 2afc data, calculate a Z score and response index for each frequency comparing baseline (100-0ms window before sound) and sound-evoked response (0-100ms window from sound-onset). Store the Z score that is largest in absolute value, the response index of that frequency, and the frequency that generates it. 
+Quantify 2afc sound response data in psychometric mice. For all the non-duplicated good cells that are in the striatum, look at their psychometric 2afc data, calculate a Z score and response index for each frequency comparing baseline (100-0ms window before sound) and sound-evoked response (0-100ms window from sound-onset). Store the Z scores, p values, ave response rates for each frequency for each cell; as well as the Z score that is largest in absolute value, the response index of that frequency, and the frequency that generates it. 
 Use one-way ANOVA to compare whether evoked-responses for all frequencies were significantly different as a measure of 'frequency-selectivity'. 
 '''
 
@@ -29,6 +29,7 @@ responseRange = [0, 0.1] # time range of sound period
 timeRange = [-0.2,0.2]
 qualityList = [1,6]
 ISIcutoff = 0.02
+numOfFreqs = 6
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
@@ -59,6 +60,10 @@ maxZscoreEachCell = np.zeros(len(allcells_psychometric))
 pValSoundResponseEachCell = np.ones(len(allcells_psychometric))
 responseIndEachCell = np.zeros(len(allcells_psychometric))
 freqSelectivityEachCell = np.ones(len(allcells_psychometric))
+zScoresEachFreqEachCell = np.zeros((len(allcells_psychometric),numOfFreqs))
+pValEachFreqEachCell = np.ones((len(allcells_psychometric),numOfFreqs))
+responseEachFreqEachCell = np.zeros((len(allcells_psychometric),numOfFreqs))
+responseIndEachFreqEachCell = np.zeros((len(allcells_psychometric),numOfFreqs))
 
 for ind,cell in cellsToPlot.iterrows(): #This ind is the index with reference to the original dataFrame (i.e. row # in allcells_psychometric)
     print 'retrieving data for cell', ind
@@ -135,7 +140,7 @@ for ind,cell in cellsToPlot.iterrows(): #This ind is the index with reference to
         # Calculate response index (S-B)/(S+B) where S and B are ave response during the sound window and baseline window, respectively
         responseIndex = (np.mean(nspkResp) - np.mean(nspkBase))/(np.mean(nspkResp) + np.mean(nspkBase))
         responseInds.append(responseIndex)
-        responseEachFreq.append(nspkResp) #Store response to each stim frequency (all trials) in a list
+        responseEachFreq.append(nspkResp) #Store response rate to each stim frequency(for all trials) 
         print 'ave firing rate for baseline and sound periods are', np.mean(nspkBase), np.mean(nspkResp), 'response index is', responseIndex
 
         #[zStat,pValue,maxZ] = spikesanalysis.response_score(spikeTimesFromEventOnset,indexLimitsEachTrial,baseRange,responseRange) #computes z score for each bin. zStat is array of z scores. maxZ is maximum value of z in timeRange; in this case only one bin so only one Z score
@@ -146,7 +151,7 @@ for ind,cell in cellsToPlot.iterrows(): #This ind is the index with reference to
         pVals.append(pValue)
     
     #?? Use correction for multiple comparisons(n comparisons where n=number of frequencies presented) here, then store whether a cell is significantly 'responsive' or not ??
-
+    
     indMaxZ = np.argmax(np.abs(zScores))
     maxZscore = zScores[indMaxZ] 
     bestFreq = possibleFreq[indMaxZ]
@@ -156,6 +161,10 @@ for ind,cell in cellsToPlot.iterrows(): #This ind is the index with reference to
     maxZscoreEachCell[ind] = maxZscore
     responseIndEachCell[ind] = responseIndMaxZ
     pValSoundResponseEachCell[ind] = pVal
+    zScoresEachFreqEachCell[ind,:] = zScores
+    pValEachFreqEachCell[ind,:] = pVals
+    responseEachFreqEachCell[ind,:] = [np.mean(response) for response in responseEachFreq]
+    responseIndEachFreqEachCell[ind,:] = responseInds
     # freqSelectivityEachCell contain the p value of the ANOVA test comparing evoked responses from all frequencies
     statistics, freqSelectivityEachCell[ind] = stats.f_oneway(*responseEachFreq) # Use one-way ANOVA to compare responses from all frequencies to see if significantly different -> if so quantify cell as freq selective
 
@@ -165,4 +174,4 @@ if not os.path.exists(outputDir):
 
 outputFile = 'summary_2afc_best_freq_maxZ_psychometric.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, bestFreqEachCell=bestFreqEachCell, maxZscoreEachCell=maxZscoreEachCell, pValSoundResponseEachCell=pValSoundResponseEachCell, responseIndEachCell=responseIndEachCell, freqSelectivityEachCell=freqSelectivityEachCell, cellSelectorBoolArray=cellSelector, baselineWindow=baseRange, soundWindow=responseRange, paradigm=paradigm, script=scriptFullPath)
+np.savez(outputFullPath, bestFreqEachCell=bestFreqEachCell, maxZscoreEachCell=maxZscoreEachCell, pValSoundResponseEachCell=pValSoundResponseEachCell, responseIndEachCell=responseIndEachCell, freqSelectivityEachCell=freqSelectivityEachCell, zScoresEachFreqEachCell=zScoresEachFreqEachCell, pValEachFreqEachCell=pValEachFreqEachCell, responseEachFreqEachCell=responseEachFreqEachCell, responseIndEachFreqEachCell=responseIndEachFreqEachCell, cellSelectorBoolArray=cellSelector, baselineWindow=baseRange, soundWindow=responseRange, paradigm=paradigm, script=scriptFullPath)
