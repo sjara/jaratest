@@ -15,7 +15,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'plots_muscimol_reaction_time'
+figFilename = 'plots_muscimol_response_time'
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [8, 6]
 
@@ -48,7 +48,7 @@ panelsToPlot=[0, 1]
 gs = gridspec.GridSpec(5, 1)
 # gs.update(left=0.15, right=0.95, bottom=0.15, wspace=0.5, hspace=0.5)
 
-summaryFilename = 'muscimol_reaction_time_summary.npz'
+summaryFilename = 'muscimol_response_time_summary.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
 fcFile = np.load(summaryFullPath)
 
@@ -59,14 +59,14 @@ for indsubject, subject in enumerate(subjects):
 
     ax = plt.subplot(gs[indsubject, 0])
 
-    #ax.hist(fcFile['{}allsaline'.format(subject)], bins=100, histtype='step', color='k')
-    ax.hist(fcFile['{}validsaline'.format(subject)], bins=100, histtype='step', color='k')
-    #ax.hist(fcFile['{}allmuscimol'.format(subject)], bins=100, histtype='step', color='r')
-    ax.hist(fcFile['{}validmuscimol'.format(subject)], bins=100, histtype='step', color='r')
-    ax.set_xlim([0.2, 1.0])
+    ax.hist(fcFile['{}allsaline'.format(subject)], bins=100, histtype='step', color='k')
+    #ax.hist(fcFile['{}validsaline'.format(subject)], bins=100, histtype='step', color='k')
+    ax.hist(fcFile['{}allmuscimol'.format(subject)], bins=100, histtype='step', color='r')
+    #ax.hist(fcFile['{}validmuscimol'.format(subject)], bins=100, histtype='step', color='r')
+    ax.set_xlim([0.0, 0.5])
     extraplots.boxoff(ax)
-    z, pVal = stats.ranksums(fcFile['{}validsaline'.format(subject)], fcFile['{}validmuscimol'.format(subject)])
-    print 'mouse {}'.format(indsubject+1), ' Compare reaction times (side-in minus center-out) between saline and muscimol sessions using ranksum test, p value is {}'.format(pVal)
+    z, pVal = stats.ranksums(fcFile['{}allsaline'.format(subject)], fcFile['{}allmuscimol'.format(subject)])
+    print 'mouse {}'.format(indsubject+1), ' Compare response times (center-out minus target), including invalid trials, between saline and muscimol sessions using ranksum test, p value is {}'.format(pVal)
 plt.show()
 
 if SAVE_FIGURE:

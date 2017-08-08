@@ -27,23 +27,25 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', FIGNAME)
 
 PANELS_TO_PLOT = [1,1,1]  # [Laser, ExperimentalTuning, ModelTuning]
 
+'''
 # -- Define which excitatory cell to use --
 excitatoryCells = ['band016_2016-12-11_T6_c6.npz','band002_2016-08-11_T4_c5.npz','band002_2016-08-12_T6_c4.npz','band003_2016-08-18_T6_c6.npz']
-
 args = sys.argv[1:]
 if len(args):
     cellToUse = excitatoryCells[int(args[0])]
 else:
     cellToUse = excitatoryCells[0]
 print cellToUse
+#cellFileNames = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz', cellToUse]
+'''
 
-cellFileNames = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz', cellToUse]
+cellFileNames = ['band004_2016-08-30_T4_c5.npz', 'band015_2016-11-12_T8_c4.npz', 'band016_2016-12-11_T6_c6.npz']
 
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'photoidentified_bandwidth_tuning' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [14,6]
 
 fontSizeLabels = 14 #12
@@ -53,6 +55,7 @@ labelDis = 0.1
 labelPosX = [0.07, 0.45]   # Horiz position for panel labels
 labelPosY = [0.9, 0.45]    # Vert position for panel labels
 cellColor = [cp.TangoPalette['Chameleon3'], cp.TangoPalette['ScarletRed1'], cp.TangoPalette['SkyBlue2']]
+laserColor = 'c'
 
 fig = plt.gcf()
 fig.clf()
@@ -69,16 +72,26 @@ if PANELS_TO_PLOT[0]:
     laserFilename = 'example_laser_response_'+cellFileNames[indc]
     laserDataFullPath = os.path.join(dataDir,laserFilename)
     laserData = np.load(laserDataFullPath)
-
+    laserDuration = 0.1
+    
     axLaser = plt.subplot(gs0[0,0])
     nTrials = 30
     laserIndexLimitsEachTrial = laserData['indexLimitsEachTrial'][:,:nTrials]
     laserTimeRange = [-0.1,0.3]
+    plt.cla()
     pRaster, hcond, zline = extraplots.raster_plot(laserData['spikeTimesFromEventOnset'],
                                                    laserIndexLimitsEachTrial,
                                                    laserTimeRange)
     axLaser.set_xticks([-0.1, 0, 0.1, 0.2, 0.3])
     axLaser.set_yticks([0,nTrials])
+    yLims = np.array(plt.ylim())
+    laserBarBottom = 1.1*yLims[1]
+    laserBarTop = laserBarBottom + 0.1*(yLims[1]-yLims[0])
+    plt.hold(1)
+    plt.fill([0,laserDuration,laserDuration,0],[laserBarBottom,laserBarBottom,laserBarTop,laserBarTop],
+             fc=laserColor, ec='none', clip_on=False)
+    #plt.plot([0,laserDuration],laserBarBottom*[1,1], color=laserColor, clip_on=False)
+    plt.hold(0)
     plt.setp(pRaster, ms=3, color=cellColor[indc])
     plt.setp(hcond, visible=False)
     plt.setp(zline, visible=False)
