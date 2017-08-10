@@ -19,7 +19,7 @@ PANELS = [1,1] # Which panels to plot
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'plots_photostim_2afc_tuning_vs_behav_bias' # Do not include extension
+figFilename = 'supp_photostim_2afc_bias_vs_freq' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [7,4]
 

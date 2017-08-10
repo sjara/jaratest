@@ -19,7 +19,7 @@ PANELS = [1,1] # Which panels to plot
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'plots_photostim_2afc_control' # Do not include extension
+figFilename = 'supp_photostim_2afc_control' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [7,4]
 
@@ -46,9 +46,9 @@ gs = gridspec.GridSpec(1, 2)
 gs.update(left=0.13, right=0.97, top=0.95, bottom=0.1, wspace=0.29, hspace=0.15)
 
 
-# -- Panel B: L vs R hemi stim bias in d1pi and wildtype controls -- #
-ax1 = plt.subplot(gs[0, 1])
-ax1.annotate('B', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+# -- Panel A: L vs R hemi stim bias in d1pi and wildtype controls -- #
+ax1 = plt.subplot(gs[0, 0])
+ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 # -- Load d1pi data -- #
 summaryFilename = 'summary_photostim_percent_right_choice_change.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
@@ -74,7 +74,7 @@ print 'Only plotting the first {} sessions in the summary panel.'.format(maxSess
 
 
 # -- Load control data -- #
-summaryFilename = 'summary_photostim_control_percent_contra_choice_change.npz'
+summaryFilename = 'summary_photostim_control_percent_right_choice_change.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
 summary = np.load(summaryFullPath)
 
@@ -86,8 +86,8 @@ right056 = summary['adap056rightHemiStim']
 ax1.axhline(y=0, color='k', linestyle='-')
 np.random.seed(7) #2
 
-#for animal,leftData in zip(['d1pi014','d1pi015','d1pi016'],[left014,left015,left016]):
-for animal,leftData in zip(['d1pi014','d1pi015'],[left014,left015]):
+for animal,leftData in zip(['d1pi014','d1pi015','d1pi016'],[left014,left015,left016]):
+#for animal,leftData in zip(['d1pi014','d1pi015'],[left014,left015]):
     randOffset = 0.3*(np.random.rand(len(leftData))-0.5)
     ax1.plot(1+randOffset, 100*leftData, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
 
@@ -95,8 +95,8 @@ for animal,controlLeftData in zip(['adap048','adap056'],[left048,left056]):
     randOffset = 0.3*(np.random.rand(len(controlLeftData))-0.5)
     ax1.plot(2+randOffset, 100*controlLeftData, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
 
-#for animal,rightData in zip(['d1pi014','d1pi015','d1pi016'],[right014,right015,right016]):
-for animal,rightData in zip(['d1pi015','d1pi016'],[right015,right016]):
+for animal,rightData in zip(['d1pi014','d1pi015','d1pi016'],[right014,right015,right016]):
+#for animal,rightData in zip(['d1pi015','d1pi016'],[right015,right016]):
     randOffset = 0.3*(np.random.rand(len(rightData))-0.5)
     ax1.plot(3+randOffset, 100*rightData, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
 
@@ -106,10 +106,10 @@ for animal,controlRightData in zip(['adap048','adap056'],[right048,right056]):
 
 
 # -- Stats for summary panel in figure grouping all animals together -- #
-#leftStimChange = np.concatenate((left014,left015,left016))
-#rightStimChange = np.concatenate((right014,right015,right016))
-leftStimChange = np.concatenate((left014,left015))
-rightStimChange = np.concatenate((right015,right016))
+leftStimChange = np.concatenate((left014,left015,left016))
+rightStimChange = np.concatenate((right014,right015,right016))
+#leftStimChange = np.concatenate((left014,left015))
+#rightStimChange = np.concatenate((right015,right016))
 meanLeftStim = np.mean(leftStimChange)
 meanRightStim = np.mean(rightStimChange)
 ax1.plot(0.3*np.array([-1,1])+1, 100*np.tile(meanLeftStim,2), lw=3, color=PHOTOSTIMCOLORS['laser_left'])
@@ -148,11 +148,11 @@ ax1.spines['bottom'].set_visible(False)
 
 
 
-# -- Panel A: relationship between distance off from center and contralateral bias -- #
-ax2 = plt.subplot(gs[0,0])
+# -- Panel B: relationship between distance off from center and contralateral bias -- #
+ax2 = plt.subplot(gs[0,1])
 plt.hold(True)
 extraplots.boxoff(ax2)
-ax2.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax2.annotate('B', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 
 # -- Load data about behavior bias in photostim 2afc -- #
