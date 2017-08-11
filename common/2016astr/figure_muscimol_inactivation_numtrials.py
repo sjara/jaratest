@@ -17,7 +17,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_{}'.format(FIGNAME) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [8, 6]
+figSize = [4.8, 2.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -42,10 +42,11 @@ fig.set_facecolor('w')
 
 panelsToPlot=[0, 1]
 
-gs = gridspec.GridSpec(2, 1)
-gs.update(left=0.15, right=0.95, bottom=0.15, wspace=0.5, hspace=0.5)
-ax1 = plt.subplot(gs[0, 0])
-ax2 = plt.subplot(gs[1, 0])
+gs = gridspec.GridSpec(1, 1)
+gs.update(left=0.15, right=0.70, bottom=0.2, wspace=0.5, hspace=0.5)
+# ax1 = plt.subplot(gs[0, 0])
+ax2 = plt.subplot(gs[0, 0])
+# ax2 = plt.subplot(111)
 
 summaryFilename = 'muscimol_num_trials_summary.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
@@ -59,7 +60,9 @@ conditions = fcFile['conditions']
 #dataMat(subject, session, condition)
 ind = np.arange(len(subjects))
 width = 0.35
-condColors = ['k', 'r']
+
+muscimolColor = figparams.colp['muscimol']
+condColors = ['k', muscimolColor]
 
 shiftAmt = width*0.05
 # shiftAmt = 0
@@ -78,8 +81,8 @@ def plot_bars(ax, dataMat, label):
                     sessionsThisCondThisSubject, marker='o', linestyle='none', mec=condColors[indCond], mfc='none')
             ax.hold(1)
 
-    rects1 = ax.bar(ind, dataMat[:, :, 0].mean(1)-0.5, width, bottom=0.5, edgecolor='k', facecolor='w')
-    rects2 = ax.bar(ind+width+0.015, dataMat[:, :, 1].mean(1)-0.5, width, bottom=0.5, edgecolor='r', facecolor='w')
+    rects1 = ax.bar(ind, dataMat[:, :, 0].mean(1)-0.5, width, bottom=0.5, edgecolor='k', facecolor='w', lw=2, label='Saline')
+    rects2 = ax.bar(ind+width+0.015, dataMat[:, :, 1].mean(1)-0.5, width, bottom=0.5, edgecolor=muscimolColor, lw=2, facecolor='w', label='Muscimol')
 
     ax.set_xticks(ind + width)
     ax.set_xticklabels(np.arange(6)+1, fontsize=fontSizeLabels)
@@ -87,13 +90,24 @@ def plot_bars(ax, dataMat, label):
     ax.axhline(y=0.5, color='0.5', linestyle='-')
     # ax.set_ylim([0.45, 1])
     ax.set_xlim([ind[0]-0.5*width, ind[-1]+2.5*width ])
-    ax.set_ylabel('Number of {} trials'.format(label), fontsize=fontSizeLabels)
+    ax.set_ylabel('Number of trials', fontsize=fontSizeLabels)
     # ax.set_yticks([0.5, 1])
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(ax)
 
-plot_bars(ax1, totalMat, 'total')
+    ax.legend(bbox_to_anchor=(0.95, 0.6),
+            loc=3,
+            numpoints=1,
+            fontsize=fontSizeLabels,
+            ncol=1,
+            columnspacing=1.5,
+            frameon=False)
+
+    for i in [1, 3, 4]:
+        extraplots.significance_stars([i+0.5*width,i+1.5*width], 1000, 50, starSize=6, gapFactor=0.4, color='0.5')
+
+# plot_bars(ax1, totalMat, 'total')
 plot_bars(ax2, validMat, 'valid')
 
 # ax2.annotate('C', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction', fontsize=fontSizePanel, fontweight='bold')
@@ -117,3 +131,6 @@ for indSubject in range(5):
 
     print indSubject
     print stats.ranksums(subDataSal, subDataMus)
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
