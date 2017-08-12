@@ -59,7 +59,7 @@ cellsToPlot = allcells_psychometric[cellSelector]
 bestFreqEachCell = np.zeros(len(cellsToPlot))
 maxZscoreEachCell = np.zeros(len(cellsToPlot))
 pValSoundResponseEachCell = np.ones(len(cellsToPlot))
-responseIndEachCell = np.zeros(len(cellsToPlot))
+maxZresponseIndEachCell = np.zeros(len(cellsToPlot))
 freqSelectivityEachCell = np.ones(len(cellsToPlot))
 zScoresEachFreqEachCell = np.zeros((len(cellsToPlot),numOfFreqs))
 pValEachFreqEachCell = np.ones((len(cellsToPlot),numOfFreqs))
@@ -164,7 +164,7 @@ for ind,cell in cellsToPlot.iterrows():
     responseIndMaxZ = responseInds[indMaxZ] #Take the response index for the freq with the biggest absolute response
     bestFreqEachCell[ind] = bestFreq
     maxZscoreEachCell[ind] = maxZscore
-    responseIndEachCell[ind] = responseIndMaxZ
+    maxZresponseIndEachCell[ind] = responseIndMaxZ
     pValSoundResponseEachCell[ind] = pVal
     zScoresEachFreqEachCell[ind,:] = zScores
     pValEachFreqEachCell[ind,:] = pVals
@@ -186,7 +186,7 @@ if not os.path.exists(outputDir):
 
 outputFile = 'summary_2afc_best_freq_maxZ_psychometric.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
-np.savez(outputFullPath, bestFreqEachCell=bestFreqEachCell, maxZscoreEachCell=maxZscoreEachCell, pValSoundResponseEachCell=pValSoundResponseEachCell, responseIndEachCell=responseIndEachCell, freqSelectivityEachCell=freqSelectivityEachCell, zScoresEachFreqEachCell=zScoresEachFreqEachCell, pValEachFreqEachCell=pValEachFreqEachCell, responseIndEachFreqEachCell=responseIndEachFreqEachCell, cellSelectorBoolArray=cellSelector, baselineWindow=baseRange, soundWindow=responseRange, paradigm=paradigm, script=scriptFullPath)
+np.savez(outputFullPath, bestFreqEachCell=bestFreqEachCell, maxZscoreEachCell=maxZscoreEachCell, pValSoundResponseEachCell=pValSoundResponseEachCell, maxZresponseIndEachCell=maxZresponseIndEachCell, freqSelectivityEachCell=freqSelectivityEachCell, zScoresEachFreqEachCell=zScoresEachFreqEachCell, pValEachFreqEachCell=pValEachFreqEachCell, responseIndEachFreqEachCell=responseIndEachFreqEachCell, cellSelectorBoolArray=cellSelector, baselineWindow=baseRange, soundWindow=responseRange, paradigm=paradigm, script=scriptFullPath)
 # Have to save the two masked arrays individually because:
 # NotImplementedError: MaskedArray.tofile() not implemented yet.
 # Cannot directly save masked arrays in npz

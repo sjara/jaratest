@@ -219,17 +219,46 @@ if PANELS[2]:
     sigResp = (minPValEachCell <= bonferroniCorrectedAlphaLevel) # In the 6 ranksum tests, at least one freq past bonferroni corrected p test
     ###############################################################################
  
+    ################################################
+    # -- Compare response to all freqs to all baselines -- #
+    responseFilename = 'response_each_freq_each_cell_psycurve_2afc.npz'
+    responseFullPath = os.path.join(dataDir,responseFilename)
+    responseEachCellEachFreq = np.load(responseFullPath)
+    baselineFilename = 'baseline_each_freq_each_cell_psycurve_2afc.npz'
+    baselineFullPath = os.path.join(dataDir,baselineFilename)
+    baselineEachCellEachFreq = np.load(baselineFullPath)
+    numCells = sum(cellSelectorBoolArray)
+    overallRespInds = np.array([])
+    pVals = np.array([])
+    for cellInd in range(numCells):
+        fSound = responseEachCellEachFreq[cellInd,:,:].compressed()
+        fBaseline = baselineEachCellEachFreq[cellInd,:,:].compressed()
+        zScore,pVal = stats.ranksums(fBaseline, fSound)
+        pVals = np.append(pVals,pVal)
+        if np.mean(fSound)+np.mean(fBaseline)==0:
+            overallRespIndexThisCell = 0
+        else:
+            overallRespIndexThisCell = (np.mean(fSound)-np.mean(fBaseline)) / (np.mean(fSound)+np.mean(fBaseline))
+        overallRespInds = np.append(overallRespInds, overallRespIndexThisCell)
+    sigRespOverall = (pVals <= 0.05)
+    nansInData = np.isnan(overallRespInds)
+    if np.any(nansInData):
+        print '*** WARNING! *** I found NaN in some elements of overall sound responsive index. I will replace with zero.'
+        overallRespInds[nansInData] = 0
+    ################################################
     plt.hold(True)
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([responseIndEachCell[sigResp],responseIndEachCell[~sigResp]], bins=binsEdges, color=['k','darkgrey'],
-             edgecolor='None',stacked=True)
-
+    #plt.hist([responseIndEachCell[sigResp],responseIndEachCell[~sigResp]], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True)
+    plt.hist([overallRespInds[sigRespOverall],overallRespInds[~sigRespOverall]], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True)
     nCellsString = '{} cells'.format(sum(cellSelectorBoolArray))
     nMiceString = '{} mice'.format(5)
-    plt.text(0.4, 65, nCellsString, ha='left',fontsize=fontSizeLabels)
-    plt.text(0.4, 60, nMiceString, ha='left',fontsize=fontSizeLabels)
+    #plt.text(0.4, 65, nCellsString, ha='left',fontsize=fontSizeLabels)
+    #plt.text(0.4, 60, nMiceString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.4, 168, nCellsString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.4, 155, nMiceString, ha='left',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
-    plt.xlabel('BF response index',fontsize=fontSizeLabels)
+    #plt.xlabel('BF response index',fontsize=fontSizeLabels)
+    plt.xlabel('Response index',fontsize=fontSizeLabels)
     plt.ylabel('Number of cells',fontsize=fontSizeLabels)
     
     plt.xlim([-1.01,1.01])
@@ -237,14 +266,17 @@ if PANELS[2]:
 
     numCells = sum(cellSelectorBoolArray)
     numResponsiveCells = sum(sigResp)
-    percentResp = numCells/float(numResponsiveCells)*100
+    numOverallRespCells = sum(sigRespOverall)
+    percentResp = float(numResponsiveCells)/numCells*100
+    percentRespOverall = float(numOverallRespCells)/numCells*100
     print 'Using Bonferroni corrected p value, out of {} cells, {} cells showed significant change in firing rate to at least one sound stim presented. That is {}% of cells.'.format(numCells, numResponsiveCells,percentResp)
-    print 'median response index:', np.mean(responseIndEachCell[~np.isnan(responseIndEachCell)]) #These is one nan value
+    print 'Summing all the sound freqs together and comparing evoked activity to baseline, {} cells were significantly responsive. That is {}% of all cells.'.format(numOverallRespCells, percentRespOverall)
+    #print 'median response index:', np.mean(responseIndEachCell[~np.isnan(responseIndEachCell)]) #These is one nan value
 
-    print sum((responseIndEachCell < 0).astype(int)), 'cells showed decreased activity;', sum((responseIndEachCell > 0).astype(int)), 'cells showed increased activity;', sum((responseIndEachCell == 0).astype(int)), 'cells had unchanged activity during sound'
+    #print sum((responseIndEachCell < 0).astype(int)), 'cells showed decreased activity;', sum((responseIndEachCell > 0).astype(int)), 'cells showed increased activity;', sum((responseIndEachCell == 0).astype(int)), 'cells had unchanged activity during sound'
 
-    (T, pVal) = stats.wilcoxon(responseIndEachCell[~np.isnan(responseIndEachCell)])
-    print 'Using the Wilcoxon signed-rank test, comparing the sound response index distribution to zero yielded a p value of', pVal
+    #(T, pVal) = stats.wilcoxon(responseIndEachCell[~np.isnan(responseIndEachCell)])
+    #print 'Using the Wilcoxon signed-rank test, comparing the sound response index distribution to zero yielded a p value of', pVal
     
 
 # -- Panel E: summary of sound selectivity index in 2afc task -- #
@@ -264,7 +296,10 @@ if PANELS[3]:
         fHigh = responseEachCellEachFreq[cellInd,:,3:].compressed()
         zScore,pVal = stats.ranksums(fLow, fHigh)
         pVals = np.append(pVals,pVal)
-        selectivityIndexThisCell = (np.mean(fHigh)-np.mean(fLow)) / (np.mean(fHigh)+np.mean(fLow))
+        if (np.mean(fHigh)+np.mean(fLow))==0:
+            selectivityIndexThisCell = 0
+        else:
+            selectivityIndexThisCell = (np.mean(fHigh)-np.mean(fLow)) / (np.mean(fHigh)+np.mean(fLow))
         selectivityInds = np.append(selectivityInds, selectivityIndexThisCell)
         
     nansInData = np.isnan(selectivityInds)
@@ -286,6 +321,9 @@ if PANELS[3]:
     # -- Statistic test for frequency selectivity (ANOVA) -- #
     numFreqSelCells = sum(freqSelective.astype(int))
     print 100*float(numFreqSelCells)/numCells, '%', numFreqSelCells, 'out of', numCells, ' cells in 2afc psycurve task show different response to high and low frequencies.'
+    freqSelSoundResp = freqSelective&sigResp
+    numFreqSelSoundRespCells = sum(freqSelSoundResp)
+    print 100*float(numFreqSelSoundRespCells)/numResponsiveCells, '%', numFreqSelSoundRespCells, 'out of', numResponsiveCells, ' sound responsive cells in 2afc psycurve task show different response to high and low frequencies.'
 
 
 plt.show()
@@ -344,3 +382,4 @@ if SAVE_FIGURE:
     
     freqSelective = summary['freqSelectivityEachCell'][cellSelectorBoolArray] <= alphaLevel #This is based on ANOVA test on evoked activity of all 6 freqs
     '''
+
