@@ -15,7 +15,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'plots_{}'.format(FIGNAME) # Do not include extension
+figFilename = 'supp_muscimol_inactivation_numtrials' #'plot_{}'.format(FIGNAME) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [8,8]
 
@@ -142,7 +142,7 @@ for indSubject in range(5):
 
 
 # -- Panel B: reaction times -- #
-ax3 = plt.subplot(gs[1, 0])
+ax3 = plt.subplot(gs[2, 0])
 centerToSideFilename = 'muscimol_reaction_time_summary.npz'
 centerToSideFullPath = os.path.join(dataDir,centerToSideFilename)
 centerToSideFile = np.load(centerToSideFullPath)
@@ -180,20 +180,23 @@ ymin = 250
 plt.ylim([ymin,ymax])
 xticks = range(5)
 xticklabels = range(1,6)
-plt.ylabel('Time from center port exit\nto reward port entrance (ms)')
+plt.ylabel('Time from center port exit\nto reward port entry (ms)')
 plt.xlabel('Mouse')
 ax3.set_xlim([ind[0]-0.5*width, ind[-1]+2.5*width ])
 ax3.set_xticks(ind + width)
 ax3.set_xticklabels(np.arange(6)+1, fontsize=fontSizeTicks)
 extraplots.boxoff(ax3)
-for sigSubjectInd in [0,2,3,4]:
+for sigSubjectInd in [4]:
     extraplots.significance_stars([sigSubjectInd+0.5*width,sigSubjectInd+1.5*width], ymax, (ymax-ymin)*starLineHeightFactor, starSize=6, gapFactor=0.4, color='0.5')
     # extraplots.significance_stars(sigSubjectInd+np.array([-0.25,0.25]), 710, 25, starSize=6, gapFactor=0.4, color='0.5')
 
-
+# -- Stats -- #
+for inds, subject in enumerate(subjects):
+    zScore, pVal = stats.ranksums(centerToSideFile['{}validmeansaline'.format(subject)], centerToSideFile['{}validmeanmuscimol'.format(subject)])
+    print 'For mouse {}, using only mean of valid trials in saline condition and in muscimol condition in a ranksums test, p value for the difference in time from centerOut to sideIn is {}.'.format(inds+1, pVal)
 
 # -- Panel C: response times -- #
-ax4 = plt.subplot(gs[2, 0])
+ax4 = plt.subplot(gs[1, 0])
 soundToCoutFilename = 'muscimol_response_time_summary.npz'
 soundToCoutFullPath = os.path.join(dataDir,soundToCoutFilename)
 soundToCoutFile = np.load(soundToCoutFullPath)
@@ -235,15 +238,20 @@ plt.ylabel('Time from sound onset\nto center port exit (ms)')
 plt.xlabel('Mouse')
 ax4.set_xlim([ind[0]-0.5*width, ind[-1]+2.5*width ])
 extraplots.boxoff(ax4)
-for sigSubjectInd in [0,1,2,3,4]:
+for sigSubjectInd in [1,2,3,4]:
     # extraplots.significance_stars(sigSubjectInd+np.array([-0.25,0.25]), 250, 10, starSize=6, gapFactor=0.4, color='0.5')
     extraplots.significance_stars([sigSubjectInd+0.5*width,sigSubjectInd+1.5*width], ymax, (ymax-ymin)*starLineHeightFactor, starSize=6, gapFactor=0.4, color='0.5')
 
 labelPosX = [0.05]   # Horiz position for panel labels
 labelPosY = [0.95, 0.62, 0.28]    # Vert position for panel labels
 ax2.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-ax3.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-ax4.annotate('C', xy=(labelPosX[0],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax4.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax3.annotate('C', xy=(labelPosX[0],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
+# -- Stats -- #
+for inds, subject in enumerate(subjects):
+    zScore, pVal = stats.ranksums(soundToCoutFile['{}validmeansaline'.format(subject)], soundToCoutFile['{}validmeanmuscimol'.format(subject)])
+    print 'For mouse {}, using only mean of valid trials in saline condition and in muscimol condition in a ranksums test, p value for the difference in time from sound-onset to centerOut is {}.'.format(inds+1, pVal)
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

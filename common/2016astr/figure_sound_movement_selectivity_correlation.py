@@ -248,6 +248,34 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
     #plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, labelspacing=0, borderaxespad=0.1)
 
+# -- Stats about left/right movement-selectivity vs high/low frequency-selectivity -- #
+alphaLevel = 0.05
+
+dataDirMv = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME,'movement_selectivity')
+movementSummaryFilename = 'summary_movement_selectivity_psychometric.npz'
+movementSummaryFullPath = os.path.join(dataDirMv,movementSummaryFilename)
+movementSummary = np.load(movementSummaryFullPath)
+sigMvModulated = movementSummary['movementSelective']
+
+dataDirSound =  os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'sound_freq_selectivity')
+responseFilename = 'response_each_freq_each_cell_psycurve_2afc.npz'
+responseFullPath = os.path.join(dataDirSound,responseFilename)
+responseEachCellEachFreq = np.load(responseFullPath)
+numCells = len(sigMvModulated)
+
+pVals = np.array([])
+for cellInd in range(numCells):
+    fLow = responseEachCellEachFreq[cellInd,:,:3].compressed()
+    fHigh = responseEachCellEachFreq[cellInd,:,3:].compressed()
+    zScore,pVal = stats.ranksums(fLow, fHigh)
+    pVals = np.append(pVals,pVal)
+    
+hlFreqSelective = (pVals <= alphaLevel)
+
+bothSelective = sigMvModulated & hlFreqSelective
+numBothSel = sum(bothSelective)
+percentBothSel = 100*numBothSel / float(numCells)
+print 'Out of {} cells, {} cells ({}%) were selective both to movement direction and high-low frequencies. '.format(numCells, numBothSel, percentBothSel)
 
 '''
 ax1 = plt.subplot(gs00[0:3,:])

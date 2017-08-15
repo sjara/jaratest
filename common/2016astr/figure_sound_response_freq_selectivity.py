@@ -265,11 +265,11 @@ if PANELS[2]:
     extraplots.boxoff(ax8)
 
     numCells = sum(cellSelectorBoolArray)
-    numResponsiveCells = sum(sigResp)
+    #numResponsiveCells = sum(sigResp)
     numOverallRespCells = sum(sigRespOverall)
-    percentResp = float(numResponsiveCells)/numCells*100
+    #percentResp = float(numResponsiveCells)/numCells*100
     percentRespOverall = float(numOverallRespCells)/numCells*100
-    print 'Using Bonferroni corrected p value, out of {} cells, {} cells showed significant change in firing rate to at least one sound stim presented. That is {}% of cells.'.format(numCells, numResponsiveCells,percentResp)
+    #print 'Using Bonferroni corrected p value, out of {} cells, {} cells showed significant change in firing rate to at least one sound stim presented. That is {}% of cells.'.format(numCells, numResponsiveCells,percentResp)
     print 'Summing all the sound freqs together and comparing evoked activity to baseline, {} cells were significantly responsive. That is {}% of all cells.'.format(numOverallRespCells, percentRespOverall)
     #print 'median response index:', np.mean(responseIndEachCell[~np.isnan(responseIndEachCell)]) #These is one nan value
 
@@ -314,18 +314,25 @@ if PANELS[3]:
     plt.xlabel('High vs low frequency selectivity',fontsize=fontSizeLabels)
     plt.ylabel('Number of cells',fontsize=fontSizeLabels)
     #nRespCellsString = '{} responsive cells'.format(numResponsiveCells)
-    plt.text(0.4, 195, nCellsString, ha='left',fontsize=fontSizeLabels)
-    plt.text(0.4, 178, nMiceString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.4, 195.5, nCellsString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.4, 180, nMiceString, ha='left',fontsize=fontSizeLabels)
     extraplots.boxoff(ax9)
     plt.ylim([0,210])
+
     # -- Statistic test for frequency selectivity (ANOVA) -- #
     numFreqSelCells = sum(freqSelective.astype(int))
     print 100*float(numFreqSelCells)/numCells, '%', numFreqSelCells, 'out of', numCells, ' cells in 2afc psycurve task show different response to high and low frequencies.'
-    freqSelSoundResp = freqSelective&sigResp
-    numFreqSelSoundRespCells = sum(freqSelSoundResp)
-    print 100*float(numFreqSelSoundRespCells)/numResponsiveCells, '%', numFreqSelSoundRespCells, 'out of', numResponsiveCells, ' sound responsive cells in 2afc psycurve task show different response to high and low frequencies.'
-
-
+    
+    hlFreqSelSoundResp = freqSelective & sigRespOverall
+    numHLFreqSelSoundRespCells = sum(hlFreqSelSoundResp)
+    print 100*float(numHLFreqSelSoundRespCells)/numOverallRespCells, '%, ', numHLFreqSelSoundRespCells, 'out of', numOverallRespCells, ' sound responsive cells in 2afc psycurve task show different response to high and low frequencies.'
+    
+    ANOVAfreqSelective = summary['freqSelectivityEachCell'] <= alphaLevel
+    numOverallFreqSelCells = sum(ANOVAfreqSelective)
+    numOverallFreqSelSoundRespCells = sum(ANOVAfreqSelective & sigRespOverall)
+    print 100*float(numOverallFreqSelSoundRespCells)/numOverallRespCells, '%, ', numOverallFreqSelSoundRespCells, 'out of', numOverallRespCells, ' sound responsive cells in 2afc psycurve task show different response to all frequencies (one-way ANOVA).'
+    print 100*float(numOverallFreqSelCells)/numCells, '%, ', numOverallFreqSelCells, 'out of', numCells, ' total responsive cells in 2afc psycurve task show different response to all frequencies (one-way ANOVA).'
+    
 plt.show()
 
 if SAVE_FIGURE:
