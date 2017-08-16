@@ -59,13 +59,16 @@ for indsubject, subject in enumerate(subjects):
 
     ax = plt.subplot(gs[indsubject, 0])
 
-    ax.hist(fcFile['{}allsaline'.format(subject)], bins=100, histtype='step', color='k')
+    ax.hist(fcFile['{}allsaline'.format(subject)][~np.isnan(fcFile['{}allsaline'.format(subject)])], bins=100, histtype='step', color='k')
     #ax.hist(fcFile['{}validsaline'.format(subject)], bins=100, histtype='step', color='k')
-    ax.hist(fcFile['{}allmuscimol'.format(subject)], bins=100, histtype='step', color='r')
+    plt.hold('True')
+    plt.axvline(np.mean(fcFile['{}allsaline'.format(subject)][~np.isnan(fcFile['{}allsaline'.format(subject)])]),color='k')
+    ax.hist(fcFile['{}allmuscimol'.format(subject)][~np.isnan(fcFile['{}allmuscimol'.format(subject)])], bins=100, histtype='step', color='r')
     #ax.hist(fcFile['{}validmuscimol'.format(subject)], bins=100, histtype='step', color='r')
-    ax.set_xlim([0.0, 0.5])
+    plt.axvline(np.mean(fcFile['{}allmuscimol'.format(subject)][~np.isnan(fcFile['{}allmuscimol'.format(subject)])]), color='red')
+    ax.set_xlim([0, 0.5])
     extraplots.boxoff(ax)
-    z, pVal = stats.ranksums(fcFile['{}allsaline'.format(subject)], fcFile['{}allmuscimol'.format(subject)])
+    z, pVal = stats.ranksums(fcFile['{}validsaline'.format(subject)], fcFile['{}validmuscimol'.format(subject)])
     print 'mouse {}'.format(indsubject+1), ' Compare response times (center-out minus target), including invalid trials, between saline and muscimol sessions using ranksum test, p value is {}'.format(pVal)
 plt.show()
 

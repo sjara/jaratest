@@ -218,7 +218,7 @@ conditions = soundToCoutFile['conditions']
 subjectMeans = np.empty((len(subjects), len(conditions)))
 for indSubject, subject in enumerate(subjects):
     for indCond, condition in enumerate(conditions):
-        thisSubjectThisCondValid = soundToCoutFile['{}validmean{}'.format(subject,condition)]
+        thisSubjectThisCondValid = soundToCoutFile['{}allmean{}'.format(subject,condition)]
         plt.hold('True')
 
         ax4.plot(np.zeros(len(thisSubjectThisCondValid)) + (indSubject + 0.5*width + indCond*width) + pointShift,
@@ -230,7 +230,7 @@ rects1 = ax4.bar(ind, 1000*subjectMeans[:,0], width, bottom=0.5, edgecolor='k', 
 rects2 = ax4.bar(ind+width+0.015, 1000*subjectMeans[:,1], width, bottom=0.5, edgecolor=muscimolColor, lw=2, facecolor='w', label='Muscimol')
 
 ymax = 250
-ymin = 100
+ymin = 10
 plt.ylim([ymin,ymax])
 ax4.set_xticks(ind + width)
 ax4.set_xticklabels(np.arange(6)+1, fontsize=fontSizeTicks)
@@ -250,7 +250,7 @@ ax3.annotate('C', xy=(labelPosX[0],labelPosY[2]), xycoords='figure fraction', fo
 
 # -- Stats -- #
 for inds, subject in enumerate(subjects):
-    zScore, pVal = stats.ranksums(soundToCoutFile['{}validmeansaline'.format(subject)], soundToCoutFile['{}validmeanmuscimol'.format(subject)])
+    zScore, pVal = stats.ranksums(soundToCoutFile['{}allmeansaline'.format(subject)], soundToCoutFile['{}allmeanmuscimol'.format(subject)])
     print 'For mouse {}, using only mean of valid trials in saline condition and in muscimol condition in a ranksums test, p value for the difference in time from sound-onset to centerOut is {}.'.format(inds+1, pVal)
 
 if SAVE_FIGURE:
