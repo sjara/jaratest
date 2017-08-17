@@ -20,11 +20,11 @@ PANELS_TO_PLOT = [1,1] # [ExperimentalRaster, ExperimentalTuning]
 
 filenameTuning = 'example_bandwidth_tuning_band033_2017-08-02_T8_c5.npz'
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_harmonics_bandwidth_tuning' # Do not include extension
+figFilename = 'harmonics_bandwidth_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [14,4]
+figSize = [8,6]
 
 fontSizeLabels = 14
 fontSizeTicks = 12
@@ -37,12 +37,12 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-laserColour = ['#4e9a06','#8ae234']
-noLaserColour = ['0.25', '0.75']
-colours = [noLaserColour, laserColour]
+laserColor = ['#4e9a06','#8ae234']
+noLaserColor = ['0.25', '0.75']
+colors = [noLaserColor, laserColor]
 
 gs = gridspec.GridSpec(2,2)
-gs.update(top=0.9, left=0.05, bottom=0.15, right=0.98, wspace=0.25, hspace=0.25)
+gs.update(top=0.9, left=0.1, bottom=0.15, right=0.98, wspace=0.25, hspace=0.25)
 
 dataFullPath = os.path.join(dataDir,filenameTuning)
 data = np.load(dataFullPath)
@@ -52,8 +52,8 @@ if PANELS_TO_PLOT[0]:
     harmoTrials = data['possibleSecondSort']
     trialsEachCond = data['trialsEachCond']
     for harmo in harmoTrials:
-        plt.subplot(gs[harmo,0])
-        colourEachCond = np.tile(colours[harmo], len(data['possibleBands'])/2+1)
+        plt.subplot(gs[1-harmo,0])
+        colorEachCond = np.tile(colors[harmo], len(data['possibleBands'])/2+1)
         trialsThisSecondVal = trialsEachCond[:, :, harmo]
         
         # a dumb workaround that dulpicates the tone trials to put in both rasters
@@ -66,8 +66,9 @@ if PANELS_TO_PLOT[0]:
                                                    data['timeRange'],
                                                    trialsEachCond=trialsEachCond[:,:,harmo],
                                                    labels=data['firstSortLabels'])
-        plt.setp(pRaster, ms=3, color=colours[harmo][0])
+        plt.setp(pRaster, ms=3, color=colors[harmo][0])
         plt.ylabel('Bandwidth (oct)')
+    plt.subplot(gs[1,0])
     plt.xlabel('Time (s)')
 
 # --- Plot of bandwidth tuning with and without laser ---
@@ -84,24 +85,25 @@ if PANELS_TO_PLOT[1]:
     lines = []
     plt.hold(True)
     l2,=plt.plot(range(len(bands)), spikeArray[:,1].flatten(), '-o', clip_on=False,
-                 color = laserColour[0], mec = laserColour[0], linewidth = 3)
+                 color = laserColor[0], mec = laserColor[0], linewidth = 3)
     lines.append(l2)
     plt.fill_between(range(len(bands)), spikeArray[:,1].flatten() - errorArray[:,1].flatten(), 
                      spikeArray[:,1].flatten() + errorArray[:,1].flatten(),
-                     alpha=0.2, edgecolor = laserColour[1], facecolor=laserColour[1])
+                     alpha=0.2, edgecolor = laserColor[1], facecolor=laserColor[1])
     l1,=plt.plot(range(len(bands)), spikeArray[:,0].flatten(), '-o', clip_on=False,
-                 color = noLaserColour[0], mec = noLaserColour[0], linewidth = 3)
+                 color = noLaserColor[0], mec = noLaserColor[0], linewidth = 3)
     lines.append(l1)
     plt.fill_between(range(len(bands)), spikeArray[:,0].flatten() - errorArray[:,0].flatten(), 
                      spikeArray[:,0].flatten() + errorArray[:,0].flatten(),
-                     alpha=0.2, edgecolor = noLaserColour[1], facecolor=noLaserColour[1])
+                     alpha=0.2, edgecolor = noLaserColor[1], facecolor=noLaserColor[1])
+    axTuning.set_xticks(range(len(bands)))
     axTuning.set_xticklabels(bands)
     plt.xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(axTuning)
-    plt.legend(lines,['Harmonics', 'Noise'], loc='lower center', frameon=False) #'upper left'
-    plt.title('Just a graph lol',fontsize=fontSizeLabels,fontweight='bold')
+    plt.legend(lines,['Harmonics', 'Noise'], loc='lower left', frameon=False) #'upper left'
+    #plt.title('Just a graph lol',fontsize=fontSizeLabels,fontweight='bold')
    
 plt.show()
 

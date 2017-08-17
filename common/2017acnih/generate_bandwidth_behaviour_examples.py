@@ -19,7 +19,7 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 from scipy import stats
 
-figName = 'ac_inactivation_behaviour'
+figName = 'ac_inactivation_behavior'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', figName)
 
 muscimolAnimals = ['band006', 'band008', 'band010']
@@ -157,7 +157,7 @@ for animal in archAnimals:
                 rightPerSNR[las,inds] += rightThisSNR
                 
     # saves relevant data for plotting psychometric curve
-    outputFile = '{}_CamKII_inactivation_psychometric.npz'.format(animal)
+    outputFile = '{}_CaMKII_inactivation_psychometric.npz'.format(animal)
     outputFullPath = os.path.join(dataDir,outputFile)
     np.savez(outputFullPath, validPerSNR=validPerSNR, rightPerSNR=rightPerSNR, nCorrect=nCorrect, possibleSNRs=possibleSNRs)
     print outputFile + " saved"
