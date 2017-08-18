@@ -80,3 +80,37 @@ exp1.add_site(2265, tetrodes=range(1, 9))
 exp1.add_session('13-48-16', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('13-50-42', 'f', 'tc', 'am_tuning_curve')
 exp1.add_session('14-23-44', 'g', 'am', 'am_tuning_curve')
+
+exp2 = celldatabase.Experiment(subject,
+                               '2017-08-17',
+                               brainarea='rightAstr',
+                               info=['anteriorDiO', 'facingPosterior'])
+experiments.append(exp2)
+
+#Mouse on the rig at 0955hrs, waiting 10 mins for brain to settle
+#Tetrodes at 1913um
+
+exp2.add_site(2010, tetrodes=range(1, 9))
+exp2.add_session('10-56-57', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('10-59-16', 'a', 'tc', 'am_tuning_curve')
+exp2.add_session('11-37-58', 'b', 'am', 'am_tuning_curve')
+
+exp2.add_site(2135, tetrodes=range(1, 9))
+exp2.add_session('12-01-43', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('12-04-19', 'c', 'tc', 'am_tuning_curve')
+exp2.add_session('12-38-17', 'd', 'am', 'am_tuning_curve')
+
+exp2.add_site(2265, tetrodes=range(1, 9))
+exp2.add_session('13-01-39', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('13-03-54', 'e', 'tc', 'am_tuning_curve')
+exp2.add_session('13-36-39', 'f', 'am', 'am_tuning_curve')
+
+exp2.add_site(2372, tetrodes=range(1, 9))
+exp2.add_session('14-03-12', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('14-42-35', 'g', 'tc', 'am_tuning_curve')
+exp2.add_session('15-16-02', 'h', 'am', 'am_tuning_curve')
+
+exp2.add_site(2508, tetrodes=range(1, 9))
+exp2.add_session('15-57-56', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('16-03-45', 'i', 'tc', 'am_tuning_curve')
+exp2.add_session('16-36-11', 'j', 'am', 'am_tuning_curve')
