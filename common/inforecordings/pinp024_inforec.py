@@ -114,3 +114,59 @@ exp2.add_site(2508, tetrodes=range(1, 9))
 exp2.add_session('15-57-56', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('16-03-45', 'i', 'tc', 'am_tuning_curve')
 exp2.add_session('16-36-11', 'j', 'am', 'am_tuning_curve')
+
+exp3 = celldatabase.Experiment(subject,
+                               '2017-08-22',
+                               brainarea='rightAstr',
+                               info=['posteriorDiI', 'facingPosterior'])
+experiments.append(exp3)
+
+#Mouse on the rig at 1100hrs, waiting 30 mins for brain to settle
+
+exp3.add_site(2003, tetrodes=range(1, 9))
+exp3.add_session('11-27-27', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('11-30-49', 'a', 'tc', 'am_tuning_curve')
+exp3.add_session('12-06-05', 'b', 'am', 'am_tuning_curve')
+
+exp3.add_site(2136, tetrodes=range(1, 9))
+exp3.add_session('12-54-42', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('12-59-50', 'c', 'tc', 'am_tuning_curve')
+exp3.add_session('13-33-22', 'd', 'am', 'am_tuning_curve')
+
+exp3.add_site(2276, tetrodes=range(1, 9))
+exp3.add_session('13-57-57', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('14-01-44', 'e', 'tc', 'am_tuning_curve')
+exp3.add_session('14-34-27', 'f', 'am', 'am_tuning_curve')
+
+exp3.add_site(2407, tetrodes=range(1, 9))
+exp3.add_session('15-00-31', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('15-02-54', 'g', 'am', 'am_tuning_curve')
+# exp3.add_session('14-34-27', 'f', 'am', 'am_tuning_curve')
+
+exp4 = celldatabase.Experiment(subject,
+                               '2017-08-23',
+                               brainarea='rightAstr',
+                               info=['posteriorDiD', 'facingPosterior'])
+experiments.append(exp4)
+
+#Mouse on the rig at 1130hrs, waiting 15 mins for brain to settle
+
+exp4.add_site(2011, tetrodes=[2, 5, 6, 7, 8])
+exp4.add_session('11-44-19', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('11-50-05', 'a', 'tc', 'am_tuning_curve')
+exp4.add_session('12-23-02', 'b', 'am', 'am_tuning_curve')
+
+exp4.add_site(2158, tetrodes=[2, 4, 5, 6, 7, 8])
+exp4.add_session('13-04-05', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('13-09-05', 'c', 'tc', 'am_tuning_curve')
+exp4.add_session('13-43-26', 'd', 'am', 'am_tuning_curve')
+
+exp4.add_site(2308, tetrodes=[4, 5, 6, 7, 8])
+exp4.add_session('14-14-41', None, 'noiseburst', 'am_tuning_curve') #2000 trials...
+exp4.add_session('14-52-37', 'e', 'tc', 'am_tuning_curve')
+exp4.add_session('15-25-09', 'f', 'am', 'am_tuning_curve')
+
+exp4.add_site(2638, tetrodes=[6, 7, 8])
+exp4.add_session('16-10-51', None, 'noiseburst', 'am_tuning_curve') #2000 trials...
+exp4.add_session('16-13-59', 'g', 'tc', 'am_tuning_curve')
+exp4.add_session('16-47-37', 'h', 'am', 'am_tuning_curve')
