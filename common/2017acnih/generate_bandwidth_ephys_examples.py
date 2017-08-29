@@ -21,20 +21,40 @@ from jaratoolbox import settings
 from scipy import stats
 
 photoFigName = 'photoidentified_cells_bandwidth_tuning'
+
 SOMFigName = 'SOM_inactivation_bandwidth_tuning'
+harmoFigName = 'harmonics_bandwidth_tuning'
 
 photoDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', photoFigName)
 SOMDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', SOMFigName)
-
+harmoDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', harmoFigName)
 
 # -- Ephys and behaviour file names for example cells -- #
-cellParamsList = [{'animal':'band004',
+cellParamsList = [{'animal':'band033',
+                   'date':'2017-08-02',
+                   'laserEphysSession': None,
+                   'bandwidthEphysSession':'2017-08-02_14-18-58',
+                   'bandwidthBehavSession':'band033_bandwidth_am_20170802k.h5',
+                   'tetrode':8,
+                   'cluster':5,
+                   'sessionType':'harmonics'},
+                  
+                  {'animal':'band004',
                    'date': '2016-09-09',
                    'laserEphysSession': '2016-09-09_13-36-54',
                    'bandwidthEphysSession': '2016-09-09_13-40-30',
                    'bandwidthBehavSession':'band004_bandwidth_am_20160909f.h5',
                    'tetrode':6,
-                   'cluster':4}, #example PV cell
+                   'cluster':4,
+                   'sessionType':'photoidentified'}, #example PV cell
+                  
+                  {'animal':'band004',
+                   'date': '2016-08-30',
+                   'laserEphysSession': '2016-08-30_13-59-33',
+                   'bandwidthEphysSession': '2016-08-30_14-26-48',
+                   'bandwidthBehavSession':'band004_bandwidth_am_20160830i.h5',
+                   'tetrode':4,
+                   'cluster':5}, #example PV cell         
                   
                   {'animal':'band015',
                    'date': '2016-11-12',
@@ -42,7 +62,8 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2016-11-12_12-23-23',
                    'bandwidthBehavSession':'band015_bandwidth_am_20161112f.h5',
                    'tetrode':8,
-                   'cluster':4}, #example SOM cell         
+                   'cluster':4,
+                   'sessionType':'photoidentified'}, #example SOM cell         
                   
                   {'animal':'band015',
                    'date': '2016-11-12',
@@ -50,7 +71,8 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2016-11-12_13-58-43',
                    'bandwidthBehavSession':'band015_bandwidth_am_20161112l.h5',
                    'tetrode':7,
-                   'cluster':4}, #bad example SOM cell (not tuned to center frequency)         
+                   'cluster':4,
+                   'sessionType':'photoidentified'}, #bad example SOM cell (not tuned to center frequency)         
                   
                   {'animal':'band016',
                    'date': '2016-12-11',
@@ -58,7 +80,8 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2016-12-11_15-07-28',
                    'bandwidthBehavSession':'band016_bandwidth_am_20161211f.h5',
                    'tetrode':6,
-                   'cluster':6}, #example excitatory cell (non-SOM cell in SOM animal)
+                   'cluster':6,
+                   'sessionType':'photoidentified'}, #example excitatory cell (non-SOM cell in SOM animal)
                   
                   {'animal':'band002',
                    'date': '2016-08-11',
@@ -66,7 +89,8 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2016-08-11_10-14-24',
                    'bandwidthBehavSession':'band002_bandwidth_am_20160811d.h5',
                    'tetrode':4,
-                   'cluster':5}, #example excitatory cell (from wt animal)
+                   'cluster':5,
+                   'sessionType':'photoidentified'}, #example excitatory cell (from wt animal)
                   
                   {'animal':'band002',
                    'date': '2016-08-12',
@@ -74,7 +98,8 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2016-08-12_12-27-34',
                    'bandwidthBehavSession':'band002_bandwidth_am_20160812k.h5',
                    'tetrode':6,
-                   'cluster':4}, #example excitatory cell (from wt animal)
+                   'cluster':4,
+                   'sessionType':'photoidentified'}, #example excitatory cell (from wt animal)
                   
                   {'animal':'band003',
                    'date': '2016-08-18',
@@ -82,7 +107,8 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2016-08-18_14-48-21',
                    'bandwidthBehavSession':'band003_bandwidth_am_20160818o.h5',
                    'tetrode':6,
-                   'cluster':6},
+                   'cluster':6,
+                   'sessionType':'photoidentified'},
                   
                   {'animal':'band025',
                    'date': '2017-04-20',
@@ -90,7 +116,8 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2017-04-20_15-16-29',
                    'bandwidthBehavSession':'band025_bandwidth_am_20170420k.h5',
                    'tetrode':6,
-                   'cluster':6}, #example cell showing different contextual modulation with laser on (SOM-Arch)
+                   'cluster':6,
+                   'sessionType':'inactivationSOM'}, #example cell showing different contextual modulation with laser on (SOM-Arch)
                   
                   {'animal':'band025',
                    'date': '2017-04-19',
@@ -98,15 +125,17 @@ cellParamsList = [{'animal':'band004',
                    'bandwidthEphysSession': '2017-04-19_14-38-17',
                    'bandwidthBehavSession':'band025_bandwidth_am_20170419g.h5',
                    'tetrode':8,
-                   'cluster':2}, #example cell showing same context mod, difference in gain with laser on (SOM-Arch) 
+                   'cluster':2,
+                   'sessionType':'inactivationSOM'}, #example cell showing same context mod, difference in gain with laser on (SOM-Arch) 
 
-                   {'animal':'band025',
+                  {'animal':'band025',
                    'date': '2017-04-19',
                    'laserEphysSession': None,
                    'bandwidthEphysSession': '2017-04-19_14-38-17',
                    'bandwidthBehavSession':'band025_bandwidth_am_20170419g.h5',
                    'tetrode':4,
-                   'cluster':3}] #example cell suppressed by laser
+                   'cluster':3,
+                   'sessionType':'inactivationSOM'}] #example cell suppressed by laser
 
 # -- Define which cells to process --
 args = sys.argv[1:]
@@ -154,14 +183,22 @@ for indCell in cellsToGenerate:
     firstSortLabels = ['{}'.format(band) for band in np.unique(bandEachTrial)]
     
     # sort by laser trials for SOM-Arch animal, otherwise by amplitude of noise in bandwidth trials
-    if cell['animal']=='band025':
+    condLabels = ['trial','bandwidth']
+    if cell['sessionType']=='inactivationSOM':
         secondSort = bdata['laserTrial']
         numSec = np.unique(secondSort)
-        secondSortLabels = ['no laser','laser'] 
-    else:
+        secondSortLabels = ['no laser','laser']
+        condLabels.append('laser')
+    elif cell['sessionType']=='harmonics':
+        secondSort = bdata['harmTrialType']
+        numSec = np.unique(secondSort)
+        secondSortLabels = ['noise','harmonics']
+        condLabels.append('harmonics')
+    elif call['sessionType']=='photoidentified':
         secondSort = bdata['currentAmp']
         numSec = np.unique(secondSort)
         secondSortLabels = ['{} dB'.format(amp) for amp in np.unique(secondSort)]
+        condLabels.append('amplitude')
         
     bandTimeRange = [-0.2, 1.5]
     bandEventOnsetTimes = bandEventData.get_event_onset_times()
@@ -190,10 +227,13 @@ for indCell in cellsToGenerate:
             trialsThisBand = trialsThisSecVal[:,band]
             if bandSpikeCountMat.shape[0] != len(trialsThisBand):
                 bandSpikeCountMat = bandSpikeCountMat[:-1,:]
-            thisBandCounts = bandSpikeCountMat[trialsThisBand].flatten()
-            spikeArray[band, thisSecVal] = np.mean(thisBandCounts)/soundDuration
-            errorArray[band, thisSecVal] = stats.sem(thisBandCounts)/soundDuration # Error is standard error of the mean
-    
+            if any(trialsThisBand):
+                thisBandCounts = bandSpikeCountMat[trialsThisBand].flatten()
+                spikeArray[band, thisSecVal] = np.mean(thisBandCounts)/soundDuration
+                errorArray[band, thisSecVal] = stats.sem(thisBandCounts)/soundDuration # Error is standard error of the mean
+            else:
+                spikeArray[band, thisSecVal] = np.nan
+                errorArray[band, thisSecVal] = np.nan
             
     # --- load spike and event data for laser trials ---
     laserEphysSession = cell['laserEphysSession']
@@ -229,15 +269,16 @@ for indCell in cellsToGenerate:
                                                                                                         laserTimeRange)
     ### Save bandwidth data ###    
     outputFile = 'example_bandwidth_tuning_{}_{}_T{}_c{}.npz'.format(cell['animal'], cell['date'], cell['tetrode'],cell['cluster'])
-    if cell['animal']=='band025':
-        outputFullPath = os.path.join(SOMDataDir,outputFile)
-    else:
-        outputFullPath = os.path.join(photoDataDir,outputFile)
+    dirDict = {'photoidentified':photoDataDir,
+               'inactivationSOM':SOMDataDir,
+               'harmonics':harmoDataDir}
+    # data from SOM-Arch animal saved in separate directory
+    outputFullPath = os.path.join(dirDict[cell['sessionType']],outputFile)
     np.savez(outputFullPath, spikeTimestamps=bandSpikeTimestamps, eventOnsetTimes=bandEventOnsetTimes,
              spikeCountMat=bandSpikeCountMat, spikeArray=spikeArray, errorArray=errorArray,
              possibleBands=numBands, possibleSecondSort=numSec, firstSortLabels=firstSortLabels,
              secondSortLabels=secondSortLabels, spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset,
-             indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,trialsEachCond=bandTrialsEachCond, **cell)
+             indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,trialsEachCond=bandTrialsEachCond, condLabels=condLabels, **cell)
     print outputFile + " saved"
 
     ### Save laser data ###

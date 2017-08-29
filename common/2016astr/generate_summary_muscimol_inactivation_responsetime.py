@@ -12,7 +12,7 @@ FIGNAME = 'muscimol_inactivation'
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 scriptFullPath = os.path.realpath(__file__)
 
-summaryFilename = 'muscimol_reaction_time_summary.npz'
+summaryFilename = 'muscimol_response_time_summary.npz'
 summaryFullPath = os.path.join(outputDir,summaryFilename)
 
 
@@ -43,20 +43,24 @@ for indAnimal, animalName in enumerate(animalsToUse):
         sessions = animalSessionDict[conditions[indCond]]
         rtAllThisSubject = np.array([])
         rtValidThisSubject = np.array([])
+        rtAllMeanThisSubject = np.array([])
         rtValidMeanThisSubject = np.array([])
         for indSession, session in enumerate(sessions):
             bdata = behavioranalysis.load_many_sessions(animalName, [session])
             validTrials = bdata['valid'].astype(bool) & (bdata['choice']!=bdata.labels['choice']['none'])
             #rtAll = bdata['timeCenterOut'] - bdata['timeTarget']
-            rtAll = bdata['timeSideIn'] - bdata['timeCenterOut'] 
+            rtAll = bdata['timeCenterOut'] - bdata['timeTarget'] 
             rtValid = rtAll[validTrials]
             rtAllThisSubject = np.append(rtAllThisSubject, rtAll)
             rtValidThisSubject = np.append(rtValidThisSubject, rtValid)
+            rtAllMean = np.mean(rtAll)
             rtValidMean = np.mean(rtValid)
+            rtAllMeanThisSubject = np.append(rtAllMeanThisSubject, rtAllMean)
             rtValidMeanThisSubject = np.append(rtValidMeanThisSubject, rtValidMean)
         dataDict.update({'{}all{}'.format(animalName, conditions[indCond]):rtAllThisSubject,
                          '{}valid{}'.format(animalName, conditions[indCond]):rtValidThisSubject,
-                         '{}validmean{}'.format(animalName, conditions[indCond]):rtValidMeanThisSubject})
+                         '{}validmean{}'.format(animalName, conditions[indCond]):rtValidMeanThisSubject,
+                         '{}allmean{}'.format(animalName, conditions[indCond]):rtAllMeanThisSubject})
 
 np.savez(summaryFullPath,
          subjects = np.array(subjects),

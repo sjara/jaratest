@@ -19,49 +19,37 @@ if not os.path.exists(outputDir):
 scriptFullPath = os.path.realpath(__file__)
 
 sessionsDict = {'adap048': {'leftHemiStim': ['20170717a',
-                                             '20170719a',
-                                             '20170721a',
-                                             '20170724a',
-                                             '20170726a',
-                                             '20170728a',
-                                             '20170801a',
-                                             '20170803a',
-                                             '20170807a',
-                                             '20170809a'
+                                            '20170719a',
+                                            '20170721a',
+                                            '20170724a',
+                                            '20170726a',
+                                            '20170728a',
+                                            '20170801a'
                                             ],
                             'rightHemiStim': ['20170718a',
-                                              '20170720a',
-                                              '20170722a',
-                                              '20170725a',
-                                              '20170727a',
-                                              '20170731a',
-                                              '20170802a',
-                                              '20170804a',
-                                              '20170808a',
-                                              '20170810a'
+                                            '20170720a',
+                                            '20170722a',
+                                            '20170725a',
+                                            '20170727a',
+                                            '20170731a',
+                                            '20170802a'
                                             ]
                             },
                 'adap056': {'leftHemiStim': ['20170717a',
-                                             '20170719a',
-                                             '20170721a',
-                                             '20170724a',
-                                             '20170726a',
-                                             '20170728a',
-                                             '20170801a',
-                                             '20170803a',
-                                             '20170807a',
-                                             '20170809a'
+                                            '20170719a',
+                                            '20170721a',
+                                            '20170724a',
+                                            '20170726a',
+                                            '20170728a',
+                                            '20170801a'
                                             ],
                             'rightHemiStim': ['20170718a',
-                                              '20170720a',
-                                              '20170722a',
-                                              '20170725a',
-                                              '20170727a',
-                                              '20170731a',
-                                              '20170802a',
-                                              '20170804a',
-                                              '20170808a',
-                                              '20170810a'
+                                            '20170720a',
+                                            '20170722a',
+                                            '20170725a',
+                                            '20170727a',
+                                            '20170731a',
+                                            '20170802a'
                                             ]
                             }
 
@@ -91,26 +79,26 @@ for mouse,sessionsEachMouse in sessionsDict.items():
                 choiceRightStim = choiceRight[trialsEachType[:,stimLabels.index('laser_left')]]
                 choiceRightStim = choiceRightStim&validTrialsStim
                 #pdb.set_trace()
-                percentRightChoiceControl = sum(choiceRightControl)/float(sum(validTrialsControl))
-                percentRightChoiceStim = sum(choiceRightStim)/float(sum(validTrialsStim))
-                percentChangeRightChoice = percentRightChoiceStim-percentRightChoiceControl
+                percentContraChoiceControl = sum(choiceRightControl)/float(sum(validTrialsControl))
+                percentContraChoiceStim = sum(choiceRightStim)/float(sum(validTrialsStim))
+                percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
                                 
             elif stimHemi == 'rightHemiStim': 
                 validTrialsControl = valid[trialsEachType[:,stimLabels.index('no_laser')]]
                 validTrialsStim = valid[trialsEachType[:,stimLabels.index('laser_right')]]
-                choiceRight = choice==bdata.labels['choice']['right']
-                choiceRightControl = choiceRight[trialsEachType[:,stimLabels.index('no_laser')]]
-                choiceRightControl = choiceRightControl&validTrialsControl
-                choiceRightStim = choiceRight[trialsEachType[:,stimLabels.index('laser_right')]]
-                choiceRightStim = choiceRightStim&validTrialsStim
+                choiceLeft = choice==bdata.labels['choice']['left']
+                choiceLeftControl = choiceLeft[trialsEachType[:,stimLabels.index('no_laser')]]
+                choiceLeftControl = choiceLeftControl&validTrialsControl
+                choiceLeftStim = choiceLeft[trialsEachType[:,stimLabels.index('laser_right')]]
+                choiceLeftStim = choiceLeftStim&validTrialsStim
                 #pdb.set_trace()
-                percentRightChoiceControl = sum(choiceRightControl)/float(sum(validTrialsControl))
-                percentRightChoiceStim = sum(choiceRightStim)/float(sum(validTrialsStim))
-                percentChangeRightChoice = percentRightChoiceStim-percentRightChoiceControl
-            resultsDict[mouse+stimHemi].append(percentChangeRightChoice)
+                percentContraChoiceControl = sum(choiceLeftControl)/float(sum(validTrialsControl))
+                percentContraChoiceStim = sum(choiceLeftStim)/float(sum(validTrialsStim))
+                percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
+            resultsDict[mouse+stimHemi].append(percentChangeContraChoice)
                 
 
 #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-outputFile = 'summary_photostim_control_percent_right_choice_change.npz'
+outputFile = 'summary_photostim_control_percent_contra_choice_change.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, script=scriptFullPath, **resultsDict)

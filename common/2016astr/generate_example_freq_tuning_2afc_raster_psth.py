@@ -128,7 +128,7 @@ for cellParams in cellParamsList:
     valid = bdata['valid'].astype('bool')
     possibleFreq = np.unique(freqEachTrial)
     trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
-    trialEachFreq = trialsEachFreq & valid[:,np.newaxis] #Use only valid trials where sound is played in full 
+    trialsEachFreq = trialsEachFreq & valid[:,np.newaxis] #Use only valid trials where sound is played in full 
 
     (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
             spikesanalysis.eventlocked_spiketimes(spikeTimestamps,soundOnsetTimeEphys,timeRange)

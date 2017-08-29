@@ -1,4 +1,4 @@
-''' Create figure showing bandwidth tuning with and without SOM inactivation'''
+''' Create figure showing bandwidth tuning with noise and harmonically organised tones'''
 import os
 import numpy as np
 from matplotlib import pyplot as plt
@@ -13,18 +13,18 @@ matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
 
 
-FIGNAME = 'som_inactivation_bandwidth_tuning'
+FIGNAME = 'harmonics_bandwidth_tuning'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', FIGNAME)
 
-PANELS_TO_PLOT = [1,1,1] # [ExperimentalRaster, ExperimentalTuning, ModelTuning]
+PANELS_TO_PLOT = [1,1] # [ExperimentalRaster, ExperimentalTuning]
 
-filenameTuning = 'example_bandwidth_tuning_band025_2017-04-20_T6_c6.npz'
+filenameTuning = 'example_bandwidth_tuning_band033_2017-08-02_T8_c5.npz'
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'som_inactivation_bandwidth_tuning' # Do not include extension
-figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [10,4]
+figFilename = 'harmonics_bandwidth_tuning' # Do not include extension
+figFormat = 'pdf' # 'pdf' or 'svg'
+figSize = [8,6]
 
 fontSizeLabels = 14
 fontSizeTicks = 12
@@ -37,44 +37,51 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-#laserColor = ['#4e9a06','#8ae234']
-#laserColor = ['#90C000','#B0F020']
-#laserColor = ['#9AB973','#AAD983']
-#laserColor = ['0.5','0.75']
-#noLaserColor = ['0.25', '0.75']
-laserColor = [cp.TangoPalette['Butter3'],cp.TangoPalette['Butter1']]
-noLaserColor = ['0', '0.75']
+laserColor = ['#4e9a06','#8ae234']
+noLaserColor = ['0.25', '0.75']
 colors = [noLaserColor, laserColor]
 
-gs = gridspec.GridSpec(2,3)
-gs.update(top=0.9, left=0.05, bottom=0.15, right=0.98, wspace=0.25, hspace=0.25)
+gs = gridspec.GridSpec(2,2)
+gs.update(top=0.9, left=0.1, bottom=0.15, right=0.98, wspace=0.25, hspace=0.25)
 
 dataFullPath = os.path.join(dataDir,filenameTuning)
 data = np.load(dataFullPath)
 
-'''
 # --- Raster plots of sound response with and without laser ---
 if PANELS_TO_PLOT[0]:
-    laserTrials = data['possibleSecondSort']
-    for laser in laserTrials:
-        plt.subplot(gs[laser,1])
-        colorEachCond = np.tile(colors[laser], len(data['possibleBands'])/2+1)
+    harmoTrials = data['possibleSecondSort']
+    trialsEachCond = data['trialsEachCond']
+    for harmo in harmoTrials:
+        plt.subplot(gs[1-harmo,0])
+        colorEachCond = np.tile(colors[harmo], len(data['possibleBands'])/2+1)
+        trialsThisSecondVal = trialsEachCond[:, :, harmo]
+        
+        # a dumb workaround that dulpicates the tone trials to put in both rasters
+        for ind2, band in enumerate(data['possibleBands']):
+            if not any(trialsThisSecondVal[:,ind2]):
+                trialsThisSecondVal[:,ind2]=trialsEachCond[:,ind2,harmo+1]
+        
         pRaster, hcond, zline = extraplots.raster_plot(data['spikeTimesFromEventOnset'],
                                                    data['indexLimitsEachTrial'],
                                                    data['timeRange'],
-                                                   trialsEachCond=data['trialsEachCond'][:,:,laser],
+                                                   trialsEachCond=trialsEachCond[:,:,harmo],
                                                    labels=data['firstSortLabels'])
-        plt.setp(pRaster, ms=3, color=colors[laser][0])
+        plt.setp(pRaster, ms=3, color=colors[harmo][0])
         plt.ylabel('Bandwidth (oct)')
+    plt.subplot(gs[1,0])
     plt.xlabel('Time (s)')
-'''
 
 # --- Plot of bandwidth tuning with and without laser ---
 if PANELS_TO_PLOT[1]:
     spikeArray = data['spikeArray']
     errorArray = data['errorArray']
+    
+    #duplicate tone data for both curves
+    spikeArray[0,0]=spikeArray[0,1]
+    errorArray[0,0]=errorArray[0,1]
+    
     bands = data['possibleBands']
-    axTuning = plt.subplot(gs[0:,1])
+    axTuning = plt.subplot(gs[0:,1:])
     lines = []
     plt.hold(True)
     l2,=plt.plot(range(len(bands)), spikeArray[:,1].flatten(), '-o', clip_on=False,
@@ -89,39 +96,15 @@ if PANELS_TO_PLOT[1]:
     plt.fill_between(range(len(bands)), spikeArray[:,0].flatten() - errorArray[:,0].flatten(), 
                      spikeArray[:,0].flatten() + errorArray[:,0].flatten(),
                      alpha=0.2, edgecolor = noLaserColor[1], facecolor=noLaserColor[1])
+    axTuning.set_xticks(range(len(bands)))
     axTuning.set_xticklabels(bands)
     plt.xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(axTuning)
-    #plt.legend(lines,['no laser', 'laser'], bbox_to_anchor=(0.95, 0.95), borderaxespad=0.)
-    plt.legend(lines,['No SOM', 'Control'], loc='lower center', frameon=False) #'upper left'
-    plt.title('Mouse AC',fontsize=fontSizeLabels,fontweight='bold')
-
-
-# -- Plot model curves --
-modelDataDir = './modeldata'
-if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
-    import pandas as pd
-    modelDataFiles = ['SSNbandwidthTuning_regime1.csv']
-
-    colorEachCond = [noLaserColor[0], laserColor[0]]
-    axModel = plt.subplot(gs[0:,2])
-    for indm, oneModelFile in enumerate(modelDataFiles):
-        modelData = pd.read_csv(os.path.join(modelDataDir,oneModelFile))
-        modelBW = modelData['BW(oct)']
-        modelRates = [modelData['y_PV'], modelData['y_SOM']]
-
-        for indc,rates in enumerate(modelRates):
-            #plt.plot(np.log2(modelBW), rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
-            plt.plot(modelBW, rates, 'o-', lw=5, color=colorEachCond[indc], mec=colorEachCond[indc], clip_on=True)
-            #axModel.set_xticklabels(bands)
-            plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
-            extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-            axModel.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
-            extraplots.boxoff(axModel)
-    plt.title('Model',fontsize=fontSizeLabels,fontweight='bold')
-    
+    plt.legend(lines,['Harmonics', 'Noise'], loc='lower left', frameon=False) #'upper left'
+    #plt.title('Just a graph lol',fontsize=fontSizeLabels,fontweight='bold')
+   
 plt.show()
 
 if SAVE_FIGURE:

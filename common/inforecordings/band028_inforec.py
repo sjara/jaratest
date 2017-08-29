@@ -79,29 +79,29 @@ exp2.laserCalibration = {
     '3.5':4.75
 }
 
-exp2.add_site(1141, tetrodes = [2,4,6,7,8])
+exp2.add_site(1141, tetrodes = [2,4])
 exp2.add_session('14-09-18', None, 'laserPulse', 'am_tuning_curve')
 
-exp2.add_site(1180, tetrodes = [2,4,6,7,8])
+exp2.add_site(1180, tetrodes = [2,4,6])
 exp2.add_session('14-11-26', None, 'laserPulse', 'am_tuning_curve')
 
-exp2.add_site(1200, tetrodes = [2,4,8])
+exp2.add_site(1200, tetrodes = [2,4])
 exp2.add_session('14-12-48', None, 'laserPulse', 'am_tuning_curve')
 
-exp2.add_site(1210, tetrodes = [2,4,8])
+exp2.add_site(1210, tetrodes = [2,4])
 exp2.add_session('14-14-20', None, 'laserPulse', 'am_tuning_curve')
 
 exp2.add_site(1220, tetrodes = [2,4,6,8])
 exp2.add_session('14-15-53', None, 'laserPulse', 'am_tuning_curve')
 exp2.add_session('14-28-15', None, 'laserPulse', 'am_tuning_curve')
 
-exp2.add_site(1250, tetrodes = [2,4,6,8])
+exp2.add_site(1250, tetrodes = [2,4,8])
 exp2.add_session('14-30-34', None, 'laserPulse', 'am_tuning_curve')
 
-exp2.add_site(1275, tetrodes = [2,4,6,8])
+exp2.add_site(1275, tetrodes = [2,4,8])
 exp2.add_session('14-32-02', None, 'laserPulse', 'am_tuning_curve')
 
-exp2.add_site(1300, tetrodes = [2,4,6,8])
+exp2.add_site(1300, tetrodes = [2,4,8])
 exp2.add_session('14-33-44', None, 'laserPulse', 'am_tuning_curve')
 exp2.add_session('14-35-20', None, 'noisebursts', 'am_tuning_curve')
 exp2.add_session('14-37-09', None, 'laserPulse', 'am_tuning_curve')

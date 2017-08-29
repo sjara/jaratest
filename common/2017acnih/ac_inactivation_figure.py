@@ -21,7 +21,7 @@ import matplotlib
 
 PRINT_FIGURE = 1
 
-FIGNAME = 'ac_inactivation_behaviour'
+FIGNAME = 'ac_inactivation_behavior'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', FIGNAME)
 
 gs = gridspec.GridSpec(2,2)

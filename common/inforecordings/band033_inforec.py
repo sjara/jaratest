@@ -18,7 +18,7 @@ exp0.add_site(1400, tetrodes=[2,4,6,8])
 exp0.add_session('13-28-16', None, 'laserPulse', 'am_tuning_curve')
 exp0.add_session('13-29-46', None, 'noisebursts', 'am_tuning_curve')
 
-exp0.add_site(1425, tetrodes=[2,4,6,7,8])
+exp0.add_site(1425, tetrodes=[2,4,6,8])
 exp0.add_session('13-34-10', None, 'laserPulse', 'am_tuning_curve')
 
 exp0.add_site(1450, tetrodes=[4,8])
