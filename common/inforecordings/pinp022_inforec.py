@@ -40,4 +40,4 @@ exp0.add_session('13-48-23', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('13-50-42', None, 'laserpulse', 'am_tuning_curve')
 exp0.add_session('13-55-10', None, 'lasertrain', 'am_tuning_curve')
 
-# I am done. max depth is 3960
+# I am done. max depth is 3960. I pulled the probe out and there were many sites that were above 10Mohms. I should have checked the impedence data before I started today.
