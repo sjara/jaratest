@@ -74,7 +74,7 @@ exp1.add_session('11-14-47', 'c', 'tc', 'am_tuning_curve')
 exp1.add_site(2163, tetrodes=range(1, 9))
 exp1.add_session('11-49-11', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('11-52-21', 'd', 'tc', 'am_tuning_curve')
-exp1.add_session('12-15-13', 'e', 'am', 'am_tuning_curve')
+exp1.add_session('12-25-13', 'e', 'am', 'am_tuning_curve')
 
 exp1.add_site(2265, tetrodes=range(1, 9))
 exp1.add_session('13-48-16', None, 'noiseburst', 'am_tuning_curve')
@@ -123,7 +123,7 @@ experiments.append(exp3)
 
 #Mouse on the rig at 1100hrs, waiting 30 mins for brain to settle
 
-exp3.add_site(2003, tetrodes=range(1, 9))
+exp3.add_site(2003, tetrodes=range(1, 9)).remove_tetrodes([5])
 exp3.add_session('11-27-27', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('11-30-49', 'a', 'tc', 'am_tuning_curve')
 exp3.add_session('12-06-05', 'b', 'am', 'am_tuning_curve')
