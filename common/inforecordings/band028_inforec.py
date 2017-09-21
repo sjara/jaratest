@@ -91,7 +91,7 @@ exp2.add_session('14-12-48', None, 'laserPulse', 'am_tuning_curve')
 exp2.add_site(1210, tetrodes = [2,4])
 exp2.add_session('14-14-20', None, 'laserPulse', 'am_tuning_curve')
 
-exp2.add_site(1220, tetrodes = [2,4,6,8])
+exp2.add_site(1220, tetrodes = [2,4,8])
 exp2.add_session('14-15-53', None, 'laserPulse', 'am_tuning_curve')
 exp2.add_session('14-28-15', None, 'laserPulse', 'am_tuning_curve')
 

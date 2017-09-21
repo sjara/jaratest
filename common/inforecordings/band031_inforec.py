@@ -49,8 +49,8 @@ exp0.add_session('14-16-01', 'e', 'tuningCurve', 'am_tuning_curve')
 exp0.add_session('14-21-57', 'f', 'AM', 'am_tuning_curve')
 exp0.add_session('14-26-19', None, 'laserPulse', 'am_tuning_curve')
 exp0.add_session('14-28-26', None, 'laserTrain', 'am_tuning_curve')
-exp0.add_session('14-31-48', 'g', 'bandwidth', 'am_tuning_curve') #6kHz for TT1 and 8
-exp0.add_session('14-51-54', 'h', 'bandwidth', 'am_tuning_curve') #4kHz for TT4
+exp0.add_session('14-31-48', 'g', 'bandwidth', 'bandwidth_am') #6kHz for TT1 and 8
+exp0.add_session('14-51-54', 'h', 'bandwidth', 'bandwidth_am') #4kHz for TT4
 exp0.add_session('15-10-19', 'i', 'noiseAmps', 'am_tuning_curve')
 
 exp0.add_site(1200, tetrodes=[1,2,4,5,6,7,8])

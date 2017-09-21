@@ -139,7 +139,7 @@ exp2.add_session('15-07-35', 'f', 'AM', 'am_tuning_curve')
 exp2.add_session('15-11-55', None, 'laserPulse', 'am_tuning_curve')
 exp2.add_session('15-14-05', None, 'laserTrain', 'am_tuning_curve')
 exp2.add_session('15-19-59', 'g', 'bandwidth', 'bandwidth_am')
-exp2.add_session('15-38-51', 'h', 'noiseAmps', 'am_tuning_curve')
+exp2.add_session('15-38-41', 'h', 'noiseAmps', 'am_tuning_curve')
 
 exp2.add_site(1050, tetrodes=[1,2,3,4,6,8])
 exp2.add_session('15-46-58', None, 'laserPulse', 'am_tuning_curve')
