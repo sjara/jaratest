@@ -331,8 +331,17 @@ if PANELS[3]:
     numOverallFreqSelCells = sum(ANOVAfreqSelective)
     numOverallFreqSelSoundRespCells = sum(ANOVAfreqSelective & sigRespOverall)
     print 100*float(numOverallFreqSelSoundRespCells)/numOverallRespCells, '%, ', numOverallFreqSelSoundRespCells, 'out of', numOverallRespCells, ' sound responsive cells in 2afc psycurve task show different response to all frequencies (one-way ANOVA).'
-    print 100*float(numOverallFreqSelCells)/numCells, '%, ', numOverallFreqSelCells, 'out of', numCells, ' total responsive cells in 2afc psycurve task show different response to all frequencies (one-way ANOVA).'
+    print 100*float(numOverallFreqSelCells)/numCells, '%, ', numOverallFreqSelCells, 'out of', numCells, ' total cells in 2afc psycurve task show different response to all frequencies (one-way ANOVA).'
     
+    # -- Statistic test for frequency selectivity (Kruskal-Wallis H-test) -- #
+    allKruskalPVals = np.ones(numCells)
+    for cellInd in range(numCells):
+        Fstat, pVal = stats.kruskal(*np.hsplit(responseEachCellEachFreq[cellInd], numFreqs))
+        allKruskalPVals[cellInd] = pVal
+    KruskalfreqSelective = allKruskalPVals <= alphaLevel
+    numOverallFreqSelCellsKruskal = sum(KruskalfreqSelective)
+    print 100*float(numOverallFreqSelCellsKruskal)/numCells, '%, ', numOverallFreqSelCellsKruskal, 'out of', numCells, ' total cells in 2afc psycurve task show different response to all frequencies (Kruskal-Wallis H-test).'
+
 plt.show()
 
 if SAVE_FIGURE:
