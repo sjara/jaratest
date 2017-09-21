@@ -97,7 +97,7 @@ if PANELS_TO_PLOT[1]:
     extraplots.boxoff(axTuning)
     #plt.legend(lines,['no laser', 'laser'], bbox_to_anchor=(0.95, 0.95), borderaxespad=0.)
     plt.legend(lines,['No SOM', 'Control'], loc='lower center', frameon=False) #'upper left'
-    plt.title('Mouse AC',fontsize=fontSizeLabels,fontweight='bold')
+    plt.title('Mouse A1',fontsize=fontSizeLabels,fontweight='normal')
 
 
 # -- Plot model curves --
@@ -129,7 +129,7 @@ if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
             extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
             axModel.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
             extraplots.boxoff(axModel)
-    plt.title('Model',fontsize=fontSizeLabels,fontweight='bold')
+    plt.title('Model',fontsize=fontSizeLabels,fontweight='normal')
     
 plt.show()
 

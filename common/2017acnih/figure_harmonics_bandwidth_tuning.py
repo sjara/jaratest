@@ -26,8 +26,8 @@ figFilename = 'harmonics_bandwidth_tuning' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [6,4]
 
-fontSizeLabels = 14
-fontSizeTicks = 12
+fontSizeLabels = 16
+fontSizeTicks = 14
 fontSizePanel = 16
 labelDis = 0.1
 labelPosX = [0.07, 0.45]   # Horiz position for panel labels
@@ -42,7 +42,7 @@ noiseColor = ['0.25', '0.75']
 allColors = [noiseColor, harmoColor]
 
 gs = gridspec.GridSpec(2,2)
-gs.update(top=0.9, left=0.1, bottom=0.15, right=0.98, wspace=0.25, hspace=0.25)
+gs.update(top=0.9, left=0.08, bottom=0.15, right=0.98, wspace=0.25, hspace=0.25)
 
 dataFullPath = os.path.join(dataDir,filenameTuning)
 data = np.load(dataFullPath)
@@ -105,7 +105,7 @@ if PANELS_TO_PLOT[0]:
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(axTuning)
     plt.legend(lines,['Harmonics', 'Noise'], loc='upper left', numpoints=1, markerscale=1, handlelength=1, frameon=False)
-    plt.title('Mouse AC',fontsize=fontSizeLabels,fontweight='bold')
+    plt.title('Mouse A1',fontsize=fontSizeLabels,fontweight='normal')
 
 if PANELS_TO_PLOT[1]:
     axModel = plt.subplot(gs[0:,1])
@@ -132,7 +132,7 @@ if PANELS_TO_PLOT[1]:
     plt.xlim([-0.25,len(modelBW)-0.75])
     plt.ylim([0,7])
     plt.legend(lines,['Harmonics', 'Noise'], loc='upper left', numpoints=1, markerscale=1, handlelength=1, frameon=False)
-    plt.title('Model',fontsize=fontSizeLabels,fontweight='bold')
+    plt.title('Model',fontsize=fontSizeLabels,fontweight='normal')
 
 
 
