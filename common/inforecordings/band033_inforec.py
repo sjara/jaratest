@@ -116,10 +116,10 @@ exp1.add_session('13-47-41', 'i', 'AM', 'am_tuning_curve')
 exp1.add_session('13-52-20', None, 'laserPulse', 'am_tuning_curve')
 exp1.add_session('13-55-39', None, 'laserTrain', 'am_tuning_curve')
 exp1.add_session('14-00-27', 'j', 'bandwidth', 'bandwidth_am')
-exp1.add_session('14-18-58', 'k', 'harmonics', 'bandwidth_am')
+exp1.add_session('14-18-58', 'k', 'harmonics', 'bandwidth_am') #18kHz center frequency
 exp1.add_session('14-40-59', 'l', 'noiseAmps', 'am_tuning_curve')
 exp1.add_session('14-46-47', None, 'noisebursts', 'am_tuning_curve')
-exp1.add_session('15-00-45', 'm', 'harmonics', 'bandwidth_am')
+exp1.add_session('15-00-45', 'm', 'harmonics', 'bandwidth_am') #22kHz center frequency
 
 
 exp1.add_site(1400, tetrodes=[1,2,3,4,5,6,8])
