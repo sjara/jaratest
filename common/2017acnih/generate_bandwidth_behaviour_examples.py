@@ -29,8 +29,8 @@ muscimolSessions = ['20161201a', '20161203a', '20161205a', '20161207a']
 PVAnimals = ['band017', 'band020']
 laserPVSessions = ['20170228a','20170226a','20170224a','20170222a']
 
-archAnimals = ['band011']
-archSessions = ['20170314a','20170315a','20170324a']
+archCaMKIIAnimals = ['band011']
+archCaMKIISessions = ['20170314a','20170315a','20170324a']
 
 # --- computes valid and right trials across all sessions for muscimol animals ---
 for animal in muscimolAnimals:
@@ -126,11 +126,11 @@ for animal in PVAnimals:
     print outputFile + " saved"
 
 # --- computes valid and right trials across all sesions for Arch animals ---
-for animal in archAnimals:
+for animal in archCaMKIIAnimals:
     validPerSNR = None
     rightPerSNR = None
     nCorrect = [0,0]
-    for ind, session in enumerate(archSessions):
+    for ind, session in enumerate(archCaMKIISessions):
         behavFile = os.path.join(settings.BEHAVIOR_PATH,animal,animal+'_2afc_'+session+'.h5')
         behavData = loadbehavior.BehaviorData(behavFile,readmode='full')
         possibleSNRs = np.unique(behavData['currentSNR'])
