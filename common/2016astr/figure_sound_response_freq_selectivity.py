@@ -118,7 +118,7 @@ if PANELS[0]:
     plt.xlim(timeRangeSound)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    yLims = [0,88]
+    yLims = [0,90]
     plt.ylim(yLims)
     plt.yticks(yLims)
     soundBarHeight = 0.1*yLims[-1]
@@ -181,7 +181,7 @@ if PANELS[1]:
     plt.xlim(timeRangeSound)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) #, labelpad=labelDis
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #, labelpad=labelDis
-    yLims = [0,8]
+    yLims = [0,10]
     soundBarHeight = 0.1*yLims[-1]
     plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
@@ -200,11 +200,11 @@ if PANELS[2]:
     summary = np.load(summaryFullPath)
 
     cellSelectorBoolArray = summary['cellSelectorBoolArray']
-    bestFreqEachCell = summary['bestFreqEachCell'][cellSelectorBoolArray]
+    bestFreqEachCell = summary['bestFreqEachCell'] #[cellSelectorBoolArray]
     #bestFreqEachCell = bestFreqEachCell[bestFreqEachCell!=0]
-    maxZscoreEachCell = summary['maxZscoreEachCell'][cellSelectorBoolArray]
+    maxZscoreEachCell = summary['maxZscoreEachCell'] #[cellSelectorBoolArray]
     #maxZscoreEachCell = maxZscoreEachCell[maxZscoreEachCell!=0]
-    responseIndEachCell = summary['responseIndEachCell'][cellSelectorBoolArray]
+    responseIndEachCell = summary['responseIndEachCell'] #[cellSelectorBoolArray]
 
     nansInData = np.isnan(responseIndEachCell)
     if np.any(nansInData):
@@ -214,48 +214,170 @@ if PANELS[2]:
     ###############################################################################
     #sigSoundResponse = (summary['pValSoundResponseEachCell'][cellSelectorBoolArray] <= alphaLevel)
     #freqSelective = (summary['pValSoundResponseEachCell'][cellSelectorBoolArray] <= alphaLevel) & (summary['freqSelectivityEachCell'][cellSelectorBoolArray] <= alphaLevel)
-    pValEachFreqEachCell = summary['pValEachFreqEachCell'][cellSelectorBoolArray]
+    pValEachFreqEachCell = summary['pValEachFreqEachCell'] #[cellSelectorBoolArray]
     minPValEachCell = np.amin(pValEachFreqEachCell, axis=1)
     sigResp = (minPValEachCell <= bonferroniCorrectedAlphaLevel) # In the 6 ranksum tests, at least one freq past bonferroni corrected p test
     ###############################################################################
  
+    ################################################
+    # -- Compare response to all freqs to all baselines -- #
+    responseFilename = 'response_each_freq_each_cell_psycurve_2afc.npz'
+    responseFullPath = os.path.join(dataDir,responseFilename)
+    responseEachCellEachFreq = np.load(responseFullPath)
+    baselineFilename = 'baseline_each_freq_each_cell_psycurve_2afc.npz'
+    baselineFullPath = os.path.join(dataDir,baselineFilename)
+    baselineEachCellEachFreq = np.load(baselineFullPath)
+    numCells = sum(cellSelectorBoolArray)
+    overallRespInds = np.array([])
+    pVals = np.array([])
+    for cellInd in range(numCells):
+        fSound = responseEachCellEachFreq[cellInd,:,:].compressed()
+        fBaseline = baselineEachCellEachFreq[cellInd,:,:].compressed()
+        zScore,pVal = stats.ranksums(fBaseline, fSound)
+        pVals = np.append(pVals,pVal)
+        if np.mean(fSound)+np.mean(fBaseline)==0:
+            overallRespIndexThisCell = 0
+        else:
+            overallRespIndexThisCell = (np.mean(fSound)-np.mean(fBaseline)) / (np.mean(fSound)+np.mean(fBaseline))
+        overallRespInds = np.append(overallRespInds, overallRespIndexThisCell)
+    sigRespOverall = (pVals <= 0.05)
+    nansInData = np.isnan(overallRespInds)
+    if np.any(nansInData):
+        print '*** WARNING! *** I found NaN in some elements of overall sound responsive index. I will replace with zero.'
+        overallRespInds[nansInData] = 0
+    ################################################
     plt.hold(True)
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([responseIndEachCell[sigResp],responseIndEachCell[~sigResp]], bins=binsEdges, color=['k','darkgrey'],
-             edgecolor='None',stacked=True)
-
+    #plt.hist([responseIndEachCell[sigResp],responseIndEachCell[~sigResp]], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True)
+    plt.hist([overallRespInds[sigRespOverall],overallRespInds[~sigRespOverall]], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True)
     nCellsString = '{} cells'.format(sum(cellSelectorBoolArray))
     nMiceString = '{} mice'.format(5)
-    plt.text(0.4, 65, nCellsString, ha='left',fontsize=fontSizeLabels)
-    plt.text(0.4, 60, nMiceString, ha='left',fontsize=fontSizeLabels)
+    #plt.text(0.4, 65, nCellsString, ha='left',fontsize=fontSizeLabels)
+    #plt.text(0.4, 60, nMiceString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.4, 168, nCellsString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.4, 155, nMiceString, ha='left',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
-    plt.xlabel('BF response index',fontsize=fontSizeLabels)
+    #plt.xlabel('BF response index',fontsize=fontSizeLabels)
+    plt.xlabel('Response index',fontsize=fontSizeLabels)
     plt.ylabel('Number of cells',fontsize=fontSizeLabels)
     
     plt.xlim([-1.01,1.01])
     extraplots.boxoff(ax8)
 
     numCells = sum(cellSelectorBoolArray)
-    numResponsiveCells = sum(sigResp)
-    percentResp = numCells/float(numResponsiveCells)*100
-    print 'Using Bonferroni corrected p value, out of {} cells, {} cells showed significant change in firing rate to at least one sound stim presented. That is {}% of cells.'.format(numCells, numResponsiveCells,percentResp)
-    print 'median response index:', np.mean(responseIndEachCell[~np.isnan(responseIndEachCell)]) #These is one nan value
+    #numResponsiveCells = sum(sigResp)
+    numOverallRespCells = sum(sigRespOverall)
+    #percentResp = float(numResponsiveCells)/numCells*100
+    percentRespOverall = float(numOverallRespCells)/numCells*100
+    #print 'Using Bonferroni corrected p value, out of {} cells, {} cells showed significant change in firing rate to at least one sound stim presented. That is {}% of cells.'.format(numCells, numResponsiveCells,percentResp)
+    print 'Summing all the sound freqs together and comparing evoked activity to baseline, {} cells were significantly responsive. That is {}% of all cells.'.format(numOverallRespCells, percentRespOverall)
+    #print 'median response index:', np.mean(responseIndEachCell[~np.isnan(responseIndEachCell)]) #These is one nan value
 
-    print sum((responseIndEachCell < 0).astype(int)), 'cells showed decreased activity;', sum((responseIndEachCell > 0).astype(int)), 'cells showed increased activity;', sum((responseIndEachCell == 0).astype(int)), 'cells had unchanged activity during sound'
+    #print sum((responseIndEachCell < 0).astype(int)), 'cells showed decreased activity;', sum((responseIndEachCell > 0).astype(int)), 'cells showed increased activity;', sum((responseIndEachCell == 0).astype(int)), 'cells had unchanged activity during sound'
 
-    (T, pVal) = stats.wilcoxon(responseIndEachCell[~np.isnan(responseIndEachCell)])
-    print 'Using the Wilcoxon signed-rank test, comparing the sound response index distribution to zero yielded a p value of', pVal
+    #(T, pVal) = stats.wilcoxon(responseIndEachCell[~np.isnan(responseIndEachCell)])
+    #print 'Using the Wilcoxon signed-rank test, comparing the sound response index distribution to zero yielded a p value of', pVal
     
 
-# -- Panel E: summary of maximal response index in 2afc task -- #
+# -- Panel E: summary of sound selectivity index in 2afc task -- #
 ax9 = plt.subplot(gs[:, 3])
 ax9.annotate('D', xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[3]:
-    summaryFilename = 'summary_2afc_best_freq_maxZ_psychometric.npz'
-    summaryFullPath = os.path.join(dataDir,summaryFilename)
-    summary = np.load(summaryFullPath)
+    responseFilename = 'response_each_freq_each_cell_psycurve_2afc.npz'
+    responseFullPath = os.path.join(dataDir,responseFilename)
+    responseEachCellEachFreq = np.load(responseFullPath)
+    #baselineFilename = 'baseline_each_freq_each_cell_psycurve_2afc.npz'
+    #baselineFullPath = os.path.join(dataDir,summaryFilename)
+    #baselineEachCellEachFreq = np.load(baselineFullPath)
+    selectivityInds = np.array([])
+    pVals = np.array([])
+    for cellInd in range(numCells):
+        fLow = responseEachCellEachFreq[cellInd,:,:3].compressed()
+        fHigh = responseEachCellEachFreq[cellInd,:,3:].compressed()
+        zScore,pVal = stats.ranksums(fLow, fHigh)
+        pVals = np.append(pVals,pVal)
+        if (np.mean(fHigh)+np.mean(fLow))==0:
+            selectivityIndexThisCell = 0
+        else:
+            selectivityIndexThisCell = (np.mean(fHigh)-np.mean(fLow)) / (np.mean(fHigh)+np.mean(fLow))
+        selectivityInds = np.append(selectivityInds, selectivityIndexThisCell)
+        
+    nansInData = np.isnan(selectivityInds)
+    if np.any(nansInData):
+        print '*** WARNING! *** I found NaN in some elements of selectivity index. I will replace with zero.'
+        selectivityInds[nansInData] = 0
+    
+    freqSelective = (pVals <= 0.05)
+    binsEdges = np.linspace(-1,1,20)
+    plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
+    plt.hist([selectivityInds[freqSelective],selectivityInds[~freqSelective]], color=['k','darkgrey'], edgecolor='None', stacked=True, bins=binsEdges)
+    plt.xlabel('High vs low frequency selectivity',fontsize=fontSizeLabels)
+    plt.ylabel('Number of cells',fontsize=fontSizeLabels)
+    #nRespCellsString = '{} responsive cells'.format(numResponsiveCells)
+    plt.text(0.4, 195.5, nCellsString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.4, 180, nMiceString, ha='left',fontsize=fontSizeLabels)
+    extraplots.boxoff(ax9)
+    plt.ylim([0,210])
 
-    cellSelectorBoolArray = summary['cellSelectorBoolArray']
+    # -- Statistic test for frequency selectivity (ANOVA) -- #
+    numFreqSelCells = sum(freqSelective.astype(int))
+    print 100*float(numFreqSelCells)/numCells, '%', numFreqSelCells, 'out of', numCells, ' cells in 2afc psycurve task show different response to high and low frequencies.'
+    
+    hlFreqSelSoundResp = freqSelective & sigRespOverall
+    numHLFreqSelSoundRespCells = sum(hlFreqSelSoundResp)
+    print 100*float(numHLFreqSelSoundRespCells)/numOverallRespCells, '%, ', numHLFreqSelSoundRespCells, 'out of', numOverallRespCells, ' sound responsive cells in 2afc psycurve task show different response to high and low frequencies.'
+    
+    ANOVAfreqSelective = summary['freqSelectivityEachCell'] <= alphaLevel
+    numOverallFreqSelCells = sum(ANOVAfreqSelective)
+    numOverallFreqSelSoundRespCells = sum(ANOVAfreqSelective & sigRespOverall)
+    print 100*float(numOverallFreqSelSoundRespCells)/numOverallRespCells, '%, ', numOverallFreqSelSoundRespCells, 'out of', numOverallRespCells, ' sound responsive cells in 2afc psycurve task show different response to all frequencies (one-way ANOVA).'
+    print 100*float(numOverallFreqSelCells)/numCells, '%, ', numOverallFreqSelCells, 'out of', numCells, ' total cells in 2afc psycurve task show different response to all frequencies (one-way ANOVA).'
+    
+    # -- Statistic test for frequency selectivity (Kruskal-Wallis H-test) -- #
+    allKruskalPVals = np.ones(numCells)
+    for cellInd in range(numCells):
+        Fstat, pVal = stats.kruskal(*np.hsplit(responseEachCellEachFreq[cellInd], numFreqs))
+        allKruskalPVals[cellInd] = pVal
+    KruskalfreqSelective = allKruskalPVals <= alphaLevel
+    numOverallFreqSelCellsKruskal = sum(KruskalfreqSelective)
+    print 100*float(numOverallFreqSelCellsKruskal)/numCells, '%, ', numOverallFreqSelCellsKruskal, 'out of', numCells, ' total cells in 2afc psycurve task show different response to all frequencies (Kruskal-Wallis H-test).'
+
+plt.show()
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+    '''
+    responseEachFreqEachCell = summary['responseEachFreqEachCell'][cellSelectorBoolArray]
+    maxRespEachCell = np.max(responseEachFreqEachCell, axis=1)
+    minRespEachCell = np.min(responseEachFreqEachCell, axis=1)
+    maxVsMinRespIndEachCell = (maxRespEachCell-minRespEachCell) / (maxRespEachCell+minRespEachCell)
+    freqSelective = (summary['freqSelectivityEachCell'][cellSelectorBoolArray][sigResp] <= alphaLevel) #only pick sound responsive cells to assess frequency selectivity
+    soundRespInds = maxVsMinRespIndEachCell[sigResp]
+    #pdb.set_trace()
+    
+    nansInData = np.isnan(maxVsMinRespIndEachCell)
+    if np.any(nansInData):
+        print '*** WARNING! *** I found NaN in some elements of maxVsMinRespIndEachCell. I will replace with zero.'
+        maxVsMinRespIndEachCell[nansInData] = 0
+    
+    binsEdges = np.linspace(-0.1,1,20)
+    #plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
+    plt.hist([soundRespInds[freqSelective],soundRespInds[~freqSelective]], color=['k','darkgrey'], edgecolor='None', stacked=True, bins=binsEdges)
+    plt.xlabel('Sound selectivity index',fontsize=fontSizeLabels)
+    plt.ylabel('Number of cells',fontsize=fontSizeLabels)
+    nRespCellsString = '{} responsive cells'.format(numResponsiveCells)
+    plt.text(0.2, 23.4, nRespCellsString, ha='left',fontsize=fontSizeLabels)
+    plt.text(0.35, 21.5, nMiceString, ha='left',fontsize=fontSizeLabels)
+    extraplots.boxoff(ax9)
+    plt.xlim([-0.1,1.1])
+    # -- Statistic test for frequency selectivity (ANOVA) -- #
+    numFreqSelCells = sum(freqSelective.astype(int))
+    print 100*float(numFreqSelCells)/numResponsiveCells, '%', numFreqSelCells, 'out of', numResponsiveCells, ' sound responsive cells in 2afc psycurve task show frequency selectivity (one-way ANOVA)'
+'''
+
+'''
+#Old way of calculating max to min response selectivity index
     zScoreEachFreqEachCell = summary['zScoresEachFreqEachCell'][cellSelectorBoolArray]
     aveRespEachFreqEachCell = summary['responseEachFreqEachCell'][cellSelectorBoolArray]
     maxZscoreIndEachCell = np.argmax(zScoreEachFreqEachCell, axis=1)
@@ -275,28 +397,5 @@ if PANELS[3]:
     maxVsMinRespIndEachCell = (maxRespEachCell-minRespEachCell) / (maxRespEachCell+minRespEachCell)
     
     freqSelective = summary['freqSelectivityEachCell'][cellSelectorBoolArray] <= alphaLevel #This is based on ANOVA test on evoked activity of all 6 freqs
-    
-    nansInData = np.isnan(maxVsMinRespIndEachCell)
-    if np.any(nansInData):
-        print '*** WARNING! *** I found NaN in some elements of maxVsMinRespIndEachCell. I will replace with zero.'
-        maxVsMinRespIndEachCell[nansInData] = 0
-    
-    binsEdges = np.linspace(-1,1,20)
-    plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
-    plt.hist([maxVsMinRespIndEachCell[freqSelective],maxVsMinRespIndEachCell[~freqSelective]], color=['k','darkgrey'], edgecolor='None', stacked=True, bins=binsEdges)
-    plt.xlabel('Sound selectivity index',fontsize=fontSizeLabels)
-    plt.ylabel('Number of cells',fontsize=fontSizeLabels)
-    plt.text(0.4, 84, nCellsString, ha='left',fontsize=fontSizeLabels)
-    plt.text(0.4, 78, nMiceString, ha='left',fontsize=fontSizeLabels)
-    extraplots.boxoff(ax9)
-
-    # -- Statistic test for frequency selectivity (ANOVA) -- #
-    numFreqSelCells = sum(freqSelective.astype(int))
-    print 100*float(numFreqSelCells)/numCells, '%', numFreqSelCells, 'out of', numCells, 'in 2afc psycurve task show frequency selectivity (one-way ANOVA)'
-
-
-plt.show()
-
-if SAVE_FIGURE:
-    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+    '''
 

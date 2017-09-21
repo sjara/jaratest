@@ -41,13 +41,26 @@ for indAnimal, animalName in enumerate(animalsToUse):
     subjects.append(animalName)
     for indCond in [0, 1]:
         sessions = animalSessionDict[conditions[indCond]]
+        rtAllThisSubject = np.array([])
+        rtValidThisSubject = np.array([])
+        rtAllMeanThisSubject = np.array([])
+        rtValidMeanThisSubject = np.array([])
         for indSession, session in enumerate(sessions):
             bdata = behavioranalysis.load_many_sessions(animalName, [session])
-            rtAll = bdata['timeCenterOut'] - bdata['timeTarget']
-            rtValid = rtAll[bdata['valid']]
-
-            dataDict.update({'{}all{}'.format(animalName, conditions[indCond]):rtAll,
-                             '{}valid{}'.format(animalName, conditions[indCond]):rtValid})
+            validTrials = bdata['valid'].astype(bool) & (bdata['choice']!=bdata.labels['choice']['none'])
+            #rtAll = bdata['timeCenterOut'] - bdata['timeTarget']
+            rtAll = bdata['timeCenterOut'] - bdata['timeTarget'] 
+            rtValid = rtAll[validTrials]
+            rtAllThisSubject = np.append(rtAllThisSubject, rtAll)
+            rtValidThisSubject = np.append(rtValidThisSubject, rtValid)
+            rtAllMean = np.mean(rtAll)
+            rtValidMean = np.mean(rtValid)
+            rtAllMeanThisSubject = np.append(rtAllMeanThisSubject, rtAllMean)
+            rtValidMeanThisSubject = np.append(rtValidMeanThisSubject, rtValidMean)
+        dataDict.update({'{}all{}'.format(animalName, conditions[indCond]):rtAllThisSubject,
+                         '{}valid{}'.format(animalName, conditions[indCond]):rtValidThisSubject,
+                         '{}validmean{}'.format(animalName, conditions[indCond]):rtValidMeanThisSubject,
+                         '{}allmean{}'.format(animalName, conditions[indCond]):rtAllMeanThisSubject})
 
 np.savez(summaryFullPath,
          subjects = np.array(subjects),

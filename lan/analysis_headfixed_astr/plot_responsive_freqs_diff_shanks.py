@@ -8,7 +8,7 @@ import pdb
 import itertools
 import scipy.stats as stats
 
-animalLists = ['adap042', 'adap043','adap044', 'adap046','adap047'] #adap041 did not have enough data
+animalLists = ['adap041','adap042', 'adap043','adap044', 'adap046','adap047'] #adap041 did not have enough data
 
 #plotAll = True
 #normalized = False
@@ -135,7 +135,7 @@ for inda, brainArea in enumerate(np.unique(cellsToPlot.brainarea)):
             plt.suptitle(animal+'_'+brainArea)
             #pdb.set_trace()
             #plt.show()
-            figname = 'freqs_by_shanks'+animal+'_'+brainArea
+            figname = 'freqs_by_shanks_{}_{}_{}dB'.format(animal, brainArea, intensityToPlot)
             figFullPath = os.path.join(outputDir, figname)
             plt.savefig(figFullPath, format='png')
 
@@ -181,31 +181,37 @@ for indr, row in outputDf.iterrows():
                     plt.setp(line, color='blue', linewidth=1.5)
 plt.xticks([0,1], ['medial shank', 'lateral shank'])       
 plt.xlim([-0.5,1.5])
-print 'number of pairs with increase from medial to lateral:', increaseCount, 'number of pairs with decrease from medial to lateral:', decreaseCount
-figname = 'weighted_responsive_freqs_medial_vs_lateral_shank'
+print 'number of pairs with increase from medial to lateral:', increaseCount, ', number of pairs with decrease from medial to lateral:', decreaseCount
+figname = 'weighted_responsive_freqs_medial_vs_lateral_shank_{}dB'.format(intensityToPlot)
 plt.title(figname)
 figFullPath = os.path.join(outputDir, figname)
 plt.savefig(figFullPath, format='svg')
 #plt.show()
-z,pVal = stats.ranksums(medialFreqs, lateralFreqs)
-print 'p value for ranksums test between weighted medial shank frequencies and lateral shank frequencies is {}'.format(pVal)
+z,pVal = stats.wilcoxon(medialFreqs, lateralFreqs)
+print 'Using weighted freq: p value for wilcoxons test between medial shank frequencies and lateral shank frequencies is {}'.format(pVal)
 
-# -- Plot using mean freqs, also discarding sites with only one cell/freq -- #
+
+# -- Plot using mean freqs, also can discarding sites with only one cell/freq -- #
 plt.gcf()
 plt.clf()
 increaseCount = 0
 decreaseCount = 0
 medialFreqs = []
 lateralFreqs = []
+#leftFreqs = []
+#rightFreqs = []
 for indr, row in outputDf.iterrows():        
     for pairOfShanks in [list(x) for x in itertools.combinations(['shank1_freq','shank2_freq','shank3_freq','shank4_freq'],2)]:
         pairOfFreqs = row[pairOfShanks].values
-        if (len(pairOfFreqs[0])>0) & (len(pairOfFreqs[1])>0):
+        if (len(pairOfFreqs[0])>1) & (len(pairOfFreqs[1])>1):
             if row.brainArea == 'leftAStr':
-                medialFreqs.extend(pairOfFreqs[1])
-                lateralFreqs.extend(pairOfFreqs[0])
+                #leftFreqs.extend(np.concatenate(pairOfFreqs))
+                #medialFreqs.extend(pairOfFreqs[1])
+                #lateralFreqs.extend(pairOfFreqs[0])
                 meanMedialFreq = np.mean(pairOfFreqs[1])
                 meanLateralFreq = np.mean(pairOfFreqs[0])
+                medialFreqs.append(meanMedialFreq)
+                lateralFreqs.append(meanLateralFreq)
                 line = plt.plot([0,1],[meanMedialFreq,meanLateralFreq], 'o-', mfc='k', mec='none')
                 if meanMedialFreq > meanLateralFreq:
                     decreaseCount += 1
@@ -214,10 +220,13 @@ for indr, row in outputDf.iterrows():
                     increaseCount += 1
                     plt.setp(line, color='k', linewidth=1.5)
             elif row.brainArea == 'rightAStr':
-                medialFreqs.extend(pairOfFreqs[0])
-                lateralFreqs.extend(pairOfFreqs[1])
+                #rightFreqs.extend(np.concatenate(pairOfFreqs))
+                #medialFreqs.extend(pairOfFreqs[0])
+                #lateralFreqs.extend(pairOfFreqs[1])
                 meanMedialFreq = np.mean(pairOfFreqs[0])
                 meanLateralFreq = np.mean(pairOfFreqs[1])
+                medialFreqs.append(meanMedialFreq)
+                lateralFreqs.append(meanLateralFreq)
                 line = plt.plot([0,1],[meanMedialFreq,meanLateralFreq], 'o-', mfc='k', mec='none')
                 if meanMedialFreq > meanLateralFreq:
                     decreaseCount += 1
@@ -227,16 +236,17 @@ for indr, row in outputDf.iterrows():
                     plt.setp(line, color='k', linewidth=1.5)
 plt.xticks([0,1], ['medial shank', 'lateral shank'])       
 plt.xlim([-0.5,1.5])
-print 'number of pairs with increase from medial to lateral:', increaseCount, 'number of pairs with decrease from medial to lateral:', decreaseCount
-figname = 'mean_responsive_freqs_medial_vs_lateral_shank'
+print 'number of pairs with increase from medial to lateral:', increaseCount, ', number of pairs with decrease from medial to lateral:', decreaseCount
+figname = 'mean_responsive_freqs_medial_vs_lateral_shank_{}dB'.format(intensityToPlot)
 plt.title(figname)
 figFullPath = os.path.join(outputDir, figname)
 plt.savefig(figFullPath, format='svg')
 #plt.show()
-z,pVal = stats.ranksums(medialFreqs, lateralFreqs)
-print 'p value for ranksums test between mean medial shank frequencies and lateral shank frequencies is {}'.format(pVal)
-
+z,pVal = stats.wilcoxon(medialFreqs, lateralFreqs)
+print 'Using mean freq: p value for wilcoxon test between medial shank frequencies and lateral shank frequencies is {}'.format(pVal)
+'''
 outputDf['zThreshold'] = maxZThreshold
 outputDf['script'] = os.path.realpath(__file__)
-dfName = 'responsive_freqs_each_shank_by_exp_headfixed_astr.h5'
+dfName = 'responsive_freqs_each_shank_by_exp_{}dB_headfixed_astr.h5'.format(intensityToPlot)
 outputDf.to_hdf(os.path.join(outputDir, dfName), key='headfixed')
+'''
