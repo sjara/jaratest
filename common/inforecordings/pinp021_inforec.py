@@ -13,10 +13,10 @@ experiments.append(exp0)
 #Tetrodes at 1248um
 # 1348 - tetrodes at 2510um, waiting for brain to settle
 
-exp0.add_site(2910, tetrodes=range(1, 9))
+exp0.add_site(2910, tetrodes=range(1, 9)).remove_tetrodes([5, 7, 8])
 exp0.add_session('14-16-29', None, 'noiseburst', 'am_tuning_curve')
 
-exp0.add_site(3104, tetrodes=range(1, 9))
+exp0.add_site(3104, tetrodes=range(1, 9)).remove_tetrodes([7])
 exp0.add_session('14-21-53', None, 'noiseburst', 'am_tuning_curve')
 
 exp0.add_site(3205, tetrodes=range(1, 9))
@@ -48,16 +48,16 @@ experiments.append(exp1)
 #Mouse on the rig at 1242hrs, waiting 10 mins for brain to settle
 #Tetrodes at 2510um
 
-exp1.add_site(2510, tetrodes=range(1, 9))
+exp1.add_site(2510, tetrodes=range(1, 9)).remove_tetrodes([1, 2, 4])
 exp1.add_session('12-56-29', None, 'noiseburst', 'am_tuning_curve')
 
-exp1.add_site(3151, tetrodes=range(1, 9))
+exp1.add_site(3151, tetrodes=range(1, 9)).remove_tetrodes([8])
 exp1.add_session('13-10-21', None, 'noiseburst', 'am_tuning_curve')
 
 exp1.add_site(3209, tetrodes=range(1, 9))
 exp1.add_session('13-15-22', None, 'noiseburst', 'am_tuning_curve')
 
-exp1.add_site(3347, tetrodes=range(1, 9))
+exp1.add_site(3347, tetrodes=range(1, 9)).remove_tetrodes([7, 8])
 exp1.add_session('13-36-01', None, 'noiseburst', 'am_tuning_curve')
 
 exp1.add_site(3466, tetrodes=range(1, 9))

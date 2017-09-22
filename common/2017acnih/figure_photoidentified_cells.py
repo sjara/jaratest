@@ -63,7 +63,7 @@ fig.set_facecolor('w')
 
 
 # -- Load laser example --
-gs0 = gridspec.GridSpec(6,3)
+gs0 = gridspec.GridSpec(4,3)
 gs0.update(top=0.9, left=0.05, right=0.7, wspace=0.6, hspace=0.1)
 
 # --- Raster plot of laser response ---
@@ -74,11 +74,11 @@ if PANELS_TO_PLOT[0]:
     laserData = np.load(laserDataFullPath)
     laserDuration = 0.1
     
-    axLaser = plt.subplot(gs0[5,0])
+    axLaser = plt.subplot(gs0[3,0])
     plt.cla()
     axLaser.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
-    axLaser.annotate('B', xy=(labelPosX[0],0.25), xycoords='figure fraction',
+    axLaser.annotate('B', xy=(labelPosX[0],0.32), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
     nTrials = 30
     laserIndexLimitsEachTrial = laserData['indexLimitsEachTrial'][:,:nTrials]
@@ -104,11 +104,17 @@ if PANELS_TO_PLOT[0]:
     plt.ylabel('Trials',fontsize=fontSizeLabels)
     plt.xlabel('Time from laser onset (s)',fontsize=fontSizeLabels)
 
+    
+    #extraplots.breakaxis(0.15, plt.gca().get_ylim()[0], np.diff(plt.gca().get_xlim())/20.0, np.diff(plt.gca().get_ylim())/10.0)
 
+
+
+
+    
 gs1 = gridspec.GridSpec(3,5)
 gs1.update(top=0.95, left=0.1, right=0.98, wspace=0.35, hspace=0.2)
 
-    
+
 # -- Plots for each cell type --
 if PANELS_TO_PLOT[1]:
     for indc,cell in enumerate(cellFileNames):
@@ -120,7 +126,7 @@ if PANELS_TO_PLOT[1]:
 
         # --- Raster plot of sound response at different bandwidths ---
         axRaster = plt.subplot(gs1[indc,1])
-        axLaser.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
+        axRaster.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
         timeRange = [-0.2,1.3]
         ####colorsEachCond = 
@@ -134,7 +140,7 @@ if PANELS_TO_PLOT[1]:
         extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
         plt.ylabel('Bandwidth (oct)',fontsize=fontSizeLabels)
         if indc==2:
-            axRaster.set_xlabel('Time (s)',fontsize=fontSizeLabels)
+            axRaster.set_xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
         else:
             axRaster.set_xticklabels('')
 
@@ -159,15 +165,19 @@ if PANELS_TO_PLOT[1]:
         else:
             axCurve.set_xticklabels('')
         extraplots.boxoff(axCurve)
+        xLims = plt.xlim(); yLims = plt.ylim()
+        extraplots.breakaxis(0.5, yLims[0], np.diff(xLims)/40.0, np.diff(yLims)/20.0, gap=0.5)
+        extraplots.breakaxis(5.5, yLims[0], np.diff(xLims)/40.0, np.diff(yLims)/20.0, gap=0.5)
+        plt.xlim(xLims); plt.ylim(yLims)
         if indc==0:
-            plt.title('Mouse AC',fontsize=fontSizeLabels,fontweight='normal')
+            plt.title('Mouse A1',fontsize=fontSizeLabels,fontweight='normal')
 
 
 # -- Plot model curves --
 modelDataDir = './modeldata'
 if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
     import pandas as pd
-    modelDataFiles = ['SSNbandwidthTuning_regime1.csv','SSNbandwidthTuning_regime2.csv']
+    modelDataFiles = ['SSNbandwidthTuning_noRFwidth_regime1.csv','SSNbandwidthTuning_noRFwidth_regime2.csv']
     titleStrings = ['Model 1', 'Model 2']
     for indm, oneModelFile in enumerate(modelDataFiles):
         modelData = pd.read_csv(os.path.join(modelDataDir,oneModelFile))
@@ -177,7 +187,14 @@ if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
         for indc,rates in enumerate(modelRates):
             axModel = plt.subplot(gs1[indc,3+indm])
             #plt.plot(np.log2(modelBW), rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
-            plt.plot(modelBW, rates, 'o-', lw=5, color=cellColor[indc], mec=cellColor[indc], clip_on=True)
+            #plt.plot(modelBW[1:], rates[1:], 'o-', lw=5, color=cellColor[indc], mec=cellColor[indc], clip_on=True)
+            plt.plot(np.log2(modelBW[1:]), rates[1:], '-', lw=5, color=cellColor[indc], mec=cellColor[indc], clip_on=True)
+            plt.xlim(np.log2([1./8, 8]))
+            #xTicks = axModel.get_xticks()
+            xTicks = np.log2([1./4, 1./2, 1, 2, 4])
+            axModel.set_xticks(xTicks)
+            newTickLabels = [str(val) for val in (2**np.array(xTicks))]
+            axModel.set_xticklabels(newTickLabels)
             #axModel.set_xticklabels(bands)
             plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
             extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)

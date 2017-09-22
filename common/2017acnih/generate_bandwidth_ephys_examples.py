@@ -21,7 +21,6 @@ from jaratoolbox import settings
 from scipy import stats
 
 photoFigName = 'photoidentified_cells_bandwidth_tuning'
-
 SOMFigName = 'SOM_inactivation_bandwidth_tuning'
 harmoFigName = 'harmonics_bandwidth_tuning'
 
@@ -30,7 +29,25 @@ SOMDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', SOMFigName)
 harmoDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2017acnih', harmoFigName)
 
 # -- Ephys and behaviour file names for example cells -- #
-cellParamsList = [{'animal':'band033',
+cellParamsList = [{'animal':'band002',
+                   'date':'2016-08-12',
+                   'laserEphysSession': None,
+                   'bandwidthEphysSession':'2016-08-12_12-08-44',
+                   'bandwidthBehavSession':'band002_am_tuning_curve_20160812i.h5',
+                   'tetrode':6,
+                   'cluster':4,
+                   'sessionType':'freqtuning'},
+                  
+                  {'animal':'band002',
+                   'date':'2016-08-12',
+                   'laserEphysSession': None,
+                   'bandwidthEphysSession':'2016-08-12_12-27-34',
+                   'bandwidthBehavSession':'band002_bandwidth_am_20160812k.h5',
+                   'tetrode':6,
+                   'cluster':4,
+                   'sessionType':'photoidentified'},
+                  
+                  {'animal':'band033',
                    'date':'2017-08-02',
                    'laserEphysSession': None,
                    'bandwidthEphysSession':'2017-08-02_14-18-58',
@@ -177,12 +194,17 @@ for indCell in cellsToGenerate:
     behavFile = os.path.join(settings.BEHAVIOR_PATH,cell['animal'],cell['bandwidthBehavSession'])
     bdata = loadbehavior.BehaviorData(behavFile,readmode='full')
     
-    # --- produce inputs for raster plot ---
-    bandEachTrial = bdata['currentBand']
-    numBands = np.unique(bandEachTrial)
-    firstSortLabels = ['{}'.format(band) for band in np.unique(bandEachTrial)]
+    # -- Define first sorting parameter --
+    if cell['sessionType']=='inactivationSOM' or cell['sessionType']=='harmonics' or cell['sessionType']=='photoidentified':
+        bandEachTrial = bdata['currentBand']
+        numBands = np.unique(bandEachTrial)
+        firstSortLabels = ['{}'.format(band) for band in np.unique(bandEachTrial)]
+    elif cell['sessionType']=='freqtuning':
+        bandEachTrial = bdata['currentFreq']
+        numBands = np.unique(bandEachTrial)
+        firstSortLabels = ['{}'.format(band) for band in np.unique(bandEachTrial)]
     
-    # sort by laser trials for SOM-Arch animal, otherwise by amplitude of noise in bandwidth trials
+    # -- Define second sorting parameter (usually amplitude) --
     condLabels = ['trial','bandwidth']
     if cell['sessionType']=='inactivationSOM':
         secondSort = bdata['laserTrial']
@@ -194,13 +216,18 @@ for indCell in cellsToGenerate:
         numSec = np.unique(secondSort)
         secondSortLabels = ['noise','harmonics']
         condLabels.append('harmonics')
-    elif call['sessionType']=='photoidentified':
+    elif cell['sessionType']=='photoidentified':
         secondSort = bdata['currentAmp']
         numSec = np.unique(secondSort)
         secondSortLabels = ['{} dB'.format(amp) for amp in np.unique(secondSort)]
         condLabels.append('amplitude')
+    elif cell['sessionType']=='freqtuning':
+        secondSort = bdata['currentIntensity']
+        numSec = np.unique(secondSort)
+        secondSortLabels = ['{} dB'.format(amp) for amp in np.unique(secondSort)]
+        condLabels.append('intensity')
         
-    bandTimeRange = [-0.2, 1.5]
+    bandTimeRange = [-0.3, 1.5]
     bandEventOnsetTimes = bandEventData.get_event_onset_times()
     bandSpikeTimestamps = bandSpikeData.timestamps
     bandTrialsEachCond = behavioranalysis.find_trials_each_combination(bandEachTrial, 
@@ -215,8 +242,10 @@ for indCell in cellsToGenerate:
     
     
     # --- produce input for bandwidth tuning curve ---
-    soundDuration = 1.0
-    print('WARNING! The sound duration is HARDCODED.')
+    #soundDuration = 1.0
+    #print('WARNING! The sound duration is HARDCODED ({0} sec)'.format(soundDuration))
+    soundDuration = bdata['stimDur'][-1]
+    print('Sound duration from behavior data: {0} sec'.format(soundDuration))
     timeRange = [0.0, soundDuration]
     bandSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, timeRange)
     spikeArray = np.zeros((len(numBands), len(numSec))) # Average firing rate
@@ -235,6 +264,13 @@ for indCell in cellsToGenerate:
                 spikeArray[band, thisSecVal] = np.nan
                 errorArray[band, thisSecVal] = np.nan
             
+    baselineRange = [-0.2, 0]
+    baselineDuration = baselineRange[1]-baselineRange[0]
+    baselineSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset,
+                                                                     bandIndexLimitsEachTrial, baselineRange)
+    baselineMean = baselineSpikeCountMat.mean()/baselineDuration
+    baselineSEM = stats.sem(baselineSpikeCountMat)/baselineDuration
+    
     # --- load spike and event data for laser trials ---
     laserEphysSession = cell['laserEphysSession']
     if laserEphysSession is not None:
@@ -268,8 +304,14 @@ for indCell in cellsToGenerate:
                                                                                                         laserEventOnsetTimes,
                                                                                                         laserTimeRange)
     ### Save bandwidth data ###    
-    outputFile = 'example_bandwidth_tuning_{}_{}_T{}_c{}.npz'.format(cell['animal'], cell['date'], cell['tetrode'],cell['cluster'])
+    outputFile = 'example_bandwidth_tuning_{}_{}_T{}_c{}.npz'.format(cell['animal'], cell['date'],
+                                                                     cell['tetrode'],cell['cluster'])
+    if cell['sessionType']=='freqtuning':
+        outputFile = 'example_frequency_tuning_{}_{}_T{}_c{}.npz'.format(cell['animal'], cell['date'],
+                                                                         cell['tetrode'],cell['cluster'])
+        
     dirDict = {'photoidentified':photoDataDir,
+               'freqtuning':photoDataDir,
                'inactivationSOM':SOMDataDir,
                'harmonics':harmoDataDir}
     # data from SOM-Arch animal saved in separate directory
@@ -278,7 +320,9 @@ for indCell in cellsToGenerate:
              spikeCountMat=bandSpikeCountMat, spikeArray=spikeArray, errorArray=errorArray,
              possibleBands=numBands, possibleSecondSort=numSec, firstSortLabels=firstSortLabels,
              secondSortLabels=secondSortLabels, spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset,
-             indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,trialsEachCond=bandTrialsEachCond, condLabels=condLabels, **cell)
+             indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,
+             baselineRange=baselineRange, baselineMean=baselineMean, baselineSEM=baselineSEM,
+             trialsEachCond=bandTrialsEachCond, condLabels=condLabels, **cell)
     print outputFile + " saved"
 
     ### Save laser data ###

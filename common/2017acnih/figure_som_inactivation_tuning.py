@@ -90,37 +90,46 @@ if PANELS_TO_PLOT[1]:
                      spikeArray[:,0].flatten() + errorArray[:,0].flatten(),
                      alpha=0.2, edgecolor = noLaserColor[1], facecolor=noLaserColor[1])
     axTuning.set_xticklabels(bands)
+    axTuning.set_ylim([2,7])
     plt.xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(axTuning)
     #plt.legend(lines,['no laser', 'laser'], bbox_to_anchor=(0.95, 0.95), borderaxespad=0.)
     plt.legend(lines,['No SOM', 'Control'], loc='lower center', frameon=False) #'upper left'
-    plt.title('Mouse AC',fontsize=fontSizeLabels,fontweight='bold')
+    plt.title('Mouse A1',fontsize=fontSizeLabels,fontweight='normal')
 
 
 # -- Plot model curves --
 modelDataDir = './modeldata'
 if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
     import pandas as pd
-    modelDataFiles = ['SSNbandwidthTuning_regime1.csv']
+    modelDataFiles = ['SSNbandwidthTuning_SOMinactivation.csv']
 
     colorEachCond = [noLaserColor[0], laserColor[0]]
     axModel = plt.subplot(gs[0:,2])
     for indm, oneModelFile in enumerate(modelDataFiles):
         modelData = pd.read_csv(os.path.join(modelDataDir,oneModelFile))
         modelBW = modelData['BW(oct)']
-        modelRates = [modelData['y_PV'], modelData['y_SOM']]
+        modelRates = [modelData['y_E_laser_off'], modelData['y_E_laser_on']]
 
         for indc,rates in enumerate(modelRates):
             #plt.plot(np.log2(modelBW), rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
-            plt.plot(modelBW, rates, 'o-', lw=5, color=colorEachCond[indc], mec=colorEachCond[indc], clip_on=True)
+            #plt.plot(modelBW, rates, 'o-', lw=5, color=colorEachCond[indc], mec=colorEachCond[indc], clip_on=True)
             #axModel.set_xticklabels(bands)
+            plt.plot(np.log2(modelBW[1:]), rates[1:], '-', lw=5, color=colorEachCond[indc], mec=colorEachCond[indc], clip_on=True)
+            plt.xlim(np.log2([1./8, 8]))
+            xTicks = np.log2([1./4, 1./2, 1, 2, 4])
+            axModel.set_xticks(xTicks)
+            newTickLabels = [str(val) for val in (2**np.array(xTicks))]
+            axModel.set_xticklabels(newTickLabels)
+
+            axModel.set_ylim([0,3])
             plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
             extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
             axModel.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
             extraplots.boxoff(axModel)
-    plt.title('Model',fontsize=fontSizeLabels,fontweight='bold')
+    plt.title('Model',fontsize=fontSizeLabels,fontweight='normal')
     
 plt.show()
 
