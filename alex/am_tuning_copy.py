@@ -330,7 +330,7 @@ class Paradigm(QtGui.QMainWindow):
             sound = {'type':'AM', 'duration':stimDur,
                      'amplitude':targetAmp,'modFrequency':self.trialParams[0]}
         elif stimType == 'SineLaser':
-        	sound = {'type':'tone', 'duration':stimDur,
+            sound = {'type':'tone', 'duration':stimDur,
                      'amplitude':targetAmp, 'frequency':self.trialParams[0]}
 
         if (stimType == 'Laser') or (stimType == 'LaserTrain'):
@@ -339,13 +339,6 @@ class Paradigm(QtGui.QMainWindow):
         elif stimType=='Light':
             stimOutput = stimSync + ['leftLED', 'centerLED', 'rightLED']
             serialOutput = 0
-        '''
-        elif stimType == 'SineLaser':
-        	stimOutput = stimSync
-        	laserOutput = laserSync
-        	serialOutput = 1
-        	self.soundClient.set_sound(1,sound)
-       	'''
         else:
             stimOutput = stimSync
             serialOutput = 1
@@ -354,11 +347,11 @@ class Paradigm(QtGui.QMainWindow):
 
         # -- Determine if the trial will present laser or not randomly
         if stimType == 'SineLaser':
-        	laserProbability = self.params['laserProbability'].get_value()
-        	if random.random() <= laserProbability:
-        		laserOutput = laserSync
-        	else:
-        		laserOutput = []
+            laserProbability = self.params['laserProbability'].get_value()
+            if random.random() <= laserProbability:
+                laserOutput = laserSync
+            else:
+                laserOutput = []
 
 
         self.params['currentFreq'].set_value(self.trialParams[0])
@@ -406,16 +399,7 @@ class Paradigm(QtGui.QMainWindow):
             self.sm.add_state(name='output5Off', statetimer = isi,
                               transitions={'Tup':'readyForNextTrial'},
                               outputsOff=stimOutput)
-        else:
-            self.sm.add_state(name='startTrial', statetimer = 0,
-                              transitions={'Tup':'output1On'})
-            self.sm.add_state(name='output1On', statetimer=stimDur,
-                              transitions={'Tup':'output1Off'},
-                              outputsOn=stimOutput,
-                              serialOut=serialOutput)
-            self.sm.add_state(name='output1Off', statetimer = isi,
-                              transitions={'Tup':'readyForNextTrial'},
-                              outputsOff=stimOutput)
+        elif stimType == 'SineLaser':
             if (laserOnset<0) and (laserOffset<=0):
                 #  SOUND:  ........|XXXXXXX|........
                 #  LASER:  ...ooo...................
@@ -524,7 +508,16 @@ class Paradigm(QtGui.QMainWindow):
                 self.sm.add_state(name='laserOff', statetimer=isi,
                                   transitions={'Tup':'readyForNextTrial'},
                                   outputsOff=laserOutput)
-
+        else:
+            self.sm.add_state(name='startTrial', statetimer = 0,
+                          transitions={'Tup':'output1On'})
+            self.sm.add_state(name='output1On', statetimer=stimDur,
+                          transitions={'Tup':'output1Off'},
+                          outputsOn=stimOutput,
+                          serialOut=serialOutput)
+            self.sm.add_state(name='output1Off', statetimer = isi,
+                          transitions={'Tup':'readyForNextTrial'},
+                          outputsOff=stimOutput)
         self.dispatcherModel.set_state_matrix(self.sm)
         self.dispatcherModel.ready_to_start_trial()
 
