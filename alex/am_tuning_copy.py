@@ -144,7 +144,7 @@ class Paradigm(QtGui.QMainWindow):
         self.params['laserDuration'] = paramgui.NumericParam('Laser Duration (s)', value=0,
                                                             group='Parameters')
         self.params['laserOnset'] = paramgui.NumericParam('Laser Onset (s)', value=0,
-                                                            group='Parameters')=
+                                                            group='Parameters')
 
 
 
