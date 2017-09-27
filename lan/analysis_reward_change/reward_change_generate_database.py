@@ -18,13 +18,14 @@ from jaratest.nick.database import dataloader_v2 as dataloader
 import numpy as np
 from scipy import stats
 
-animal = 'adap045'
+animal = 'gosi004'
 inforecFullPath = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(animal))
+'''
 # -- Cluster and store stats, if have not already done so -- #
 ci = spikesorting.ClusterInforec(inforecFullPath)
 ci.cluster_all_experiments(recluster=False, maxClusters=12, maxPossibleClusters=12)
-
 '''
+
 databaseFullPath = os.path.join(settings.DATABASE_PATH, '{}_database.h5'.format(animal))
 key = 'reward_change'
 
@@ -306,7 +307,8 @@ else:
         gosidb['movementModS'] = movementModS
         gosidb.to_hdf(databaseFullPath, key=key)
 
-'''
+    
+
 
 
 

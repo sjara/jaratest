@@ -123,6 +123,17 @@ def plot_events_in_time_each_cluster(animal, ephysSession, tetrode, cluster):
     tsThisCluster = spikeData.timestamps
     spikesorting.plot_events_in_time(tsThisCluster)
 
+def plot_isi_loghist_each_cluster(animal, ephysSession, tetrode, cluster):
+    '''Function to plot the ISI of a given cluster.
+    :param arg1: String containing animal name.
+    :param arg2: A string of the name of the ephys session, this is the full filename, in {date}_XX-XX-XX format. 
+    :param arg3: Integer in range(1,9) for tetrode number.
+    :param arg4: Integer for cluster number.
+    '''
+    spikeData = load_spike_data(animal, ephysSession, tetrode, cluster)
+    tsThisCluster = spikeData.timestamps
+    spikesorting.plot_isi_loghist(tsThisCluster)
+
 
 def load_behavior_basic(animal, behavSession):
     '''Load behavior using the basic BehaviorData class of loadbehavior module.
@@ -183,9 +194,13 @@ def plot_tuning_raster(animal, ephysSession, behavSession, tetrode, cluster, int
     #intensityLabels = ['{:.0f} dB'.format(intensity) for intensity in possibleIntensity]        
     
     ### FIXME: this is a bad hack for when ephys is one trial more than behavior file ###
-    if len(eventOnsetTimes)==len(intensityEachTrial)+1:
+    if len(eventOnsetTimes)==len(freqEachTrial)+1:
         eventOnsetTimes=eventOnsetTimes[:-1]
-    #print len(intensityEachTrial),len(eventOnsetTimes),len(spikeTimestamps)
+        ### FIXME: this is a bad hack for when behavior is one trial more than ephys file ###
+    if len(eventOnsetTimes)==len(freqEachTrial)-1:
+        freqEachTrial=freqEachTrial[:-1]
+        print 'Tuning behavior is one trial more than ephys!'
+    #print len(freqEachTrial),len(eventOnsetTimes),len(spikeTimestamps)
     
     trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
     
@@ -319,7 +334,7 @@ def get_trials_each_cond_reward_change(animal, behavSession, ephysSession, tetro
             labelEachCond = ['low freq same reward', 'low freq left more', 'low freq right more']
         elif freqToPlot == 'high':
             colorEachCond = [colorCondDict['sameRewardHighFreq'],colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
-        labelEachCond = ['high freq same reward', 'high freq left more', 'high freq right more']
+            labelEachCond = ['high freq same reward', 'high freq left more', 'high freq right more']
     return trialsEachCond, colorEachCond, labelEachCond
 
 '''  
