@@ -144,9 +144,7 @@ class Paradigm(QtGui.QMainWindow):
         self.params['laserDuration'] = paramgui.NumericParam('Laser Duration (s)', value=0,
                                                             group='Parameters')
         self.params['laserOnset'] = paramgui.NumericParam('Laser Onset (s)', value=0,
-                                                            group='Parameters')
-        self.params['laserOffset'] = paramgui.NumericParam('Laser Offset (s)', value=0,
-                                                            group='Parameters')
+                                                            group='Parameters')=
 
 
 
@@ -345,13 +343,18 @@ class Paradigm(QtGui.QMainWindow):
             self.soundClient.set_sound(1,sound)
 
 
-        # -- Determine if the trial will present laser or not randomly
+        # -- Determine if the trial will present laser or not randomly --
         if stimType == 'SineLaser':
             laserProbability = self.params['laserProbability'].get_value()
             if random.random() <= laserProbability:
                 laserOutput = laserSync
             else:
                 laserOutput = []
+
+        # -- Get the laser parameters --
+        laserOnset = self.params['laserOnset'].get_value()
+        laserDuration = self.params['laserDuration'].get_value()
+        laserOffset = laserOnset + laserDuration
 
 
         self.params['currentFreq'].set_value(self.trialParams[0])
