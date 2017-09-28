@@ -139,12 +139,16 @@ class Paradigm(QtGui.QMainWindow):
                                                            group='Parameters',
                                                            decimals=4)
         
+
+        self.params['laserOn'] = paramgui.NumericParam('Laser On', value=0, enabled=False
+                                                            group='Parameters')
         self.params['laserProbability'] = paramgui.NumericParam('Laser Probability (s)', value=0,
                                                             group='Parameters')
         self.params['laserDuration'] = paramgui.NumericParam('Laser Duration (s)', value=0,
                                                             group='Parameters')
         self.params['laserOnset'] = paramgui.NumericParam('Laser Onset (s)', value=0,
                                                             group='Parameters')
+
 
 
 
@@ -348,8 +352,10 @@ class Paradigm(QtGui.QMainWindow):
             laserProbability = self.params['laserProbability'].get_value()
             if random.random() <= laserProbability:
                 laserOutput = laserSync
+                self.params['laserOn'].set_value(1)
             else:
                 laserOutput = []
+                self.params['laserOn'].set_value(0)
 
         # -- Get the laser parameters --
         laserOnset = self.params['laserOnset'].get_value()
@@ -499,7 +505,7 @@ class Paradigm(QtGui.QMainWindow):
                 self.sm.add_state(name='startTrial', statetimer=0,
                                   transitions={'Tup':'stimulusOn'})
                 self.sm.add_state(name='stimulusOn', statetimer=stimDur,
-                                  transitions={'Tup':'waitForSidePreLaser'},
+                                  transitions={'Tup':'stimulusOff'},
                                   outputsOn=stimOutput, 
                                   serialOut=serialOutput)
                 self.sm.add_state(name='stimulusOff', statetimer=laserOnset-stimDur,
