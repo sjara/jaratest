@@ -138,9 +138,9 @@ class Paradigm(QtGui.QMainWindow):
                                                            enabled=False,
                                                            group='Parameters',
                                                            decimals=4)
-        
 
-        self.params['laserOn'] = paramgui.NumericParam('Laser On', value=0, enabled=False
+
+        self.params['laserOn'] = paramgui.NumericParam('Laser On', value=0, enabled=False,
                                                             group='Parameters')
         self.params['laserProbability'] = paramgui.NumericParam('Laser Probability (s)', value=0,
                                                             group='Parameters')
@@ -422,7 +422,7 @@ class Paradigm(QtGui.QMainWindow):
                                   outputsOff=laserOutput)
                 self.sm.add_state(name='stimulusOn', statetimer=stimDur,
                                   transitions={'Tup':'stimulusOff'},
-                                  outputsOn=stimOutput, 
+                                  outputsOn=stimOutput,
                                   serialOut=serialOutput)
                 self.sm.add_state(name='stimulusOff', statetimer=isi,
                                   transitions={'Tup':'readyForNextTrial'},
@@ -437,7 +437,7 @@ class Paradigm(QtGui.QMainWindow):
                                   outputsOn=laserOutput)
                 self.sm.add_state(name='stimulusOn', statetimer=laserOffset,
                                   transitions={'Tup':'playStimPostLaser'},
-                                  outputsOn=stimOutput, 
+                                  outputsOn=stimOutput,
                                   serialOut=serialOutput)
                 self.sm.add_state(name='playStimPostLaser', statetimer=stimDur-laserOffset,
                                   transitions={'Tup':'StimulusOff'},
@@ -455,7 +455,7 @@ class Paradigm(QtGui.QMainWindow):
                                   outputsOn=laserOutput)
                 self.sm.add_state(name='stimulusOn', statetimer=stimDur,
                                   transitions={'Tup':'laserAfterStim'},
-                                  outputsOn=stimOutput, 
+                                  outputsOn=stimOutput,
                                   serialOut=serialOutput)
                 self.sm.add_state(name='laserAfterStim', statetimer=laserOffset-stimDur,
                                   transitions={'Tup':'laserOff'},
@@ -470,7 +470,7 @@ class Paradigm(QtGui.QMainWindow):
                                   transitions={'Tup':'stimulusOn'})
                 self.sm.add_state(name='stimulusOn', statetimer=laserOnset,
                                   transitions={'Tup':'playStimDuringLaser'},
-                                  outputsOn=stimOutput, 
+                                  outputsOn=stimOutput,
                                   serialOut=serialOutput)
                 self.sm.add_state(name='playStimDuringLaser', statetimer=laserDuration,
                                   transitions={'Tup':'playStimPostLaser'},
@@ -488,7 +488,7 @@ class Paradigm(QtGui.QMainWindow):
                                   transitions={'Tup':'stimulusOn'})
                 self.sm.add_state(name='stimulusOn', statetimer=laserOnset,
                                   transitions={'Tup':'playStimDuringLaser'},
-                                  outputsOn=stimOutput, 
+                                  outputsOn=stimOutput,
                                   serialOut=serialOutput)
                 self.sm.add_state(name='playStimDuringLaser', statetimer=stimDur-laserOnset,
                                   transitions={'Tup':'LaserAfterStim'},
@@ -506,7 +506,7 @@ class Paradigm(QtGui.QMainWindow):
                                   transitions={'Tup':'stimulusOn'})
                 self.sm.add_state(name='stimulusOn', statetimer=stimDur,
                                   transitions={'Tup':'stimulusOff'},
-                                  outputsOn=stimOutput, 
+                                  outputsOn=stimOutput,
                                   serialOut=serialOutput)
                 self.sm.add_state(name='stimulusOff', statetimer=laserOnset-stimDur,
                                   transitions={'Tup':'LaserOn'},
