@@ -353,5 +353,7 @@ if CASE == 4:
    
         dfAllReward_ChangeMouse = pd.concat(allMiceDfs, ignore_index=True)
         #dfAllReward_ChangeMouse.drop('level_0', 1, inplace=True)
+        # To make sure there are not duplicates
+        dfAllReward_ChangeMouse.drop_duplicates(['subject','date','tetrode','cluster','indSite','indExperiment'], inplace=True)
         dfAllReward_ChangeMouse.to_hdf(os.path.join(settings.DATABASE_PATH, 'reward_change_{}.h5'.format(region)), key='reward_change')
         #when saving to hdf, using (format='table',data_columns=True) is slower but enable on disk queries

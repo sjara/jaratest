@@ -18,7 +18,7 @@ from jaratoolbox import extraplots
 #from jaratest.nick.database import dataplotter
 import matplotlib.patches as mpatches
 
-EPHYS_PATH = settings.EPHYS_PATH
+EPHYS_PATH = settings.EPHYS_PATH_REMOTE
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH
 
 colorDictRC = {'leftMoreLowFreq':'g',

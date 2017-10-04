@@ -16,9 +16,11 @@ import pandas as pd
 import subprocess
 from jaratest.nick.database import dataloader_v2 as dataloader
 import numpy as np
+import importlib
+import sys
 from scipy import stats
 
-animal = 'gosi004'
+animal = 'adap013'
 inforecFullPath = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(animal))
 '''
 # -- Cluster and store stats, if have not already done so -- #
@@ -307,6 +309,20 @@ else:
         gosidb['movementModS'] = movementModS
         gosidb.to_hdf(databaseFullPath, key=key)
 
+    # -- Added striatumRange and tetrodeLengthList to inforec files after histology verification of striatum/cortex range -- #
+    if not ('inTargetArea' in gosidb.columns): 
+        sys.path.append(settings.INFOREC_PATH)  
+        inforec = importlib.import_module('{}_inforec'.format(animal))
+        tetrodeLengthList = inforec.tetrodeLengthList
+        targetRangeLongestTt = inforec.targetRangeLongestTt
+
+        def calculate_cell_depth(indCell):
+            tetrode = int(gosidb['tetrode'][indCell])
+            depthThisCell = gosidb['depth'][indCell] - tetrodeLengthList[tetrode-1]
+            inTargetRange = (depthThisCell >= targetRangeLongestTt[0]) & (depthThisCell <= targetRangeLongestTt[1])
+            return inTargetRange
+        
+        inTargetArea = gosidb.apply(lambda row: calculate_cell_depth(row.name))
     
 
 
