@@ -8,6 +8,7 @@ from statsmodels.stats.proportion import proportion_confint
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from jaratoolbox import colorpalette as cp
 from jaratoolbox import extraplots
 from jaratoolbox import settings
@@ -26,8 +27,8 @@ filenameArchCaMKIIpsycurve = 'band011_CaMKII_inactivation_psychometric.npz'
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'behavior_inactivation' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [14,6]
+figFormat = 'svg' # 'pdf' or 'svg'
+figSize = [8,4]
 
 fontSizeLabels = 14 #12
 fontSizeTicks = 12 #10
@@ -39,40 +40,19 @@ labelPosY = [0.9, 0.45]    # Vert position for panel labels
 dataFullPath = os.path.join(dataDir,filenameArchCaMKIIpsycurve)
 data = np.load(dataFullPath)
 
-laserColor = [cp.TangoPalette['Butter3'],cp.TangoPalette['Butter1']]
-colors = ['k','m']
+#laserColor = [cp.TangoPalette['Butter3'],cp.TangoPalette['Butter1']]
+colors = ['k', cp.TangoPalette['Butter3']]
+
+fig = plt.gcf()
+fig.clf()
+fig.set_facecolor('w')
+
+gs = gridspec.GridSpec(1,2)
+gs.update(top=0.9, left=0.05, bottom=0.15, right=0.98, wspace=0.25, hspace=0.25)
+
+#axTask = plt.subplot(gs[0,0])
 
 '''
-# -- From jaratest/anna/behaviour_test.py --
-def band_SNR_laser_psychometric(animal, sessions, trialTypes='laserSide', paradigm='2afc', xlabel=True, ylabel=True):
-    loader = dataloader.DataLoader(animal)
-    validPerSNR = None
-    rightPerSNR = None
-    for ind, session in enumerate(sessions):
-        behavFile = loadbehavior.path_to_behavior_data(animal,paradigm,session)
-        behavData = loader.get_session_behavior(behavFile)
-        ax = plt.gca()
-        ax.cla()
-        possibleSNRs = np.unique(behavData['currentSNR'])
-        laserTrialTypes = np.unique(behavData[trialTypes])
-        trialsEachCond = behavioranalysis.find_trials_each_combination(behavData['currentSNR'], possibleSNRs, 
-                                                                        behavData[trialTypes], laserTrialTypes)
-        valid = behavData['valid'].astype(bool)
-        rightChoice = behavData['choice']==behavData.labels['choice']['right']
-        if validPerSNR is None:
-            validPerSNR = np.zeros((len(laserTrialTypes),len(possibleSNRs)))
-            rightPerSNR = np.zeros((len(laserTrialTypes),len(possibleSNRs)))
-        for las in range(len(laserTrialTypes)):
-            trialsThisLaser = trialsEachCond[:,:,las]
-            for inds in range(len(possibleSNRs)):
-                trialsThisSNR = trialsThisLaser[:,inds]
-                validThisSNR = np.sum(trialsThisSNR.astype(int)[valid])
-                rightThisSNR = np.sum(trialsThisSNR.astype(int)[rightChoice])
-                validPerSNR[las,inds] += validThisSNR
-                rightPerSNR[las,inds] += rightThisSNR
-    return validPerSNR, rightPerSNR, possibleSNRs, laserTrialTypes
-'''
-
 # -- From jaratest/anna/behaviour_test.py --
 def plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs, color = 'k', xlabel=True, ylabel=True):
     performance = []
@@ -83,7 +63,7 @@ def plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs, color = 'k', xlabe
         performance.append(100.0*rightPerSNR[inds]/validPerSNR[inds])
         upper.append(100.0*CIthisSNR[1]-performance[-1])
         lower.append(performance[-1]-100.0*CIthisSNR[0])
-    plt.plot(np.arange(len(possibleSNRs)), performance, marker='o', color=color, lw=3, ms=10, clip_on=False)
+    plt.plot(np.arange(len(possibleSNRs)), performance, marker='o', color=color, mec='none', lw=3, ms=10, clip_on=False)
     plt.errorbar(np.arange(len(possibleSNRs)), performance, yerr = [lower, upper],color=color, clip_on=False)
     if ylabel:
         plt.ylabel("% rightward", fontsize=16)
@@ -91,20 +71,41 @@ def plot_psychometric(validPerSNR, rightPerSNR, possibleSNRs, color = 'k', xlabe
         plt.xlabel('SNR (dB)', fontsize=16)
     plt.xticks(np.arange(len(possibleSNRs)), possibleSNRs)
     plt.ylim((0,100))
-
 #validPerSNR, rightPerSNR, possibleSNRs, laserTrialTypes = band_SNR_laser_psychometric(animal, sessions)
+'''
 
-validPerSNR = data['validPerSNR']
+validPerSNReach = data['validPerSNR']
+rightPerSNReach = data['rightPerSNR']
 possibleSNRs = data['possibleSNRs']
-rightPerSNR = data['rightPerSNR']
 
+ax1 = plt.subplot(gs[0,1])
+pHandles = []
+for las in range(len(validPerSNReach)):
+    validPerSNR = validPerSNReach[las,:]
+    rightPerSNR = rightPerSNReach[las,:]
+    thisColor = colors[las]
+    performance = []
+    upper = []
+    lower = []
+    for inds in range(len(possibleSNRs)):
+        CIthisSNR = np.array(proportion_confint(rightPerSNR[inds], validPerSNR[inds], method = 'wilson'))
+        performance.append(100.0*rightPerSNR[inds]/validPerSNR[inds])
+        upper.append(100.0*CIthisSNR[1]-performance[-1])
+        lower.append(performance[-1]-100.0*CIthisSNR[0])
+    thisPlot, = plt.plot(np.arange(len(possibleSNRs)), performance, marker='o', color=thisColor, mec='none', lw=3, ms=10, clip_on=False)
+    pHandles.append(thisPlot)
+    plt.errorbar(np.arange(len(possibleSNRs)), performance, yerr = [lower, upper], color=thisColor, clip_on=False)
 
-plt.clf()
-ax1 = plt.gca()
-for las in range(len(validPerSNR)):
-    plot_psychometric(validPerSNR[las,:], rightPerSNR[las,:], possibleSNRs, color = colors[las])
+plt.xticks(np.arange(len(possibleSNRs)), possibleSNRs)
+plt.xlim([-0.2, len(possibleSNRs)-1+0.2])
+plt.ylim((0,100))
+plt.legend(pHandles,['Control','No E cells'], loc='upper left', numpoints=1, markerscale=1, handlelength=1.5, frameon=False)
+
 extraplots.boxoff(ax1)
-plt.ylabel('Rightward choice (%)', fontsize=fontSizeLabels)
+#plt.ylabel('Rightward choice (%)', fontsize=fontSizeLabels)
+plt.ylabel('Signal detection rate (%)', fontsize=fontSizeLabels)
 plt.xlabel('Signal to noise ratio (dB)', fontsize=fontSizeLabels)
 plt.show()
 
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
