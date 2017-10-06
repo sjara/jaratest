@@ -75,6 +75,9 @@ exampleCell = {'subject':'gosi008',
                'brainRegion':'ac'} # rightward, movement modulated
 cellParamsList.append(exampleCell)
 
+# -- Here we can choose to generate data for a specific cell instead of every cell -- #
+cellIndToGenerate = 1
+
 ####################################################################################
 
 scriptFullPath = os.path.realpath(__file__)
@@ -180,6 +183,8 @@ if not os.path.ismount(EPHYS_PATH):
 
 
 # -- Select an example cell from allcells file -- #
+if cellIndToGenerate:
+    cellParamsList = [cellParamsList[cellIndToGenerate]]
 for cellParams in cellParamsList:
     animal = cellParams['subject']
     date = cellParams['date']

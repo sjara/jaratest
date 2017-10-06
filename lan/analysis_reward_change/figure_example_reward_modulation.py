@@ -35,12 +35,22 @@ exampleModulatedSoundAc = 'lowfreq_gosi004_2017-03-03_T6_c3'
 exampleModulatedSoundAc2 = 'lowfreq_gosi004_2017-03-18_T6_c10'
 exampleModulatedMovementAStr = 'highfreq_adap012_2016-02-04_T3_c3'
 exampleModulatedMovementAc = 'highfreq_gosi008_2017-03-14_T7_c8'
-examplesDict = {'sound': {'astr': [exampleModulatedSoundAstr],
-                          'ac': [exampleModulatedSoundAc,
-                                 exampleModulatedSoundAc2]},
-               'center-out': {'astr': [exampleModulatedMovementAStr],
-                              'ac': [exampleModulatedMovementAc]}
-               }
+
+# -- Here is where we can select just one cell to plot -- #
+plotAll = False
+
+if not plotAll:
+    examplesDict = {'sound': {'astr': [exampleModulatedSoundAstr]}}
+    #examplesDict = {'center-out': {'astr': [exampleModulatedMovementAstr]}}
+else:
+    examplesDict = {'sound': {'astr': [exampleModulatedSoundAstr],
+                              'ac': [exampleModulatedSoundAc,
+                                     exampleModulatedSoundAc2]},
+                   'center-out': {'astr': [exampleModulatedMovementAStr],
+                                  'ac': [exampleModulatedMovementAc]}
+                   }
+###########################################################
+
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 
@@ -63,6 +73,7 @@ msRaster = 2
 smoothWinSizePsth = 3
 lwPsth = 2
 downsampleFactorPsth = 1
+
 
 for alignment in examplesDict.keys():
     for brainRegion in examplesDict[alignment].keys():
@@ -128,7 +139,7 @@ for alignment in examplesDict.keys():
     
             plt.legend(set(condLabels), loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
             plt.suptitle('{}\n{}'.format(figFilename,cell))
-
+            plt.show()
             if SAVE_FIGURE:
                 extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
