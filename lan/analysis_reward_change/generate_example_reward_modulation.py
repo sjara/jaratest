@@ -1,9 +1,9 @@
 '''
-Generate and store intermediate data for plot showing soundonset-aligned firing activity of astr neurons recorded in psychometric curve task, only trials of the two middle frequencies are plotted. Data for raster and psth are saved separately. 
-For raster data, output contains spikeTimestamps, eventOnsetTimes, freqEachTrial.
-For psth data, output contains spikeCountMat, timeVec, freqEachTrial.
+Generate and store intermediate data for plots showing soundonset-aligned or center-out-aligned firing activity of astr/ac neurons recorded in reward-change task (for trials using the low and high frequency separately). 
+For raster data, output contains spikeTimestamps, eventOnsetTimes, spikeTimesFromEventOnset, condEachTrial, labelEachTrial, as well as meta params.
+For psth data, output contains spikeCountMat, timeVec, condEachTrial, as well as meta params.
 
-Lan Guo20161226
+Lan Guo 20171006
 '''
 import os
 import sys
@@ -37,49 +37,42 @@ exampleCell = {'subject':'adap015',
               'date':'2016-03-18',
               'tetrode':3,
                'cluster':9,
-               'brainRegion':'astr'} #sound modulated
+               'brainRegion':'astr'} # low freq, sound modulated
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'gosi004',
               'date':'2017-03-03',
               'tetrode':6,
                'cluster':3,
-               'brainRegion':'ac'} #sound modulated
+               'brainRegion':'ac'} # low freq, sound modulated
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'gosi004',
               'date':'2017-03-18',
               'tetrode':6,
                'cluster':10,
-               'brainRegion':'ac'} #sound modulated
+               'brainRegion':'ac'} # low freq, sound modulated
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'adap012',
               'date':'2016-02-04',
               'tetrode':3,
                'cluster':3,
-               'brainRegion':'astr'} #movement modulated
-cellParamsList.append(exampleCell)
-
-exampleCell = {'subject':'adap012',
-              'date':'2016-02-04',
-              'tetrode':3,
-               'cluster':3,
-               'brainRegion':'astr'} #movement modulated
+               'brainRegion':'astr'} # rightward, movement modulated
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'gosi004',
               'date':'2017-03-11',
               'tetrode':1,
                'cluster':10,
-               'brainRegion':'ac'} #movement modulated
+               'brainRegion':'ac'} # leftward, movement modulated
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'gosi008',
               'date':'2017-03-14',
               'tetrode':7,
                'cluster':8,
-               'brainRegion':'ac'} #movement modulated
+               'brainRegion':'ac'} # rightward, movement modulated
 cellParamsList.append(exampleCell)
 
 ####################################################################################
@@ -92,7 +85,7 @@ soundTriggerChannel = 0
 paradigm = '2afc'
 minBlockSize = 30
 freqsToPlot = ['low', 'high']
-
+alignmentsToPlot = ['sound', 'center-out']
 ###################################################################################
 def get_trials_each_cond_reward_change(bdata, freqToPlot, colorCondDict, byBlock=True, minBlockSize=30):
     '''Function to generate selection vector showing which trials to plot for each behavior conditions and the color to use in the plot label.
@@ -192,22 +185,21 @@ for cellParams in cellParamsList:
     date = cellParams['date']
     tetrode = cellParams['tetrode']
     cluster = cellParams['cluster']
-    
+    brainRegion = cellParams['brainRegion']
     celldbPath = os.path.join(settings.DATABASE_PATH,'{}_database.h5'.format(animal))
     celldb = pd.read_hdf(celldbPath, key='reward_change')
     
-    ### Using cellDB methode to find the index of this cell in the cellDB ###
-    #oneCell = celldb.loc[(celldb.subject==animal) & (celldb.date==date) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)]
-    cellInd = celldb.loc[(celldb.subject==animal) & (celldb.date==date) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)].index.values
-    #rcInd = oneCell['sessiontype'].index('behavior')
-    rcInd = celldb.iloc[cellInd, ]
-    #rcEphysThisCell = oneCell['ephys'][rcInd]
-    #rcBehavThisCell = oneCell['behavior'][rcInd]
+    ### Using cellDB methode to find this cell in the cellDB ###
+    oneCell = celldb.loc[(celldb.subject==animal) & (celldb.date==date) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)]
+    sessionsThisCell = oneCell.iloc[0].sessiontype
+    rcInd = sessionsThisCell.index('behavior')
+    rcEphysThisCell = oneCell['ephys'].iloc[0][rcInd]
+    rcBehavThisCell = oneCell['behavior'].iloc[0][rcInd]
 
     ## Get behavior data associated with 2afc session ###
     behavFileName = rcBehavThisCell
     behavFile = os.path.join(BEHAVIOR_PATH,animal,behavFileName)
-    bdata = loadbehavior.BehaviorData(behavFile,readmode='full')
+    bdata = loadbehavior.FlexCategBehaviorData(behavFile,readmode='full')
 
 
     ### Get events data ###
@@ -266,7 +258,7 @@ for cellParams in cellParamsList:
             #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
             outputFile = 'example_rc_{}aligned_raster_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
             outputFullPath = os.path.join(dataDir,outputFile)
-            np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=labelEachCond, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, frequencyPloted=freq, alignedTo=alignment, **cellParams)
+            np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=EventOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=labelEachCond, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, frequencyPloted=freq, alignedTo=alignment, **cellParams)
 
 
             # -- Calculate additional arrays for plotting psth -- #
@@ -277,4 +269,4 @@ for cellParams in cellParamsList:
             #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
             outputFile = 'example_rc_{}aligned_psth_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
             outputFullPath = os.path.join(dataDir,outputFile)
-            np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, labelEachCond=labelEachCond, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams)
+            np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=labelEachCond, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams)
