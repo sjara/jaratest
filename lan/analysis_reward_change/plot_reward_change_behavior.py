@@ -97,7 +97,7 @@ if __name__ == '__main__':
     CASE = 1
 
     if CASE == 1:
-        subjects = ['adap071','adap067']
+        subjects = ['adap071']
     
         if len(sys.argv)>1:
             sessions = sys.argv[1:]

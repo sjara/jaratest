@@ -30,7 +30,7 @@ def score_compare_ave_std(timestamps, numBins, sd2mean=0.5):
     countsStd = np.std(counts)
     if countsStd >= sd2mean * countsMean:
         consistentFiring = False
-    '''    
+    '''   
     #Ploting code used for testing.
     plt.figure()
     label = '{}'.format(consistentFiring)
@@ -115,30 +115,38 @@ if __name__ == '__main__':
     for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(label))
         celldb = pd.read_hdf(celldbPath, key='reward_change')
-        celldb = celldb.reset_index()
-        goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{}'.format(ISIcutoff, qualityThreshold))
-        #goodQualCells = goodQualCells[-25:]
-        consistencyArray = np.zeros(len(celldb), dtype=bool)
-        for ind, cell in goodQualCells.iterrows():
-            indc = cell.name
-            animal = cell['animalName']
-            date = cell['date']
-            tetrode = int(cell['tetrode'])
-            cluster = int(cell['cluster'])
-            rcInd = cell['sessiontype'].index('behavior')
-            rcEphysThisCell = cell['ephys'][rcInd]
-            #rcBehavThisCell = cell['behavior'][rcInd]
+        if 'level_0' in list(celldb):
+            celldb.drop('level_0', inplace=True, axis=1)
+        else:
+            celldb = celldb.reset_index()
+            celldb.drop('level_0', inplace=True, axis=1)
 
-            spikeData = rcfuncs.load_spike_data(animal, rcEphysThisCell, tetrode, cluster)
-            timestamps = spikeData.timestamps
-            timestamps = timestamps - timestamps[0] #timestamps unit is seconds
-            
-            #consistentFiring = score_overall_ave_std(timestamps, numBins, consistentZthreshold, maxInconsistentBins)
-            #consistentFiring = score_running_ave_std(timestamps, numBins, initialWinSize, consistentZthreshold, maxInconsistentBins)
-            consistentFiring = score_compare_ave_std(timestamps, numBins, sd2mean)
-            consistencyArray[indc] = consistentFiring
-            #pdb.set_trace()
+        if 'consistentInFiring' not in list(celldb):
+            goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{}'.format(ISIcutoff, qualityThreshold))
+            #goodQualCells = goodQualCells[-30:]
+            consistencyArray = np.zeros(len(celldb), dtype=bool)
+            for ind, cell in goodQualCells.iterrows():
+                indc = cell.name
+                animal = cell['animalName']
+                date = cell['date']
+                tetrode = int(cell['tetrode'])
+                cluster = int(cell['cluster'])
+                rcInd = cell['sessiontype'].index('behavior')
+                rcEphysThisCell = cell['ephys'][rcInd]
+                #rcBehavThisCell = cell['behavior'][rcInd]
+                print 'Checking cell {}'.format(indc)
 
-            #raw_input('Press Enter')
-        celldb['consistentInFiring'] = consistencyArray
+                spikeData = rcfuncs.load_spike_data(animal, rcEphysThisCell, tetrode, cluster)
+                timestamps = spikeData.timestamps
+                timestamps = timestamps - timestamps[0] #timestamps unit is seconds
+
+                #consistentFiring = score_overall_ave_std(timestamps, numBins, consistentZthreshold, maxInconsistentBins)
+                #consistentFiring = score_running_ave_std(timestamps, numBins, initialWinSize, consistentZthreshold, maxInconsistentBins)
+                consistentFiring = score_compare_ave_std(timestamps, numBins, sd2mean)
+                consistencyArray[indc] = consistentFiring
+                #pdb.set_trace()
+
+                #raw_input('Press Enter')
+            celldb['consistentInFiring'] = consistencyArray
+        
         celldb.to_hdf(celldbPath, key='reward_change')

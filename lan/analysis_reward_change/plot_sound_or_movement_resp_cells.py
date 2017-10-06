@@ -123,79 +123,79 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         outputDir = '/home/languo/data/ephys/reward_change_stats/modulated_cells_reports/movement_selective'
         if not os.path.exists(outputDir):
             os.mkdir(outputDir)
-            modWindow = '0.05-0.35s_center-out'
-            movementModInd = cell['movementModI']
-            if movementModInd > 0:
-                freq = 'High' #fire more when moving to the right (high freq)
-                indf = 1
-            elif movementModInd <= 0:
-                freq = 'Low'
-                indf = 0
+        modWindow = '0.05-0.35s_center-out'
+        movementModInd = cell['movementModI']
+        if movementModInd > 0:
+            freq = 'High' #fire more when moving to the right (high freq)
+            indf = 1
+        elif movementModInd <= 0:
+            freq = 'Low'
+            indf = 0
 
-            modIndName = 'modInd'+freq+'_'+modWindow
-            modSigName = 'modSig'+freq+'_'+modWindow
-            
-            animal = cell['animalName']
-            date = cell['date']
-            tetrode = int(cell['tetrode'])
-            cluster = int(cell['cluster'])
-            modIThisFreqThisWindow = cell[modIndName]
-            
-            spikeQuality = cell['shapeQuality']
+        modIndName = 'modInd'+freq+'_'+modWindow
+        modSigName = 'modSig'+freq+'_'+modWindow
 
-            figname = '{}_{}_T{}_c{}_{}_{}.png'.format(animal,date,tetrode,cluster, freq, modWindow)
-            figFullPath = os.path.join(outputDir, figname)
-            if os.path.exists(figFullPath):
-                continue
+        animal = cell['animalName']
+        date = cell['date']
+        tetrode = int(cell['tetrode'])
+        cluster = int(cell['cluster'])
+        modIThisFreqThisWindow = cell[modIndName]
 
-            tuningSessionInd = cell['sessiontype'].index('tc')
-            tuningEphysThisCell = cell['ephys'][tuningSessionInd]
-            tuningBehavThisCell = cell['behavior'][tuningSessionInd]
-            thisFreqZscore = cell['behavZscore'][indf]
-            rcInd = cell['sessiontype'].index('behavior')
-            rcEphysThisCell = cell['ephys'][rcInd]
-            rcBehavThisCell = cell['behavior'][rcInd]
-            print 'Ploting report for {} {} T{}c{}'.format(animal,date,tetrode,cluster)
-            plt.figure(figsize=(18,9))
-            gs = gridspec.GridSpec(2,3)
-            gs.update(left=0.1, right=0.9, wspace=0.5, hspace=0.2)
-            gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.1)
-            gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,2], hspace=0.1)
+        spikeQuality = cell['shapeQuality']
 
-            # Tuning raster
-            ax1 = plt.subplot(gs[0, 0])
-            try:
-                rcfuncs.plot_tuning_raster(animal, tuningEphysThisCell, tuningBehavThisCell, tetrode, cluster, intensity=50, timeRange = [-0.5,1])
-                ax1.set_title('Z score for {} freq: {:.3f}'.format(freq, thisFreqZscore))
-            except:
-                ax1.set_title('Cannot load tuning data or clustering for tuning session had failed')
-                pass
-            # mod window-aligned this freq 
-            alignment = modWindow.split('_')[1]
-            ax2 = plt.subplot(gs00[0:2, :])
-            rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4])
-            ax2.set_title('Reward modulation {}: {:.3f}'.format(modWindow, modIThisFreqThisWindow))
-            ax3 = plt.subplot(gs00[2, :])
-            rcfuncs.plot_reward_change_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=False, alignment=alignment, timeRange=[-0.3,0.4], binWidth=0.010)
+        figname = '{}_{}_T{}_c{}_{}_{}.png'.format(animal,date,tetrode,cluster, freq, modWindow)
+        figFullPath = os.path.join(outputDir, figname)
+        if os.path.exists(figFullPath):
+            continue
 
-            # Plot movement-related response, includes all valid trials (correct&incorrect)
-            ax4 = plt.subplot(gs01[0:2, :])
-            rcfuncs.plot_movement_response_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5])
-            ax4.set_title('Movement modulation index: {:.3f}'.format(movementModInd))
-            ax5 = plt.subplot(gs01[2, :])
-            rcfuncs.plot_movement_response_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010)
+        tuningSessionInd = cell['sessiontype'].index('tc')
+        tuningEphysThisCell = cell['ephys'][tuningSessionInd]
+        tuningBehavThisCell = cell['behavior'][tuningSessionInd]
+        thisFreqZscore = cell['behavZscore'][indf]
+        rcInd = cell['sessiontype'].index('behavior')
+        rcEphysThisCell = cell['ephys'][rcInd]
+        rcBehavThisCell = cell['behavior'][rcInd]
+        print 'Ploting report for {} {} T{}c{}'.format(animal,date,tetrode,cluster)
+        plt.figure(figsize=(18,9))
+        gs = gridspec.GridSpec(2,3)
+        gs.update(left=0.1, right=0.9, wspace=0.5, hspace=0.2)
+        gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.1)
+        gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,2], hspace=0.1)
 
-            # Plot spike quality summary graphs
-            ax6 = plt.subplot(gs[1, 0])
-            rcfuncs.plot_waveform_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
-            ax6.set_title('spike shape quality: {:.3f}'.format(spikeQuality))
+        # Tuning raster
+        ax1 = plt.subplot(gs[0, 0])
+        try:
+            rcfuncs.plot_tuning_raster(animal, tuningEphysThisCell, tuningBehavThisCell, tetrode, cluster, intensity=50, timeRange = [-0.5,1])
+            ax1.set_title('Z score for {} freq: {:.3f}'.format(freq, thisFreqZscore))
+        except:
+            ax1.set_title('Cannot load tuning data or clustering for tuning session had failed')
+            pass
+        # mod window-aligned this freq 
+        alignment = modWindow.split('_')[1]
+        ax2 = plt.subplot(gs00[0:2, :])
+        rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4])
+        ax2.set_title('Reward modulation {}: {:.3f}'.format(modWindow, modIThisFreqThisWindow))
+        ax3 = plt.subplot(gs00[2, :])
+        rcfuncs.plot_reward_change_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=False, alignment=alignment, timeRange=[-0.3,0.4], binWidth=0.010)
 
-            ax7 = plt.subplot(gs[1,1])
-            rcfuncs.plot_isi_loghist_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
+        # Plot movement-related response, includes all valid trials (correct&incorrect)
+        ax4 = plt.subplot(gs01[0:2, :])
+        rcfuncs.plot_movement_response_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5])
+        ax4.set_title('Movement modulation index: {:.3f}'.format(movementModInd))
+        ax5 = plt.subplot(gs01[2, :])
+        rcfuncs.plot_movement_response_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010)
 
-            ax8 = plt.subplot(gs[1, 2])
-            rcfuncs.plot_events_in_time_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
-            plt.suptitle(figname)
-            # Save figure
+        # Plot spike quality summary graphs
+        ax6 = plt.subplot(gs[1, 0])
+        rcfuncs.plot_waveform_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
+        ax6.set_title('spike shape quality: {:.3f}'.format(spikeQuality))
 
-            plt.savefig(figFullPath)
+        ax7 = plt.subplot(gs[1,1])
+        rcfuncs.plot_isi_loghist_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
+
+        ax8 = plt.subplot(gs[1, 2])
+        rcfuncs.plot_events_in_time_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
+        plt.suptitle(figname)
+        # Save figure
+
+        plt.savefig(figFullPath)

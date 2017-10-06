@@ -23,9 +23,10 @@ import pandas as pd
 
 STUDY_NAME = '2017rewardchange'
 
-def find_2afc_ephys_sessions(celldb):
-    inds = celldb['sessiontype'].apply(lambda x: x.index('behavior'))
-    behavEphysSessionsEachCell = celldb.apply(lambda row: row['ephys'][inds[row.name]], axis=1)
+def find_2afc_ephys_sessions(celldb, tetrode):
+    celldbThisTetrode = celldb.loc[celldb['tetrode']==tetrode]
+    inds = celldbThisTetrode['sessiontype'].apply(lambda x: x.index('behavior'))
+    behavEphysSessionsEachCell = celldbThisTetrode.apply(lambda row: row['ephys'][inds[row.name]], axis=1)
     sortedUniqueEphysSessions = sorted(set(behavEphysSessionsEachCell.values))
     return sortedUniqueEphysSessions
 
@@ -51,30 +52,33 @@ def calculate_avg_waveforms(subject, cellDB, ephysSession, tetrode,  wavesize=16
     date = ephysSession.split('_')[0]
     #passingClusters = np.array(np.repeat(0,12), dtype=bool) #default to all false
     cells = cellDB.loc[(cellDB.date==date) & (cellDB.tetrode==tetrode)]
-    # DONE: Load data for one tetrodes and calculate average for each cluster.
-    #ephysFilename = ???
-    ephysDir = os.path.join(settings.EPHYS_PATH_REMOTE, subject, ephysSession)
-    ephysFilename = os.path.join(ephysDir, 'Tetrode{}.spikes'.format(tetrode))
-    spikes = loadopenephys.DataSpikes(ephysFilename)
+    if len(cells) == 0: #This tetrode doesn't exist in this session
+        allWaveforms = None
+    else:
+        # DONE: Load data for one tetrodes and calculate average for each cluster.
+        #ephysFilename = ???
+        ephysDir = os.path.join(settings.EPHYS_PATH_REMOTE, subject, ephysSession)
+        ephysFilename = os.path.join(ephysDir, 'Tetrode{}.spikes'.format(tetrode))
+        spikes = loadopenephys.DataSpikes(ephysFilename)
 
-    # DONE: Load cluster file
-    #kkDataDir = os.path.dirname(self.filename)+'_kk'
-    #fullPath = os.path.join(kkDataDir,clusterFilename)
-    clustersDir = '{}_kk'.format(ephysDir)
-    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(tetrode))
-    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
-    clustersThisSession = np.unique(clusters)
-    numClustersThisTetrode = len(cells) #Sometimes clustersThisSession don't include all the possible clusters this tetrode!
-    # DONE: loop through clusters
-    allWaveforms = np.empty((numClustersThisTetrode,wavesize))
-    for indc, cluster in enumerate(clustersThisSession):
-        print 'Estimating average waveform for {0} T{1}c{2}'.format(ephysSession,tetrode,cluster)
+        # DONE: Load cluster file
+        #kkDataDir = os.path.dirname(self.filename)+'_kk'
+        #fullPath = os.path.join(kkDataDir,clusterFilename)
+        clustersDir = '{}_kk'.format(ephysDir)
+        clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(tetrode))
+        clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
+        clustersThisSession = np.unique(clusters)
+        numClustersThisTetrode = len(cells) #Sometimes clustersThisSession don't include all the possible clusters this tetrode!
+        # DONE: loop through clusters
+        allWaveforms = np.empty((numClustersThisTetrode,wavesize))
+        for indc, cluster in enumerate(clustersThisSession):
+            print 'Estimating average waveform for {0} T{1}c{2}'.format(ephysSession,tetrode,cluster)
 
-        # DONE: get waveforms for one cluster
-        waveforms = spikes.samples[clusters==cluster, :, :]
-        alignedWaveforms = spikesorting.align_waveforms(waveforms)
-        meanWaveforms = np.mean(alignedWaveforms,axis=0)
-        allWaveforms[cluster-1,:] = meanWaveforms.flatten()
+            # DONE: get waveforms for one cluster
+            waveforms = spikes.samples[clusters==cluster, :, :]
+            alignedWaveforms = spikesorting.align_waveforms(waveforms)
+            meanWaveforms = np.mean(alignedWaveforms,axis=0)
+            allWaveforms[cluster-1,:] = meanWaveforms.flatten()
     return allWaveforms
 
 
@@ -116,9 +120,13 @@ def spikeshape_correlation(waveforms):
     ccAccross = []
     #inds=-1 # Needed in case only one waveform
     for inds in range(len(waveforms)-1):
-        ccSelf.append(row_corrcoeff(waveforms[inds],waveforms[inds]))
-        ccAccross.append(row_corrcoeff(waveforms[inds],waveforms[inds+1]))
-    ccSelf.append(row_corrcoeff(waveforms[inds+1],waveforms[inds+1]))
+        if np.any(waveforms[inds]) and np.any(waveforms[inds+1]):
+            ccSelf.append(row_corrcoeff(waveforms[inds],waveforms[inds]))
+            ccAccross.append(row_corrcoeff(waveforms[inds],waveforms[inds+1]))
+        else:
+            continue
+    if np.any(waveforms[inds+1]):
+        ccSelf.append(row_corrcoeff(waveforms[inds+1],waveforms[inds+1]))
     return (ccSelf,ccAccross)
 
 
@@ -162,7 +170,7 @@ def comparison_quality_filter(cellDB, session1, session2, tetrode, isiThresh=0.0
 
     return qualityMat
   
-def session_good_clusters(cellDB, session, tetrode, isiThresh, qualityThresh):
+def session_good_clusters(cellDB, session, tetrode, isiThresh, qualityThresh, consistencyChecked=True):
     '''
     Now this function uses database look up to determine quality of clusters. Return a 12-item bool vector, containing True if the cluster was good quality and False otherwise
     '''
@@ -176,7 +184,13 @@ def session_good_clusters(cellDB, session, tetrode, isiThresh, qualityThresh):
     if np.any(cells):
         goodQualityCells = (cells.shapeQuality >= qualityThresh)
         lowISICells = (cells.isiViolations <= isiThresh)
-        passingClusters = (goodQualityCells & lowISICells).values
+        if consistencyChecked:
+            consistentFiring = (cells.consistentInFiring == True)
+            passingClusters = (goodQualityCells & lowISICells & consistentFiring).values
+        else:
+            passingClusters = (goodQualityCells & lowISICells).values
+    else:
+        passingClusters = np.zeros(12)
     return passingClusters
 
     
@@ -221,27 +235,29 @@ def print_reports_clusters(subject, sessions, tetrode, printer):
 
 if __name__=='__main__':
     ### Useful trick:   np.set_printoptions(linewidth=160)
-    CASE = 4
+    isiThresh = 0.02 #The upper threshold for ISI violations
+    qualityThresh = 3 #2.5
+    consistencyChecked=True
+    
+    CASE = 3
+
     #ANIMALS = ['adap017','adap013']
-    ANIMALS = ['gosi001'] #,'gosi004','gosi008','gosi010']
+    brainRegion = 'astr'
+    ANIMALS = ['adap005','adap012'] #,'gosi004','gosi008','gosi010']
     # -- Calculate waveform, correlations within and across 2 consecutive sessions for each tetrode in each animal -- #
     if CASE==1:
         for animal in ANIMALS:
             subject = animal
             tetrodes = range(1, 9)
             #corrThresh = 0.7 #The lower limit for the correlation value 
-            isiThresh = 0.02 #The upper threshold for ISI violations
-            qualityThresh = 2.5
             #goodQualityList = [1,6] #Qaulity score for good cells
             ## -- Load cellDB of this animal -- #
-            celldbPath = os.path.join(settings.DATABASE_PATH,'{}_database.h5'.format(animal))
-            cellDB = pd.read_hdf(celldbPath, key='reward_change')
-            cellDB = cellDB.drop_duplicates(['subject','date','tetrode','cluster'])
+            celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(brainRegion))
+            cellDBAll = pd.read_hdf(celldbPath, key='reward_change')
+            
+            cellDB = cellDBAll.loc[cellDBAll['subject'] == animal].reset_index()
+            #cellDB = cellDB.drop_duplicates(['subject','date','tetrode','cluster'])
 
-            ### -- DO THIS PER ANIMAL -- ###
-            #Find all the 2afc sessions for this animal
-            sessions = find_2afc_ephys_sessions(cellDB)
-            clusterDirs = ['{}_kk'.format(session) for session in sessions]
             ### -- DO THIS PER TETRODE -- ###
             waveDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/wavefiles/{}'.format(STUDY_NAME)) 
             corrDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/corrfiles/{}'.format(STUDY_NAME))
@@ -251,6 +267,9 @@ if __name__=='__main__':
                     os.mkdir(folder)
 
             for tetrode in tetrodes:
+                #Find all the 2afc sessions for this animal this tetrode
+                sessions = find_2afc_ephys_sessions(cellDB, tetrode)
+                clusterDirs = ['{}_kk'.format(session) for session in sessions]
                 #If the waves exist, load them. If not, get them
                 waveFile = os.path.join(waveDesFolder, '{}_TT{}waves.p'.format(subject, tetrode))
 
@@ -287,18 +306,20 @@ if __name__=='__main__':
                 #allSelfCorrComps = []; 
 
                 for indSession, session in enumerate(sessions):
-                    selfCompThisSession = ccSelf[indSession]
-                    qualityMat = comparison_quality_filter(cellDB, session, session, tetrode, isiThresh, qualityThresh)
-                    qualityMat = triangle_filter(qualityMat)
-                    larray = comparison_label_array(cellDB, session, session, tetrode)
-                    goodCorrVals = selfCompThisSession[qualityMat]
-                    goodCompLabs = larray[qualityMat]
-                    #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
-                    #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
-                    #save out the values
-                    allSelfCorrVals.extend(list(goodCorrVals))
-                    allSelfCorrLabs.extend(list(goodCompLabs))
-                    
+                    try:
+                        selfCompThisSession = ccSelf[indSession]
+                        qualityMat = comparison_quality_filter(cellDB, session, session, tetrode, isiThresh, qualityThresh)
+                        qualityMat = triangle_filter(qualityMat)
+                        larray = comparison_label_array(cellDB, session, session, tetrode)
+                        goodCorrVals = selfCompThisSession[qualityMat]
+                        goodCompLabs = larray[qualityMat]
+                        #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
+                        #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
+                        #save out the values
+                        allSelfCorrVals.extend(list(goodCorrVals))
+                        allSelfCorrLabs.extend(list(goodCompLabs))
+                    except IndexError: # This is when a tetrode don't have data for all the sessions
+                        continue
                 outputFile = os.path.join(resultsDesFolder,'{}_TT{}_SELF_corr.npz'.format(subject, tetrode))
                 np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allSelfCorrVals=allSelfCorrVals, allSelfCorrLabs=allSelfCorrLabs)
 
@@ -307,103 +328,24 @@ if __name__=='__main__':
                 #allCrossCorrComps = []
                 
                 for indComp, (session1, session2) in enumerate(zip(sessions, sessions[1:])):
-                    crossCompTheseSessions = ccAcross[indComp]
-                    qualityMat = comparison_quality_filter(cellDB, session1, session2, tetrode, isiThresh, qualityThresh)
-                    larray = comparison_label_array(cellDB, session1, session2, tetrode)
-                    goodCorrVals = crossCompTheseSessions[qualityMat]
-                    goodCompLabs = larray[qualityMat]
-                    #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
-                    #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
-                    #save out the values
-                    allCrossCorrVals.extend(list(goodCorrVals))
-                    allCrossCorrLabs.extend(list(goodCompLabs))
-                    
+                    try:
+                        crossCompTheseSessions = ccAcross[indComp]
+                        qualityMat = comparison_quality_filter(cellDB, session1, session2, tetrode, isiThresh, qualityThresh)
+                        larray = comparison_label_array(cellDB, session1, session2, tetrode)
+                        goodCorrVals = crossCompTheseSessions[qualityMat]
+                        goodCompLabs = larray[qualityMat]
+                        #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
+                        #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
+                        #save out the values
+                        allCrossCorrVals.extend(list(goodCorrVals))
+                        allCrossCorrLabs.extend(list(goodCompLabs))
+                    except IndexError: # This is when a tetrode don't have data for all the sessions
+                        continue
                 outputFile = os.path.join(resultsDesFolder,'{}_TT{}_CROSS_corr.npz'.format(subject, tetrode))
                 np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allCrossCorrVals=allCrossCorrVals, allCrossCorrLabs=allCrossCorrLabs)
 
+    # -- Isolate and plot side by side comparisons of cell pairs that has a correlation surpassing some threshold -- #
     elif CASE==2:
-        # Plot histogram of correlation values to visualize the range of corr values for each tetrode of one mouse
-        import matplotlib.pyplot as plt
-
-        subject = ANIMAL
-        resultsDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values')
-
-        def plot_corr_vals(corrvals, subject, tetrode, mode=None):
-            #mode is 'self' or 'cross'
-            meanCorrVal = np.mean(corrvals)
-            sdCorrVale = np.std(corrvals)
-            plt.clf()
-            plt.hist(corrvals)
-            plt.axvline(x=meanCorrVal+2*sdCorrVale, color='r')
-            plt.xlim([-1,1])
-            figname = '{} Tt{} {} correlation.pdf'.format(subject, tetrode, mode)
-            plt.title(figname.split('.')[0])
-            plt.savefig(os.path.join('/tmp/',figname))
-
-
-        for filename in os.listdir(resultsDesFolder):
-            fullFilename = os.path.join(resultsDesFolder, filename)
-            if os.path.isfile(fullFilename) and subject in filename:
-                if 'SELF' in filename:
-                    selfCorrDb = np.load(fullFilename)
-                    tetrode = int(selfCorrDb['tetrode'])
-                    selfCorrValsThisT = selfCorrDb['allSelfCorrVals'] 
-                    selfCorrLabsThisT = selfCorrDb['allSelfCorrLabs']
-                    plot_corr_vals(selfCorrValsThisT, subject, tetrode, mode='self')
-
-                elif 'CROSS' in filename:
-                    crossCorrDb = np.load(fullFilename)
-                    tetrode = int(crossCorrDb['tetrode'])
-                    crossCorrValsThisT = crossCorrDb['allCrossCorrVals'] 
-                    crossCorrLabsThisT = crossCorrDb['allCrossCorrLabs']
-                    plot_corr_vals(crossCorrValsThisT, subject, tetrode, mode='cross')
-   
-    elif CASE==3:
-        # Plot histogram of correlation values to visualize the range of corr values for all tetrodes of one mouse
-        import matplotlib.pyplot as plt
-        subject = ANIMAL
-        numOfTetrode = 8
-        corrThresh = 0.8
-        resultsDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values')
-
-        def plot_corr_vals(corrvals, subject, tetrode, mode=None):
-            #mode is 'self' or 'cross' or 'both'
-            meanCorrVal = np.mean(corrvals)
-            sdCorrVale = np.std(corrvals)
-            plt.clf()
-            plt.hist(corrvals, bins=100)
-            plt.axvline(x=meanCorrVal+2*sdCorrVale, color='r')
-            plt.xlim([-1,1])
-            if tetrode==None:
-                tetrode = 'All'
-            figname = '{} Tt {} {} correlation.pdf'.format(subject, tetrode, mode)
-            plt.title(figname.split('.')[0])
-            plt.savefig(os.path.join('/tmp/',figname))
-        
-        allCorrVals = np.array([]); allCorrLabs = np.array([])
-        for filename in os.listdir(resultsDesFolder):
-            fullFilename = os.path.join(resultsDesFolder, filename)
-            if os.path.isfile(fullFilename) and subject in filename:
-                if 'SELF' in filename:
-                    selfCorrDb = np.load(fullFilename)
-                    tetrode = int(selfCorrDb['tetrode'])
-                    corrValsThisT = selfCorrDb['allSelfCorrVals']
-                    corrLabsThisT = selfCorrDb['allSelfCorrLabs']
-                elif 'CROSS' in filename:
-                    crossCorrDb = np.load(fullFilename)
-                    tetrode = int(crossCorrDb['tetrode'])
-                    corrValsThisT = crossCorrDb['allCrossCorrVals'] 
-                    corrLabsThisT = crossCorrDb['allCrossCorrLabs']
-                allCorrVals = np.append(allCorrVals, corrValsThisT)
-                allCorrLabs = np.append(allCorrLabs, corrLabsThisT)
-        plot_corr_vals(allCorrVals, subject, tetrode=None, mode='both')
-
-        #corrValsOverThresh = allCorrVals[allCorrVals>=corrThresh]
-        #corrLabsOverThresh = allCorrLabs[allCorrVals>=corrThresh]
-        #print corrLabsOverThresh
-    
-
-    elif CASE==4:
         import sys
         import pdb
         import importlib
@@ -413,113 +355,114 @@ if __name__=='__main__':
         from jaratest.lan.analysis_reward_change import reward_change_loader_plotter_functions as rcfuncs
         reload(rcfuncs)
         
-        # -- Isolate and plot side by side comparisons of cell pairs that has a correlation surpassing some threshold -- #
-        subject = 'gosi001'        
-        corrThresh = 0.8
+        #subject = 'gosi001'        
+        corrThresh = 0.9
         resultsDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values/{}'.format(STUDY_NAME))
 
-        allCorrVals = np.array([]); allCorrLabs = np.array([])
-        for filename in os.listdir(resultsDesFolder):
-            fullFilename = os.path.join(resultsDesFolder, filename)
-            if os.path.isfile(fullFilename) and subject in filename:
-                if 'SELF' in filename:
-                    selfCorrDb = np.load(fullFilename)
-                    tetrode = int(selfCorrDb['tetrode'])
-                    corrValsThisT = selfCorrDb['allSelfCorrVals']
-                    corrLabsThisT = selfCorrDb['allSelfCorrLabs']
-                elif 'CROSS' in filename:
-                    crossCorrDb = np.load(fullFilename)
-                    tetrode = int(crossCorrDb['tetrode'])
-                    corrValsThisT = crossCorrDb['allCrossCorrVals'] 
-                    corrLabsThisT = crossCorrDb['allCrossCorrLabs']
-                allCorrVals = np.append(allCorrVals, corrValsThisT)
-                allCorrLabs = np.append(allCorrLabs, corrLabsThisT)
-                
-        corrValsOverThresh = allCorrVals[allCorrVals>=corrThresh]
-        corrLabsOverThresh = allCorrLabs[allCorrVals>=corrThresh]
-        
-        outputDir = os.path.join(settings.EPHYS_PATH, 'cluster_analysis', subject)
-        if not os.path.exists(outputDir):
-            os.mkdir(outputDir)
-        #pdb.set_trace()
-        # -- Parse corr label to get cell infos -- #
-        if not np.any(corrValsOverThresh):
-            pass
-        for (val,lab) in zip(corrValsOverThresh,corrLabsOverThresh):
-            cell1,cell2 = lab.split(' x ')
-            cellParamsList = []
-            for cell in lab.split(' x '):
-                date = cell.split('_')[0]
-                behavSession = cell.split('_')[0].replace('-','')
-                behavSession = behavSession + 'a'
-                ephysSession = '_'.join((date,cell.split('_')[1]))
-                tetrode = cell.split('_')[2][1]
-                cluster = cell.split('_')[2][3]
-                cellParams = {'animal':subject,
-                              'ephysSession':ephysSession,
-                              'behavSession':behavSession,
-                              'tetrode':int(tetrode),
-                              'cluster':int(cluster)}
-                cellParamsList.append(cellParams)
-            
-            numRows = 3
-            colsEachPan = 2
-            panEachCell = 2
-            numCols = colsEachPan*panEachCell*2
-            # -- Plot the two cells side by side (waveform, ISI, events-in-time, tuning) -- #
-            figname = '{}_{}x{}'.format(subject, cell1, cell2)
-            figpath = os.path.join(outputDir, figname)
-            if os.path.isfile(figpath):
-                continue
+        for animal in ANIMALS:
+            subject = animal
+            allCorrVals = np.array([]); allCorrLabs = np.array([])
+            for filename in os.listdir(resultsDesFolder):
+                fullFilename = os.path.join(resultsDesFolder, filename)
+                if os.path.isfile(fullFilename) and subject in filename:
+                    if 'SELF' in filename:
+                        selfCorrDb = np.load(fullFilename)
+                        tetrode = int(selfCorrDb['tetrode'])
+                        corrValsThisT = selfCorrDb['allSelfCorrVals']
+                        corrLabsThisT = selfCorrDb['allSelfCorrLabs']
+                    elif 'CROSS' in filename:
+                        crossCorrDb = np.load(fullFilename)
+                        tetrode = int(crossCorrDb['tetrode'])
+                        corrValsThisT = crossCorrDb['allCrossCorrVals'] 
+                        corrLabsThisT = crossCorrDb['allCrossCorrLabs']
+                    allCorrVals = np.append(allCorrVals, corrValsThisT)
+                    allCorrLabs = np.append(allCorrLabs, corrLabsThisT)
 
-            for ind,cellParams in enumerate(cellParamsList):
-                # -- Plot waveform, ISI, events-in-time based on 2afc session recording -- #
-                animal = cellParams['animal']
-                rcEphysThisCell = cellParams['ephysSession']
-                rcBehavThisCell = '{}_2afc_{}.h5'.format(animal,cellParams['behavSession'])
-                tetrode = cellParams['tetrode']
-                cluster = cellParams['cluster']
-                ax1 = plt.subplot2grid((numRows,numCols), (0,ind*colsEachPan*panEachCell), colspan=colsEachPan)
-                rcfuncs.plot_isi_loghist_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
-                
-                ax2 = plt.subplot2grid((numRows,numCols), (1,ind*colsEachPan*panEachCell), colspan=colsEachPan)
-                rcfuncs.plot_waveform_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
+            corrValsOverThresh = allCorrVals[allCorrVals>=corrThresh]
+            corrLabsOverThresh = allCorrLabs[allCorrVals>=corrThresh]
 
-                ax3 = plt.subplot2grid((numRows,numCols), (2,ind*colsEachPan*panEachCell), colspan=colsEachPan)
-                rcfuncs.plot_events_in_time_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
-                
-                # -- Plot 2afc raster -- #
-                ax4 = plt.subplot2grid((numRows,numCols), (0,ind*colsEachPan*panEachCell+2), colspan=colsEachPan, rowspan=3)
-                rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot='both', byBlock=True, alignment='sound', timeRange=[-0.3,0.4]) 
-            figname = '{}_{}x{}'.format(subject, cell1, cell2)
-            plt.suptitle(figname+'\n correlation: {}'.format(val))
-            plt.savefig(figpath, format='png')
-            
+            outputDir = os.path.join(settings.EPHYS_PATH, 'cluster_analysis', subject)
+            if not os.path.exists(outputDir):
+                os.mkdir(outputDir)
+            #pdb.set_trace()
+            # -- Parse corr label to get cell infos -- #
+            if not np.any(corrValsOverThresh):
+                pass
+            for (val,lab) in zip(corrValsOverThresh,corrLabsOverThresh):
+                cell1,cell2 = lab.split(' x ')
+                cellParamsList = []
+                for cell in lab.split(' x '):
+                    date = cell.split('_')[0]
+                    behavSession = cell.split('_')[0].replace('-','')
+                    behavSession = behavSession + 'a'
+                    ephysSession = '_'.join((date,cell.split('_')[1]))
+                    tetrode = cell.split('_')[2][1]
+                    cluster = cell.split('_')[2][3]
+                    cellParams = {'animal':subject,
+                                  'ephysSession':ephysSession,
+                                  'behavSession':behavSession,
+                                  'tetrode':int(tetrode),
+                                  'cluster':int(cluster)}
+                    cellParamsList.append(cellParams)
+
+                numRows = 3
+                colsEachPan = 2
+                panEachCell = 2
+                numCols = colsEachPan*panEachCell*2
+                # -- Plot the two cells side by side (waveform, ISI, events-in-time, tuning) -- #
+                figname = '{}_{}x{}'.format(subject, cell1, cell2)
+                figpath = os.path.join(outputDir, figname)
+                if os.path.isfile(figpath):
+                    continue
+
+                for ind,cellParams in enumerate(cellParamsList):
+                    # -- Plot waveform, ISI, events-in-time based on 2afc session recording -- #
+                    animal = cellParams['animal']
+                    rcEphysThisCell = cellParams['ephysSession']
+                    rcBehavThisCell = '{}_2afc_{}.h5'.format(animal,cellParams['behavSession'])
+                    tetrode = cellParams['tetrode']
+                    cluster = cellParams['cluster']
+                    ax1 = plt.subplot2grid((numRows,numCols), (0,ind*colsEachPan*panEachCell), colspan=colsEachPan)
+                    rcfuncs.plot_isi_loghist_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
+
+                    ax2 = plt.subplot2grid((numRows,numCols), (1,ind*colsEachPan*panEachCell), colspan=colsEachPan)
+                    rcfuncs.plot_waveform_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
+
+                    ax3 = plt.subplot2grid((numRows,numCols), (2,ind*colsEachPan*panEachCell), colspan=colsEachPan)
+                    rcfuncs.plot_events_in_time_each_cluster(animal, rcEphysThisCell, tetrode, cluster)
+
+                    # -- Plot 2afc raster -- #
+                    ax4 = plt.subplot2grid((numRows,numCols), (0,ind*colsEachPan*panEachCell+2), colspan=colsEachPan, rowspan=3)
+                    rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot='both', byBlock=True, alignment='sound', timeRange=[-0.3,0.4]) 
+                figname = '{}_{}x{}'.format(subject, cell1, cell2)
+                plt.suptitle(figname+'\n correlation: {}'.format(val))
+                plt.savefig(figpath, format='png')
+
     
-    elif CASE==7:
-        # -- For Switching Mice: Pick out cell pairs with correlation value above threshold, only include the cell that has higher maxZ value in 2afc task. Do this separately for within and cross session correlations. --    
+    elif CASE==3:
+        # -- For Reward-change Mice: Pick out cell pairs with correlation value above threshold, only include the cell that has higher maxZ value in 2afc task. Do this separately for within and cross session correlations. --    
         
         import pdb
 
-        corrThresh = 0.8
-        switchingMice = ['test059','test089','test017','adap020']
-        #switchingMice = ['adap020']
-                
-        # -- Import databases -- #
-        switchingFilePath = os.path.join(settings.FIGURESDATA,STUDY_NAME)
-        switchingFileName = 'all_cells_all_measures_extra_mod_waveform_switching.h5'
-        switchingFullPath = os.path.join(switchingFilePath,switchingFileName)
-        allcells_switching = pd.read_hdf(switchingFullPath,key='switching')
+        corrThresh = 0.9
+        #brainRegion = 'astr'
+        rewardChangeMice = ['adap005'] #,'adap012','adap013','adap015','adap017']
         
-        goodCorrFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values')
-
-        #allCorrVals = np.array([]); allCorrLabs = np.array([])
-        allMiceDfs = []
-        for animal in switchingMice:
+        # -- Import databases -- #
+        #celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(brainRegion))
+        #allcells_rewardChange = pd.read_hdf(celldbPath, key='reward_change')
+        goodCorrFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values/{}'.format(STUDY_NAME))
+        #allcells_rewardChange = allcells_rewardChange.drop('level_0',1)
+        #allMiceDfs = []
+        for animal in rewardChangeMice:
+            celldbPath = os.path.join(settings.DATABASE_PATH,'{}_database.h5'.format(animal))
             # Process one mouse at a time
-            dfThisMouse = allcells_switching.loc[allcells_switching['animalName'] == animal].reset_index()
-            excludeDf = dfThisMouse[['animalName','behavSession','tetrode','cluster']]
-            excludeDf['maxSoundRes'] = np.max(np.abs(dfThisMouse[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
+            #dfThisMouse = allcells_rewardChange.loc[allcells_rewardChange['subject'] == animal].reset_index()
+            dfThisMouse = pd.read_hdf(celldbPath, key='reward_change')
+            excludeDf = dfThisMouse[['animalName', 'date', 'tetrode','cluster']]
+            ## !! REWARD-CHANGE MAX SOUND RESPONSE BASED ON RESPONSE TO THE TWO FREQS !! ##
+            #excludeDf['maxSoundRes'] = np.max(np.abs(dfThisMouse[['maxZSoundMid1','maxZSoundMid2']].values),axis=1)
+            excludeDf['maxSoundRes'] = dfThisMouse.behavZscore.apply(lambda x: np.max(np.abs(x))).values
             excludeDf['script'] = os.path.realpath(__file__)
             excludeDf['duplicate_self'] = 0
             excludeDf['duplicate_cross'] = 0
@@ -545,14 +488,15 @@ if __name__=='__main__':
                 for lab in sorted(corrLabsOverThreshSelf):
                     cell1,cell2 = lab.split(' x ')
                     behavSession = cell1.split('_')[0].replace('-','') + 'a'
+                    date = cell1.split('_')[0]
                     if behavSession == behavSessionPre:
                         cellsThisSession.extend([cell1,cell2])
                     elif (behavSession != behavSessionPre) & (len(cellsThisSession) != 0):
                         behavSessionList.append(behavSession)
                         # -- Pick one cell out of all duplicates for the session -- #
                         tetrode = int(tetrodeName[-1])
-                        clusterList = [int(cellstr.split('_')[2][3:]) for cellstr in cellsThisSession]
-                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSession) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))]
+                        clusterList = [int(cellstr.split('_')[2][3]) for cellstr in cellsThisSession]
+                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.date==date) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))]
                         excludeDf.ix[cells.index,'duplicate_self'] = 1
                         #maxSoundResEachCell = np.max(np.abs(cells[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
                         cellToKeepIndex = np.argmax(cells.maxSoundRes, axis=1)
@@ -578,9 +522,10 @@ if __name__=='__main__':
                     cellInds = np.array([],dtype=int)
                     for ind,cellstr in enumerate([cell1, cell2]):
                         behavSession = cellstr.split('_')[0].replace('-','') + 'a'    
+                        date = cellstr.split('_')[0]
                         tetrode = int(tetrodeName[-1])
-                        cluster = int(cellstr.split('_')[2][3:])
-                        cell = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSession) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster==cluster)]
+                        cluster = int(cellstr.split('_')[2][3])
+                        cell = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.date==date) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster==cluster)]
                         excludeDf.ix[cell.index,'duplicate_cross'] = 1
                         cellInds = np.append(cellInds, cell.index)
                         
@@ -605,135 +550,15 @@ if __name__=='__main__':
             duplicateAnyKeep = duplicateSelfOnlyKeep | duplicateCrossOnlyKeep | duplicateBothKeep
             excludeDf['keep_after_dup_test'] = nonduplicate | duplicateAnyKeep
 
-            # -- Put excludeDf together with this animal's switching celldb -- #
+            # -- Put excludeDf together with this animal's rewardChange celldb -- #
             dfs = [dfThisMouse,excludeDf]
             
-            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','behavSession','tetrode','cluster'],how='inner'), dfs)                    
-            allMiceDfs.append(dfAllThisMouse)
+            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','date','tetrode','cluster'],how='inner'), dfs)      
+            dfAllThisMouse.to_hdf(celldbPath, key = 'reward_change')
+            #allMiceDfs.append(dfAllThisMouse)
 
-        dfAllSwitchingMouse = pd.concat(allMiceDfs, ignore_index=True)
-        dfAllSwitchingMouse.to_hdf(switchingFullPath, key='switching')
-
-
-
-
-    
-    elif CASE==8:
-        # -- For Psychometric Mice: Pick out cell pairs with correlation value above threshold, only include the cell that has higher maxZ value in 2afc task. Do this separately for within and cross session correlations. --    
-        
-        import pdb
-
-        corrThresh = 0.8
-        psychometricMice = ['test055','test053','adap013','adap015','adap017']
-        
-        # -- Import databases -- #
-        psychometricFilePath = os.path.join(settings.FIGURESDATA, STUDY_NAME)
-        psychometricFileName = 'all_cells_all_measures_waveform_psychometric.h5'
-        psychometricFullPath = os.path.join(psychometricFilePath,psychometricFileName)
-        allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')
-        
-        goodCorrFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values')
-        #allcells_psychometric = allcells_psychometric.drop('level_0',1)
-        allMiceDfs = []
-        for animal in psychometricMice:
-            # Process one mouse at a time
-            dfThisMouse = allcells_psychometric.loc[allcells_psychometric['animalName'] == animal].reset_index()
-            excludeDf = dfThisMouse[['animalName','behavSession','tetrode','cluster']]
-            ## !! PSYCHOMETRIC MAX SOUND RESPONSE BASED ON RESPONSE TO THE TWO MIDDLE FREQS !! ##
-            excludeDf['maxSoundRes'] = np.max(np.abs(dfThisMouse[['maxZSoundMid1','maxZSoundMid2']].values),axis=1)
-            excludeDf['script'] = os.path.realpath(__file__)
-            excludeDf['duplicate_self'] = 0
-            excludeDf['duplicate_cross'] = 0
-            excludeDf['duplicate_self_keep'] = 0
-            excludeDf['duplicate_cross_keep'] = 0
-            
-            tetrodeNames = ['TT' + str(i) for i in range(1,9)]
-            # -- Get all the cell pairs with correlation value over threshold -- #
-            # First go through the SELF (same session) correlations; THE STRATEGY HERE IS TO POOL ALL DUPLICATE CELLS FROM THE SAME SESSION AND KEEP THE ONE WITH THE BIGGEST SOUND RESPONSE
-            for tetrodeName in tetrodeNames:
-                filenameSelf = animal + '_' + tetrodeName +'_SELF_corr.npz'
-                fullFilenameSelf = os.path.join(goodCorrFolder, filenameSelf)
-                selfCorrDb = np.load(fullFilenameSelf)
-                tetrode = int(selfCorrDb['tetrode'])
-                corrValsSelf = selfCorrDb['allSelfCorrVals']
-                corrLabsSelf = selfCorrDb['allSelfCorrLabs']
-                corrValsOverThreshSelf = corrValsSelf[corrValsSelf>=corrThresh]
-                corrLabsOverThreshSelf = corrLabsSelf[corrValsSelf>=corrThresh]
-                
-                behavSessionList = [] #Keep a list of the sessions with clusters showing high self correlation 
-                behavSessionPre = ''
-                cellsThisSession = []
-                for lab in sorted(corrLabsOverThreshSelf):
-                    cell1,cell2 = lab.split(' x ')
-                    behavSession = cell1.split('_')[0].replace('-','') + 'a'
-                    if behavSession == behavSessionPre:
-                        cellsThisSession.extend([cell1,cell2])
-                    elif (behavSession != behavSessionPre) & (len(cellsThisSession) != 0):
-                        behavSessionList.append(behavSession)
-                        # -- Pick one cell out of all duplicates for the session -- #
-                        tetrode = int(tetrodeName[-1])
-                        clusterList = [int(cellstr.split('_')[2][3:]) for cellstr in cellsThisSession]
-                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSession) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))]
-                        excludeDf.ix[cells.index,'duplicate_self'] = 1
-                        #maxSoundResEachCell = np.max(np.abs(cells[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
-                        cellToKeepIndex = np.argmax(cells.maxSoundRes, axis=1)
-                        excludeDf.ix[cellToKeepIndex, 'duplicate_self_keep'] = 1
-                        cellsThisSession = [cell1,cell2]
-                    else:
-                        cellsThisSession = [cell1,cell2]
-                    behavSessionPre = behavSession
-
-                # -- Look at cross correlations and mark cells: whether they are duplicated cross sessions or not, and whether to keep them or not -- #    
-                filenameCross = animal + '_' + tetrodeName +'_CROSS_corr.npz'
-                fullFilenameCross = os.path.join(goodCorrFolder, filenameCross)
-                crossCorrDb = np.load(fullFilenameCross)
-                tetrode = int(crossCorrDb['tetrode'])
-                corrValsCross = crossCorrDb['allCrossCorrVals'] 
-                corrLabsCross = crossCorrDb['allCrossCorrLabs']
-                corrValsOverThreshCross = corrValsCross[corrValsCross>=corrThresh]
-                corrLabsOverThreshCross = corrLabsCross[corrValsCross>=corrThresh]
-                
-                for lab in sorted(corrLabsOverThreshCross):
-                    #pdb.set_trace()
-                    cell1,cell2 = lab.split(' x ')
-                    cellInds = np.array([],dtype=int)
-                    for ind,cellstr in enumerate([cell1, cell2]):
-                        behavSession = cellstr.split('_')[0].replace('-','') + 'a'    
-                        tetrode = int(tetrodeName[-1])
-                        cluster = int(cellstr.split('_')[2][3:])
-                        cell = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSession) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster==cluster)]
-                        excludeDf.ix[cell.index,'duplicate_cross'] = 1
-                        cellInds = np.append(cellInds, cell.index)
-                        
-                    soundResBothCells = excludeDf.iloc[cellInds]['maxSoundRes']
-                    cellToKeepInd = np.argmax(soundResBothCells)
-                    cellToDiscardInd = cellInds[cellInds != cellToKeepInd]
-                    # -- Assign value to 'duplicate_cross_keep' column: 1-keep, 0-no status, -1:discard -- #
-                    if excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] == 0: #cell with bigger sound response has not been compared before
-                        excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] = 1
-                        excludeDf.ix[cellToDiscardInd, 'duplicate_cross_keep'] = -1
-                    elif excludeDf.ix[cellToKeepInd, 'duplicate_cross_keep'] in [1,-1]: #cell with bigger sound response previously determined to be kept or to be discarded, do not change its result
-                        excludeDf.ix[cellToDiscardInd, 'duplicate_cross_keep'] = -1
-
-            # -- Summarize all duplicate screening into one column deciding whether to keep a cell or not -- #
-            nonduplicate = (excludeDf.duplicate_self==0) & (excludeDf.duplicate_cross==0)
-            duplicateBoth = (excludeDf.duplicate_self==1) & (excludeDf.duplicate_cross==1)
-            duplicateSelfOnly = (excludeDf.duplicate_self==1) & (excludeDf.duplicate_cross==0)
-            duplicateCrossOnly = (excludeDf.duplicate_self==0) & (excludeDf.duplicate_cross==1)
-            duplicateBothKeep = duplicateBoth & (excludeDf.duplicate_self_keep==1) & (excludeDf.duplicate_cross_keep==1)
-            duplicateSelfOnlyKeep = duplicateSelfOnly & (excludeDf.duplicate_self_keep==1)
-            duplicateCrossOnlyKeep = duplicateCrossOnly & (excludeDf.duplicate_cross_keep==1)
-            duplicateAnyKeep = duplicateSelfOnlyKeep | duplicateCrossOnlyKeep | duplicateBothKeep
-            excludeDf['keep_after_dup_test'] = nonduplicate | duplicateAnyKeep
-
-            # -- Put excludeDf together with this animal's psychometric celldb -- #
-            dfs = [dfThisMouse,excludeDf]
-            
-            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','behavSession','tetrode','cluster'],how='inner'), dfs)                    
-            allMiceDfs.append(dfAllThisMouse)
-
-        dfAllPsychometricMouse = pd.concat(allMiceDfs, ignore_index=True)
-        dfAllPsychometricMouse.to_hdf(psychometricFullPath, key='psychometric')
+        #dfAllRewardChangeMouse = pd.concat(allMiceDfs, ignore_index=True)
+        #dfAllRewardChangeMouse.to_hdf(rewardChangeFullPath, key='rewardChange')
                        
      
 
