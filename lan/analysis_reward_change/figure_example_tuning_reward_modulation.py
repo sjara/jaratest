@@ -88,9 +88,8 @@ fontSizePanel = 16 #figparams.fontSizePanel
 #labelPosY = [0.92]    # Vert position for panel labels
 
 gs = gridspec.GridSpec(4, 1)
-gs.update(left=0.15, right=0.95, top=0.9, bottom=0.1, wspace=0.4, hspace=0.15)
+gs.update(left=0.2, right=0.95, top=0.9, bottom=0.15, wspace=0.4, hspace=0.15)
 
-#timeRangeSound = [-0.2, 0.4]
 msRaster = 4
 smoothWinSizePsth = 3
 lwPsth = 3
@@ -124,7 +123,7 @@ for indc, cellInfo in enumerate(cellsToPlot):
                                                    timeRange=timeRange,
                                                    trialsEachCond=trialsEachCond,
                                                    colorEachCond=colorEachFreq,
-                                                   fillWidth=None,labels=None)
+                                                   labels=labels)
 
     plt.setp(pRaster, ms=msRaster)
     plt.setp(hcond,zorder=3)
@@ -141,7 +140,6 @@ for indc, cellInfo in enumerate(cellsToPlot):
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
-    timeRange = psthExample['timeRange']
     possibleFreq = psthExample['possibleFreq']
     numFreqs = len(possibleFreq)
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
@@ -159,14 +157,14 @@ for indc, cellInfo in enumerate(cellsToPlot):
     plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     #plt.ylim(yLims)
     plt.yticks(yLims)
-    plt.xlim(timeRange)
+    plt.xlim(timeRange[0],timeRange[1])
     plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)')
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-    plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
-               frameon=False, labelspacing=0, borderaxespad=0)
+    #plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    #           frameon=False, labelspacing=0, borderaxespad=0)
     plt.suptitle('tuning 50dB chords\n{}'.format(cellName))
     plt.show()
     if SAVE_FIGURE:
