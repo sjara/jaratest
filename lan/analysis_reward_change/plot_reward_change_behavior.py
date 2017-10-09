@@ -76,7 +76,8 @@ def plot_ave_psycurve_reward_change(animal, sessions):
 
 def save_svg_psycurve_reward_change(animal, sessions):
     import os
-    outputDir='/home/languo/data/behavior_reports' 
+    #outputDir='/home/languo/data/behavior_reports' 
+    outputDir='/tmp/'
     animalStr = animal
     sessionStr = '-'.join(sessions)
     plt.gcf().set_size_inches((8.5,11))
@@ -120,6 +121,7 @@ if __name__ == '__main__':
                               'gosi001':['20170406a','20170407a','20170408a','20170409a','20170410a','20170411a'],
                               'gosi010':['20170406a','20170407a','20170408a','20170409a','20170410a','20170411a']
         }
+        sujectSessionsDict = {'adap071':['20171002a','20171003a','20171004a','20171005a','20171006a','20171007a']}
         numOfAnimals = len(sujectSessionsDict.keys())
         avePsycurveMoreLeft = np.empty((numOfAnimals,8)) #We used 8 frequencies in the psy curve
         avePsycurveMoreRight = np.empty((numOfAnimals,8))
