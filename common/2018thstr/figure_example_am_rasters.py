@@ -120,95 +120,94 @@ if __name__=='__main__':
     dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
     db = pd.read_hdf(dbPath, key='dataframe')
 
-    CASE=0
+    CASE=1
+
+    exampleCells = []
+
+    #Thalamus, non-identified, very synchronized
+    cell = {'subject':'pinp015',
+            'date':'2017-02-15',
+            'depth':3110,
+            'tetrode':7,
+            'cluster':3}
+    exampleCells.append(cell)
+
+    #Cortex, non-identified, Rate coding (higher rates)
+    cell = {'subject':'pinp015',
+            'date':'2017-02-02',
+            'depth':975,
+            'tetrode':2,
+            'cluster':6}
+    exampleCells.append(cell)
+
+    #Cortex, non-identified, Rate coding (medium rates)
+    cell = {'subject':'pinp018',
+            'date':'2017-04-11',
+            'depth':905,
+            'tetrode':6,
+            'cluster':5}
+    exampleCells.append(cell)
+
+    #Cortex, non-identified, Rate coding (higher rates), one of the best examples
+    cell = {'subject':'pinp017',
+            'date':'2017-03-23',
+            'depth':1281,
+            'tetrode':7,
+            'cluster':2}
+    exampleCells.append(cell)
+
+    #Thalamus, Identified
+    ## Synchronized to 16Hz
+    cell = {'subject':'pinp016',
+            'date':'2017-03-14',
+            'depth':3703,
+            'tetrode':2,
+            'cluster':2}
+    exampleCells.append(cell)
+
+    ## Synchronized to 128Hz
+    cell = {'subject':'pinp015',
+            'date':'2017-02-15',
+            'depth':3110,
+            'tetrode':7,
+            'cluster':6}
+    exampleCells.append(cell)
+
+    #Cortex, Identified
+    ## Synchronized to 8Hz
+    cell = {'subject':'pinp018',
+            'date':'2017-04-11',
+            'depth':1016,
+            'tetrode':4,
+            'cluster':5}
+    exampleCells.append(cell)
+
+    ## Synchronized to 32Hz
+    cell = {'subject':'pinp017',
+            'date':'2017-03-23',
+            'depth':1281,
+            'tetrode':7,
+            'cluster':2}
+    exampleCells.append(cell)
+
+    #Striatum
+    ## Sync'd to 4Hz max
+    cell = {'subject':'pinp020',
+            'date':'2017-05-10',
+            'depth':2580,
+            'tetrode':7,
+            'cluster':3}
+    exampleCells.append(cell)
+
+    ## Sync'd to 11Hz max
+    cell = {'subject':'pinp025',
+            'date':'2017-09-01',
+            'depth':2111,
+            'tetrode':4,
+            'cluster':3}
+    exampleCells.append(cell)
 
     if CASE==0:
-
-        exampleCells = []
-
-        #Thalamus, non-identified, very synchronized
-        cell = {'subject':'pinp015',
-                'date':'2017-02-15',
-                'depth':3110,
-                'tetrode':7,
-                'cluster':3}
-        exampleCells.append(cell)
-
-        #Cortex, non-identified, Rate coding (higher rates)
-        cell = {'subject':'pinp015',
-                'date':'2017-02-02',
-                'depth':975,
-                'tetrode':2,
-                'cluster':6}
-        exampleCells.append(cell)
-
-        #Cortex, non-identified, Rate coding (medium rates)
-        cell = {'subject':'pinp018',
-                'date':'2017-04-11',
-                'depth':905,
-                'tetrode':6,
-                'cluster':5}
-        exampleCells.append(cell)
-
-        #Cortex, non-identified, Rate coding (higher rates), one of the best examples
-        cell = {'subject':'pinp017',
-                'date':'2017-03-23',
-                'depth':1281,
-                'tetrode':7,
-                'cluster':2}
-        exampleCells.append(cell)
-
-        #Thalamus, Identified
-        ## Synchronized to 16Hz
-        cell = {'subject':'pinp016',
-                'date':'2017-03-14',
-                'depth':3703,
-                'tetrode':2,
-                'cluster':2}
-        exampleCells.append(cell)
-
-        ## Synchronized to 128Hz
-        cell = {'subject':'pinp015',
-                'date':'2017-02-15',
-                'depth':3110,
-                'tetrode':7,
-                'cluster':6}
-        exampleCells.append(cell)
-
-        #Cortex, Identified
-        ## Synchronized to 8Hz
-        cell = {'subject':'pinp018',
-                'date':'2017-04-11',
-                'depth':1016,
-                'tetrode':4,
-                'cluster':5}
-        exampleCells.append(cell)
-
-        ## Synchronized to 32Hz
-        cell = {'subject':'pinp017',
-                'date':'2017-03-23',
-                'depth':1281,
-                'tetrode':7,
-                'cluster':2}
-        exampleCells.append(cell)
-
-        #Striatum
-        ## Sync'd to 4Hz max
-        cell = {'subject':'pinp020',
-                'date':'2017-05-10',
-                'depth':2580,
-                'tetrode':7,
-                'cluster':3}
-        exampleCells.append(cell)
-
-        ## Sync'd to 11Hz max
-        cell = {'subject':'pinp025',
-                'date':'2017-09-01',
-                'depth':2111,
-                'tetrode':4,
-                'cluster':3}
-        exampleCells.append(cell)
-
         if len(sys.argv)>1:
             cellInd = int(sys.argv[1])
         else:
