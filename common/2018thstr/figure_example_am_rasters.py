@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import numpy as np
+from jaratoolbox import settings
 from jaratoolbox import celldatabase
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
