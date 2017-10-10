@@ -10,6 +10,8 @@ from jaratoolbox import extraplots
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
 
+STUDY_NAME = '2018thstr'
+
 def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, freqEachTrial):
     '''
     Generator func to return the spiketimes/trial indices for trials of each frequency
