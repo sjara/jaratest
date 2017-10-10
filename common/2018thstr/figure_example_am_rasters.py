@@ -123,6 +123,9 @@ if __name__=='__main__':
 
     if CASE==0:
 
+        #Automatically rsync the ephys and behavior data for the examples
+        autoDataTransfer=True
+
         #Thalamus, Identified
         '''
         ## Synchronized to 16Hz
@@ -179,15 +182,15 @@ if __name__=='__main__':
 
         cell = find_cell(db, cell['subject'], cell['date'], cell['depth'], cell['tetrode'], cell['cluster']).iloc[0]
 
-        #######   Get the ephys data for this example  ######
-        #Comment this out if you don't want it running every time
-        amInd = celldatabase.get_session_inds(cell, 'am')[0]
-        amSession = cell['ephys'][amInd]
-        rsync_session_data(cell['subject'], amSession)
-        rsync_session_data(cell['subject'], '{}_kk'.format(amSession))
-        amBehav = cell['behavior'][amInd]
-        rsync_behavior(cell['subject'], amBehav)
-        ######################################################
+        if autoDataTransfer:
+            #######   Get the ephys data for this example  ######
+            amInd = celldatabase.get_session_inds(cell, 'am')[0]
+            amSession = cell['ephys'][amInd]
+            rsync_session_data(cell['subject'], amSession)
+            rsync_session_data(cell['subject'], '{}_kk'.format(amSession))
+            amBehav = cell['behavior'][amInd]
+            rsync_behavior(cell['subject'], amBehav)
+            ######################################################
 
         am_example(cell)
         plt.show()
