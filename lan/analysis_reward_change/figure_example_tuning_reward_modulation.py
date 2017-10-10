@@ -77,7 +77,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [5,5]
+figSize = [5,7]
 
 fontSizeLabels = 12 #figparams.fontSizeLabels
 fontSizeTicks = 12 #figparams.fontSizeTicks
@@ -147,8 +147,11 @@ for indc, cellInfo in enumerate(cellsToPlot):
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,
                                  trialsEachCond=trialsEachCond,colorEachCond=colorEachFreq,
                                  linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+    psthToShow = [0,4, 8, 15]
     for ind,line in enumerate(pPSTH):
         plt.setp(line, label=labels[ind])
+        if not ind in psthToShow:
+            line.set_visible(False)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     #yLims = [0,50]
