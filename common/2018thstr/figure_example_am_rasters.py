@@ -184,6 +184,7 @@ if __name__=='__main__':
         amInd = celldatabase.get_session_inds(cell, 'am')[0]
         amSession = cell['ephys'][amInd]
         rsync_session_data(cell['subject'], amSession)
+        rsync_session_data(cell['subject'], '{}_kk'.format(amSession))
         amBehav = cell['behavior'][amInd]
         rsync_behavior(cell['subject'], amBehav)
         ######################################################
