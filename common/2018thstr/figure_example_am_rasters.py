@@ -9,6 +9,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import extraplots
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
+import subprocess
 
 STUDY_NAME = '2018thstr'
 
@@ -77,6 +78,43 @@ def am_example(cell, timeRange=[-0.2, 0.7]):
             ax = plt.subplot2grid((11, 3), (10-indFreq, 2))
             ax.hist(spikeRads, bins=50, color=colors[indFreq], histtype='step')
 
+def rsync_session_data(subject,
+                       session,
+                       server = 'jarauser@jarastore',
+                       serverEphysPath = '/data/ephys',
+                       skipIfExists=False):
+    '''
+    #DONE: server user and server name as one string
+    #TODO: server ephys path and user in settings file
+    Rsync just the sessions you need from jarahub
+    '''
+    fullRemotePath = os.path.join(serverEphysPath, subject, session)
+    serverDataPath = '{}:{}'.format(server, fullRemotePath)
+    localDataPath = os.path.join(settings.EPHYS_PATH, subject) + os.sep
+    fullLocalPath = os.path.join(localDataPath, session)
+    transferCommand = ['rsync', '-av', '--exclude=*.continuous', serverDataPath, localDataPath]
+    if skipIfExists:
+        if not os.path.exists(fullLocalPath):
+            subprocess.call(transferCommand)
+    else:
+        subprocess.call(transferCommand)
+
+def rsync_behavior(subject,
+                   behavFile,
+                   server = 'jarauser@jarahub',
+                   serverBehavPath = '/data/behavior',
+                   skipIfExists=False):
+    fullRemotePath = os.path.join(serverBehavPath, subject, behavFile)
+    serverDataPath = '{}:{}'.format(server, fullRemotePath)
+    localDataPath = os.path.join(settings.BEHAVIOR_PATH, subject) + os.sep
+    fullLocalPath = os.path.join(localDataPath, behavFile)
+    transferCommand = ['rsync', '-av', serverDataPath, localDataPath]
+    if skipIfExists:
+        if not os.path.exists(fullLocalPath):
+            subprocess.call(transferCommand)
+    else:
+        subprocess.call(transferCommand)
+
 if __name__=='__main__':
     dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
     db = pd.read_hdf(dbPath, key='dataframe')
@@ -130,16 +168,26 @@ if __name__=='__main__':
                 'tetrode':7,
                 'cluster':3}
         '''
-        '''
+        # '''
         ## Sync'd to 11Hz max
         cell = {'subject':'pinp025',
                 'date':'2017-09-01',
                 'depth':2111,
                 'tetrode':4,
                 'cluster':3}
-        '''
+        # '''
 
         cell = find_cell(db, cell['subject'], cell['date'], cell['depth'], cell['tetrode'], cell['cluster']).iloc[0]
+
+        #######   Get the ephys data for this example  ######
+        #Comment this out if you don't want it running every time
+        amInd = celldatabase.get_session_inds(cell, 'am')[0]
+        amSession = cell['ephys'][amInd]
+        rsync_session_data(cell['subject'], amSession)
+        amBehav = cell['behavior'][amInd]
+        rsync_behavior(cell['subject'], amBehav)
+        ######################################################
+
         am_example(cell)
         plt.show()
 
