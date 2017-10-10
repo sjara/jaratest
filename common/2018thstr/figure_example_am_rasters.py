@@ -9,6 +9,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import extraplots
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
+import sys
 import subprocess
 
 STUDY_NAME = '2018thstr'
@@ -123,79 +124,113 @@ if __name__=='__main__':
 
     if CASE==0:
 
-        #Automatically rsync the ephys and behavior data for the examples
-        autoDataTransfer=True
+        exampleCells = []
+
+        #Thalamus, non-identified, very synchronized
+        cell = {'subject':'pinp015',
+                'date':'2017-02-15',
+                'depth':3110,
+                'tetrode':7,
+                'cluster':3}
+        exampleCells.append(cell)
+
+        #Cortex, non-identified, Rate coding (higher rates)
+        cell = {'subject':'pinp015',
+                'date':'2017-02-02',
+                'depth':975,
+                'tetrode':2,
+                'cluster':6}
+        exampleCells.append(cell)
+
+        #Cortex, non-identified, Rate coding (higher rates)
+        cell = {'subject':'pinp018',
+                'date':'2017-04-11',
+                'depth':905,
+                'tetrode':6,
+                'cluster':5}
+        exampleCells.append(cell)
+
+        #Cortex, non-identified, Rate coding (higher rates)
+        cell = {'subject':'pinp017',
+                'date':'2017-03-23',
+                'depth':1281,
+                'tetrode':7,
+                'cluster':2}
+        exampleCells.append(cell)
 
         #Thalamus, Identified
-        '''
         ## Synchronized to 16Hz
         cell = {'subject':'pinp016',
                 'date':'2017-03-14',
                 'depth':3703,
                 'tetrode':2,
                 'cluster':2}
-        '''
-        '''
+        exampleCells.append(cell)
+
         ## Synchronized to 128Hz
         cell = {'subject':'pinp015',
                 'date':'2017-02-15',
                 'depth':3110,
                 'tetrode':7,
                 'cluster':6}
-        '''
+        exampleCells.append(cell)
 
         #Cortex, Identified
-        '''
         ## Synchronized to 8Hz
         cell = {'subject':'pinp018',
                 'date':'2017-04-11',
                 'depth':1016,
                 'tetrode':4,
                 'cluster':5}
-        '''
-        '''
+        exampleCells.append(cell)
+
         ## Synchronized to 32Hz
         cell = {'subject':'pinp017',
                 'date':'2017-03-23',
                 'depth':1281,
                 'tetrode':7,
                 'cluster':2}
-        '''
+        exampleCells.append(cell)
 
         #Striatum
-        '''
         ## Sync'd to 4Hz max
         cell = {'subject':'pinp020',
                 'date':'2017-05-10',
                 'depth':2580,
                 'tetrode':7,
                 'cluster':3}
-        '''
-        # '''
+        exampleCells.append(cell)
+
         ## Sync'd to 11Hz max
         cell = {'subject':'pinp025',
                 'date':'2017-09-01',
                 'depth':2111,
                 'tetrode':4,
                 'cluster':3}
-        # '''
+        exampleCells.append(cell)
 
-        cell = find_cell(db, cell['subject'], cell['date'], cell['depth'], cell['tetrode'], cell['cluster']).iloc[0]
+        if len(sys.argv)>1:
+            cellInd = int(sys.argv[1])
+        else:
+            print "Use sys.argv to select a cell. Defaulting to cell 0"
+            cellInd = 0
 
-        if autoDataTransfer:
-            #######   Get the ephys data for this example  ######
+        cellDict = exampleCells[cellInd]
+        cell = find_cell(db, cellDict['subject'], cellDict['date'], cellDict['depth'], cellDict['tetrode'], cellDict['cluster']).iloc[0]
+        am_example(cell)
+        plt.show()
+
+    if CASE==1:
+        #Rsync all the example data
+        for cell in exampleCells:
             amInd = celldatabase.get_session_inds(cell, 'am')[0]
             amSession = cell['ephys'][amInd]
             rsync_session_data(cell['subject'], amSession)
             rsync_session_data(cell['subject'], '{}_kk'.format(amSession))
             amBehav = cell['behavior'][amInd]
             rsync_behavior(cell['subject'], amBehav)
-            ######################################################
 
-        am_example(cell)
-        plt.show()
-
-    if CASE==1:
+    if CASE==2:
         ### THIS IS FOR PLOTTING ALL CELLS BY THEIR MAX SYNC FREQ
         def mkdir(directory):
             if not os.path.exists(directory):
@@ -206,7 +241,7 @@ if __name__=='__main__':
         # thal2 = soundResponsive.groupby('brainarea').get_group('rightThalamus')
         # thal = pd.concat([thal1, thal2])
         # ac = soundResponsive.groupby('brainarea').get_group('rightAC')
-        plotOnlyIdentified = True
+        plotOnlyIdentified = False
 
         if plotOnlyIdentified:
             baseDir = '/home/nick/data/reports/nick/2018thstr_am_sync_onlyID/'
