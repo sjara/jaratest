@@ -142,7 +142,7 @@ if __name__=='__main__':
                 'cluster':6}
         exampleCells.append(cell)
 
-        #Cortex, non-identified, Rate coding (higher rates)
+        #Cortex, non-identified, Rate coding (medium rates)
         cell = {'subject':'pinp018',
                 'date':'2017-04-11',
                 'depth':905,
@@ -150,7 +150,7 @@ if __name__=='__main__':
                 'cluster':5}
         exampleCells.append(cell)
 
-        #Cortex, non-identified, Rate coding (higher rates)
+        #Cortex, non-identified, Rate coding (higher rates), one of the best examples
         cell = {'subject':'pinp017',
                 'date':'2017-03-23',
                 'depth':1281,
@@ -222,7 +222,8 @@ if __name__=='__main__':
 
     if CASE==1:
         #Rsync all the example data
-        for cell in exampleCells:
+        for cellDict in exampleCells:
+            cell = find_cell(db, cellDict['subject'], cellDict['date'], cellDict['depth'], cellDict['tetrode'], cellDict['cluster']).iloc[0]
             amInd = celldatabase.get_session_inds(cell, 'am')[0]
             amSession = cell['ephys'][amInd]
             rsync_session_data(cell['subject'], amSession)
