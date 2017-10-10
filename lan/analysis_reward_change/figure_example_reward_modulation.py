@@ -19,8 +19,16 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
 
+'''
 colorDict = {'leftMoreLowFreq':'g',
              'rightMoreLowFreq':'m',
+             'sameRewardLowFreq':'y',
+             'leftMoreHighFreq':'r',
+             'rightMoreHighFreq':'b',
+             'sameRewardHighFreq':'darkgrey'}
+'''
+colorDict = {'leftMoreLowFreq':cp.TangoPalette['SkyBlue2'],
+             'rightMoreLowFreq':cp.TangoPalette['Orange2'],
              'sameRewardLowFreq':'y',
              'leftMoreHighFreq':'r',
              'rightMoreHighFreq':'b',
@@ -60,24 +68,6 @@ if len(sys.argv)>1:
 else:
     cellsToPlot = infoEachCell
 
-#print cellsToPlot
-#sys.exit()
-'''
-# -- Here is where we can select just one cell to plot -- #
-plotAll = False
-
-if not plotAll:
-    examplesDict = {'sound': {'astr': [exampleModulatedSoundAstr]}}
-    #examplesDict = {'center-out': {'astr': [exampleModulatedMovementAstr]}}
-else:
-    examplesDict = {'sound': {'astr': [exampleModulatedSoundAstr],
-                              'ac': [exampleModulatedSoundAc,
-                                     exampleModulatedSoundAc2]},
-                   'center-out': {'astr': [exampleModulatedMovementAStr],
-                                  'ac': [exampleModulatedMovementAc]}
-                   }
-###########################################################
-'''
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -121,7 +111,10 @@ for indc, cellInfo in enumerate(cellsToPlot):
     rasterExample = np.load(rasterFullPath)
 
     trialsEachCond = rasterExample['trialsEachCond']
-    colorEachCond = rasterExample['colorEachCond']
+    #colorEachCond = rasterExample['colorEachCond']
+    colorEachCond = [colorDict['leftMoreLowFreq'],colorDict['rightMoreLowFreq'],colorDict['leftMoreLowFreq']]
+    ####### WARNING!: hardcoded #######
+    
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
     #timeRange = rasterExample['timeRange']
@@ -149,7 +142,7 @@ for indc, cellInfo in enumerate(cellsToPlot):
 
     condLabels = psthExample['condLabels']
     trialsEachCond = psthExample['trialsEachCond']
-    colorEachCond = psthExample['colorEachCond']
+    #colorEachCond = psthExample['colorEachCond']
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
