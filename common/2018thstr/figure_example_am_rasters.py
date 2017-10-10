@@ -9,7 +9,6 @@ from jaratoolbox import extraplots
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
 
-#### Plotting code below ####
 def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, freqEachTrial):
     '''
     Generator func to return the spiketimes/trial indices for trials of each frequency
@@ -33,6 +32,7 @@ def find_cell(dataframe, subject, date, depth, tetrode, cluster):
 
 def am_example(cell, timeRange=[-0.2, 0.7]):
 
+    #Plot histograms of spikes relative to stimulus period?
     plotCycleHists = False
 
     spikeData, eventData = celldatabase.get_session_ephys(cell, 'am')
@@ -75,7 +75,7 @@ def am_example(cell, timeRange=[-0.2, 0.7]):
             ax.hist(spikeRads, bins=50, color=colors[indFreq], histtype='step')
 
 if __name__=='__main__':
-    dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+    dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
     db = pd.read_hdf(dbPath, key='dataframe')
 
     CASE=0
@@ -141,6 +141,7 @@ if __name__=='__main__':
         plt.show()
 
     if CASE==1:
+        ### THIS IS FOR PLOTTING ALL CELLS BY THEIR MAX SYNC FREQ
         def mkdir(directory):
             if not os.path.exists(directory):
                 os.makedirs(directory)
