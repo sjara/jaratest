@@ -13,29 +13,15 @@ from matplotlib import pyplot as plt
 from jaratoolbox import colorpalette as cp
 
 STUDY_NAME = '2017rc'
-FIGNAME = 'modulation_reward_change'
+FIGNAME = 'tuning_reward_change'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
 
-'''
-colorDict = {'leftMoreLowFreq':'g',
-             'rightMoreLowFreq':'m',
-             'sameRewardLowFreq':'y',
-             'leftMoreHighFreq':'r',
-             'rightMoreHighFreq':'b',
-             'sameRewardHighFreq':'darkgrey'}
-'''
-colorDict = {'leftMoreLowFreq':cp.TangoPalette['SkyBlue2'],
-             'rightMoreLowFreq':cp.TangoPalette['Orange2'],
-             'sameRewardLowFreq':'y',
-             'leftMoreHighFreq':'r',
-             'rightMoreHighFreq':'b',
-             'sameRewardHighFreq':'darkgrey'}
-
 soundColor = cp.TangoPalette['Butter2']
 timeRange = [-0.3,0.5]
+colormapTuning = matplotlib.cm.winter 
 
 # -- Select example cells here -- #
 '''
@@ -68,12 +54,30 @@ if len(sys.argv)>1:
 else:
     cellsToPlot = infoEachCell
 
+#print cellsToPlot
+#sys.exit()
+'''
+# -- Here is where we can select just one cell to plot -- #
+plotAll = False
+
+if not plotAll:
+    examplesDict = {'sound': {'astr': [exampleModulatedSoundAstr]}}
+    #examplesDict = {'center-out': {'astr': [exampleModulatedMovementAstr]}}
+else:
+    examplesDict = {'sound': {'astr': [exampleModulatedSoundAstr],
+                              'ac': [exampleModulatedSoundAc,
+                                     exampleModulatedSoundAc2]},
+                   'center-out': {'astr': [exampleModulatedMovementAStr],
+                                  'ac': [exampleModulatedMovementAc]}
+                   }
+###########################################################
+'''
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [5,5]
+figSize = [5,7]
 
 fontSizeLabels = 12 #figparams.fontSizeLabels
 fontSizeTicks = 12 #figparams.fontSizeTicks
@@ -84,9 +88,8 @@ fontSizePanel = 16 #figparams.fontSizePanel
 #labelPosY = [0.92]    # Vert position for panel labels
 
 gs = gridspec.GridSpec(4, 1)
-gs.update(left=0.15, right=0.95, top=0.9, bottom=0.1, wspace=0.4, hspace=0.15)
+gs.update(left=0.2, right=0.95, top=0.9, bottom=0.15, wspace=0.4, hspace=0.15)
 
-#timeRangeSound = [-0.2, 0.4]
 msRaster = 4
 smoothWinSizePsth = 3
 lwPsth = 3
@@ -98,60 +101,57 @@ downsampleFactorPsth = 1
 #        for indc, cell in enumerate(examplesDict[alignment][brainRegion]):
 
 for indc, cellInfo in enumerate(cellsToPlot):
-    alignment = cellInfo['alignment']
-    brainRegion = cellInfo['brainRegion']
     cellName = cellInfo['cellName']
-    soundFreq = cellInfo['soundFreq']
     fig = plt.gcf()
     fig.clf()
     fig.set_facecolor('w')
-    figFilename = 'example_rc_{}_{}_{}_{}'.format(alignment, brainRegion, soundFreq, cellName)
-    rasterFilename = 'example_rc_{}aligned_raster_{}_{}.npz'.format(alignment, soundFreq, cellName) 
+    figFilename = 'example_tuning_{}'.format(cellName)
+    rasterFilename = 'example_tuning_raster_{}.npz'.format(cellName) 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample = np.load(rasterFullPath)
 
-    trialsEachCond = rasterExample['trialsEachCond']
-    #colorEachCond = rasterExample['colorEachCond']
-    colorEachCond = [colorDict['leftMoreLowFreq'],colorDict['rightMoreLowFreq'],colorDict['leftMoreLowFreq']]
-    ####### WARNING!: hardcoded #######
-    
+    possibleFreq = rasterExample['possibleFreq']
+    trialsEachCond = rasterExample['trialsEachFreq']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    #timeRange = rasterExample['timeRange']
+    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+    colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
+
     ax1 = plt.subplot(gs[0:3, :])
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRange,
                                                    trialsEachCond=trialsEachCond,
-                                                   colorEachCond=colorEachCond,
-                                                   fillWidth=None,labels=None)
+                                                   colorEachCond=colorEachFreq,
+                                                   labels=labels)
 
     plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    #ax2.axes.xaxis.set_ticklabels([])
-    ax1.set_yticklabels([])
-    ax1.set_xticklabels([])
-    #plt.ylabel('Trials',fontsize=fontSizeLabels,labelpad=labelDis)
-    plt.ylabel('Trials\nby reward size', fontsize=fontSizeLabels)
-    #plt.xlim(timeRangeSound[0],timeRangeSound[1])
-
+    plt.setp(hcond,zorder=3)
+    plt.gca().set_xticklabels('')
+    plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
+    plt.xlim(timeRange[0],timeRange[1])
+ 
     ax2 = plt.subplot(gs[3, :])
-    psthFilename = 'example_rc_{}aligned_psth_{}_{}.npz'.format(alignment, soundFreq, cellName) 
+    psthFilename = 'example_tuning_psth_{}.npz'.format(cellName) 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
-    condLabels = psthExample['condLabels']
-    trialsEachCond = psthExample['trialsEachCond']
-    #colorEachCond = psthExample['colorEachCond']
+    trialsEachCond = psthExample['trialsEachFreq']
     spikeCountMat = psthExample['spikeCountMat']
     timeVec = psthExample['timeVec']
     binWidth = psthExample['binWidth']
-    #timeRange = psthExample['timeRange']
+    possibleFreq = psthExample['possibleFreq']
+    numFreqs = len(possibleFreq)
+    labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,
-                                 trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,
+                                 trialsEachCond=trialsEachCond,colorEachCond=colorEachFreq,
                                  linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-
+    psthToShow = [0,4, 8, 15]
+    for ind,line in enumerate(pPSTH):
+        plt.setp(line, label=labels[ind])
+        if not ind in psthToShow:
+            line.set_visible(False)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     #yLims = [0,50]
@@ -160,15 +160,15 @@ for indc, cellInfo in enumerate(cellsToPlot):
     plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     #plt.ylim(yLims)
     plt.yticks(yLims)
-    plt.xlim(timeRange)
+    plt.xlim(timeRange[0],timeRange[1])
     plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from {} (s)'.format(alignment),fontsize=fontSizeLabels)
+    plt.xlabel('Time from sound onset (s)')
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-    plt.legend(set(condLabels), loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
-               frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
-    plt.suptitle('{}\n{}'.format(figFilename,cellName))
+    #plt.legend(loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    #           frameon=False, labelspacing=0, borderaxespad=0)
+    plt.suptitle('tuning 50dB chords\n{}'.format(cellName))
     plt.show()
     if SAVE_FIGURE:
         extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

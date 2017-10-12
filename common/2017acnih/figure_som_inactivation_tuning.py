@@ -91,6 +91,7 @@ if PANELS_TO_PLOT[1]:
                      alpha=0.2, edgecolor = noLaserColor[1], facecolor=noLaserColor[1])
     axTuning.set_xticklabels(bands)
     axTuning.set_ylim([2,7])
+    #axTuning.set_ylim([0,7])
     plt.xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -104,10 +105,12 @@ if PANELS_TO_PLOT[1]:
 modelDataDir = './modeldata'
 if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
     import pandas as pd
-    modelDataFiles = ['SSNbandwidthTuning_SOMinactivation.csv']
+    #modelDataFiles = ['SSNbandwidthTuning_SOMinactivation.csv']
+    modelDataFiles = ['SSNbandwidthTuning_New_SOMinactivation_SOMinactivation_noRFwidth-2.csv']
 
     colorEachCond = [noLaserColor[0], laserColor[0]]
     axModel = plt.subplot(gs[0:,2])
+    plotHandles = []
     for indm, oneModelFile in enumerate(modelDataFiles):
         modelData = pd.read_csv(os.path.join(modelDataDir,oneModelFile))
         modelBW = modelData['BW(oct)']
@@ -117,19 +120,22 @@ if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
             #plt.plot(np.log2(modelBW), rates, 'o', lw=5, color=cellColor[indc], mec=cellColor[indc])
             #plt.plot(modelBW, rates, 'o-', lw=5, color=colorEachCond[indc], mec=colorEachCond[indc], clip_on=True)
             #axModel.set_xticklabels(bands)
-            plt.plot(np.log2(modelBW[1:]), rates[1:], '-', lw=5, color=colorEachCond[indc], mec=colorEachCond[indc], clip_on=True)
+            plotHandle,=plt.plot(np.log2(modelBW[1:]), rates[1:], '-', lw=5, color=colorEachCond[indc], mec=colorEachCond[indc], clip_on=True)
             plt.xlim(np.log2([1./8, 8]))
             xTicks = np.log2([1./4, 1./2, 1, 2, 4])
             axModel.set_xticks(xTicks)
             newTickLabels = [str(val) for val in (2**np.array(xTicks))]
             axModel.set_xticklabels(newTickLabels)
 
-            axModel.set_ylim([0,3])
+            #axModel.set_ylim([0,3])
+            axModel.set_ylim([0,6])
             plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
             extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
             axModel.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
             extraplots.boxoff(axModel)
+            plotHandles.append(plotHandle)
     plt.title('Model',fontsize=fontSizeLabels,fontweight='normal')
+    plt.legend(plotHandles[::-1],['No SOM', 'Control'], loc='lower left', frameon=False) #'upper left'
     
 plt.show()
 

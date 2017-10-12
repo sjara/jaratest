@@ -39,7 +39,13 @@ print cellToUse
 #cellFileNames = ['band004_2016-09-09_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz', cellToUse]
 '''
 
-cellFileNames = ['band004_2016-08-30_T4_c5.npz', 'band015_2016-11-12_T8_c4.npz', 'band016_2016-12-11_T6_c6.npz']
+# Old version: PV, SOM, Exc
+#cellFileNames = ['band004_2016-08-30_T4_c5.npz', 'band015_2016-11-12_T8_c4.npz', 'band016_2016-12-11_T6_c6.npz']
+#cellColor = [cp.TangoPalette['Chameleon3'], cp.TangoPalette['ScarletRed1'], cp.TangoPalette['SkyBlue2']]
+
+#cellFileNames = ['band016_2016-12-11_T6_c6.npz', 'band015_2016-11-12_T8_c4.npz', 'band004_2016-08-30_T4_c5.npz' ]
+cellFileNames = ['band002_2016-08-12_T6_c4.npz', 'band015_2016-11-12_T8_c4.npz', 'band004_2016-08-30_T4_c5.npz' ]
+cellColor = [cp.TangoPalette['SkyBlue2'], cp.TangoPalette['ScarletRed1'], cp.TangoPalette['Chameleon3'] ]
 
 
 SAVE_FIGURE = 1
@@ -54,7 +60,6 @@ fontSizePanel = 16
 labelDis = 0.1
 labelPosX = [0.017, 0.23, 0.61]   # Horiz position for panel labels  0.44,
 labelPosY = [0.96, 0.45]    # Vert position for panel labels
-cellColor = [cp.TangoPalette['Chameleon3'], cp.TangoPalette['ScarletRed1'], cp.TangoPalette['SkyBlue2']]
 laserColor = 'c'
 
 fig = plt.gcf()
@@ -68,7 +73,7 @@ gs0.update(top=0.9, left=0.05, right=0.7, wspace=0.6, hspace=0.1)
 
 # --- Raster plot of laser response ---
 if PANELS_TO_PLOT[0]:
-    indc = 0
+    indc = 2
     laserFilename = 'example_laser_response_'+cellFileNames[indc]
     laserDataFullPath = os.path.join(dataDir,laserFilename)
     laserData = np.load(laserDataFullPath)
@@ -177,7 +182,8 @@ if PANELS_TO_PLOT[1]:
 modelDataDir = './modeldata'
 if PANELS_TO_PLOT[2] & os.path.isdir(modelDataDir):
     import pandas as pd
-    modelDataFiles = ['SSNbandwidthTuning_noRFwidth_regime1.csv','SSNbandwidthTuning_noRFwidth_regime2.csv']
+    #modelDataFiles = ['SSNbandwidthTuning_noRFwidth_regime1.csv','SSNbandwidthTuning_noRFwidth_regime2.csv']
+    modelDataFiles = ['SSNbandwidthTuning_NewOct42017__regime1_Fig3.csv','SSNbandwidthTuning_noRFwidth_regime2.csv']
     titleStrings = ['Model 1', 'Model 2']
     for indm, oneModelFile in enumerate(modelDataFiles):
         modelData = pd.read_csv(os.path.join(modelDataDir,oneModelFile))

@@ -75,6 +75,9 @@ exampleCell = {'subject':'gosi008',
                'brainRegion':'ac'} # rightward, movement modulated
 cellParamsList.append(exampleCell)
 
+# -- Here we can choose to generate data for a specific cell instead of every cell -- #
+cellIndToGenerate = 1
+
 ####################################################################################
 
 scriptFullPath = os.path.realpath(__file__)
@@ -180,13 +183,15 @@ if not os.path.ismount(EPHYS_PATH):
 
 
 # -- Select an example cell from allcells file -- #
+if cellIndToGenerate:
+    cellParamsList = [cellParamsList[cellIndToGenerate]]
 for cellParams in cellParamsList:
     animal = cellParams['subject']
     date = cellParams['date']
     tetrode = cellParams['tetrode']
     cluster = cellParams['cluster']
     brainRegion = cellParams['brainRegion']
-    celldbPath = os.path.join(settings.DATABASE_PATH,'{}_database.h5'.format(animal))
+    celldbPath = os.path.join(settings.DATABASE_PATH, STUDY_NAME, '{}_database.h5'.format(animal))
     celldb = pd.read_hdf(celldbPath, key='reward_change')
     
     ### Using cellDB methode to find this cell in the cellDB ###
@@ -269,4 +274,5 @@ for cellParams in cellParamsList:
             #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
             outputFile = 'example_rc_{}aligned_psth_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
             outputFullPath = os.path.join(dataDir,outputFile)
+            print 'Saving {0} ...'.format(outputFullPath)
             np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=labelEachCond, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams)
