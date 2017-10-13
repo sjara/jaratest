@@ -46,8 +46,9 @@ if not os.path.isfile(databaseFullPath):
 else:
     gosidb = pd.read_hdf(databaseFullPath, key=key)
 
-    if not ('shapeQaulity' in gosidb.columns):
+    if not ('shapeQuality' in gosidb.columns):
         #Waveform analysis
+        print 'Calculating shape quality'
         allShapeQuality = np.empty(len(gosidb))
         for indCell, cell in gosidb.iterrows():
             peakAmplitudes = cell['clusterPeakAmplitudes']
@@ -59,6 +60,7 @@ else:
         gosidb.to_hdf(databaseFullPath, key=key)
 
     if not ('tuningZscore' in gosidb.columns):
+        print 'Calculating sound response Z scores for tuning curve'
         # -- Aalyse tuning curve and 2afc data -- #
         tuningDict = {'tuningFreqs':[],
                       'tuningZscore':[],
@@ -169,6 +171,7 @@ else:
         gosidb.to_hdf(databaseFullPath, key=key)
 
     if not ('behavZscore' in gosidb.columns):
+        print 'Calculating sound response Z scores for 2afc session'
         # -- Analyse 2afc data: calculate sound response Z score for each freq, store frequencies presented and corresponding Z scores -- #
         #gosidb = pd.read_hdf(databaseFullPath)
         behavDict = {'behavFreqs':[], 
@@ -311,20 +314,27 @@ else:
 
     # -- Added striatumRange and tetrodeLengthList to inforec files after histology verification of striatum/cortex range -- #
     if not ('inTargetArea' in gosidb.columns): 
+        print 'Calculating actual depth and test whether in range of target'
         sys.path.append(settings.INFOREC_PATH)  
         inforec = importlib.import_module('{}_inforec'.format(animal))
         tetrodeLengthList = inforec.tetrodeLengthList
         targetRangeLongestTt = inforec.targetRangeLongestTt
 
-        def calculate_cell_depth(indCell):
-            tetrode = int(gosidb['tetrode'][indCell])
-            depthThisCell = gosidb['depth'][indCell] - tetrodeLengthList[tetrode-1]
+        def calculate_cell_depth(cell):
+            tetrode = int(cell.tetrode)
+            depthThisCell = cell.depth - tetrodeLengthList[tetrode-1]
+            return depthThisCell
+
+        def testInTargetRange(cell):
+            depthThisCell = cell.actualDepth
             inTargetRange = (depthThisCell >= targetRangeLongestTt[0]) & (depthThisCell <= targetRangeLongestTt[1])
             return inTargetRange
         
-        inTargetArea = gosidb.apply(lambda row: calculate_cell_depth(row.name))
-    
-
+        actualDepth = gosidb.apply(lambda row: calculate_cell_depth(row), axis=1)
+        gosidb['actualDepth'] = actualDepth
+        inTargetArea = gosidb.apply(lambda row: testInTargetRange(row), axis=1)
+        gosidb['inTargetArea'] = inTargetArea
+        gosidb.to_hdf(databaseFullPath, key=key)
 
 
 
