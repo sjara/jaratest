@@ -290,3 +290,6 @@ site1.add_session('12-43-43', 'a', 'behavior', paradigm='2afc')
 for exp in experiments:
     for site in exp.sites:
         site.clusterFolder = 'multisession_{}_site1'.format(site.date)
+
+tetrodeLengthList = [560,300,0,560,0,300,180,180] #0 is the longest tetrode, other numbers means tetrode is x um shorter than longest tetrode.
+targetRangeLongestTt = (2340, 3060)

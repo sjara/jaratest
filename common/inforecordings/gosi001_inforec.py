@@ -423,3 +423,6 @@ exp30.add_session('10-40-49', 'a', 'behavior', '2afc')#150 trials/block, less th
 for ind, exp in enumerate(experiments):
     for site in exp.sites:
         site.clusterFolder = 'multisession_exp{}site0'.format(ind)
+
+tetrodeLengthList = [0, 190, 40, 230, 140, 300, 300, 210] #0 is the longest tetrode, other numbers means tetrode is x um shorter than longest tetrode.
+targetRangeLongestTt = (500, 1500)

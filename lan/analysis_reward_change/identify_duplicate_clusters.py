@@ -242,8 +242,8 @@ if __name__=='__main__':
     CASE = 3
 
     #ANIMALS = ['adap017','adap013']
-    brainRegion = 'astr'
-    ANIMALS = ['adap005','adap012'] #,'gosi004','gosi008','gosi010']
+    brainRegion = 'ac'
+    ANIMALS = ['gosi004','gosi010']
     # -- Calculate waveform, correlations within and across 2 consecutive sessions for each tetrode in each animal -- #
     if CASE==1:
         for animal in ANIMALS:
@@ -397,7 +397,7 @@ if __name__=='__main__':
                     behavSession = behavSession + 'a'
                     ephysSession = '_'.join((date,cell.split('_')[1]))
                     tetrode = cell.split('_')[2][1]
-                    cluster = cell.split('_')[2][3]
+                    cluster = float(cell.split('_')[2][3:])
                     cellParams = {'animal':subject,
                                   'ephysSession':ephysSession,
                                   'behavSession':behavSession,
@@ -446,7 +446,7 @@ if __name__=='__main__':
 
         corrThresh = 0.9
         #brainRegion = 'astr'
-        rewardChangeMice = ['adap005'] #,'adap012','adap013','adap015','adap017']
+        rewardChangeMice = ['adap013','adap015','adap017']
         
         # -- Import databases -- #
         #celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(brainRegion))
@@ -473,6 +473,7 @@ if __name__=='__main__':
             # -- Get all the cell pairs with correlation value over threshold -- #
             # First go through the SELF (same session) correlations; THE STRATEGY HERE IS TO POOL ALL DUPLICATE CELLS FROM THE SAME SESSION AND KEEP THE ONE WITH THE BIGGEST SOUND RESPONSE
             for tetrodeName in tetrodeNames:
+                print 'Finding same session duplicates for {}'.format(tetrodeName)
                 filenameSelf = animal + '_' + tetrodeName +'_SELF_corr.npz'
                 fullFilenameSelf = os.path.join(goodCorrFolder, filenameSelf)
                 selfCorrDb = np.load(fullFilenameSelf)
@@ -481,10 +482,11 @@ if __name__=='__main__':
                 corrLabsSelf = selfCorrDb['allSelfCorrLabs']
                 corrValsOverThreshSelf = corrValsSelf[corrValsSelf>=corrThresh]
                 corrLabsOverThreshSelf = corrLabsSelf[corrValsSelf>=corrThresh]
-                
+                print 'Label pairs that crossed threshold:', len(corrLabsOverThreshSelf)
                 behavSessionList = [] #Keep a list of the sessions with clusters showing high self correlation 
                 behavSessionPre = ''
                 cellsThisSession = []
+                dateLastSess = ''
                 for lab in sorted(corrLabsOverThreshSelf):
                     cell1,cell2 = lab.split(' x ')
                     behavSession = cell1.split('_')[0].replace('-','') + 'a'
@@ -493,10 +495,12 @@ if __name__=='__main__':
                         cellsThisSession.extend([cell1,cell2])
                     elif (behavSession != behavSessionPre) & (len(cellsThisSession) != 0):
                         behavSessionList.append(behavSession)
-                        # -- Pick one cell out of all duplicates for the session -- #
+                        print 'Finding same session duplicates for {} {}'.format(dateLastSess, tetrodeName)
+                        # -- Pick one cell out of all duplicates for the session that was just done processing (the last session!) -- #
                         tetrode = int(tetrodeName[-1])
-                        clusterList = [int(cellstr.split('_')[2][3]) for cellstr in cellsThisSession]
-                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.date==date) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))]
+                        clusterList = [int(float(cellstr.split('_')[2][3:])) for cellstr in cellsThisSession]
+                        print 'tetrode {}, clusters: {}'.format(tetrode, clusterList)
+                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.date==dateLastSess) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))] 
                         excludeDf.ix[cells.index,'duplicate_self'] = 1
                         #maxSoundResEachCell = np.max(np.abs(cells[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
                         cellToKeepIndex = np.argmax(cells.maxSoundRes, axis=1)
@@ -505,8 +509,10 @@ if __name__=='__main__':
                     else:
                         cellsThisSession = [cell1,cell2]
                     behavSessionPre = behavSession
+                    dateLastSess = date
 
                 # -- Look at cross correlations and mark cells: whether they are duplicated cross sessions or not, and whether to keep them or not -- #    
+                print 'Finding cross session duplicates for {}'.format(tetrodeName)
                 filenameCross = animal + '_' + tetrodeName +'_CROSS_corr.npz'
                 fullFilenameCross = os.path.join(goodCorrFolder, filenameCross)
                 crossCorrDb = np.load(fullFilenameCross)
@@ -524,7 +530,7 @@ if __name__=='__main__':
                         behavSession = cellstr.split('_')[0].replace('-','') + 'a'    
                         date = cellstr.split('_')[0]
                         tetrode = int(tetrodeName[-1])
-                        cluster = int(cellstr.split('_')[2][3])
+                        cluster = int(float(cellstr.split('_')[2][3:]))
                         cell = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.date==date) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster==cluster)]
                         excludeDf.ix[cell.index,'duplicate_cross'] = 1
                         cellInds = np.append(cellInds, cell.index)

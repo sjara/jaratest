@@ -94,10 +94,10 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.style.use(['seaborn-white','seaborn-talk'])
 
-    CASE = 2
+    CASE = 1
     # -- For checking a particular animal's performance on a particular date -- #
     if CASE == 1:
-        subjects = ['adap071']
+        subjects = ['adap067']
     
         if len(sys.argv)>1:
             sessions = sys.argv[1:]
