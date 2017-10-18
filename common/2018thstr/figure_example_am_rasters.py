@@ -51,7 +51,7 @@ def am_example(cell, timeRange=[-0.2, 0.7]):
         plt.subplot2grid((11, 3), (0, 0), rowspan=11, colspan=2)
     else:
         plt.subplot(111)
-    ms=2
+    ms=6 #4
     sortArray = bdata['currentFreq']
     trialsEachCond = behavioranalysis.find_trials_each_type(
         sortArray, np.unique(sortArray))
@@ -66,8 +66,9 @@ def am_example(cell, timeRange=[-0.2, 0.7]):
         labels=labels,
         colorEachCond=colors)
     plt.setp(pRaster, ms=ms)
-    plt.ylabel('Highest AM sync rate')
-    plt.xlabel('Time from stimulus onset (s)')
+    fontsize = 20
+    plt.ylabel('AM rate', fontsize=fontsize)
+    plt.xlabel('Time from stimulus onset (s)', fontsize=fontsize)
 
     if plotCycleHists:
         #Want to plot a hist of spike times from 0 to 2pi
@@ -120,7 +121,7 @@ if __name__=='__main__':
     dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
     db = pd.read_hdf(dbPath, key='dataframe')
 
-    CASE=1
+    CASE=0
 
     exampleCells = []
 
@@ -218,6 +219,10 @@ if __name__=='__main__':
         cell = find_cell(db, cellDict['subject'], cellDict['date'], cellDict['depth'], cellDict['tetrode'], cellDict['cluster']).iloc[0]
         am_example(cell)
         plt.show()
+        figFilename = 'exampleAM_{}'.format(cellInd)
+        print 'Saving {}'.format(figFilename)
+        extraplots.save_figure(figFilename, 'svg', [6,10], '/tmp/')
+        
 
     if CASE==1:
         #Rsync all the example data
