@@ -239,7 +239,7 @@ if __name__=='__main__':
     qualityThresh = 3 #2.5
     consistencyChecked=True
     
-    CASE = 3
+    CASE = 4
 
     #ANIMALS = ['adap017','adap013']
     brainRegion = 'ac'
@@ -446,7 +446,7 @@ if __name__=='__main__':
 
         corrThresh = 0.9
         #brainRegion = 'astr'
-        rewardChangeMice = ['adap013','adap015','adap017']
+        rewardChangeMice = ['adap013']
         
         # -- Import databases -- #
         #celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(brainRegion))
@@ -567,4 +567,22 @@ if __name__=='__main__':
         #dfAllRewardChangeMouse.to_hdf(rewardChangeFullPath, key='rewardChange')
                        
      
-
+    elif CASE==4:
+        brainRegion = 'ac'
+               
+        # -- Import databases -- #
+        celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(brainRegion))
+        allcellsDb = pd.read_hdf(celldbPath, key='reward_change')
+        for animal in np.unique(allcellsDb.subject):
+            thisMouseDb = allcellsDb.query("subject=='{}'".format(animal))
+            numSessions = len(np.unique(thisMouseDb.date))
+            withinSessionDups = 0
+            crossSessionDups = 0
+            for date in np.unique(thisMouseDb.date):
+                cellsThisSession = thisMouseDb.query("date=='{}'".format(date))
+                if np.any(cellsThisSession['duplicate_self'].values):
+                    withinSessionDups += 1
+                if np.any(cellsThisSession['duplicate_cross'].values):
+                    crossSessionDups += 1
+            print 'For {}, {} sessions have within-session duplicated cells out of {} total sessions.'.format(animal, withinSessionDups, numSessions)
+            print 'For {}, {} sessions have cross-session duplicated cells out of {} total sessions.'.format(animal, crossSessionDups, numSessions)

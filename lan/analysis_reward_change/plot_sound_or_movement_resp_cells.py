@@ -25,7 +25,7 @@ animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001
 animalLabels = ['astr', 'ac']
 #modulationWindows = ['0-0.1s_sound','0-0.1s_center-out','0.05-0.15s_center-out','0.05-0.35s_center-out']
 freqLabels = ['Low','High']
-qualityThreshold = 2.5 #3 
+qualityThreshold = 3 #2.5
 maxZThreshold = 3
 ISIcutoff = 0.02
 alphaLevel = 0.05
@@ -33,7 +33,7 @@ alphaLevel = 0.05
 for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
     celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(label))
     celldb = pd.read_hdf(celldbPath, key='reward_change')
-    goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{}'.format(ISIcutoff, qualityThreshold))
+    goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True'.format(ISIcutoff, qualityThreshold))
     
     lowFreqResp = goodQualCells.behavZscore.apply(lambda x: abs(x[0]) >= maxZThreshold) 
     highFreqResp = goodQualCells.behavZscore.apply(lambda x: abs(x[1]) >= maxZThreshold)
@@ -95,7 +95,7 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
             rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4])
             ax2.set_title('Reward modulation {}: {:.3f}'.format(modWindow, modIThisFreqThisWindow))
             ax3 = plt.subplot(gs00[2, :])
-            rcfuncs.plot_reward_change_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=False, alignment=alignment, timeRange=[-0.3,0.4], binWidth=0.010)
+            rcfuncs.plot_reward_change_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4], binWidth=0.010)
 
             # Plot movement-related response, includes all valid trials (correct&incorrect)
             ax4 = plt.subplot(gs01[0:2, :])
@@ -176,7 +176,7 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4])
         ax2.set_title('Reward modulation {}: {:.3f}'.format(modWindow, modIThisFreqThisWindow))
         ax3 = plt.subplot(gs00[2, :])
-        rcfuncs.plot_reward_change_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=False, alignment=alignment, timeRange=[-0.3,0.4], binWidth=0.010)
+        rcfuncs.plot_reward_change_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4], binWidth=0.010)
 
         # Plot movement-related response, includes all valid trials (correct&incorrect)
         ax4 = plt.subplot(gs01[0:2, :])

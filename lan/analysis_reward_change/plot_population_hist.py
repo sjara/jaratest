@@ -26,6 +26,9 @@ qualityThreshold = 3 #2.5
 maxZThreshold = 3
 ISIcutoff = 0.02
 alphaLevel = 0.05
+
+plt.figure()
+
 outputDir = '/home/languo/data/ephys/reward_change_stats/reports/'
 if not os.path.exists(outputDir):
     os.mkdir(outputDir)
@@ -35,7 +38,7 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
     celldb = pd.read_hdf(celldbPath, key='reward_change')
 
     # -- Plot histogram of modulation index for sound responsive cells, take the most responsive frequency -- #
-    goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True'.format(ISIcutoff, qualityThreshold))
+    goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria==True'.format(ISIcutoff, qualityThreshold))
 
     soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x)) >=  maxZThreshold) #The bigger of the sound Z score is over threshold
     moreRespLowFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[0]) > abs(x[1]))
@@ -66,7 +69,7 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         nonsigModI = np.concatenate((goodLowFreqRespModInd[~sigModulatedLow].values,
                                   goodHighFreqRespModInd[~sigModulatedHigh].values))
         
-        plt.figure()
+        plt.clf()
         binsEdges = np.linspace(-1,1,20)
         plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
         figTitle = '{}_{}_sound_responsive_cells'.format(label,modWindow)
@@ -87,6 +90,9 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         rightModIndName = 'modIndHigh_'+modWindow+'_'+'center-out'
         rightModSigName = 'modSigHigh_'+modWindow+'_'+'center-out'
         
+        goodMovementSelCells = goodQualCells[movementSelective]
+        sigModEitherDirection = (goodMovementSelCells[leftModSigName] < alphaLevel) | (goodMovementSelCells[rightModSigName] < alphaLevel)  
+        print 'Out of {} movement-selective cells, {} were modulated by reward either going left or going right'.format(len(goodMovementSelCells), sum(sigModEitherDirection))
         goodLeftMovementSelModInd = goodLeftMovementSelCells[leftModIndName]
         goodLeftMovementSelModSig = goodLeftMovementSelCells[leftModSigName]
         goodRightMovementSelModInd = goodRightMovementSelCells[rightModIndName]
@@ -98,12 +104,14 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         nonsigModI = np.concatenate((goodLeftMovementSelModInd[~sigModulatedLeft].values,
                                      goodRightMovementSelModInd[~sigModulatedRight].values))
         
-        plt.figure()
+        plt.clf()
         binsEdges = np.linspace(-1,1,20)
         plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
         figTitle = '{}_{}_movement_selective_cells'.format(label,modWindow)
         plt.title(figTitle)
-        plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} movement-selective cells: {:.3f}%'.format(len(sigModI), sum(movementSelective), 100*float(len(sigModI))/sum(movementSelective)))        
+        plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} movement-selective cells: {:.3f}%'.format(len(sigModI), sum(movementSelective), 100*float(len(sigModI))/sum(movementSelective))) 
+        plt.text(-0.9, 0.8*plt.ylim()[1], 'Out of {} movement-selective cells, {} were modulated \nby reward either going left or going right'.format(len(goodMovementSelCells), sum(sigModEitherDirection)))
+
         plt.xlabel('Modulation index')
         plt.ylabel('Num of cells')
         #plt.show()
@@ -111,6 +119,43 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         plt.savefig(figFullPath,format='png')
 
 
+        # -- Plot reward modulation during movement for all good cells -- #
+    for indw, modWindow in enumerate(modulationWindows['center-out']):
+        leftModIndName = 'modIndLow_'+modWindow+'_'+'center-out'
+        leftModSigName = 'modSigLow_'+modWindow+'_'+'center-out'
+        rightModIndName = 'modIndHigh_'+modWindow+'_'+'center-out'
+        rightModSigName = 'modSigHigh_'+modWindow+'_'+'center-out'
+        
+        goodCellsLeftModInd = goodQualCells[leftModIndName]
+        goodCellsLeftModSig = goodQualCells[leftModSigName]
+        goodCellsRightModInd = goodQualCells[rightModIndName]
+        goodCellsRightModSig = goodQualCells[rightModSigName]
+        sigModulatedLeft = goodCellsLeftModSig < alphaLevel
+        sigModulatedRight = goodCellsRightModSig < alphaLevel
+        sigModILeft = goodCellsLeftModInd[sigModulatedLeft].values
+        nonsigModILeft = goodCellsLeftModInd[~sigModulatedLeft].values
+        sigModIRight = goodCellsRightModInd[sigModulatedRight].values
+        nonsigModIRight = goodCellsRightModInd[~sigModulatedRight]
+        
+        binsEdges = np.linspace(-1,1,20)
+        plt.clf()
+        plt.subplot(1,2,1)
+        plt.hist([sigModILeft,nonsigModILeft], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+        figTitle = '{}_{}_center-out_left'.format(label,modWindow)
+        plt.title(figTitle)
+        plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of \n{} good cells: {:.3f}%'.format(len(sigModILeft), len(goodQualCells), 100*float(len(sigModILeft))/len(goodQualCells)))        
+        plt.xlabel('Modulation index')
+        plt.ylabel('Num of cells')
+        #plt.show()
+        plt.subplot(1,2,2)
+        plt.hist([sigModIRight,nonsigModIRight], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+        figTitle = '{}_{}_center-out_right'.format(label,modWindow)
+        plt.title(figTitle)
+        plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of \n{} good cells: {:.3f}%'.format(len(sigModIRight), len(goodQualCells), 100*float(len(sigModIRight))/len(goodQualCells)))
+        plt.tight_layout()
+        figSupTitle = '{}_{}_center-out_all_good_cells'.format(label,modWindow)
+        figFullPath = os.path.join(outputDir, figSupTitle)
+        plt.savefig(figFullPath,format='png')
 
 '''
 # ---------------- Movement --------------------#

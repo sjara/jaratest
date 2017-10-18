@@ -112,8 +112,11 @@ def score_running_ave_std(timestamps, numBins, initialWinSize=2, consistentZthre
     return consistentFiring
 
 if __name__ == '__main__':
-    for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
-        celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(label))
+    #for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
+    animalList = ['adap013']
+    for animal in animalList:
+        #celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(label))
+        celldbPath = os.path.join(settings.DATABASE_PATH, '{}_database.h5'.format(animal))
         celldb = pd.read_hdf(celldbPath, key='reward_change')
         if 'level_0' in list(celldb):
             celldb.drop('level_0', inplace=True, axis=1)
