@@ -798,7 +798,7 @@ if __name__=='__main__':
                         # -- Pick one cell out of all duplicates for the session -- #
                         tetrode = int(tetrodeName[-1])
                         clusterList = [int(cellstr.split('_')[2][3:]) for cellstr in cellsThisSession]
-                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSession) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))]
+                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.behavSession==behavSessionPre) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))]
                         excludeDf.ix[cells.index,'duplicate_self'] = 1
                         #maxSoundResEachCell = np.max(np.abs(cells[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
                         cellToKeepIndex = np.argmax(cells.maxSoundRes, axis=1)
