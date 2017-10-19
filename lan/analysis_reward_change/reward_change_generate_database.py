@@ -20,7 +20,7 @@ import importlib
 import sys
 from scipy import stats
 
-animal = 'gosi010'
+animal = 'adap071'
 inforecFullPath = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(animal))
 '''
 # -- Cluster and store stats, if have not already done so -- #
@@ -312,29 +312,6 @@ else:
         gosidb['movementModS'] = movementModS
         gosidb.to_hdf(databaseFullPath, key=key)
 
-    # -- Added striatumRange and tetrodeLengthList to inforec files after histology verification of striatum/cortex range -- #
-    if not ('inTargetArea' in gosidb.columns): 
-        print 'Calculating actual depth and test whether in range of target'
-        sys.path.append(settings.INFOREC_PATH)  
-        inforec = importlib.import_module('{}_inforec'.format(animal))
-        tetrodeLengthList = inforec.tetrodeLengthList
-        targetRangeLongestTt = inforec.targetRangeLongestTt
-
-        def calculate_cell_depth(cell):
-            tetrode = int(cell.tetrode)
-            depthThisCell = cell.depth - tetrodeLengthList[tetrode-1]
-            return depthThisCell
-
-        def testInTargetRange(cell):
-            depthThisCell = cell.actualDepth
-            inTargetRange = (depthThisCell >= targetRangeLongestTt[0]) & (depthThisCell <= targetRangeLongestTt[1])
-            return inTargetRange
-        
-        actualDepth = gosidb.apply(lambda row: calculate_cell_depth(row), axis=1)
-        gosidb['actualDepth'] = actualDepth
-        inTargetArea = gosidb.apply(lambda row: testInTargetRange(row), axis=1)
-        gosidb['inTargetArea'] = inTargetArea
-        gosidb.to_hdf(databaseFullPath, key=key)
-
+ 
 
 
