@@ -63,3 +63,21 @@ exp0.add_session('22-26-45', None, 'noisebursts', 'am_tuning_curve')
 exp0.add_site(2550, tetrodes=[1,2,5,6,7,8])
 exp0.add_session('22-29-45', None, 'noisebursts', 'am_tuning_curve')
 exp0.add_session('22-31-59', 'i', 'laserTuningCurve', 'laser_am_tuning_curve')
+
+
+exp1 = celldatabase.Experiment(subject, '2017-10-25', 'right_AudStr', info='MedialfacingPosteriorDiD')
+experiments.append(exp1)
+
+exp1.add_site(2000, tetrodes=[1,2,3,4,5,6,7,8])
+exp1.add_session('17-59-45', None, 'noisebursts', 'am_tuning_curve')
+
+exp1.add_site(2050, tetrodes=[2])
+exp1.add_session('18-10-46', None, 'noisebursts', 'am_tuning_curve')
+exp1.add_session('18-31-46', 'a', 'tuningCurve', 'am_tuning_curve')
+
+exp1.add_site(2100, tetrodes=[2])
+exp1.add_session('18-50-26', None, 'noisebursts', 'am_tuning_curve')
+exp1.add_session('18-53-13', 'b', 'tuningCurve', 'am_tuning_curve')
+
+
+
