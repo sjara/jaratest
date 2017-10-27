@@ -5,6 +5,9 @@ from jaratoolbox import settings
 from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 import matplotlib.pyplot as plt
+import seaborn as sns
+import scipy.stats as stats
+import statsmodels.stats.multicomp as mc
 
 animalList = ['adap012', 'adap013', 'adap015', 'adap017', 'gosi001','gosi004', 'gosi008','gosi010']
 
@@ -50,8 +53,12 @@ for inda, animal in enumerate(animalList):
         reactionTimeAll = bdata['timeSideIn'] - bdata['timeCenterOut'] 
         reactionTimeLeftChoiceMoreLeft = reactionTimeAll[choiceLeftTrials & trialsEachType[:,1]]
         reactionTimeLeftChoiceMoreRight = reactionTimeAll[choiceLeftTrials & trialsEachType[:,2]]
+        Z, pVal = stats.ranksums(reactionTimeLeftChoiceMoreLeft, reactionTimeLeftChoiceMoreRight)
+        print '{} {} going left, time from center to side port, more vs less reward (ranksums) p val: {}'.format(animal, date, pVal)
         reactionTimeRightChoiceMoreRight = reactionTimeAll[choiceRightTrials & trialsEachType[:,2]]
         reactionTimeRightChoiceMoreLeft = reactionTimeAll[choiceRightTrials & trialsEachType[:,1]]
+        Z, pVal = stats.ranksums(reactionTimeRightChoiceMoreLeft, reactionTimeRightChoiceMoreRight)
+        print '{} {} going right, time from center to side port, more vs less reward (ranksums) p val: {}'.format(animal, date, pVal)
         reactionTimeLeftChoiceMoreLeftAll = np.append(reactionTimeLeftChoiceMoreLeftAll,reactionTimeLeftChoiceMoreLeft) 
         reactionTimeRightChoiceMoreLeftAll = np.append(reactionTimeRightChoiceMoreLeftAll, reactionTimeRightChoiceMoreLeft)
         reactionTimeLeftChoiceMoreRightAll = np.append(reactionTimeLeftChoiceMoreRightAll, reactionTimeLeftChoiceMoreRight)
@@ -60,24 +67,56 @@ for inda, animal in enumerate(animalList):
         responseTimeAll = bdata['timeCenterOut'] - bdata['timeTarget']
         responseTimeLeftChoiceMoreLeft = responseTimeAll[choiceLeftTrials & trialsEachType[:,1]]
         responseTimeLeftChoiceMoreRight = responseTimeAll[choiceLeftTrials & trialsEachType[:,2]]
+        Z, pVal = stats.ranksums(responseTimeLeftChoiceMoreLeft, responseTimeLeftChoiceMoreRight)
+        print '{} {} going left, time from sound to center exit, more vs less reward (ranksums) p val: {}'.format(animal, date, pVal)
         responseTimeRightChoiceMoreRight = responseTimeAll[choiceRightTrials & trialsEachType[:,2]]
         responseTimeRightChoiceMoreLeft = responseTimeAll[choiceRightTrials & trialsEachType[:,1]]
+        Z, pVal = stats.ranksums(responseTimeRightChoiceMoreLeft, responseTimeRightChoiceMoreRight)
+        print '{} {} going right, time from sound to center exit, more vs less reward (ranksums) p val: {}'.format(animal, date, pVal)
         responseTimeLeftChoiceMoreLeftAll = np.append(responseTimeLeftChoiceMoreLeftAll,responseTimeLeftChoiceMoreLeft) 
         responseTimeRightChoiceMoreLeftAll = np.append(responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreLeft)
         responseTimeLeftChoiceMoreRightAll = np.append(responseTimeLeftChoiceMoreRightAll, responseTimeLeftChoiceMoreRight)
         responseTimeRightChoiceMoreRightAll = np.append(responseTimeRightChoiceMoreRightAll, responseTimeRightChoiceMoreRight)
         
+    # -- histogram -- #
     plt.clf()
     plt.subplot(211)
-    plt.hist([reactionTimeLeftChoiceMoreLeftAll, reactionTimeLeftChoiceMoreRightAll, reactionTimeRightChoiceMoreLeftAll, reactionTimeRightChoiceMoreRightAll], 50, edgecolor='None', color=['k','darkgrey','magenta','r'], label=['go_left_more_left', 'go_left_more_right', 'go_right_more_left', 'go_right_more_right'], stacked=False)
+    plt.hist([reactionTimeLeftChoiceMoreLeftAll, reactionTimeLeftChoiceMoreRightAll, reactionTimeRightChoiceMoreLeftAll, reactionTimeRightChoiceMoreRightAll], 50, normed=1, edgecolor='None', color=['k','darkgrey','magenta','r'], label=['go_left_more_left', 'go_left_more_right', 'go_right_more_left', 'go_right_more_right'], stacked=False)
     plt.xlim([0.15, 1.0])
     plt.title('Time from center-out to side-in')
     plt.subplot(212)
-    plt.hist([responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll], 30, edgecolor='None', color=['k','darkgrey','magenta','r'], label=['go_left_more_left', 'go_left_more_right', 'go_right_more_left', 'go_right_more_right'], stacked=False)
+    plt.hist([responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll], 30, normed=1, edgecolor='None', color=['k','darkgrey','magenta','r'], label=['go_left_more_left', 'go_left_more_right', 'go_right_more_left', 'go_right_more_right'], stacked=False)
     plt.title('Time from sound-onset to center-out')
     plt.xlim([0.1, 0.5])
     plt.legend()
     plt.suptitle(animal)
     #plt.show()
-    figFullPath = os.path.join(outputDir, animal)
+    figFullPath = os.path.join(outputDir, animal+'_density')
     plt.savefig(figFullPath,format='png')
+    
+    # -- violin plot -- #
+    plt.clf()
+    plt.subplot(211)
+    sns.violinplot(data=[reactionTimeLeftChoiceMoreLeftAll, reactionTimeLeftChoiceMoreRightAll, reactionTimeRightChoiceMoreLeftAll, reactionTimeRightChoiceMoreRightAll])
+    # -- stats -- #
+    f, pVal = stats.kruskal(reactionTimeLeftChoiceMoreLeftAll, reactionTimeLeftChoiceMoreRightAll, reactionTimeRightChoiceMoreLeftAll, reactionTimeRightChoiceMoreRightAll)
+    plt.text(0, 0.5, 'Kruskal-Wallis H-test p value {:.3f} between groups'.format(pVal)) 
+    #plt.xticks([0,1,2,3],['LeftChoiceMoreLeft', 'LeftChoiceMoreRight', 'RightChoiceMoreLeft', 'RightChoiceMoreRight'])
+    plt.xticks([])
+    plt.ylim([0,1])
+    plt.title('Time from center-out to side-in')
+    plt.subplot(212)
+    sns.violinplot(data=[responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll])
+    # -- stats -- #
+    f, pVal = stats.kruskal(responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll)
+    plt.text(0, 0.25, 'Kruskal-Wallis H-test p value {:.3f} between groups'.format(pVal)) 
+    plt.xticks([0,1,2,3],['LeftChoiceMoreLeft', 'LeftChoiceMoreRight', 'RightChoiceMoreLeft', 'RightChoiceMoreRight'])
+    plt.title('Time from sound-onset to center-out')
+    plt.ylim([0, 0.5])
+    plt.suptitle(animal+'_violinplot')
+    #plt.show()
+    figFullPath = os.path.join(outputDir, animal+'_violinplot')
+    plt.savefig(figFullPath,format='png')
+
+    
+    
