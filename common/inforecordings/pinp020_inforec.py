@@ -107,5 +107,5 @@ exp3.add_session('15-46-05', 'b', 'tc', 'am_tuning_curve')
 
 #Going back up...
 
-exp3.add_site(2458, tetrodes=range(1, 9))
-exp3.add_session('16-39-18', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_site(2458, tetrodes=range(1, 9))
+# exp3.add_session('16-39-18', None, 'noiseburst', 'am_tuning_curve')

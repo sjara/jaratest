@@ -46,7 +46,7 @@ exp1 = celldatabase.Experiment(subject,
                                info=['DiD', 'facingLateral'])
 experiments.append(exp1)
 
-exp1.add_site(3868, tetrodes=range(1, 9))
+exp1.add_site(3868, tetrodes=range(1, 9)).remove_tetrodes([6, 8])
 exp1.add_session('15-32-40', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('15-33-59', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('15-35-16', None, 'lasertrain', 'am_tuning_curve')
@@ -84,7 +84,7 @@ exp3 = celldatabase.Experiment(subject,
                                info=['anteriorDiD', 'facingPosterior'])
 experiments.append(exp3)
 
-exp3.add_site(3452, tetrodes=range(1, 9))
+exp3.add_site(3452, tetrodes=range(1, 9)).remove_tetrodes([7])
 exp3.add_session('14-19-13', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('14-21-47', None, 'laserpulse', 'am_tuning_curve')
 exp3.add_session('14-23-08', None, 'lasertrain', 'am_tuning_curve')
