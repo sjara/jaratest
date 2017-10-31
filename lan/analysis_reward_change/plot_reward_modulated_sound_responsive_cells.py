@@ -1,5 +1,5 @@
 '''
-Script to plot significantly reward-modulated cells that were also selective to movement direction.
+Script to plot significantly reward-modulated cells that were also responsive to the modulated frequency.
 '''
 import os
 import imp
@@ -32,7 +32,7 @@ maxZThreshold = 3
 ISIcutoff = 0.02
 alphaLevel = 0.05
 
-modulationWindows = {'center-out': ['0.05-0.35s']}
+modulationWindows = {'sound':['0-0.1s']}
 
 for indRegion, animal in enumerate(animalList):
     celldbPath = os.path.join(settings.DATABASE_PATH,'{}_database.h5'.format(animal))
@@ -41,46 +41,42 @@ for indRegion, animal in enumerate(animalList):
     # -- Take movement-selected cells that are modulated by reward expectation, plot the modulated movement direction -- #
     goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria==True'.format(ISIcutoff, qualityThreshold))
 
-    movementSelective = goodQualCells.movementModS < alphaLevel
-    goodMovementSelCells = goodQualCells[movementSelective]
-    #moreRespMoveLeft = movementSelective & (goodQualCells.movementModI < 0)
-    #moreRespMoveRight = movementSelective & (goodQualCells.movementModI > 0)
-    #goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
-    #goodRightMovementSelCells = goodQualCells[moreRespMoveRight]
+    #soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x)) >=  maxZThreshold) #The bigger of the sound Z score is over threshold
+    #moreRespLowFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[0]) > abs(x[1]))
+    #moreRespHighFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[1]) > abs(x[0]))
+    respLowFreq = goodQualCells.behavZscore.apply(lambda x: abs(x[0]) >= maxZThreshold)
+    respHighFreq = goodQualCells.behavZscore.apply(lambda x: abs(x[-1]) >= maxZThreshold)
+    #goodLowFreqRespCells = goodQualCells[moreRespLowFreq]
+    #goodHighFreqRespCells = goodQualCells[moreRespHighFreq]
+    goodLowFreqRespCells = goodQualCells[respLowFreq]
+    goodHighFreqRespCells = goodQualCells[respHighFreq]
 
-    for indw, modWindow in enumerate(modulationWindows['center-out']):
-        leftModIndName = 'modIndLow_'+modWindow+'_'+'center-out'
-        leftModSigName = 'modSigLow_'+modWindow+'_'+'center-out'
-        rightModIndName = 'modIndHigh_'+modWindow+'_'+'center-out'
-        rightModSigName = 'modSigHigh_'+modWindow+'_'+'center-out'
-                   
-        #goodLeftMovementSelModSig = goodLeftMovementSelCells[leftModSigName]
-        #goodRightMovementSelModSig = goodRightMovementSelCells[rightModSigName]
-        #sigModulatedLeft = goodLeftMovementSelModSig < alphaLevel
-        #sigModulatedRight = goodRightMovementSelModSig < alphaLevel
-        #sigModLeftCells = goodLeftMovementSelCells[sigModulatedLeft]
-        #sigModRightCells = goodRightMovementSelCells[sigModulatedRight]
-        goodMovSelModSigLeft = goodMovementSelCells[leftModSigName]
-        goodMovSelModSigRight = goodMovementSelCells[rightModSigName]
-        sigModulatedLeft = goodMovSelModSigLeft < alphaLevel
-        sigModulatedRight = goodMovSelModSigRight < alphaLevel
-        sigModLeftCells = goodMovementSelCells[sigModulatedLeft]
-        sigModRightCells = goodMovementSelCells[sigModulatedRight]
+    for indw, modWindow in enumerate(modulationWindows['sound']):
+        lowFreqModIndName = 'modIndLow_'+modWindow+'_'+'sound'
+        lowFreqModSigName = 'modSigLow_'+modWindow+'_'+'sound'
+        highFreqModIndName = 'modIndHigh_'+modWindow+'_'+'sound'
+        highFreqModSigName = 'modSigHigh_'+modWindow+'_'+'sound'          
+        goodLowFreqRespModSig = goodLowFreqRespCells[lowFreqModSigName]
+        goodHighFreqRespModSig = goodHighFreqRespCells[highFreqModSigName]
+        sigModulatedLow = goodLowFreqRespModSig < alphaLevel
+        sigModulatedHigh = goodHighFreqRespModSig < alphaLevel
+        sigModLowCells = goodLowFreqRespCells[sigModulatedLow]
+        sigModHighCells = goodHighFreqRespCells[sigModulatedHigh]
         
-        newOutputDir = '/home/languo/data/ephys/reward_change_stats/modulated_cells_reports/mod_{}_center-out_movement_sel'.format(modWindow)
+        newOutputDir = '/home/languo/data/ephys/reward_change_stats/modulated_cells_reports/mod_{}_sound_responsive'.format(modWindow)
         if not os.path.exists(newOutputDir):
             os.mkdir(newOutputDir)
 
-        oldOutputDir = '/home/languo/data/ephys/reward_change_stats/modulated_cells_reports/movement_selective'.format(modWindow)
+        oldOutputDir = '/home/languo/data/ephys/reward_change_stats/modulated_cells_reports/sound_responsive'.format(modWindow)
 
-        for freq, cells in zip(freqLabels, [sigModLeftCells, sigModRightCells]):
+        for freq, cells in zip(freqLabels, [sigModLowCells, sigModHighCells]):
             for indc, cell in cells.iterrows():
                 if freq == 'Low':
                     indf = 0
                 elif freq == 'High':
                     indf = -1
-                modIndName = 'modInd'+freq+'_'+modWindow+'_center-out'
-                modSigName = 'modSig'+freq+'_'+modWindow+'_center-out'
+                modIndName = 'modInd'+freq+'_'+modWindow+'_sound'
+                modSigName = 'modSig'+freq+'_'+modWindow+'_sound'
                 animal = cell['animalName']
                 date = cell['date']
                 tetrode = int(cell['tetrode'])
@@ -90,7 +86,7 @@ for indRegion, animal in enumerate(animalList):
                 movementModInd = cell['movementModI']
                 spikeQuality = cell['shapeQuality']
 
-                figname = '{}_{}_T{}_c{}_{}_{}_center-out.png'.format(animal,date,tetrode,cluster, freq, modWindow)
+                figname = '{}_{}_T{}_c{}_{}_{}_sound.png'.format(animal,date,tetrode,cluster, freq, modWindow)
                 figOldFullPath = os.path.join(oldOutputDir, figname)
                 figNewFullPath = os.path.join(newOutputDir, figname)
                 if os.path.exists(figOldFullPath):
@@ -119,7 +115,7 @@ for indRegion, animal in enumerate(animalList):
                         ax1.set_title('Cannot load tuning data or clustering for tuning session had failed')
                         pass
                     # centerout-aligned this freq 
-                    alignment = 'center-out' #modWindow.split('_')[1]
+                    alignment = 'sound' #modWindow.split('_')[1]
                     ax2 = plt.subplot(gs00[0:2, :])
                     rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.5])
                     ax2.set_title('Reward modulation {}: {:.3f}\npVal {:.2E}'.format(modWindow, modIThisFreqThisWindow, modSigThisFreqThisWindow))
