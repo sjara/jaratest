@@ -40,7 +40,7 @@ astrInds = movementIndGroups[0]
 astrIndMean = np.mean(astrInds)
 astrSig = movementSigGroups[0] < alphaLevel
 percentMovementSelAStr = sum(astrSig) / float(len(astrSig)) * 100
-plt.hist([astrInds[astrSig], astrInds[~astrSig]], bins=binsEdges, color=['k','darkgrey'], edgecolor='None', label=['selective','not selective'])
+plt.hist([astrInds[astrSig], astrInds[~astrSig]], bins=binsEdges, stacked=True, color=['k','darkgrey'], edgecolor='None', label=['selective','not selective'])
 #plt.xlabel('Movement selectivity index')
 plt.ylabel('Number of cells')
 plt.legend()
@@ -53,7 +53,7 @@ acInds = movementIndGroups[1]
 acIndMean = np.mean(acInds)
 acSig = movementSigGroups[1] < alphaLevel
 percentMovementSelAC = sum(acSig) / float(len(acSig)) * 100
-plt.hist([acInds[acSig], acInds[~acSig]], bins=binsEdges, color=['k','darkgrey'], edgecolor='None', label=['selective','not selective'])
+plt.hist([acInds[acSig], acInds[~acSig]], bins=binsEdges, stacked=True, color=['k','darkgrey'], edgecolor='None', label=['selective','not selective'])
 plt.xlabel('Movement selectivity index')
 plt.ylabel('Number of cells')
 plt.legend()

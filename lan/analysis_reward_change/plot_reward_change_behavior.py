@@ -35,7 +35,7 @@ def plot_ave_psycurve_reward_change(animal, sessions):
     nBlocks = len(blockTypes)
     #thisAnimalPos = inda
     #ax1=plt.subplot(gs[thisAnimalPos])
-    plt.clf()
+    #plt.clf()
     fontsize = 12
     allPline = []
     blockLegends = []

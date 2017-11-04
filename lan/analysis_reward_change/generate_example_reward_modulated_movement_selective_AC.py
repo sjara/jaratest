@@ -240,6 +240,16 @@ for cellParams in cellParamsList:
     # Remove missing trials
     bdata.remove_trials(missingTrials)
 
+    # -- calculate response and reaction time, as well as trials each type -- #
+    responseTimes = bdata['timeSideIn'] - bdata['timeCenterOut']
+    reactionTimes = bdata['timeCenterOut'] - bdata['timeTarget']
+    currentBlock = bdata['currentBlock']
+    blockTypeLabels = ['more_left', 'more_right']
+    blockTypes = [bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']]
+    trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
+    possibleFreq = np.unique(bdata['targetFrequency'])
+    correct = bdata['outcome']==bdata.labels['outcome']['correct']
+
     # -- Select trials to plot from behavior file -- #
     for freq in freqsToPlot:
         trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorDict)
@@ -253,6 +263,17 @@ for cellParams in cellParamsList:
         # -- Calculate arrays for plotting raster -- #
         (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
         spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
+
+        # -- Save behavior related times and labels -- #
+        if freq == 'low':
+            oneFreqTrials = bdata['targetFrequency'] == possibleFreq[0] 
+        elif freq == 'high':
+            oneFreqTrials = bdata['targetFrequency'] == possibleFreq[-1]
+        leftMoreTrialsOneFreq = trialsEachType[:,0] & oneFreqTrials & correct
+        rightMoreTrialsOneFreq = trialsEachType[:,1] & oneFreqTrials & correct
+        outputFile = 'behavior_times_{}freq_{}_{}.npz'.format(freq, animal,date)
+        outputFullPath = os.path.join(dataDir,outputFile)
+        np.savez(outputFullPath, leftMoreTrials=leftMoreTrialsOneFreq, rightMoreTrials=rightMoreTrialsOneFreq, responseTimes=responseTimes, reactionTimes=reactionTimes)
 
         # -- Save raster intermediate data -- #    
         #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
