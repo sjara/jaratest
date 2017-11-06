@@ -31,6 +31,7 @@ def plot_ave_psycurve_reward_change(animal, sessions):
     trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
     
     nFreqs = len(np.unique(targetFrequency))
+    print '{}, freqs: {}'.format(animal, str(np.unique(targetFrequency)))
     #print trialsEachType
     nBlocks = len(blockTypes)
     #thisAnimalPos = inda
@@ -109,11 +110,11 @@ if __name__ == '__main__':
     # -- All reward change mice, all good sessions average plot -- #
     elif CASE == 2:
         sujectSessionsDict = {'adap012':['20160219a','20160223a','20160224a','20160226a','20160227a','20160228a','20160229a'],
-                              'adap008':['20151118a','20151119a','20151120a','20151121a','20151122a','20151123a','20151124a'], #same_left_right block transition
+                              #'adap008':['20151118a','20151119a','20151120a','20151121a','20151122a','20151123a','20151124a'], #same_left_right block transition
                               'adap005':['20151118a','20151119a','20151120a','20151121a','20151122a','20151123a','20151124a'], #same_left_right block transition
-                              'adap011':['20160122a','20160123a','20160124a','20160125a','20160126a'],
-                              'adap013':['20160216a','20160217a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'], #some of them are of same_right_left block transition
-                              'adap015':['20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a','20160315a'], #some of them are of same_right_left block transition
+                              #'adap011':['20160122a','20160123a','20160124a','20160125a','20160126a'],
+                              #'adap013':['20160216a','20160217a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'], #some of them are of same_right_left block transition
+                              #'adap015':['20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a','20160315a'], #some of them are of same_right_left block transition
                               'adap017':['20160219a','20160222a','20160223a','20160224a','20160226a','20160301a','20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'], #some of them are of same_right_left block transition
                               'adap071':['20171002a','20171003a','20171004a','20171005a','20171006a','20171007a'],
                               'adap067':['20171023a','20171024a','20171025a','20171026a','20171027a','20171028a'],
@@ -129,19 +130,20 @@ if __name__ == '__main__':
 
         for ind, (subject, sessions) in enumerate(sujectSessionsDict.items()):
             fractionHitsEachValueAllBlocks = plot_ave_psycurve_reward_change(subject, sessions)
-            save_svg_psycurve_reward_change(subject, sessions)
+            #save_svg_psycurve_reward_change(subject, sessions)
             avePsycurveMoreLeft[ind,:] = fractionHitsEachValueAllBlocks[1,:] #The second row is more_left block
             avePsycurveMoreRight[ind,:] = fractionHitsEachValueAllBlocks[2,:]#The third row is more_right block
 
        
         # -- This plots an average psycurve for all the mice -- #    
+        import scipy.stats as stats
         fontsize = 12
         plt.clf()
-        plt.errorbar(x=range(1,9),y=np.mean(avePsycurveMoreLeft,axis=0),yerr=np.std(avePsycurveMoreLeft,axis=0),linewidth=3,linestyle='-',capthick=2,elinewidth=2,marker='o',ms=8,color=colorpalette.TangoPalette['ScarletRed1'])
+        plt.errorbar(x=range(1,9),y=np.mean(avePsycurveMoreLeft,axis=0),yerr=stats.sem(avePsycurveMoreLeft,axis=0),linewidth=3,linestyle='-',capthick=2,elinewidth=2,marker='o',ms=8,color=colorpalette.TangoPalette['ScarletRed1'])
         plt.hold('on')
-        plt.errorbar(x=range(1,9),y=np.mean(avePsycurveMoreRight,axis=0),yerr=np.std(avePsycurveMoreRight,axis=0),linewidth=3,linestyle='-',capthick=2,elinewidth=2,marker='o',ms=8,color=colorpalette.TangoPalette['SkyBlue2'])
+        plt.errorbar(x=range(1,9),y=np.mean(avePsycurveMoreRight,axis=0),yerr=stats.sem(avePsycurveMoreRight,axis=0),linewidth=3,linestyle='-',capthick=2,elinewidth=2,marker='o',ms=8,color=colorpalette.TangoPalette['SkyBlue2'])
         plt.xlabel('Frequency (kHz)',fontsize=fontsize)
-        plt.ylabel('Rightward trials (%)',fontsize=fontsize)
+        plt.ylabel('Proportion of rightward choice',fontsize=fontsize)
         plt.ylim((-0.1,1.1))
         extraplots.set_ticks_fontsize(plt.gca(),fontsize)
         plt.show()
