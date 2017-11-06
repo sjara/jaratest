@@ -94,7 +94,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.style.use(['seaborn-white','seaborn-talk'])
 
-    CASE = 1
+    CASE = 2
     # -- For checking a particular animal's performance on a particular date -- #
     if CASE == 1:
         subjects = ['adap067']
@@ -122,7 +122,7 @@ if __name__ == '__main__':
                               'gosi001':['20170406a','20170407a','20170408a','20170409a','20170410a','20170411a'],
                               'gosi010':['20170406a','20170407a','20170408a','20170409a','20170410a','20170411a']
         }
-        sujectSessionsDict = {'adap071':['20171002a','20171003a','20171004a','20171005a','20171006a','20171007a']}
+        #sujectSessionsDict = {'adap071':['20171002a','20171003a','20171004a','20171005a','20171006a','20171007a']}
         numOfAnimals = len(sujectSessionsDict.keys())
         avePsycurveMoreLeft = np.empty((numOfAnimals,8)) #We used 8 frequencies in the psy curve
         avePsycurveMoreRight = np.empty((numOfAnimals,8))
@@ -130,10 +130,10 @@ if __name__ == '__main__':
         for ind, (subject, sessions) in enumerate(sujectSessionsDict.items()):
             fractionHitsEachValueAllBlocks = plot_ave_psycurve_reward_change(subject, sessions)
             save_svg_psycurve_reward_change(subject, sessions)
-            avePsycurveMoreLeft[ind,:] = fractionHitsEachValueAllBlocks[0,:] #The first row is more_left block
-            avePsycurveMoreRight[ind,:] = fractionHitsEachValueAllBlocks[1,:]#The second row is more_right block
+            avePsycurveMoreLeft[ind,:] = fractionHitsEachValueAllBlocks[1,:] #The second row is more_left block
+            avePsycurveMoreRight[ind,:] = fractionHitsEachValueAllBlocks[2,:]#The third row is more_right block
 
-        '''
+       
         # -- This plots an average psycurve for all the mice -- #    
         fontsize = 12
         plt.clf()
@@ -145,4 +145,4 @@ if __name__ == '__main__':
         plt.ylim((-0.1,1.1))
         extraplots.set_ticks_fontsize(plt.gca(),fontsize)
         plt.show()
-        '''
+      
