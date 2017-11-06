@@ -12,6 +12,7 @@ from jaratoolbox import extraplots
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
+STUDY_NAME = '2017rc'
 brainRegion = 'ac' #['astr', 'ac']
 
 modulationWindows = {'sound':'0-0.1s',
@@ -25,12 +26,12 @@ ISIcutoff = 0.02
 alphaLevel = 0.05
 
 plt.figure(figsize=(6,6))
-
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 outputDir = '/tmp/'
 figFormat = 'png'
 
 #for indRegion, brainRegion in enumerate(brainRegions):
-celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(brainRegion))
+celldbPath = os.path.join(dataDir,'reward_change_{}.h5'.format(brainRegion))
 celldb = pd.read_hdf(celldbPath, key='reward_change')
 
 # -- For histogram of modulation index for sound-responsive cells, take the most responsive frequency -- #
