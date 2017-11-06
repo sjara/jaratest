@@ -41,6 +41,14 @@ exampleCell = {'subject':'adap015',
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'gosi004',
+              'date':'2017-03-19',
+              'tetrode':6,
+               'cluster':4,
+               'brainRegion':'ac'} # low freq, sound modulated
+cellParamsList.append(exampleCell)
+
+
+exampleCell = {'subject':'gosi004',
               'date':'2017-03-03',
               'tetrode':6,
                'cluster':3,
@@ -191,7 +199,7 @@ for cellParams in cellParamsList:
     tetrode = cellParams['tetrode']
     cluster = cellParams['cluster']
     brainRegion = cellParams['brainRegion']
-    celldbPath = os.path.join(settings.DATABASE_PATH, STUDY_NAME, '{}_database.h5'.format(animal))
+    celldbPath = os.path.join(settings.DATABASE_PATH, '{}_database.h5'.format(animal))
     celldb = pd.read_hdf(celldbPath, key='reward_change')
     
     ### Using cellDB methode to find this cell in the cellDB ###

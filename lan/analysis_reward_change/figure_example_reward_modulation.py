@@ -50,16 +50,18 @@ exampleModulatedMovementAc = 'highfreq_gosi008_2017-03-14_T7_c8'
                  'highfreq_gosi008_2017-03-14_T7_c8', # Locked to CenterOut AC
 '''
 infoEachCell = []
-infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'adap015_2016-03-18_T3_c9',
-                      'alignment':'sound', 'brainRegion':'astr' })
-infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-03_T6_c3',
+infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-19_T6_c4',
                       'alignment':'sound', 'brainRegion':'ac' })
-infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-18_T6_c10',
-                      'alignment':'sound', 'brainRegion':'ac' })
-infoEachCell.append({ 'soundFreq':'highfreq', 'cellName':'adap012_2016-02-04_T3_c3',
-                      'alignment':'center-out', 'brainRegion':'astr' })
-infoEachCell.append({ 'soundFreq':'highfreq', 'cellName':'gosi008_2017-03-14_T7_c8',
-                      'alignment':'center-out', 'brainRegion':'ac' })
+#infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'adap015_2016-03-18_T3_c9',
+#                      'alignment':'sound', 'brainRegion':'astr' })
+#infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-03_T6_c3',
+#                      'alignment':'sound', 'brainRegion':'ac' })
+#infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-18_T6_c10',
+#                      'alignment':'sound', 'brainRegion':'ac' })
+#infoEachCell.append({ 'soundFreq':'highfreq', 'cellName':'adap012_2016-02-04_T3_c3',
+#                      'alignment':'center-out', 'brainRegion':'astr' })
+#infoEachCell.append({ 'soundFreq':'highfreq', 'cellName':'gosi008_2017-03-14_T7_c8',
+#                      'alignment':'center-out', 'brainRegion':'ac' })
 
 
 if len(sys.argv)>1:
