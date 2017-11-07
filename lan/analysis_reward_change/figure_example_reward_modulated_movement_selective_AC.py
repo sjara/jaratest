@@ -35,12 +35,12 @@ infoEachCell.append({ 'cellName':'gosi001_2017-05-06_T3_c5',
                       'alignment':'center-out', 'brainRegion':'ac' })
 infoEachCell.append({ 'cellName':'gosi004_2017-02-13_T7_c8',
                       'alignment':'center-out', 'brainRegion':'ac' })
-infoEachCell.append({ 'cellName':'gosi004_2017-03-15_T6_c7',
-                      'alignment':'center-out', 'brainRegion':'ac' })
-infoEachCell.append({ 'cellName':'gosi004_2017-03-18_T3_c4',
-                      'alignment':'center-out', 'brainRegion':'ac' })
-infoEachCell.append({ 'cellName':'gosi004_2017-04-06_T7_c5',
-                      'alignment':'center-out', 'brainRegion':'ac' })
+#infoEachCell.append({ 'cellName':'gosi004_2017-03-15_T6_c7',
+#                      'alignment':'center-out', 'brainRegion':'ac' })
+#infoEachCell.append({ 'cellName':'gosi004_2017-03-18_T3_c4',
+#                      'alignment':'center-out', 'brainRegion':'ac' })
+#infoEachCell.append({ 'cellName':'gosi004_2017-04-06_T7_c5',
+#                      'alignment':'center-out', 'brainRegion':'ac' })
 infoEachCell.append({ 'cellName':'gosi008_2017-03-14_T7_c8',
                       'alignment':'center-out', 'brainRegion':'ac' })
 
