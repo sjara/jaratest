@@ -83,8 +83,15 @@ exampleCell = {'subject':'gosi008',
                'brainRegion':'ac'} # rightward, movement modulated
 cellParamsList.append(exampleCell)
 
+exampleCell = {'subject':'gosi004',
+              'date':'2017-03-11',
+              'tetrode':4,
+               'cluster':5,
+               'brainRegion':'ac'} # low freq, strong sound response, not modulated
+cellParamsList.append(exampleCell)
+
 # -- Here we can choose to generate data for a specific cell instead of every cell -- #
-cellIndToGenerate = 1
+cellIndToGenerate = -1
 
 ####################################################################################
 

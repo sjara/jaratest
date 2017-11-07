@@ -52,6 +52,9 @@ exampleModulatedMovementAc = 'highfreq_gosi008_2017-03-14_T7_c8'
 infoEachCell = []
 infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-19_T6_c4',
                       'alignment':'sound', 'brainRegion':'ac' })
+infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-11_T4_c5',
+                      'alignment':'sound', 'brainRegion':'ac' })#Not modulated by reward
+
 #infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'adap015_2016-03-18_T3_c9',
 #                      'alignment':'sound', 'brainRegion':'astr' })
 #infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-03_T6_c3',
