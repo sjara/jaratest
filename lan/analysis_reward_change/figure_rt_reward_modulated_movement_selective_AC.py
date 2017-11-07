@@ -83,7 +83,7 @@ for indc, cellInfo in enumerate(cellsToPlot):
         plt.title(soundFreq)
         plt.xlabel('Time from center out to side in (sec)')
         plt.ylabel('Probability density')
-        
+        plt.legend()
         plt.show()
         if SAVE_FIGURE:
             extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
