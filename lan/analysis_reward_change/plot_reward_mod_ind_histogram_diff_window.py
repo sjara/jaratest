@@ -11,6 +11,7 @@ from jaratoolbox import settings
 from jaratoolbox import extraplots
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import scipy.stats as stats
 
 STUDY_NAME = '2017rc'
 brainRegion = 'ac' #['astr', 'ac']
@@ -62,7 +63,7 @@ elif len( sys.argv) == 2:
         highFreqModIndName = 'modIndHigh_'+modWindow+'_'+'sound'
         highFreqModSigName = 'modSigHigh_'+modWindow+'_'+'sound'
 
-        goodLowFreqRespModInd = goodLowFreqRespCells[lowFreqModIndName]
+        goodLowFreqRespModInd = (-1) * goodLowFreqRespCells[lowFreqModIndName]
         goodLowFreqRespModSig = goodLowFreqRespCells[lowFreqModSigName]
         goodHighFreqRespModInd = goodHighFreqRespCells[highFreqModIndName]
         goodHighFreqRespModSig = goodHighFreqRespCells[highFreqModSigName]
@@ -73,6 +74,9 @@ elif len( sys.argv) == 2:
         nonsigModI = np.concatenate((goodLowFreqRespModInd[~sigModulatedLow].values,
                                   goodHighFreqRespModInd[~sigModulatedHigh].values))
         
+        allModI = np.concatenate((goodLowFreqRespModInd.values, goodHighFreqRespModInd.values))
+        Z, pVal = stats.wilcoxon(allModI)
+        print 'Population mod ind mean: {:.2f}, compared to zero p value: {:.3f}'.format(np.mean(allModI), pVal)
         plt.clf()
         binsEdges = np.linspace(-1,1,20)
         plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
@@ -99,7 +103,7 @@ elif len( sys.argv) == 2:
         goodMovementSelCells = goodQualCells[movementSelective]
         sigModEitherDirection = (goodMovementSelCells[leftModSigName] < alphaLevel) | (goodMovementSelCells[rightModSigName] < alphaLevel)  
         print 'Out of {} movement-selective cells, {} were modulated by reward either going left or going right'.format(len(goodMovementSelCells), sum(sigModEitherDirection))
-        goodLeftMovementSelModInd = goodLeftMovementSelCells[leftModIndName]
+        goodLeftMovementSelModInd = (-1) * goodLeftMovementSelCells[leftModIndName]
         goodLeftMovementSelModSig = goodLeftMovementSelCells[leftModSigName]
         goodRightMovementSelModInd = goodRightMovementSelCells[rightModIndName]
         goodRightMovementSelModSig = goodRightMovementSelCells[rightModSigName]
@@ -109,7 +113,9 @@ elif len( sys.argv) == 2:
                                   goodRightMovementSelModInd[sigModulatedRight].values))
         nonsigModI = np.concatenate((goodLeftMovementSelModInd[~sigModulatedLeft].values,
                                      goodRightMovementSelModInd[~sigModulatedRight].values))
-        
+        allModI = np.concatenate((goodLeftMovementSelModInd.values, goodRightMovementSelModInd.values))
+        Z, pVal = stats.wilcoxon(allModI)
+        print 'Population mod ind mean: {:.2f}, compared to zero p value: {:.3f}'.format(np.mean(allModI), pVal)
         plt.clf()
         binsEdges = np.linspace(-1,1,20)
         plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
