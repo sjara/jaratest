@@ -19,16 +19,6 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
 
-colorDict = {'leftMoreLowFreq':cp.TangoPalette['SkyBlue2'],
-             'rightMoreLowFreq':cp.TangoPalette['Orange2'],
-             'sameRewardLowFreq':'y',
-             'leftMoreHighFreq':'r',
-             'rightMoreHighFreq':'b',
-             'sameRewardHighFreq':'darkgrey'}
-
-soundColor = cp.TangoPalette['Butter2']
-timeRange = [-0.3,0.5]
-
 # -- Select example cells here -- #
 infoEachCell = []
 infoEachCell.append({ 'cellName':'gosi001_2017-05-06_T3_c5',
@@ -67,9 +57,11 @@ downsampleFactorPsth = 1
 soundFreqsToPlot = ['lowfreq','highfreq']
 
 for indc, cellInfo in enumerate(cellsToPlot):
-    alignment = cellInfo['alignment']
     brainRegion = cellInfo['brainRegion']
     cellName = cellInfo['cellName']
+    animal = cellName.split('_')[0]
+    date = cellName.split('_')[1]
+
     for soundFreq in soundFreqsToPlot:
         fig = plt.gcf()
         fig.clf()
@@ -82,8 +74,15 @@ for indc, cellInfo in enumerate(cellsToPlot):
         leftMoreTrialsOneFreq = behavSum['leftMoreTrials']
         rightMoreTrialsOneFreq = behavSum['rightMoreTrials']
         responseTimes = behavSum['responseTimes']
-        
-
+        bins = np.arange(0.1,1,0.05)
+        plt.hist(responseTimes[leftMoreTrialsOneFreq], bins, label='left_more_reward', color='green', edgecolor='grey', alpha=0.7, normed=1)
+        plt.hist(responseTimes[rightMoreTrialsOneFreq], bins, label='right_more_reward', color='red', edgecolor='grey', alpha=0.7, normed=1)
+        T, pVal =  stats.ranksums(responseTimes[leftMoreTrialsOneFreq],responseTimes[rightMoreTrialsOneFreq])
+        yUpper = plt.ylim()[1]
+        plt.text(0.1, 0.5*yUpper, 'For {}, comparing response times, p value: {:.3f}'.format(soundFreq, pVal))
+        plt.title(soundFreq)
+        plt.xlabel('Time from center out to side in (sec)')
+        plt.ylabel('Probability density')
         
         plt.show()
         if SAVE_FIGURE:
