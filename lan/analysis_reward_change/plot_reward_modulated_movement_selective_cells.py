@@ -32,7 +32,7 @@ maxZThreshold = 3
 ISIcutoff = 0.02
 alphaLevel = 0.05
 
-modulationWindows = {'center-out': ['0.05-0.35s']}
+modulationWindows = {'center-out': ['0.05-0.15s','0.05-0.25s']}
 
 for indRegion, animal in enumerate(animalList):
     celldbPath = os.path.join(settings.DATABASE_PATH,'{}_database.h5'.format(animal))
@@ -95,6 +95,8 @@ for indRegion, animal in enumerate(animalList):
                 figNewFullPath = os.path.join(newOutputDir, figname)
                 if os.path.exists(figOldFullPath):
                     shutil.copyfile(figOldFullPath, figNewFullPath)
+                elif os.path.exists(figNewFullPath):
+                    continue
                 else:
                     tuningSessionInd = cell['sessiontype'].index('tc')
                     tuningEphysThisCell = cell['ephys'][tuningSessionInd]

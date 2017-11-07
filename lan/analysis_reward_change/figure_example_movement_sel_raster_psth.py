@@ -13,56 +13,38 @@ from matplotlib import pyplot as plt
 from jaratoolbox import colorpalette as cp
 
 STUDY_NAME = '2017rc'
-FIGNAME = 'modulation_reward_change'
+FIGNAME = 'movement_selectivity'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
 
-'''
-colorDict = {'leftMoreLowFreq':'g',
-             'rightMoreLowFreq':'m',
-             'sameRewardLowFreq':'y',
-             'leftMoreHighFreq':'r',
-             'rightMoreHighFreq':'b',
-             'sameRewardHighFreq':'darkgrey'}
-'''
-colorDict = {'leftMoreLowFreq':cp.TangoPalette['SkyBlue2'],
-             'rightMoreLowFreq':cp.TangoPalette['Orange2'],
-             'sameRewardLowFreq':'y',
-             'leftMoreHighFreq':'r',
-             'rightMoreHighFreq':'b',
-             'sameRewardHighFreq':'darkgrey'}
+colorsDict = {'left':'r', 'right':'g'} 
 
-soundColor = cp.TangoPalette['Butter2']
 timeRange = [-0.3,0.5]
 
 # -- Select example cells here -- #
-'''
-exampleModulatedSoundAstr = 'lowfreq_adap015_2016-03-18_T3_c9'
-exampleModulatedSoundAc = 'lowfreq_gosi004_2017-03-03_T6_c3'
-exampleModulatedSoundAc2 = 'lowfreq_gosi004_2017-03-18_T6_c10'
-exampleModulatedMovementAStr = 'highfreq_adap012_2016-02-04_T3_c3'
-exampleModulatedMovementAc = 'highfreq_gosi008_2017-03-14_T7_c8'
-                 'lowfreq_gosi004_2017-03-03_T6_c3',  # Locked to SoundOn AC
-                 'lowfreq_gosi004_2017-03-18_T6_c10', # Locked to SoundOn AC
-                 'highfreq_adap012_2016-02-04_T3_c3', # Locked to CenterOut AStr
-                 'highfreq_gosi008_2017-03-14_T7_c8', # Locked to CenterOut AC
-'''
 infoEachCell = []
-infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-19_T6_c4',
-                      'alignment':'sound', 'brainRegion':'ac' })
-#infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'adap015_2016-03-18_T3_c9',
-#                      'alignment':'sound', 'brainRegion':'astr' })
-#infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-03_T6_c3',
-#                      'alignment':'sound', 'brainRegion':'ac' })
-#infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-18_T6_c10',
-#                      'alignment':'sound', 'brainRegion':'ac' })
-#infoEachCell.append({ 'soundFreq':'highfreq', 'cellName':'adap012_2016-02-04_T3_c3',
-#                      'alignment':'center-out', 'brainRegion':'astr' })
-#infoEachCell.append({ 'soundFreq':'highfreq', 'cellName':'gosi008_2017-03-14_T7_c8',
-#                      'alignment':'center-out', 'brainRegion':'ac' })
-
+infoEachCell.append({ 'cellName':'gosi004_2017-03-11_T4_c5',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi004_2017-02-13_T7_c8',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi004_2017-03-15_T4_c8',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi004_2017-03-18_T4_c10',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi004_2017-03-25_T8_c3',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi008_2017-03-07_T1_c4',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi008_2017-03-10_T1_c10',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi008_2017-03-14_T7_c8',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi008_2017-03-20_T4_c12',
+                      'alignment':'center-out', 'brainRegion':'ac' })
+infoEachCell.append({ 'cellName':'gosi010_2017-05-02_T4_c12',
+                      'alignment':'center-out', 'brainRegion':'ac' })
 
 if len(sys.argv)>1:
     cellInd = int(sys.argv[1])
@@ -94,29 +76,23 @@ smoothWinSizePsth = 3
 lwPsth = 3
 downsampleFactorPsth = 1
 
-
-#for alignment in examplesDict.keys():
-#    for brainRegion in examplesDict[alignment].keys():
-#        for indc, cell in enumerate(examplesDict[alignment][brainRegion]):
-
 for indc, cellInfo in enumerate(cellsToPlot):
     alignment = cellInfo['alignment']
     brainRegion = cellInfo['brainRegion']
     cellName = cellInfo['cellName']
-    soundFreq = cellInfo['soundFreq']
     fig = plt.gcf()
     fig.clf()
     fig.set_facecolor('w')
-    figFilename = 'example_rc_{}_{}_{}_{}'.format(alignment, brainRegion, soundFreq, cellName)
-    rasterFilename = 'example_rc_{}aligned_raster_{}_{}.npz'.format(alignment, soundFreq, cellName) 
+    figFilename = 'example_movement_sel_{}'.format(cellName)
+    rasterFilename = 'example_movement_sel_raster_{}.npz'.format(cellName) 
     rasterFullPath = os.path.join(dataDir, rasterFilename)
     rasterExample = np.load(rasterFullPath)
 
     trialsEachCond = rasterExample['trialsEachCond']
-    #colorEachCond = rasterExample['colorEachCond']
-    colorEachCond = [colorDict['leftMoreLowFreq'],colorDict['rightMoreLowFreq'],colorDict['leftMoreLowFreq']]
+    colorEachCond = rasterExample['colorEachCond']
+    #colorEachCond = [colorDict['leftMoreLowFreq'],colorDict['rightMoreLowFreq'],colorDict['leftMoreLowFreq']]
     ####### WARNING!: hardcoded #######
-    
+
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
     #timeRange = rasterExample['timeRange']
@@ -138,7 +114,7 @@ for indc, cellInfo in enumerate(cellsToPlot):
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
 
     ax2 = plt.subplot(gs[3, :])
-    psthFilename = 'example_rc_{}aligned_psth_{}_{}.npz'.format(alignment, soundFreq, cellName) 
+    psthFilename = 'example_movement_sel_psth_{}.npz'.format(cellName) 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
 
@@ -158,17 +134,14 @@ for indc, cellInfo in enumerate(cellsToPlot):
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     #yLims = [0,50]
     yLims = plt.ylim()
-    soundBarHeight = 0.1*yLims[-1]
-    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
-    #plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRange)
     plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from {} (s)'.format(alignment),fontsize=fontSizeLabels)
+    plt.xlabel('Time from center exit (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-    plt.legend(condLabels, loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.legend(set(condLabels), loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
                frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     plt.suptitle('{}\n{}'.format(figFilename,cellName))
     plt.show()
