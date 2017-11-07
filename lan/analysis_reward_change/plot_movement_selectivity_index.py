@@ -60,3 +60,5 @@ elif len(sys.argv) > 1:
     figFullPath = os.path.join(outputDir, figTitle)
     print 'Saving {} to {}'.format(figTitle, outputDir)
     plt.savefig(figFullPath,format=figFormat)
+    plt.show()
+    
