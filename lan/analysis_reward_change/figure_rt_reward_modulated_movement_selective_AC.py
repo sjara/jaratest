@@ -77,6 +77,7 @@ for indc, cellInfo in enumerate(cellsToPlot):
         bins = np.arange(0.1,1,0.05)
         plt.hist(responseTimes[leftMoreTrialsOneFreq], bins, label='left_more_reward', color='green', edgecolor='grey', alpha=0.7, normed=1)
         plt.hist(responseTimes[rightMoreTrialsOneFreq], bins, label='right_more_reward', color='red', edgecolor='grey', alpha=0.7, normed=1)
+        print '{} mean rt for left more reward trials: {:.3f}s, mean rt for right more reward trials: {:.3f}s'.format(soundFreq, np.mean(responseTimes[leftMoreTrialsOneFreq]), np.mean(responseTimes[rightMoreTrialsOneFreq]))
         T, pVal =  stats.ranksums(responseTimes[leftMoreTrialsOneFreq],responseTimes[rightMoreTrialsOneFreq])
         yUpper = plt.ylim()[1]
         plt.text(0.1, 0.5*yUpper, 'For {}, comparing response times, p value: {:.3f}'.format(soundFreq, pVal))
