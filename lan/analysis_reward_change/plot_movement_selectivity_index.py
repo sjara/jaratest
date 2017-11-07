@@ -25,7 +25,7 @@ figFormat = 'svg'
 #movementSigGroups = []
 
 if len(sys.argv) == 1:
-    print 'Please input a number to indicate the brain region to plot, 1=ac, 2=astr'
+    print 'Please input a number to indicate the brain region to plot, 0=astr, 1=ac'
 elif len(sys.argv) > 1:
     brainRegion = brainRegions[int(sys.argv[1])]
 
