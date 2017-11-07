@@ -168,7 +168,7 @@ for indc, cellInfo in enumerate(cellsToPlot):
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-    plt.legend(set(condLabels), loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.legend(condLabels, loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
                frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     plt.suptitle('{}\n{}'.format(figFilename,cellName))
     plt.show()

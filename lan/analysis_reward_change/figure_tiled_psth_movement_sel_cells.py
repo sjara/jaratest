@@ -110,7 +110,7 @@ for indc, cellInfo in enumerate(infoEachCell):
     extraplots.boxoff(plt.gca())
     if indc == numOfCells-1:
         plt.xlabel('Time from center exit (s)',fontsize=fontSizeLabels)
-        plt.legend(set(condLabels), loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+        plt.legend(condLabels, loc='upper right', fontsize=fontSizeTicks, handlelength=0.2, frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     
 plt.show()
 if SAVE_FIGURE:
