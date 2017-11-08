@@ -414,7 +414,8 @@ exp30.add_session('15-18-31', None, 'noiseburst', 'laser_tuning_curve')#ref=21
 exp30.add_session('15-21-33', 'a', 'tc', 'laser_tuning_curve')#ref=21
 exp30.add_session('15-29-21', 'a', 'behavior', '2afc')#150 trials/block,
 
-
+'''
+# Somehow on this date the 2afc behavior file was not saved
 exp31 = celldatabase.Experiment(subject,
                                '2017-10-05',
                                brainarea='rightAC',
@@ -427,7 +428,7 @@ exp31.add_session('16-26-19', None, 'noiseburst', 'laser_tuning_curve')#ref=9
 #exp31.add_session('16-28-57', None, 'noiseburst', 'laser_tuning_curve')#ref=21
 exp31.add_session('16-32-20', 'a', 'tc', 'laser_tuning_curve')#ref=11
 exp31.add_session('16-39-09', 'a', 'behavior', '2afc')#150 trials/block,
-
+'''
 
 exp32 = celldatabase.Experiment(subject,
                                '2017-10-06',
