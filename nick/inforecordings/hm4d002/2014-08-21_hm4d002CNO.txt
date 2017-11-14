@@ -1,0 +1,22 @@
+Today we are recording from (0, -250um) relative to the initial injection site. 
+
+12:24:13 - Mouse in box on 3% isoflurane
+12:35:06 - ELectrodes at 953um, mouse off anaesthesia, waiting for him to wake up. THe tetrodes were wacked against the side of the well, and two of them became slightly bent. As a result, the tetrodes form a kind of array pointing from the middle posterior point of the well to the 10:00 point of the well..
+
+12:47:18 - FIrst good signals at 2700um. I am leaving the mouse for 10mins to allow the brain to stabilize. 
+14:39:13 - We are going to do the experiment at 2990um because I have good cells on TT2 and 3. I will leave the mouse like this for abour 10 mins t make sure things will not shift much. 
+14:48:18 - The cells seem to be the same, so I am going to start recording a baseline. THe baseline will most likely run long since I need to talk to chris niell at 1500. I should record 2 things every time I make a change: the number of trials on the sound presentation paradigm, and the exact time that the door was opened and closed. THe only thing about this is that the phys computer is about 1min faster than the rig, so there will be some difference between my timestamp in these notes and the exact time on the recording. I think that if the experiment goes as planned, we should be able to see on the plots when things change. 
+14:51:49 - TO be safe, I will wait a few more minutes and then start the baseline. 
+15:00:56 - I added saline to the wells and began recording the experiment, 2014-08-21_15-02-05
+15:18:19 - Door opened at 670 trials, sounds stopped. 
+15:19:45 - Door closed and sounds restarted. I injected 350ul of CNO at 2mg/ml. I also added saline to the wells. 
+15:35:36 - 1283 trials, door opened to put new saline in wells and sounds stopped
+15:36:23 - Door closed and sounds resumed. The cells on TT2 now look much better than the cells on TT3. 
+15:48:54 - 1757 trials, sounds stopped and door opened to put more saline in the wells. 
+15:49:18 - DOor closed and sounds re-started. 
+16:05:14 - 2367 Trials, sounds stopped and door opened to add more saline to wells
+16:05:42 - door closed and sounds started. 
+16:20:45 - 2944 trials, sounds stopped and door opened to apply more saline to the wells. 
+16:21:08 - Door closed and sounds started
+16:26:16 - I will stop the experiment at 88mins from the beginning
+16:31:05 - Was talking with billy, actually stopeed at 90mins. I am going to remove the elctrodes now and deal with the mouse. 

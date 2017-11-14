@@ -41,7 +41,7 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
         ##
 
         self.report = None
-        self.reportFileName = '{0}.png'.format(self.tetrode)
+        self.reportFileName = '{0}_{1}_{2}.png'.format(self.animalName,self.analysisDate,self.tetrode) #changed filename to include animal name and date info.
         
         #self.featureNames = ['peak','valley','energy']  
         self.featureNames = ['peak','valleyFirstHalf']  #new features used for clustering
@@ -57,26 +57,29 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
                 ephysDir = os.path.join(settings.EPHYS_PATH, self.animalName, session)
                 spikeFile = os.path.join(ephysDir, 'Tetrode{0}.spikes'.format(self.tetrode))
                 dataSpkObj = loadopenephys.DataSpikes(spikeFile)
-                numSpikes = dataSpkObj.nRecords
-            
-                #Add the ind to a vector of zeros, indicates which recording this is from. 
-                sessionVector = np.zeros(numSpikes)+ind
+                if dataSpkObj.filesize > 1024: #Check whether file is empty; if there are no spikes then move on to next session
+                    numSpikes = dataSpkObj.nRecords
+                
+                    #Add the ind to a vector of zeros, indicates which recording this is from. 
+                    sessionVector = np.zeros(numSpikes)+ind
 
-                samplesThisSession = dataSpkObj.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
-                samplesThisSession = (1000.0/dataSpkObj.gain[0,0]) * samplesThisSession
-                timestampsThisSession = dataSpkObj.timestamps/self.SAMPLING_RATE
-            
-                #Set the values when working with the first session, then append for the other sessions. 
-                if ind==0:
-                    self.samples = samplesThisSession
-                    self.timestamps = timestampsThisSession
-                    self.recordingNumber = sessionVector
-                else:
-                    self.samples = np.concatenate([self.samples, samplesThisSession])
-                    self.timestamps = np.concatenate([self.timestamps, timestampsThisSession])
-                    self.recordingNumber = np.concatenate([self.recordingNumber, sessionVector])
-            
-        self.nSpikes = len(self.timestamps)
+                    samplesThisSession = dataSpkObj.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
+                    samplesThisSession = (1000.0/dataSpkObj.gain[0,0]) * samplesThisSession
+                    timestampsThisSession = dataSpkObj.timestamps/self.SAMPLING_RATE
+   
+                    #Set the values when working with the first session, then append for the other sessions. 
+                    if ind==0:
+                        self.samples = samplesThisSession
+                        self.timestamps = timestampsThisSession
+                        self.recordingNumber = sessionVector
+                    else:
+                        self.samples = np.concatenate([self.samples, samplesThisSession])
+                        self.timestamps = np.concatenate([self.timestamps, timestampsThisSession])
+                        self.recordingNumber = np.concatenate([self.recordingNumber, sessionVector])
+        if np.any(self.timestamps):        
+            self.nSpikes = len(self.timestamps)
+        else:
+            self.nSpikes = 0 #In case there are no spikes in all sessions for one tetrode
 
     def create_multisession_fet_files(self):
         if not os.path.exists(self.clustersDir):
@@ -105,30 +108,31 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
         sessions = self.sessionList
 
         for indSession, session in enumerate(self.sessionList):
-            
-            #Make the cluster file directory for this session if it does not already exist
-            sessionClusterDir = os.path.join(settings.EPHYS_PATH,self.animalName,session+'_kk') 
+            if session: 
+                #sometimes did not record ephys session
+                #Make the cluster file directory for this session if it does not already exist
+                sessionClusterDir = os.path.join(settings.EPHYS_PATH,self.animalName,session+'_kk') 
 
-            if not os.path.exists(sessionClusterDir):
-                print 'Creating clusters directory: %s'%(sessionClusterDir)
-                os.makedirs(sessionClusterDir)
+                if not os.path.exists(sessionClusterDir):
+                    print 'Creating clusters directory: %s'%(sessionClusterDir)
+                    os.makedirs(sessionClusterDir)
 
-            sessionClusterFile = os.path.join(sessionClusterDir,'Tetrode{}.clu.1'.format(self.tetrode))
+                sessionClusterFile = os.path.join(sessionClusterDir,'Tetrode{}.clu.1'.format(self.tetrode))
 
-            fid = open(sessionClusterFile,'w')
-            fid.write('{0}\n'.format('12')) #FIXME: I don't know if this number is the number of clusters, SHOULD NOT HARD CODE IT
+                fid = open(sessionClusterFile,'w')
+                fid.write('{0}\n'.format('12')) #FIXME: I don't know if this number is the number of clusters, SHOULD NOT HARD CODE IT
 
-            clusterNumsThisSession = self.clusters[self.recordingNumber == indSession]
-            print "Writing .clu.1 file for session {}".format(session)
-            for cn in clusterNumsThisSession:
-                fid.write('{0}\n'.format(cn))
+                clusterNumsThisSession = self.clusters[self.recordingNumber == indSession]
+                print "Writing .clu.1 file for session {}".format(session)
+                for cn in clusterNumsThisSession:
+                    fid.write('{0}\n'.format(cn))
 
-            fid.close()
+                fid.close()
 
 
-            if copyClusterReport: #Need to finish this
-                pass
-                #copyCommand = ['cp', 
+                if copyClusterReport: #Need to finish this
+                    pass
+                    #copyCommand = ['cp', 
 
 
                 
@@ -136,7 +140,7 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
     def save_multisession_report(self):
         if self.clusters == None:
             self.set_clusters_from_file()
-        figTitle = 'Multisession Report TT{}'.format(self.tetrode)
+        figTitle = 'Multisession Report {0}_{1}TT{2}'.format(self.animalName,self.analysisDate.split('_'),self.tetrode)
         self.report = MultiSessionClusterReport(self.samples, self.timestamps, self.clusters,
                                             outputDir=self.clustersDir,
                                             filename=self.reportFileName,figtitle=figTitle,

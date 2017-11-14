@@ -1,0 +1,32 @@
+11:51:30 - Mouse in rig, anaesthesia removed, electrodes in RIGHT well at 586um, waiting for mouse to regain consciousness.
+12:04:26 - Mouse is awake, advancing tetrodes toward 2500 (our target depth). 
+12:06:42 - Spikes on TT3 at 969um. Respond to visual stimuli
+12:13:32 - Silence from 1000um all the way to 1881um - am I only now approaching CA1? perhaps I have missed it. Perhaps we have no idea were we are...
+12:16:43 - THere are periodic bursts of noise on all channels
+12:19:33 - THe bursts are large in magnitude and somewhat frequent... I am going to go ahead with the experiment, because even if the bursts add a spike or two they should not impact the firing rate... they might even get clustered out...
+
+12:22:00 - Silence at 2264um. 
+12:23:12 - At 2700um. I am going to wait here for ten mins to allow the brain to stop moving. 
+12:52:01 - Still silence, I am going to move now. THere is the possibility that the tissue on the surface was much thicker, and we are lagging behind compared to the other experiments. Usually, we would be in the vicinity of the target location by now.
+12:54:44 - Approaching cells, 2962um
+13:00:06 - Advanced to 3500um. At this point, the polyamide tubes are getting very close to the surface of the tissue, and we cannot proceed farther. I am going to try another insertion.  
+13:01:30 - Removing the electrodes.
+13:10:13 - Re-inserted the electrodes after cutting the very tips off. At 1097um, nothing so far. 
+13:11:22 - Spikes on TT3 at 1335um.
+13:12:04 - Quiet again at 1690um
+13:12:58 - 2000um, nothing. 
+13:14:16 - Lots of spikes on TT3 by 2500um. I think this is where I should do my experiment. I will wait here for the brain to settle. 
+13:29:12 - Moved to 2800 insearch of better signals. All signals gone now. 
+13:44:13 - At 3334um. No signals. I think I should remove the electrodes and try again before it is too late. 
+13:45:51 - Cell on TT4 at 2202um. 
+13:47:18 - I am going to take what I can get and do the experiment here.
+13:48:38 - Recording first baseline session. 
+14:01:16 - Injecting CNO now
+14:04:44 - First CNO recording. I Just injected 500ul of 1mg/mL CNO, so the mouse recived approximately 500ug of CNO. THis translates to roughly 20mg/kg. 
+14:34:35 - I missed a CNO recording, I should figure out a way to plot the actual timestamps instead of plotting by trial... some kind of windowed average with a margin of error? 
+14:54:43 - 50mins elapsed since injection with CNO
+14:58:04 - The mouse is alive and grooming himself. 
+15:10:56 - I am recording the last CNO trial. 
+15:21:48 - Total elapsed time from injection at the end of the final recording = 1:07
+
+

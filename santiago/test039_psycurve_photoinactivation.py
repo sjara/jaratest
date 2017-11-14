@@ -8,9 +8,13 @@ from jaratoolbox import extraplots
 from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 import matplotlib.pyplot as plt
+import sys
 
-subject = 'adap031'
-session = '20160916a'
+#subject = 'adap031'
+#session = '20160918a'
+
+subject = sys.argv[1]
+session = sys.argv[2]
 
 behavFile = loadbehavior.path_to_behavior_data(subject,'2afc',session)
 bdata = loadbehavior.BehaviorData(behavFile)

@@ -76,7 +76,7 @@ def load_remote_2afc_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MO
     Given a CellInfo object and remote behavior and ephys directories, this function loads the associated 2afc ephys and 2afc behav data from the mounted jarastore drive. Returns eventOnsetTimes, spikeTimestamps, and bData objects.
     '''
     
-    ### Get behavior data associated with tuning curve ###
+    ### Get behavior data associated with 2afc session ###
     behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
     behavFile = os.path.join(behavDir,oneCell.animalName,behavFileName)
     bData = loadbehavior.FlexCategBehaviorData(behavFile,readmode='full')
@@ -105,6 +105,51 @@ def load_remote_2afc_data(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MO
     #spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
     
     return (eventData, spikeData, bData)
+
+
+def load_remote_2afc_behav(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MOUNTED):
+    '''
+    Given a CellInfo object and remote behavior and ephys directories, this function loads the associated 2afc behav data from the mounted jarastore drive. Returns bData object.
+    '''
+    ### Get behavior data associated with 2afc session ###
+    behavFileName = '{0}_{1}_{2}.h5'.format(oneCell.animalName,'2afc',oneCell.behavSession)
+    behavFile = os.path.join(behavDir,oneCell.animalName,behavFileName)
+    bData = loadbehavior.FlexCategBehaviorData(behavFile,readmode='full')
+    return bData
+
+
+def load_remote_2afc_events(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MOUNTED):
+    '''
+    Given a CellInfo object and remote behavior and ephys directories, this function loads the associated 2afc events from the mounted jarastore drive. Returns eventOnsetTimes, spikeTimestamps.
+    '''
+    ### Get events data ###
+    fullEventFilename=os.path.join(ephysDir, oneCell.animalName, oneCell.ephysSession, 'all_channels.events')
+    eventData = loadopenephys.Events(fullEventFilename)
+
+    ### Get event onset times ###
+    eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
+    #evID=np.array(eventData.eventID)
+    #eventOnsetTimes=eventTimestamps[(evID==1)]
+    return eventData
+
+def load_remote_2afc_spikes(oneCell,behavDir=BEHAVDIR_MOUNTED,ephysDir=EPHYSDIR_MOUNTED):
+    '''
+    Given a CellInfo object and remote behavior and ephys directories, this function loads the associated 2afc spikes from the mounted jarastore drive. Returns eventOnsetTimes, spikeTimestamps.
+    '''
+    ### GEt spike data of just this cluster ###
+    spikeFilename = os.path.join(ephysDir,oneCell.animalName,oneCell.ephysSession, 'Tetrode{}.spikes'.format(oneCell.tetrode))
+    spikeData = loadopenephys.DataSpikes(spikeFilename)
+    spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
+    clustersDir = os.path.join(ephysDir,oneCell.animalName,oneCell.ephysSession)+'_kk'
+    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(oneCell.tetrode))
+    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
+    spikeData.timestamps = spikeData.timestamps[clusters==oneCell.cluster]
+    spikeData.samples = spikeData.samples[clusters==oneCell.cluster, :, :]
+    spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
+    # FIXME: This assumes the gain is the same for all channels and records
+    spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
+    #spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
+    return spikeData
 
 
 def plot_tuning_raster_one_intensity(oneCell, intensity=50.0, timeRange = [-0.5,1]):
@@ -216,7 +261,7 @@ def get_trials_each_cond_switching(oneCell, freqToPlot='middle', byBlock=True):
     # Remove missing trials
     bdata.remove_trials(missingTrials)
 
-     # -- Select trials to plot from behavior file -- #
+    # -- Select trials to plot from behavior file -- #
     correct = bdata['outcome']==bdata.labels['outcome']['correct']
     possibleFreq = np.unique(bdata['targetFrequency'])
     numFreqs = len(possibleFreq)
@@ -370,15 +415,28 @@ def save_report_plot(animal,date,tetrode,cluster,filePath,figFormat,chartType='r
     print 'saving figure to %s'%fullFileName
     plt.gcf().savefig(fullFileName)
 
+def plot_ave_wave_form_w_peak_times(oneCell):
+    spkData = load_remote_2afc_spikes(oneCell)
+    waveforms = spkData.samples
+    samplingRate = spkData.samplingRate
+    sampVals = np.arange(0,waveforms.shape[2]/samplingRate,1/samplingRate)
+    (peakTimes, peakAmplitudes, avWaveform, waveformSD) = spikesorting.estimate_spike_peaks(waveforms,samplingRate)
+    plt.plot(sampVals,avWaveform, 'g-')
+    plt.axvline(peakTimes[1],ls='--',color='r')
+    plt.axvline(peakTimes[0],ls='--',color='0.75')
+    plt.axvline(peakTimes[2],ls='--',color='0.75')
+    
+
+
 
 if __name__ == '__main__':
     ### Params associated with the cell of interest ###
-    cellParams = {'behavSession':'20160418a',
-                  'tetrode':6,
-                  'cluster':8}
+    cellParams = {'behavSession':'20160124a',
+                  'tetrode':4,
+                  'cluster':6}
 
     ### Loading allcells file for a specified mouse ###
-    mouseName = 'adap020'
+    mouseName = 'test089'
     #allcellsFileName = 'allcells_'+mouseName
     allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
     sys.path.append(settings.ALLCELLS_PATH)
@@ -407,7 +465,7 @@ if __name__ == '__main__':
     plot_switching_raster(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,0.5],byBlock=True)
     save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,filePath,chartType='raster',figFormat='svg')
     plt.figure()
-    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,0.5],byBlock=False, binWidth=0.010)
+    plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,0.5],byBlock=True, binWidth=0.010)
     save_report_plot(thisCell.animalName,thisCell.behavSession,thisCell.tetrode,thisCell.cluster,filePath,chartType='PSTH',figFormat='svg')
     #plt.figure()
     #plot_switching_PSTH(thisCell, freqToPlot='middle', alignment='sound',timeRange=[-0.5,1],byBlock=False)

@@ -19,7 +19,7 @@ class DataLoader(object):
             subject (str): The subject to load data for
             convertSeconds (bool): Whether to convert timestamps to seconds
         '''
-        print "FIXME: Hardcoded ephys sampling rate in DataLoader __init__"
+        # print "FIXME: Hardcoded ephys sampling rate in DataLoader __init__"
         self.convertSeconds = convertSeconds
         self.subject = subject
         self.EPHYS_SAMPLING_RATE = 30000.0
@@ -29,7 +29,6 @@ class DataLoader(object):
     def get_session_events(self, sessionDir):
         '''
         Gets the event data for a session.
-        The event data is not modified. Timestamps are not converted to seconds at this point
         '''
 
         eventFilename=os.path.join(self.ephysPath, sessionDir, 'all_channels.events')
@@ -94,16 +93,17 @@ class DataLoader(object):
 
         #TODO: Why do we need this?
         #Make samples an empty array if there are no spikes
-        if not hasattr(spikeData, 'samples'):
+        if spikeData.samples is None:
             spikeData.samples = np.array([])
 
         #TODO: Make this an option
         #Convert the spike samples to mV
         spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
-        spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
+        if spikeData.gain is not None:
+            spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
 
         #Make timestamps an empty array if it does not exist
-        if not hasattr(spikeData, 'timestamps'):
+        if spikeData.timestamps is None:
             spikeData.timestamps = np.array([])
 
         #Convert the timestamps to seconds
@@ -113,7 +113,7 @@ class DataLoader(object):
         #If clustering has been done for the tetrode, add the clusters to the spikedata object
         clustersDir = os.path.join(self.ephysPath, '{}_kk'.format(sessionDir))
         clustersFile = os.path.join(clustersDir,'{}{}.clu.1'.format(electrodeName, tetrode))
-        print clustersFile #NOTE: For debugging
+        # print clustersFile #NOTE: For debugging
         if os.path.isfile(clustersFile):
             spikeData.set_clusters(clustersFile)
 

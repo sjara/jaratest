@@ -1,0 +1,24 @@
+I am testing impedence because I cut the ends of the electrodes. 
+
+All tetrodes are very similar in length. 
+
+1 full turn of the micromanipulator dial moves the array 750um. Therefore, to move 250um we should turn the manipulator wheel 1/3 of a turn.
+
+The location of the previous recordings in the left well is now considered to be (0,0). Today I am recording at (0, 250um) (x, y). This corresponds to just slightly medial to the center of the craniotomy and anterior of it. 
+
+14:35:46 - The mouse is in the rig and off anaesthesia. THe electrodes are at 750um, waiting until the mouse wakes up. 
+15:04:49 - Spikes on TT3 at 1064um
+15:06:25 - Quiet from 1200 past the usual putative CA1 depth of 1400um
+15:09:10 - Some low-magnitude activity on TT3 at 1700um. 
+15:11:31 - Activity on TT2, 3, 4 at 2440um, but went away quickly. Seemed to be present more when the mouse was running. 
+15:14:23 - Small magnitude spikes on TT3 at 2558um. 
+
+15:16:06 - LArger signals on TT3 at 2642um, but they fire infrequently.  
+16:05:41 - I am recording the baseline right now. 2014-08-19_16-07-01. THere are auditory responses, so we will record while presenting sounds. I am presenting 10msec bursts of white noise at an amplitude of 0.5
+16:24:54 - Injected CNO - time in recording software = 15:15 Injected 20mg/kg CNO
+16:38:51 - Accidentally stopped the recording at 29mins and 45 seconds. 
+16:39:20 - Adding saline to the wells at 31mins 0sec
+16:55:40 - Addes saline t the wells at 46min 50sec
+17:13:33 - Added saline to the wells at 64min 9sec
+17:27:27 - Added saline to the wells at 78min 45sec
+

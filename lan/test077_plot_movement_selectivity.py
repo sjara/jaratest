@@ -22,7 +22,7 @@ for ind,allcells in enumerate([allcells_switching,allcells_psychometric]):
 
     
     dataToPlot = pd.DataFrame({'selective':sigMod, 'animalName':allcells.animalName, 'movementModI':allcells.movementModI})
-    '''
+    
     #g = sns.FacetGrid(dataToPlot, col='animalName', hue='selective', hue_kws={"color":['blue','red']}, sharey=False)
     g = sns.FacetGrid(dataToPlot, col='animalName', row='selective', sharey=False, sharex=False)
     g.map(plt.hist, 'movementModI', edgecolor='k',alpha=0.5,bins=50,stacked=True)
@@ -36,4 +36,4 @@ for ind,allcells in enumerate([allcells_switching,allcells_psychometric]):
     median = np.median(dataToPlot.movementModI[sigMod])
     T,p = stats.wilcoxon(dataToPlot.movementModI[sigMod])
     print 'For {} cells, median movement index is: {}, p value is: {}'.format(['switching','psychometric'][ind],median,p)
-
+    '''

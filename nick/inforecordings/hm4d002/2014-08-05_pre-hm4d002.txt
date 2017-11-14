@@ -1,0 +1,7 @@
+Today we will attempt to go directly to the MGB and record more sound-evoked responses. 
+
+15:39:40 - mouse on anaesthesia
+15:57:46 - mouse in rig off anaesthesia, electrodes at 960um
+16:29:41 - Recording a cell on TT3 2014-08-05_16-29-42 3100um. Signals are small but clearly neuronal. Playing 10msec bursts of white noise. 
+16:39:15 - The spikes on TT3 are not linked to the stimulus. I am going to move slowly until I see more spikes. 
+16:59:33 - Very quiet all the way to 3500um. Strange. Removing electrodes.

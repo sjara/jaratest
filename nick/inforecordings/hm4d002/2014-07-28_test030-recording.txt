@@ -1,0 +1,23 @@
+Recording from test030
+
+Objective: open a more medial portion of the craniotomy and attempt to find the auditory thalamus
+
+09:35:56 - Anaesthesia on at 3%
+09:42:34 - Moving mouse to rig
+09:47:35 - Anaesthesia at 1%
+10:05:23 - Mouse off anaesthesia, electrodes at surface of tissue on right margin of left craniotomy. 
+10:12:06 - Electrodes at 1440 um, waiting 2 mins. 
+10:14:38 - Advancing electrodes to 2000 um
+10:19:31 - Spikes on TT2 @ 1650um
+10:33:24 - No sound output, restarting jararig1
+10:44:57 - Tons of cells on TT2, between 2200 and 2400
+10:47:04 - At 2500um, still seeing cells on TT2 but magnitude is reducing. I think that this is because the electrodes are leaving the hippocampus. This is approxamately the right location for that to happen, as long as the tissue on the top of the brain is a few hundred microns thick. Hopefully we will now start entering the thalamus. 
+10:51:22 - Powerful cell on TT2, 2600 um. Then, a vast reduction in the magnitude. Probably the electrodes moving past the cell. perhaps they are still near hippocampus cells. 
+10:56:22 - 2850um, things were quiet for a minute but are beginning to pick up again. Cells on TT2, 3, and 4. No apparent sound response at this time. 
+11:10:27 - @3000um, small magnitude cells on TT1, 2, and 4. Recording 2014-07-28_11-12-40
+11:14:10 - Bad file location, re-recording 2014-07-28_11-15-15
+11:16:14 - No sound response
+11:20:12 - at 3184um, recording 2014-07-28_11-21-55
+11:33:15 - @3400um, seeing many cells that fire continuously. also some cells on TT4 that only fire opccasionally, but do not appear to be locked to a stimulus.11:54:20 - Mouse back in cage
+
+

@@ -43,14 +43,16 @@ numTetrodes = 8 #Number of tetrodes
 timeRange = [-0.2,0.8] # In seconds. Time range for rastor plot to plot spikes (around some event onset as 0)
 
 for mouseName in mouseNameList:
-    allcellsFileName = 'allcells_'+mouseName
+    allcellsFileName = 'allcells_'+mouseName+'_quality' #Billy's allcells file
+    #allcellsFileName = 'allcells_'+mouseName  #Lan's allcells file
     sys.path.append(settings.ALLCELLS_PATH)
     allcells = importlib.import_module(allcellsFileName)
     #from jaratest.lan.Allcells import allcellsFileName as allcells
     subject = allcells.cellDB[0].animalName
     ephysRootDir = settings.EPHYS_PATH
     outputDir = '/home/languo/data/ephys/'+mouseName
-    
+    #outputDir = os.path.join(settings.EPHYS_PATH_REMOTE, mouseName+'_processed')
+
     window = str(countTimeRange[0])+'to'+str(countTimeRange[1])+'sec_window_'
    #################################################################################
     nameOfmodSFile = 'modSig_LvsR_movement_'+window+mouseName
@@ -106,7 +108,7 @@ for mouseName in mouseNameList:
                 modSList.append(behavName)
         modSig_file.close()
     else:
-        modSig_file = open(modS_filename, 'w') #when file dosenot exit then create it, but will truncate the existing file
+        modSig_file = open(modSig_filename, 'w') #when file dosenot exit then create it, but will truncate the existing file
 
     badSessionList = [] #Makes sure sessions that crash don't get modI values printed
     behavSession = ''
@@ -126,13 +128,13 @@ for mouseName in mouseNameList:
             # -- Write modIndex and modSig to file as have finished calculating last session--
             if behavSession != '':
                 modI_file = open(modI_filename, 'a')
-                modI_file.write("Behavior Session:%s" % behavSession)
+                modI_file.write("Behavior Session:%s\n" % behavSession)
                 for modInd in modIDict[behavSession]:
                     modI_file.write("%s," % modInd)
                 modI_file.write("\n")
                 modI_file.close()
                 modSig_file = open(modSig_filename, 'a')
-                modSig_file.write("Behavior Session:%s" % behavSession)
+                modSig_file.write("Behavior Session:%s\n" % behavSession)
                 for modSig in modSigDict[behavSession]:
                     modSig_file.write("%s," % modSig)
                 modSig_file.write("\n")

@@ -1,0 +1,68 @@
+Laser Calibration
+
+1.92 - 1.01mW output
+
+2.18 - 1.52mW output
+
+2.4 - 1.99mW output
+
+2.68 - 2.5mW output
+
+2.9 - 3.0mW output
+
+3.12 - 3.51mW output
+
+
+Testing electrode impedence
+
+TT3: 189, 75.7, 75.0, 232
+TT4: 157, 73.5, 73.6, 334
+TT5: 183, 214, 264, 403
+TT6: 145, 252, 153, 224
+
+
+1131hrs - mouse is on the rig, electrodes have been in the cortex at 1052um from the surdace for 10 mins. I am recording more posterior, still on the medial side, in the Right craniotomy. We should be posterior to the recording sites form yesterday
+
+2061um, sounds like we are near the hippocampus. Lots of fast spikes, lots of multiunit noise
+
+1136hrs - at 3000, waiting for a few minutes before movng to look for spikes. 
+
+1142hrs - at 3100um, some minute spikes on TT6 if we lower the vis. threshold to 15uV. I will keep moving until I find spikes. 
+
+1154 - 33460um, we see small but nice spikes on TT6. Not much sound response yet
+
+
+by 3500um there are very weak sound responses. Moving to get better responses. 
+
+
+at 3551um there are some responses, collecting more reps with 0.4amp noise instead of 0.3
+Clear sound responses, good spikes on TT6. FIle = 2015-06-25_11-56-46
+
+testing responses to 100msec laser pulses at 2.5mW. File = 2015-06-25_12-00-40
+The laser response is very weak. Testing responses to pulses, file = 2015-06-25_12-03-22
+Strange response to pulses, does not look good, moving another 50um
+
+at 3601um, good responses to noise bursts at 0.3amp. File = 2015-06-25_12-13-38
+Testing responses to laser pulses at 2.5mW. File = 2015-06-25_12-15-58
+No responses to the laser. Trying pulses at 3mW. File = 2015-06-25_12-18-50
+No response to the laser. Moving deeper. 
+
+
+at 3650um, recording noise bursts. File = 2015-06-25_12-23-21
+Strong sound responses. Testing with laser pulses at 2.5mW. File = 2015-06-25_12-26-09
+No laser responses. We are going to record from the other well now. 
+
+We moved to a site in the center (A-P) medial area of the left well. I coated the elecrodes with some DiI before inserting them. We are currently at 1112um from the surface. The growth on the top was pretty thick, so I suspect all of our distances will be shallow. There seem to be some background noises when moving the light
+
+At 1264 there is a lot of activity
+
+2182um, lots of activity. Hippocampus?
+
+By 2537 it is quiet again
+
+at 2784 there are spikes on TT6, testing sound responses - Not sound responsive
+2955um, large spikes on TT6
+3150 - really fast spikes on TT6
+3250, tons of spikes on TT3 and TT6, no sound responses
+3650, lots of really fast spikes on all the tetrodes. No sound responses
+4206, cant get away from these really fast spikes. Ending the experiment

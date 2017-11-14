@@ -119,17 +119,25 @@ class CellDatabase(list):
         >> cellDB.findcell(onecell)
         '''
         if isinstance(firstParam,str):
-            onecell = CellInfo(firstParam,'',behavSession,tetrode,cluster)
+            #onecell = CellInfo(firstParam,'',behavSession,tetrode,cluster)
+            for ind,cell in enumerate(self):
+                 if firstParam==cell.animalName:
+                      if behavSession==cell.behavSession:
+                           if tetrode==cell.tetrode:
+                                if cluster==cell.cluster:
+                                     cellIndex = ind
+
         else:
             onecell = firstParam
-        cellIndex = None
-        for ind,cell in enumerate(self):
-            if onecell.animalName==cell.animalName:
-                if onecell.behavSession==cell.behavSession:
-                    if onecell.tetrode==cell.tetrode:
-                        if onecell.cluster==cell.cluster:
-                            cellIndex = ind
+            #cellIndex = None
+            for ind,cell in enumerate(self):
+                 if onecell.animalName==cell.animalName:
+                     if onecell.behavSession==cell.behavSession:
+                         if onecell.tetrode==cell.tetrode:
+                             if onecell.cluster==cell.cluster:
+                                 cellIndex = ind
         return cellIndex
+
     def set_soundResponsive(self,zScores,threshold=3):
         '''
         Set soundResponsive flag for each cell, given zScores

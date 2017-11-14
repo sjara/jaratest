@@ -1,0 +1,42 @@
+band016: 2016-12-11
+
+probe: 7752 (three-dots)
+
+Recording from left AC, medial edge of craniotomy. Mouse had picked sylgard out of this well, but some bone/tissue had grown over the craniotomy anyway, so brain surface was fine. Probes coated with DiD.
+
+At 500um, probes initially flexed going in but straightened right out. Already looks like we have shitty spikes on TT2.
+
+Large amount of noise when mouse moves. Unsure why... ground seems to be in place, out of reach of mouse's tail, agar not anywhere except implant. Tried referencing to different channel... helped a lot, but still noisy.
+
+At 700um, quite a few spikes on TT6.
+Upon further examination, it appears the back of the implant may be slightly loose and lifting up and down off the back of the mouse's head as he runs. Movement is pretty minute, probes should be safe, though recording will be quite noisy.
+
+At 850um, good spikes on TT2,6.
+TT6 sound responsive. Both TT2 and 6 have a laser off response. This is the first response I've gotten today, so might as well record it.
+TT6 likes 14kHz and has both onset and offset response at 64Hz mod.
+
+At 900um, no longer noisy from mouse movement, big ol' variaty pack of spikes on TT6, some on TT2,3,4 too.
+Nothing but off laser responses.
+
+At 950um, more big TT6 spikes, now with big TT2 spikes!
+Maybe a weak laser response on TT2?
+Looks like TT2 laser response went away after I went through all the trouble of recording a tuning curve... oh well.
+14kHz, 32Hz mod for TT6.
+
+At 1000um, really nice spikes on TT6 and some on TT2.
+Only laser off responses.
+
+At 1050um, some spiking on TT2,5,6
+Only off responses to laser.
+
+At 1075um, spikes on TT2,4,5,6
+Only off responses!!!
+
+At 1275um, spikes on TT2,4,5,6
+Maybe a weak laser response on TT6, but not much.
+
+At 1325um, spikes on TT2,3,4,5,6
+TT6 laser response!!!
+TT6 not sound responsive to noise, and laser response looks to be fading, but I'm still going for it.
+TT6 response gone after tuning curve, but now looks like there's a weak response on TT5.
+TT5 likes 12kHz and 16Hz mod.

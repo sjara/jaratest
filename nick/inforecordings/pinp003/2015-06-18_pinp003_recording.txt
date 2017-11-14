@@ -1,0 +1,38 @@
+15:10:44 - Mouse is on rig with tetrode array at 935m from pia. 
+
+Recording in the center of the craniotomy
+
+
+15:39:38 - tetrodes are at 1397 from pia, fiber is either touching the dura or through the hole. 
+
+17:41:56 - tetrodes at 2166 - very fast spikes but no sound responses
+
+1754hrs - 2202um - good spikes but no sound responses 
+
+1800hrs - 2265um, fast spikes but no sound responses
+
+1809hrs - 2350um, spikes but no sound responses. Very fast spikes with large waveforms on one tetrode. 
+
+1824hrs - 2518um - potential sound responses, potential laser responses. Noise-burst (100msec, 0.9sec isi, Amp = 0.1) 2015-06-18_18-19-46
+
+Laser presentation - 2015-06-18_18-26-26
+
+1832hrs - 2522um. Good spikes on TT4 (second tetrode) - I think the large-amplitude ones are responding to the sound. Noise burst stim = 2015-06-18_18-31-46
+
+Laser presentation = 2015-06-18_18-38-15
+
+Increased threshold on TT4 to 50uV. Recording noise burst file=2015-06-18_18-45-36
+Now I am not as convinced - hard to say
+Laser presentation with higher thresholds - 2015-06-18_18-49-14
+
+1854hrs - 2570um I think I see laser responses. FIle=2015-06-18_18-53-53
+Nevermind, I am wanting to believe..
+
+1902hrs - 2761um: THings have been quiet up to here. I now have some spikes and I am testing sound responses. 2015-06-18_19-01-26
+No obvious sound responses
+
+
+1925hrs - 2001um: Thought we saw some laser responses, not clear in rasters. Recording = 2015-06-18_19-20-52
+
+
+I am removing the electrodes now. There are no sound responses in this area. Recoring = 2015-06-18_19-12-58

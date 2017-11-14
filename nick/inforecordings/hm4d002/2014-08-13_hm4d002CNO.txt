@@ -1,0 +1,25 @@
+We are inserting the electrodes into the Left well near the site of the original craniotomy for the injection
+15:20:43 - Mouse is awake, electrodes are at 730um. 
+15:22:44 - Visual responses at 1026um
+15:23:16 - Punched through to silence at 1354um
+15:24:26 - Cells dying, spikes in the distance at 1900um
+15:25:42 - Really fast spiking at 2550um. 
+15:26:18 - Cells dying at 2715um
+15:27:05 - Tons of spikes at 3023um
+15:27:53 - At 3240um, holding here to look for sound responses. 
+15:31:00 - Allowing the tissue to settle before continuing further. 3278um
+15:40:36 - Continuing. All of the activity I have been recording has been from TT3. However, there is also some spiking on TT2 and TT4. 
+15:44:13 - Sound-responsive spikes at 3420, moving a little farther in hopes of finding a better cell. 
+15:47:08 - 3500um, searching for cleaner signals. There is sometimes a spike following the stimulius that appears on all of the channels...electrical noise?
+15:54:54 - I am recording while presenting some 100msec bursts of sound... THe cells that I have seem like they are firing all of the time, I am not sure how sound-responsive they actually are. 
+16:06:02 - 3814um. There are A LOT of spikes on TT2, also on TT3 and 4 but of lower magnitude. I am not sure what this means. IF I am too lateral I could be hitting more hippocampus. I am going to remove the electrodes and re-insert them more medially. 
+16:17:50 - Electrodes removed and re-inserted more medially. Currently at 740um, animal is nust waking up from anaesthesia. 
+16:22:26 - Neurons that seem to respond to light at 1092um. Not as robust of a response as the other location. 
+16:25:35 - Punched through to silence at 1346um. 
+16:27:30 - Spikes at 1778um: near CA1?
+16:30:29 - Spikes and cells dying at 2481um
+16:41:33 - Punched through a cell layer (killing it) but still in a spiking area... 3115um
+16:46:22 - Just recorded 2014-08-13_16-44-47. There is a sharp onset after presentation of the stimulus and then the increased rate stays for about 200msec. I am going to play a longer noise and see what happens. 
+16:50:12 - THere is no obvious response to a 100msec noise. I am going to move farther. 
+16:53:45 - Cell death followed by quiet at 3428um
+16:59:55 - I am going to remove the electrodes and call it a day. 

@@ -1,0 +1,18 @@
+12:30:54 - Animal in rig on 1.5% isoflurane. 
+12:43:12 - Electrodes are at 750um, location is (0, +250um) from the original site of injection. 
+12:50:07 - MOving down. 
+12:57:19 - Almost nothing all the way down to 2000um. There were some rustles around 1000um but no clear cell waveforms. 
+13:03:20 - Cells at 3092um, playing 10msec clicks to see if the cell is responsive to sounds. 
+13:04:54 - THis cell is not responsive to sounds. 
+13:06:42 - MOved to 3281um, found a cell with a larger waveform. Testing for sound responses. 
+13:11:29 - This cell is not responsive to sounds. However, I do not want to do another penetration if I don't have to today. I think I should do the experiment here. I will allow the brain to settle for 10 mins. 
+13:22:29 - I am going to add water to the wells and start the experiment here. 
+13:24:15 - Recording baseline for main experiment 2014-08-22_13-25-20. THe depth is 3281 um and I am presenting 10msec bursts of white noise even though the cells do not look like they are responsive to sounds. I am doing this so that we can plot a raster and to be consistent with the previous experiments. 
+13:40:44 - 632 trials, door opened at 17mins on recording
+13:43:43- Closed door and resumed playing sounds. I will reapply saline to the wells every 15mins. 
+14:06:12 - Trial 1522 stopped to add saline, 42mins on recording. 
+14:07:04 - Restarted sounds. 
+14:18:42 - THere are absolutely no signals... I checked the raster plots and the signals stop exactly when I open the door. I think that this session is a failure, I must have moved the animals's head when I was trying to inject the CNO. The only positive thing about this failure is that I think I may have an easy way to read the data in python, as it is being written. If we loop the plotting script and use draw() instead of show() within the loop, the plot will update. My issue now is that I do not have any spikes to test it with...
+14:22:18 - OPened door to present sounds at 2099 trials. 
+14:22:53 - closed door and restarted sounds. 
+14:36:43 - I am going to stop recording because it looks like I lost the cell when I injected the animal. 

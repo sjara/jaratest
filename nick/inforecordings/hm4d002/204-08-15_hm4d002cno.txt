@@ -1,0 +1,16 @@
+09:48:40 - Mouse in box on 3% isoflurane.
+10:00:50 - isoflurane removed, electrodes at 1129um in Left well.
+10:02:06 - Holding for 10 mins to allow the mouse to wake up. 
+10:19:31 - Spikes on TT3 at 1299um
+10:20:49 - More spiking on TT3, 1408um
+10:24:17 - Activity faded away on TT3 between 1500um and 2400. 
+10:25:07 - Whooshing heard at 2410um. At 2420, spikes on TT3
+10:27:06 - 2700um, spikes on TT3 and TT2. This might be a good place to record. However, I think we were here yeaterday and I wat more cells. I will keep going a few hundred um to see if I can pick some up on TT1 or 4. 
+10:29:57 - At 3000um I still have activity on TT2 and 3, but not on 1 or 4. I will wait here for 10mins to allow the brain to settle. 
+10:32:03 - Much more activity on TT3 - Large magnitude spikes with a high firing rate.
+10:53:41 - Placing more saline on the wells and beginning the experiment. 
+11:13:26 - I am recording 4 baselines while I get the CNO ready. 
+11:19:36 - CNO was injected. Other computer time = 11:21
+11:19:54 - Recording first CNO trial immediatly.
+11:25:50 - Recording second CNO trial. THe spikes on TT3 have decreased in magnitude. 
+12:27:57 - DOne with final CNO recording, removing electrodes. TOtal time elapsed since injection =1hr7mins 

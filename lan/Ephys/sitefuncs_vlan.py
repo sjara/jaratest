@@ -9,7 +9,7 @@ LG 20151202 modified to use new features for clustering (peak, valleyFirstHalf)
 '''
 from jaratest.lan.Ephys import clusterManySessions_vlan as cms2 #this version uses new features for clustering
 reload(cms2)
-from jaratoolbox.test.nick.database import dataloader
+from jaratest.nick.database import dataloader
 from jaratest.lan.Ephys import dataplotter_vlan as dataplotter
 reload(dataplotter)
 from jaratoolbox import extraplots
@@ -33,7 +33,7 @@ def cluster_site(site, siteName, tetrode, report=True):
         oneTT.set_clusters_from_file()
         
     else:
-        oneTT.load_all_waveforms() #load waveforms only if need to cluster
+        #oneTT.load_all_waveforms() #load waveforms only if need to cluster
         oneTT.create_multisession_fet_files()
         oneTT.run_clustering()
         oneTT.set_clusters_from_file()

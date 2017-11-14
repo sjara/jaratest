@@ -1,0 +1,47 @@
+I am recording electrode distances and impedence. 
+
+Distances:
+*TT3 - 0um
+*TT2 - 101.6um
+*TT1 - 306um
+*TT4 - 348um
+
+Impedence:
+*TT1 - 175, 260, 256, 239
+*TT2 - 269, 161, 170, 158
+*TT3 - 208, 238, 159, 133
+*TT4 - 250, 305, 161, 187
+
+14:41:17 - Mouse on 3% isoflurane
+14:45:08 - Mouse moved to rig on 1.5% isoflurane
+14:50:52 - Mouse off isoflurane
+15:26:59 - Electrodes at 943um. Advancing to 2200um. We will look for cells between 2200-2500um and record from the first really good cells we see.
+15:30:10 - We see good cells at 1011um that respond to visual stimuli.
+15:37:03 - At 1454um we see another good cell on TT3 that is also responsive to visual stimuli. 
+15:50:23 - Large spikes on TT3 @ 1900um - We believe that this is CA1, which means that we are 700um farther than the atlas. 
+15:56:15 - As a test, we anaesthetized the mouse to the point where we could lift his tail and inject him. The mouse wakes up quickly and we believe that the same cells are still visible on TT3. The mouse was fully awake within  two minutes. 
+16:05:57 - Not much activity on TT3, some small signals but noisy
+16:15:26 - We are seeing large spikes on TT3 @ 2758um. 
+16:19:02 - Huge spikes on TT3, 2815um. We are holding here to see what happens. 
+16:50:58 - We are at 3061um and starting the experiment. We are going to record 2mins of data and then wait 3 mins. We will repeat this twice before doing the CNO injection 
+16:53:30 - Just started first recording. 2014-08-08_16-54-46. The signals on TT3 have not changed much recently. TT3 is thresholded at 50uV, and all of the electrodes are referencing electrode 9 in TT1. 
+16:58:28 - Just started 2nd recording 2014-08-08_16-59-46.
+17:03:38 - Started recording third baseline trial 2014-08-08_17-04-46.
+17:04:14 - At the end of this trial I will anaesthetize the animnal and inject CNO. 
+17:07:23 - CNO Injecected and animal off isoflurane. the next recording will begiin as soon as the naimal wakes back up. I in injected 0.250mL of CNO, which corresponds to 0.250mg of CNO. The concentration is 1mg/mL. 
+17:11:31 - Just finished first CNO Recording 2014-08-08_17-10-46
+17:16:59 - Just finished recording CNO trial 2, 214-08-08_1-15-48
+17:19:32 - Recording third CNO trial 2014-08-08_17-20-49. 
+17:24:33 - Recording fourth CNO trial 2014-08-08_17-25-50. The cells on TT3 look smaller, but still seem to be firing at the same rate. 
+17:29:32 - Recording fifth CNO trial 2014-08-08_17-30-50
+17:34:35 - Recording sixth CNO trial 2014-08-08_17-35-51 I do not think there is enough saline in the wells, the other electrodes are going wild. I am going to record again after this trial, after adding saline. 
+17:37:35 - Recording again after adding saline to the wells 2014-08-08_17-38-55. THe signals on TT3 are reducing in amplitude. I may have to lower the recording threshld if we start to cut cells. There is no evidence on the spike viewer that we are cutting off a cell. 
+17:39:43 - Just finished recording, I am starting to think that the firing rate of the cell on TT3 is lower. However, I may be convincing myself. 
+17:42:37 - Recording 2014-08-08_17-43-56
+17:49:38 - Just finished recording 2014-08-08_17-48-56. I think that the spikes look good after adding the saline. We neec a better way to ground the electrodes so that adding saline in the middle of an experiment is not necessary. 
+17:52:44 - Recording 2014-08-08_17-53-56. This experiment has now lasted 1 hour. The CNO has been in the animal for 45 minutes. I hope that the CNO was truly in solution and not in suspension. I used DMSO at 0.5% to help dilute the CNO. 
+17:57:38 - Recording 2014-08-08_17-58-56. The spikes on TT3 are sometimes smaller in magnitude, but I get sporadic bursts of larger magnitude spikes. 
+18:05:32 - I accidentally recorded an extra two seconds onto the end of the last recording. 
+18:06:05 - I am recording one last time 2014-08-08_18-07-25. The mouse looks like he is sleeping. The spikking saucer is a great success. 
+18:10:46 - I am removing the electrodes. 
+

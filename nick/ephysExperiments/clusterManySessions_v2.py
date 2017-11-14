@@ -3,6 +3,7 @@ from jaratoolbox import spikesorting
 from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import spikesorting
+from jaratoolbox import extraplots
 from pylab import * #Necessary?
 import numpy as np
 reload(spikesorting)
@@ -70,7 +71,7 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
                     samplesThisSession = None
                     timestampsThisSession = None
 
-                #Set the values when working with the first non-empty session, then append for the other sessions. 
+                #Set the values when working with the first non-empty session, then append for the other sessions.
                 if numSpikes != 0:
                     if self.samples is None:
                         self.samples = samplesThisSession
@@ -80,15 +81,17 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
                         self.samples = np.concatenate([self.samples, samplesThisSession])
                         self.timestamps = np.concatenate([self.timestamps, timestampsThisSession])
                         self.recordingNumber = np.concatenate([self.recordingNumber, sessionVector])
-
-        self.nSpikes = len(self.timestamps)
+        if self.timestamps is not None:
+            self.nSpikes = len(self.timestamps)
+        if self.samples is None:
+            self.samples = np.zeros(0)
 
     def create_multisession_fet_files(self):
         if not os.path.exists(self.clustersDir):
             print 'Creating clusters directory: %s'%(self.clustersDir)
             os.makedirs(self.clustersDir)
         if self.samples is None:
-            self.load_waveforms()
+            self.load_all_waveforms()
         self.featureValues = spikesorting.calculate_features(self.samples,self.featureNames)
         spikesorting.write_fet_file(self.fetFilename, self.featureValues)
 
@@ -109,6 +112,8 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
         recordingNumber = self.recordingNumber
         sessions = self.sessionList
 
+        nClusters = len(np.unique(clusters))
+
         for indSession, session in enumerate(self.sessionList):
 
             #Make the cluster file directory for this session if it does not already exist
@@ -121,7 +126,7 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
             sessionClusterFile = os.path.join(sessionClusterDir,'Tetrode{}.clu.1'.format(self.tetrode))
 
             fid = open(sessionClusterFile,'w')
-            fid.write('{0}\n'.format('12')) #FIXME: I don't know if this number is the number of clusters, SHOULD NOT HARD CODE IT
+            fid.write('{0}\n'.format(nClusters)) #DONE: I don't know if this number is the number of clusters, SHOULD NOT HARD CODE IT
 
             clusterNumsThisSession = self.clusters[self.recordingNumber == indSession]
             print "Writing .clu.1 file for session {}".format(session)
@@ -147,6 +152,91 @@ class MultipleSessionsToCluster(spikesorting.TetrodeToCluster):
                                             filename=self.reportFileName,figtitle=figTitle,
                                                 showfig=False)
 
+
+def multisession_isi_loghist(timeStamps,nBins=350,fontsize=8):
+    '''
+    Plot histogram of inter-spike interval (in msec, log scale)
+
+    NOTE:
+    Nick: I needed to make a copy of this function from jaratoolbox.spikesorting
+    because if the acquisition system is ever stopped and restarted between sessions,
+    then the timestamps will not be sequential. The easiest fix is to ignore any ISIs
+    that are less than 0. The more complicated way would be to ignore the ISIs at the
+    boundaries of the sessions. 
+
+    FIXME: I am doing the easy fix for now (2016-10-19)
+
+    Parameters
+    ----------
+    timeStamps : array (float in sec)
+    '''
+    fontsizeLegend = fontsize
+    xLims = [1e-1,1e4]
+    ax = plt.gca()
+    ISI = np.diff(timeStamps)
+    if np.any(ISI<0):
+        ISI = ISI[ISI>0] #NOTE: The change is here
+    if len(ISI)==0:  # Hack in case there is only one spike
+        ISI = np.array(10)
+    logISI = np.log10(ISI)
+    [ISIhistogram,ISIbinsLog] = np.histogram(logISI,bins=nBins)
+    ISIbins = 1000*(10**ISIbinsLog[:-1]) # Conversion to msec
+    fractionViolation = np.mean(ISI<1e-3) # Assumes ISI in usec
+    fractionViolation2 = np.mean(ISI<2e-3) # Assumes ISI in usec
+    
+    hp, = plt.semilogx(ISIbins,ISIhistogram,color='k')
+    plt.setp(hp,lw=0.5,color='k')
+    yLims = plt.ylim()
+    plt.xlim(xLims)
+    plt.text(0.15,0.85*yLims[-1],'N={0}'.format(len(timeStamps)),fontsize=fontsizeLegend,va='top')
+    plt.text(0.15,0.6*yLims[-1],'{0:0.2%}\n{1:0.2%}'.format(fractionViolation,fractionViolation2),
+             fontsize=fontsizeLegend,va='top')
+    #plt.text(0.15,0.6*yLims[-1],'%0.2f%%\n%0.2f%%'%(percentViolation,percentViolation2),
+    #         fontsize=fontsizeLegend,va='top')
+    #'VerticalAlignment','top','HorizontalAlignment','left','FontSize',FontSizeAxes);
+    ax.xaxis.grid(True)
+    ax.yaxis.grid(False)
+    plt.xlabel('Interspike interval (ms)')
+    ax.set_yticks(plt.ylim())
+    extraplots.set_ticks_fontsize(ax,fontsize)
+    return (hp,ISIhistogram,ISIbins)
+
+def multisession_events_in_time(timeStamps,nBins=50,fontsize=8):
+    '''
+    Plot the spike timestamps throughout the recording session.
+
+    IF the acquisition system is restarted at a site, then the timestamps will
+    also reset and cause a failure in the traditional implementation of this method
+    (spikesorting.plot_events_in_time). This method finds any negative ISIs (which mark
+    the spot where the timestamps were reset), adds the value of the ts immediatly before
+    the reset to all remaining timestamps, and plots a red line at this time point to indicate
+    that there is an uncertain amount of time between the spikes before and after this point. 
+
+    TODO: Still need to implement the fix I described above and then use the method in the
+    multisession report
+
+    Parameters
+    ----------
+    timeStamps : array (float in sec)
+    '''
+
+    # ISI = np.diff(timeStamps)
+    # if np.any(ISI<0):
+
+
+
+    ax = plt.gca()
+    timeBinEdges = np.linspace(timeStamps[0],timeStamps[-1],nBins) # in microsec
+    # FIXME: Limits depend on the time of the first spike (not of recording)
+    (nEvents,binEdges) = np.histogram(timeStamps,bins=timeBinEdges)
+    hp, = plt.plot((binEdges-timeStamps[0])/60.0, np.r_[nEvents,0], drawstyle='steps-post')
+    plt.setp(hp,lw=1,color='k')
+    plt.xlabel('Time (min)')
+    plt.axis('tight')
+    ax.set_yticks(plt.ylim())
+    extraplots.boxoff(ax)
+    extraplots.set_ticks_fontsize(ax,fontsize)
+    return hp
 
 class MultiSessionClusterReport(object):
     '''
@@ -195,7 +285,7 @@ class MultiSessionClusterReport(object):
             wavesThisCluster = self.samples[self.spikesEachCluster[indc,:],:,:]
             # -- Plot ISI histogram --
             plt.subplot(self.nRows,nCols,indc*nCols+1)
-            spikesorting.plot_isi_loghist(tsThisCluster)
+            multisession_isi_loghist(tsThisCluster)
             if indc<(self.nClusters-1): #indc<2:#
                 plt.xlabel('')
                 plt.gca().set_xticklabels('')

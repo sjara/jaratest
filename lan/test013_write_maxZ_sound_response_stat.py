@@ -61,9 +61,9 @@ tetrodeID = ''
 ################################################################################################
 baseRange = [-0.050,-0.025]              # Baseline range (in seconds)
 binTime = baseRange[1]-baseRange[0]         # Time-bin size
-responseTimeRange = [-0.1,0.1]       #Time range to calculate z value for (should be divisible by binTime
-responseTime = responseTimeRange[1]-responseTimeRange[0]
-binEdges = np.arange(0,5)*binTime  # Edges of bins to calculate response (in seconds)
+#responseTimeRange = [-0.1,0.1]       #Time range to calculate z value for (should be divisible by binTime
+#responseTime = responseTimeRange[1]-responseTimeRange[0]
+binEdges = np.arange(0,5)*binTime  # Edges of bins to calculate response Z score in (in seconds)
 ################################################################################################
 
 class nestedDict(dict):#This is to create maxZDict

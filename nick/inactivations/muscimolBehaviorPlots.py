@@ -2,7 +2,7 @@
 For compiling the behavior data from muscimol and saline days
 '''
 import sys
-from jaratest.nick import behavioranalysis_vnick as behavioranalysis
+from jaratest.nick.behavior import behavioranalysis_vnick as behavioranalysis
 reload(behavioranalysis)
 from matplotlib import pyplot as plt
 # from jaratoolbox import behavioranalysis
@@ -46,37 +46,70 @@ def muscimol_plot(animal,
 
 
 if __name__=='__main__':
+    # plt.figure()
+    # animal = 'amod001'
+    # muscimolSessions = ['20160214a', '20160317a', '20160319a', '20160321a', '20160323a']
+    # salineSessions = ['20160315a', '20160318a', '20160320a', '20160322a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+
+    # plt.figure()
+    # animal = 'amod005'
+    # muscimolSessions = ['20160215a', '20160317a', '20160319a', '20160321a', '20160323a']
+    # salineSessions = ['20160316a', '20160318a', '20160320a', '20160322a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+
+    # plt.figure()
+    # animal = 'adap016'
+    # # muscimolSessions = ['20160317a', '20160319a', '20160321a']
+    # muscimolSessions = ['20160319a', '20160321a']
+    # salineSessions = ['20160316a', '20160318a', '20160320a', '20160322a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+
+    # plt.figure()
+    # animal = 'adap019'
+    # muscimolSessions = ['20160317a', '20160319a','20160323a']
+    # salineSessions = ['20160316a', '20160318a', '20160320a', '20160322a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+
+    # plt.figure()
+    # animal = 'adap019'
+    # # muscimolSessions = ['20160317a', '20160319a']
+    # muscimolSessions = ['20160322a']
+    # salineSessions = ['20160316a', '20160318a', '20160320a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+
+    # plt.figure()
+
+
+    #Adap032, 033, 035 regular muscimol sessions
+    # plt.figure()
+    # animal = 'adap035'
+    # muscimolSessions = ['20161130a','20161202a','20161204a','20161206a']
+    # salineSessions = ['20161129a','20161201a','20161203a','20161205a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+    # plt.savefig('/tmp/{}_muscimolPlot20161212.png'.format(animal))
+
+    #Fluorescent muscimol 1.25 ticks at 0.5mg/ml
+    # plt.figure()
+    # animal = 'adap033'
+    # muscimolSessions = ['20161207a']
+    # salineSessions = ['20161205a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+    # plt.savefig('/tmp/{}_fluorescentMus_1.25ticks.png'.format(animal))
+
+    # #Fluorescent muscimol 2.5 ticks at 0.5mg/ml
+    # plt.figure()
+    # animal = 'adap033'
+    # muscimolSessions = ['20161208a']
+    # salineSessions = ['20161205a']
+    # muscimol_plot(animal, muscimolSessions, salineSessions)
+    # plt.savefig('/tmp/{}_fluorescentMus_2.5ticks.png'.format(animal))
+
+
+    #Fluorescent muscimol 2.5 ticks at 0.5mg/ml
     plt.figure()
-    animal = 'amod001'
-    muscimolSessions = ['20160214a', '20160317a', '20160319a', '20160321a', '20160323a']
-    salineSessions = ['20160315a', '20160318a', '20160320a', '20160322a']
+    animal = 'adap034'
+    muscimolSessions = ['20170115a']
+    salineSessions = ['20170114a']
     muscimol_plot(animal, muscimolSessions, salineSessions)
-
-    plt.figure()
-    animal = 'amod005'
-    muscimolSessions = ['20160215a', '20160317a', '20160319a', '20160321a', '20160323a']
-    salineSessions = ['20160316a', '20160318a', '20160320a', '20160322a']
-    muscimol_plot(animal, muscimolSessions, salineSessions)
-
-    plt.figure()
-    animal = 'adap016'
-    # muscimolSessions = ['20160317a', '20160319a', '20160321a']
-    muscimolSessions = ['20160319a', '20160321a']
-    salineSessions = ['20160316a', '20160318a', '20160320a', '20160322a']
-    muscimol_plot(animal, muscimolSessions, salineSessions)
-
-    plt.figure()
-    animal = 'adap019'
-    muscimolSessions = ['20160317a', '20160319a','20160323a']
-    salineSessions = ['20160316a', '20160318a', '20160320a', '20160322a']
-    muscimol_plot(animal, muscimolSessions, salineSessions)
-
-    plt.figure()
-    animal = 'adap019'
-    # muscimolSessions = ['20160317a', '20160319a']
-    muscimolSessions = ['20160322a']
-    salineSessions = ['20160316a', '20160318a', '20160320a']
-    muscimol_plot(animal, muscimolSessions, salineSessions)
-
-    plt.figure()
-
+    plt.savefig('/tmp/{}_FCM_4ticks.png'.format(animal))
