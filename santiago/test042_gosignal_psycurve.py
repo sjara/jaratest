@@ -13,8 +13,13 @@ import matplotlib.pyplot as plt
 #subject = sys.argv[1]
 session = sys.argv[1]
 
-animalList = ['gosi006','gosi010','gosi012']
-#animalList = ['gosi010']
+
+animalList = ['gosi010']
+
+'''
+animalList = ['gosi006','gosi008','gosi009','gosi010','gosi012','gosi013','gosi014']
+'''
+
 '''
 animalList = ['gosi001','gosi002','gosi003','gosi004','gosi005',
               'gosi006','gosi007','gosi008','gosi009','gosi010',
