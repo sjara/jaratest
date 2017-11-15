@@ -417,3 +417,5 @@ for ind, exp in enumerate(experiments):
     for site in exp.sites:
         site.clusterFolder = 'multisession_exp{}site0'.format(ind)
 
+tetrodeLengthList = [80, 80, 50, 50, 20, 20, 0, 50] #0 is the longest tetrode, other numbers means tetrode is x mm shorter than longest tetrode.
+targetRangeLongestTt = (500, 1500)

@@ -23,9 +23,9 @@ colorDictRC = {'leftMoreLowFreq':'g', #green
 
 
 #animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001','gosi004', 'gosi008','gosi010']]
-animalList = ['gosi001','gosi004', 'gosi008','gosi010','adap005','adap012', 'adap013', 'adap015', 'adap017']
+animalList = ['adap067', 'adap071'] #['gosi001','gosi004', 'gosi008','gosi010','adap005','adap012', 'adap013', 'adap015', 'adap017']
 #animalLabels = ['astr', 'ac']
-#modulationWindows = ['0-0.1s_sound','0-0.1s_center-out'] #,'0.05-0.15s_center-out','0.05-0.35s_center-out']
+
 freqLabels = ['Low','High']
 qualityThreshold = 3 #2.5 
 maxZThreshold = 3
@@ -91,6 +91,8 @@ for indRegion, animal in enumerate(animalList):
                 figNewFullPath = os.path.join(newOutputDir, figname)
                 if os.path.exists(figOldFullPath):
                     shutil.copyfile(figOldFullPath, figNewFullPath)
+                elif os.path.exists(figNewFullPath):
+                    continue
                 else:
                     tuningSessionInd = cell['sessiontype'].index('tc')
                     tuningEphysThisCell = cell['ephys'][tuningSessionInd]
