@@ -35,12 +35,12 @@ infoEachCell.append({ 'cellName':'gosi001_2017-05-06_T3_c5',
                       'alignment':'center-out', 'brainRegion':'ac' })
 infoEachCell.append({ 'cellName':'gosi004_2017-02-13_T7_c8',
                       'alignment':'center-out', 'brainRegion':'ac' })
-infoEachCell.append({ 'cellName':'gosi004_2017-03-15_T6_c7',
-                      'alignment':'center-out', 'brainRegion':'ac' })
-infoEachCell.append({ 'cellName':'gosi004_2017-03-18_T3_c4',
-                      'alignment':'center-out', 'brainRegion':'ac' })
-infoEachCell.append({ 'cellName':'gosi004_2017-04-06_T7_c5',
-                      'alignment':'center-out', 'brainRegion':'ac' })
+#infoEachCell.append({ 'cellName':'gosi004_2017-03-15_T6_c7',
+#                      'alignment':'center-out', 'brainRegion':'ac' })
+#infoEachCell.append({ 'cellName':'gosi004_2017-03-18_T3_c4',
+#                      'alignment':'center-out', 'brainRegion':'ac' })
+#infoEachCell.append({ 'cellName':'gosi004_2017-04-06_T7_c5',
+#                      'alignment':'center-out', 'brainRegion':'ac' })
 infoEachCell.append({ 'cellName':'gosi008_2017-03-14_T7_c8',
                       'alignment':'center-out', 'brainRegion':'ac' })
 
@@ -146,7 +146,7 @@ for indc, cellInfo in enumerate(cellsToPlot):
         plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
         extraplots.boxoff(plt.gca())
 
-        plt.legend(set(condLabels), loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+        plt.legend(condLabels, loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
                    frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
         plt.suptitle('{}\n{}'.format(figFilename,cellName))
         plt.show()

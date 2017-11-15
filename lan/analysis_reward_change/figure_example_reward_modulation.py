@@ -52,6 +52,9 @@ exampleModulatedMovementAc = 'highfreq_gosi008_2017-03-14_T7_c8'
 infoEachCell = []
 infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-19_T6_c4',
                       'alignment':'sound', 'brainRegion':'ac' })
+infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-11_T4_c5',
+                      'alignment':'sound', 'brainRegion':'ac' })#Not modulated by reward
+
 #infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'adap015_2016-03-18_T3_c9',
 #                      'alignment':'sound', 'brainRegion':'astr' })
 #infoEachCell.append({ 'soundFreq':'lowfreq', 'cellName':'gosi004_2017-03-03_T6_c3',
@@ -168,7 +171,7 @@ for indc, cellInfo in enumerate(cellsToPlot):
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-    plt.legend(set(condLabels), loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.legend(condLabels, loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
                frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     plt.suptitle('{}\n{}'.format(figFilename,cellName))
     plt.show()

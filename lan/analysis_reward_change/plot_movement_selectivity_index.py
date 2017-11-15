@@ -1,68 +1,64 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
 from jaratoolbox import settings
 from jaratoolbox import extraplots
 import matplotlib.pyplot as plt
-import pdb
 
 
+STUDY_NAME = '2017rc'
 brainRegions = ['astr', 'ac']
 qualityThreshold = 3 #2.5 
 maxZThreshold = 3
 ISIcutoff = 0.02
 alphaLevel = 0.05
 
-outputDir = '/home/languo/data/ephys/reward_change_stats/reports/'
+#outputDir = '/home/languo/data/ephys/reward_change_stats/reports/'
+outputDir = '/tmp/'
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 
 plt.figure()
-movementIndGroups = []
-movementSigGroups = []
-for indRegion, brainRegion in enumerate(brainRegions):
-    celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(brainRegion))
+figFormat = 'svg'
+#movementIndGroups = []
+#movementSigGroups = []
+
+if len(sys.argv) == 1:
+    print 'Please input a number to indicate the brain region to plot, 0=astr, 1=ac'
+elif len(sys.argv) > 1:
+    brainRegion = brainRegions[int(sys.argv[1])]
+
+    celldbPath = os.path.join(dataDir,'reward_change_{}.h5'.format(brainRegion))
     celldb = pd.read_hdf(celldbPath, key='reward_change')
     goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria==True'.format(ISIcutoff, qualityThreshold))
     movementInd = goodQualCells.movementModI
     movementSig = goodQualCells.movementModS
-    movementIndGroups.append(movementInd)
-    movementSigGroups.append(movementSig)
+    #movementIndGroups.append(movementInd)
+    #movementSigGroups.append(movementSig)
 
-# -- Stats -- #
-T, pVal = stats.ranksums(*movementIndGroups)
-print 'movement selectivity index from both brain regions were compared using the Wilcoxon signed-rank test, p value is: {}'.format(pVal)
+    '''
+    # -- Stats -- #
+    T, pVal = stats.ranksums(*movementIndGroups)
+    print 'movement selectivity index from both brain regions were compared using the Wilcoxon signed-rank test, p value is: {}'.format(pVal)
+    '''
+    # -- Plot hist -- #
+    plt.clf()
+    binsEdges = np.linspace(-1,1,20)
+    movIndMean = np.mean(movementInd)
+    sigMovementSel = movementSig < alphaLevel
+    percentMovementSel = sum(sigMovementSel) / float(len(sigMovementSel)) * 100
+    plt.hist([movementInd[sigMovementSel], movementInd[~sigMovementSel]], bins=binsEdges, stacked=True, color=['k','darkgrey'], edgecolor='None', label=['selective','not selective'])
+    plt.xlabel('Movement selectivity index')
+    plt.ylabel('Number of cells')
+    plt.legend()
+    plt.title(brainRegion)
+    T, pVal =  stats.wilcoxon(movementInd.values)
+    plt.text(-0.8, 30, '{} movement selectivity index mean: {:.3f}, p value: {:.3E}\n {:.2f}% of good cells were movement selective'.format(brainRegion, movIndMean, pVal, percentMovementSel))
+    figTitle = '{} movement selectivity index'.format(brainRegion)
 
-# -- Plot hist -- #
-plt.clf()
-binsEdges = np.linspace(-1,1,20)
-plt.subplot(211)
-astrInds = movementIndGroups[0]
-astrIndMean = np.mean(astrInds)
-astrSig = movementSigGroups[0] < alphaLevel
-percentMovementSelAStr = sum(astrSig) / float(len(astrSig)) * 100
-plt.hist([astrInds[astrSig], astrInds[~astrSig]], bins=binsEdges, stacked=True, color=['k','darkgrey'], edgecolor='None', label=['selective','not selective'])
-#plt.xlabel('Movement selectivity index')
-plt.ylabel('Number of cells')
-plt.legend()
-plt.title('AStr')
-T, pVal0 =  stats.wilcoxon(movementIndGroups[0].values)
-plt.text(-0.8, 30, '{} movement selectivity index mean: {:.3f}, p value: {:.3f}\n {:.2f} percent of good cells were movement selective'.format(brainRegions[0], astrIndMean, pVal0, percentMovementSelAStr))
-
-plt.subplot(212)
-acInds = movementIndGroups[1]
-acIndMean = np.mean(acInds)
-acSig = movementSigGroups[1] < alphaLevel
-percentMovementSelAC = sum(acSig) / float(len(acSig)) * 100
-plt.hist([acInds[acSig], acInds[~acSig]], bins=binsEdges, stacked=True, color=['k','darkgrey'], edgecolor='None', label=['selective','not selective'])
-plt.xlabel('Movement selectivity index')
-plt.ylabel('Number of cells')
-plt.legend()
-plt.title('AC')
-T, pVal1 =  stats.wilcoxon(movementIndGroups[1].values)
-plt.text(-0.8, 30, '{} movement selectivity index mean: {:.3f}, p value: {:.3E}\n {:.2f} percent of good cells were movement selective'.format(brainRegions[1], acIndMean, pVal1,percentMovementSelAC))
-figTitle = 'movement_selectivity_all_good_cells'
-
-plt.suptitle(figTitle + '\nWilcoxon rank-sum test between group difference, p value: {:.3f}'.format(pVal))
-plt.tight_layout()
-figFullPath = os.path.join(outputDir, figTitle)
-plt.savefig(figFullPath,format='png')
+    figFullPath = os.path.join(outputDir, figTitle)
+    print 'Saving {} to {}'.format(figTitle, outputDir)
+    plt.savefig(figFullPath,format=figFormat)
+    plt.show()
+    
