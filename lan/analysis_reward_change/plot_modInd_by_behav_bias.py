@@ -58,6 +58,9 @@ for indRegion, brainRegion in enumerate(brainRegions):
         plt.title(figTitle)
         rho, pVal = stats.spearmanr(np.abs(lowFreqRespModInd), lowFreqRespBehavBias)
         plt.text(-0.2, 0.5*plt.ylim()[1], 'spearman correlation r={:.2f}, p={:.2f}'.format(rho, pVal))
+        rhos, pVals = stats.spearmanr(lowFreqRespBehavBias[lowFreqRespModSig<alphaLevel], np.abs(lowFreqRespModInd[lowFreqRespModSig<alphaLevel]))
+        plt.text(-0.2, 0.4*plt.ylim()[1], 'for reward-modulated cells r={:.2f}, p={:.2f}'.format(rhos, pVals))
+        plt.ylim([-0.1, 0.85])
         figFullPath = os.path.join(outputDir, figTitle)
         plt.savefig(figFullPath,format='png')
 
@@ -72,6 +75,9 @@ for indRegion, brainRegion in enumerate(brainRegions):
         plt.title(figTitle)
         rho, pVal = stats.spearmanr(np.abs(highFreqRespModInd), highFreqRespBehavBias)
         plt.text(-0.2, 0.5*plt.ylim()[1], 'spearman correlation r={:.2f}, p={:.2f}'.format(rho, pVal))
+        rhos, pVals = stats.spearmanr(highFreqRespBehavBias[highFreqRespModSig<alphaLevel], np.abs(highFreqRespModInd[highFreqRespModSig<alphaLevel]))
+        plt.text(-0.2, 0.4*plt.ylim()[1], 'for reward-modulated cells r={:.2f}, p={:.2f}'.format(rhos, pVals))
+        plt.ylim([-0.1, 0.85])
         figFullPath = os.path.join(outputDir, figTitle)
         plt.savefig(figFullPath,format='png')
 
@@ -100,6 +106,9 @@ for indRegion, brainRegion in enumerate(brainRegions):
         plt.title(figTitle)
         rho, pVal = stats.spearmanr(np.abs(leftMovementSelModInd), lowFreqBehavBias)
         plt.text(-0.2, 0.5*plt.ylim()[1], 'spearman correlation r={:.2f}, p={:.2f}'.format(rho, pVal))
+        rhos, pVals = stats.spearmanr(lowFreqBehavBias[leftMovementSelModSig<alphaLevel],np.abs(leftMovementSelModInd[leftMovementSelModSig<alphaLevel]))
+        plt.text(-0.2, 0.4*plt.ylim()[1], 'for reward-modulated cells r={:.2f}, p={:.2f}'.format(rhos, pVals))
+        plt.ylim([-0.1, 0.85])
         figFullPath = os.path.join(outputDir, figTitle)
         plt.savefig(figFullPath,format='png')
 
@@ -113,5 +122,8 @@ for indRegion, brainRegion in enumerate(brainRegions):
         plt.title(figTitle)
         rho, pVal = stats.spearmanr(np.abs(rightMovementSelModInd), highFreqBehavBias)
         plt.text(-0.2, 0.5*plt.ylim()[1], 'spearman correlation r={:.2f}, p={:.2f}'.format(rho, pVal))
+        rhos, pVals = stats.spearmanr(highFreqBehavBias[rightMovementSelModSig<alphaLevel], np.abs(rightMovementSelModInd[rightMovementSelModSig<alphaLevel]))
+        plt.text(-0.2, 0.4*plt.ylim()[1], 'for reward-modulated cells r={:.2f}, p={:.2f}'.format(rhos, pVals))
+        plt.ylim([-0.1, 0.85])
         figFullPath = os.path.join(outputDir, figTitle)
         plt.savefig(figFullPath,format='png')

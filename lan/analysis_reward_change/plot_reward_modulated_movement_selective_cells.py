@@ -23,16 +23,16 @@ colorDictRC = {'leftMoreLowFreq':'g', #green
 
 
 #animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001','gosi004', 'gosi008','gosi010']]
-animalList = ['gosi001','gosi004', 'gosi008','gosi010','adap005','adap012', 'adap013', 'adap015', 'adap017']
+animalList = ['adap067','adap071'] #['gosi001','gosi004', 'gosi008','gosi010','adap005','adap012', 'adap013', 'adap015', 'adap017']
 #animalLabels = ['astr', 'ac']
-#modulationWindows = ['0-0.1s_sound','0-0.1s_center-out'] #,'0.05-0.15s_center-out','0.05-0.35s_center-out']
+
 freqLabels = ['Low','High']
 qualityThreshold = 3 #2.5 
 maxZThreshold = 3
 ISIcutoff = 0.02
 alphaLevel = 0.05
 
-modulationWindows = {'center-out': ['0.05-0.15s','0.05-0.25s']}
+modulationWindows = {'center-out': ['0.05-0.15s','0.05-0.25s','0.05-0.35s','0-0.1s']}
 
 for indRegion, animal in enumerate(animalList):
     celldbPath = os.path.join(settings.DATABASE_PATH,'{}_database.h5'.format(animal))
