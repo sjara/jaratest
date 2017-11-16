@@ -20,7 +20,7 @@ import importlib
 import sys
 from scipy import stats
 
-animal = 'adap071'
+animal = 'adap067'
 inforecFullPath = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(animal))
 '''
 # -- Cluster and store stats, if have not already done so -- #

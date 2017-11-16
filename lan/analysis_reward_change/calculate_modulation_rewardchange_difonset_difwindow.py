@@ -24,7 +24,7 @@ from jaratest.nick.database import dataloader_v2 as dataloader
 #from jaratest.lan import test055_load_n_plot_billy_data_one_cell as loader
 #reload(loader)
   
-mouseName = 'adap013'
+mouseName = 'adap067'
 # -- Global variables -- #
 SAMPLING_RATE=30000.0
 soundTriggerChannel = 0 # channel 0 is the sound presentation, 1 is the trial    
@@ -32,7 +32,7 @@ processedDate = time.strftime("%d_%m_%Y")
 
 key = 'reward_change'
 
-CASE = 4
+CASE = 3
 
 if CASE == 1:
     #-- Calculate modulation index and significance with different onset and time window --#

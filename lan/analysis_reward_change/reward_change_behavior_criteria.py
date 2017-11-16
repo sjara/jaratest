@@ -4,7 +4,7 @@ import numpy as np
 from jaratoolbox import settings
 from jaratoolbox import loadbehavior
 
-animalList = ['adap005','adap012', 'adap013', 'adap015', 'adap017', 'gosi001','gosi004', 'gosi008','gosi010']
+animalList = ['adap071', 'adap067'] #['adap005','adap012', 'adap013', 'adap015', 'adap017', 'gosi001','gosi004', 'gosi008','gosi010']
 
 # -- Behavior criteria -- #
 minBlockNum = 3

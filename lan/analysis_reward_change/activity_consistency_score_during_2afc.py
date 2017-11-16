@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from jaratoolbox import settings
 from jaratest.lan.analysis_reward_change import reward_change_loader_plotter_functions as rcfuncs
 
-animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001','gosi004', 'gosi008','gosi010']]
-animalLabels = ['astr', 'ac']
+#animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001','gosi004', 'gosi008','gosi010']]
+#animalLabels = ['astr', 'ac']
 
 qualityThreshold = 2.5 #3 
 maxZThreshold = 3
@@ -113,7 +113,7 @@ def score_running_ave_std(timestamps, numBins, initialWinSize=2, consistentZthre
 
 if __name__ == '__main__':
     #for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
-    animalList = ['adap013']
+    animalList = ['adap067'] #['adap013']
     for animal in animalList:
         #celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(label))
         celldbPath = os.path.join(settings.DATABASE_PATH, '{}_database.h5'.format(animal))
@@ -141,15 +141,17 @@ if __name__ == '__main__':
 
                 spikeData = rcfuncs.load_spike_data(animal, rcEphysThisCell, tetrode, cluster)
                 timestamps = spikeData.timestamps
-                timestamps = timestamps - timestamps[0] #timestamps unit is seconds
+                if not np.any(timestamps): #A cluster that has no spikes in rc ephys session
+                    consistencyArray[indc] = False
+                else:
+                    timestamps = timestamps - timestamps[0] #timestamps unit is seconds
+                    #consistentFiring = score_overall_ave_std(timestamps, numBins, consistentZthreshold, maxInconsistentBins)
+                    #consistentFiring = score_running_ave_std(timestamps, numBins, initialWinSize, consistentZthreshold, maxInconsistentBins)
+                    consistentFiring = score_compare_ave_std(timestamps, numBins, sd2mean)
+                    consistencyArray[indc] = consistentFiring
+                    #pdb.set_trace()
 
-                #consistentFiring = score_overall_ave_std(timestamps, numBins, consistentZthreshold, maxInconsistentBins)
-                #consistentFiring = score_running_ave_std(timestamps, numBins, initialWinSize, consistentZthreshold, maxInconsistentBins)
-                consistentFiring = score_compare_ave_std(timestamps, numBins, sd2mean)
-                consistencyArray[indc] = consistentFiring
-                #pdb.set_trace()
-
-                #raw_input('Press Enter')
+                    #raw_input('Press Enter')
             celldb['consistentInFiring'] = consistencyArray
         
         celldb.to_hdf(celldbPath, key='reward_change')
