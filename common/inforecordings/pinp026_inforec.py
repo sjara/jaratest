@@ -135,3 +135,37 @@ exp1.add_session('18-12-22', 'j', 'am', 'am_tuning_curve')
 # exp1.add_session('18-35-54', None, 'lasertrain', 'am_tuning_curve') #Not good enough
 
 #Final depth 3605um
+
+exp2 = celldatabase.Experiment(subject,
+                               '2017-11-16',
+                               brainarea='rightThal',
+                               info=['posteriorDiI', 'facingPosterior'])
+experiments.append(exp2)
+
+exp2.add_site(2952, tetrodes=[1, 2, 3, 4, 6, 8])
+exp2.add_session('10-33-50', None, 'laserpulse', 'am_tuning_curve')
+exp2.add_session('10-36-13', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('10-38-53', None, 'lasertrain', 'am_tuning_curve')
+exp2.add_session('10-44-08', 'a', 'tc', 'am_tuning_curve')
+exp2.add_session('11-19-22', 'b', 'am', 'am_tuning_curve')
+
+exp2.add_site(3046, tetrodes=[1, 2, 4, 5, 6, 7, 8])
+exp2.add_session('11-43-52', None, 'laserpulse', 'am_tuning_curve')
+exp2.add_session('11-46-57', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('11-49-32', None, 'lasertrain', 'am_tuning_curve')
+exp2.add_session('11-54-24', 'c', 'tc', 'am_tuning_curve')
+exp2.add_session('12-28-58', 'd', 'am', 'am_tuning_curve')
+
+exp2.add_site(3122, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp2.add_session('13-04-12', None, 'laserpulse', 'am_tuning_curve')
+exp2.add_session('13-06-23', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('13-10-38', None, 'lasertrain', 'am_tuning_curve')
+exp2.add_session('13-16-42', 'e', 'tc', 'am_tuning_curve')
+exp2.add_session('13-50-04', 'f', 'am', 'am_tuning_curve')
+
+exp2.add_site(3256, tetrodes=[1, 2, 4, 5, 6, 7, 8])
+exp2.add_session('14-10-13', None, 'laserpulse', 'am_tuning_curve')
+exp2.add_session('14-14-04', None, 'noiseburst', 'am_tuning_curve')
+exp2.add_session('14-16-11', None, 'lasertrain', 'am_tuning_curve')
+exp2.add_session('14-23-21', 'g', 'tc', 'am_tuning_curve')
+exp2.add_session('14-56-42', 'h', 'am', 'am_tuning_curve')
