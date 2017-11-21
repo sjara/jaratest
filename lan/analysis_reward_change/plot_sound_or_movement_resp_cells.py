@@ -21,7 +21,7 @@ colorDictRC = {'leftMoreLowFreq':'g', #green
                'sameRewardHighFreq':'darkgrey'}
 
 
-animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001','gosi004', 'gosi008','gosi010']]
+animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001','gosi004', 'gosi008','gosi010','adap067', 'adap071']]
 animalLabels = ['astr', 'ac']
 #modulationWindows = ['0-0.1s_sound','0-0.1s_center-out','0.05-0.15s_center-out','0.05-0.35s_center-out']
 freqLabels = ['Low','High']
@@ -33,8 +33,8 @@ alphaLevel = 0.05
 for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
     celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(label))
     celldb = pd.read_hdf(celldbPath, key='reward_change')
-    goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True'.format(ISIcutoff, qualityThreshold))
-    
+    goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria==True'.format(ISIcutoff, qualityThreshold))
+
     lowFreqResp = goodQualCells.behavZscore.apply(lambda x: abs(x[0]) >= maxZThreshold) 
     highFreqResp = goodQualCells.behavZscore.apply(lambda x: abs(x[1]) >= maxZThreshold)
     soundResp = lowFreqResp | highFreqResp
@@ -59,6 +59,7 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
             tetrode = int(cell['tetrode'])
             cluster = int(cell['cluster'])
             modIThisFreqThisWindow = cell[modIndName]
+            modSigThisFreqThisWindow = cell[modSigName]
             movementModInd = cell['movementModI']
             spikeQuality = cell['shapeQuality']
 
@@ -93,7 +94,7 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
             alignment = modWindow.split('_')[1]
             ax2 = plt.subplot(gs00[0:2, :])
             rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4])
-            ax2.set_title('Reward modulation {}: {:.3f}'.format(modWindow, modIThisFreqThisWindow))
+            ax2.set_title('Reward modulation {}: {:.3f}\npVal {:.2E}'.format(modWindow, modIThisFreqThisWindow, modSigThisFreqThisWindow))
             ax3 = plt.subplot(gs00[2, :])
             rcfuncs.plot_reward_change_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4], binWidth=0.010)
 
@@ -140,7 +141,7 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         tetrode = int(cell['tetrode'])
         cluster = int(cell['cluster'])
         modIThisFreqThisWindow = cell[modIndName]
-
+        modSigThisFreqThisWindow = cell[modSigName]
         spikeQuality = cell['shapeQuality']
 
         figname = '{}_{}_T{}_c{}_{}_{}.png'.format(animal,date,tetrode,cluster, freq, modWindow)
@@ -174,7 +175,7 @@ for indRegion, (label,animalList) in enumerate(zip(animalLabels, animalLists)):
         alignment = modWindow.split('_')[1]
         ax2 = plt.subplot(gs00[0:2, :])
         rcfuncs.plot_reward_change_raster(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4])
-        ax2.set_title('Reward modulation {}: {:.3f}'.format(modWindow, modIThisFreqThisWindow))
+        ax2.set_title('Reward modulation {}: {:.3f}\npVal {:.2E}'.format(modWindow, modIThisFreqThisWindow, modSigThisFreqThisWindow))
         ax3 = plt.subplot(gs00[2, :])
         rcfuncs.plot_reward_change_psth(animal, rcBehavThisCell, rcEphysThisCell, tetrode, cluster, freqToPlot=freq.lower(), byBlock=True, alignment=alignment, timeRange=[-0.3,0.4], binWidth=0.010)
 
