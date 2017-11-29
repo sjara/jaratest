@@ -130,7 +130,9 @@ minBlockSize = 30
 freqsToPlot = ['low', 'high']
 alignment = 'center-out' #'side-in' 
 
-rollingWinSize = 5 # Use 5*binWidth rolling window 
+slidingWinSize = 5 # Use 5*binWidth sliding window 
+numBootstrapResamples = 1000
+bootstrapSampleSize = 100
 ###################################################################################
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
@@ -241,19 +243,34 @@ for cellParams in cellParamsList:
             rewardLabelsTrialsThisFreq = rightMoreTrialsOneFreq[oneFreqCorrectTrials]
 
         spikeCountMatThisFreq = spikeCountMat[oneFreqCorrectTrials, :]
-        # -- Calculate and store roc_auc for each rolling window -- #
+        # -- Calculate and store roc_auc for each sliding window -- #
         yTrueLabel = rewardLabelsTrialsThisFreq
         df = pd.DataFrame(spikeCountMatThisFreq.transpose()) # Make time bin dimension as dataframe columns
-        rollingSumDf = df.rolling(rollingWinSize).sum()
-        rollingSums = rollingSumDf.values.transpose()[:,(rollingWinSize-1):] # Convert to original direction, get rid of trialing NaN values generated from rolling sum
-        numRollingWins = rollingSums.shape[1]
-        aucEachRollingWin = np.zeros(numRollingWins)
-        rollingWinEdges = np.zeros((numRollingWins, 2))
-        for timeBin in range(numRollingWins):
-             yScore = rollingSums[:, timeBin]  #spikeCountMatThisFreq[:,timeBin]
-             aucEachRollingWin[timeBin] = sklearn.metrics.roc_auc_score(yTrueLabel, yScore)
-             rollingWinEdges[timeBin, :] = np.array((timeVec[timeBin], timeVec[timeBin]+binWidth*rollingWinSize))
+        slidingSumDf = df.rolling(slidingWinSize).sum()
+        slidingSums = slidingSumDf.values.transpose()[:,(slidingWinSize-1):] # Convert to original direction, get rid of trialing NaN values generated from sliding sum
+        numSlidingWins = slidingSums.shape[1]
+        aucEachSlidingWin = np.zeros(numSlidingWins)
+        slidingWinEdges = np.zeros((numSlidingWins, 2))
+        # Calculate roc auc for each sliding window
+        for timeBin in range(numSlidingWins):
+             yScore = slidingSums[:, timeBin]  #spikeCountMatThisFreq[:,timeBin]
+             aucEachSlidingWin[timeBin] = sklearn.metrics.roc_auc_score(yTrueLabel, yScore)
+             slidingWinEdges[timeBin, :] = np.array((timeVec[timeBin], timeVec[timeBin]+binWidth*slidingWinSize))
+        
+        nTrials = slidingSums.shape[0]
+        auc95ConfidenceInterval = np.zeros((numBootstrapResamples, numSlidingWins))
+        # Calculate 95% confidence interval using bootstrap resample
+        for ind in range(numBootstrapResamples):
+            bootstrapInds = np.random.choice(nTrials, bootstrapSampleSize) # random resample with replacement
+            bsSlidingSums = slidingSums[bootstrapInds, :]
+            bsYTrueLabel = yTrueLabel[bootstrapInds]
+            bsAucEachSlidingWin = np.zeros(numSlidingWins)
+            for timeBin in range(numSlidingWins):
+                bsYScore = bsSlidingSums[:, timeBin]
+                bsAucEachSlidingWin[timeBin] = sklearn.metrics.roc_auc_score(bsYTrueLabel, bsYScore)
+            auc95ConfidenceInterval[ind, :] =  bsAucEachSlidingWin
+   
         outputFile = 'binned_auc_roc_{}aligned_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
         outputFullPath = os.path.join(dataDir,outputFile)
         print 'Saving {0} ...'.format(outputFullPath)
-        np.savez(outputFullPath, spikeCountMatThisFreq=spikeCountMatThisFreq, rewardLabelsTrialsThisFreq=rewardLabelsTrialsThisFreq, timeVec=timeVec, rollingWinSize=rollingWinSize, rollingWinEdges=rollingWinEdges, aucEachRollingWin=aucEachRollingWin, script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams) 
+        np.savez(outputFullPath, spikeCountMatThisFreq=spikeCountMatThisFreq, rewardLabelsTrialsThisFreq=rewardLabelsTrialsThisFreq, timeVec=timeVec, slidingWinSize=slidingWinSize, slidingWinEdges=slidingWinEdges, aucEachSlidingWin=aucEachSlidingWin, auc95ConfidenceInterval=auc95ConfidenceInterval, script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams) 
