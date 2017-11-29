@@ -14,7 +14,7 @@ import matplotlib.gridspec as gridspec
 import scipy.stats as stats
 
 STUDY_NAME = '2017rc'
-brainRegion = 'ac' #['astr', 'ac']
+brainRegions = ['astr', 'ac']
 animalList = ['adap005', 'adap012', 'adap013', 'adap015', 'adap017'] #['gosi001','gosi004','gosi008','gosi010','adap067','adap071']
 
 modulationWindows = {'sound':'0-0.1s',
@@ -32,10 +32,10 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 outputDir = '/tmp/'
 figFormat = 'png'
 
-#for indRegion, brainRegion in enumerate(brainRegions):
-for animal in animalList:
-    #celldbPath = os.path.join(dataDir,'reward_change_{}.h5'.format(brainRegion))
-    celldbPath = os.path.join(dataDir, '{}_database.h5'.format(animal))
+for indRegion, brainRegion in enumerate(brainRegions):
+#for animal in animalList:
+    celldbPath = os.path.join(dataDir,'reward_change_{}.h5'.format(brainRegion))
+    #celldbPath = os.path.join(dataDir, '{}_database.h5'.format(animal))
     celldb = pd.read_hdf(celldbPath, key='reward_change')
 
     # -- For histogram of modulation index for sound-responsive cells, take the most responsive frequency -- #
@@ -83,8 +83,8 @@ for animal in animalList:
             plt.clf()
             binsEdges = np.linspace(-1,1,20)
             plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-            #figTitle = '{}_{}_sound_responsive_cells'.format(brainRegion,modWindow)
-            figTitle = '{}_{}_sound_responsive_cells'.format(animal,modWindow)
+            figTitle = '{}_{}_sound_responsive_cells'.format(brainRegion,modWindow)
+            #figTitle = '{}_{}_sound_responsive_cells'.format(animal,modWindow)
             plt.title(figTitle)
             plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} sound-responsive cells: {:.3f}%'.format(len(sigModI), sum(soundResp), 100*float(len(sigModI))/sum(soundResp)))  
 
