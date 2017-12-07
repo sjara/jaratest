@@ -20,7 +20,7 @@ exp0.add_session('14-04-02', 'c', 'am', 'am_tuning_curve')
 exp0.add_session('14-20-14', None, 'lasertrain', 'am_tuning_curve')
 
 
-exp0.add_site(957, tetrodes=range(1, 9))
+exp0.add_site(957, tetrodes=[1, 2, 3, 4, 7, 8])
 exp0.add_session('14-27-09', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('14-29-53', None, 'lasertrain', 'am_tuning_curve')
 exp0.add_session('14-34-47', 'd', 'rlf', 'am_tuning_curve')
@@ -37,7 +37,7 @@ exp0.add_session('15-40-05', 'h', 'tc', 'am_tuning_curve')
 exp0.add_session('15-57-52', 'i', 'am', 'am_tuning_curve')
 exp0.add_session('16-15-07', None, 'lasertrain', 'am_tuning_curve')
 
-exp0.add_site(1146, tetrodes=[1, 2, 4, 5, 6, 7, 8])
+exp0.add_site(1146, tetrodes=[1, 2, 4, 6, 7, 8])
 exp0.add_session('16-20-45', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('16-23-21', None, 'lasertrain', 'am_tuning_curve')
 exp0.add_session('16-27-29', 'j', 'rlf', 'am_tuning_curve')
@@ -47,7 +47,7 @@ exp0.add_session('16-59-01',None, 'lasertrain', 'am_tuning_curve')
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-01-27',
-                               brainarea='rightThalamus',
+                               brainarea='rightThal',
                                info='medialDiI')
 experiments.append(exp1)
 
@@ -129,7 +129,7 @@ experiments.append(exp3)
 
 exp4 = celldatabase.Experiment(subject,
                                '2017-02-15',
-                               brainarea='rightThalamus',
+                               brainarea='rightThal',
                                info='medialDiD')
 experiments.append(exp4)
 

@@ -24,7 +24,7 @@ from jaratest.nick.database import dataloader_v2 as dataloader
 #from jaratest.lan import test055_load_n_plot_billy_data_one_cell as loader
 #reload(loader)
   
-mouseName = 'adap067'
+mouseName = 'adap017'
 # -- Global variables -- #
 SAMPLING_RATE=30000.0
 soundTriggerChannel = 0 # channel 0 is the sound presentation, 1 is the trial    
@@ -41,9 +41,9 @@ if CASE == 1:
 
     # -- Define the alignment and countTimeRange windows to use for calculating modulation -- #
     #allAlignments = ['sound','center-out', 'side-in'] #the first argument is alignment, choices are 'sound', 'center-out' and 'side-in'
-    allAlignments = ['center-out']
+    allAlignments = ['side-in']
     #allCountTimeRanges = ([0,0.1],[-0.1,0])
-    allCountTimeRanges = ([0.05,0.15], [0.05,0.25], [0.05,0.35])
+    allCountTimeRanges = ([-0.2,-0.1], [-0.3,-0.2])
     # Generate conditions for calculating modulation in by taking all possible combinations from all alignments and countTimeRanges
     conditions = list(itertools.product(allAlignments,allCountTimeRanges))
 
