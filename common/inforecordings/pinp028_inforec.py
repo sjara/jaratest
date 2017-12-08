@@ -54,7 +54,7 @@ experiments.append(exp1)
 # exp1.add_site(2626, tetrodes=[2, 3, 4, 5, 6, 7, 8])
 # exp1.add_session('13-52-56', None, 'noiseburst', 'am_tuning_curve')
 
-exp1.add_site(2721, tetrodes=[1, 2, 3, 4])
+exp1.add_site(2721, tetrodes=[1, 2, 3])
 # exp1.add_session('14-25-29', None, 'noiseburst', 'am_tuning_curve') #Bad ref, missing a spike
 # exp1.add_session('14-31-40', 'a', 'am', 'am_tuning_curve') #Bad ref, missing a spike
 exp1.add_session('14-50-30', None, 'noiseburst', 'am_tuning_curve') 

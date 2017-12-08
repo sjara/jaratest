@@ -23,7 +23,7 @@ colorDictRC = {'leftMoreLowFreq':'g', #green
 
 
 #animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001','gosi004', 'gosi008','gosi010']]
-animalList = ['adap067','adap071'] #['gosi001','gosi004', 'gosi008','gosi010','adap005','adap012', 'adap013', 'adap015', 'adap017']
+animalList = ['adap067','adap071','gosi001','gosi004','gosi008','gosi010','adap005','adap012', 'adap013', 'adap015', 'adap017']
 #animalLabels = ['astr', 'ac']
 
 freqLabels = ['Low','High']
