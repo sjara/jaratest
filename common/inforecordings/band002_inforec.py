@@ -4,11 +4,11 @@ reload(celldb)
 subject = 'band002'
 experiments = []
 
-exp0 = celldb.Experiment(subject, '2016-08-11', 'left_AC', info='lateralDiI')
+exp0 = celldb.Experiment(subject, '2016-08-11', 'left_AC', info=['lateralDiI','TT1ant','sound_left'])
 experiments.append(exp0)
 
-exp0.add_site(837, tetrodes = [1,2,4,6])
-exp0.add_session('09-48-08', None, 'noisebursts', 'am_tuning_curve') #looks like inhibitory response on TT2? Slight excitatory response on TT4
+#exp0.add_site(837, tetrodes = [1,2,4,6])
+#exp0.add_session('09-48-08', None, 'noisebursts', 'am_tuning_curve') #looks like inhibitory response on TT2? Slight excitatory response on TT4
 
 exp0.add_site(900, tetrodes = [2,4,6])
 exp0.add_session('09-53-50', 'a', 'noisebursts', 'am_tuning_curve') #decent sound response on TT4
@@ -16,8 +16,8 @@ exp0.add_session('09-55-51', 'b', 'tuningCurve', 'am_tuning_curve') #TT4 and TT6
 exp0.add_session('10-06-41', 'c', 'AM', 'am_tuning_curve') #sustained reponses on TT4, onset on TT6, ??? on TT2
 exp0.add_session('10-14-24', 'd', 'bandwidth', 'bandwidth_am') #18kHz, 64Hz mod for TT4 cell(s)
 
-exp0.add_site(1007, tetrodes = [2,3,4,6])
-exp0.add_session('10-36-29', 'e', 'noisebursts', 'am_tuning_curve') #decent inhibitory response on TT4, weak sound responses on TT2,3
+#exp0.add_site(1007, tetrodes = [2,3,4,6])
+#exp0.add_session('10-36-29', 'e', 'noisebursts', 'am_tuning_curve') #decent inhibitory response on TT4, weak sound responses on TT2,3
 
 exp0.add_site(1060, tetrodes = [2,4,6])
 exp0.add_session('10-41-04', 'f', 'noisebursts', 'am_tuning_curve') #inhibitory response on TT4,6, weak excitatory on TT2
@@ -38,7 +38,7 @@ exp0.add_session('12-29-07', 'p', 'AM', 'am_tuning_curve') #22kHz, 16Hz mod to t
 exp0.add_session('12-36-23', 'q', 'bandwidth', 'bandwidth_am')
 
 
-exp1 = celldb.Experiment(subject, '2016-08-12', 'left_AC', info='medialDiI')
+exp1 = celldb.Experiment(subject, '2016-08-12', 'left_AC', info=['medialDiI','TT1ant','sound_left'])
 experiments.append(exp1)
 
 exp1.add_site(1177, tetrodes = [2,4,6])

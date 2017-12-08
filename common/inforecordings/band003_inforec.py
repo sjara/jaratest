@@ -6,7 +6,7 @@ reload(celldb)
 subject = 'band003'
 experiments = []
 
-exp0 = celldb.Experiment(subject, '2016-08-18', 'left_AC', info='lateralDiO')
+exp0 = celldb.Experiment(subject, '2016-08-18', 'left_AC', info=['lateralDiO','TT1ant','sound_left']])
 experiments.append(exp0)
 
 exp0.add_site(830, tetrodes = [2])
@@ -52,11 +52,11 @@ exp0.add_session('16-06-21', 't', 'AM', 'am_tuning_curve')
 exp0.add_session('16-16-47', 'u', 'bandwidth' , 'bandwidth_am')
 
 
-exp1 = celldb.Experiment(subject, '2016-08-19', 'left_AC', info='centerDiI')
+exp1 = celldb.Experiment(subject, '2016-08-19', 'left_AC', info=['centerDiI','TT1ant','sound_left'])
 experiments.append(exp1)
 
-exp1.add_site(789, tetrodes = [2])
-exp1.add_session('08-55-09', None, 'noisebursts', 'am_tuning_curve')
+# exp1.add_site(789, tetrodes = [2])
+# exp1.add_session('08-55-09', None, 'noisebursts', 'am_tuning_curve')
 
 exp1.add_site(841, tetrodes = [2])
 exp1.add_session('08-58-19', None, 'noisebursts', 'am_tuning_curve')
@@ -64,8 +64,8 @@ exp1.add_session('09-00-25', 'a', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('09-11-22', 'b', 'AM', 'am_tuning_curve')
 exp1.add_session('09-17-44', 'c', 'bandwidth', 'bandwidth_am')
 
-exp1.add_site(951, tetrodes = [1,2,4])
-exp1.add_session('09-49-35', None, 'noisebursts', 'am_tuning_curve')
+# exp1.add_site(951, tetrodes = [1,2,4])
+# exp1.add_session('09-49-35', None, 'noisebursts', 'am_tuning_curve')
 
 exp1.add_site(987, tetrodes = [1,2,4,8])
 exp1.add_session('09-52-55', None, 'noisebursts', 'am_tuning_curve')
@@ -86,23 +86,23 @@ exp1.add_session('11-39-54', 'k', 'AM', 'am_tuning_curve')
 exp1.add_session('11-48-58', 'l', 'bandwidth', 'bandwidth_am')
 
 
-exp2 = celldb.Experiment(subject, '2016-08-21', 'left_AC', info='medialDiD')
+exp2 = celldb.Experiment(subject, '2016-08-21', 'left_AC', info=['medialDiD','TT1ant','sound_left'])
 experiments.append(exp2)
 
-exp2.add_site(880, tetrodes = [2])
-exp2.add_session('10-34-45', None, 'noisebursts', 'am_tuning_curve')
-
-exp2.add_site(920, tetrodes = [2])
-exp2.add_session('10-39-23', None, 'noisebursts', 'am_tuning_curve')
-
-exp2.add_site(950, tetrodes = [2])
-exp2.add_session('10-42-46', None, 'noisebursts', 'am_tuning_curve')
-
-exp2.add_site(1000, tetrodes = [2])
-exp2.add_session('10-48-41', None, 'noisebursts', 'am_tuning_curve')
-
-exp2.add_site(1080, tetrodes = [2])
-exp2.add_session('10-55-55', None, 'noisebursts', 'am_tuning_curve')
+# exp2.add_site(880, tetrodes = [2])
+# exp2.add_session('10-34-45', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp2.add_site(920, tetrodes = [2])
+# exp2.add_session('10-39-23', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp2.add_site(950, tetrodes = [2])
+# exp2.add_session('10-42-46', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp2.add_site(1000, tetrodes = [2])
+# exp2.add_session('10-48-41', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp2.add_site(1080, tetrodes = [2])
+# exp2.add_session('10-55-55', None, 'noisebursts', 'am_tuning_curve')
 
 exp2.add_site(1120, tetrodes = [1,2])
 exp2.add_session('11-01-56', None, 'noisebursts', 'am_tuning_curve')
@@ -135,14 +135,14 @@ exp2.add_session('14-03-38', 'n', 'AM', 'am_tuning_curve')
 exp2.add_session('14-12-19', 'o', 'bandwidth', 'bandwidth_am')
 
 
-exp3 = celldb.Experiment(subject, '2016-08-22', 'right_AC')
+exp3 = celldb.Experiment(subject, '2016-08-22', 'right_AC', info=['unknown','TT1ant','sound_left'])
 experiments.append(exp3)
 
-exp3.add_site(720, tetrodes = [2,6])
-exp3.add_session('09-44-29', None, 'noisebursts', 'am_tuning_curve')
-
-exp3.add_site(750, tetrodes = [2])
-exp3.add_session('09-48-33', None, 'noisebursts', 'am_tuning_curve')
+# exp3.add_site(720, tetrodes = [2,6])
+# exp3.add_session('09-44-29', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp3.add_site(750, tetrodes = [2])
+# exp3.add_session('09-48-33', None, 'noisebursts', 'am_tuning_curve')
 
 exp3.add_site(874, tetrodes = [1,2,4,6])
 exp3.add_session('09-58-07', None, 'noisebursts', 'am_tuning_curve')
@@ -175,11 +175,11 @@ exp3.add_session('13-17-09', 'n', 'AM', 'am_tuning_curve')
 exp3.add_session('13-25-18', 'o', 'bandwidth', 'bandwidth_am')
 
 
-exp4 = celldb.Experiment(subject, '2016-08-23', 'right_AC')
+exp4 = celldb.Experiment(subject, '2016-08-23', 'right_AC', info=['unknown','TT1ant','sound_left'])
 experiments.append(exp4)
 
-exp4.add_site(820, tetrodes = [4,6])
-exp4.add_session('10-11-50', None, 'noisebursts', 'am_tuning_curve')
+# exp4.add_site(820, tetrodes = [4,6])
+# exp4.add_session('10-11-50', None, 'noisebursts', 'am_tuning_curve')
 
 exp4.add_site(860, tetrodes = [4,5,6])
 exp4.add_session('10-15-40', None, 'noisebursts', 'am_tuning_curve')
@@ -199,26 +199,26 @@ exp4.add_session('11-52-12', 'g', 'tuningCurve', 'am_tuning_curve')
 exp4.add_session('12-03-12', 'h', 'AM', 'am_tuning_curve')
 exp4.add_session('12-11-32', 'i', 'bandwidth', 'bandwidth_am')
 
-exp4.add_site(1069, tetrodes = [2,4,5,6])
-exp4.add_session('12-42-15', None, 'noisebursts', 'am_tuning_curve')
-exp4.add_session('12-44-43', 'j', 'tuningCurve', 'am_tuning_curve')
-exp4.add_session('13-09-49', 'k', 'AM', 'am_tuning_curve')
+# exp4.add_site(1069, tetrodes = [2,4,5,6])
+# exp4.add_session('12-42-15', None, 'noisebursts', 'am_tuning_curve')
+# exp4.add_session('12-44-43', 'j', 'tuningCurve', 'am_tuning_curve')
+# exp4.add_session('13-09-49', 'k', 'AM', 'am_tuning_curve')
 
 exp4.add_site(1070, tetrodes = [2,4,5,6])
 exp4.add_session('13-16-42', 'l', 'AM', 'am_tuning_curve')
 exp4.add_session('13-22-04', 'm', 'tuningCurve', 'am_tuning_curve')
 exp4.add_session('13-38-29', 'n', 'bandwidth', 'bandwidth_am')
 
-exp4.add_site(1120, tetrodes = [2,3,4,5,6])
-exp4.add_session('14-02-13', None, 'noisebursts', 'am_tuning_curve')
-exp4.add_session('14-04-45', 'o', 'tuningCurve', 'am_tuning_curve')
-exp4.add_session('14-15-23', 'p', 'AM', 'am_tuning_curve')
-#exp4.add_session('14-23-41', None, 'bandwidth', 'bandwidth_am')
+# exp4.add_site(1120, tetrodes = [2,3,4,5,6])
+# exp4.add_session('14-02-13', None, 'noisebursts', 'am_tuning_curve')
+# exp4.add_session('14-04-45', 'o', 'tuningCurve', 'am_tuning_curve')
+# exp4.add_session('14-15-23', 'p', 'AM', 'am_tuning_curve')
+# #exp4.add_session('14-23-41', None, 'bandwidth', 'bandwidth_am')
 
 
-exp5 = celldb.Experiment(subject, '2016-08-24', 'right_AC')
+exp5 = celldb.Experiment(subject, '2016-08-24', 'right_AC', info=['unknown','TT1ant','sound_left'])
 experiments.append(exp5)
 
-exp5.add_site(860, tetrodes = [2])
-exp5.add_session('12-08-14', None, 'noisebursts', 'am_tuning_curve')
-exp5.add_session('12-10-04', 'a', 'tuningCurve', 'am_tuning_curve')
+# exp5.add_site(860, tetrodes = [2])
+# exp5.add_session('12-08-14', None, 'noisebursts', 'am_tuning_curve')
+# exp5.add_session('12-10-04', 'a', 'tuningCurve', 'am_tuning_curve')
