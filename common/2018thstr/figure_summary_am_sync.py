@@ -9,28 +9,37 @@ import pandas as pd
 import figparams
 
 STUDY_NAME = '2018thstr'
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
+# db = pd.read_hdf(dbPath, key='dataframe')
+
+dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 db = pd.read_hdf(dbPath, key='dataframe')
 
-soundResponsive = db.query('isiViolations<0.02 and shapeQuality>2 and noisePval<0.05')
+# soundResponsive = db.query('isiViolations<0.02 and spikeShapeQuality>2 and noisePval<0.05')
+# goodCells = db.query('isiViolations<0.02 and spikeShapeQuality>2')
+goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
 
-plotOnlyIdentified = True
+# soundResponsive = db.query('isiViolations<0.02 and shapeQuality>2 and noisePval<0.05')
+
+dataframe = goodLaser
+
+plotOnlyIdentified = False
 
 if plotOnlyIdentified:
-    soundLaserResponsive = soundResponsive.query('pulsePval<0.05 and trainRatio>0.8')
+    soundLaserResponsive = dataframe.query('pulsePval<0.05 and trainRatio>0.8')
     thal1 = soundLaserResponsive.groupby('brainarea').get_group('rightThal')
     thal2 = soundLaserResponsive.groupby('brainarea').get_group('rightThalamus')
     thal = pd.concat([thal1, thal2])
     ac = soundLaserResponsive.groupby('brainarea').get_group('rightAC')
 else:
-    thal1 = soundResponsive.groupby('brainarea').get_group('rightThal')
-    thal2 = soundResponsive.groupby('brainarea').get_group('rightThalamus')
-    thal = pd.concat([thal1, thal2])
-    ac = soundResponsive.groupby('brainarea').get_group('rightAC')
+    thal = dataframe.groupby('brainArea').get_group('rightThal')
+    # thal2 = dataframe.groupby('brainArea').get_group('rightThalamus')
+    # thal = pd.concat([thal1, thal2])
+    ac = dataframe.groupby('brainArea').get_group('rightAC')
 
-astrR = soundResponsive.groupby('brainarea').get_group('rightAstr')
-astrL = soundResponsive.groupby('brainarea').get_group('rightAstr')
-astr = pd.concat([astrR, astrL])
+# astrR = dataframe.groupby('brainarea').get_group('rightAstr')
+# astrL = dataframe.groupby('brainarea').get_group('rightAstr')
+# astr = pd.concat([astrR, astrL])
 
 lowFreq = 4
 highFreq = 128
@@ -49,9 +58,9 @@ acdata = np.round(ac[feature][pd.notnull(ac[feature])], decimals=1)
 acCount = Counter(acdata)
 acHeights = [100*acCount[freq]/np.double(len(acdata)) for freq in freqs]
 
-astrdata = np.round(astr[feature][pd.notnull(astr[feature])], decimals=1)
-astrCount = Counter(astrdata)
-astrHeights = [100*astrCount[freq]/np.double(len(astrdata)) for freq in freqs]
+# astrdata = np.round(astr[feature][pd.notnull(astr[feature])], decimals=1)
+# astrCount = Counter(astrdata)
+# astrHeights = [100*astrCount[freq]/np.double(len(astrdata)) for freq in freqs]
 
 index = np.arange(len(freqs))
 
@@ -86,17 +95,17 @@ plt.xticks(index + bar_width, freqs)
 plt.ylabel('% cells')
 plt.title('AC, N={}'.format(len(acdata)))
 
-ax = plt.subplot(313)
-rects11 = plt.bar(index+0.5*bar_width,
-                astrHeights,
-                bar_width,
-                label='AC',
-                facecolor='w',
-                edgecolor=colorpalette.TangoPalette['SkyBlue2'],
-                linewidth = linewidth)
-plt.xticks(index + bar_width, freqs)
-plt.xlabel('Highest AM rate to which cell could sync')
-plt.ylabel('% cells')
-plt.title('AStr, N={}'.format(len(astrdata)))
+# ax = plt.subplot(313)
+# rects11 = plt.bar(index+0.5*bar_width,
+#                 astrHeights,
+#                 bar_width,
+#                 label='AC',
+#                 facecolor='w',
+#                 edgecolor=colorpalette.TangoPalette['SkyBlue2'],
+#                 linewidth = linewidth)
+# plt.xticks(index + bar_width, freqs)
+# plt.xlabel('Highest AM rate to which cell could sync')
+# plt.ylabel('% cells')
+# plt.title('AStr, N={}'.format(len(astrdata)))
 
 plt.show()
