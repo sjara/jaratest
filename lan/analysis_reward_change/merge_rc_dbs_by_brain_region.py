@@ -25,7 +25,7 @@ for region,mouseNameList in zip(brainRegions,mouseNameList):
         '''
         allMiceDfs.append(dfThisMouse)
     dfAllReward_ChangeMouse = pd.concat(allMiceDfs, ignore_index=True)
-    dfAllReward_ChangeMouse.drop('level_0', 1, inplace=True)
+    #dfAllReward_ChangeMouse.drop('level_0', 1, inplace=True)
     # To make sure there are not duplicates
     dfAllReward_ChangeMouse.drop_duplicates(['subject','date','tetrode','cluster','indSite','indExperiment'], inplace=True)
     dfAllReward_ChangeMouse.reset_index(inplace=True)

@@ -4,7 +4,7 @@ reload(celldatabase)
 subject = 'band026'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2017-04-26', 'right_AC', info='medialDiI')
+exp0 = celldatabase.Experiment(subject, '2017-04-26', 'right_AC', info=['medialDiI','TT1ant','sound_left'])
 experiments.append(exp0)
 
 exp0.laserCalibration = {
@@ -17,14 +17,14 @@ exp0.laserCalibration = {
     '3.5':2.65
 }
 
-exp0.add_site(850, tetrodes = [4,7,8])
-exp0.add_session('10-49-47', None, 'noisebursts', 'am_tuning_curve')
-exp0.add_session('10-52-29', None, 'laserPulse', 'am_tuning_curve')
-exp0.add_session('10-55-09', None, 'laserTrain', 'am_tuning_curve')
-# clustering shows laser responsive cells are not sound responsive...
-
-exp0.add_site(1010, tetrodes = [4,5,6,8])
-exp0.add_session('11-05-16', None, 'noisebursts', 'am_tuning_curve')
+# exp0.add_site(850, tetrodes = [4,7,8])
+# exp0.add_session('10-49-47', None, 'noisebursts', 'am_tuning_curve')
+# exp0.add_session('10-52-29', None, 'laserPulse', 'am_tuning_curve')
+# exp0.add_session('10-55-09', None, 'laserTrain', 'am_tuning_curve')
+# # clustering shows laser responsive cells are not sound responsive...
+# 
+# exp0.add_site(1010, tetrodes = [4,5,6,8])
+# exp0.add_session('11-05-16', None, 'noisebursts', 'am_tuning_curve')
 
 exp0.add_site(1096, tetrodes = [4,5,6,7,8])
 exp0.add_session('11-13-02', None, 'noisebursts', 'am_tuning_curve')
@@ -36,10 +36,10 @@ exp0.add_session('11-33-21', 'c', 'bandwidth', 'bandwidth_am') #9kHz, 32Hz for m
 exp0.add_session('11-53-29', 'd', 'noiseAmps', 'am_tuning_curve')
 exp0.add_session('11-57-50', None, 'laserPulse', 'am_tuning_curve')
 
-exp0.add_site(1322, tetrodes = [4,6,7,8])
-exp0.add_session('12-06-10', None, 'laserPulse', 'am_tuning_curve')
-exp0.add_session('12-08-59', None, 'noisebursts', 'am_tuning_curve')
-#bad sound responses in laser responsive cells
+# exp0.add_site(1322, tetrodes = [4,6,7,8])
+# exp0.add_session('12-06-10', None, 'laserPulse', 'am_tuning_curve')
+# exp0.add_session('12-08-59', None, 'noisebursts', 'am_tuning_curve')
+# #bad sound responses in laser responsive cells
 
 exp0.add_site(1470, tetrodes = [4,5,6,7,8])
 exp0.add_session('12-17-51', None, 'laserPulse', 'am_tuning_curve')
@@ -52,7 +52,7 @@ exp0.add_session('12-56-59', None, 'laserPulse', 'am_tuning_curve')
 exp0.add_session('12-59-17', None, 'laserTrain', 'am_tuning_curve')
 
 
-exp1 = celldatabase.Experiment(subject, '2017-04-27', 'right_AC', info='middleDiD')
+exp1 = celldatabase.Experiment(subject, '2017-04-27', 'right_AC', info=['middleDiD','TT1ant','sound_left'])
 experiments.append(exp1)
 
 exp1.laserCalibration = {
@@ -75,10 +75,10 @@ exp1.add_session('11-02-04', None, 'laserTrain', 'am_tuning_curve')
 exp1.add_session('11-04-57', 'c', 'bandwidth', 'bandwidth_am') #7kHz, 64Hz for TT4 PV cell
 exp1.add_session('11-27-59', 'd', 'noiseAmps', 'am_tuning_curve')
 
-exp1.add_site(1310, tetrodes = [4,6,8])
-exp1.add_session('11-43-36', None, 'laserPulse', 'am_tuning_curve')
-exp1.add_session('11-46-23', None, 'noisebursts', 'am_tuning_curve')
-#not that great responses
+# exp1.add_site(1310, tetrodes = [4,6,8])
+# exp1.add_session('11-43-36', None, 'laserPulse', 'am_tuning_curve')
+# exp1.add_session('11-46-23', None, 'noisebursts', 'am_tuning_curve')
+# #not that great responses
 
 exp1.add_site(1350, tetrodes = [4,6,8])
 exp1.add_session('11-50-04', None, 'laserPulse', 'am_tuning_curve')
@@ -101,7 +101,7 @@ exp1.add_session('12-58-39', 'k', 'bandwidth', 'bandwidth_am') #yet another 7kHz
 exp1.add_session('13-20-30', 'l', 'noiseAmps', 'am_tuning_curve')
 
 
-exp2 = celldatabase.Experiment(subject, '2017-04-28', 'right_AC', info='lateralDiI')
+exp2 = celldatabase.Experiment(subject, '2017-04-28', 'right_AC', info=['lateralDiI','TT1ant','sound_left'])
 experiments.append(exp2)
 
 exp2.laserCalibration = {
@@ -114,13 +114,13 @@ exp2.laserCalibration = {
     '3.5':2.8
 }
 
-exp2.add_site(1000, tetrodes = [4,6,8])
-exp2.add_session('09-48-29', None, 'laserPulse', 'am_tuning_curve')
-# weak-sauce laser responses
-
-exp2.add_site(1050, tetrodes = [4,6,8])
-exp2.add_session('09-56-05', None, 'laserPulse', 'am_tuning_curve')
-# better, still not that great
+# exp2.add_site(1000, tetrodes = [4,6,8])
+# exp2.add_session('09-48-29', None, 'laserPulse', 'am_tuning_curve')
+# # weak-sauce laser responses
+# 
+# exp2.add_site(1050, tetrodes = [4,6,8])
+# exp2.add_session('09-56-05', None, 'laserPulse', 'am_tuning_curve')
+# # better, still not that great
 
 exp2.add_site(1087, tetrodes = [4,6,8])
 exp2.add_session('09-59-36', None, 'laserPulse', 'am_tuning_curve')
@@ -165,7 +165,7 @@ exp2.add_session('13-28-36', 'q', 'bandwidth', 'bandwidth_am') #22kHz, 64Hz for 
 exp2.add_session('13-47-19', 'r', 'noiseAmps', 'am_tuning_curve')
 
 
-exp3 = celldatabase.Experiment(subject, '2017-04-29', 'right_AC', info='posteriormiddleDiI')
+exp3 = celldatabase.Experiment(subject, '2017-04-29', 'right_AC', info=['posteriormiddleDiI','TT1ant','sound_left'])
 experiments.append(exp3)
 
 exp3.laserCalibration = {
@@ -209,7 +209,7 @@ exp3.add_session('14-29-16', 'k', 'bandwidth', 'bandwidth_am')
 exp3.add_session('14-48-01', 'l', 'noiseAmps', 'am_tuning_curve')
 
 
-exp4 = celldatabase.Experiment(subject, '2017-04-30', 'right_AC', info='posteriorlateralDiD')
+exp4 = celldatabase.Experiment(subject, '2017-04-30', 'right_AC', info=['posteriorlateralDiD','TT1ant','sound_left'])
 experiments.append(exp4)
 
 exp4.laserCalibration = {
@@ -222,14 +222,14 @@ exp4.laserCalibration = {
     '3.5':2.85
 }
 
-exp4.add_site(1125, tetrodes = [3,4,6,8])
-exp4.add_session('11-36-26', None, 'laserPulse', 'am_tuning_curve')
-# pretty crappy laser response
-
-exp4.add_site(1341, tetrodes = [4,6,8])
-exp4.add_session('11-41-23', None, 'laserPulse', 'am_tuning_curve')
-exp4.add_session('11-42-48', None, 'noisebursts', 'am_tuning_curve')
-# shitty laser response, bad sound response
+# exp4.add_site(1125, tetrodes = [3,4,6,8])
+# exp4.add_session('11-36-26', None, 'laserPulse', 'am_tuning_curve')
+# # pretty crappy laser response
+# 
+# exp4.add_site(1341, tetrodes = [4,6,8])
+# exp4.add_session('11-41-23', None, 'laserPulse', 'am_tuning_curve')
+# exp4.add_session('11-42-48', None, 'noisebursts', 'am_tuning_curve')
+# # shitty laser response, bad sound response
 
 exp4.add_site(1370, tetrodes = [4,6,8])
 exp4.add_session('11-45-59', None, 'laserPulse', 'am_tuning_curve')

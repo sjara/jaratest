@@ -2,10 +2,6 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-from jaratoolbox import loadbehavior
-from jaratoolbox import loadopenephys
-from jaratoolbox import spikesanalysis
-from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import sklearn.metrics
 
@@ -27,7 +23,7 @@ exampleCell = {'subject':'adap012',
               'tetrode':3,
                'cluster':3,
                'brainRegion':'astr',
-               'freqsToPlot':'low'} # low freq
+               'freqsToPlot':'high'} # high freq
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'adap012',
@@ -143,10 +139,13 @@ for cellParams in cellParamsList:
     aucFile = 'binned_auc_roc_{}aligned_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
     aucFullPath = os.path.join(dataDir, aucFile)
     aucOverTime = np.load(aucFullPath)
-    rollingWinEdges = aucOverTime['rollingWinEdges']
-    aucEachRollingWin = aucOverTime['aucEachRollingWin']
+    slidingWinEdges = aucOverTime['slidingWinEdges']
+    aucEachSlidingWin = aucOverTime['aucEachSlidingWin']
+    ci = aucOverTime['auc95ConfidenceInterval']
+    aucMax = aucEachSlidingWin.max()
+    maxInd = aucEachSlidingWin.argmax()
+    aucMaxTimeWin = slidingWinEdges[maxInd, :]
+    ciThisWin = [ci[:, maxInd].min(axis=0), ci[:, maxInd].max(axis=0)]
 
-    aucMax = aucEachRollingWin.max()
-    aucMaxTimeWin = rollingWinEdges[aucEachRollingWin.argmax(),:]
-    print 'For {}freq_{}_{}_T{}_c{}, maximum auc is {:.3f} at time period {}'.format(freq, animal, date, tetrode, cluster, aucMax, aucMaxTimeWin)
+    print 'For {}freq_{}_{}_T{}_c{}, maximum auc is {:.3f} at time period {}, the 95% confidence interval is {}'.format(freq, animal, date, tetrode, cluster, aucMax, aucMaxTimeWin, ciThisWin)
 

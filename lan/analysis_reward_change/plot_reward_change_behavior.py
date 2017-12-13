@@ -36,7 +36,7 @@ def plot_ave_psycurve_reward_change(animal, sessions):
     nBlocks = len(blockTypes)
     #thisAnimalPos = inda
     #ax1=plt.subplot(gs[thisAnimalPos])
-    plt.clf()
+    #plt.clf()
     fontsize = 12
     allPline = []
     blockLegends = []
@@ -95,20 +95,22 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.style.use(['seaborn-white','seaborn-talk'])
 
-    CASE = 2
+    CASE = 1
     # -- For checking a particular animal's performance on a particular date -- #
     if CASE == 1:
-        subjects = ['adap067']
+        subjects = ['adap012']
     
         if len(sys.argv)>1:
             sessions = sys.argv[1:]
 
         for thisAnimal in subjects:
+            plt.gcf().clf()
             plot_ave_psycurve_reward_change(thisAnimal, sessions)
             save_svg_psycurve_reward_change(thisAnimal, sessions)
 
     # -- All reward change mice, all good sessions average plot -- #
     elif CASE == 2:
+        numSessionsToInclude = 6
         sujectSessionsDict = {'adap012':['20160219a','20160223a','20160224a','20160226a','20160227a','20160228a','20160229a'],
                               #'adap008':['20151118a','20151119a','20151120a','20151121a','20151122a','20151123a','20151124a'], #same_left_right block transition
                               'adap005':['20151118a','20151119a','20151120a','20151121a','20151122a','20151123a','20151124a'], #same_left_right block transition
@@ -129,6 +131,8 @@ if __name__ == '__main__':
         avePsycurveMoreRight = np.empty((numOfAnimals,8))
 
         for ind, (subject, sessions) in enumerate(sujectSessionsDict.items()):
+            sessions = sessions[:numSessionsToInclude]
+            plt.gcf().clf()
             fractionHitsEachValueAllBlocks = plot_ave_psycurve_reward_change(subject, sessions)
             save_svg_psycurve_reward_change(subject, sessions)
             avePsycurveMoreLeft[ind,:] = fractionHitsEachValueAllBlocks[1,:] #The second row is more_left block
