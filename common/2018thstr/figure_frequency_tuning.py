@@ -11,22 +11,18 @@ reload(figparams)
 
 FIGNAME = 'figure_frequency_tuning'
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+db = pd.read_hdf(dbPath, key='dataframe')
 exData = np.load(exampleDataPath)
 np.random.seed(0)
 
-
-dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
-db = pd.read_hdf(dbPath, key='dataframe')
 goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
-#Use the good Laser 
 goodStriatum = db.groupby('brainArea').get_group('rightAstr').query('isiViolations<0.02 and spikeShapeQuality>2')
 goodLaserPlusStriatum = goodLaser.append(goodStriatum, ignore_index=True)
-
-# goodFit = goodLaserPlusStriatum.query('rsquaredFit > 0.08')
-
 goodFit = goodLaserPlusStriatum.query('rsquaredFit > 0.08')
-goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
 
+#Calculate the midpoint of the gaussian fit
+goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
 goodFitToUse = goodFit.query('fitMidPoint<32000')
 
 #Which dataframe to use
@@ -59,7 +55,7 @@ gs = gridspec.GridSpec(2, 6)
 gs.update(left=0.1, right=0.98, top=0.88, bottom=0.10, wspace=0.5, hspace=0.5)
 
 ##### Cells to use #####
-# Criteria: Want cells where the threshold and flanks are well-captured. 
+# Criteria: Want cells where the threshold and flanks are well-captured.
 #AC1 - pinp016 2017-03-09 1904 TT6c6: Beautiful cell with wide looking tuning
 #AC2 - pinp017 2017-03-22 1143 TT6c5: Sharper looking tuning on this cell
 
