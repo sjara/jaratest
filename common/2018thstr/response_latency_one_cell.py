@@ -109,6 +109,7 @@ plt.clf()
 plt.title(cellInd)
 plt.subplot(2,1,1)
 plt.plot(newSpikeTimes, newTrialInds, '.k')
+#plt.plot(spikeTimesFromEventOnset, trialIndexForEachSpike, '.k') # Plot all trials
 plt.xlim(timeRangeForLatency)
 plt.hold(1)
 plt.axvline(respLatency,color='r')
