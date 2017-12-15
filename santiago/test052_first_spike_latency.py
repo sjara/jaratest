@@ -9,6 +9,7 @@ TO DO:
 
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.signal
 
 datafile = '/mnt/jarahubdata/figuresdata/2018thstr/latency_data.npz'
 
@@ -37,12 +38,21 @@ for indtrial in range(nTrials):
     spkCountThisTrial,binsEdges = np.histogram(spikeTimes[indsThisTrial],binEdges)
     spikeCountMat[indtrial,:] = spkCountThisTrial
 
+
 avResp = np.mean(spikeCountMat,axis=0)
-maxResp = np.max(avResp)
-threshold = 0.2*maxResp
-respLatencyInd = np.flatnonzero(avResp>threshold)[0]
+#winShape = [0.25,0.5,1,0.5,0.25]; winShape = winShape/np.sum(winShape)
+winShape = scipy.signal.hanning(7); winShape = winShape/np.sum(winShape)
+smoothPSTH = np.convolve(avResp,winShape,mode='same')
+avBaseline = np.mean(smoothPSTH[:10])
+
+maxResp = np.max(smoothPSTH)
+threshold = avBaseline + 0.5*(maxResp-avBaseline)
+respLatencyInd = np.flatnonzero(smoothPSTH>threshold)[0]
 timeVec = binsEdges[1:]  # FIXME: is this the best way to define the time axis?
-respLatency = timeVec[respLatencyInd]
+#respLatency = timeVec[respLatencyInd]
+yFraction = (threshold-smoothPSTH[respLatencyInd-1])/(smoothPSTH[respLatencyInd]-smoothPSTH[respLatencyInd-1])
+respLatency = timeVec[respLatencyInd-1] + yFraction*(timeVec[respLatencyInd]-timeVec[respLatencyInd-1])
+
 print 'Response latency: {} sec'.format(respLatency)
 
 plt.clf()
@@ -54,9 +64,13 @@ plt.axvline(respLatency,color='r')
 
 plt.subplot(2,1,2)
 #plt.imshow(spikeCountMat,cmap='gray')
-plt.plot(binsEdges[1:], avResp,'.-')
+plt.plot(binsEdges[1:], avResp,'.-k')
 plt.hold(1)
 plt.axvline(respLatency,color='r')
+plt.axhline(threshold,ls='--',color='0.75')
+plt.axhline(avBaseline,ls=':',color='0.75')
+plt.axhline(maxResp,ls=':',color='0.75')
+plt.plot(binsEdges[1:],smoothPSTH,'ro-',mec='none',lw=3)
 plt.show()
 
 

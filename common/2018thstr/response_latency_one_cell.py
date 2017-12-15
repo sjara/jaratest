@@ -2,9 +2,11 @@ import sys
 import os
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesanalysis
+reload(spikesanalysis)
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
@@ -80,13 +82,47 @@ if not np.any(avgRespArray > thresholdResponse):
 
 #Determine trials that come from a I/F pair with a response above the threshold
 fra = avgRespArray > thresholdResponse
-validTrials = np.any(trialsEachCondition[:,fra], axis=1)
+selectedTrials = np.any(trialsEachCondition[:,fra], axis=1)
+
+# -- Calculate response latency --
+indexLimitsSelectedTrials = indexLimitsEachTrial[:,selectedTrials]
+timeRangeForLatency = [-0.1,0.1]
+(respLatency,interim) = spikesanalysis.response_latency(spikeTimesFromEventOnset,
+                                                        indexLimitsSelectedTrials,
+                                                        timeRangeForLatency, threshold=0.5)
 
 
+print 'Response latency: {:0.1f} ms'.format(1e3*respLatency)
 
+# ------------ From here down is for plotting -------------
+selectedTrialsInds = np.flatnonzero(selectedTrials)
+selectedSpikesInds = np.isin(trialIndexForEachSpike,selectedTrialsInds)
+tempTIFES = trialIndexForEachSpike[selectedSpikesInds]
+newSpikeTimes = spikeTimesFromEventOnset[selectedSpikesInds]
 
+# The next thing is slow, but I don't have time to optimize
+newTrialInds = np.empty(tempTIFES.shape, dtype=int)
+for ind,trialInd in enumerate(np.unique(tempTIFES)):
+    newTrialInds[tempTIFES==trialInd] = ind
 
+plt.clf()
+plt.title(cellInd)
+plt.subplot(2,1,1)
+plt.plot(newSpikeTimes, newTrialInds, '.k')
+plt.xlim(timeRangeForLatency)
+plt.hold(1)
+plt.axvline(respLatency,color='r')
 
+plt.subplot(2,1,2)
+plt.plot(interim['timeVec'], interim['avgCount'],'.-k')
+plt.hold(1)
+plt.axvline(respLatency,color='r')
+plt.axhline(interim['threshold'],ls='--',color='0.75')
+plt.axhline(interim['baseline'],ls=':',color='0.75')
+plt.axhline(interim['maxResponse'],ls=':',color='0.75')
+plt.plot(interim['timeVec'],interim['psth'],'r-',mec='none',lw=3)
+plt.xlim(timeRangeForLatency)
+plt.show()
 
 
 
