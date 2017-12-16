@@ -96,7 +96,8 @@ print 'Response latency: {:0.1f} ms'.format(1e3*respLatency)
 
 # ------------ From here down is for plotting -------------
 selectedTrialsInds = np.flatnonzero(selectedTrials)
-selectedSpikesInds = np.isin(trialIndexForEachSpike,selectedTrialsInds)
+# selectedSpikesInds = np.isin(trialIndexForEachSpike,selectedTrialsInds)#NOTE: Requires newer numpy
+selectedSpikesInds = np.in1d(trialIndexForEachSpike,selectedTrialsInds)
 tempTIFES = trialIndexForEachSpike[selectedSpikesInds]
 newSpikeTimes = spikeTimesFromEventOnset[selectedSpikesInds]
 

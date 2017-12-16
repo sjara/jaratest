@@ -11,7 +11,8 @@ reload(figparams)
 
 FIGNAME = 'figure_frequency_tuning'
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_with_latency.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 exData = np.load(exampleDataPath)
 np.random.seed(0)
@@ -257,7 +258,7 @@ plt.hold(True)
 # axHist.annotate('I', xy=(labelPosX[2],labelPosY[2]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[8]:
-    column='medianFSLatency'
+    column='latency'
     order_n = []
     for position, groupName in enumerate(order):
         data = groups.get_group(groupName)[column].values*1000
@@ -268,7 +269,7 @@ if PANELS[8]:
     axHist.set_xticks(range(2))
     axHist.set_xticklabels(order)
     axHist.set_xlim([-0.5, 1.5])
-    axHist.set_ylim([10, 65])
+    # axHist.set_ylim([0, 65])
     plt.ylabel('Median latency to first spike (ms)')
     extraplots.boxoff(axHist)
     # plt.title('ATh -> Str N: {}\nAC -> Str N: {}'.format(order_n[0], order_n[1]))
@@ -289,10 +290,10 @@ acThresh = ac['threshold']
 stat, pVal = stats.ranksums(athThresh, acThresh)
 print "p (threshold) = {}".format(pVal)
 
-athLatency = ath['medianFSLatency']
-acLatency = ac['medianFSLatency']
+athLatency = ath['latency']
+acLatency = ac['latency']
 stat, pVal = stats.ranksums(athLatency, acLatency)
-print "p (medianFSLatency) = {}".format(pVal)
+print "p (latency) = {}".format(pVal)
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

@@ -12,6 +12,7 @@ from scipy import optimize
 from scipy import stats
 from scipy import signal
 from jaratoolbox import spikesanalysis
+from jaratoolbox import behavioranalysis
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import settings
@@ -21,10 +22,104 @@ import pandas as pd
 dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 db = pd.read_hdf(dbPath, key='dataframe')
 dataframe = db
-threshold = 0.4
+thresholdFRA = 0.4
 latencyDataList = []
 
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
+
+    cell = ephyscore.Cell(dbRow)
+
+    try:
+        ephysData, bdata = cell.load('tc')
+    except (IndexError, ValueError): #The cell does not have a tc or the tc session has no spikes
+        print "No tc for cell {}".format(indRow)
+        dataframe.loc[indRow, 'latency'] = np.nan
+        continue
+
+    eventOnsetTimes = ephysData['events']['soundDetectorOn']
+
+    eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
+    spikeTimes = ephysData['spikeTimes']
+    freqEachTrial = bdata['currentFreq']
+    possibleFreq = np.unique(freqEachTrial)
+    intensityEachTrial = bdata['currentIntensity']
+    possibleIntensity = np.unique(intensityEachTrial)
+
+    #FIXME: I need to remove the last event here if there is an extra one
+    if len(eventOnsetTimes) == len(freqEachTrial)+1:
+        eventOnsetTimes = eventOnsetTimes[:-1]
+    elif len(eventOnsetTimes) < len(freqEachTrial):
+        print "Wrong number of events, probably caused by the original sound detector problems"
+        dataframe.loc[indRow, 'latency'] = np.nan
+        continue
+
+    trialsEachCondition = behavioranalysis.find_trials_each_combination(intensityEachTrial, possibleIntensity,
+                                                                        freqEachTrial, possibleFreq)
+
+    baseRange = [-0.1, 0]
+    responseRange = [0, 0.1]
+    alignmentRange = [-0.2, 0.2]
+
+    #Align all spikes to events
+    (spikeTimesFromEventOnset,
+    trialIndexForEachSpike,
+    indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
+                                                                eventOnsetTimes,
+                                                                alignmentRange)
+
+    #Count spikes in baseline and response ranges
+    nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                        indexLimitsEachTrial,
+                                                        baseRange)
+    nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                        indexLimitsEachTrial,
+                                                        responseRange)
+
+    #Filter and average the response spikes by the condition matrix
+    conditionMatShape = np.shape(trialsEachCondition)
+    numRepeats = np.product(conditionMatShape[1:])
+    nSpikesMat = np.reshape(nspkResp.squeeze().repeat(numRepeats), conditionMatShape)
+    spikesFilteredByTrialType = nSpikesMat * trialsEachCondition
+    avgRespArray = np.sum(spikesFilteredByTrialType, 0) / np.sum(
+        trialsEachCondition, 0).astype('float')
+
+    thresholdResponse = nspkBase.mean() + thresholdFRA*(avgRespArray.max()-nspkBase.mean())
+
+    if not np.any(avgRespArray > thresholdResponse):
+        print "Nothing above the threshold"
+        dataframe.loc[indRow, 'latency'] = np.nan
+        continue
+
+    #Determine trials that come from a I/F pair with a response above the threshold
+    fra = avgRespArray > thresholdResponse
+    selectedTrials = np.any(trialsEachCondition[:,fra], axis=1)
+
+    # -- Calculate response latency --
+    indexLimitsSelectedTrials = indexLimitsEachTrial[:,selectedTrials]
+    timeRangeForLatency = [-0.1,0.1]
+    try:
+        (respLatency,interim) = spikesanalysis.response_latency(spikeTimesFromEventOnset,
+                                                                indexLimitsSelectedTrials,
+                                                                timeRangeForLatency, threshold=0.5)
+    except IndexError:
+        print "Index error for cell {}".format(indRow) #If there are no spikes in the timeRangeForLatency 
+        dataframe.loc[indRow, 'latency'] = np.nan
+        continue
+
+    dataframe.loc[indRow, 'latency'] = respLatency
+    print 'Response latency: {:0.1f} ms'.format(1e3*respLatency)
+
+
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+print 'Saving database to {}'.format(dbPath)
+dataframe.to_hdf(dbPath, 'dataframe')
+
+# latencyDataArray = np.array(latencyDataList)
+# savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'latency_data.npz')
+# np.savez(dataFn, data=latencyDataArray)
+
+'''
+
     failed=False
     print "Cell {}".format(indRow)
     cell = ephyscore.Cell(dbRow)
@@ -125,12 +220,4 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         spikesAllCombinations = np.concatenate((spikesAllCombinations, spikesThisCombination))
         trialIndsAllCombinations = np.concatenate((trialIndsAllCombinations, trialIndsThisCombination))
 
-    cellData.update({'spikeTimes':spikesAllCombinations})
-    cellData.update({'trialInds':trialIndsAllCombinations})
-
-    dataframe.loc[indRow, 'medianFSLatency'] = np.median(latenciesAllCombinations)
-    latencyDataList.append(cellData)
-
-latencyDataArray = np.array(latencyDataList)
-savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'latency_data.npz')
-np.savez(dataFn, data=latencyDataArray)
+'''
