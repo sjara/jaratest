@@ -17,7 +17,7 @@ dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldat
 
 PANELS = [1, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_figure_name' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
@@ -35,6 +35,8 @@ labelPosY = [0.9, 0.48, 0.19]    # Vert position for panel labels
 
 # Define colors, use figparams
 laserColor = figparams.colp['blueLaser']
+colorATh = figparams.cp.TangoPalette['SkyBlue2']
+colorAC = figparams.cp.TangoPalette['ScarletRed1']
 
 fig = plt.gcf()
 fig.clf()
@@ -52,10 +54,10 @@ exampleSpikeTimes = exampleData['exampleSpikeTimes'].item()
 exampleTrialIndexForEachSpike = exampleData['exampleTrialIndexForEachSpike'].item()
 exampleIndexLimitsEachTrial = exampleData['exampleIndexLimitsEachTrial'].item()
 
-def plot_example_with_rate(subplotSpec, exampleName):
+def plot_example_with_rate(subplotSpec, exampleName, color='k'):
     fig = plt.gcf()
 
-    gs = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=subplotSpec, wspace=-0.4, hspace=0.0 )
+    gs = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=subplotSpec, wspace=-0.45, hspace=0.0 )
 
     specRaster = gs[0:2]
     axRaster = plt.Subplot(fig, specRaster)
@@ -99,21 +101,27 @@ def plot_example_with_rate(subplotSpec, exampleName):
     axRate = plt.Subplot(fig, specRate)
     fig.add_subplot(axRate)
 
+    nRates = len(possibleFreq)
     plt.hold(True)
-    plt.plot(avgSpikesArray, range(len(possibleFreq)), 'r-')
-    plt.plot(avgSpikesArray-stdSpikesArray, range(len(possibleFreq)), 'k--')
-    plt.plot(avgSpikesArray+stdSpikesArray, range(len(possibleFreq)), 'k--')
-
-    ax = plt.gca()
-    ax.set_xlabel('Firing rate (spk/s)')
-    extraplots.boxoff(ax)
+    plt.plot(avgSpikesArray, range(nRates), 'ro-', mec='none', ms=7, lw=3, color=color)
+    plt.plot(avgSpikesArray-stdSpikesArray, range(len(possibleFreq)), 'k:')
+    plt.plot(avgSpikesArray+stdSpikesArray, range(len(possibleFreq)), 'k:')
+    axRate.set_ylim([-0.5, nRates-0.5])
+    axRate.set_yticks(range(nRates))
+    axRate.set_yticklabels([])
+    
+    #ax = plt.gca()
+    axRate.set_xlabel('Firing rate (spk/s)')
+    extraplots.boxoff(axRate)
     # extraplots.boxoff(ax, keep='right')
-
+    return (axRaster, axRate)
 
 spec = gs[0, 0]
+
 if PANELS[0]:
-    plot_example_with_rate(spec, 'Thal1')
-    plt.title('ATh -> Str Example 1')
+    (axRaster, axRate) = plot_example_with_rate(spec, 'Thal1', color=colorATh)
+    axRaster.set_title('ATh -> Str Example 1')
+    axRate.set_xlim([0,200])
 # ax = plt.gc
 # ax.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
@@ -124,20 +132,21 @@ spec = gs[0, 1]
 # axWide.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
-    plot_example_with_rate(spec, 'Thal2')
-    plt.title('ATh -> Str Example 2')
+    (axRaster, axRate) = plot_example_with_rate(spec, 'Thal2', color=colorATh)
+    axRaster.set_title('ATh -> Str Example 2')
+    axRate.set_xlim([0,20])
 
 spec = gs[1, 0]
 # axSharp.annotate('D', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
-    plot_example_with_rate(spec, 'AC1')
-    plt.title('AC -> Str Example 1')
+    (axRaster, axRate) = plot_example_with_rate(spec, 'AC1', color=colorAC)
+    axRaster.set_title('AC -> Str Example 1')
 # -- Panel: Cortex less synchronized --
 # axWide = plt.subplot(gs[1, 1])
 spec = gs[1, 1]
 # axWide.annotate('E', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[3]:
-    plot_example_with_rate(spec, 'AC2')
-    plt.title('AC -> Str Example 2')
+    (axRaster, axRate) = plot_example_with_rate(spec, 'AC2', color=colorAC)
+    axRaster.set_title('AC -> Str Example 2')
