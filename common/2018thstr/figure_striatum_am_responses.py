@@ -17,11 +17,11 @@ dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldat
 
 PANELS = [1, 1, 1, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_striatum_am' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [3, 6] # In inches
+figSize = [12, 4] # In inches
 
 # thalHistColor = '0.4'
 # acHistColor = '0.4'
@@ -42,7 +42,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.15, right=0.98, top=0.95, bottom=0.1, wspace=.4, hspace=0.5)
+gs.update(left=0.08, right=0.98, top=0.93, bottom=0.12, wspace=.4, hspace=0.5)
 
 #Load example data
 exampleDataPath = os.path.join(dataDir, 'data_am_examples.npz')
@@ -121,13 +121,14 @@ def plot_hist(ax, dataArr, color, label):
     plt.xticks(index + barWidth, freqs)
     ax.set_xticklabels(freqLabels, rotation='vertical')
     plt.ylabel('% cells')
-    plt.title('{}, N={}'.format(label, len(roundData)))
+    plt.title('N = {} {}'.format(len(roundData),label))
     # ax.set_xlim([1.5,index[-1]+2*barWidth-0.5])
     plt.xlabel('Highest AM rate to which\ncell can synchronize (Hz)')
     extraplots.boxoff(ax)
 
     height = max(heights)*0.05
-    extraplots.breakaxis(1.8, 0, 0.5, height, gap=0.4)
+    extraplots.breakaxis(1.8, 0, 0.3, height, gap=0.4)
+    ax.tick_params(axis='x', length=0)
     plt.ylim([0, max(heights)+1])
 
 

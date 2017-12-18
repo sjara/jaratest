@@ -15,7 +15,7 @@ exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME,
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_with_latency.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 exData = np.load(exampleDataPath)
-np.random.seed(0)
+np.random.seed(8)
 
 goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
 goodStriatum = db.groupby('brainArea').get_group('rightAstr').query('isiViolations<0.02 and spikeShapeQuality>2')
@@ -32,11 +32,11 @@ dataframe = goodFitToUse
 
 PANELS = [1, 1, 1, 1, 1, 0, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_frequency_tuning' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [20, 5] # In inches
+figSize = [14, 5] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -52,7 +52,7 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 6)
+gs = gridspec.GridSpec(2, 5)
 gs.update(left=0.1, right=0.98, top=0.88, bottom=0.10, wspace=0.5, hspace=0.5)
 
 ##### Cells to use #####
@@ -97,7 +97,7 @@ if PANELS[0]:
     ax.set_xticklabels(freqLabels)
     ax.set_xlabel('Frequency (kHz)')
     plt.ylabel('Intensity (db SPL)')
-    plt.title('ATh -> Str Example 1')
+    plt.title('ATh->Str Example 1')
 
 # -- Panel: Thalamus wide tuning --
 axWide = plt.subplot(gs[0, 2])
@@ -115,7 +115,7 @@ if PANELS[1]:
     ax.set_xticklabels(freqLabels)
     ax.set_xlabel('Frequency (kHz)')
     plt.ylabel('Intensity (db SPL)')
-    plt.title('ATh -> Str Example 2')
+    plt.title('ATh->Str Example 2')
 
 ##### Cortex #####
 # -- Panel: Cortex sharp tuning --
@@ -134,7 +134,7 @@ if PANELS[3]:
     ax.set_xticklabels(freqLabels)
     ax.set_xlabel('Frequency (kHz)')
     plt.ylabel('Intensity (db SPL)')
-    plt.title('AC -> Str Example 1')
+    plt.title('AC->Str Example 1')
 
 # -- Panel: Cortex wide tuning --
 axWide = plt.subplot(gs[1, 2])
@@ -152,7 +152,7 @@ if PANELS[4]:
     ax.set_xticklabels(freqLabels)
     ax.set_xlabel('Frequency (kHz)')
     plt.ylabel('Intensity (db SPL)')
-    plt.title('AC -> Str Example 2')
+    plt.title('AC->Str Example 2')
 
 # -- Panel: Cortex histogram --
 # axHist = plt.subplot(gs[1, 2])
@@ -207,7 +207,8 @@ def medline(yval, midline, width, color='k', linewidth=3):
     end = midline+(width/2)
     plt.plot([start, end], [yval, yval], color=color, lw=linewidth)
 
-order = ['rightThal', 'rightAC']
+order = ['rightThal', 'rightAC'] # Should match 'tickLabels'
+tickLabels = ['ATh->Str', 'AC->AStr']       # Should match 'order'
 groups = dataframe.groupby('brainArea')
 
 axHist = plt.subplot(gs[0:2, 3])
@@ -225,7 +226,7 @@ if PANELS[2]:
         medline(np.median(data), position, 0.5)
         order_n.append(len(data))
     axHist.set_xticks(range(2))
-    axHist.set_xticklabels(order)
+    axHist.set_xticklabels(tickLabels)
     axHist.set_xlim([-0.5, 1.5])
     plt.ylabel('BW10')
     # plt.ylim([0, 4.5])
@@ -246,17 +247,19 @@ if PANELS[8]:
         medline(np.median(data), position, 0.5)
         order_n.append(len(data))
     axHist.set_xticks(range(2))
-    axHist.set_xticklabels(order)
+    axHist.set_xticklabels(tickLabels)
     axHist.set_xlim([-0.5, 1.5])
     plt.ylabel('Threshold (dB SPL)')
     plt.ylim([0, 80])
     extraplots.boxoff(axHist)
-    plt.title('ATh -> Str N: {}\nAC -> Str N: {}'.format(order_n[0], order_n[1]))
+    plt.title('N = {} ATh->Str \nN = {} AC->Str'.format(order_n[0], order_n[1]))
 
+'''
 axHist = plt.subplot(gs[0:2, 5])
 plt.hold(True)
 # axHist.annotate('I', xy=(labelPosX[2],labelPosY[2]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
+
 if PANELS[8]:
     column='latency'
     order_n = []
@@ -273,6 +276,7 @@ if PANELS[8]:
     plt.ylabel('Median latency to first spike (ms)')
     extraplots.boxoff(axHist)
     # plt.title('ATh -> Str N: {}\nAC -> Str N: {}'.format(order_n[0], order_n[1]))
+'''
 
 plt.show()
 
