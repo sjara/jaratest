@@ -273,13 +273,13 @@ if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
 
-thal = goodLaserPlusStriatum.groupby('brainArea').get_group('rightThal')
-thalBW = thal['BW10'][pd.notnull(thal['BW10'])]
-thalThresh = thal['threshold'][pd.notnull(thal['threshold'])]
-thalLatency = thal['medianFSLatency'][pd.notnull(thal['medianFSLatency'])]
+# thal = goodLaserPlusStriatum.groupby('brainArea').get_group('rightThal')
+# thalBW = thal['BW10'][pd.notnull(thal['BW10'])]
+# thalThresh = thal['threshold'][pd.notnull(thal['threshold'])]
+# thalLatency = thal['medianFSLatency'][pd.notnull(thal['medianFSLatency'])]
 
-ac = goodLaserPlusStriatum.groupby('brainArea').get_group('rightAC')
-acBW = ac['BW10'][pd.notnull(ac['BW10'])]
-acThresh = ac['threshold'][pd.notnull(ac['threshold'])]
-acLatency = ac['medianFSLatency'][pd.notnull(ac['medianFSLatency'])]
+# ac = goodLaserPlusStriatum.groupby('brainArea').get_group('rightAC')
+# acBW = ac['BW10'][pd.notnull(ac['BW10'])]
+# acThresh = ac['threshold'][pd.notnull(ac['threshold'])]
+# acLatency = ac['medianFSLatency'][pd.notnull(ac['medianFSLatency'])]
 
