@@ -18,10 +18,11 @@ dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldat
 PANELS = [1, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
-figFilename = 'plots_figure_name' # Do not include extension
-figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,5] # In inches
+# outputDir = '/tmp/'
+outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
+figFilename = 'plots_am_tuning' # Do not include extension
+figFormat = 'pdf' # 'pdf' or 'svg'
+figSize = [12,8] # In inches
 
 thalHistColor = '0.4'
 acHistColor = '0.4'
@@ -39,7 +40,7 @@ colorATh = figparams.cp.TangoPalette['SkyBlue2']
 colorAC = figparams.cp.TangoPalette['ScarletRed1']
 
 fig = plt.gcf()
-fig.clf()
+plt.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 2)
@@ -77,6 +78,9 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
     ax.set_xticks([0, 0.5])
     ax.set_xlabel('Time from sound onset (s)')
     ax.set_ylabel('AM Rate (Hz)')
+
+    # ax.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
+    #             fontsize=fontSizePanel, fontweight='bold')
 
 
     countRange = [0.1, 0.5]
@@ -150,3 +154,8 @@ spec = gs[1, 1]
 if PANELS[3]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'AC2', color=colorAC)
     axRaster.set_title('AC -> Str Example 2')
+
+plt.show()
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

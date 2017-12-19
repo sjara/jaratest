@@ -15,12 +15,12 @@ FIGNAME = 'figure_am'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 
-PANELS = [1, 1, 1, 1, 1, 1] # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
+outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
 figFilename = 'plots_striatum_am' # Do not include extension
-figFormat = 'svg' # 'pdf' or 'svg'
+figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [12, 4] # In inches
 
 # thalHistColor = '0.4'
@@ -158,13 +158,17 @@ if PANELS[1]:
     plot_example(spec, 'Str2')
     plt.title('AStr Example 2')
 # -- Panel: Thalamus histogram --
-axHist = plt.subplot(gs[0, 2])
+# axHist = plt.subplot(gs[0, 2])
+spec = plt.subplot(gs[0, 2])
 # axHist.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
-    groupName = 'rightAstr'
-    data = groups.get_group(groupName)[column]
-    plot_hist(axHist, data, astrHistColor, 'AStr')
+    # groupName = 'rightAstr'
+    # data = groups.get_group(groupName)[column]
+    # plot_hist(axHist, data, astrHistColor, 'AStr')
+    plt.subplot(spec)
+    plot_example(spec, 'Str3')
+    plt.title('AStr Example 3')
 
 plt.show()
 

@@ -29,6 +29,7 @@ examples.update({'Thal2' : 'pinp026_2017-11-16_3046_4_3'})
 # examples.update({'Str1' : 'pinp029_2017-11-08_2052_2_3'})
 examples.update({'Str1' : 'pinp020_2017-05-09_2702_8_2'})
 examples.update({'Str2' : 'pinp020_2017-05-09_2802_7_2'})
+examples.update({'Str3' : 'pinp029_2017-11-08_2052_2_3'})
 
 exampleList = [val for key, val in examples.iteritems()]
 exampleKeys = [key for key, val in examples.iteritems()]
