@@ -26,7 +26,7 @@ from jaratest.nick.database import dataloader_v2 as dataloader
   
 # -- Global variables -- #
 mouseNameList = ['adap005','adap012','adap013','adap015','adap017','gosi001','gosi004','gosi008','gosi010','adap067','adap071'] 
-SAMPLING_RATE=30000.0
+SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0 # channel 0 is the sound presentation, 1 is the trial    
 processedDate = time.strftime("%d_%m_%Y")
 
@@ -34,7 +34,7 @@ dbKey = 'reward_change'
 
 timeRange = [-0.5,0.5] # In seconds. Time range for to calculate spikeTimesFromEventOnset, this time window has to span all the possible count time ranges for generating spike count matrix
 
-recalculate = True
+recalculate = False
 CASE = 3
 ##############################################################
 
@@ -51,7 +51,7 @@ if CASE == 1:
         allCountTimeRanges = ([-0.3,-0.2])
         # Generate conditions for calculating modulation in by taking all possible combinations from all alignments and countTimeRanges
         #conditions = list(itertools.product(allAlignments,allCountTimeRanges))
-        conditions = [('center-out',[0.05,0.2]),('side-in',[-0.15,0])]
+        conditions = [('side-in',[-0.3,0])]
         modulationDfAllMice = pd.DataFrame()
 
         #for mouseName in mouseNameList:
