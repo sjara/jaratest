@@ -25,8 +25,8 @@ STUDY_NAME = '2017rewardchange'
 
 def find_2afc_ephys_sessions(celldb, tetrode):
     celldbThisTetrode = celldb.loc[celldb['tetrode']==tetrode]
-    inds = celldbThisTetrode['sessiontype'].apply(lambda x: x.index('behavior'))
-    behavEphysSessionsEachCell = celldbThisTetrode.apply(lambda row: row['ephys'][inds[row.name]], axis=1)
+    inds = celldbThisTetrode['sessionType'].apply(lambda x: x.index('behavior'))
+    behavEphysSessionsEachCell = celldbThisTetrode.apply(lambda row: row['ephysTime'][inds[row.name]], axis=1)
     sortedUniqueEphysSessions = sorted(set(behavEphysSessionsEachCell.values))
     return sortedUniqueEphysSessions
 
@@ -232,10 +232,73 @@ def print_reports_clusters(subject, sessions, tetrode, printer):
         print ' '.join(printcommand)
         # subprocess.call(printcommand)
 
-def (tetrodes=range(1,9)):
+def calculate_waveforms_all_sessions_each_tetrode(cellDB, tetrode, waveDesFolder):
+    if not os.path.exists(waveDesFolder):
+        os.mkdir(waveDesFolder)
+    #Find all the 2afc sessions for this animal this tetrode
+    sessions = find_2afc_ephys_sessions(cellDB, tetrode)
+    clusterDirs = ['{}_kk'.format(session) for session in sessions]
+    #If the waves exist, load them. If not, get them
+    waveFile = os.path.join(waveDesFolder, '{}_TT{}waves.p'.format(subject, tetrode))
+
+    # #DONE: stop calculating waves every time
+    if os.path.isfile(waveFile):
+        #Load the waves
+        #NOTE: I first used np.savez, but it saved a dict and did not preserve the order of the sessions. Pickle saves the actual object.
+        #TODO: Use np.savez with the data object to save as the list of arrays
+        #TODO: Also see if we should use savez_compressed
+        print "Loading average waves for {} tetrode {}".format(subject, tetrode)
+        sessionWaves = pickle.load(open(waveFile, 'rb'))
+    else:
+        print "Calculating average waves for Subject {} tetrode {}".format(subject, tetrode)
+        sessionWaves = waveforms_many_sessions(subject, cellDB, sessions, tetrode)
+        pickle.dump(sessionWaves, open(waveFile, 'wb'))
+    return sessionWaves
+
+def calculate_within_and_cross_session_correlations_each_tetrode(subject, tetrode, corrDesFolder):
+    if not os.path.exists(corrDesFolder):
+        os.mkdir(corrDesFolder)
+    corrFile = os.path.join(corrDesFolder, '{}_TT{}corr.npz'.format(subject, tetrode))
+    if os.path.isfile(corrFile):
+        #Load the correlations if they already exist
+        loadCorr = np.load(corrFile)
+        ccSelf = loadCorr['ccSelf']
+        ccAcross = loadCorr['ccAcross']
+    else:
+        #Calculate the pairwise correlation between spikes
+        ccSelf, ccAcross = spikeshape_correlation(sessionWaves)
+        #Save the correlations
+        np.savez_compressed(corrFile, ccSelf=ccSelf, ccAcross=ccAcross)
+        print "Saving correlation file for Subject {} tetrode {}".format(subject, tetrode)
+    return ccSelf, ccAcross
+
+def save_within_session_correlations_good_cells(cellDB, tetrode, ccSelf):
+    allSelfCorrVals = []; allSelfCorrLabs = []
+    sessions = find_2afc_ephys_sessions(cellDB, tetrode)
+    for indSession, session in enumerate(sessions):
+        try:
+            selfCompThisSession = ccSelf[indSession]
+            qualityMat = comparison_quality_filter(cellDB, session, session, tetrode, isiThresh, qualityThresh)
+            qualityMat = triangle_filter(qualityMat)
+            larray = comparison_label_array(cellDB, session, session, tetrode)
+            goodCorrVals = selfCompThisSession[qualityMat]
+            goodCompLabs = larray[qualityMat]
+            #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
+            #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
+            #save out the values
+            allSelfCorrVals.extend(list(goodCorrVals))
+            allSelfCorrLabs.extend(list(goodCompLabs))
+        except IndexError: # This is when a tetrode don't have data for all the sessions
+            continue
+    subject = cellDB.subject.loc[0]
+    outputFile = os.path.join(resultsDesFolder,'{}_TT{}_SELF_corr.npz'.format(subject, tetrode))
+    np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allSelfCorrVals=allSelfCorrVals, allSelfCorrLabs=allSelfCorrLabs)
+
+
+def calculate_wave_correlations(cellDB, tetrode, waveDesFolder, corrDesFolder, resultsDesFolder):
     
-    waveDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/wavefiles/{}'.format(STUDY_NAME)) 
-        corrDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/corrfiles/{}'.format(STUDY_NAME))
+    waveDesFolder = os.path.join(settings.EPHYS_PATH_REMOTE, 'cluster_analysis/wavefiles/{}'.format(STUDY_NAME)) 
+    corrDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/corrfiles/{}'.format(STUDY_NAME))
     resultsDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values/{}'.format(STUDY_NAME))
     for folder in (waveDesFolder, corrDesFolder, resultsDesFolder):
         if not os.path.exists(folder):
@@ -276,7 +339,6 @@ def (tetrodes=range(1,9)):
             print "Saving correlation file for Subject {} tetrode {}".format(subject, tetrode)
 
         #Loop self comparisons WITH THRESHOLD and save to file
-        #DONE: Name the file according to animal and tetrode
         allSelfCorrVals = []; allSelfCorrLabs = []
         #allSelfCorrComps = []; 
 
