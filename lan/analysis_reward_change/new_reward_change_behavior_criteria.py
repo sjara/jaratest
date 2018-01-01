@@ -25,10 +25,10 @@ def ensure_behav_criteria_celldb(celldb, strict=True, sessiontype=sessiontype, m
     
     for date in np.unique(celldb.date):
         cellsThisSession = celldb.query('date=="{}"'.format(date))
-        firstCellThisSession = cellsThisSession.loc[0]
-        cellObj = ephyscore.CellDataObj(firstCellThisSession)
+        firstCellThisSession = cellsThisSession.iloc[0]
+        cellObj = ephyscore.Cell(firstCellThisSession)
         rcInd = cellObj.get_session_inds(sessiontype=sessiontype)
-        bdata = cellObj.load_behavior_by_index(rcInd)
+        bdata = cellObj.load_behavior_by_index(rcInd[0])
 
         currentBlock = bdata['currentBlock']
         blockChanges = len(np.flatnonzero(np.diff(currentBlock)))
@@ -58,6 +58,6 @@ def ensure_behav_criteria_celldb(celldb, strict=True, sessiontype=sessiontype, m
             if (numOfLeftOrRightMoreBlocks >= minBlockNum) & (percentCorrect >= performanceThreshold):
                 metBehavCriteria.loc[cellsThisSession.index] = True
         
-        return metBehavCriteria
+    return metBehavCriteria
 
 

@@ -27,8 +27,10 @@ def find_2afc_ephys_sessions(celldb, tetrode):
     celldbThisTetrode = celldb.loc[celldb['tetrode']==tetrode]
     inds = celldbThisTetrode['sessionType'].apply(lambda x: x.index('behavior'))
     behavEphysSessionsEachCell = celldbThisTetrode.apply(lambda row: row['ephysTime'][inds[row.name]], axis=1)
+    dateEachCell = celldbThisTetrode.date
     sortedUniqueEphysSessions = sorted(set(behavEphysSessionsEachCell.values))
-    return sortedUniqueEphysSessions
+    # need to add back the date to generate a full ephys session name
+    return sortedUniqueEphysSessions 
 
 def waveforms_many_sessions(subject, cellDB, ephysSessions, tetrode,  wavesize=160):
     '''

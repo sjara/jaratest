@@ -13,6 +13,7 @@ reload(spikesorting)
 reload(ephyscore)
 import new_reward_change_behavior_criteria as behavCriteria
 import new_activity_consistency_score_celldb as consistentActivity
+import new_reward_change_cell_in_target_range_celldb as inTargetRangeCheck
 
 STUDY_NAME = '2017rc'
 SAVE_FULL_DB = 1
@@ -27,6 +28,7 @@ inforecFolder = settings.INFOREC_PATH
 qualityThreshold = 2.5 # conservative quality threshold 
 ISIcutoff = 0.02
 useStrictBehavCriterionWhenSaving = True
+checkDuplicateBeforeSaving = False
 
 # -- params for behavior criteria -- #
 minBlockNum = 3
@@ -62,27 +64,33 @@ for animal in animals:
         fullDb.to_hdf(fullDbFullPath, key=dbKey)
 
     # -- check if cell meets behavior criteria -- #
-    met_behav_criteria_strict = behavCriteria.ensure_behav_criteria_celldb(fullDb, strict=useStrictBehavCriterionWhenSaving,  sessiontype='behavior', minBlockNum=minBlockNum, minTrialNumEndBlock=minTrialNumEndBlock, performanceThreshold=performanceThreshold)
+    metBehavCriteria = behavCriteria.ensure_behav_criteria_celldb(fullDb, strict=useStrictBehavCriterionWhenSaving,  sessiontype='behavior', minBlockNum=minBlockNum, minTrialNumEndBlock=minTrialNumEndBlock, performanceThreshold=performanceThreshold)
     
-    # -- check if cell is duplicated -- #
-    keep_after_dup_test = 
-
     # -- check firing consistency in 2afc session -- #
-    consistent_firing_2afc = pd.Series(index=fullDb.index, dtype=bool)
+    consistentFiring = pd.Series(index=fullDb.index, dtype=bool)
     for indCell, cell in fullDb.iterrows():
-        cellObj = ephyscore.CellDataObj(cell)
+        cellObj = ephyscore.Cell(cell)
         consistencyThisCell = consistentActivity.score_compare_ave_firing_vs_std(cellObj, sessionToUse='behavior', numBins=numBins, sd2mean=sdToMeanRatio)
-        consistent_firing_2afc[indCell] = consistencyThisCell
+        consistentFiring[indCell] = consistencyThisCell
 
     # -- check if cell depth is inside target region range -- #
+    actualDepthEachCell, inTargetArea = inTargetRangeCheck.celldb_in_target_range_check(fullDb, inforecPath = settings.INFOREC_PATH)
+    
+    # -- check if cell is duplicated -- #
+    keepAfterDupTest = 
+    goodQualCells['keep_after_dup_test'] = keepAfterDupTest
+
+    # PLAN: calculate behav criteria, firing consistency, depth in target region (by calling designated functions in a separate module), then save only the good qual cells as a celldb, keeping the noncontinuous indices from the original celldb:
+    
+    goodQualCells = celldb.query('isiViolations<{} and spikeShapeQuality>{}'.format(ISIcutoff, qualityThreshold))
+
+    goodQualCells = goodQualCells.loc[(consistentFiring==True) & (inTargetArea==True) & (metBehavCriteria==True)]
+    
+    if checkDuplicateBeforeSaving:
+        goodQualCells = goodQualCells.query('keep_after_dup_check==True')
     
     
-    # PLAN: calculate behav criteria, duplicate cell, firing consistency, depth in target region (by calling designated functions in a separate module), then save only the good qual cells as a celldb, keeping the noncontinuous indices from the original celldb:
     
-    #if useStrictBehavCriterionWhenSaving:
-        #goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria_strict==True'.format(ISIcutoff, qualityThreshold))
-    #else:
-        #goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria==True'.format(ISIcutoff, qualityThreshold))
 
 
     '''
