@@ -4,7 +4,7 @@ reload(celldatabase)
 subject = 'band023'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2017-03-20', brainarea='right_thalamus', info='anteriorDiI')
+exp0 = celldatabase.Experiment(subject, '2017-03-20', brainarea='right_thalamus', info=['anteriorDiI','sitesAnt','sound_left'])
 experiments.append(exp0)
 
 exp0.add_site(3301, tetrodes = [1,2,5,7])
@@ -40,13 +40,13 @@ exp0.add_session('14-26-10', 's', 'noiseAmps', 'am_tuning_curve')
 exp0.add_session('14-31-29', 't', 'bandwidth', 'bandwidth_am') #27kHz, 64Hz for TT1
 
 
-exp1 = celldatabase.Experiment(subject, '2017-03-22', brainarea='right_thalamus', info='middleDiD')
+exp1 = celldatabase.Experiment(subject, '2017-03-22', brainarea='right_thalamus', info=['middleDiD','sitesAnt','sound_left'])
 experiments.append(exp1)
 
-exp1.add_site(3300, tetrodes = [2,4,6])
-exp1.add_session('09-20-44', None, 'noisebursts', 'am_tuning_curve') #two decent sound responsive spikes on TT4
-exp1.add_session('09-23-13', 'a', 'tuningCurve', 'am_tuning_curve') #not that great sound responses
-exp1.add_session('09-34-22', 'b', 'AM', 'am_tuning_curve')
+# exp1.add_site(3300, tetrodes = [2,4,6])
+# exp1.add_session('09-20-44', None, 'noisebursts', 'am_tuning_curve') #two decent sound responsive spikes on TT4
+# exp1.add_session('09-23-13', 'a', 'tuningCurve', 'am_tuning_curve') #not that great sound responses
+# exp1.add_session('09-34-22', 'b', 'AM', 'am_tuning_curve')
 
 exp1.add_site(3390, tetrodes = [2,4,6])
 exp1.add_session('09-41-43', None, 'noisebursts', 'am_tuning_curve') #good sound response on TT2, good spikes on TT4 with ok sound response
@@ -73,7 +73,7 @@ exp1.add_session('13-20-06', 'p', 'bandwidth', 'bandwidth_am') #12kHz, 64Hz for 
 exp1.add_session('13-40-07', 'q', 'noiseAmps', 'am_tuning_curve')
 
 
-exp2 = celldatabase.Experiment(subject, '2017-03-23', brainarea='right_thalamus', info='posteriorDiI')
+exp2 = celldatabase.Experiment(subject, '2017-03-23', brainarea='right_thalamus', info=['posteriorDiI','sitesAnt','sound_left'])
 experiments.append(exp2)
 
 exp2.add_site(3300, tetrodes = [2,3,4,5,6,8])
@@ -92,7 +92,7 @@ exp2.add_session('11-44-33', 'h', 'bandwidth', 'bandwidth_am') #26kHz, 8Hz for o
 exp2.add_session('12-02-59', 'i', 'noiseAmps', 'am_tuning_curve')
 
 
-exp3 = celldatabase.Experiment(subject, '2017-03-24', brainarea='left_thalamus', info='anteriorDiI')
+exp3 = celldatabase.Experiment(subject, '2017-03-24', brainarea='left_thalamus', info=['anteriorDiI','TT1ant','sound_left'])
 experiments.append(exp3)
 
 exp3.add_site(3000, tetrodes = [1,2,3,4,5,7,8])
@@ -118,7 +118,7 @@ exp3.add_session('12-42-45', 'l', 'bandwidth', 'bandwidth_am') #15kHz, 64Hz for 
 exp3.add_session('13-01-14', 'm', 'noiseAmps', 'am_tuning_curve')
 
 
-exp4 = celldatabase.Experiment(subject, '2017-03-26', brainarea='left_thalamus', info='middleDiD')
+exp4 = celldatabase.Experiment(subject, '2017-03-26', brainarea='left_thalamus', info=['middleDiD','TT1ant','sound_left'])
 experiments.append(exp4)
 
 exp4.add_site(3135, tetrodes = [1,3,4,7,8])
@@ -146,7 +146,7 @@ exp4.add_session('16-52-55', 'k', 'bandwidth', 'bandwidth_am') #8kHz, 64Hz for T
 exp4.add_session('17-11-30', 'l', 'noiseAmps', 'am_tuning_curve')
 
 
-exp5 = celldatabase.Experiment(subject, '2017-03-27', brainarea='left_thalamus', info='posteriorDiI')
+exp5 = celldatabase.Experiment(subject, '2017-03-27', brainarea='left_thalamus', info=['posteriorDiI','TT1ant','sound_left'])
 experiments.append(exp5)
 
 exp5.add_site(3200, tetrodes = [1,2,3,4,6,7,8])

@@ -28,9 +28,12 @@ ISIcutoff = 0.02
 alphaLevel = 0.05
 
 plt.figure(figsize=(6,6))
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
+#dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
+dataDir = settings.DATABASE_PATH
 outputDir = '/tmp/'
 figFormat = 'png'
+
+useStrictBehavCriteria = False
 
 for indRegion, brainRegion in enumerate(brainRegions):
 #for animal in animalList:
@@ -39,7 +42,11 @@ for indRegion, brainRegion in enumerate(brainRegions):
     celldb = pd.read_hdf(celldbPath, key='reward_change')
 
     # -- For histogram of modulation index for sound-responsive cells, take the most responsive frequency -- #
-    goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria==True'.format(ISIcutoff, qualityThreshold))
+    if useStrictBehavCriteria:
+        goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria_strict==True'.format(ISIcutoff, qualityThreshold))
+    else:
+        goodQualCells = celldb.query('isiViolations<{} and shapeQuality>{} and consistentInFiring==True and keep_after_dup_test==True and inTargetArea==True and met_behav_criteria==True'.format(ISIcutoff, qualityThreshold))
+    
 
     soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x)) >=  maxZThreshold) #The bigger of the sound Z score is over threshold
     moreRespLowFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[0]) > abs(x[1]))
@@ -123,8 +130,8 @@ for indRegion, brainRegion in enumerate(brainRegions):
             plt.clf()
             binsEdges = np.linspace(-1,1,20)
             plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-            #figTitle = '{}_{}_movement_selective_cells'.format(brainRegion,modWindow)
-            figTitle = '{}_{}_movement_selective_cells'.format(animal,modWindow)
+            figTitle = '{}_{}_movement_selective_cells'.format(brainRegion,modWindow)
+            #figTitle = '{}_{}_movement_selective_cells'.format(animal,modWindow)
             plt.title(figTitle)
             plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} movement-selective cells: {:.3f}%'.format(len(sigModI), sum(movementSelective), 100*float(len(sigModI))/sum(movementSelective))) 
             plt.text(-0.9, 0.8*plt.ylim()[1], 'Out of {} movement-selective cells, {} were modulated \nby reward either going left or going right'.format(len(goodMovementSelCells), sum(sigModEitherDirection)))

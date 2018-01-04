@@ -159,10 +159,12 @@ for animal in animals:
     dbList.append(db)
 
 masterdb = pandas.concat(dbList, ignore_index=True)
+goodCells = masterdb.query('isiViolations<0.02 and spikeShapeQuality>2')
+
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 
 if SAVE:
     print 'Saving database to {}'.format(dbPath)
-    masterdb.to_hdf(dbPath, 'dataframe')
+    goodCells.to_hdf(dbPath, 'dataframe')
 

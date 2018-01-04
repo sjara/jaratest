@@ -1,5 +1,6 @@
 import pandas as pd
 from scipy import signal
+from scipy import stats
 import numpy as np
 from jaratoolbox import celldatabase
 from jaratoolbox import spikesanalysis
@@ -7,31 +8,42 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import loadopenephys
 from jaratoolbox import extraplots
 from jaratoolbox import settings
+from jaratoolbox import ephyscore
 import figparams
 from matplotlib import pyplot as plt
 import os
 
 STUDY_NAME = '2018thstr'
 
-def angle_population_vector(angles):
-    '''
-        Compute the complex population mean vector from a set of angles
-        Mean over Axis 0
-    '''
-    return np.mean(np.exp(1j*angles), axis=0)
+# def angle_population_vector(angles):
+#     '''
+#         Compute the complex population mean vector from a set of angles
+#         Mean over Axis 0
+#     '''
+#     return np.mean(np.exp(1j*angles), axis=0)
 
-def angle_population_R(angles=None, angle_population_vec=None, weights=None):
+# def angle_population_R(angles=None, angle_population_vec=None, weights=None):
+#     '''
+#         Compute R, the length of the angle population complex vector.
+#         Used to compute Standard deviation and diverse tests.
+#         If weights is provided, computes a weighted population mean vector instead.
+#     '''
+#     if angle_population_vec is None:
+#         if weights is None:
+#             angle_population_vec = angle_population_vector(angles)
+#         else:
+#             angle_population_vec = angle_population_vector_weighted(angles, weights)
+#     return np.abs(angle_population_vec)
+
+def angle_population_vector_zar(angles):
     '''
-        Compute R, the length of the angle population complex vector.
-        Used to compute Standard deviation and diverse tests.
-        If weights is provided, computes a weighted population mean vector instead.
+    Copied directly from Biostatistical analysis, Zar, 3rd ed, pg 598 (Mike W has this book)
+    Computes the length of the mean vector for a population of angles
     '''
-    if angle_population_vec is None:
-        if weights is None:
-            angle_population_vec = angle_population_vector(angles)
-        else:
-            angle_population_vec = angle_population_vector_weighted(angles, weights)
-    return np.abs(angle_population_vec)
+    X = np.mean(np.cos(angles))
+    Y = np.mean(np.sin(angles))
+    r = np.sqrt(X**2 + Y**2)
+    return r
 
 def rayleigh_test(angles):
     '''
@@ -45,54 +57,12 @@ def rayleigh_test(angles):
         angles = angles.flatten()
     N = angles.size
     # Compute Rayleigh's R
-    R = N*angle_population_R(angles)
+    R = N*angle_population_vector_zar(angles)
     # Compute Rayleight's z
     zVal = R**2. / N
     # Compute pvalue (Zar, Eq 27.4)
     pVal = np.exp(np.sqrt(1. + 4*N + 4*(N**2. - R**2)) - 1. - 2.*N)
     return zVal, pVal
-
-# timeRange = [0, 0.5]
-# spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-#     spikeTimestamps, eventOnsetTimes, timeRange)
-# freqEachTrial = behavData['currentFreq']
-# squeezedinds=np.array([list(np.unique(selectinds)).index(x) for x in selectinds])
-
-def AM_vector_strength(spikeTimesFromEventOnset, behavData, ignoreBefore=0.03):
-    '''
-    Compute the vector strength
-
-    '''
-    currentFreq = behavData['currentFreq']
-    possibleFreq = np.unique(currentFreq)
-    vs_array=np.array([])
-    ral_array=np.array([])
-    pval_array = np.array([])
-    for freq in possibleFreq:
-        select = np.flatnonzero(currentFreq==freq)
-        selectspikes = spikeTimesFromEventOnset[np.in1d(trialIndexForEachSpike, select)]
-        selectinds = trialIndexForEachSpike[np.in1d(trialIndexForEachSpike, select)]
-        squeezedinds=np.array([list(np.unique(selectinds)).index(x) for x in selectinds])
-        spikesAfterFirstCycle = selectspikes[selectspikes>ignoreBefore]
-        indsAfterFirstCycle = selectinds[selectspikes>ignoreBefore]
-
-        strength, phase = signal.vectorstrength(spikesAfterFirstCycle, 1.0/freq)
-        vs_array=np.concatenate((vs_array, np.array([strength])))
-
-        #Compute the pval for the vector strength
-        radsPerSec=freq*2*np.pi
-        spikeRads = (spikesAfterFirstCycle*radsPerSec)%(2*np.pi)
-        ral_test = rayleigh_test(spikeRads)
-        pval = np.array([ral_test['pvalue']])
-        ral =np.array([2*len(spikesAfterFirstCycle)*(strength**2)])
-        pval_array = np.concatenate((pval_array, pval))
-        ral_array = np.concatenate((ral_array, ral))
-    return vs_array, pval_array, ral_array
-
-#TODO: not needed after example testing
-def find_cell(dataframe, subject, date, depth, tetrode, cluster):
-    cell = dataframe.query("subject==@subject and date==@date and depth==@depth and tetrode==@tetrode and cluster==@cluster")
-    return cell
 
 def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, freqEachTrial):
     '''
@@ -107,70 +77,98 @@ def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, 
 
 CASE=1
 SAVE=True
-if CASE==0:
-    cell = {'subject':'pinp015',
-            'date':'2017-02-15',
-            'depth':2902,
-            'tetrode':8,
-            'cluster':6}
-    dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
-    db = pd.read_hdf(dbPath, key='dataframe')
-    #TODO: Define these
-    # eventID =
-    # eventChannel =
-    cell = find_cell(db, cell['subject'], cell['date'], cell['depth'], cell['tetrode'], cell['cluster']).iloc[0]
-    spikeData, eventData = celldatabase.get_session_ephys(cell, 'am')
-    eventOnsetTimes = eventData.get_event_onset_times(eventID=1, eventChannel=5)
-    eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.7)
-    bdata = celldatabase.get_session_bdata(cell, 'am')
-    timeRange = [-0.2, 0.7]
-    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-        spikeData.timestamps, eventOnsetTimes, timeRange)
-    freqEachTrial = bdata['currentFreq']
-    plt.figure()
-    for spiketimes, trialInds in spiketimes_each_frequency(spikeTimesFromEventOnset,
-                                                           trialIndexForEachSpike,
-                                                           freqEachTrial):
-        plt.clf()
-        plt.plot(spiketimes, trialInds, '.')
-        plt.show()
-        plt.waitforbuttonpress()
+# if CASE==0:
+#     cell = {'subject':'pinp015',
+#             'date':'2017-02-15',
+#             'depth':2902,
+#             'tetrode':8,
+#             'cluster':6}
+#     dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+#     db = pd.read_hdf(dbPath, key='dataframe')
+#     #TODO: Define these
+#     # eventID =
+#     # eventChannel =
+#     cell = find_cell(db, cell['subject'], cell['date'], cell['depth'], cell['tetrode'], cell['cluster']).iloc[0]
+#     spikeData, eventData = celldatabase.get_session_ephys(cell, 'am')
+#     eventOnsetTimes = eventData.get_event_onset_times(eventID=1, eventChannel=5)
+#     eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.7)
+#     bdata = celldatabase.get_session_bdata(cell, 'am')
+#     timeRange = [-0.2, 0.7]
+#     spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+#         spikeData.timestamps, eventOnsetTimes, timeRange)
+#     freqEachTrial = bdata['currentFreq']
+#     plt.figure()
+#     for spiketimes, trialInds in spiketimes_each_frequency(spikeTimesFromEventOnset,
+#                                                            trialIndexForEachSpike,
+#                                                            freqEachTrial):
+#         plt.clf()
+#         plt.plot(spiketimes, trialInds, '.')
+#         plt.show()
+#         plt.waitforbuttonpress()
 
 if CASE==1:
     # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
     dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
-    db = pd.read_hdf(dbPath, key='dataframe')
+    dataframe = pd.read_hdf(dbPath, key='dataframe')
 
-    #FOR TESTING
-    # db = db[:5]
-
-    numFreq = 11
-    allFreqVS = np.empty((len(db), numFreq))
-    allFreqRal = np.empty((len(db), numFreq))
-    allFreqPval = np.empty((len(db), numFreq))
-
-    for indCell, cell in db.iterrows():
-        if not 'am' in cell['sessiontype']:
-            db.loc[indCell, 'highestSync'] = np.nan
+    for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
+        if not 'am' in dbRow['sessionType']:
+            dataframe.loc[indRow, 'highestSync'] = np.nan
             print 'BREAKING, AM'
             continue
-        spikeData, eventData = celldatabase.get_session_ephys(cell, 'am')
-        if spikeData.timestamps is None:
-            db.loc[indCell, 'highestSync'] = np.nan
-            print "BREAKING, no spike data"
+        cell = ephyscore.Cell(dbRow)
+        # spikeData, eventData = celldatabase.get_session_ephys(cell, 'am')
+        try:
+            ephysData, bdata = cell.load('am')
+        except (IndexError, ValueError): #The cell does not have a tc or the tc session has no spikes
+            failed=True
+            print "No am session for cell {}".format(indRow)
+            dataframe.loc[indRow, 'highestSync'] = np.nan
             continue
-        if len(spikeData.timestamps)<100:
-            db.loc[indCell, 'highestSync'] = np.nan
+
+        spikeTimes = ephysData['spikeTimes']
+
+        if len(spikeTimes)<100:
+            dataframe.loc[indRow, 'highestSync'] = np.nan
             print "BREAKING, Spikenum"
             continue
-        eventOnsetTimes = eventData.get_event_onset_times(eventID=1, eventChannel=5)
-        eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.7)
-        bdata = celldatabase.get_session_bdata(cell, 'am')
-        timeRange = [0.1, 0.5] #DONE: Use this to cut out onset responses
 
+        numFreq = len(np.unique(bdata['currentFreq']))
+
+        allFreqVS = np.empty(numFreq)
+        allFreqRal = np.empty(numFreq)
+        allFreqPval = np.empty(numFreq)
+
+        eventOnsetTimes = ephysData['events']['soundDetectorOn']
+        eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.7)
+
+        ### --- Test to see if there is a response to the AM session --- ###
+        baseRange = [-0.5, -0.1]
+        responseRange = [0.1, 0.5]
+        alignmentRange = [baseRange[0], responseRange[1]]
+        (spikeTimesFromEventOnset,
+         trialIndexForEachSpike,
+         indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
+                                                                       eventOnsetTimes,
+                                                                       alignmentRange)
+        nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                            indexLimitsEachTrial,
+                                                            baseRange)
+        nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                            indexLimitsEachTrial,
+                                                            responseRange)
+        [zScore, pVal] = stats.ranksums(nspkResp,nspkBase)
+        if pVal > 0.05: #No response
+            dataframe.loc[indRow, 'highestSync'] = np.nan
+            print "Breaking, no significant response"
+            continue
+        ### ------------------------------------------------------------ ###
+
+        ### --- Calculate vector strength and significance --- ###
+        timeRange = [0.1, 0.5] #DONE: Use this to cut out onset responses
         (spikeTimesFromEventOnset,
         trialIndexForEachSpike,
-        indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeData.timestamps,
+        indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
                                                                     eventOnsetTimes,
                                                                     timeRange)
         freqEachTrial = bdata['currentFreq']
@@ -188,9 +186,9 @@ if CASE==1:
             #NOTE: I checked the math in this function using the text referenced (Mike W. has a copy if needed)
             zVal, pVal = rayleigh_test(spikeRads)
 
-            allFreqVS[indCell, indFreq] = strength
-            allFreqRal[indCell, indFreq] = ral
-            allFreqPval[indCell, indFreq] = pVal
+            allFreqVS[indFreq] = strength
+            allFreqRal[indFreq] = ral
+            allFreqPval[indFreq] = pVal
 
             # # pValArr = np.concatenate((pValArr, np.array([pVal])))
             # allFreqPval.append(pVal)
@@ -198,17 +196,14 @@ if CASE==1:
             # # ralArr = np.concatenate((ralArr, np.array([ral])))
             # allFreqRal.append(ral)
 
-        pValThisCell = allFreqPval[indCell, :]
         possibleFreq = np.unique(freqEachTrial)
-        if any(pValThisCell<0.05):
-            db.loc[indCell, 'highestSync'] = possibleFreq[pValThisCell<0.05].max()
-            print possibleFreq[pValThisCell<0.05].max()
+        if any(allFreqPval<0.05):
+            dataframe.loc[indRow, 'highestSync'] = possibleFreq[allFreqPval<0.05].max()
+            # print possibleFreq[pValThisCell<0.05].max()
         else:
-            db.loc[indCell, 'highestSync'] = 0
-            print 'ZERO'
+            dataframe.loc[indRow, 'highestSync'] = 0
+            # print 'ZERO'
     if SAVE:
         savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-        db.to_hdf(savePath, 'dataframe')
+        dataframe.to_hdf(savePath, 'dataframe')
         print "SAVED DATAFRAME to {}".format(savePath)
-
-

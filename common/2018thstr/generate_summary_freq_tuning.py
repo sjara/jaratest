@@ -112,6 +112,7 @@ cfs = np.full(len(dataframe), np.nan)
 thresholds = np.full(len(dataframe), np.nan)
 lowerFreqs = np.full(len(dataframe), np.nan)
 upperFreqs = np.full(len(dataframe), np.nan)
+rsquaredFit = np.full(len(dataframe), np.nan)
 
 #Init lists to hold indices of the cells that fail this analysis in one way or another
 noTCinds = [] #Cells that do not have a TC or the TC session does not have any spikes
@@ -130,11 +131,8 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         failed=True
         print "No tc for cell {}".format(indRow)
         noTCinds.append(indRow)
-        #NOTE: If the cell has no TC data we actually don't need to do anything because the arrays are filled with NaN by default
-        # thresholds[indIter] = None
-        # cfs[indIter] = None
-        # lowerFreqs[indIter] = None
-        # upperFreqs[indIter] = None
+        #NOTE: If the cell has no TC data we actually don't need to do anything
+        #because the arrays are filled with NaN by default
         continue #Move on to the next cell
 
     eventOnsetTimes = ephysData['events']['stimOn']
@@ -152,6 +150,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
     #Init list to hold the optimized parameters for the gaussian for each intensity
     popts = []
+    Rsquareds = []
 
     #Init arrays to hold the baseline and response spike counts per condition
     allIntenBase = np.array([])
@@ -192,6 +191,15 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
                                             bounds=([0, np.log2(possibleFreq[0]), 0, 0],
                                                     [inf, np.log2(possibleFreq[-1]), inf, inf]))
             popts.append(popt) #Save the curve paramaters
+
+            ## Calculate the R**2 value for the fit
+            fittedSpks = gaussian(np.log2(freqs), *popt)
+            residuals = spks - fittedSpks
+            SSresidual = np.sum(residuals**2)
+            SStotal = np.sum((spks-np.mean(spks))**2)
+            Rsquared = 1-(SSresidual/SStotal)
+            Rsquareds.append(Rsquared)
+
         except RuntimeError:
             failed=True
             print "RUNTIME ERROR, Cell {}".format(indIter)
@@ -201,6 +209,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
             lowerFreqs[indIter] = None
             upperFreqs[indIter] = None
             popts.append([np.nan, np.nan, np.nan, np.nan])
+            Rsquareds.append(np.nan)
             continue
 
     ### ----- Save the example cells out to an NPZ ---- ###
@@ -254,6 +263,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
     ind10Above = indThreshInt + int(10/np.diff(possibleIntensity)[0]) #How many inds to go above the threshold intensity ind
     try:
+        Rsquared10Above = Rsquareds[ind10Above]
         popt10AboveThreshold = popts[ind10Above]
         #TODO: Need to do something if we can't get 10dB above threshold
     except IndexError:
@@ -264,6 +274,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         no10dbAboveInds.append(indIter)
         upperFreq = None
         lowerFreq = None
+        Rsquared10Above = np.nan
     else:
         result = inverse_gaussian(thresholdResponse, *popt10AboveThreshold)
         if result is not None:
@@ -276,6 +287,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
             lowerFreq=None
             upperFreq=None
     #Things to save
+    rsquaredFit[indIter] = Rsquared10Above
     thresholds[indIter] = threshold
     cfs[indIter] = cf
     lowerFreqs[indIter] = lowerFreq
@@ -285,6 +297,7 @@ dataframe['threshold'] = thresholds
 dataframe['cf'] = cfs
 dataframe['lowerFreq'] = lowerFreqs
 dataframe['upperFreq'] = upperFreqs
+dataframe['rsquaredFit'] = rsquaredFit
 
 dataframe['BW10'] = (dataframe['upperFreq']-dataframe['lowerFreq'])/dataframe['cf']
 
