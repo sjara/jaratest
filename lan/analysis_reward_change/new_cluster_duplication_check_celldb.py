@@ -26,24 +26,23 @@ STUDY_NAME = '2017rewardchange'
 def find_2afc_ephys_sessions(celldb, tetrode):
     celldbThisTetrode = celldb.loc[celldb['tetrode']==tetrode]
     inds = celldbThisTetrode['sessionType'].apply(lambda x: x.index('behavior'))
-    behavEphysSessionsEachCell = celldbThisTetrode.apply(lambda row: row['ephysTime'][inds[row.name]], axis=1)
-    dateEachCell = celldbThisTetrode.date
+    behavEphysSessionsEachCell = celldbThisTetrode.apply(lambda row: '_'.join((row['date'], row['ephysTime'][inds[row.name]])), axis=1)
     sortedUniqueEphysSessions = sorted(set(behavEphysSessionsEachCell.values))
-    # need to add back the date to generate a full ephys session name
+    
     return sortedUniqueEphysSessions 
 
-def waveforms_many_sessions(subject, cellDB, ephysSessions, tetrode,  wavesize=160):
+def waveforms_many_sessions(cellDB, ephysSessions, tetrode,  wavesize=160):
     '''
     Create a list of arrays containing waveforms for each session for one tetrode.
     '''
     waveformsOneTetrode = []
     for oneSession in ephysSessions:
-        waves = calculate_avg_waveforms(subject, cellDB, oneSession, tetrode,
+        waves = calculate_avg_waveforms(cellDB, oneSession, tetrode,
                                  wavesize=wavesize)
         waveformsOneTetrode.append(waves)
     return waveformsOneTetrode
 
-def calculate_avg_waveforms(subject, cellDB, ephysSession, tetrode,  wavesize=160):
+def calculate_avg_waveforms(cellDB, ephysSession, tetrode,  wavesize=160):
     '''
     NOTE: This methods should look through sessions, not clusters.
           The idea is to compare clusters within a tetrode, and then across sessions
@@ -54,6 +53,8 @@ def calculate_avg_waveforms(subject, cellDB, ephysSession, tetrode,  wavesize=16
     date = ephysSession.split('_')[0]
     #passingClusters = np.array(np.repeat(0,12), dtype=bool) #default to all false
     cells = cellDB.loc[(cellDB.date==date) & (cellDB.tetrode==tetrode)]
+
+    subject = cellDB.subject.iloc[0]
     if len(cells) == 0: #This tetrode doesn't exist in this session
         allWaveforms = None
     else:
@@ -147,13 +148,15 @@ def plot_correlation(ccSelf,ccAccross,cmap='hot'):
     plt.colorbar()
     plt.draw()
 
-
+'''
+DEPRECATED IN NEW CELLDB
 def locate_cell_in_celldb(celldb, animal, behavSession, tetrode, cluster):
-    '''
-    Given a cell's parameters and a celldb(pandas DataFrame), locate the cell. Returns either an empty dataframe or a dataframe(subset of original) containing this cell.
-    '''
+    
+    #Given a cell's parameters and a celldb(pandas DataFrame), locate the cell. Returns either an empty dataframe or a dataframe(subset of original) containing this cell.
+    
     cell = allce.loc[(celldb.animalName==animal) & (celldb.behavSession==behavSession) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)]
     return cell
+'''
 
 
 def comparison_quality_filter(cellDB, session1, session2, tetrode, isiThresh=0.02, qualityThresh=2.5):  
@@ -184,10 +187,10 @@ def session_good_clusters(cellDB, session, tetrode, isiThresh, qualityThresh, co
         print 'ATTENTION: for {} on {}, 2afc session has {} clusters'.format(animal, date, tetrode, len(cells))
     
     if np.any(cells):
-        goodQualityCells = (cells.shapeQuality >= qualityThresh)
+        goodQualityCells = (cells.spikeShapeQuality >= qualityThresh)
         lowISICells = (cells.isiViolations <= isiThresh)
         if consistencyChecked:
-            consistentFiring = (cells.consistentInFiring == True)
+            consistentFiring = (cells.consistentFiring == True)
             passingClusters = (goodQualityCells & lowISICells & consistentFiring).values
         else:
             passingClusters = (goodQualityCells & lowISICells).values
@@ -234,16 +237,15 @@ def print_reports_clusters(subject, sessions, tetrode, printer):
         print ' '.join(printcommand)
         # subprocess.call(printcommand)
 
+
 def calculate_waveforms_all_sessions_each_tetrode(cellDB, tetrode, waveDesFolder):
-    if not os.path.exists(waveDesFolder):
-        os.mkdir(waveDesFolder)
+    subject = cellDB.subject.iloc[0]
     #Find all the 2afc sessions for this animal this tetrode
     sessions = find_2afc_ephys_sessions(cellDB, tetrode)
     clusterDirs = ['{}_kk'.format(session) for session in sessions]
     #If the waves exist, load them. If not, get them
     waveFile = os.path.join(waveDesFolder, '{}_TT{}waves.p'.format(subject, tetrode))
 
-    # #DONE: stop calculating waves every time
     if os.path.isfile(waveFile):
         #Load the waves
         #NOTE: I first used np.savez, but it saved a dict and did not preserve the order of the sessions. Pickle saves the actual object.
@@ -257,9 +259,10 @@ def calculate_waveforms_all_sessions_each_tetrode(cellDB, tetrode, waveDesFolder
         pickle.dump(sessionWaves, open(waveFile, 'wb'))
     return sessionWaves
 
-def calculate_within_and_cross_session_correlations_each_tetrode(subject, tetrode, corrDesFolder):
-    if not os.path.exists(corrDesFolder):
-        os.mkdir(corrDesFolder)
+
+
+def calculate_within_and_cross_session_correlations_each_tetrode(cellDB, tetrode, waveDesFolder, corrDesFolder):
+    subject = cellDB.subject.iloc[0]
     corrFile = os.path.join(corrDesFolder, '{}_TT{}corr.npz'.format(subject, tetrode))
     if os.path.isfile(corrFile):
         #Load the correlations if they already exist
@@ -268,13 +271,15 @@ def calculate_within_and_cross_session_correlations_each_tetrode(subject, tetrod
         ccAcross = loadCorr['ccAcross']
     else:
         #Calculate the pairwise correlation between spikes
+        sessionWaves = calculate_waveforms_all_sessions_each_tetrode(cellDB, tetrode, waveDesFolder)
         ccSelf, ccAcross = spikeshape_correlation(sessionWaves)
         #Save the correlations
         np.savez_compressed(corrFile, ccSelf=ccSelf, ccAcross=ccAcross)
         print "Saving correlation file for Subject {} tetrode {}".format(subject, tetrode)
     return ccSelf, ccAcross
 
-def save_within_session_correlations_good_cells(cellDB, tetrode, ccSelf):
+
+def save_within_session_correlations_good_cells(cellDB, tetrode, ccSelf, resultsDesFolder):
     allSelfCorrVals = []; allSelfCorrLabs = []
     sessions = find_2afc_ephys_sessions(cellDB, tetrode)
     for indSession, session in enumerate(sessions):
@@ -292,12 +297,34 @@ def save_within_session_correlations_good_cells(cellDB, tetrode, ccSelf):
             allSelfCorrLabs.extend(list(goodCompLabs))
         except IndexError: # This is when a tetrode don't have data for all the sessions
             continue
-    subject = cellDB.subject.loc[0]
+    subject = cellDB.subject.iloc[0]
     outputFile = os.path.join(resultsDesFolder,'{}_TT{}_SELF_corr.npz'.format(subject, tetrode))
     np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allSelfCorrVals=allSelfCorrVals, allSelfCorrLabs=allSelfCorrLabs)
 
 
-def calculate_wave_correlations(cellDB, tetrode, waveDesFolder, corrDesFolder, resultsDesFolder):
+def save_cross_session_correlations_good_cells(cellDB, tetrode, ccAcross, resultsDesFolder):
+    allCrossCorrVals = []; allCrossCorrLabs = []
+    sessions = find_2afc_ephys_sessions(cellDB, tetrode)
+    for indComp, (session1, session2) in enumerate(zip(sessions, sessions[1:])):
+        try:
+            crossCompTheseSessions = ccAcross[indComp]
+            qualityMat = comparison_quality_filter(cellDB, session1, session2, tetrode, isiThresh, qualityThresh)
+            larray = comparison_label_array(cellDB, session1, session2, tetrode)
+            goodCorrVals = crossCompTheseSessions[qualityMat]
+            goodCompLabs = larray[qualityMat]
+            #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
+            #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
+            #save out the values
+            allCrossCorrVals.extend(list(goodCorrVals))
+            allCrossCorrLabs.extend(list(goodCompLabs))
+        except IndexError: # This is when a tetrode don't have data for all the sessions
+            continue
+    subject = cellDB.subject.iloc[0]
+    outputFile = os.path.join(resultsDesFolder,'{}_TT{}_CROSS_corr.npz'.format(subject, tetrode))
+    np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allCrossCorrVals=allCrossCorrVals, allCrossCorrLabs=allCrossCorrLabs)
+
+
+def calculate_and_save_correlations(cellDB, tetrode, waveDesFolder, corrDesFolder, resultsDesFolder):
     
     waveDesFolder = os.path.join(settings.EPHYS_PATH_REMOTE, 'cluster_analysis/wavefiles/{}'.format(STUDY_NAME)) 
     corrDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/corrfiles/{}'.format(STUDY_NAME))
@@ -305,84 +332,19 @@ def calculate_wave_correlations(cellDB, tetrode, waveDesFolder, corrDesFolder, r
     for folder in (waveDesFolder, corrDesFolder, resultsDesFolder):
         if not os.path.exists(folder):
             os.mkdir(folder)
-
+    subject = cellDB.subject.iloc[0]
     for tetrode in tetrodes:
-        #Find all the 2afc sessions for this animal this tetrode
-        sessions = find_2afc_ephys_sessions(cellDB, tetrode)
-        clusterDirs = ['{}_kk'.format(session) for session in sessions]
-        #If the waves exist, load them. If not, get them
-        waveFile = os.path.join(waveDesFolder, '{}_TT{}waves.p'.format(subject, tetrode))
+        resultsFile = os.path.join(resultsDesFolder,'{}_TT{}_CROSS_corr.npz'.format(subject, tetrode))
+        if not os.path.exists(resultsFile):
+            ccSelf, ccAcross = calculate_within_and_cross_session_correlations_each_tetrode(cellDB, tetrode, waveDesFolder, corrDesFolder)
 
-        # #DONE: stop calculating waves every time
-        if os.path.isfile(waveFile):
-            #Load the waves
-            #NOTE: I first used np.savez, but it saved a dict and did not preserve the order of the sessions. Pickle saves the actual object.
-            #TODO: Use np.savez with the data object to save as the list of arrays
-            #TODO: Also see if we should use savez_compressed
-            print "Loading average waves for {} tetrode {}".format(subject, tetrode)
-            sessionWaves = pickle.load(open(waveFile, 'rb'))
+            save_within_session_correlations_good_cells(cellDB, tetrode, ccSelf, resultsDesFolder)
+            save_cross_session_correlations_good_cells(cellDB, tetrode, ccAcross, resultsDesFolder)
         else:
-            print "Calculating average waves for Subject {} tetrode {}".format(subject, tetrode)
-            sessionWaves = waveforms_many_sessions(subject, cellDB, sessions, tetrode)
-            pickle.dump(sessionWaves, open(waveFile, 'wb'))
-
-        #TODO: if the correlations exist we don't need to load the waves
-        corrFile = os.path.join(corrDesFolder, '{}_TT{}corr.npz'.format(subject, tetrode))
-        if os.path.isfile(corrFile):
-            #Load the correlations if they already exist
-            loadCorr = np.load(corrFile)
-            ccSelf = loadCorr['ccSelf']
-            ccAcross = loadCorr['ccAcross']
-        else:
-            #Calculate the pairwise correlation between spikes
-            ccSelf, ccAcross = spikeshape_correlation(sessionWaves)
-            #Save the correlations
-            np.savez_compressed(corrFile, ccSelf=ccSelf, ccAcross=ccAcross)
-            print "Saving correlation file for Subject {} tetrode {}".format(subject, tetrode)
-
-        #Loop self comparisons WITH THRESHOLD and save to file
-        allSelfCorrVals = []; allSelfCorrLabs = []
-        #allSelfCorrComps = []; 
-
-        for indSession, session in enumerate(sessions):
-            try:
-                selfCompThisSession = ccSelf[indSession]
-                qualityMat = comparison_quality_filter(cellDB, session, session, tetrode, isiThresh, qualityThresh)
-                qualityMat = triangle_filter(qualityMat)
-                larray = comparison_label_array(cellDB, session, session, tetrode)
-                goodCorrVals = selfCompThisSession[qualityMat]
-                goodCompLabs = larray[qualityMat]
-                #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
-                #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
-                #save out the values
-                allSelfCorrVals.extend(list(goodCorrVals))
-                allSelfCorrLabs.extend(list(goodCompLabs))
-            except IndexError: # This is when a tetrode don't have data for all the sessions
-                continue
-        outputFile = os.path.join(resultsDesFolder,'{}_TT{}_SELF_corr.npz'.format(subject, tetrode))
-        np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allSelfCorrVals=allSelfCorrVals, allSelfCorrLabs=allSelfCorrLabs)
-
-        #DONE: Name the file according to animal and tetrode
-        allCrossCorrVals = []; allCrossCorrLabs = []
-        #allCrossCorrComps = []
-
-        for indComp, (session1, session2) in enumerate(zip(sessions, sessions[1:])):
-            try:
-                crossCompTheseSessions = ccAcross[indComp]
-                qualityMat = comparison_quality_filter(cellDB, session1, session2, tetrode, isiThresh, qualityThresh)
-                larray = comparison_label_array(cellDB, session1, session2, tetrode)
-                goodCorrVals = crossCompTheseSessions[qualityMat]
-                goodCompLabs = larray[qualityMat]
-                #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
-                #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
-                #save out the values
-                allCrossCorrVals.extend(list(goodCorrVals))
-                allCrossCorrLabs.extend(list(goodCompLabs))
-            except IndexError: # This is when a tetrode don't have data for all the sessions
-                continue
-        outputFile = os.path.join(resultsDesFolder,'{}_TT{}_CROSS_corr.npz'.format(subject, tetrode))
-        np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allCrossCorrVals=allCrossCorrVals, allCrossCorrLabs=allCrossCorrLabs)
-
+            print 'Waveform correlation for tetrode is already completed.'
+            continue
+        
+        
 
 
 if __name__=='__main__':
@@ -391,11 +353,10 @@ if __name__=='__main__':
     qualityThresh = 3 #2.5
     consistencyChecked=True
     
-    CASE = 2
+    CASE = 1
 
-    #ANIMALS = ['adap017','adap013']
     #brainRegion = 'ac'
-    ANIMALS = ['adap067','adap071'] #['gosi004','gosi010']
+    ANIMALS = ['adap005'] #['gosi004','gosi010']
     # -- Calculate waveform, correlations within and across 2 consecutive sessions for each tetrode in each animal -- #
     if CASE==1:
         for animal in ANIMALS:
@@ -414,87 +375,76 @@ if __name__=='__main__':
             waveDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/wavefiles/{}'.format(STUDY_NAME)) 
             corrDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/corrfiles/{}'.format(STUDY_NAME))
             resultsDesFolder = os.path.join(settings.EPHYS_PATH, 'cluster_analysis/good_corr_values/{}'.format(STUDY_NAME))
-            for folder in (waveDesFolder, corrDesFolder, resultsDesFolder):
-                if not os.path.exists(folder):
-                    os.mkdir(folder)
-
+            
             for tetrode in tetrodes:
-                #Find all the 2afc sessions for this animal this tetrode
-                sessions = find_2afc_ephys_sessions(cellDB, tetrode)
-                clusterDirs = ['{}_kk'.format(session) for session in sessions]
-                #If the waves exist, load them. If not, get them
-                waveFile = os.path.join(waveDesFolder, '{}_TT{}waves.p'.format(subject, tetrode))
-
-                # #DONE: stop calculating waves every time
-                if os.path.isfile(waveFile):
-                    #Load the waves
-                    #NOTE: I first used np.savez, but it saved a dict and did not preserve the order of the sessions. Pickle saves the actual object.
-                    #TODO: Use np.savez with the data object to save as the list of arrays
-                    #TODO: Also see if we should use savez_compressed
-                    print "Loading average waves for {} tetrode {}".format(subject, tetrode)
-                    sessionWaves = pickle.load(open(waveFile, 'rb'))
-                else:
-                    print "Calculating average waves for Subject {} tetrode {}".format(subject, tetrode)
-                    sessionWaves = waveforms_many_sessions(subject, cellDB, sessions, tetrode)
-                    pickle.dump(sessionWaves, open(waveFile, 'wb'))
-
-                #TODO: if the correlations exist we don't need to load the waves
-                corrFile = os.path.join(corrDesFolder, '{}_TT{}corr.npz'.format(subject, tetrode))
-                if os.path.isfile(corrFile):
-                    #Load the correlations if they already exist
-                    loadCorr = np.load(corrFile)
-                    ccSelf = loadCorr['ccSelf']
-                    ccAcross = loadCorr['ccAcross']
-                else:
-                    #Calculate the pairwise correlation between spikes
-                    ccSelf, ccAcross = spikeshape_correlation(sessionWaves)
-                    #Save the correlations
-                    np.savez_compressed(corrFile, ccSelf=ccSelf, ccAcross=ccAcross)
-                    print "Saving correlation file for Subject {} tetrode {}".format(subject, tetrode)
-
-                #Loop self comparisons WITH THRESHOLD and save to file
-                #DONE: Name the file according to animal and tetrode
-                allSelfCorrVals = []; allSelfCorrLabs = []
-                #allSelfCorrComps = []; 
-
-                for indSession, session in enumerate(sessions):
-                    try:
-                        selfCompThisSession = ccSelf[indSession]
-                        qualityMat = comparison_quality_filter(cellDB, session, session, tetrode, isiThresh, qualityThresh)
-                        qualityMat = triangle_filter(qualityMat)
-                        larray = comparison_label_array(cellDB, session, session, tetrode)
-                        goodCorrVals = selfCompThisSession[qualityMat]
-                        goodCompLabs = larray[qualityMat]
-                        #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
-                        #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
-                        #save out the values
-                        allSelfCorrVals.extend(list(goodCorrVals))
-                        allSelfCorrLabs.extend(list(goodCompLabs))
-                    except IndexError: # This is when a tetrode don't have data for all the sessions
-                        continue
-                outputFile = os.path.join(resultsDesFolder,'{}_TT{}_SELF_corr.npz'.format(subject, tetrode))
-                np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allSelfCorrVals=allSelfCorrVals, allSelfCorrLabs=allSelfCorrLabs)
-
-                #DONE: Name the file according to animal and tetrode
-                allCrossCorrVals = []; allCrossCorrLabs = []
-                #allCrossCorrComps = []
+                calculate_and_save_correlations(cellDB, tetrode, waveDesFolder, corrDesFolder, resultsDesFolder)
                 
-                for indComp, (session1, session2) in enumerate(zip(sessions, sessions[1:])):
-                    try:
-                        crossCompTheseSessions = ccAcross[indComp]
-                        qualityMat = comparison_quality_filter(cellDB, session1, session2, tetrode, isiThresh, qualityThresh)
-                        larray = comparison_label_array(cellDB, session1, session2, tetrode)
-                        goodCorrVals = crossCompTheseSessions[qualityMat]
-                        goodCompLabs = larray[qualityMat]
-                        #corrAboveThreshold = goodCorrVals[goodCorrVals>corrThresh]
-                        #compsAboveThreshold = goodCompLabs[goodCorrVals>corrThresh]
-                        #save out the values
-                        allCrossCorrVals.extend(list(goodCorrVals))
-                        allCrossCorrLabs.extend(list(goodCompLabs))
-                    except IndexError: # This is when a tetrode don't have data for all the sessions
-                        continue
-                outputFile = os.path.join(resultsDesFolder,'{}_TT{}_CROSS_corr.npz'.format(subject, tetrode))
-                np.savez(outputFile, subject=subject, tetrode=tetrode, ephysSessions=sessions, allCrossCorrVals=allCrossCorrVals, allCrossCorrLabs=allCrossCorrLabs)
+
+
+def check_within_session_duplicate_cellDB(cellDB, resultsDesFolder, corrThresh):
+    
+    excludeDf = cellDB[['subject', 'date', 'tetrode','cluster']]
+    ## !! REWARD-CHANGE MAX SOUND RESPONSE BASED ON RESPONSE TO THE TWO FREQS !! ##
+    #excludeDf['maxSoundRes'] = np.max(np.abs(cellDB[['maxZSoundMid1','maxZSoundMid2']].values),axis=1)
+    excludeDf['maxSoundRes'] = cellDB.behavZscore.apply(lambda x: np.max(np.abs(x))).values
+    #excludeDf['script'] = os.path.realpath(__file__)
+    excludeDf['duplicate_self'] = 0
+    #excludeDf['duplicate_cross'] = 0
+    excludeDf['duplicate_self_keep'] = 0
+    #excludeDf['duplicate_cross_keep'] = 0
+
+    tetrodeNames = ['TT' + str(i) for i in range(1,9)]
+    # -- Get all the cell pairs with correlation value over threshold -- #
+    # First go through the SELF (same session) correlations; THE STRATEGY HERE IS TO POOL ALL DUPLICATE CELLS FROM THE SAME SESSION AND KEEP THE ONE WITH THE BIGGEST SOUND RESPONSE
+    for tetrodeName in tetrodeNames:
+        print 'Finding same session duplicates for {}'.format(tetrodeName)
+        filenameSelf = animal + '_' + tetrodeName +'_SELF_corr.npz'
+        fullFilenameSelf = os.path.join(resultsDesFolder, filenameSelf)
+        selfCorrDb = np.load(fullFilenameSelf)
+        tetrode = int(selfCorrDb['tetrode'])
+        corrValsSelf = selfCorrDb['allSelfCorrVals']
+        corrLabsSelf = selfCorrDb['allSelfCorrLabs']
+        corrValsOverThreshSelf = corrValsSelf[corrValsSelf>=corrThresh]
+        corrLabsOverThreshSelf = corrLabsSelf[corrValsSelf>=corrThresh]
+        print 'Label pairs that crossed threshold:', len(corrLabsOverThreshSelf)
+        behavSessionList = [] #Keep a list of the sessions with clusters showing high self correlation 
+        behavSessionPre = ''
+        cellsThisSession = []
+        dateLastSess = ''
+        for lab in sorted(corrLabsOverThreshSelf):
+            cell1,cell2 = lab.split(' x ')
+            behavSession = cell1.split('_')[0].replace('-','') + 'a'
+            date = cell1.split('_')[0]
+            if behavSession == behavSessionPre:
+                cellsThisSession.extend([cell1,cell2])
+            elif (behavSession != behavSessionPre) & (len(cellsThisSession) != 0):
+                behavSessionList.append(behavSession)
+                print 'Finding same session duplicates for {} {}'.format(dateLastSess, tetrodeName)
+                # -- Pick one cell out of all duplicates for the session that was just done processing (the last session!) -- #
+                tetrode = int(tetrodeName[-1])
+                clusterList = [int(float(cellstr.split('_')[2][3:])) for cellstr in cellsThisSession]
+                print 'tetrode {}, clusters: {}'.format(tetrode, clusterList)
+                cells = excludeDf.loc[(excludeDf.subject==animal) & (excludeDf.date==dateLastSess) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))] 
+                excludeDf.ix[cells.index,'duplicate_self'] = 1
+                #maxSoundResEachCell = np.max(np.abs(cells[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
+                cellToKeepIndex = np.argmax(cells.maxSoundRes, axis=1)
+                excludeDf.ix[cellToKeepIndex, 'duplicate_self_keep'] = 1
+                cellsThisSession = [cell1,cell2]
+            else:
+                cellsThisSession = [cell1,cell2]
+            behavSessionPre = behavSession
+            dateLastSess = date
+    return excludeDf
+
+
+def check_cross_session_duplicate_and_keep_by_sound_resp(cellDB, resultsDesFolder, corrThresh):
+    
+    excludeDf = cellDB[['subject', 'date', 'tetrode','cluster']]
+    ## !! REWARD-CHANGE MAX SOUND RESPONSE BASED ON RESPONSE TO THE TWO FREQS !! ##
+    #excludeDf['maxSoundRes'] = np.max(np.abs(cellDB[['maxZSoundMid1','maxZSoundMid2']].values),axis=1)
+    excludeDf['maxSoundRes'] = cellDB.behavZscore.apply(lambda x: np.max(np.abs(x))).values
+
+
 
     elif CASE==2:
         # -- For Reward-change Mice: Pick out cell pairs with correlation value above threshold, only include the cell that has higher maxZ value in 2afc task. Do this separately for within and cross session correlations. --    
@@ -516,7 +466,7 @@ if __name__=='__main__':
             # Process one mouse at a time
             #dfThisMouse = allcells_rewardChange.loc[allcells_rewardChange['subject'] == animal].reset_index()
             dfThisMouse = pd.read_hdf(celldbPath, key='reward_change')
-            excludeDf = dfThisMouse[['animalName', 'date', 'tetrode','cluster']]
+            excludeDf = dfThisMouse[['subject', 'date', 'tetrode','cluster']]
             ## !! REWARD-CHANGE MAX SOUND RESPONSE BASED ON RESPONSE TO THE TWO FREQS !! ##
             #excludeDf['maxSoundRes'] = np.max(np.abs(dfThisMouse[['maxZSoundMid1','maxZSoundMid2']].values),axis=1)
             excludeDf['maxSoundRes'] = dfThisMouse.behavZscore.apply(lambda x: np.max(np.abs(x))).values
@@ -557,7 +507,7 @@ if __name__=='__main__':
                         tetrode = int(tetrodeName[-1])
                         clusterList = [int(float(cellstr.split('_')[2][3:])) for cellstr in cellsThisSession]
                         print 'tetrode {}, clusters: {}'.format(tetrode, clusterList)
-                        cells = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.date==dateLastSess) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))] 
+                        cells = excludeDf.loc[(excludeDf.subject==animal) & (excludeDf.date==dateLastSess) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster.isin(clusterList))] 
                         excludeDf.ix[cells.index,'duplicate_self'] = 1
                         #maxSoundResEachCell = np.max(np.abs(cells[['maxZSoundHigh','maxZSoundMid','maxZSoundLow']].values),axis=1)
                         cellToKeepIndex = np.argmax(cells.maxSoundRes, axis=1)
@@ -588,7 +538,7 @@ if __name__=='__main__':
                         date = cellstr.split('_')[0]
                         tetrode = int(tetrodeName[-1])
                         cluster = int(float(cellstr.split('_')[2][3:]))
-                        cell = excludeDf.loc[(excludeDf.animalName==animal) & (excludeDf.date==date) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster==cluster)]
+                        cell = excludeDf.loc[(excludeDf.subject==animal) & (excludeDf.date==date) & (excludeDf.tetrode==tetrode) & (excludeDf.cluster==cluster)]
                         excludeDf.ix[cell.index,'duplicate_cross'] = 1
                         cellInds = np.append(cellInds, cell.index)
                         
@@ -616,7 +566,7 @@ if __name__=='__main__':
             # -- Put excludeDf together with this animal's rewardChange celldb -- #
             dfs = [dfThisMouse,excludeDf]
             
-            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['animalName','date','tetrode','cluster'],how='inner'), dfs)      
+            dfAllThisMouse = reduce(lambda left,right: pd.merge(left,right,on=['subject','date','tetrode','cluster'],how='inner'), dfs)      
             dfAllThisMouse.to_hdf(celldbPath, key = 'reward_change')
             #allMiceDfs.append(dfAllThisMouse)
 

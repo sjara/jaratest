@@ -20,27 +20,30 @@ import importlib
 import sys
 from scipy import stats
 
-animal = 'adap067'
+#animal = 'adap005'
 
-databaseFullPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', '{}_database.h5'.format(animal))
-key = 'reward_change'
+#databaseFullPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', '{}_database.h5'.format(animal))
+#key = 'reward_change'
 
 timeRange = [-0.5,1]
 movementTimeRangeList = [[0.05, 0.15], [0.05, 0.25]] 
 #soundTriggerChannel = 0
 soundChannelType = 'stim'
 
-gosidb = pd.read_hdf(databaseFullPath, key=key)
+#cellDb = pd.read_hdf(databaseFullPath, key=key)
 
-# -- Analyse 2afc data: calculate movement selectivity index and significance -- #
-for movementTimeRange in movementTimeRangeList:
-    if not ('movementModI_{}'.format(movementTimeRange) in gosidb.columns):
-        print 'Calculating movement selectivity index for 2afc session in time range: '+movementTimeRange
+def evaluate_movement_selectivity_celldb(cellDb, movementTimeRange):
+    '''
+    Analyse 2afc data: calculate movement selectivity index and significance;
+    movementTimeRange should be a list (in seconds, time from center-out).
+    '''
+    if not ('movementModI_{}'.format(movementTimeRange) in cellDb.columns):
+        print 'Calculating movement selectivity index for 2afc session in time range: ' + str(movementTimeRange)
 
-        movementModI = np.zeros(len(gosidb)) #default value 0
-        movementModS = np.ones(len(gosidb)) #default value 1
+        movementModI = pd.Series(np.zeros(len(cellDb)), index=cellDb.index) #default value 0
+        movementModS = pd.Series(np.ones(len(cellDb)), index=cellDb.index) #default value 1
 
-        for indCell, cell in gosidb.iterrows():
+        for indCell, cell in cellDb.iterrows():
             cellObj = ephyscore.Cell(cell)
             sessiontype = 'behavior'  #2afc behavior
             #ephysData, bata = cellObj.load(sessiontype)
@@ -78,7 +81,6 @@ for movementTimeRange in movementTimeRangeList:
             responseEachFreq = []
             responseInds = []
 
-
             # -- calculate movement selectivity -- #
             rightward = bdata['choice']==bdata.labels['choice']['right']
             leftward = bdata['choice']==bdata.labels['choice']['left'] 
@@ -105,12 +107,15 @@ for movementTimeRange in movementTimeRangeList:
             else:
                 movementModI[indCell] = ((spikeAvgRightward - spikeAvgLeftward)/(spikeAvgRightward + spikeAvgLeftward))  
                 movementModS[indCell] = spikesanalysis.evaluate_modulation(spikeTimesFromEventOnset,indexLimitsEachTrial,movementTimeRange,trialsEachCond)[1]
+    
+    return movementModI, movementModS
 
 
-        gosidb['movementModI_{}'.format(movementTimeRange)] = movementModI
-        gosidb['movementModS_{}'.format(movementTimeRange)] = movementModS
-        gosidb.to_hdf(databaseFullPath, key=key)
-
+'''
+        cellDb['movementModI_{}'.format(movementTimeRange)] = movementModI
+        cellDb['movementModS_{}'.format(movementTimeRange)] = movementModS
+        cellDb.to_hdf(databaseFullPath, key=key)
+'''
 
 
 
