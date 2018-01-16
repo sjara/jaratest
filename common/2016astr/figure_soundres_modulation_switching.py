@@ -94,8 +94,8 @@ plt.setp(hPlots[3], color='grey') #Block2, lowFreq
 plt.setp(hPlots[4], color=colorRight) #Block2, midFreq
 plt.setp(hPlots[8], color='grey') #Block3, highFreq
 plt.setp(hPlots[7], color=colorLeft) #Block3, midFreq
-plt.setp(hPlots[3], color='grey') #Block4, lowFreq
-plt.setp(hPlots[4], color=colorRight) #Block4, midFreq
+plt.setp(hPlots[9], color='grey') #Block4, lowFreq
+plt.setp(hPlots[10], color=colorRight) #Block4, midFreq
 plt.ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
 
 # -- Panel C: representative sound-evoked raster from switching task, Not modulated-- #
