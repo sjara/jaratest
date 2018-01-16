@@ -7,6 +7,8 @@ from matplotlib import pyplot as plt
 from jaratoolbox import colorpalette as cp
 from jaratoolbox import extraplots
 from jaratoolbox import settings
+from jaratoolbox import loadbehavior
+from jaratoolbox import behavioranalysis
 import matplotlib.gridspec as gridspec
 import matplotlib
 import matplotlib.patches as mpatches
@@ -61,9 +63,9 @@ fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 2)
 gs.update(left=0.12, right=0.98, top=0.95, bottom=0.1, wspace=0.3, hspace=0.3)
-
-gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.15)
-gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,1], hspace=0.15)
+gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,0], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.15)
+gs02 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -73,14 +75,32 @@ downsampleFactorPsth = 1
 
 # -- Panel A: schematic of switching task-- #
 #ax1 = plt.subplot(gs[0:2, 0:2])
-ax1 = plt.subplot(gs[0, 0])
+ax1 = plt.subplot(gs00[0:2, :])
 plt.axis('off')
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
+ax2 = plt.subplot(gs00[2, :])
+animal = 'test089'
+paradigm = '2afc'
+session = '20160113a'
+winsize = 40
+behavFileName = loadbehavior.path_to_behavior_data(animal,paradigm,session)
+behavData = loadbehavior.FlexCategBehaviorData(behavFileName)
+hPlots = behavioranalysis.plot_dynamics(behavData, winsize=winsize, fontsize=fontSizeLabels, soundfreq=None)
+extraplots.boxoff(plt.gca())
+plt.setp(hPlots[1], color=colorLeft) #Block1, midFreq
+plt.setp(hPlots[2], color='grey') #Block1, highFreq
+plt.setp(hPlots[3], color='grey') #Block2, lowFreq
+plt.setp(hPlots[4], color=colorRight) #Block2, midFreq
+plt.setp(hPlots[8], color='grey') #Block3, highFreq
+plt.setp(hPlots[7], color=colorLeft) #Block3, midFreq
+plt.setp(hPlots[3], color='grey') #Block4, lowFreq
+plt.setp(hPlots[4], color=colorRight) #Block4, midFreq
+plt.ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
 
-# -- Panel B: representative sound-evoked raster from switching task, Not modulated-- #
-ax2 = plt.subplot(gs01[0:2, 0:])
-ax2.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+# -- Panel C: representative sound-evoked raster from switching task, Not modulated-- #
+ax2 = plt.subplot(gs02[0:2, :])
+ax2.annotate('C', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
     rasterFilename = 'example_switching_midfreq_soundaligned_raster_adap020_20160526a_T2_c9.npz'  # H-L-H blocks
@@ -112,7 +132,7 @@ if PANELS[0]:
 
     # -- Panel B2: representative sound-evoked psth from switching task, Not modulated -- #
     #ax3 = plt.subplot(gs[1, 2:4])
-    ax3 = plt.subplot(gs01[2:, :])
+    ax3 = plt.subplot(gs02[2:, :])
     psthFilename = 'example_switching_midfreq_soundaligned_psth_adap020_20160526a_T2_c9.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
@@ -145,10 +165,10 @@ if PANELS[0]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels, labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-# -- Panel C: representative sound-evoked raster from switching task, modulated -- #
+# -- Panel B: representative sound-evoked raster from switching task, modulated -- #
 #ax4 = plt.subplot(gs[2, 0:2])
-ax4 = plt.subplot(gs00[0:2, 0:])
-ax4.annotate('C', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax4 = plt.subplot(gs01[0:2, 0:])
+ax4.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[1]:
     rasterFilename = 'example_switching_midfreq_soundaligned_raster_test089_20160124a_T4_c6.npz'   # H-L-H blocks
@@ -181,7 +201,7 @@ if PANELS[1]:
 
     # -- Panel C2: representative sound-evoked psth from switching task, modulated -- #
     #ax5 = plt.subplot(gs[3, 0:2])
-    ax5 = plt.subplot(gs00[2:, 0:])
+    ax5 = plt.subplot(gs01[2:, 0:])
     psthFilename = 'example_switching_midfreq_soundaligned_psth_test089_20160124a_T4_c6.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
