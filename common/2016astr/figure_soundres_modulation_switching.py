@@ -53,7 +53,7 @@ fontSizePanel = figparams.fontSizePanel
 labelDis = 0.1
 
 labelPosX = [0.02, 0.54]   # Horiz position for panel labels
-labelPosY = [0.95, 0.48]    # Vert position for panel labels
+labelPosY = [0.95, 0.67, 0.48, 0.35]    # Vert position for panel labels
 
 #COLORMAP = {'leftTrials':'red', 'rightTrials':'green'}
 
@@ -61,11 +61,11 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 2)
-gs.update(left=0.12, right=0.98, top=0.95, bottom=0.1, wspace=0.3, hspace=0.3)
-gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,0], hspace=0.15)
-gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,1], hspace=0.15)
-gs02 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[1,1], hspace=0.15)
+gs = gridspec.GridSpec(6, 2)
+gs.update(left=0.14, right=0.98, top=0.95, bottom=0.1, wspace=0.5, hspace=1.5)
+#gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0,0], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[0:3,1], hspace=0.15)
+gs02 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[3:,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -73,13 +73,16 @@ smoothWinSizePsth = 2#3
 lwPsth = 2
 downsampleFactorPsth = 1
 
-# -- Panel A: schematic of switching task-- #
+# -- Panel A: schematic of switching task -- #
 #ax1 = plt.subplot(gs[0:2, 0:2])
-ax1 = plt.subplot(gs00[0:2, :])
+ax1 = plt.subplot(gs[0:2, 0])
 plt.axis('off')
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
-ax2 = plt.subplot(gs00[2, :])
+# -- Panel B: example dynamics plot -- #
+ax2 = plt.subplot(gs[2:4, 0])
+ax1.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
 animal = 'test089'
 paradigm = '2afc'
 session = '20160113a'
@@ -96,11 +99,15 @@ plt.setp(hPlots[8], color='grey') #Block3, highFreq
 plt.setp(hPlots[7], color=colorLeft) #Block3, midFreq
 plt.setp(hPlots[9], color='grey') #Block4, lowFreq
 plt.setp(hPlots[10], color=colorRight) #Block4, midFreq
-plt.ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+plt.xlim([0,740])
+plt.xticks([0,200,400,600])
+plt.yticks([0,50,100])
+plt.ylabel('Rightward\ntrials (%)', labelpad=0.5, fontsize=fontSizeLabels)
+plt.xlabel('Trial', fontsize=fontSizeLabels)
 
 # -- Panel C: representative sound-evoked raster from switching task, Not modulated-- #
-ax2 = plt.subplot(gs02[0:2, :])
-ax2.annotate('C', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax3 = plt.subplot(gs02[0:2, :])
+ax3.annotate('D', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
     rasterFilename = 'example_switching_midfreq_soundaligned_raster_adap020_20160526a_T2_c9.npz'  # H-L-H blocks
@@ -121,9 +128,9 @@ if PANELS[0]:
 
     plt.setp(pRaster, ms=msRaster)
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) 
-    #ax2.axes.xaxis.set_ticklabels('')
-    ax2.set_yticklabels([])
-    ax2.set_xticklabels([])
+    
+    ax3.set_yticklabels([])
+    ax3.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels) #, labelpad=labelDis)
     #plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
     plt.ylabel('Mid-freq correct\ntrials each block', fontsize=fontSizeLabels)
@@ -168,7 +175,7 @@ if PANELS[0]:
 # -- Panel B: representative sound-evoked raster from switching task, modulated -- #
 #ax4 = plt.subplot(gs[2, 0:2])
 ax4 = plt.subplot(gs01[0:2, 0:])
-ax4.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax4.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[1]:
     rasterFilename = 'example_switching_midfreq_soundaligned_raster_test089_20160124a_T4_c6.npz'   # H-L-H blocks
@@ -235,8 +242,8 @@ if PANELS[1]:
 
 # -- Panel D: summary distribution of switching modulation index, total cells is good cells in striatum (nonduplicate) that are responsive to mid freq -- #
 #ax6 = plt.subplot(gs[2:,2:4])
-ax6 = plt.subplot(gs[1,0])
-ax6.annotate('D', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax6 = plt.subplot(gs[4:,0])
+ax6.annotate('E', xy=(labelPosX[0],labelPosY[3]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
     colorMod = 'black'
     colorNotMod = 'darkgrey'
@@ -277,4 +284,4 @@ if SAVE_FIGURE:
 # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
 print 'Total number of good cells responsive to mid frequency is:', len(sigModulated), '\nNumber of cells significantly modulated is:', sum(sigModulated)
 (T, pVal) = stats.wilcoxon(summary['modulationIndex'])
-print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of', pVal
+print 'Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(pVal)
