@@ -25,19 +25,19 @@ def score_compare_ave_firing_vs_std(cellObj, sessionToUse=sessionToUse, numBins=
     MOST RELAXED CRITERIA
     Compare the overall mean and std from all the firing rate bins, a cell is judged to be inconsistent in activity if std is over the specified fraction (sd2mean) of mean.
     '''
-    sessionInd = cellObj.get_session_inds(sessionToUse)
-    spiketimes, samples, events = cellObj.load_ephys_by_index(sessionInd)
+    sessionInd = cellObj.get_session_inds(sessionToUse)[0]
+    ephysData = cellObj.load_ephys_by_index(sessionInd)
+    spiketimes = ephysData['spikeTimes'] 
+    consistentFiring = True
     if not np.any(spiketimes): #A cluster that has no spikes in rc ephys session
-        consistencyArray[indc] = False
+        consistentFiring = False
     else:
         spiketimes = spiketimes - spiketimes[0]
-    
-    consistentFiring = True
-    counts, binEdges = np.histogram(spiketimes, bins=numBins) #turn spiketimes data into counts data
-    countsMean = np.mean(counts)
-    countsStd = np.std(counts)
-    if countsStd >= sd2mean * countsMean:
-        consistentFiring = False
+        counts, binEdges = np.histogram(spiketimes, bins=numBins) #turn spiketimes data into counts data
+        countsMean = np.mean(counts)
+        countsStd = np.std(counts)
+        if countsStd >= sd2mean * countsMean:
+            consistentFiring = False
     
     return consistentFiring 
 

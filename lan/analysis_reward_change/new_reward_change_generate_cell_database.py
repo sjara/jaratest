@@ -6,29 +6,29 @@ from jaratoolbox import ephyscore
 from jaratoolbox import spikesorting
 from scipy import stats
 import numpy as np
-from numpy import inf
-import pandas
+import pandas as pd
 reload(celldatabase)
 reload(spikesorting)
 reload(ephyscore)
 import new_reward_change_behavior_criteria as behavCriteria
 import new_activity_consistency_score_celldb as consistentActivity
 import new_reward_change_cell_in_target_range_celldb as inTargetRangeCheck
+import new_reward_change_evaluate_sound_response as evaluateSoundResp
+import new_reward_change_evaluate_movement_selectivity as evaluateMovementSel
 
 STUDY_NAME = '2017rc'
-SAVE_FULL_DB = 1
-RECALCULATE_TETRODESTATS=0
-FIND_TETRODES_WITH_NO_SPIKES=0
+SAVE_FULL_DB = True
+RECALCULATE_TETRODESTATS = False
+FIND_TETRODES_WITH_NO_SPIKES = False
 dbKey = 'reward_change'
 
 #We need access to ALL of the neurons from all animals that have been recorded from.
-animals = ['adap005']
+animals = ['adap013', 'adap012', 'adap015','adap017','gosi001','gosi004','gosi008','gosi010','adap067','adap071'] 
 inforecFolder = settings.INFOREC_PATH
 
-qualityThreshold = 2.5 # conservative quality threshold 
+qualityThreshold = 3
 ISIcutoff = 0.02
 useStrictBehavCriterionWhenSaving = True
-checkDuplicateBeforeSaving = False
 
 # -- params for behavior criteria -- #
 minBlockNum = 3
@@ -40,187 +40,101 @@ performanceThreshold = 70 # Has to do over 70% correct overall
 numBins = 20
 sdToMeanRatio=0.5
 #############################################
+dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-dbList = []
-for animal in animals:
-    inforecFn = os.path.join(inforecFolder, '{}_inforec.py'.format(animal))
+CASE = 4
 
-    #If we need to regenerate the tetrodeStats files
-    if RECALCULATE_TETRODESTATS:
-        ci = spikesorting.ClusterInforec(inforecFn)
-        ci.process_all_experiments(recluster=False)
+if CASE == 1:
+    for animal in animals:
+        inforecFn = os.path.join(inforecFolder, '{}_inforec.py'.format(animal))
 
-    if FIND_TETRODES_WITH_NO_SPIKES:
-        ci = spikesorting.ClusterInforec(inforecFn)
-        ci.find_tetrodes_with_no_spikes()
-        continue
+        #If we need to regenerate the tetrodeStats files
+        if RECALCULATE_TETRODESTATS:
+            ci = spikesorting.ClusterInforec(inforecFn)
+            ci.process_all_experiments(recluster=False)
 
-    fullDb = celldatabase.generate_cell_database(inforecFn)
+        if FIND_TETRODES_WITH_NO_SPIKES:
+            ci = spikesorting.ClusterInforec(inforecFn)
+            ci.find_tetrodes_with_no_spikes()
+            continue
+
+        fullDb = celldatabase.generate_cell_database(inforecFn)
+
+        fullDbFullPath = os.path.join(dbFolder, '{}_database_all_clusters.h5'.format(animal)) 
+        if SAVE_FULL_DB:
+            print 'Saving database to {}'.format(fullDbFullPath)
+            fullDb.to_hdf(fullDbFullPath, key=dbKey)
+
+if CASE == 2:
+    # -- check behavior criteria and cell depth is inside target region, save a subset of cells -- #
+    for animal in animals:
+        fullDbFullPath = os.path.join(dbFolder, '{}_database_all_clusters.h5'.format(animal)) 
+        fullDb = pd.read_hdf(fullDbFullPath, key=dbKey) 
+        
+        # -- check if cell meets behavior criteria -- #
+        print 'Checking behavior criteria'
+        metBehavCriteria = behavCriteria.ensure_behav_criteria_celldb(fullDb, strict=useStrictBehavCriterionWhenSaving,  sessiontype='behavior', minBlockNum=minBlockNum, minTrialNumEndBlock=minTrialNumEndBlock, performanceThreshold=performanceThreshold)
+        fullDb['metBehavCriteria'] = metBehavCriteria
+
+        # -- check if cell depth is inside target region range -- #
+        print 'Checking whether cell in target range'
+        actualDepthEachCell, inTargetArea = inTargetRangeCheck.celldb_in_target_range_check(fullDb, inforecPath = settings.INFOREC_PATH)
+        fullDb['depth_this_cell'] = actualDepthEachCell
+        fullDb['inTargetArea'] = inTargetArea
+
+        # calculate behav criteria, and depth in target region (by calling designated functions in a separate module), then save only the good qual cells as a celldb, keeping the noncontinuous indices from the original celldb:
+        goodQualCells = fullDb.query('isiViolations<{} and spikeShapeQuality>{} and inTargetArea==True and metBehavCriteria==True'.format(ISIcutoff, qualityThreshold))
+        print 'Saving good quality cell database'
+        goodQualDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal))
+        goodQualCells.to_hdf(goodQualDbFullPath, key=dbKey)
+
+if CASE == 3:
+    # -- check firing consistency in 2afc session only in a subset of cells -- #
+    for animal in animals:
+        goodDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
+        goodDb = pd.read_hdf(goodDbFullPath, key=dbKey) 
+        
+        print 'Checking consistent firing'
+        consistentFiring = pd.Series(index=goodDb.index, dtype=bool)
+        for indCell, cell in goodDb.iterrows():
+            cellObj = ephyscore.Cell(cell)
+            consistencyThisCell = consistentActivity.score_compare_ave_firing_vs_std(cellObj, sessionToUse='behavior', numBins=numBins, sd2mean=sdToMeanRatio)
+            consistentFiring[indCell] = consistencyThisCell
+        goodDb['consistentFiring'] = consistentFiring
+        goodQualCells = goodDb.query('consistentFiring==True')
+        print 'Saving good quality cell database'
+        
+        goodQualCells.to_hdf(goodDbFullPath, key=dbKey)
+
+if CASE == 4:
+    # -- evaluate sound responsiveness -- #
+    for animal in animals:
+        goodDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
+        goodDb = pd.read_hdf(goodDbFullPath, key=dbKey) 
+                
+        tuningDict = evaluateSoundResp.evaluate_tuning_sound_response_celldb(goodDb)
+        behavDict = evaluateSoundResp.evaluate_2afc_sound_response_celldb(goodDb)
+        
+        for key in tuningDict:
+            goodDb[key] = tuningDict[key]
+        for key in behavDict:
+            goodDb[key] = behavDict[key]
+        
+        goodDb.to_hdf(goodDbFullPath, key=dbKey)
+
+#if CASE == 5:
+    # -- duplicate check and keep the one with largest sound Z score -- #
     
-    dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
-    fullDbFullPath = os.path.join(dbFolder, '{}_database_all_clusters.h5'.format(animal)) 
-    if SAVE_FULL_DB:
-        print 'Saving database to {}'.format(dbPath)
-        fullDb.to_hdf(fullDbFullPath, key=dbKey)
 
-    # -- check if cell meets behavior criteria -- #
-    metBehavCriteria = behavCriteria.ensure_behav_criteria_celldb(fullDb, strict=useStrictBehavCriterionWhenSaving,  sessiontype='behavior', minBlockNum=minBlockNum, minTrialNumEndBlock=minTrialNumEndBlock, performanceThreshold=performanceThreshold)
+if CASE == 6:
+    # -- evaluate movement selectivity -- #
+    movementTimeRangeList = [[0.05, 0.15], [0.05, 0.25]] 
+    for animal in animals:
+        goodDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
+        goodDb = pd.read_hdf(goodDbFullPath, key=dbKey) 
     
-    # -- check firing consistency in 2afc session -- #
-    consistentFiring = pd.Series(index=fullDb.index, dtype=bool)
-    for indCell, cell in fullDb.iterrows():
-        cellObj = ephyscore.Cell(cell)
-        consistencyThisCell = consistentActivity.score_compare_ave_firing_vs_std(cellObj, sessionToUse='behavior', numBins=numBins, sd2mean=sdToMeanRatio)
-        consistentFiring[indCell] = consistencyThisCell
-
-    # -- check if cell depth is inside target region range -- #
-    actualDepthEachCell, inTargetArea = inTargetRangeCheck.celldb_in_target_range_check(fullDb, inforecPath = settings.INFOREC_PATH)
-    
-    # -- check if cell is duplicated -- #
-    keepAfterDupTest = 
-    goodQualCells['keep_after_dup_test'] = keepAfterDupTest
-
-    # PLAN: calculate behav criteria, firing consistency, depth in target region (by calling designated functions in a separate module), then save only the good qual cells as a celldb, keeping the noncontinuous indices from the original celldb:
-    
-    goodQualCells = celldb.query('isiViolations<{} and spikeShapeQuality>{}'.format(ISIcutoff, qualityThreshold))
-
-    goodQualCells = goodQualCells.loc[(consistentFiring==True) & (inTargetArea==True) & (metBehavCriteria==True)]
-    
-    if checkDuplicateBeforeSaving:
-        goodQualCells = goodQualCells.query('keep_after_dup_check==True')
-    
-    
-    
-
-
-    '''
-    #Calculate noiseburst response
-    #TODO: Instead of using alternative session types if 'noiseburst' is not available, should we
-    #just calculate the onset response to each sound stimulus type and see if any of them are significant?
-    noiseZscore = np.empty(len(db))
-    noisePval = np.empty(len(db))
-    baseRange = [-0.1,0]
-    responseRange = [0, 0.1]
-    for indRow, dbRow in db.iterrows():
-
-        cell = ephyscore.Cell(dbRow)
-
-        if 'noiseburst' in cell.dbRow['sessionType']:
-            sessionType = 'noiseburst'
-        elif 'rlf' in cell.dbRow['sessionType']:
-            sessionType = 'rlf'
-        elif 'am' in cell.dbRow['sessionType']:
-            sessionType = 'am'
-        # spikeData, eventData = cellData.load_ephys(sessionType)
-        try:
-            ephysData, bdata = cell.load(sessionType)
-        except ValueError: #No spike data for that session type
-            zScore=0
-            pVal=0
-        else:
-            spikeTimes = ephysData['spikeTimes']
-            eventOnsetTimes = ephysData['events']['stimOn']
-            alignmentRange = [baseRange[0], responseRange[1]]
-            (spikeTimesFromEventOnset,
-            trialIndexForEachSpike,
-            indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
-                                                                        eventOnsetTimes,
-                                                                        alignmentRange)
-            nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-                                                                indexLimitsEachTrial,
-                                                                baseRange)
-            nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-                                                                indexLimitsEachTrial,
-                                                                responseRange)
-            [zScore, pVal] = stats.ranksums(nspkResp,nspkBase)
-
-        noiseZscore[indRow] = zScore
-        noisePval[indRow] = pVal
-    db['noiseZscore'] = noiseZscore
-    db['noisePval'] = noisePval
-
-    # #Laser pulse response
-    # #NOTE: This does the same thing as the noise burst response, but I am not making a function
-    # #because things are getting hidden and I want to be more explicit about what I am doing.
-    pulseZscore = np.empty(len(db))
-    pulsePval = np.empty(len(db))
-    baseRange = [-0.1,0]
-    responseRange = [0, 0.1]
-    for indRow, dbRow in db.iterrows():
-
-        #Create ephyscore object to load data
-        # cellDict = cell.to_dict()
-        # cellData = ephyscore.CellData(**cellDict)
-        cell = ephyscore.Cell(dbRow)
-
-        if 'laserpulse' in cell.dbRow['sessionType']:
-            sessionType = 'laserpulse'
-        elif 'lasertrain' in cell.dbRow['sessionType']:
-            sessionType = 'lasertrain'
-        try:
-            ephysData, bdata = cell.load(sessionType)
-        except (ValueError, IndexError): #No spike data for that session type
-            zScore=0
-            pVal=0
-        else:
-            spikeTimes = ephysData['spikeTimes']
-            eventOnsetTimes = ephysData['events']['stimOn']
-            alignmentRange = [baseRange[0], responseRange[1]]
-            (spikeTimesFromEventOnset,
-            trialIndexForEachSpike,
-            indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
-                                                                        eventOnsetTimes,
-                                                                        alignmentRange)
-            nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-                                                                indexLimitsEachTrial,
-                                                                baseRange)
-            nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-                                                                indexLimitsEachTrial,
-                                                                responseRange)
-            [zScore, pVal] = stats.ranksums(nspkResp,nspkBase)
-        pulseZscore[indRow] = zScore
-        pulsePval[indRow] = pVal
-    db['pulseZscore'] = pulseZscore
-    db['pulsePval'] = pulsePval
-
-    #Laser train response, ratio of pulse avg spikes
-    trainRatio = np.full(len(db), np.nan)
-    timeRange = [-0.1, 1] #For initial alignment
-    baseRange = [0, 0.05]
-    responseRange = [0.2, 0.25]
-    for indRow, dbRow in db.iterrows():
-        #Create ephyscore object to load data
-        cell = ephyscore.Cell(dbRow)
-        try:
-            ephysData, bdata = cell.load('lasertrain')
-        except (ValueError, IndexError): #No spike data for that session type
-            continue #Just skip this cell, it will be nan
-        else:
-            spikeTimes = ephysData['spikeTimes']
-            eventOnsetTimes = ephysData['events']['stimOn']
-            eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, 0.5)
-            (spikeTimesFromEventOnset,
-            trialIndexForEachSpike,
-            indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
-                                                                        eventOnsetTimes,
-                                                                        timeRange)
-            avgSpikesBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-                                                                        indexLimitsEachTrial,
-                                                                        baseRange).mean()
-            avgSpikesResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-                                                                        indexLimitsEachTrial,
-                                                                        responseRange).mean()
-            ratio = avgSpikesResp/avgSpikesBase
-        trainRatio[indRow] = ratio
-    db['trainRatio'] = trainRatio
-    dbList.append(db)
-
-masterdb = pandas.concat(dbList, ignore_index=True)
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
-# dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
-
-if SAVE:
-    print 'Saving database to {}'.format(dbPath)
-    masterdb.to_hdf(dbPath, 'dataframe')
-
-'''
+        for movementTimeRange in movementTimeRangeList:
+            movementModI, movementModS = evaluateMovementSel.evaluate_movement_selectivity_celldb(goodDb, movementTimeRange)
+            goodDb['movementModI_{}'.format(movementTimeRange)] = movementModI
+            goodDb['movementModS_{}'.format(movementTimeRange)] = movementModS
+        goodDb.to_hdf(goodDbFullPath, key=dbKey)
