@@ -218,14 +218,15 @@ for inds,subject in enumerate(sessionsDict.iterkeys()):
     plt.axhline(mfactor*0.5, ls='--', color='0.5')
     plt.axvline(firstTrialAboveChance, ls='--',color='0.75')
     plt.xlabel('Trials after switch',fontsize=fontSizeLabels)
-    plt.ylabel('Correct trials for\nreversing sound (%)',ma='center',fontsize=fontSizeLabels,labelpad=0.01)
+    plt.ylabel('Correct trials for\nmid freq (%)',ma='center',fontsize=fontSizeLabels,labelpad=0.01)
     plt.ylim([0,mfactor*1])
     plt.yticks([0,50,100], fontsize=fontSizeTicks)
     extraplots.boxoff(plt.gca())
     plt.hold(False)
-    plt.title(subject, fontsize=fontSizeLabels)
+    nSess = len(sessionsDict[subject])
+    plt.title('mouse {}\nn = {} sessions'.format(inds+1, nSess), fontsize=fontSizeLabels)
 
-plt.tight_layout(pad=0.2, w_pad=1.5, h_pad=1.0, rect=(0.05,0.1,0.98,0.95))
+plt.tight_layout(pad=0.2, w_pad=1.5, h_pad=1.5, rect=(0.05,0.05,0.98,0.95))
 plt.show()
 
 plt.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')

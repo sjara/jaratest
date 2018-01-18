@@ -104,10 +104,15 @@ plt.xticks([0,200,400,600])
 plt.yticks([0,50,100])
 plt.ylabel('Rightward\ntrials (%)', labelpad=0.5, fontsize=fontSizeLabels)
 plt.xlabel('Trial', fontsize=fontSizeLabels)
-
+#plt.fill([80,160,160,80],[110,110,113,113], ec='none', fc=colorLeft, clip_on=False)
+#plt.fill([450,530,530,450],[110,110,113,113], ec='none', fc=colorRight, clip_on=False)
+plt.text(30, 38, '11', fontsize=fontSizeLabels)
+plt.text(165, 38, 'L', fontsize=fontSizeLabels)
+plt.text(255, 38, '11', fontsize=fontSizeLabels)
+plt.text(390, 38, 'R', fontsize=fontSizeLabels)
 # -- Panel C: representative sound-evoked raster from switching task, Not modulated-- #
 ax3 = plt.subplot(gs02[0:2, :])
-ax3.annotate('D', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax3.annotate('E', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
     rasterFilename = 'example_switching_midfreq_soundaligned_raster_adap020_20160526a_T2_c9.npz'  # H-L-H blocks
@@ -175,7 +180,7 @@ if PANELS[0]:
 # -- Panel B: representative sound-evoked raster from switching task, modulated -- #
 #ax4 = plt.subplot(gs[2, 0:2])
 ax4 = plt.subplot(gs01[0:2, 0:])
-ax4.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax4.annotate('D', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[1]:
     rasterFilename = 'example_switching_midfreq_soundaligned_raster_test089_20160124a_T4_c6.npz'   # H-L-H blocks
@@ -243,7 +248,7 @@ if PANELS[1]:
 # -- Panel D: summary distribution of switching modulation index, total cells is good cells in striatum (nonduplicate) that are responsive to mid freq -- #
 #ax6 = plt.subplot(gs[2:,2:4])
 ax6 = plt.subplot(gs[4:,0])
-ax6.annotate('E', xy=(labelPosX[0],labelPosY[3]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax6.annotate('C', xy=(labelPosX[0],labelPosY[3]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
     colorMod = 'black'
     colorNotMod = 'darkgrey'
