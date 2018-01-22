@@ -10,7 +10,12 @@ import scipy.optimize
 from jaratoolbox import behavioranalysis
 from jaratoolbox import loadbehavior
 from jaratoolbox import extraplots
+import matplotlib
 from matplotlib import pyplot as plt
+import figparams
+
+matplotlib.rcParams['font.family'] = 'Helvetica'
+matplotlib.rcParams['svg.fonttype'] = 'none'
 
 sessionsDict = {'adap020':['20160414a',
                            '20160419a',
@@ -112,6 +117,8 @@ sessionsDict = {'adap020':['20160414a',
                        ]
 }
 
+SAVE_FIGURE = 1
+outputDir = '/tmp/'
 
 # -- Functions for exponential fit --
 def fixedintercept_exponential(xval,intercept,tau,amp=1):
@@ -121,11 +128,21 @@ def error_fixed_exponential(theta,xval,yval,intercept):
     yhat = fixedintercept_exponential(xval,intercept,*theta)
     return np.sum((yval-yhat)**2)
 
+figFilename = 'supp_trials_to_switch'
+figFormat = 'svg'
+figSize = [7,7]
 
 paradigm = '2afc'
-fontsize = 14
+#fontsize = 14
 plt.clf()
 plt.gcf().set_facecolor('w')
+
+fontSizeLabels = figparams.fontSizeLabels
+fontSizeTicks = figparams.fontSizeTicks
+fontSizePanel = figparams.fontSizePanel
+
+labelPosX = [0.02, 0.5]   # Horiz position for panel labels
+labelPosY = [0.95, 0.5]
 
 for inds,subject in enumerate(sessionsDict.iterkeys()):
     eachBehavData = []
@@ -200,11 +217,22 @@ for inds,subject in enumerate(sessionsDict.iterkeys()):
     plt.plot(xval+1, mfactor*yFit, '-', lw=4, color='k')
     plt.axhline(mfactor*0.5, ls='--', color='0.5')
     plt.axvline(firstTrialAboveChance, ls='--',color='0.75')
-    plt.xlabel('Trials after switch',fontsize=fontsize)
-    plt.ylabel('Correct trials for\nreversing sound (%)',ma='center',fontsize=fontsize)
+    plt.xlabel('Trials after switch',fontsize=fontSizeLabels)
+    plt.ylabel('Correct trials for\nmid freq (%)',ma='center',fontsize=fontSizeLabels,labelpad=0.01)
     plt.ylim([0,mfactor*1])
+    plt.yticks([0,50,100], fontsize=fontSizeTicks)
     extraplots.boxoff(plt.gca())
     plt.hold(False)
-    plt.title(subject)
-    plt.show()
+    nSess = len(sessionsDict[subject])
+    plt.title('mouse {}\nn = {} sessions'.format(inds+1, nSess), fontsize=fontSizeLabels)
 
+plt.tight_layout(pad=0.2, w_pad=1.5, h_pad=1.5, rect=(0.05,0.05,0.98,0.95))
+plt.show()
+
+plt.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+plt.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+plt.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+plt.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
