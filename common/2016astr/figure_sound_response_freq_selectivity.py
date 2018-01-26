@@ -340,7 +340,9 @@ if PANELS[3]:
         allKruskalPVals[cellInd] = pVal
     KruskalfreqSelective = allKruskalPVals <= alphaLevel
     numOverallFreqSelCellsKruskal = sum(KruskalfreqSelective)
+    numOverallFreqSelSoundRespCellsKruskal = sum(KruskalfreqSelective & sigRespOverall)
     print 100*float(numOverallFreqSelCellsKruskal)/numCells, '%, ', numOverallFreqSelCellsKruskal, 'out of', numCells, ' total cells in 2afc psycurve task show different response to all frequencies (Kruskal-Wallis H-test).'
+    print 100*float(numOverallFreqSelSoundRespCellsKruskal)/numOverallRespCells, '%, ', numOverallFreqSelSoundRespCellsKruskal, 'out of', numOverallRespCells, ' sound responsive cells in 2afc psycurve task show different response to all frequencies (Kruskal-Wallis H-test).'
 
 plt.show()
 
