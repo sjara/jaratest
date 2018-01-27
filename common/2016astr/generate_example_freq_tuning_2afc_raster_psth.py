@@ -118,6 +118,9 @@ for cellParams in cellParamsList:
     soundOnsetTimeEphys = eventOnsetTimes[soundOnsetEvents]
     soundOnsetTimeBehav = bdata['timeTarget']
 
+    diffTimes = bdata['timeCenterOut'] - bdata['timeTarget']
+    #movementOnsetTimeEphys = soundOnsetTimeEphys + diffTimes
+    
     # Find missing trials
     missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
     # Remove missing trials
@@ -137,7 +140,7 @@ for cellParams in cellParamsList:
     #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_freq_tuning_2afc_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
     outputFullPath = os.path.join(dataDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes, possibleFreq=possibleFreq, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, timeRange=timeRange,trialsEachFreq=trialsEachFreq, script=scriptFullPath, **cellParams)
+    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=eventOnsetTimes, possibleFreq=possibleFreq, spikeTimesFromEventOnset=spikeTimesFromEventOnset, movementTimesFromEventOnset=diffTimes, indexLimitsEachTrial=indexLimitsEachTrial, timeRange=timeRange,trialsEachFreq=trialsEachFreq, script=scriptFullPath, **cellParams)
 
     # -- Calculate and store intermediate data for tuning psth -- #
     timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
