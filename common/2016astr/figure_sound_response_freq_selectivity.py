@@ -76,6 +76,11 @@ if PANELS[0]:
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
     #timeRange = rasterExample['timeRange']
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    indexLimitsEachTrialMovement = np.zeros(indexLimitsEachTrial.shape, dtype=int)
+    numTrials = indexLimitsEachTrial.shape[-1]
+    indexLimitsEachTrialMovement[0,:] = np.arange(numTrials)
+    indexLimitsEachTrialMovement[1,:] = np.arange(numTrials) + 1
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
     colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
@@ -88,6 +93,13 @@ if PANELS[0]:
                                                    labels=labels)
     plt.setp(pRaster, ms=msRaster)
     plt.setp(hcond,zorder=3)
+    pRasterMv, hcondMv, zlineMv = extraplots.raster_plot(movementTimesFromEventOnset,
+                                                         indexLimitsEachTrialMovement,
+                                                         timeRangeSound,
+                                                         trialsEachCond=trialsEachCond,
+                                                         colorEachCond=colorEachFreq,
+                                                         labels=labels)
+    plt.setp(pRasterMv, marker='|', color='grey')
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
@@ -138,6 +150,11 @@ if PANELS[1]:
     trialsEachCond = rasterExample['trialsEachFreq']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    indexLimitsEachTrialMovement = np.zeros(indexLimitsEachTrial.shape, dtype=int)
+    numTrials = indexLimitsEachTrial.shape[-1]
+    indexLimitsEachTrialMovement[0,:] = np.arange(numTrials)
+    indexLimitsEachTrialMovement[1,:] = np.arange(numTrials) + 1
     #timeRange = rasterExample['timeRange']
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
@@ -151,6 +168,13 @@ if PANELS[1]:
                                                    labels=labels)
     plt.setp(pRaster, ms=msRaster)
     plt.setp(hcond,zorder=3)
+    pRasterMv, hcondMv, zlineMv = extraplots.raster_plot(movementTimesFromEventOnset,
+                                                         indexLimitsEachTrialMovement,
+                                                         timeRangeSound,
+                                                         trialsEachCond=trialsEachCond,
+                                                         colorEachCond=colorEachFreq,
+                                                         labels=labels)
+    plt.setp(pRasterMv, marker='|', color='grey')
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
@@ -340,7 +364,9 @@ if PANELS[3]:
         allKruskalPVals[cellInd] = pVal
     KruskalfreqSelective = allKruskalPVals <= alphaLevel
     numOverallFreqSelCellsKruskal = sum(KruskalfreqSelective)
+    numOverallFreqSelSoundRespCellsKruskal = sum(KruskalfreqSelective & sigRespOverall)
     print 100*float(numOverallFreqSelCellsKruskal)/numCells, '%, ', numOverallFreqSelCellsKruskal, 'out of', numCells, ' total cells in 2afc psycurve task show different response to all frequencies (Kruskal-Wallis H-test).'
+    print 100*float(numOverallFreqSelSoundRespCellsKruskal)/numOverallRespCells, '%, ', numOverallFreqSelSoundRespCellsKruskal, 'out of', numOverallRespCells, ' sound responsive cells in 2afc psycurve task show different response to all frequencies (Kruskal-Wallis H-test).'
 
 plt.show()
 

@@ -236,23 +236,33 @@ if PANELS[2]:
     print 'Only plotting the first {} sessions in the summary panel.'.format(maxSessionNum) 
     ax5.axhline(y=0, color='k', linestyle='-')
     np.random.seed(7) #2
-    for animal,leftData in zip(['d1pi014','d1pi015','d1pi016'],[left014,left015,left016]):
+    for inda, (animal,leftData) in enumerate(zip(['d1pi014','d1pi015','d1pi016'],[left014,left015,left016])):
         #ax5.scatter(np.repeat(1+0.2*(ind-1),len(leftData)), 100*leftData, marker=SHAPESEACHANIMAL[animal], color=PHOTOSTIMCOLORS['laser_left'], edgecolors="black")
-        randOffset = 0.3*(np.random.rand(len(leftData))-0.5)
-        ax5.plot(1+randOffset, 100*leftData, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
+        #randOffset = 0.3*(np.random.rand(len(leftData))-0.5)
+        #ax5.plot(1+randOffset, 100*leftData, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
+        # -- plot sessions segregated by animal -- #
+        offset = np.repeat(inda*0.15, len(leftData))
+        ax5.plot(0.85+offset, 100*leftData, 'o', mec=PHOTOSTIMCOLORS['laser_left'], mfc='None')
+        # -- plot mean of each animal each hemi -- #
+        ax5.plot(0.85+inda*0.15, np.mean(100*leftData), 'ko')
 
-    for animal,rightData in zip(['d1pi014','d1pi015','d1pi016'],[right014,right015,right016]):
+    for inda, (animal,rightData) in enumerate(zip(['d1pi014','d1pi015','d1pi016'],[right014,right015,right016])):
         #ax5.scatter(np.repeat(2+0.2*(ind-1),len(rightData)), 100*rightData, marker=SHAPESEACHANIMAL[animal], color=PHOTOSTIMCOLORS['laser_right'], edgecolors="black")
-        randOffset = 0.3*(np.random.rand(len(leftData))-0.5)
-        ax5.plot(2+randOffset, 100*rightData, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
+        #randOffset = 0.3*(np.random.rand(len(leftData))-0.5)
+        #ax5.plot(2+randOffset, 100*rightData, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
+        # -- plot sessions segregated by animal -- #
+        offset = np.repeat(inda*0.15, len(leftData))
+        ax5.plot(1.85+offset, 100*rightData, 'o', mec=PHOTOSTIMCOLORS['laser_right'], mfc='None')
+        # -- plot mean of each animal each hemi -- #
+        ax5.plot(1.85+inda*0.15, np.mean(100*rightData), 'ko')
 
     # -- Stats for summary panel in figure grouping all animals together -- #
     leftStimChange = np.concatenate((left014,left015,left016))
     rightStimChange = np.concatenate((right014,right015,right016))
     meanLeftStim = np.mean(leftStimChange)
     meanRightStim = np.mean(rightStimChange)
-    ax5.plot(0.3*np.array([-1,1])+1, 100*np.tile(meanLeftStim,2), lw=3, color=PHOTOSTIMCOLORS['laser_left'])
-    ax5.plot(0.3*np.array([-1,1])+2, 100*np.tile(meanRightStim,2), lw=3, color=PHOTOSTIMCOLORS['laser_right'])
+    #ax5.plot(0.3*np.array([-1,1])+1, 100*np.tile(meanLeftStim,2), lw=3, color=PHOTOSTIMCOLORS['laser_left'])
+    #ax5.plot(0.3*np.array([-1,1])+2, 100*np.tile(meanRightStim,2), lw=3, color=PHOTOSTIMCOLORS['laser_right'])
 
     '''
     # -- Add shapes as legend -- #
