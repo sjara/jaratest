@@ -59,13 +59,13 @@ exp1.add_session('14-11-27', 'c', 'tuningCurve', 'am_tuning_curve')
 exp1.add_site(2250, tetrodes=[5,8])
 exp1.add_session('14-19-06', None, 'noisebursts', 'am_tuning_curve')
 
-exp1.add_site(2300, tetrodes=[1,2,3,4,5,6,7,8])
+exp1.add_site(2300, tetrodes=[2,5,8])
 exp1.add_session('14-24-26', None, 'noisebursts', 'am_tuning_curve')
 
-exp1.add_site(2350, tetrodes=[1,2,3,4,5,6,7,8])
+exp1.add_site(2350, tetrodes=[2,5,6,7,8])
 exp1.add_session('14-26-39', None, 'noisebursts', 'am_tuning_curve')
 
-exp1.add_site(2400, tetrodes=[1,2,3,4,5,6,7,8])
+exp1.add_site(2400, tetrodes=[2,5,6,7,8])
 exp1.add_session('14-30-20', None, 'noisebursts', 'am_tuning_curve')
 
 
@@ -85,14 +85,14 @@ exp2.laserCalibration = {
 }
 
 #Tetrode 1 has reference; threshold set to 50 mV
-exp2.add_site(2500, tetrodes=[1,2,3,4,5,6,7,8])
+exp2.add_site(2500, tetrodes=[])
 exp2.add_session('10-54-30', None, 'noisebursts', 'am_tuning_curve')
 exp2.add_session('10-56-12', 'a', 'tuningCurve', 'am_tuning_curve')
 
 #Tetrode 2 has reference; threshold set to 42 mV
-exp2.add_site(2550, tetrodes=[1,2,3,4,5,6,7,8])
+exp2.add_site(2550, tetrodes=[])
 exp2.add_session('11-02-21', None, 'noisebursts', 'am_tuning_curve')
-exp2.add_session('11-06-56', 'b', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('11-06-53', 'b', 'tuningCurve', 'am_tuning_curve')
 
 exp2.add_site(2650, tetrodes=[1,2,3,4,5,6,7,8])
 exp2.add_session('11-12-58', None, 'noisebursts', 'am_tuning_curve')
@@ -101,10 +101,10 @@ exp2.add_session('11-14-45', None, 'noisebursts', 'am_tuning_curve')
 #exp2.add_session('11-06-56', 'b', 'tuningCurve', 'am_tuning_curve')
 
 #Set threshold back to 42 mV
-exp2.add_site(2700, tetrodes=[1,2,3,4,5,6,7,8])
+exp2.add_site(2700, tetrodes=[8])
 exp2.add_session('11-19-14', None, 'noisebursts', 'am_tuning_curve')
 
-exp2.add_site(2750, tetrodes=[1,2,3,4,5,6,7,8])
+exp2.add_site(2750, tetrodes=[2])
 exp2.add_session('11-22-23', None, 'noisebursts', 'am_tuning_curve')
 
 exp2.add_site(2850, tetrodes=[4])
@@ -120,7 +120,7 @@ exp2.add_session('11-42-06', None, 'noisebursts', 'am_tuning_curve')
 #Mid recording, signals changed from having large variations coordinated between channels to
 #very small signals, more like those seen from silicon probes
 
-exp2.add_site(3100, tetrodes=[4])
+exp2.add_site(3100, tetrodes=[])
 exp2.add_session('11-48-39', None, 'noisebursts', 'am_tuning_curve')
 #Signals returned to how they were previously
 
