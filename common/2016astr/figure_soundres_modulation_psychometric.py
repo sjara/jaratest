@@ -76,6 +76,7 @@ gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
+msMvStart = 3
 smoothWinSizePsth = 3
 lwPsth = 2
 downsampleFactorPsth = 1
@@ -112,6 +113,19 @@ if PANELS[1]:
                                                    fillWidth=None,labels=None)
 
     plt.setp(pRaster, ms=msRaster)
+
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    indexLimitsEachTrialMovement = np.zeros(indexLimitsEachTrial.shape, dtype=int)
+    numTrials = indexLimitsEachTrial.shape[-1]
+    indexLimitsEachTrialMovement[0,:] = np.arange(numTrials)
+    indexLimitsEachTrialMovement[1,:] = np.arange(numTrials) + 1
+    pRasterMv, hcondMv, zlineMv = extraplots.raster_plot(movementTimesFromEventOnset,
+                                                         indexLimitsEachTrialMovement,
+                                                         timeRange,
+                                                         trialsEachCond=trialsEachCond,
+                                                         colorEachCond=colorEachCond)
+    plt.setp(pRasterMv, marker='.', color='darkgrey', ms=msMvStart)
+
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
     #ax2.axes.xaxis.set_ticklabels([])
     ax2.set_yticklabels([])
@@ -175,6 +189,19 @@ if PANELS[1]:
                                                    colorEachCond=colorEachCond)
 
     plt.setp(pRaster, ms=msRaster)
+
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    indexLimitsEachTrialMovement = np.zeros(indexLimitsEachTrial.shape, dtype=int)
+    numTrials = indexLimitsEachTrial.shape[-1]
+    indexLimitsEachTrialMovement[0,:] = np.arange(numTrials)
+    indexLimitsEachTrialMovement[1,:] = np.arange(numTrials) + 1
+    pRasterMv, hcondMv, zlineMv = extraplots.raster_plot(movementTimesFromEventOnset,
+                                                         indexLimitsEachTrialMovement,
+                                                         timeRange,
+                                                         trialsEachCond=trialsEachCond,
+                                                         colorEachCond=colorEachCond)
+    plt.setp(pRasterMv, marker='.', color='grey', ms=msMvStart)
+
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) 
     #ax4.axes.xaxis.set_ticklabels([])
     ax4.set_yticklabels([])

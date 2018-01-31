@@ -152,10 +152,11 @@ for inds in range(repeatedSamples):
         # -- There are some modulation index with values of 1 or -1 due to lack of spikes in the trials going one direction (only one center freq trials were included, sometimes very few trials going to one direction) -- #
         #choiceModI[(choiceModI == 1)|(choiceModI == -1)] = 0
         print('Mid freq: left vs right choice modulation index is {:.3f} +/- {:.3f}'.format(np.mean(choiceModI), np.std(choiceModI)))
-        
+        Zscore, pValSvC = stats.kruskal(choiceModI, selectivityIndsLeft, selectivityIndsRight)
         ZscoreLvC, pValSvCLeft = stats.ranksums(choiceModI, selectivityIndsLeft)
         ZscoreRvC, pValSvCRight = stats.ranksums(choiceModI, selectivityIndsRight)
-        print('Using wilcoxon rank sums test to compare choice modulation vs high/low freq selectivity. Leftward trials p = {:.3f}, rightward trials p= {:.3f}.'.format(pValSvCLeft,pValSvCRight))
+        print('Using Kruskal-Wallis H-test to compare choice modulation vs high/low freq selectivity, p = {:.3f}'.format(pValSvC))
+        print('Using wilcoxon rank sum test to compare choice modulation vs high/low freq selectivity: for all left-choice trials, p = {:.3f}, for all right-choice trials, p = {:.3f} '.format(pValSvCLeft, pValSvCRight))
     ####################################################3
     numFreqSelCellsLeft = sum(freqSelectiveLeftChoice.astype(int))
     percentFreqSelLeft = 100*float(numFreqSelCellsLeft)/numCells
@@ -183,7 +184,7 @@ if subsample:
 if not subsample:  
     binsEdges = np.linspace(-1,1,20)
     plt.clf()
-    plt.subplot(1,2,1)
+    plt.subplot(1,3,1)
     plt.hist([selectivityIndsLeft[freqSelectiveLeftChoice],selectivityIndsLeft[~freqSelectiveLeftChoice]], color=['k','darkgrey'], edgecolor='None', stacked=True, bins=binsEdges)
     plt.xlabel('High vs low frequency selectivity')
     plt.ylabel('Number of cells')
@@ -192,7 +193,7 @@ if not subsample:
     else:
         plt.title('{:.3f}% of trials with left choice'.format(fraction*100))
 
-    plt.subplot(1,2,2)
+    plt.subplot(1,3,2)
     plt.hist([selectivityIndsRight[freqSelectiveRightChoice],selectivityIndsRight[~freqSelectiveRightChoice]], color=['k','darkgrey'], edgecolor='None', stacked=True, bins=binsEdges)
     plt.xlabel('High vs low frequency selectivity')
     plt.ylabel('Number of cells')
@@ -200,12 +201,12 @@ if not subsample:
         plt.title('All trials with right choice')
     else:
         plt.title('{:.3f}% of trials with right choice'.format(fraction*100))
-    '''
+    
     plt.subplot(1,3,3)
     plt.hist([choiceModI[choiceModulated],choiceModI[~choiceModulated]], color=['k','darkgrey'], edgecolor='None', stacked=True, bins=binsEdges)
     plt.xlabel('choice modulation')
     plt.ylabel('Number of cells')
     plt.title('All trials with mid freq')
-    '''
+    
     plt.show()
 

@@ -41,10 +41,11 @@ fontSizePanel = figparams.fontSizePanel
 
 timeRangeMovement = [-0.3, 0.5]
 msRaster = 2
+msSoundStart = 3
 smoothWinSizePsth = 2
 lwPsth = 2
 downsampleFactorPsth = 1
-
+soundColor = figparams.colp['sound']
 #colormapMovement =  
 
 labelPosX = [0.015, 0.355, 0.68]   # Horiz position for panel labels
@@ -89,6 +90,29 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                colorEachCond=MOVEMENTCOLORS)
 
 plt.setp(pRaster, ms=msRaster)
+
+soundTimesFromEventOnset = rasterExample['soundTimesFromEventOnset']
+trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+yLims = plt.gca().get_ylim()
+plt.hold('on')
+bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+10], widths=[25])
+extraplots.boxoff(plt.gca())
+plt.autoscale(enable=True, axis='y', tight=True)
+plt.axis('off')
+for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+    plt.setp(bplot[element], color='grey', linewidth=1)
+plt.setp(bplot['whiskers'], linestyle='-')
+
+#indexLimitsEachTrialSound = np.zeros(indexLimitsEachTrial.shape, dtype=int)
+#numTrials = indexLimitsEachTrial.shape[-1]
+#indexLimitsEachTrialSound[0,:] = np.arange(numTrials)
+#indexLimitsEachTrialSound[1,:] = np.arange(numTrials) + 1
+#pRasterSound, hcondSound, zlineSound = extraplots.raster_plot(soundTimesFromEventOnset,
+#                                                              indexLimitsEachTrialSound,
+#                                                              timeRangeMovement,
+#                                                              trialsEachCond=trialsEachCond,
+#                                                              colorEachCond=MOVEMENTCOLORS)
+#plt.setp(pRasterSound, marker='.', color=soundColor, ms=msSoundStart)
 #plt.xlabel('Time from movement onset (s)', fontsize=fontSizeLabels)
 #plt.ylabel('Trials', fontsize=fontSizeLabels)
 plt.ylabel('Trials grouped\nby choice', fontsize=fontSizeLabels)
@@ -154,6 +178,30 @@ pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                colorEachCond=MOVEMENTCOLORS)
 
 plt.setp(pRaster, ms=msRaster)
+
+soundTimesFromEventOnset = rasterExample['soundTimesFromEventOnset']
+trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+yLims = plt.gca().get_ylim()
+plt.hold('on')
+bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, whis=0.75, positions=[yLims[-1]+10], widths=[25])
+extraplots.boxoff(plt.gca())
+plt.autoscale(enable=True, axis='y', tight=True)
+plt.axis('off')
+for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+    plt.setp(bplot[element], color='grey', linewidth=1)
+plt.setp(bplot['whiskers'], linestyle='-')
+
+#indexLimitsEachTrialSound = np.zeros(indexLimitsEachTrial.shape, dtype=int)
+#numTrials = indexLimitsEachTrial.shape[-1]
+#indexLimitsEachTrialSound[0,:] = np.arange(numTrials)
+#indexLimitsEachTrialSound[1,:] = np.arange(numTrials) + 1
+#pRasterSound, hcondSound, zlineSound = extraplots.raster_plot(soundTimesFromEventOnset,
+#                                                              indexLimitsEachTrialSound,
+#                                                              timeRangeMovement,
+#                                                              trialsEachCond=trialsEachCond,
+#                                                              colorEachCond=MOVEMENTCOLORS)
+#plt.setp(pRasterSound, marker='.', color=soundColor, ms=msSoundStart)
+
 #plt.xlabel('Time from movement onset (s)', fontsize=fontSizeLabels)
 plt.ylabel('Trials grouped\nby choice', fontsize=fontSizeLabels)
 ax1.set_yticklabels([])

@@ -35,6 +35,7 @@ labelDis = 0.1
 
 timeRangeSound = [-0.2, 0.4]
 msRaster = 2
+msMvStart = 3
 smoothWinSizePsth1 = 1 #2
 smoothWinSizePsth2 = 3 #2
 lwPsth = 2
@@ -76,11 +77,6 @@ if PANELS[0]:
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
     #timeRange = rasterExample['timeRange']
-    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
-    indexLimitsEachTrialMovement = np.zeros(indexLimitsEachTrial.shape, dtype=int)
-    numTrials = indexLimitsEachTrial.shape[-1]
-    indexLimitsEachTrialMovement[0,:] = np.arange(numTrials)
-    indexLimitsEachTrialMovement[1,:] = np.arange(numTrials) + 1
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
     colorEachFreq = [colormapTuning(x) for x in np.linspace(1.0, 0.2, len(possibleFreq))] 
@@ -93,13 +89,19 @@ if PANELS[0]:
                                                    labels=labels)
     plt.setp(pRaster, ms=msRaster)
     plt.setp(hcond,zorder=3)
-    pRasterMv, hcondMv, zlineMv = extraplots.raster_plot(movementTimesFromEventOnset,
-                                                         indexLimitsEachTrialMovement,
-                                                         timeRangeSound,
-                                                         trialsEachCond=trialsEachCond,
-                                                         colorEachCond=colorEachFreq,
-                                                         labels=labels)
-    plt.setp(pRasterMv, marker='|', color='grey')
+
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+10], widths=[25])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
@@ -150,11 +152,7 @@ if PANELS[1]:
     trialsEachCond = rasterExample['trialsEachFreq']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
-    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
-    indexLimitsEachTrialMovement = np.zeros(indexLimitsEachTrial.shape, dtype=int)
-    numTrials = indexLimitsEachTrial.shape[-1]
-    indexLimitsEachTrialMovement[0,:] = np.arange(numTrials)
-    indexLimitsEachTrialMovement[1,:] = np.arange(numTrials) + 1
+    
     #timeRange = rasterExample['timeRange']
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
@@ -168,13 +166,19 @@ if PANELS[1]:
                                                    labels=labels)
     plt.setp(pRaster, ms=msRaster)
     plt.setp(hcond,zorder=3)
-    pRasterMv, hcondMv, zlineMv = extraplots.raster_plot(movementTimesFromEventOnset,
-                                                         indexLimitsEachTrialMovement,
-                                                         timeRangeSound,
-                                                         trialsEachCond=trialsEachCond,
-                                                         colorEachCond=colorEachFreq,
-                                                         labels=labels)
-    plt.setp(pRasterMv, marker='|', color='grey')
+    
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+10], widths=[25])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
