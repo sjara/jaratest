@@ -69,6 +69,7 @@ gs02 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[3:,1], hspace=0.15
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
+msMvStart = 3
 smoothWinSizePsth = 2#3
 lwPsth = 2
 downsampleFactorPsth = 1
@@ -132,7 +133,19 @@ if PANELS[0]:
                                                    colorEachCond=colorEachCond)
 
     plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) 
+
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+10], widths=[15])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
     
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
@@ -141,10 +154,8 @@ if PANELS[0]:
     plt.ylabel('Mid-freq correct\ntrials each block', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
     
-
     # -- Panel B2: representative sound-evoked psth from switching task, Not modulated -- #
-    #ax3 = plt.subplot(gs[1, 2:4])
-    ax3 = plt.subplot(gs02[2:, :])
+    ax3 = plt.subplot(gs02[2, :])
     psthFilename = 'example_switching_midfreq_soundaligned_psth_adap020_20160526a_T2_c9.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)
@@ -179,7 +190,7 @@ if PANELS[0]:
 
 # -- Panel B: representative sound-evoked raster from switching task, modulated -- #
 #ax4 = plt.subplot(gs[2, 0:2])
-ax4 = plt.subplot(gs01[0:2, 0:])
+ax4 = plt.subplot(gs01[0:2, :])
 ax4.annotate('D', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[1]:
@@ -201,19 +212,31 @@ if PANELS[1]:
                                                    fillWidth=None,labels=None)
 
     plt.setp(pRaster, ms=msRaster)
-    #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    #ax4.axes.xaxis.set_ticklabels('')
+
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+10], widths=[15])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+
     ax4.set_yticklabels([])
     ax4.set_xticklabels([])
     #plt.ylabel('Trials',fontsize=fontSizeLabels, labelpad=labelDis)
     #plt.ylabel('Mid-freq trials\ngrouped by choice', fontsize=fontSizeLabels)
     plt.ylabel('Mid-freq correct\ntrials each block', fontsize=fontSizeLabels)
     #plt.xlim(timeRangeSound[0],timeRangeSound[1])
-
+    
+    
 
     # -- Panel C2: representative sound-evoked psth from switching task, modulated -- #
-    #ax5 = plt.subplot(gs[3, 0:2])
-    ax5 = plt.subplot(gs01[2:, 0:])
+    ax5 = plt.subplot(gs01[2, :])
     psthFilename = 'example_switching_midfreq_soundaligned_psth_test089_20160124a_T4_c6.npz' 
     psthFullPath = os.path.join(dataDir, psthFilename)
     psthExample =np.load(psthFullPath)

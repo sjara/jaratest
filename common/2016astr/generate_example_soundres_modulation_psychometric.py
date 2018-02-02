@@ -171,6 +171,7 @@ for cellParams in cellParamsList:
         eventOnsetTimes=np.array(eventData.timestamps)
         soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
         soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
+        diffTimes = bdata['timeCenterOut'] - bdata['timeTarget']
 
         # -- Calculate arrays for plotting raster -- #
         (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
@@ -181,7 +182,7 @@ for cellParams in cellParamsList:
         #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
         outputFile = 'example_psycurve_soundaligned_raster_{}Hz_{}_{}_T{}_c{}.npz'.format(middleFreq, oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
         outputFullPath = os.path.join(dataDir,outputFile)
-        np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['colorL'], colorRightTrials=colorsDict['colorR'], frequencyPloted=middleFreq, **cellParams)
+        np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=soundOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, movementTimesFromEventOnset=diffTimes, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['colorL'], colorRightTrials=colorsDict['colorR'], frequencyPloted=middleFreq, **cellParams)
 
 
         # -- Calculate additional arrays for plotting psth -- #

@@ -35,6 +35,7 @@ labelDis = 0.1
 
 timeRangeSound = [-0.2, 0.4]
 msRaster = 2
+msMvStart = 3
 smoothWinSizePsth1 = 1 #2
 smoothWinSizePsth2 = 3 #2
 lwPsth = 2
@@ -88,6 +89,20 @@ if PANELS[0]:
                                                    labels=labels)
     plt.setp(pRaster, ms=msRaster)
     plt.setp(hcond,zorder=3)
+
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+15], widths=[25])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
@@ -138,6 +153,7 @@ if PANELS[1]:
     trialsEachCond = rasterExample['trialsEachFreq']
     spikeTimesFromEventOnset = rasterExample['spikeTimesFromEventOnset']
     indexLimitsEachTrial = rasterExample['indexLimitsEachTrial']
+    
     #timeRange = rasterExample['timeRange']
     labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
 
@@ -151,6 +167,20 @@ if PANELS[1]:
                                                    labels=labels)
     plt.setp(pRaster, ms=msRaster)
     plt.setp(hcond,zorder=3)
+    
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+15], widths=[25])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
     plt.gca().set_xticklabels('')
     plt.ylabel('Frequency (kHz)',fontsize=fontSizeLabels) #, labelpad=labelDis)
@@ -340,7 +370,9 @@ if PANELS[3]:
         allKruskalPVals[cellInd] = pVal
     KruskalfreqSelective = allKruskalPVals <= alphaLevel
     numOverallFreqSelCellsKruskal = sum(KruskalfreqSelective)
+    numOverallFreqSelSoundRespCellsKruskal = sum(KruskalfreqSelective & sigRespOverall)
     print 100*float(numOverallFreqSelCellsKruskal)/numCells, '%, ', numOverallFreqSelCellsKruskal, 'out of', numCells, ' total cells in 2afc psycurve task show different response to all frequencies (Kruskal-Wallis H-test).'
+    print 100*float(numOverallFreqSelSoundRespCellsKruskal)/numOverallRespCells, '%, ', numOverallFreqSelSoundRespCellsKruskal, 'out of', numOverallRespCells, ' sound responsive cells in 2afc psycurve task show different response to all frequencies (Kruskal-Wallis H-test).'
 
 plt.show()
 

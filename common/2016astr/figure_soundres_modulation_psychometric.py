@@ -76,6 +76,7 @@ gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
+msMvStart = 3
 smoothWinSizePsth = 3
 lwPsth = 2
 downsampleFactorPsth = 1
@@ -112,6 +113,20 @@ if PANELS[1]:
                                                    fillWidth=None,labels=None)
 
     plt.setp(pRaster, ms=msRaster)
+
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[5])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
     #ax2.axes.xaxis.set_ticklabels([])
     ax2.set_yticklabels([])
@@ -175,6 +190,20 @@ if PANELS[1]:
                                                    colorEachCond=colorEachCond)
 
     plt.setp(pRaster, ms=msRaster)
+
+    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[5])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) 
     #ax4.axes.xaxis.set_ticklabels([])
     ax4.set_yticklabels([])
