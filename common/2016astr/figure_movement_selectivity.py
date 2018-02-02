@@ -95,14 +95,14 @@ soundTimesFromEventOnset = rasterExample['soundTimesFromEventOnset']
 trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
 yLims = plt.gca().get_ylim()
 plt.hold('on')
-bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+10], widths=[25])
+bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+15], widths=[25])
 extraplots.boxoff(plt.gca())
 plt.autoscale(enable=True, axis='y', tight=True)
 plt.axis('off')
 for element in ['boxes', 'whiskers', 'fliers', 'caps']:
     plt.setp(bplot[element], color='grey', linewidth=1)
 plt.setp(bplot['whiskers'], linestyle='-')
-
+plt.setp(bplot['medians'], color='orange')
 #indexLimitsEachTrialSound = np.zeros(indexLimitsEachTrial.shape, dtype=int)
 #numTrials = indexLimitsEachTrial.shape[-1]
 #indexLimitsEachTrialSound[0,:] = np.arange(numTrials)
@@ -183,12 +183,13 @@ soundTimesFromEventOnset = rasterExample['soundTimesFromEventOnset']
 trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
 yLims = plt.gca().get_ylim()
 plt.hold('on')
-bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, whis=0.75, positions=[yLims[-1]+10], widths=[25])
+bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, whis=0.75, positions=[yLims[-1]+15], widths=[25])
 extraplots.boxoff(plt.gca())
 plt.autoscale(enable=True, axis='y', tight=True)
 plt.axis('off')
 for element in ['boxes', 'whiskers', 'fliers', 'caps']:
     plt.setp(bplot[element], color='grey', linewidth=1)
+plt.setp(bplot['medians'], color='orange')
 plt.setp(bplot['whiskers'], linestyle='-')
 
 #indexLimitsEachTrialSound = np.zeros(indexLimitsEachTrial.shape, dtype=int)

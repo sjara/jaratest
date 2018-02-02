@@ -115,16 +115,17 @@ if PANELS[1]:
     plt.setp(pRaster, ms=msRaster)
 
     movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
-    indexLimitsEachTrialMovement = np.zeros(indexLimitsEachTrial.shape, dtype=int)
-    numTrials = indexLimitsEachTrial.shape[-1]
-    indexLimitsEachTrialMovement[0,:] = np.arange(numTrials)
-    indexLimitsEachTrialMovement[1,:] = np.arange(numTrials) + 1
-    pRasterMv, hcondMv, zlineMv = extraplots.raster_plot(movementTimesFromEventOnset,
-                                                         indexLimitsEachTrialMovement,
-                                                         timeRange,
-                                                         trialsEachCond=trialsEachCond,
-                                                         colorEachCond=colorEachCond)
-    plt.setp(pRasterMv, marker='.', color='darkgrey', ms=msMvStart)
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[5])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
 
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
     #ax2.axes.xaxis.set_ticklabels([])
@@ -191,16 +192,17 @@ if PANELS[1]:
     plt.setp(pRaster, ms=msRaster)
 
     movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
-    indexLimitsEachTrialMovement = np.zeros(indexLimitsEachTrial.shape, dtype=int)
-    numTrials = indexLimitsEachTrial.shape[-1]
-    indexLimitsEachTrialMovement[0,:] = np.arange(numTrials)
-    indexLimitsEachTrialMovement[1,:] = np.arange(numTrials) + 1
-    pRasterMv, hcondMv, zlineMv = extraplots.raster_plot(movementTimesFromEventOnset,
-                                                         indexLimitsEachTrialMovement,
-                                                         timeRange,
-                                                         trialsEachCond=trialsEachCond,
-                                                         colorEachCond=colorEachCond)
-    plt.setp(pRasterMv, marker='.', color='grey', ms=msMvStart)
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[5])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
 
     #plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels) 
     #ax4.axes.xaxis.set_ticklabels([])
