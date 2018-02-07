@@ -5,6 +5,7 @@ import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
 from jaratoolbox import extraplots
 from jaratoolbox import histologyanalysis as ha
+import matplotlib.ticker as mticker
 import figparams
 reload(figparams)
 
@@ -19,7 +20,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_anatomy' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,5] # In inches
+figSize = [9,5] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -27,7 +28,7 @@ fontSizePanel = figparams.fontSizePanel
 
 barColor = '0.5'
 
-labelPosX = [0.05, 0.35, 0.65]   # Horiz position for panel labels
+labelPosX = [0.04, 0.32, 0.65]   # Horiz position for panel labels
 labelPosY = [0.95, 0.45]    # Vert position for panel labels
 
 # Define colors, use figparams
@@ -73,10 +74,15 @@ axP.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
 # axP.set_xlabel('Cell density')
 # axP.set_ylabel('Depth (um)')
 if PANELS[2]:
-    axP.hist(allSliceDepths+0.1, bins=25, color=barColor)
+    #Plot histogram of cell depths. The weights argument allows the heights of the bars to add to 1.
+    axP.hist(allSliceDepths, bins=25, color=barColor, weights=np.ones_like(allSliceDepths)/float(len(allSliceDepths)))
+    #Set custom formatter to get output in percent instead of fraction
+    # formatter = mticker.FuncFormatter(lambda v, pos: str(v * 100))
+    formatter = mticker.FuncFormatter(lambda v, pos: '{0:g}'.format(v * 100))
+    axP.yaxis.set_major_formatter(formatter)
     axP.set_xlim([0, 1])
     axP.set_xticks([0, 0.5, 1])
-    plt.ylabel('Number of cells')
+    plt.ylabel('% labeled neurons')
     plt.xlabel('Normalized distance from pia')
     plt.show()
     extraplots.boxoff(axP)
@@ -109,8 +115,6 @@ thalDataPath = os.path.join(dataDir, 'thalamusAreaCounts.npz')
 sliceCountSum = np.load(thalDataPath)['sliceCountSum'].item()
 sliceTotalVoxelsSum = np.load(thalDataPath)['sliceTotalVoxelsSum'].item()
 
-# 1/0
-
 areasToPlot = [
     'Medial geniculate complex, dorsal part',
     'Medial geniculate complex, medial part',
@@ -123,10 +127,10 @@ areasToPlot = [
     # 'Peripeduncular nucleus'
 ]
 
-plotDensity=True
-
 abbrevs = ['MGd', 'MGm', 'MGv', 'LP', 'SG', 'Pol']
 areaSums = [sliceCountSum[key] for key in areasToPlot]
+totalCells = sum(areaSums)
+areaPercent = [(val/float(totalCells))*100 for val in areaSums]
 areaDensity = [sliceCountSum[key]/float(sliceTotalVoxelsSum[key]) for key in areasToPlot]
 
 axP = plt.subplot(gs[1, 2])
@@ -138,12 +142,9 @@ axP.annotate('F', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
 if PANELS[5]:
     ind = np.arange(len(areaSums))
     width = 0.5
-    if plotDensity:
-        axP.bar(ind, areaDensity, width, color=barColor)
-        plt.ylabel('Cell density (cells/voxel)')
-    else:
-        axP.bar(ind, areaSums, width, color=barColor)
-        plt.ylabel('Number of cells')
+    #NOTE: Plotting fraction of labeled cells here
+    axP.bar(ind, areaPercent, width, color=barColor)
+    plt.ylabel('% labeled neurons')
     axP.set_xticks(ind+width)
     axP.set_xticklabels(abbrevs, rotation=70, horizontalalignment='right')
     plt.subplots_adjust(bottom=0.2, left=0.2)

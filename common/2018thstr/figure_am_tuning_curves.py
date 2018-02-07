@@ -20,7 +20,7 @@ PANELS = [1, 1, 1, 1] # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 # outputDir = '/tmp/'
 outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
-figFilename = 'plots_am_tuning' # Do not include extension
+figFilename = 'plots_am_tuning_exampleOnly' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [12,8] # In inches
 
@@ -31,8 +31,8 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.07, 0.36, 0.7]   # Horiz position for panel labels
-labelPosY = [0.9, 0.48, 0.19]    # Vert position for panel labels
+labelPosX = [0.03, 0.47]   # Horiz position for panel labels
+labelPosY = [0.95, 0.48]    # Vert position for panel labels
 
 # Define colors, use figparams
 laserColor = figparams.colp['blueLaser']
@@ -127,33 +127,33 @@ if PANELS[0]:
     axRaster.set_title('ATh -> Str Example 1')
     axRate.set_xlim([0,200])
 # ax = plt.gc
-# ax.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
-#              fontsize=fontSizePanel, fontweight='bold')
+axRaster.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
 
 # -- Panel: Thalamus less synchronized --
 # axWide = plt.subplot(gs[0, 1])
 spec = gs[0, 1]
-# axWide.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
-#              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'Thal2', color=colorATh)
     axRaster.set_title('ATh -> Str Example 2')
     axRate.set_xlim([0,20])
+axRaster.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
 
 spec = gs[1, 0]
-# axSharp.annotate('D', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
-#              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'AC1', color=colorAC)
     axRaster.set_title('AC -> Str Example 1')
+axRaster.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
 # -- Panel: Cortex less synchronized --
 # axWide = plt.subplot(gs[1, 1])
 spec = gs[1, 1]
-# axWide.annotate('E', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
-#              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[3]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'AC2', color=colorAC)
     axRaster.set_title('AC -> Str Example 2')
+axRaster.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
 
 plt.show()
 

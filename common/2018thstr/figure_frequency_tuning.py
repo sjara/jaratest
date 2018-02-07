@@ -8,6 +8,7 @@ from jaratoolbox import celldatabase
 from scipy import stats
 import pandas as pd
 import figparams
+reload(extraplots)
 reload(figparams)
 
 FIGNAME = 'figure_frequency_tuning'
@@ -104,6 +105,7 @@ if PANELS[0]:
     ax = axSharp
     exampleKey = 'Thal2'
     plt.imshow(np.flipud(exData[exampleKey]), interpolation='nearest', cmap='Blues')
+    plt.colorbar
     ax.set_yticks(intenTickLocations)
     ax.set_yticklabels(intensities[::-1])
     ax.set_xticks(freqTickLocations)
@@ -120,31 +122,31 @@ if PANELS[0]:
     else:
         plt.title('ATh->Str Example 1', fontsize=fontSizeTitles)
 
-# -- Panel: Thalamus wide tuning --
-axWide = plt.subplot(gs[0, 2])
-axWide.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
-             fontsize=fontSizePanel, fontweight='bold')
-if PANELS[1]:
-    # Plot stuff
-    ax = axWide
-    exampleKey = 'Thal1'
-    plt.imshow(np.flipud(exData[exampleKey]), interpolation='nearest', cmap='Blues')
-    ax.set_yticks(intenTickLocations)
-    ax.set_yticklabels(intensities[::-1])
-    ax.set_xticks(freqTickLocations)
-    freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
-    # ax.set_xticklabels(freqLabels, rotation='vertical')
-    ax.set_xticklabels(freqLabels)
-    ax.set_xlabel('Frequency (kHz)')
-    plt.ylabel('Intensity (db SPL)')
+# # -- Panel: Thalamus wide tuning --
+# axWide = plt.subplot(gs[0, 2])
+# axWide.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
+#              fontsize=fontSizePanel, fontweight='bold')
+# if PANELS[1]:
+#     # Plot stuff
+#     ax = axWide
+#     exampleKey = 'Thal1'
+#     plt.imshow(np.flipud(exData[exampleKey]), interpolation='nearest', cmap='Blues')
+#     ax.set_yticks(intenTickLocations)
+#     ax.set_yticklabels(intensities[::-1])
+#     ax.set_xticks(freqTickLocations)
+#     freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
+#     # ax.set_xticklabels(freqLabels, rotation='vertical')
+#     ax.set_xticklabels(freqLabels)
+#     ax.set_xlabel('Frequency (kHz)')
+#     plt.ylabel('Intensity (db SPL)')
 
-    cellDict = examples[exampleKey]
-    cellInd, cell = celldatabase.find_cell(dataframe, **cellDict)
+#     cellDict = examples[exampleKey]
+#     cellInd, cell = celldatabase.find_cell(dataframe, **cellDict)
 
-    if titleExampleBW:
-        plt.title('ATh->Str, BW10={:.2f}'.format(cell['BW10']), fontsize=fontSizeTitles)
-    else:
-        plt.title('ATh->Str Example 2', fontsize=fontSizeTitles)
+#     if titleExampleBW:
+#         plt.title('ATh->Str, BW10={:.2f}'.format(cell['BW10']), fontsize=fontSizeTitles)
+#     else:
+#         plt.title('ATh->Str Example 2', fontsize=fontSizeTitles)
 
 ##### Cortex #####
 # -- Panel: Cortex sharp tuning --
@@ -158,6 +160,7 @@ if PANELS[3]:
     ax = axSharp
     exampleKey = 'AC1'
     plt.imshow(np.flipud(exData[exampleKey]), interpolation='nearest', cmap='Blues')
+    plt.colorbar()
     ax.set_yticks(intenTickLocations)
     ax.set_yticklabels(intensities[::-1])
     ax.set_xticks(freqTickLocations)
@@ -175,29 +178,29 @@ if PANELS[3]:
     else:
         plt.title('AC->Str Example 1', fontsize=fontSizeTitles)
 
-# -- Panel: Cortex wide tuning --
-axWide = plt.subplot(gs[1, 2])
-axWide.annotate('F', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
-             fontsize=fontSizePanel, fontweight='bold')
-if PANELS[4]:
-    # Plot stuff
-    ax = axWide
-    exampleKey = 'AC2'
-    plt.imshow(np.flipud(exData[exampleKey]), interpolation='nearest', cmap='Blues')
-    ax.set_yticks(intenTickLocations)
-    ax.set_yticklabels(intensities[::-1])
-    ax.set_xticks(freqTickLocations)
-    freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
-    # ax.set_xticklabels(freqLabels, rotation='vertical')
-    ax.set_xticklabels(freqLabels)
-    ax.set_xlabel('Frequency (kHz)')
-    plt.ylabel('Intensity (db SPL)')
-    cellDict = examples[exampleKey]
-    cellInd, cell = celldatabase.find_cell(dataframe, **cellDict)
-    if titleExampleBW:
-        plt.title('AC->Str, BW10={:.2f}'.format(cell['BW10']), fontsize=fontSizeTitles)
-    else:
-        plt.title('AC->Str Example 2', fontsize=fontSizeTitles)
+# # -- Panel: Cortex wide tuning --
+# axWide = plt.subplot(gs[1, 2])
+# axWide.annotate('F', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
+#              fontsize=fontSizePanel, fontweight='bold')
+# if PANELS[4]:
+#     # Plot stuff
+#     ax = axWide
+#     exampleKey = 'AC2'
+#     plt.imshow(np.flipud(exData[exampleKey]), interpolation='nearest', cmap='Blues')
+#     ax.set_yticks(intenTickLocations)
+#     ax.set_yticklabels(intensities[::-1])
+#     ax.set_xticks(freqTickLocations)
+#     freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
+#     # ax.set_xticklabels(freqLabels, rotation='vertical')
+#     ax.set_xticklabels(freqLabels)
+#     ax.set_xlabel('Frequency (kHz)')
+#     plt.ylabel('Intensity (db SPL)')
+#     cellDict = examples[exampleKey]
+#     cellInd, cell = celldatabase.find_cell(dataframe, **cellDict)
+#     if titleExampleBW:
+#         plt.title('AC->Str, BW10={:.2f}'.format(cell['BW10']), fontsize=fontSizeTitles)
+#     else:
+#         plt.title('AC->Str Example 2', fontsize=fontSizeTitles)
 
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
@@ -209,11 +212,13 @@ def medline(yval, midline, width, color='k', linewidth=3):
     end = midline+(width/2)
     plt.plot([start, end], [yval, yval], color=color, lw=linewidth)
 
+dotEdgeColor = '0.5'
+
 order = ['rightThal', 'rightAC'] # Should match 'tickLabels'
 tickLabels = ['ATh->Str', 'AC->AStr']       # Should match 'order'
 groups = dataframe.groupby('brainArea')
 
-axHist = plt.subplot(gs[0:2, 3])
+axHist = plt.subplot(gs[0:2, 2])
 plt.hold(True)
 axHist.annotate('G', xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
@@ -227,21 +232,23 @@ if PANELS[2]:
     for position, groupName in enumerate(order):
         data = groups.get_group(groupName)[column].values
         pos = jitter(np.ones(len(data))*position, 0.20)
-        axHist.plot(pos, data, 'o', mec = 'k', mfc = 'None')
+        axHist.plot(pos, data, 'o', mec = dotEdgeColor, mfc = 'None')
         medline(np.median(data), position, 0.5)
         order_n.append(len(data))
         dataList.append(data)
     axHist.set_xticks(range(2))
     axHist.set_xticklabels(tickLabels)
     axHist.set_xlim([-0.5, 1.5])
+    extraplots.new_significance_stars([0, 1], 3.6, 0.1, starMarker='ns', fontSize=12, gapFactor=0.25)
+    axHist.set_ylim([0, 3.8])
     plt.ylabel('BW10')
     # plt.ylim([0, 4.5])
     zVal, pVal = stats.ranksums(*dataList)
     extraplots.boxoff(axHist)
     # plt.title('ATh -> Str N: {}\nAC -> Str N: {}'.format(order_n[0], order_n[1]))
-    plt.title('p = {:.03f}'.format(pVal), fontsize=fontSizeTitles)
+    # plt.title('p = {:.03f}'.format(pVal), fontsize=fontSizeTitles)
 
-axHist = plt.subplot(gs[0:2, 4])
+axHist = plt.subplot(gs[0:2, 3])
 plt.hold(True)
 if PANELS[8]:
     column='threshold'
@@ -250,7 +257,7 @@ if PANELS[8]:
     for position, groupName in enumerate(order):
         data = groups.get_group(groupName)[column].values
         pos = jitter(np.ones(len(data))*position, 0.20)
-        axHist.plot(pos, data, 'o', mec = 'k', mfc = 'None')
+        axHist.plot(pos, data, 'o', mec = dotEdgeColor, mfc = 'None')
         medline(np.median(data), position, 0.5)
         order_n.append(len(data))
         dataList.append(data)
@@ -261,12 +268,45 @@ if PANELS[8]:
     plt.ylim([0, 80])
     extraplots.boxoff(axHist)
     zVal, pVal = stats.ranksums(*dataList)
-    plt.title('p = {:.03f}'.format(pVal), fontsize=fontSizeTitles)
+    # plt.title('p = {:.03f}'.format(pVal), fontsize=fontSizeTitles)
+    # extraplots.significance_stars([0, 1], 70, 2.5, starMarker='*')
+    extraplots.new_significance_stars([0, 1], 70, 2.5, starMarker='*', fontSize=15)
 
     #TODO: put font size in figparams?
     fontSizeNLabel = 10
     axHist.annotate('N = {} ATh->Str \nN = {} AC->Str'.format(order_n[0], order_n[1]),
                     xy=(0.88, 0.82), xycoords='figure fraction', fontsize=fontSizeNLabel, fontweight='bold')
+
+axHist = plt.subplot(gs[0:2, 4])
+plt.hold(True)
+if PANELS[8]:
+    column='latency'
+    order_n = []
+    dataList = []
+    for position, groupName in enumerate(order):
+        data = groups.get_group(groupName)[column].values
+        pos = jitter(np.ones(len(data))*position, 0.20)
+        axHist.plot(pos, data, 'o', mec = dotEdgeColor, mfc = 'None')
+        medline(np.nanmedian(data), position, 0.5)
+        # 1/0
+        order_n.append(len(data))
+        dataList.append(data)
+    axHist.set_xticks(range(2))
+    axHist.set_xticklabels(tickLabels)
+    axHist.set_xlim([-0.5, 1.5])
+    plt.ylabel('Latency to first spike (ms)')
+    # plt.ylim([0, 80])
+    extraplots.boxoff(axHist)
+    zVal, pVal = stats.ranksums(*dataList)
+    # plt.title('p = {:.03f}'.format(pVal), fontsize=fontSizeTitles)
+    # extraplots.significance_stars([0, 1], 70, 2.5, starMarker='*')
+    # extraplots.new_significance_stars([0, 1], 70, 2.5, starMarker='*', fontSize=15)
+
+    #TODO: put font size in figparams?
+    fontSizeNLabel = 10
+
+
+
 
 '''
 axHist = plt.subplot(gs[0:2, 5])

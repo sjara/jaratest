@@ -23,6 +23,10 @@ figFilename = 'plots_spike_latency' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [12, 5] # In inches
 
+labelPosX = [0.07, 0.68]   # Horiz position for panel labels
+labelPosY = 0.90    # Vert position for panel label
+fontSizePanel = figparams.fontSizePanel
+
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
@@ -159,6 +163,9 @@ plt.hold(1)
 plt.axvline(respLatency,color='r')
 plt.axis('off')
 
+axRaster.annotate('A', xy=(labelPosX[0], labelPosY), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+
 
 axPSTH = plt.subplot(gs[1, 0:2])
 # plt.plot(interim['timeVec'], interim['avgCount'],'.-k')
@@ -218,6 +225,9 @@ plt.setp(bp['whiskers'], color=boxColor, lw=linewidth)
 plt.setp(bp['fliers'], color=boxColor, marker='+')
 plt.setp(bp['medians'], color=boxColor, lw=linewidth)
 plt.setp(bp['caps'], color=boxColor)
+
+axHist.annotate('B', xy=(labelPosX[1], labelPosY), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
 
 zVal, pVal = stats.ranksums(*dataList)
 plt.title('p={:.3f}'.format(pVal))

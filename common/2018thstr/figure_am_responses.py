@@ -8,6 +8,7 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import spikesanalysis
 from jaratoolbox import colorpalette
 from collections import Counter
+from scipy import stats
 import pandas as pd
 import figparams
 reload(figparams)
@@ -17,6 +18,10 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 
 PANELS = [1, 1, 1, 1, 1, 1] # Plot panel i if PANELS[i]==1
+
+# hsFeatureName = 'highestUSync'
+# hsFeatureName = 'highestSync'
+hsFeatureName = 'highestSyncCorrected'
 
 SAVE_FIGURE = 1
 outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
@@ -42,7 +47,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 3)
-gs.update(left=0.08, right=0.98, top=0.90, bottom=0.12, wspace=.4, hspace=0.5)
+gs.update(left=0.08, right=0.98, top=0.90, bottom=0.15, wspace=.4, hspace=0.7)
 
 #Load example data
 exampleDataPath = os.path.join(dataDir, 'data_am_examples.npz')
@@ -56,7 +61,7 @@ exampleIndexLimitsEachTrial = exampleData['exampleIndexLimitsEachTrial'].item()
 #Load database with AM data
 db = pd.read_hdf(dbPath, key='dataframe')
 goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
-#Use the good Laser 
+#Use the good Laser
 goodStriatum = db.groupby('brainArea').get_group('rightAstr').query('isiViolations<0.02 and spikeShapeQuality>2')
 goodLaserPlusStriatum = goodLaser.append(goodStriatum, ignore_index=True)
 
@@ -87,7 +92,7 @@ def plot_hist(ax, dataArr, color, label):
     freqs = np.round(freqs, decimals=1)
     freqs = np.r_[0, freqs]
     freqLabels = ['{}'.format(freq) for freq in freqs[1:]]
-    freqLabels = ['NS', ' '] + freqLabels
+    freqLabels = ['N.Sync.', ' '] + freqLabels
 
     roundData = np.round(dataArr[pd.notnull(dataArr)], decimals=1)
     counts = Counter(roundData)
@@ -124,7 +129,7 @@ def plot_hist(ax, dataArr, color, label):
 
     return rects
 
-column = 'highestSync'
+column = hsFeatureName
 groups = goodLaserPlusStriatum.groupby('brainArea')
 ##### Thalamus #####
 spec = gs[0, 0]
@@ -150,8 +155,8 @@ ax.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
 axHist = plt.subplot(gs[0, 2])
 if PANELS[2]:
     groupName = 'rightThal'
-    data = groups.get_group(groupName)[column]
-    plot_hist(axHist, data, thalHistColor, 'ATh')
+    thalData = groups.get_group(groupName)[column]
+    plot_hist(axHist, thalData, thalHistColor, 'ATh')
 axHist.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 
@@ -179,10 +184,34 @@ ax.annotate('E', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
 axHist = plt.subplot(gs[1, 2])
 if PANELS[5]:
     groupName = 'rightAC'
-    data = groups.get_group(groupName)[column]
-    plot_hist(axHist, data, acHistColor, 'AC')
+    ACData = groups.get_group(groupName)[column]
+    plot_hist(axHist, ACData, acHistColor, 'AC')
 axHist.annotate('F', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
+
+
+thalData = thalData[pd.notnull(thalData)]
+ACData = ACData[pd.notnull(ACData)]
+
+#Ranksums test on the non-zero distributions
+zval, pval = stats.ranksums(thalData[thalData > 0], ACData[ACData > 0])
+print "Thalamus vs. AC AM sync ranksums test pval: {}".format(pval)
+
+#Fisher exact test on the nonsync/sync data
+thalNonSync = sum(thalData==0)
+thalSync = sum(thalData>0)
+
+acNonSync = sum(ACData==0)
+acSync = sum(ACData>0)
+
+print "Thal nonsync = {}, sync = {}".format(thalNonSync, thalSync)
+print "AC nonsync = {}, sync = {}".format(acNonSync, acSync)
+
+oddsratio, pvalue = stats.fisher_exact([[thalNonSync, acNonSync], [thalSync, acSync]])
+
+print "Fisher exact contingency table: [{}, {}], [{}, {}]".format(thalNonSync, acNonSync, thalSync, acSync)
+print "Fisher exact pVal = {}".format(pvalue)
+
 
 
 ##### Striatum #####
