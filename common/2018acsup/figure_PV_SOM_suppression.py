@@ -23,27 +23,27 @@ reload(figparams)
 FIGNAME = 'figure_PV_SOM_suppression'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
-PANELS = [1,1,1,1] # Plot panel i if PANELS[i]==1
+PANELS = [1,1,1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'PV_SOM_suppression' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [9,5] # In inches
+figSize = [9,8] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.02, 0.40, 0.72, 0.9]   # Horiz position for panel labels
-labelPosY = [0.9, 0.48]    # Vert position for panel labels
+labelPosX = [0.02, 0.32, 0.65]   # Horiz position for panel labels
+labelPosY = [0.96, 0.67, 0.4]    # Vert position for panel labels
 
-PVFileName = 'band026_2017-04-27_1350um_T4_c2.npz'
-#PVFileName = 'band026_2017-04-27_1410um_T4_c6.npz'
+#PVFileName = 'band026_2017-04-27_1350um_T4_c2.npz'
+PVFileName = 'band026_2017-04-27_1410um_T4_c6.npz'
 
 #SOMFileName = 'band028_2017-05-21_1450um_T2_c4.npz'
-#SOMFileName = 'band028_2017-05-21_1625um_T6_c6.npz'
-SOMFileName = 'band031_2017-06-29_1280um_T1_c4.npz'
+SOMFileName = 'band028_2017-05-21_1625um_T6_c6.npz'
+#SOMFileName = 'band031_2017-06-29_1280um_T1_c4.npz'
 
 summaryFileName = 'photoidentified_cells_suppression_scores.npz'
 
@@ -53,8 +53,8 @@ fig.clf()
 fig.set_facecolor('w')
 
 
-gs = gridspec.GridSpec(2,4,width_ratios=[1, 0.7, 0.7, 1.5])
-gs.update(top=0.9, left=0.07, right=0.95, wspace=0.4, hspace=0.2)
+gs = gridspec.GridSpec(3,3,width_ratios=[1, 1.3, 1.3], height_ratios=[1,1,1.5])
+gs.update(top=0.95, bottom=0.05, left=0.1, right=0.95, wspace=0.4, hspace=0.3)
 
 # --- Raster plots of example PV and SOM cell ---
 if PANELS[0]:
@@ -105,7 +105,7 @@ if PANELS[0]:
     plt.ylabel('Bandwidth (oct)',fontsize=fontSizeLabels)
     plt.xlabel('Time from laser onset (s)',fontsize=fontSizeLabels)
 
-# -- Plots of onset bandwidth tuning --
+# -- Plots of onset and sustained bandwidth tuning --
 if PANELS[1]:
     # PV response
     PVFile = 'example_PV_bandwidth_tuning_'+PVFileName
@@ -113,94 +113,67 @@ if PANELS[1]:
     PVData = np.load(PVDataFullPath)
     
     PVonsetResponseArray = PVData['onsetResponseArray']
-    PVonsetSEM = PVData['onsetSEM']
-    bands = PVData['possibleBands']
-    axCurve = plt.subplot(gs[0,1])
-    plt.plot(range(len(bands)), PVonsetResponseArray, '-o', ms=7, lw=3,
-             color='k', mec='k', clip_on=False)
-    plt.fill_between(range(len(bands)), PVonsetResponseArray - PVonsetSEM, 
-                     PVonsetResponseArray + PVonsetSEM, alpha=0.2, color='0.5', edgecolor='none')
-    axCurve.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
-                     fontsize=fontSizePanel, fontweight='bold')
-    axCurve.set_xticklabels('')
-    axCurve.set_ylim(bottom=0)
-    plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
-    extraplots.boxoff(axCurve)
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.title('Onset responses',fontsize=fontSizeLabels,fontweight='normal')
+    PVonsetSTD = PVData['onsetSTD']
+    PVsustainedResponseArray = PVData['sustainedResponseArray']
+    PVsustainedSTD = PVData['sustainedSTD']
+    PVbaseline = PVData['baselineMean']
     
-    # SOM response
     SOMFile = 'example_SOM_bandwidth_tuning_'+SOMFileName
     SOMDataFullPath = os.path.join(dataDir,SOMFile)
     SOMData = np.load(SOMDataFullPath)
     
     SOMonsetResponseArray = SOMData['onsetResponseArray']
-    SOMonsetSEM = SOMData['onsetSEM']
-    bands = SOMData['possibleBands']
-    axCurve = plt.subplot(gs[1,1])
-    plt.plot(range(len(bands)), SOMonsetResponseArray, '-o', ms=7, lw=3,
-             color='k', mec='k', clip_on=False)
-    plt.fill_between(range(len(bands)), SOMonsetResponseArray - SOMonsetSEM, 
-                     SOMonsetResponseArray + SOMonsetSEM, alpha=0.2, color='0.5', edgecolor='none')
-    axCurve.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
-                     fontsize=fontSizePanel, fontweight='bold')
-    axCurve.set_xticklabels(bands)
-    axCurve.set_ylim(bottom=0)
-    plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
-    extraplots.boxoff(axCurve)
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    axCurve.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
-    extraplots.boxoff(axCurve)
-    
-# -- Plots of sustained bandwidth tuning --
-if PANELS[2]:
-    # PV response
-    PVFile = 'example_PV_bandwidth_tuning_'+PVFileName
-    PVDataFullPath = os.path.join(dataDir,PVFile)
-    PVData = np.load(PVDataFullPath)
-    
-    PVsustainedResponseArray = PVData['sustainedResponseArray']
-    PVsustainedSEM = PVData['sustainedSEM']
-    bands = PVData['possibleBands']
-    axCurve = plt.subplot(gs[0,2])
-    plt.plot(range(len(bands)), PVsustainedResponseArray, '-o', ms=7, lw=3,
-             color='k', mec='k', clip_on=False)
-    plt.fill_between(range(len(bands)), PVsustainedResponseArray - PVsustainedSEM, 
-                     PVsustainedResponseArray + PVsustainedSEM, alpha=0.2, color='0.5', edgecolor='none')
-    axCurve.annotate('E', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
-                     fontsize=fontSizePanel, fontweight='bold')
-    axCurve.set_xticklabels('')
-    axCurve.set_ylim(bottom=0)
-    plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
-    extraplots.boxoff(axCurve)
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.title('Sustained responses',fontsize=fontSizeLabels,fontweight='normal')
-    
-    # SOM response
-    SOMFile = 'example_SOM_bandwidth_tuning_'+SOMFileName
-    SOMDataFullPath = os.path.join(dataDir,SOMFile)
-    SOMData = np.load(SOMDataFullPath)
-    
+    SOMonsetSTD = SOMData['onsetSTD']
     SOMsustainedResponseArray = SOMData['sustainedResponseArray']
-    SOMsustainedSEM = SOMData['sustainedSEM']
-    bands = SOMData['possibleBands']
-    axCurve = plt.subplot(gs[1,2])
-    plt.plot(range(len(bands)), SOMsustainedResponseArray, '-o', ms=7, lw=3,
-             color='k', mec='k', clip_on=False)
-    plt.fill_between(range(len(bands)), SOMsustainedResponseArray - SOMsustainedSEM, 
-                     SOMsustainedResponseArray + SOMsustainedSEM, alpha=0.2, color='0.5', edgecolor='none')
-    axCurve.annotate('F', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
-                     fontsize=fontSizePanel, fontweight='bold')
-    axCurve.set_xticklabels(bands)
-    axCurve.set_ylim(bottom=0)
-    plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
-    extraplots.boxoff(axCurve)
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    axCurve.set_xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
-    extraplots.boxoff(axCurve)
+    SOMsustainedSTD = SOMData['sustainedSTD']
+    SOMbaseline = SOMData['baselineMean']
+
+    bands = PVData['possibleBands']
+    
+    onsetResponses = [PVonsetResponseArray, SOMonsetResponseArray]
+    onsetSTDs = [PVonsetSTD, SOMonsetSTD]
+    
+    sustainedResponses = [PVsustainedResponseArray, SOMsustainedResponseArray]
+    sustainedSTDs = [PVsustainedSTD, SOMsustainedSTD]
+    
+    responses = [onsetResponses, sustainedResponses]
+    SEMs = [onsetSTDs, sustainedSTDs]
+    baselineRates = [PVbaseline, SOMbaseline]
+    
+    PVColor = figparams.colp['PVcell']
+    SOMColor = figparams.colp['SOMcell']
+    
+    cellTypeColours = [PVColor, SOMColor]
+    panelLabels = [['C', 'D'], ['E', 'F']]
+    
+    for ind, responseType in enumerate(responses):
+        for ind2, responseByCell in enumerate(responseType):
+            plt.hold(1)
+            axCurve = plt.subplot(gs[ind2,ind+1])
+            plt.plot(range(len(bands)), responseByCell, '-o', ms=7, lw=3,
+                     color=cellTypeColours[ind2], mec=cellTypeColours[ind2], clip_on=False)
+            plt.fill_between(range(len(bands)), responseByCell - SEMs[ind][ind2], 
+                             responseByCell + SEMs[ind][ind2], alpha=0.2, color=cellTypeColours[ind2], edgecolor='none')
+            plt.plot(range(len(bands)), np.tile(baselineRates[ind2], len(bands)), '--', color='0.4', lw=2)
+            axCurve.annotate(panelLabels[ind][ind2], xy=(labelPosX[ind+1],labelPosY[ind2]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
+            axCurve.set_xticklabels('')
+            axCurve.set_ylim(bottom=0)
+            extraplots.boxoff(axCurve)
+            extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+            if not (ind | ind2):
+                plt.title('Onset responses',fontsize=fontSizeLabels,fontweight='normal')
+            if ind and not ind2:
+                plt.title('Sustained responses',fontsize=fontSizeLabels,fontweight='normal')
+            if ind2:
+                axCurve.set_xticklabels(bands)
+                plt.xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
+            if not ind:
+                plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
+                
 
 # -- Summary plots comparing suppression indices of PV, SOM, and excitatory cells for onset and sustained responses --    
-if PANELS[3]:
+if PANELS[2]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
@@ -224,10 +197,14 @@ if PANELS[3]:
     
     cellTypeColours = [PVColor, SOMColor, excitatoryColor]
     
-    categoryLabels = ['PV', 'SOM', 'excitatory']
+    categoryLabels = ['PV', 'SOM', 'Ex.']
+    
+    panelLabels = ['G', 'H']
+    
+    yLabels = ['Onset Suppression Index', 'Sustained Suppression Index']
     
     for ind, vals in enumerate(suppressionVals):
-        axScatter = plt.subplot(gs[ind,3])
+        axScatter = plt.subplot(gs[2,ind+1])
         plt.hold(1)
         for category in range(len(vals)):
             edgeColour = matplotlib.colors.colorConverter.to_rgba(cellTypeColours[category], alpha=0.5)
@@ -236,16 +213,19 @@ if PANELS[3]:
             jitterAmt = np.random.random(len(xval))
             xval = xval + (0.3 * jitterAmt) - 0.15
             
-            plt.plot(xval, vals[category], 'o', mec=edgeColour, mfc='none')
+            plt.plot(xval, vals[category], 'o', mec=edgeColour, mfc='none', clip_on=False)
             median = np.median(vals[category])
             #sem = stats.sem(vals[category])
             plt.plot([category+0.85,category+1.15], [median,median], '-', color='k', mec=cellTypeColours[category], lw=3)
-    
+            plt.ylabel(yLabels[ind],fontsize=fontSizeLabels)
+        axScatter.annotate(panelLabels[ind], xy=(labelPosX[ind+1],labelPosY[2]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
         plt.xlim(0,len(vals)+1)
         plt.ylim(0,1)
-        ax = plt.gca()
-        ax.set_xticks(range(1,len(vals)+1))
-        ax.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
+        axScatter.set_xticks(range(1,len(vals)+1))
+        axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
+        extraplots.boxoff(axScatter)
+        extraplots.significance_stars([1,3], 0.9, 0.05)
         plt.hold(0)
     
 if SAVE_FIGURE:

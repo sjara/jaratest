@@ -3,22 +3,15 @@ Generates inputs to plot histograms/scatter plots of suppression indeces for all
 '''
 
 import os
-import sys
-import importlib
 import pandas as pd
 import numpy as np
-from scipy import stats
 
-from jaratoolbox import spikesanalysis
-from jaratoolbox import celldatabase
-from jaratoolbox import ephyscore
-from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import figparams
 
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
-dbase = pd.read_hdf(dbPath, 'dataframe')
+dbase = pd.read_hdf(dbPath, 'database',index_col=0)
 
 allACFigName = 'figure_all_AC_suppression'
 photoFigName = 'figure_PV_SOM_suppression'
@@ -68,10 +61,18 @@ nonSOMonsetSuppression = onsetnonSOMCells['onsetSuppressionIndexHigh']
 
 # -- get onset and sustained suppression for ALL cells --
 allSustainedCells = bestCells.loc[bestCells['bandSustainedSoundResponsepVal']<SOUND_RESPONSE_PVAL]
-allOnsetCells = bestCells.loc[bestCells['bandOnsetSoundResponsepVal']<SOUND_RESPONSE_PVAL]
+allSigSupSustainedCells = allSustainedCells.loc[allSustainedCells['sustainedSuppressionpValHigh']<0.05]
+allNotSigSustainedCells = allSustainedCells.loc[allSustainedCells['sustainedSuppressionpValHigh']>0.05]
 
-allSustainedSuppression = allSustainedCells['sustainedSuppressionIndexHigh']
-allOnsetSuppression = allOnsetCells['onsetSuppressionIndexHigh']
+allOnsetCells = bestCells.loc[bestCells['bandOnsetSoundResponsepVal']<SOUND_RESPONSE_PVAL]
+allSigSupOnsetCells = allOnsetCells.loc[allOnsetCells['onsetSuppressionpValHigh']<0.05]
+allNotSigOnsetCells = allSustainedCells.loc[allSustainedCells['onsetSuppressionpValHigh']>0.05]
+
+allSigSustainedSuppression = allSigSupSustainedCells['sustainedSuppressionIndexHigh']
+allNotSigSustainedSuppression = allNotSigSustainedCells['sustainedSuppressionIndexHigh']
+
+allSigOnsetSuppression = allSigSupOnsetCells['onsetSuppressionIndexHigh']
+allNotSigOnsetSuppression = allNotSigOnsetCells['onsetSuppressionIndexHigh']
 
 # -- save photoidentified suppression scores --
 outputFile = 'photoidentified_cells_suppression_scores.npz'
@@ -89,6 +90,8 @@ print outputFile + " saved"
 outputFile = 'all_cells_suppression_scores.npz'
 allOutputFullPath = os.path.join(allACDataDir,outputFile)
 np.savez(allOutputFullPath,
-         allSustainedSuppression = allSustainedSuppression,
-         allOnsetSuppression = allOnsetSuppression)
+         allSigSustainedSuppression = allSigSustainedSuppression,
+         allNotSigSustainedSuppression = allNotSigSustainedSuppression,
+         allSigOnsetSuppression = allSigOnsetSuppression,
+         allNotSigOnsetSuppression = allNotSigOnsetSuppression)
 print outputFile + " saved"

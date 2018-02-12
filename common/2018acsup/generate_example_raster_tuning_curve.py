@@ -11,7 +11,6 @@ run generate_example_raster_tuning_curve.py 0 2 (generate the first and third ce
 
 import os
 import sys
-import importlib
 import pandas as pd
 import numpy as np
 from scipy import stats
@@ -25,7 +24,7 @@ from jaratoolbox import settings
 import figparams
 
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
-dbase = pd.read_hdf(dbPath, 'dataframe')
+dbase = pd.read_hdf(dbPath, 'database',index_col=0)
 
 allACFigName = 'figure_all_AC_suppression'
 photoFigName = 'figure_PV_SOM_suppression'
@@ -107,7 +106,7 @@ for indCell in cellsToGenerate:
     secondSort = bandBData['currentAmp']
     numSec = np.unique(secondSort)
         
-    bandTimeRange = [-0.3, 1.5]
+    bandTimeRange = [-0.5, 1.5]
     bandTrialsEachCond = behavioranalysis.find_trials_each_combination(bandEachTrial, 
                                                                            numBands, 
                                                                            secondSort, 
@@ -131,11 +130,11 @@ for indCell in cellsToGenerate:
     sustainedSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, sustainedTimeRange)
     
     onsetResponseArray = np.zeros(len(numBands))
-    onsetSEM = np.zeros_like(onsetResponseArray)
+    onsetSTD = np.zeros_like(onsetResponseArray)
     sustainedResponseArray = np.zeros_like(onsetResponseArray)
-    sustainedSEM = np.zeros_like(onsetResponseArray)
+    sustainedSTD = np.zeros_like(onsetResponseArray)
     
-    # Average firing rate for high amplitude trials and SEM
+    # Average firing rate for high amplitude trials and stdev
     trialsHighAmp = bandTrialsEachCond[:,:,-1] #only using high amplitude trials (-1 in list of amps)
     for band in range(len(numBands)):
         trialsThisBand = trialsHighAmp[:,band]
@@ -149,16 +148,16 @@ for indCell in cellsToGenerate:
             onsetResponseArray[band] = np.mean(thisBandOnsetCounts)/onsetDuration
             sustainedResponseArray[band] = np.mean(thisBandSustainedCounts)/sustainedDuration
             
-            onsetSEM[band] = stats.sem(thisBandOnsetCounts)/onsetDuration
-            sustainedSEM[band] = stats.sem(thisBandSustainedCounts)/sustainedDuration # Error is standard error of the mean
+            onsetSTD[band] = np.std(thisBandOnsetCounts)/onsetDuration
+            sustainedSTD[band] = np.std(thisBandSustainedCounts)/sustainedDuration # Error is standard error of the mean
 
-    # Baseline firing rate and SEM
+    # Baseline firing rate and stdev
     baselineRange = [-1.1, -0.1]
     baselineDuration = baselineRange[1]-baselineRange[0]
     baselineSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset,
                                                                      bandIndexLimitsEachTrial, baselineRange)
     baselineMean = baselineSpikeCountMat.mean()/baselineDuration
-    baselineSEM = stats.sem(baselineSpikeCountMat)/baselineDuration
+    baselineSTD = np.std(baselineSpikeCountMat)/baselineDuration
     
     ### Save bandwidth data ###    
     outputFile = 'example_{}_bandwidth_tuning_{}_{}_{}um_T{}_c{}.npz'.format(cellTypes[indCell],dbRow['subject'], dbRow['date'],
@@ -170,12 +169,12 @@ for indCell in cellsToGenerate:
 
     outputFullPath = os.path.join(dirDict[cellTypes[indCell]],outputFile)
     np.savez(outputFullPath,
-             onsetResponseArray=onsetResponseArray, onsetSEM=onsetSEM,
-             sustainedResponseArray=sustainedResponseArray, sustainedSEM=sustainedSEM,
+             onsetResponseArray=onsetResponseArray, onsetSTD=onsetSTD,
+             sustainedResponseArray=sustainedResponseArray, sustainedSTD=sustainedSTD,
              possibleBands=numBands,
              spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset,
              indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,
-             baselineRange=baselineRange, baselineMean=baselineMean, baselineSEM=baselineSEM,
+             baselineRange=baselineRange, baselineMean=baselineMean, baselineSTD=baselineSTD,
              trialsEachCond=trialsHighAmp,
              onsetTimeRange=onsetTimeRange, sustainedTimeRange=sustainedTimeRange)
     print outputFile + " saved"
