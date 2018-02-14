@@ -28,7 +28,7 @@ def get_all_same_session_cells(celldb):
     '''
     sameSessionCellsDict = {}
     for date in np.unique(celldb.date):
-        cellsThisSession = celldb.loc[celldb.date==date]
+        cellsThisSession = celldb.loc[celldb.date==date,:]
         tetrodes = cellsThisSession.tetrode
         for tetrode in np.unique(tetrodes):
             cellsThisSessThisTt = cellsThisSession.query('tetrode=={}'.format(tetrode))
@@ -63,15 +63,15 @@ def get_all_consecutive_session_cells(celldb):
         consecutiveDates.append([dateStrs[ind], dateStrs[ind+1]]) 
     consecutiveSessCellsDict = {}
     for pairOfDates in consecutiveDates:
-        cellsDate1 = celldb.loc[celldb.date==pairOfDates[0]]
-        cellsDate2 = celldb.loc[celldb.date==pairOfDates[1]]
+        cellsDate1 = celldb.loc[celldb.date==pairOfDates[0],:]
+        cellsDate2 = celldb.loc[celldb.date==pairOfDates[1],:]
         tetrodes = cellsDate1.tetrode
         for tetrode in np.unique(tetrodes):
             if tetrode in np.unique(cellsDate2.tetrode):
                 cellsDate1ThisTt = cellsDate1.query('tetrode=={}'.format(tetrode))
                 cellsDate2ThisTt = cellsDate2.query('tetrode=={}'.format(tetrode))
                 consecutiveSessCellsDict.update({'_'.join((pairOfDates))+'Tt{}'.format(tetrode):[cellsDate1ThisTt, cellsDate2ThisTt]})
-    pdb.set_trace()
+    #pdb.set_trace()
     return consecutiveSessCellsDict
         
 
@@ -149,10 +149,10 @@ def find_within_session_duplicates(celldb, threshold):
         if np.any(dupInds):
             dupCellsInds = cellsThisSess.index[dupInds]
             dupCells = excludeDf.loc[dupCellsInds] 
-            excludeDf.ix[dupCellsInds, 'duplicate_self'] = 1
+            excludeDf.loc[dupCellsInds, 'duplicate_self'] = 1
             cellToKeepIndex = np.argmax(dupCells.maxSoundRes, axis=1)
-            cellToDiscardIndex = dupCellsInds[dupCellsInds!= cellToKeepInd]
-            excludeDf.ix[cellToDiscardIndex, 'duplicate_self_discard'] = 1
+            cellToDiscardIndex = dupCellsInds[dupCellsInds!= cellToKeepIndex]
+            excludeDf.loc[cellToDiscardIndex, 'duplicate_self_discard'] = 1
     return excludeDf
 
 
@@ -171,7 +171,7 @@ def find_cross_session_duplicates(celldb, threshold):
     two sessions that are not 'consecutive' and do not compare or discard cells that 
     are duplicated in more than two consecutive sessions.
     '''
-    excludeDf = cellDB[['date', 'tetrode','cluster']]
+    excludeDf = celldb[['date', 'tetrode','cluster']]
     excludeDf['duplicate_cross'] = 0
     excludeDf['duplicate_cross_discard'] = 0
     excludeDf['maxSoundRes'] = celldb.behavZscore.apply(lambda x: np.max(np.abs(x))).values
@@ -188,11 +188,11 @@ def find_cross_session_duplicates(celldb, threshold):
         dupCellsInds2 = cellsSess2.index[dupIndsSess2]
         dupCellsInds = np.concatenate((dupCellsInds1, dupCellsInds2))
         if np.any(dupCellsInds):
-            excludeDf.ix[dupCellsInds, 'duplicate_cross'] = 1
+            excludeDf.loc[dupCellsInds, 'duplicate_cross'] = 1
             dupCells = excludeDf.loc[dupCellsInds]
             cellToKeepIndex = np.argmax(dupCells.maxSoundRes, axis=1) 
-            cellToDiscardInd = dupCellsInds[dupCellsInds!= cellToKeepInd]
-            excludeDf.ix[cellToDiscardInd, 'duplicate_cross_discard'] = 1
+            cellToDiscardInd = dupCellsInds[dupCellsInds!= cellToKeepIndex]
+            excludeDf.loc[cellToDiscardInd, 'duplicate_cross_discard'] = 1
     return excludeDf
 
 
@@ -200,10 +200,48 @@ def find_cross_session_duplicates(celldb, threshold):
 if __name__=='__main__':
     corrThreshold = 0.9
     
-    CASE = 1
+    CASE = 2
 
-    ANIMALS = ['adap013'] #['gosi004','gosi010']
+    #ANIMALS = ['adap013'] #['gosi004','gosi010']
     # --  -- #
+    if CASE==1:
+        animal = 'adap013'
+        celldbPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', '{}_database.h5'.format(animal)) 
+        celldb = pd.read_hdf(celldbPath, key='reward_change')
+        sameSessionCellsDict = get_all_same_session_cells(celldb)
+    
+    if CASE==2:
+        animal = 'gosi010'
+        celldbPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', '{}_database.h5'.format(animal)) 
+        celldb = pd.read_hdf(celldbPath, key='reward_change')
+        sameSessionCellsDict = get_all_same_session_cells(celldb)
+        for (date,cellsThisSess) in sorted(sameSessionCellsDict.items()):
+            waveformsThisSess = get_all_waveforms_one_session(cellsThisSess, wavesize=160)
+            numCells = len(cellsThisSess)
+            plt.figure()
+            for cellInd in range(numCells):
+                plt.subplot2grid((1,numCells), (0, cellInd))
+                plt.plot(waveformsThisSess[cellInd,:])
+                plt.title(cellsThisSess.iloc[cellInd]['cluster'])
+                plt.suptitle(date)
+            plt.show()
+            corrMat = row_corrcoeff(waveformsThisSess, waveformsThisSess)
+            print(date+'\n', corrMat)
+
+    if CASE==3:
+        animal = 'gosi010'
+        celldbPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', '{}_database.h5'.format(animal)) 
+        celldb = pd.read_hdf(celldbPath, key='reward_change')
+        consecutiveSessCellsDict = get_all_consecutive_session_cells(celldb)
+        for (pairOfDates,[cellsSess1,cellsSess2]) in consecutiveSessCellsDict.items():
+            waveformsSess1 = get_all_waveforms_one_session(cellsSess1, wavesize=160)
+            waveformsSess2 = get_all_waveforms_one_session(cellsSess2, wavesize=160)
+            corrMat = row_corrcoeff(waveformsSess1, waveformsSess2)
+            print(pairOfDates, corrMat)
+
+
+
+'''
     if CASE==1:
         for animal in ANIMALS:
             ## -- Load cellDB of this animal -- #
@@ -211,16 +249,20 @@ if __name__=='__main__':
             cellDB = pd.read_hdf(celldbPath, key='reward_change')
             print 'Finding within session duplicates for {}'.format(animal)
             excludeDfWithinSess = find_within_session_duplicates(cellDB, corrThreshold)
-            cellDB = reduce(lambda left,right: pd.merge(left,right,on=['date','tetrode','cluster'],how='inner'), [cellDB, excludeDfWithinSess])
-            cellDB.to_hdf(celldbPath, key='reward_change')
-
+            excludeDfWithinSessPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', '{}_dup_check_self.h5'.format(animal))
+            #cellDB = reduce(lambda left,right: pd.merge(left,right,on=['date','tetrode','cluster'],how='inner'), [cellDB, excludeDfWithinSess])
+            #cellDB.to_hdf(celldbPath, key='reward_change')
+            excludeDfWithinSess.to_hdf(excludeDfWithinSessPath, key='reward_change')
 
     if CASE == 2:
         for animal in ANIMALS:
             ## -- Load cellDB of this animal -- #
             celldbPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', '{}_database.h5'.format(animal)) 
             cellDB = pd.read_hdf(celldbPath, key='reward_change')
-            print 'Finding within session duplicates for {}'.format(animal)
+            print 'Finding cross session duplicates for {}'.format(animal)
             excludeDfCrossSess = find_cross_session_duplicates(cellDB, corrThreshold)
-            cellDB = reduce(lambda left,right: pd.merge(left,right,on=['date','tetrode','cluster'],how='inner'), [cellDB, excludeDfWithinSess])
-            cellDB.to_hdf(celldbPath, key='reward_change')
+            excludeDfCrossSessPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', '{}_dup_check_cross.h5'.format(animal))
+            #cellDB = reduce(lambda left,right: pd.merge(left,right,on=['date','tetrode','cluster'],how='inner'), [cellDB, excludeDfCrossSess])
+            #cellDB.to_hdf(celldbPath, key='reward_change')
+            excludeDfCrossSess.to_hdf(excludeDfCrossSessPath, key='reward_change')
+'''
