@@ -5,6 +5,7 @@ Generates inputs to plot median firing rates during bandwidth trials for PV and 
 import os
 import pandas as pd
 import numpy as np
+import scipy.stats
 
 from jaratoolbox import spikesanalysis
 from jaratoolbox import ephyscore
@@ -13,8 +14,16 @@ from jaratoolbox import settings
 
 import figparams
 
+def mad(arr):
+    """ Median Absolute Deviation: a "Robust" version of standard deviation.
+        https://en.wikipedia.org/wiki/Median_absolute_deviation 
+    """
+    arr = np.ma.array(arr).compressed() # should be faster to not use masked arrays.
+    med = np.median(arr)
+    return np.median(np.abs(arr - med))
+
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
-dbase = pd.read_hdf(dbPath, 'dataframe')
+dbase = pd.read_hdf(dbPath, 'database', index_col=0)
 
 figName = 'figure_PV_SOM_firing_rates'
 
@@ -45,6 +54,10 @@ sustainedSOMCells = SOMCells.loc[SOMCells['bandSustainedSoundResponsepVal']<SOUN
 onsetPVCells = PVCells.loc[PVCells['bandOnsetSoundResponsepVal']<SOUND_RESPONSE_PVAL]
 onsetSOMCells = SOMCells.loc[SOMCells['bandOnsetSoundResponsepVal']<SOUND_RESPONSE_PVAL]
 
+# -- get cells responsive during any part of response --
+responsivePVCells = PVCells.loc[PVCells['bandSoundResponsepVal']<SOUND_RESPONSE_PVAL]
+responsiveSOMCells = SOMCells.loc[SOMCells['bandSoundResponsepVal']<SOUND_RESPONSE_PVAL]
+
 # -- get proportions of response that happens at onset --
 PVonsetProp = onsetPVCells['bandOnsetSpikePropHigh']
 SOMonsetProp = onsetSOMCells['bandOnsetSpikePropHigh']
@@ -69,11 +82,7 @@ responseArrays = [PVonsetResponseArrays, PVsustainedResponseArrays, SOMonsetResp
 baselineSpikeRates = [PVonsetBaseSpikeRates, PVsustainedBaseSpikeRates, SOMonsetBaseSpikeRates, SOMsustainedBaseSpikeRates]
 timeRanges = [onsetTimeRange, sustainedTimeRange, onsetTimeRange, sustainedTimeRange]
 
-medianResponses = []
-SEMedians = []
-medianBaselineRates = []
-
-# -- compute average onset and sustained responses for all PV and SOM cells, then find median response
+# -- compute average onset and sustained responses for all PV and SOM cells
 for ind, cellsThisType in enumerate(cells):
     for indCell in range(len(cellsThisType)):
         cell = cellsThisType.iloc[indCell]
@@ -85,7 +94,7 @@ for ind, cellsThisType in enumerate(cells):
         bandEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(bandEventOnsetTimes, minEventOnsetDiff=0.2)
         bandSpikeTimestamps = bandEphysData['spikeTimes']
         
-        bandTimeRange = [-0.3, 1.5]
+        bandTimeRange = [-0.5, 1.5]
         responseTimeDuration = timeRanges[ind][1] - timeRanges[ind][0]
         
         bandSpikeTimesFromEventOnset, trialIndexForEachSpike, bandIndexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
@@ -106,7 +115,7 @@ for ind, cellsThisType in enumerate(cells):
                                                                            numAmps)
         
         if responseArrays[ind] is None:
-            responseArrays[ind] = np.zeros((len(cellsThisType),len(numBands)))
+            responseArrays[ind] = np.zeros((len(numBands),len(cellsThisType)))
         
         responseArray = np.zeros(len(numBands))
         
@@ -127,25 +136,90 @@ for ind, cellsThisType in enumerate(cells):
                                                                          bandIndexLimitsEachTrial, baselineRange)
         baselineMean = np.mean(baselineSpikeCountMat)/baselineDuration
         
-        
-        responseArrays[ind][indCell,:] = responseArray
+        responseArrays[ind][:,indCell] = responseArray
         baselineSpikeRates[ind][indCell] = baselineMean
-    medianResponses.append(np.median(responseArrays[ind], axis=0))
-    medianBaselineRates.append(np.median(baselineSpikeRates[ind]))
+
+# -- compute p values for differenced in PV and SOM firing per bandwidth --
+onsetpVals = np.zeros(len(numBands))
+sustainedpVals = np.zeros_like(onsetpVals)
+
+for band in range(len(numBands)):
+    thisBandPVonsetResponses = responseArrays[0][band,:]
+    thisBandPVsustainedResponses = responseArrays[1][band,:]
+    thisBandSOMonsetResponses = responseArrays[2][band,:]
+    thisBandSOMsustainedResponses = responseArrays[3][band,:]
     
+    onsetpVals[band] = scipy.stats.ranksums(thisBandPVonsetResponses,thisBandSOMonsetResponses)[1]
+    sustainedpVals[band] = scipy.stats.ranksums(thisBandPVsustainedResponses,thisBandSOMsustainedResponses)[1]
+
+# -- compute average normalised PSTH of PV and SOM cell responses --
+cells = [responsivePVCells, responsiveSOMCells]
+averagePSTHs = []
+MADs = []
+
+for ind, cellsThisType in enumerate(cells):
+    thisCellTypeAllPSTHs = None
+    for indCell in range(len(cellsThisType)):
+        cell = cellsThisType.iloc[indCell]
+        cellObj = ephyscore.Cell(cell)
+        bandEphysData, bandBData = cellObj.load_by_index(int(cell['bestBandIndexHigh']))
+        bandEventOnsetTimes = bandEphysData['events']['soundDetectorOn']
+        if len(bandEventOnsetTimes)==0: #some cells recorded before sound detector installed
+            bandEventOnsetTimes = bandEphysData['events']['stimOn'] + 0.0093 #correction for bandwidth trials, determined by comparing sound detector onset to stim event onset
+        bandEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(bandEventOnsetTimes, minEventOnsetDiff=0.2)
+        bandSpikeTimestamps = bandEphysData['spikeTimes']
+        
+        bandTimeRange = [-0.5, 1.5]
+        binsize = 50 #in milliseconds
+        
+        bandSpikeTimesFromEventOnset, trialIndexForEachSpike, bandIndexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+                                                                                                        bandSpikeTimestamps, 
+                                                                                                        bandEventOnsetTimes,
+                                                                                                        [bandTimeRange[0]-binsize, bandTimeRange[1]])
+        
+        binEdges = np.around(np.arange(bandTimeRange[0]-(binsize/1000.0), bandTimeRange[1]+2*(binsize/1000.0), (binsize/1000.0)), decimals=2)
+        if thisCellTypeAllPSTHs is None:
+            thisCellTypeAllPSTHs = np.zeros((len(cellsThisType),len(binEdges)-1))
+        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, binEdges)
+        thisPSTH = np.mean(spikeCountMat,axis=0)
+        #thisPSTH = thisPSTH/max(thisPSTH)
+        thisPSTH = thisPSTH/thisPSTH[np.where(binEdges==0)[0][0]] #normalise so onset is 1
+        thisCellTypeAllPSTHs[indCell,:] = thisPSTH
+    smoothWinSize = 1
+    winShape = np.concatenate((np.zeros(smoothWinSize),np.ones(smoothWinSize))) # Square (causal)
+    winShape = winShape/np.sum(winShape)
+    thisCellTypePSTH = np.median(thisCellTypeAllPSTHs, axis=0)
+    smoothPSTH = np.convolve(thisCellTypePSTH,winShape,mode='same')
+    averagePSTHs.append(smoothPSTH)
+    
+    MAD = np.zeros(len(smoothPSTH))
+    for thisBin in range(len(smoothPSTH)):
+        MAD[thisBin] = mad(thisCellTypeAllPSTHs[:,thisBin])
+    MADs.append(MAD)
+        
+    
+        
+        
 # -- save photoidentified suppression scores --
 outputFile = 'photoidentified_cells_firing_rates.npz'
 outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFullPath,
-         PVonsetMedianResponse = medianResponses[0],
-         PVsustainedMedianResponse = medianResponses[1],
-         SOMonsetMedianResponse = medianResponses[2],
-         SOMsustainedMedianResponse = medianResponses[3],
+         PVonsetResponses = responseArrays[0],
+         PVsustainedResponses = responseArrays[1],
+         SOMonsetResponses = responseArrays[2],
+         SOMsustainedResponses = responseArrays[3],
          possibleBands = numBands,
-         PVonsetMedianBaseline = medianBaselineRates[0],
-         PVsustainedMedianBaseline = medianBaselineRates[1],
-         SOMonsetMedianBaseline = medianBaselineRates[2],
-         SOMsustainedMedianBaseline = medianBaselineRates[3],
+         PVonsetBaselines = baselineSpikeRates[0],
+         PVsustainedBaselines = baselineSpikeRates[1],
+         SOMonsetBaselines = baselineSpikeRates[2],
+         SOMsustainedBaselines = baselineSpikeRates[3],
+         onsetpVals = onsetpVals,
+         sustainedpVals = sustainedpVals,
          PVonsetProp = PVonsetProp,
-         SOMonsetProp = SOMonsetProp)
+         SOMonsetProp = SOMonsetProp,
+         PVaveragePSTH = averagePSTHs[0],
+         SOMaveragePSTH = averagePSTHs[1],
+         PVPSTHMAD = MADs[0],
+         SOMPSTHMAD = MADs[1],
+         PSTHbinStartTimes = binEdges[:-1])
 print outputFile + " saved"

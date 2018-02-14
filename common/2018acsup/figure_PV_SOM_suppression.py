@@ -15,6 +15,7 @@ import matplotlib.colors
 
 from jaratoolbox import settings
 from jaratoolbox import extraplots
+reload(extraplots)
 
 import figparams
 reload(figparams)
@@ -36,7 +37,7 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
 labelPosX = [0.02, 0.32, 0.65]   # Horiz position for panel labels
-labelPosY = [0.96, 0.67, 0.4]    # Vert position for panel labels
+labelPosY = [0.96, 0.65, 0.36]    # Vert position for panel labels
 
 #PVFileName = 'band026_2017-04-27_1350um_T4_c2.npz'
 PVFileName = 'band026_2017-04-27_1410um_T4_c6.npz'
@@ -52,9 +53,11 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
+gs = gridspec.GridSpec(3,3,width_ratios=[1,1.3,1.3],height_ratios=[1,1,1.5])
+gs.update(top=0.95, bottom=0.05, left=0.1, right=0.95, wspace=0.4, hspace=0.6)
 
-gs = gridspec.GridSpec(3,3,width_ratios=[1, 1.3, 1.3], height_ratios=[1,1,1.5])
-gs.update(top=0.95, bottom=0.05, left=0.1, right=0.95, wspace=0.4, hspace=0.3)
+# gs0 = gridspec.GridSpec(2,3,width_ratios=[1, 1.3, 1.3])
+# gs0.update(top=0.95, bottom=0.05, left=0.1, right=0.95, wspace=0.4, hspace=0.3)
 
 # --- Raster plots of example PV and SOM cell ---
 if PANELS[0]:
@@ -74,12 +77,14 @@ if PANELS[0]:
     pRaster, hcond, zline = extraplots.raster_plot(bandSpikeTimesFromEventOnset,bandIndexLimitsEachTrial,bandTimeRange,
                                                    trialsEachCond=trialsEachCond,labels=bandLabels)
     
+    axRaster.set_xticklabels('')
     axRaster.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
     plt.setp(pRaster, ms=3, color='k')
     extraplots.boxoff(axRaster)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.ylabel('Bandwidth (oct)',fontsize=fontSizeLabels)
+    plt.title('PV')
 
     
     # SOM cell
@@ -97,13 +102,14 @@ if PANELS[0]:
     bandLabels = ['{}'.format(band) for band in np.unique(possibleBands)]
     pRaster, hcond, zline = extraplots.raster_plot(bandSpikeTimesFromEventOnset,bandIndexLimitsEachTrial,bandTimeRange,
                                                    trialsEachCond=trialsEachCond,labels=bandLabels)
-    axRaster.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
+    axRaster.annotate('D', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
     plt.setp(pRaster, ms=3, color='k')
     extraplots.boxoff(axRaster)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.ylabel('Bandwidth (oct)',fontsize=fontSizeLabels)
-    plt.xlabel('Time from laser onset (s)',fontsize=fontSizeLabels)
+    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    plt.title('SOM')
 
 # -- Plots of onset and sustained bandwidth tuning --
 if PANELS[1]:
@@ -144,7 +150,7 @@ if PANELS[1]:
     SOMColor = figparams.colp['SOMcell']
     
     cellTypeColours = [PVColor, SOMColor]
-    panelLabels = [['C', 'D'], ['E', 'F']]
+    panelLabels = [['B', 'E'], ['C', 'F']]
     
     for ind, responseType in enumerate(responses):
         for ind2, responseByCell in enumerate(responseType):
@@ -159,6 +165,8 @@ if PANELS[1]:
                              fontsize=fontSizePanel, fontweight='bold')
             axCurve.set_xticklabels('')
             axCurve.set_ylim(bottom=0)
+            yLims = np.array(plt.ylim())
+            axCurve.set_ylim(top=yLims[1]*1.3)
             extraplots.boxoff(axCurve)
             extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
             if not (ind | ind2):
@@ -171,6 +179,9 @@ if PANELS[1]:
             if not ind:
                 plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
                 
+
+# gs1 = gridspec.GridSpec(1,2)
+# gs1.update(top=0.95, bottom=0.05, left=0.1, right=0.95, wspace=0.4, hspace=0.3)
 
 # -- Summary plots comparing suppression indices of PV, SOM, and excitatory cells for onset and sustained responses --    
 if PANELS[2]:
@@ -211,12 +222,12 @@ if PANELS[2]:
             xval = (category+1)*np.ones(len(vals[category]))
             
             jitterAmt = np.random.random(len(xval))
-            xval = xval + (0.3 * jitterAmt) - 0.15
+            xval = xval + (0.4 * jitterAmt) - 0.2
             
             plt.plot(xval, vals[category], 'o', mec=edgeColour, mfc='none', clip_on=False)
             median = np.median(vals[category])
             #sem = stats.sem(vals[category])
-            plt.plot([category+0.85,category+1.15], [median,median], '-', color='k', mec=cellTypeColours[category], lw=3)
+            plt.plot([category+0.7,category+1.3], [median,median], '-', color='k', mec=cellTypeColours[category], lw=3)
             plt.ylabel(yLabels[ind],fontsize=fontSizeLabels)
         axScatter.annotate(panelLabels[ind], xy=(labelPosX[ind+1],labelPosY[2]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
@@ -225,7 +236,15 @@ if PANELS[2]:
         axScatter.set_xticks(range(1,len(vals)+1))
         axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
         extraplots.boxoff(axScatter)
-        extraplots.significance_stars([1,3], 0.9, 0.05)
+        yLims = np.array(plt.ylim())
+        if ind==0:
+            extraplots.new_significance_stars([1,2], yLims[1]*1.1, yLims[1]*0.04, starMarker='p=0.40', gapFactor=0.4, color='0.5')
+            extraplots.new_significance_stars([2,3], yLims[1]*1.1, yLims[1]*0.04, starMarker='p=0.82', gapFactor=0.4, color='0.5')
+            extraplots.new_significance_stars([1,3], yLims[1]*1.18, yLims[1]*0.04, starMarker='p=0.06', gapFactor=0.2, color='0.5')
+        if ind==1:
+            extraplots.new_significance_stars([1,2], yLims[1]*1.1, yLims[1]*0.04, starMarker='p=0.82', gapFactor=0.4, color='0.5')
+            extraplots.new_significance_stars([2,3], yLims[1]*1.1, yLims[1]*0.04, starMarker='p=0.09', gapFactor=0.4, color='0.5')
+            extraplots.new_significance_stars([1,3], yLims[1]*1.18, yLims[1]*0.04, starMarker='p=0.03', gapFactor=0.2, color='0.5')
         plt.hold(0)
     
 if SAVE_FIGURE:

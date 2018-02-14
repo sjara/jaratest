@@ -18,11 +18,12 @@ fontSizePanel = 16
 fontSizeTitles = 12
 
 colp = {}
-colp['excitatoryCell'] = cp.TangoPalette['SkyBlue2']
+colp['excitatoryCell'] = cp.TangoPalette['Chameleon3']
 colp['SOMcell'] = cp.TangoPalette['ScarletRed1']
-colp['PVcell'] = cp.TangoPalette['Chameleon3']
+colp['PVcell'] = cp.TangoPalette['SkyBlue2']
 
-colp['sound'] = cp.TangoPalette['Butter2']
+colp['laser'] = cp.TangoPalette['Butter3']
+colp['laserError'] = cp.TangoPalette['Butter1']
 
 
 #7570B3 - blupurp
