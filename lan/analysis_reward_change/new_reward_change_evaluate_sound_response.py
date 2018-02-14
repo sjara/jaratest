@@ -6,17 +6,13 @@ The script is to be run after the database has been fully generated and good qua
 Lan 2018-01-02
 '''
 from jaratoolbox import ephyscore
-from jaratoolbox import celldatabase
 from jaratoolbox import settings
 reload(settings)
-from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 import os
 import pandas as pd
-import subprocess
 import numpy as np
-import importlib
 import sys
 from scipy import stats
 
