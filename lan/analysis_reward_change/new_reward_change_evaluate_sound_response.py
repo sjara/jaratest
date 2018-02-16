@@ -55,7 +55,8 @@ def evaluate_tuning_sound_response_celldb(cellDb):
 
             try:
                 ephysData = cellObj.load_ephys_by_index(sessionInd)
-            except ValueError:
+            except (ValueError, IOError) as error:
+                print(error)
                 spikeData = (0, 0)
                 tuningDict['tuningFreqs'].append(possibleFreq)
                 tuningDict['tuningZscore'].append(np.zeros(numFreqs))
@@ -152,7 +153,8 @@ def evaluate_2afc_sound_response_celldb(cellDb):
 
             try:
                 ephysData = cellObj.load_ephys_by_index(sessionInd)
-            except ValueError:
+            except (ValueError, IOError) as error:
+                print(error)
                 spikeData = (0, 0)
                 behavDict['behavFreqs'].append(possibleFreq)
                 behavDict['behavZscore'].append(np.zeros(numFreqs))

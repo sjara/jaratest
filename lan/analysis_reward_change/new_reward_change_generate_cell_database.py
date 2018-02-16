@@ -24,7 +24,7 @@ FIND_TETRODES_WITH_NO_SPIKES = False
 dbKey = 'reward_change'
 
 #We need access to ALL of the neurons from all animals that have been recorded from.
-animals = ['adap005', 'adap012', 'adap013', 'adap015','adap017','gosi001','gosi004','gosi008','adap067','adap071']  
+animals = ['adap005', 'adap012', 'adap013', 'adap015','adap017','gosi001','gosi004','gosi008','adap067','adap071']  #
 #'gosi010' completed 20180213
 inforecFolder = settings.INFOREC_PATH
 
@@ -44,7 +44,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 6
+CASE = 5
 
 if CASE == 1:
     for animal in animals:
@@ -89,7 +89,7 @@ if CASE == 2:
         goodQualCells = fullDb.query('isiViolations<{} and spikeShapeQuality>{} and inTargetArea==True and metBehavCriteria==True'.format(ISIcutoff, qualityThreshold))
         
         print 'Checking consistent firing'
-        consistentFiring = pd.Series(index=goodDb.index, dtype=bool)
+        consistentFiring = pd.Series(index=goodQualCells.index, dtype=bool)
         for indCell, cell in goodQualCells.iterrows():
             cellObj = ephyscore.Cell(cell)
             consistencyThisCell = consistentActivity.score_compare_ave_firing_vs_std(cellObj, sessionToUse='behavior', numBins=numBins, sd2mean=sdToMeanRatio)
