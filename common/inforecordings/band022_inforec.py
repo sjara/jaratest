@@ -4,17 +4,17 @@ reload(celldatabase)
 subject = 'band022'
 experiments=[]
 
-'''exp0 = celldatabase.Experiment(subject, '2017-03-02', brainarea='right_thalamus', info='lateralDiI')
+exp0 = celldatabase.Experiment(subject, '2017-03-02', brainarea='right_thalamus', info='lateralDiI')
 experiments.append(exp0)
 
 #crazy hippocampus lfp cleared up, now lots of spikes on TT2 while others quiet.
-exp0.add_site(3010, tetrodes = [2])
-exp0.add_session('11-42-47', None, 'noisebursts', 'am_tuning_curve')
+# exp0.add_site(3010, tetrodes = [2])
+# exp0.add_session('11-42-47', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp0.add_site(3425, tetrodes = [4])
+# exp0.add_session('12-03-42', None, 'noisebursts', 'am_tuning_curve')
 
-exp0.add_site(3425, tetrodes = [4])
-exp0.add_session('12-03-42', None, 'noisebursts', 'am_tuning_curve')'''
-
-exp1 = celldatabase.Experiment(subject, '2017-03-17', brainarea='right_thalamus', info='anteriorDiI')
+exp1 = celldatabase.Experiment(subject, '2017-03-17', brainarea='right_thalamus', info=['anteriorDiI','sitesAnt','sound_left'])
 experiments.append(exp1)
 
 exp1.add_site(3204, tetrodes = [1,3,5,6,7])
@@ -31,13 +31,13 @@ exp1.add_session('12-54-44', 'f', 'AM', 'am_tuning_curve')
 exp1.add_session('13-01-53', 'g', 'bandwidth', 'bandwidth_am') #6.5kHz for TT3
 exp1.add_session('13-21-00', 'h', 'noiseAmps', 'am_tuning_curve')
 
-exp1.add_site(3395, tetrodes = [1,2,3,5,6,7,8])
-exp1.add_session('13-32-08', None, 'noisebursts', 'am_tuning_curve')
-exp1.add_session('13-35-28', 'i', 'tuningCurve', 'am_tuning_curve')
-exp1.add_session('13-46-10', 'j', 'AM', 'am_tuning_curve')
+# exp1.add_site(3395, tetrodes = [1,2,3,5,6,7,8])
+# exp1.add_session('13-32-08', None, 'noisebursts', 'am_tuning_curve')
+# exp1.add_session('13-35-28', 'i', 'tuningCurve', 'am_tuning_curve')
+# exp1.add_session('13-46-10', 'j', 'AM', 'am_tuning_curve')
 #nothing has good tuning, ending recording here
 
-exp2 = celldatabase.Experiment(subject, '2017-03-18', brainarea='right_thalamus', info='posteriorDiD')
+exp2 = celldatabase.Experiment(subject, '2017-03-18', brainarea='right_thalamus', info=['posteriorDiD','sitesAnt','sound_left'])
 experiments.append(exp2)
 
 exp2.add_site(3100, tetrodes = [1,2,3,4,6,7,8])

@@ -20,7 +20,7 @@ exp0.add_session('14-04-02', 'c', 'am', 'am_tuning_curve')
 exp0.add_session('14-20-14', None, 'lasertrain', 'am_tuning_curve')
 
 
-exp0.add_site(957, tetrodes=range(1, 9))
+exp0.add_site(957, tetrodes=[1, 2, 3, 4, 7, 8])
 exp0.add_session('14-27-09', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('14-29-53', None, 'lasertrain', 'am_tuning_curve')
 exp0.add_session('14-34-47', 'd', 'rlf', 'am_tuning_curve')
@@ -37,7 +37,7 @@ exp0.add_session('15-40-05', 'h', 'tc', 'am_tuning_curve')
 exp0.add_session('15-57-52', 'i', 'am', 'am_tuning_curve')
 exp0.add_session('16-15-07', None, 'lasertrain', 'am_tuning_curve')
 
-exp0.add_site(1146, tetrodes=[1, 2, 4, 5, 6, 7, 8])
+exp0.add_site(1146, tetrodes=[1, 2, 4, 6, 7, 8])
 exp0.add_session('16-20-45', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('16-23-21', None, 'lasertrain', 'am_tuning_curve')
 exp0.add_session('16-27-29', 'j', 'rlf', 'am_tuning_curve')
@@ -47,7 +47,7 @@ exp0.add_session('16-59-01',None, 'lasertrain', 'am_tuning_curve')
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-01-27',
-                               brainarea='rightThalamus',
+                               brainarea='rightThal',
                                info='medialDiI')
 experiments.append(exp1)
 
@@ -73,7 +73,7 @@ exp2.add_session('11-38-52', 'b', 'tc', 'am_tuning_curve')
 exp2.add_session('11-56-10', 'c', 'am', 'am_tuning_curve')
 exp2.add_session('12-12-03', None, 'laserpulse', 'am_tuning_curve') #Better laser pulse session, 70 trials
 exp2.add_session('12-13-43', None, 'lasertrain', 'am_tuning_curve')
-exp2.add_session('12-18-41', 'd', 'am', 'am_tuning_curve') #64-512Hz, 4 freqs
+exp2.add_session('12-18-41', 'd', 'amfast', 'am_tuning_curve') #64-512Hz, 4 freqs
 
 exp2.add_site(1087, tetrodes=range(1, 9))
 exp2.add_session('12-48-20', None, 'lasertrain', 'am_tuning_curve')
@@ -90,7 +90,7 @@ exp2.add_session('13-52-25', 'i', 'tc', 'am_tuning_curve')
 exp2.add_session('14-09-58', 'j', 'am', 'am_tuning_curve')
 exp2.add_session('14-26-52', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('14-30-40', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('14-34-32', 'k', 'am', 'am_tuning_curve') # 64-512, 4 freqs
+exp2.add_session('14-34-32', 'k', 'amfast', 'am_tuning_curve') # 64-512, 4 freqs
 exp2.add_session('14-42-42', None, 'noiseburst', 'am_tuning_curve')
 
 exp2.add_site(1275, tetrodes=range(1, 9))
@@ -98,7 +98,7 @@ exp2.add_session('15-00-54', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('15-05-34', None, 'lasertrain_2.8', 'am_tuning_curve') #Check the clusters from this session later, laser artifacts??
 exp2.add_session('15-07-57', 'l', 'rlf', 'am_tuning_curve')
 exp2.add_session('15-13-12', 'm', 'tc', 'am_tuning_curve')
-exp2.add_session('15-34-57', 'n', 'am', 'am_tuning_curve')
+exp2.add_session('15-34-57', 'n', 'amfast', 'am_tuning_curve')
 exp2.add_session('15-50-50', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('15-54-49', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('15-57-48', None, 'noiseburst', 'am_tuning_curve')
@@ -129,7 +129,7 @@ experiments.append(exp3)
 
 exp4 = celldatabase.Experiment(subject,
                                '2017-02-15',
-                               brainarea='rightThalamus',
+                               brainarea='rightThal',
                                info='medialDiD')
 experiments.append(exp4)
 
@@ -160,7 +160,7 @@ exp4.add_site(3009, tetrodes=range(1, 9))
 exp4.add_session('14-31-49', None, 'lasertrain', 'am_tuning_curve')
 exp4.add_session('14-36-06', None, 'laserpulse', 'am_tuning_curve')
 exp4.add_session('14-39-18', 'd', 'tc', 'am_tuning_curve') #Better, larger tuning curve
-exp4.add_session('15-13-17', None, 'lasertrain2', 'am_tuning_curve') 
+exp4.add_session('15-13-17', None, 'lasertrain2', 'am_tuning_curve')
 exp4.add_session('15-16-49', 'e', 'am', 'am_tuning_curve')
 
 exp4.add_site(3110, tetrodes=range(1, 9))
@@ -171,4 +171,3 @@ exp4.add_session('16-26-20', None, 'lasertrain', 'am_tuning_curve')
 exp4.add_session('16-31-24', 'g', 'am', 'am_tuning_curve')
 exp4.add_session('16-47-10', None, 'lasertrain', 'am_tuning_curve')
 exp4.add_session('16-50-58', None, 'laserpulse', 'am_tuning_curve')
-

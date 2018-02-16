@@ -4,7 +4,9 @@ Common parameters for figures and data related to these figures.
 
 from jaratoolbox import colorpalette as cp
 import matplotlib
+from matplotlib import pyplot as plt
 
+plt.rcParams['svg.image_noscale'] = False
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 
@@ -13,6 +15,7 @@ STUDY_NAME = '2018thstr'
 fontSizeLabels = 12
 fontSizeTicks = 12
 fontSizePanel = 16
+fontSizeTitles = 12
 
 colp = {}
 colp['blueLaser'] = cp.TangoPalette['SkyBlue1']

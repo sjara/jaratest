@@ -1,57 +1,35 @@
 '''
-#celldatabase
-def get_cell_info(subject, date, depth, tetrode, cluster, session):
-    return (subject, date, tetrode, cluster, ephysSession, behavSession)
+This file contains examples of usecases for the Oct 2017 version of the celldatabase and the
+loading functions in ephyscore.
 
-#ephyscore
-def load_session_for_one_cell(subject, date, tetrode, cluster, ephysSession, behavSession):
-    return (spikeData, eventData, bdata)
-
-def get_session_inds(cell, sessiontype)
-    #Gets ALL the indices where the list of sessiontypes == sessiontype
-    sessionInds = [i for i, st in enumerate(cell['sessiontype']) if st==sessiontype]
-
-def get_cell_info_fromframe(dataframe, indCell, session='', sessionind=None):
-
-    #Specify either the sessiontype string or the index of the session in the list. If neither, fail. If both, we don't know what behavior to have right now. If you specify session='am' and sessionInd = 1, it isn't supposed to 
-
-
-    cell = dataframe.ix[indCell]
-    subject = cell['cell']
-    date = cell['date']
-    tetrode = int(cell['tetrode']) #FIXME: Remove the int() when we solve the problem that converts them to floats
-    cluster = int(cell['cluster']) #FIXME: Remove the int() when we solve the problem that converts them to floats
-
-    return (subject, date, tetrode, cluster, ephysSession, behavSession)
 '''
 from jaratoolbox import ephyscore
 from jaratoolbox import celldatabase
 
 ###### ------ Report for each cell in a database, plus selecting which session of type to use ----- ####
-#TODO: Multi session for one cell
 
 dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
-db = pd.read_hdf(dbPath, key='dataframe')
+dbase = pd.read_hdf(dbPath, key='dataframe')
 
 # Select the good, isolated cells from the database
-goodCells = db.query('isiViolations < 0.02')
+goodCells = dbase.query('isiViolations < 0.02')
 
-for indCell, cell in goodCells.iterrows():
-    #Get the ephys data/behavior data
-    cellObj = ephyscore.CellDataObj(cell)
+for indRow, dbRow in goodCells.iterrows():
+    #Create a cell object using the database row
+    cell = ephyscore.Cell(dbRow)
 
     #AM session
     #Find the inds for a specific sessiontype that was recorded several times
-    sessionInds = cellObj.find_session_inds('am')
+    sessionInds = cell.get_session_inds('am')
     for sessionInd in sessionInds:
         #Get the bdata for this session
-        bdata = cellObj.get_behavior_by_index(sessionInd)
+        bdata = cell.load_behavior_by_index(sessionInd)
         #Look at something in the bdata
         if bdata['something']==whatWeWant:
             indToUse=sessionInd
             break #We keep this bdata and use this sessionInd
     #get the spikeData for this ind (we might already have the bdata because we just loaded it)
-    ephysData = cellObj.load_ephys_by_ind(sessionInd)
+    ephysData = cell.load_ephys_by_ind(indToUse)
 
     #Noiseburst session
 
@@ -70,36 +48,42 @@ cellDict = {'subject' : 'pinp025',
 
 #TODO: Use settings here
 dbPath = '/mnt/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
-db = pd.read_hdf(dbPath, key='dataframe')
+dbase = pd.read_hdf(dbPath, key='dataframe')
 
 # Get the row for the cell you want from the dataframe (include things like spikeshape, depth)
 
-cell = celldatabase.find_cell(db, **cellDict)
-cellObj = ephyscore.CellDataObject(cell)
+cellInd = find_cell_index(dbase, **cellDict)
+dbRow = dbase.loc[cellInd]
+
+cell = ephyscore.Cell(dbRow)
 
 # Load ephys/behavior data for the cell
+ephysData, bdata = cell.load('noiseburst')
 
 # Do some analysis
+spikeTimes = ephysData['spikeTimes']
+events = ephysData['events']['stimOn']
 
 # Plot something
 
 
 ####### -------- Plot summary figure for paper -------- #########
+#This usecase is not updated yet
 
 dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
-db = pd.read_hdf(dbPath, key='dataframe')
+dbase = pd.read_hdf(dbPath, key='dataframe')
 
 # Select the good, isolated cells from the database
-goodCells = db.query('isiViolations < 0.02')
+goodCells = dbase.query('isiViolations < 0.02')
+
+# Select the cells from the thalamus
+mybrainarea = 'rightThal'
+brainareaDB = goodCells.query("brainarea == '{}' and nSpikes > 100".format(mybrainarea))
 
 #Options for selecting subdatabases
 # thalamusDB = goodCells.query("brainarea == '{}' and nSpikes > 100".format(mybrainarea))
 # thalamusDB = goodCells.query("brainarea == '@mybrainarea' and nSpikes > 100")
 # thalamusDB = goodCells[(goodCells['brainarea'] == mybrainarea) & (goodCells)]
-
-# Select the cells from the thalamus
-mybrainarea = 'rightThal'
-brainareaDB = goodCells.query("brainarea == '{}' and nSpikes > 100".format(mybrainarea))
 
 # Do some analysis for both
 maxSyncRate = np.empty(len(brainareaDB))

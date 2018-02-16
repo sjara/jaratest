@@ -80,4 +80,3 @@ exp1.add_session('18-50-26', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('18-53-13', 'b', 'tuningCurve', 'am_tuning_curve')
 
 
-

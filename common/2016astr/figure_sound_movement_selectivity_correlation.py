@@ -262,20 +262,46 @@ responseFilename = 'response_each_freq_each_cell_psycurve_2afc.npz'
 responseFullPath = os.path.join(dataDirSound,responseFilename)
 responseEachCellEachFreq = np.load(responseFullPath)
 numCells = len(sigMvModulated)
-
+selectivityInds = np.array([])
 pVals = np.array([])
 for cellInd in range(numCells):
     fLow = responseEachCellEachFreq[cellInd,:,:3].compressed()
     fHigh = responseEachCellEachFreq[cellInd,:,3:].compressed()
     zScore,pVal = stats.ranksums(fLow, fHigh)
     pVals = np.append(pVals,pVal)
-    
+    if (np.mean(fHigh)+np.mean(fLow))==0:
+        selectivityIndexThisCell = 0
+    else:
+        selectivityIndexThisCell = (np.mean(fHigh)-np.mean(fLow)) / (np.mean(fHigh)+np.mean(fLow))
+    selectivityInds = np.append(selectivityInds, selectivityIndexThisCell)
+
+nansInData = np.isnan(selectivityInds)
+if np.any(nansInData):
+    print '*** WARNING! *** I found NaN in some elements of selectivity index. I will replace with zero.'
+    selectivityInds[nansInData] = 0
+
 hlFreqSelective = (pVals <= alphaLevel)
 
 bothSelective = sigMvModulated & hlFreqSelective
 numBothSel = sum(bothSelective)
 percentBothSel = 100*numBothSel / float(numCells)
 print 'Out of {} cells, {} cells ({}%) were selective both to movement direction and high-low frequencies. '.format(numCells, numBothSel, percentBothSel)
+
+# -- Test sound freq vs movement direction preference correlation -- #
+rho, pCorr = stats.spearmanr(movementSummary['movementModI'], selectivityInds)
+print 'Correlation between high-low freq selectivity index and movement direction selectivity index is', rho, 'p value is', pCorr
+rhoS, pCorrS = stats.spearmanr(movementSummary['movementModI'][bothSelective], selectivityInds[bothSelective])
+print 'For the cells significantly selective for both, correlation between high-low freq selectivity index and movement direction selectivity index is', rhoS, 'p value is', pCorrS
+'''
+plt.gcf()
+plt.clf()
+plt.plot(movementSummary['movementModI'], selectivityInds, 'o')
+plt.plot(movementSummary['movementModI'][bothSelective], selectivityInds[bothSelective], 'ro')
+plt.xlabel('movement selectivity index')
+plt.ylabel('high-low freq selectivity index')
+plt.show()
+'''
+
 
 '''
 ax1 = plt.subplot(gs00[0:3,:])

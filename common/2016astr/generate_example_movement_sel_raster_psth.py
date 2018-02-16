@@ -28,7 +28,9 @@ binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
 
-colorsDict = {'left':'r', 'right':'g'} 
+#colorsDict = {'left':'r', 'right':'g'} 
+colorsDict = {'left':figparams.colp['MidFreqL'], 
+              'right':figparams.colp['MidFreqR']} 
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
@@ -154,7 +156,7 @@ for cellParams in cellParamsList:
     #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(oneCell.animalName, oneCell.behavSession, oneCell.tetrode,oneCell.cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) #frequencyPloted=middleFreq,
+    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, soundTimesFromEventOnset=-(diffTimes), indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) #frequencyPloted=middleFreq,
 
 
     # -- Calculate additional arrays for plotting psth -- #

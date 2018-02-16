@@ -4,7 +4,7 @@ reload(celldatabase)
 subject = 'band005'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2016-09-16', 'left_AC',info='medialDiD')
+exp0 = celldatabase.Experiment(subject, '2016-09-16', 'left_AC',info=['medialDiD','TT1ant','sound_left'])
 experiments.append(exp0)
 
 exp0.laserCalibration = {
@@ -17,12 +17,12 @@ exp0.laserCalibration = {
     '3.5':4.1
 }
 
-exp0.add_site(1037, tetrodes=[2])
-exp0.add_session('12-14-13', None, 'noisebursts', 'am_tuning_curve')
-exp0.add_session('12-17-37', None, 'noisebursts', 'am_tuning_curve')
-exp0.add_session('12-20-17', None, 'laserPulse', 'am_tuning_curve')
-exp0.add_session('12-22-56', None, 'laserTrain', 'am_tuning_curve')
-exp0.add_session('12-25-50', 'a', 'tuningCurve', 'am_tuning_curve')
+# exp0.add_site(1037, tetrodes=[2])
+# exp0.add_session('12-14-13', None, 'noisebursts', 'am_tuning_curve')
+# exp0.add_session('12-17-37', None, 'noisebursts', 'am_tuning_curve')
+# exp0.add_session('12-20-17', None, 'laserPulse', 'am_tuning_curve')
+# exp0.add_session('12-22-56', None, 'laserTrain', 'am_tuning_curve')
+# exp0.add_session('12-25-50', 'a', 'tuningCurve', 'am_tuning_curve')
 
 exp0.add_site(1140, tetrodes=[2,4,6])
 exp0.add_session('12-54-16', None, 'laserPulse', 'am_tuning_curve')
@@ -51,7 +51,7 @@ exp0.add_session('15-22-46', None, 'laserPulse', 'am_tuning_curve')
 exp0.add_session('15-25-27', None, 'laserTrain', 'am_tuning_curve')
 exp0.add_session('15-27-50', 'j', 'bandwidth', 'bandwidth_am')
 
-exp1 = celldatabase.Experiment(subject, '2016-09-20', 'left_AC',info='middleDiI')
+exp1 = celldatabase.Experiment(subject, '2016-09-20', 'left_AC',info=['middleDiI','TT1ant','sound_left'])
 experiments.append(exp1)
 
 exp1.laserCalibration = {
@@ -64,7 +64,7 @@ exp1.laserCalibration = {
     '3.5':3.35
 }
 
-exp2 = celldatabase.Experiment(subject, '2016-09-21', 'left_AC', info='middleDiI')
+exp2 = celldatabase.Experiment(subject, '2016-09-21', 'left_AC', info=['middleDiI','TT1ant','sound_left'])
 experiments.append(exp2)
 
 exp2.laserCalibration = {

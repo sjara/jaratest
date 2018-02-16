@@ -31,27 +31,34 @@ exp0.add_session('12-06-40', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('12-09-17', 'c', 'am', 'am_tuning_curve')
 exp0.add_session('12-24-37', 'd', 'tc', 'am_tuning_curve')
 
+exp0.maxDepth = 2802
+
 exp1 = celldatabase.Experiment(subject,
                                '2017-05-10',
                                brainarea='rightAstr',
                                info=['DiD', 'facingPosterior'])
 experiments.append(exp1)
 
-exp1.add_site(2580, tetrodes=range(1, 9))
+# exp1.add_site(2580, tetrodes=range(1, 9))
+exp1.add_site(2580, tetrodes=[1, 2, 3, 4, 5, 6])
 # exp1.add_session('18-31-39', None, 'noiseburst', 'am_tuning_curve')
 # exp1.add_session('18-52-26', 'a', 'am', 'am_tuning_curve')
 exp1.add_session('19-08-46', 'b', 'tc', 'am_tuning_curve')
 exp1.add_session('19-42-17', 'c', 'am', 'am_tuning_curve') #Recording am again, first one looked strange
 exp1.add_session('19-58-05', None, 'noiseburst', 'am_tuning_curve')
 
-exp1.add_site(2682, tetrodes=range(1, 9))
+# exp1.add_site(2682, tetrodes=range(1, 9))
+exp1.add_site(2682, tetrodes=[1, 2, 3, 4, 5, 6])
 exp1.add_session('20-20-55', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('20-23-54', 'd', 'am', 'am_tuning_curve')
 exp1.add_session('20-40-14', 'e', 'tc', 'am_tuning_curve')
 
-exp1.add_site(2784, tetrodes=range(1, 9))
+# exp1.add_site(2784, tetrodes=range(1, 9))
+exp1.add_site(2784, tetrodes=[1, 2, 3, 4, 5, 6])
 exp1.add_session('21-23-11', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('21-25-23', 'f', 'am', 'am_tuning_curve')
+
+exp1.maxDepth = 2784
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-05-11',
@@ -78,12 +85,13 @@ experiments.append(exp2)
 # exp2.add_session('13-51-48', None, 'noiseburst', 'am_tuning_curve')
 
 # Went to 3250um, no more units, finishing the experiment
+exp2.maxDepth = 3250
 
-exp3 = celldatabase.Experiment(subject,
-                               '2017-05-12',
-                               brainarea='leftAstr',
-                               info=['AnteriorDiI', 'facingPosterior'])
-experiments.append(exp3)
+# exp3 = celldatabase.Experiment(subject,
+#                                '2017-05-12',
+#                                brainarea='leftAstr',
+#                                info=['AnteriorDiI', 'facingPosterior'])
+# experiments.append(exp3)
 
 # exp3.add_site(1538, tetrodes=range(1, 9))
 # exp3.add_session('14-48-40', None, 'noiseburst', 'am_tuning_curve')
@@ -94,10 +102,10 @@ experiments.append(exp3)
 # exp3.add_site(2301, tetrodes=range(1, 9))
 # exp3.add_session('14-59-41', None, 'noiseburst', 'am_tuning_curve')
 
-exp3.add_site(2430, tetrodes=range(1, 9))
-exp3.add_session('15-25-15', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('15-27-53', 'a', 'am', 'am_tuning_curve')
-exp3.add_session('15-46-05', 'b', 'tc', 'am_tuning_curve')
+# exp3.add_site(2430, tetrodes=range(1, 9))
+# exp3.add_session('15-25-15', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('15-27-53', 'a', 'am', 'am_tuning_curve')
+# exp3.add_session('15-46-05', 'b', 'tc', 'am_tuning_curve')
 
 # exp3.add_site(2601, tetrodes=range(1, 9))
 # exp3.add_session('16-32-41', None, 'noiseburst', 'am_tuning_curve')

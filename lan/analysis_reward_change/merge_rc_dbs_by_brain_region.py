@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 from jaratoolbox import settings
 
-brainRegions = ['ac','astr']
-mouseNameList = [['gosi001','gosi004','gosi008','gosi010'],['adap005','adap012','adap013','adap015','adap017']]
+brainRegions = ['ac', 'astr']
+mouseNameList = [['gosi001','gosi004','gosi008','gosi010','adap071','adap067'],['adap005','adap012','adap013','adap015','adap017']]
 for region,mouseNameList in zip(brainRegions,mouseNameList):
     allMiceDfs = []
     for mouseName in mouseNameList:

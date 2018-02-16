@@ -95,26 +95,28 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.style.use(['seaborn-white','seaborn-talk'])
 
-    CASE = 2
+    CASE = 1
     # -- For checking a particular animal's performance on a particular date -- #
     if CASE == 1:
-        subjects = ['adap067']
+        subjects = ['adap012']
     
         if len(sys.argv)>1:
             sessions = sys.argv[1:]
 
         for thisAnimal in subjects:
+            plt.gcf().clf()
             plot_ave_psycurve_reward_change(thisAnimal, sessions)
             save_svg_psycurve_reward_change(thisAnimal, sessions)
 
     # -- All reward change mice, all good sessions average plot -- #
     elif CASE == 2:
+        numSessionsToInclude = 6
         sujectSessionsDict = {'adap012':['20160219a','20160223a','20160224a','20160226a','20160227a','20160228a','20160229a'],
                               #'adap008':['20151118a','20151119a','20151120a','20151121a','20151122a','20151123a','20151124a'], #same_left_right block transition
                               'adap005':['20151118a','20151119a','20151120a','20151121a','20151122a','20151123a','20151124a'], #same_left_right block transition
                               #'adap011':['20160122a','20160123a','20160124a','20160125a','20160126a'],
-                              #'adap013':['20160216a','20160217a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'], #some of them are of same_right_left block transition
-                              #'adap015':['20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a','20160315a'], #some of them are of same_right_left block transition
+                              'adap013':['20160216a','20160217a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'], #some of them are of same_right_left block transition
+                              'adap015':['20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a','20160315a'], #some of them are of same_right_left block transition
                               'adap017':['20160219a','20160222a','20160223a','20160224a','20160226a','20160301a','20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'], #some of them are of same_right_left block transition
                               'adap071':['20171002a','20171003a','20171004a','20171005a','20171006a','20171007a'],
                               'adap067':['20171023a','20171024a','20171025a','20171026a','20171027a','20171028a'],
@@ -129,8 +131,10 @@ if __name__ == '__main__':
         avePsycurveMoreRight = np.empty((numOfAnimals,8))
 
         for ind, (subject, sessions) in enumerate(sujectSessionsDict.items()):
+            sessions = sessions[:numSessionsToInclude]
+            plt.gcf().clf()
             fractionHitsEachValueAllBlocks = plot_ave_psycurve_reward_change(subject, sessions)
-            #save_svg_psycurve_reward_change(subject, sessions)
+            save_svg_psycurve_reward_change(subject, sessions)
             avePsycurveMoreLeft[ind,:] = fractionHitsEachValueAllBlocks[1,:] #The second row is more_left block
             avePsycurveMoreRight[ind,:] = fractionHitsEachValueAllBlocks[2,:]#The third row is more_right block
 
