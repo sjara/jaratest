@@ -1,4 +1,5 @@
 import os
+import subprocess
 from jaratoolbox import celldatabase
 from jaratoolbox import spikesanalysis
 from jaratoolbox import settings
@@ -17,14 +18,14 @@ import new_good_cell_duplication_check_celldb as duplicationCheck
 import new_reward_change_evaluate_sound_response as evaluateSoundResp
 import new_reward_change_evaluate_movement_selectivity as evaluateMovementSel
 
-STUDY_NAME = '2017rc'
+STUDY_NAME = '2018rc'
 SAVE_FULL_DB = True
 RECALCULATE_TETRODESTATS = False
 FIND_TETRODES_WITH_NO_SPIKES = False
 dbKey = 'reward_change'
 
 #We need access to ALL of the neurons from all animals that have been recorded from.
-animals = ['adap005', 'adap012', 'adap013', 'adap015','adap017','gosi001','gosi004','gosi008','adap067','adap071']  #
+animals = ['adap005','adap012','adap013','adap015','adap017','gosi001','gosi004','gosi008','gosi010','adap067','adap071']
 #'gosi010' completed 20180213
 inforecFolder = settings.INFOREC_PATH
 
@@ -44,7 +45,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 5
+CASE = 7
 
 if CASE == 1:
     for animal in animals:
@@ -161,9 +162,20 @@ if CASE == 6:
     for animal in animals:
         modIndScriptPath = '/home/languo/src/jaratest/lan/analysis_reward_change/new_calculate_reward_modulation_celldb.py'
         # -- Call to calculate modulation indices for different windows different alignments -- #
-        commandListCalculate = ['python'] + [modIndScriptPath] + ['--CASE', 'calculate'] + ['-MICE'] + animals
+        commandListCalculate = ['python'] + [modIndScriptPath] + ['--CASE', 'calculate'] + ['--MOUSE'] + animal
         subprocess.call(commandListCalculate)
         #subprocess.call('python /home/languo/src/jaratest/lan/.py --CASE calculate -MICE adap005 adap012 gosi001'.split(' '))
         # -- Call to merge newly generated mod indices columns into database -- #
-        commandListMerge = ['python'] + [modIndScriptPath] + ['--CASE', 'merge'] + ['-MICE'] + animals
+        commandListMerge = ['python'] + [modIndScriptPath] + ['--CASE', 'merge'] + ['--MOUSE'] + animal
         subprocess.call(commandListMerge)
+
+if CASE == 7:
+    # -- Merge all individual animal databases into one master db -- #
+    dfs = []
+    for animal in animals:
+        animalDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
+        animalDb = pd.read_hdf(animalDbFullPath, key=dbKey) 
+        dfs.append(animalDb)
+    masterDf = pd.concat(dfs, ignore_index=True)
+    masterDfFullPath = os.path.join(dbFolder, 'rc_database.h5')
+    masterDf.to_hdf(masterDfFullPath, key=dbKey)
