@@ -36,6 +36,7 @@ experiments.append(exp0)
 
 # exp0.add_site(2502, tetrodes=range(1, 9))
 # exp0.add_session('15-25-21', None, 'noiseburst', 'am_tuning_curve') #Nothing here.
+exp0.maxDepth = 2502
 
 #I am removing the probes and calling it a day. I think I am too medial, and the probes are starting to look pretty weird.
 
@@ -59,6 +60,7 @@ exp1.add_session('12-05-25', 'a', 'am', 'am_tuning_curve')
 exp1.add_session('12-23-38', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('12-25-29', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('12-31-53', 'b', 'tc', 'am_tuning_curve') #Mouse ripped plastic guard off at some point in this session. Also ground wire was out after this, not sure if grounding was ok. After lookingat the raster it looks like all is bad.
+exp1.maxDepth = 1601
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-03-09',
@@ -99,6 +101,7 @@ exp2.add_session('15-01-38', 'e', 'am', 'am_tuning_curve')
 exp2.add_session('15-17-28', 'f', 'tc', 'am_tuning_curve') #opened door at 1178 trials to put saline
 exp2.add_session('15-50-19', None, 'lasertrain2', 'am_tuning_curve')
 #Done for the day
+exp2.maxDepth = 2051
 
 exp3 = celldatabase.Experiment(subject,
                                '2017-03-10',
@@ -131,6 +134,7 @@ exp3.add_session('15-59-00', None, 'lasertrain2', 'am_tuning_curve')
 
 # exp3.add_site(2091, tetrodes=range(1, 9))
 # exp3.add_session('16-09-06', None, 'noiseburst', 'am_tuning_curve') #Not getting any more sound responses, and the connector package is nearing the well. I am removing the probes now
+exp3.maxDepth = 2091
 
 exp4 = celldatabase.Experiment(subject,
                                '2017-03-14',
@@ -169,10 +173,10 @@ exp4.add_session('16-35-36', None, 'laserpulse3', 'am_tuning_curve')
 exp4.add_session('16-37-06', None, 'lasertrain3', 'am_tuning_curve')
 
 
-
 # exp4.add_site(3802, tetrodes=range(1, 9))
 # exp4.add_session('16-42-04', None, 'noiseburst', 'am_tuning_curve')
 # exp4.add_session('16-43-56', None, 'laserpulse', 'am_tuning_curve') #small sound responses, but no laser responses. Calling it a day
+exp4.maxDepth = 3802
 
 
 exp5 = celldatabase.Experiment(subject,
@@ -194,6 +198,7 @@ experiments.append(exp5)
 # exp5.add_session('14-39-21', None, 'noiseburst', 'am_tuning_curve')
 #I am removing the electrodes at this point, the ground can be hit by the animal.
 #I am going to do the Lateral DiI penetration now.
+exp5.maxDepth = 3613
 
 exp6 = celldatabase.Experiment(subject,
                                '2017-03-15',
@@ -235,6 +240,7 @@ exp6.add_session('16-41-48', 'c', 'am', 'am_tuning_curve')
 exp6.add_session('17-00-23', None, 'laserpulse2', 'am_tuning_curve')
 exp6.add_session('17-02-47', None, 'lasertrain2', 'am_tuning_curve')
 exp6.add_session('17-05-48', 'd', 'tc', 'am_tuning_curve') #Woke mouse at 540 trials
+exp6.maxDepth = 3797
 
 exp7 = celldatabase.Experiment(subject,
                                '2017-03-16',
@@ -266,3 +272,4 @@ exp7.add_session('15-53-18', 'c', 'am', 'am_tuning_curve')
 exp7.add_session('16-13-51', 'd', 'tc', 'am_tuning_curve')
 exp7.add_session('16-46-39', None, 'laserpulse2', 'am_tuning_curve')
 exp7.add_session('16-49-08', None, 'lasertrain2', 'am_tuning_curve')
+exp7.maxDepth = 3800

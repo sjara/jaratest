@@ -16,7 +16,7 @@ np.random.seed(0)
 FIGNAME = 'figure_tagged_untagged'
 SAVE_FIGURE = 1
 outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
-figFilename = 'plots_tagged_vs_untagged' # Do not include extension
+figFilename = 'plots_tagged_vs_untagged_am' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [12,8] # In inches
 
@@ -29,24 +29,12 @@ labelPosY = [0.48, 0.95]    # Vert position for panel labels
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 dbase = pd.read_hdf(dbPath, key='dataframe')
 
-thalColor = colorpalette.TangoPalette['SkyBlue2']
-acColor = colorpalette.TangoPalette['ScarletRed2']
+thalColor = figparams.colp['thalColor']
+acColor = figparams.colp['acColor']
 
 fig = plt.gcf()
 plt.clf()
 fig.set_facecolor('w')
-
-goodFit = dbase.query('rsquaredFit > 0.08')
-
-#Calculate the midpoint of the gaussian fit
-goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
-goodFitToUse = goodFit.query('fitMidPoint<32000')
-
-# dataframe = goodFitToUse.query("brainArea == 'rightThal'")
-
-# for feature in features:
-#     zval, pval = stats.ranksums(dataTagged, dataUntagged)
-#     print "p-val for feature: {} is {}".format(feature, pval)
 
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
@@ -58,51 +46,6 @@ def medline(yval, midline, width, color='k', linewidth=3):
     end = midline+(width/2)
     plt.plot([start, end], [yval, yval], color=color, lw=linewidth)
 
-def plot_hist(ax, dataArr, color, label):
-    lowFreq = 4
-    highFreq = 128
-    nFreqs = 11
-    freqs = np.logspace(np.log10(lowFreq),np.log10(highFreq),nFreqs)
-    freqs = np.round(freqs, decimals=1)
-    freqs = np.r_[0, freqs]
-    freqLabels = ['{}'.format(freq) for freq in freqs[1:]]
-    freqLabels = ['NS', ' '] + freqLabels
-
-    roundData = np.round(dataArr[pd.notnull(dataArr)], decimals=1)
-    counts = Counter(roundData)
-
-    freqsToPlot = np.r_[0, 1, freqs[1:]]
-    index = np.arange(len(freqsToPlot))
-
-    heights = []
-    for freq in freqsToPlot:
-        try:
-            heights.append(100*counts[freq]/np.double(len(roundData)))
-        except KeyError:
-            heights.append(0)
-
-    barWidth = 0.8
-    rects = plt.bar(index+0.5*barWidth,
-                    heights,
-                    barWidth,
-                    label=label,
-                    color=color)
-    plt.xticks(index + barWidth, freqs)
-    ax.set_xticklabels(freqLabels, rotation='vertical')
-    plt.ylabel('% cells')
-    # ax.set_xlim([1.5,index[-1]+2*barWidth-0.5])
-    # plt.xlabel('Highest AM rate to which\ncell can synchronize (Hz)')
-    extraplots.boxoff(ax)
-
-    height = max(heights)*0.05
-    extraplots.breakaxis(1.8, 0, 0.3, height, gap=0.4)
-    ax.tick_params(axis='x', length=0)
-    plt.ylim([0, max(heights)+1])
-    labelText = '{}, N={}'.format(label, len(roundData))
-    ax.annotate(labelText, xy=(0.1, 0.9), xycoords='axes fraction',
-                fontsize=9, fontweight='bold')
-    return rects
-
 plt.clf()
 
 gs = gridspec.GridSpec(2, 3)
@@ -110,37 +53,60 @@ gs.update(left=0.12, right=0.98, top=0.88, bottom=0.15, wspace=0.52, hspace=1)
 
 
 #boxplot features
-features = ['BW10', 'threshold', 'latency']
-yLabels = ['BW10', 'Threshold (dB SPL)', 'Response latency (s)']
+features = ['highestSyncCorrected', 'mutualInfoPerSpikeBits']
+yLabels = ['Highest AM sync. rate (Hz)', 'MI (AM Rate, bits)', 'MI (AM Phase, bits)']
 
 ## -- Thal cells -- ##
-dataframe = goodFitToUse.query("brainArea == 'rightThal'")
+dataframe = dbase.query("brainArea == 'rightThal'")
 taggedBool = (dataframe['pulsePval']<0.05) & (dataframe['trainRatio']>0.8)
 taggedCells = dataframe[taggedBool]
 untaggedCells = dataframe[~taggedBool]
 
 rowX = 0
 for indFeature, feature in enumerate(features):
-    dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
-    dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
     ax = plt.subplot(gs[rowX, indFeature])
+
+    if indFeature==0:
+        dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
+        dataTagged = dataTagged[dataTagged>0]
+        dataTagged = np.log(dataTagged)
+        dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
+        dataUntagged = dataUntagged[dataUntagged>0]
+        dataUntagged = np.log(dataUntagged)
+
+        # ytickLabels = np.logspace(np.log2(4), np.log2(128), 11, base=2)
+        ytickLabels = [4, 8, 16, 32, 64, 128]
+        yticks = np.log(ytickLabels)
+
+    elif indFeature==1:
+        dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
+        dataTagged[dataTagged<0]=0
+        dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
+        dataUntagged[dataUntagged<0]=0
+
+    else:
+        dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
+        dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
 
     posTagged = jitter(np.ones(len(dataTagged))*0, 0.20)
     posUntagged = jitter(np.ones(len(dataUntagged))*1, 0.20)
 
-    ax.plot(posTagged, dataTagged, 'o', mec = 'k', mfc = 'None')
+    ax.plot(posTagged, dataTagged, 'o', mec = '0.5', mfc = 'None')
     medline(np.median(dataTagged), 0, 0.5)
-    ax.plot(posUntagged, dataUntagged, 'o', mec = 'k', mfc = 'None')
+    ax.plot(posUntagged, dataUntagged, 'o', mec = '0.5', mfc = 'None')
     medline(np.median(dataUntagged), 1, 0.5)
     ax.set_xticks([0,1])
     ax.set_xticklabels(['Tagged\nN={}'.format(len(dataTagged)),
                         'Untagged\nN={}'.format(len(dataUntagged))])
     ax.set_ylabel(yLabels[indFeature])
+    if indFeature==0:
+        ax.set_yticks(yticks)
+        ax.set_yticklabels(ytickLabels)
     extraplots.boxoff(ax)
-    if indFeature==1:
-        ax.set_ylim([12, 62])
-    elif indFeature==2:
-        ax.set_ylim([0, 0.06])
+    # if indFeature==1:
+    #     ax.set_ylim([12, 62])
+    # elif indFeature==2:
+    #     ax.set_ylim([0, 0.06])
     zVal, pVal = stats.ranksums(dataTagged, dataUntagged)
     plt.title('p={:.3f}'.format(pVal))
 
@@ -170,37 +136,101 @@ for indFeature, feature in enumerate(features):
 # print "Thalamus, tagged vs. untagged AM sync ranksums test pval: {}".format(pval)
 
 ## -- AC cells -- ##
-dataframe = goodFitToUse.query("brainArea == 'rightAC'")
+dataframe = dbase.query("brainArea == 'rightAC'")
 taggedBool = (dataframe['pulsePval']<0.05) & (dataframe['trainRatio']>0.8)
 taggedCells = dataframe[taggedBool]
 untaggedCells = dataframe[~taggedBool]
 
 rowX = 1
 for indFeature, feature in enumerate(features):
-    dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
-    dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
+
+    if indFeature==0: #Plot in log for highest AM rate
+        dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
+        dataTagged = dataTagged[dataTagged>0]
+        dataTagged = np.log(dataTagged)
+        dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
+        dataUntagged = dataUntagged[dataUntagged>0]
+        dataUntagged = np.log(dataUntagged)
+
+        # ytickLabels = np.logspace(np.log2(4), np.log2(128), 11, base=2)
+        ytickLabels = [4, 8, 16, 32, 64, 128]
+        yticks = np.log(ytickLabels)
+
+    elif indFeature==1: #Lower limit at 0
+        dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
+        dataTagged[dataTagged<0]=0
+        dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
+        dataUntagged[dataUntagged<0]=0
+
+    else:
+        dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
+        dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
+
     ax = plt.subplot(gs[rowX, indFeature])
 
     posTagged = jitter(np.ones(len(dataTagged))*0, 0.20)
     posUntagged = jitter(np.ones(len(dataUntagged))*1, 0.20)
 
-    ax.plot(posTagged, dataTagged, 'o', mec = 'k', mfc = 'None')
+    ax.plot(posTagged, dataTagged, 'o', mec = '0.5', mfc = 'None')
+    plt.hold(1)
     medline(np.median(dataTagged), 0, 0.5)
-    ax.plot(posUntagged, dataUntagged, 'o', mec = 'k', mfc = 'None')
+    ax.plot(posUntagged, dataUntagged, 'o', mec = '0.5', mfc = 'None')
+    plt.hold(1)
     medline(np.median(dataUntagged), 1, 0.5)
     ax.set_xticks([0,1])
     ax.set_xticklabels(['Tagged\nN={}'.format(len(dataTagged)),
                         'Untagged\nN={}'.format(len(dataUntagged))])
     ax.set_ylabel(yLabels[indFeature])
+    if indFeature==0:
+        ax.set_yticks(yticks)
+        ax.set_yticklabels(ytickLabels)
     extraplots.boxoff(ax)
-    if indFeature==1:
-        ax.set_ylim([12, 62])
-    elif indFeature==2:
-        ax.set_ylim([0, 0.06])
     zVal, pVal = stats.ranksums(dataTagged, dataUntagged)
     plt.title('p={:.3f}'.format(pVal))
 
 # -- Highest Sync plots -- #
+################### Percent non-sync #####################
+axSummary = plt.subplot(gs[rowX, len(features)])
+
+feature = 'highestSyncCorrected'
+dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
+dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
+
+taggedSyncN = len(dataTagged[dataTagged > 0])
+taggedNonSyncN = len(dataUntagged[dataUntagged == 0])
+acSyncPercent = acSyncN/float(acSyncN + acNonSyncN) * 100
+acNonSyncPercent = acNonSyncN/float(acSyncN + acNonSyncN) * 100
+
+thalSyncN = len(thalPopStat[thalPopStat > 0])
+thalNonSyncN = len(thalPopStat[thalPopStat == 0])
+thalSyncPercent = thalSyncN/float(thalSyncN + thalNonSyncN)*100
+thalNonSyncPercent = thalNonSyncN/float(thalSyncN + thalNonSyncN)*100
+
+width = 0.5
+plt.hold(1)
+loc = [1, 2]
+axSummary.bar(loc[0]-width/2, thalNonSyncPercent, width, color=colorATh)
+axSummary.bar(loc[0]-width/2, thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
+axSummary.bar(loc[1]-width/2, acNonSyncPercent, width, color=colorAC)
+axSummary.bar(loc[1]-width/2, acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
+extraplots.boxoff(axSummary)
+
+extraplots.new_significance_stars([1, 2], 105, 2.5, starMarker='*',
+                                    fontSize=fontSizeStars, gapFactor=starGapFactor)
+
+axSummary.text(2.65, 30, 'Non-Sync.', rotation=90, fontweight='bold')
+axSummary.text(2.65, 75, 'Sync.', rotation=90, fontweight='bold', color='0.5')
+
+axSummary.set_xlim([0.5, 2.6])
+# extraplots.boxoff(axSummary)
+axSummary.set_ylim([0, 100.5])
+axSummary.set_xticks([1, 2])
+tickLabels = ['ATh\nv\nStr', 'AC\nv\nAStr']
+axSummary.set_xticklabels(tickLabels)
+axSummary.set_ylabel('% neurons', labelpad=-5)
+
+
+##########################################################
 
 # dataframe = dbase.query("brainArea == 'rightAC'")
 # taggedBool = (dataframe['pulsePval']<0.05) & (dataframe['trainRatio']>0.8)

@@ -16,6 +16,13 @@ fontSizeLabels = 12
 fontSizeTicks = 12
 fontSizePanel = 16
 fontSizeTitles = 12
+fontSizeNS = 10
+fontSizeStars = 15
+starHeightFactor = 0.2
+starGapFactor = 0.3
+starYfactor = 0.1
+
+dotEdgeColor = '0.5'
 
 colp = {}
 colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
@@ -34,6 +41,9 @@ colp['muscimol'] = cp.TangoPalette['Chocolate2']
 #colp['stimRight'] = cp.TangoPalette['Chameleon3']
 colp['stimLeft'] = cp.TangoPalette['Orange2']
 colp['stimRight'] = '#829910'
+
+colp['thalColor'] = cp.TangoPalette['SkyBlue2']
+colp['acColor'] = cp.TangoPalette['ScarletRed2']
 
 
 #7570B3 - blupurp

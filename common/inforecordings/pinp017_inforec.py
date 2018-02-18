@@ -35,6 +35,7 @@ exp0.add_session('17-27-07', 'e', 'am', 'am_tuning_curve')
 exp0.add_session('17-42-17', 'f', 'tc', 'am_tuning_curve')
 exp0.add_session('18-13-31', None, 'laserpulse2', 'am_tuning_curve')
 exp0.add_session('18-15-07', None, 'lasertrain', 'am_tuning_curve')
+exp0.maxDepth = 1338
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-03-23',
@@ -76,6 +77,7 @@ exp1.add_session('16-17-15', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('16-20-49', 'g', 'am', 'am_tuning_curve')
 exp1.add_session('16-38-29', 'h', 'tc', 'am_tuning_curve')
 # removed the trodes, forgetting to take the last 2 laser sessions. Hopefully all is well
+exp1.maxDepth = 1604
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-03-24',
@@ -111,6 +113,7 @@ exp2.add_session('16-22-04', 'd', 'am', 'am_tuning_curve')
 exp2.add_session('16-38-06', 'e', 'tc', 'am_tuning_curve')
 exp2.add_session('17-11-42', None, 'laserpulse2', 'am_tuning_curve')
 exp2.add_session('17-13-27', None, 'lasertrain2', 'am_tuning_curve')
+exp2.maxDepth = 1525
 
 exp3 = celldatabase.Experiment(subject,
                                '2017-03-28',
@@ -152,6 +155,7 @@ exp3.add_session('15-37-30', 'e', 'am', 'am_tuning_curve')
 # exp3.add_session('16-30-40', None, 'laserpulse', 'am_tuning_curve')
 # exp3.add_session('16-32-28', None, 'laserpulse', 'am_tuning_curve')
 #Nothing here, stopping for the day
+exp3.maxDepth = 3349
 
 exp4 = celldatabase.Experiment(subject,
                                '2017-03-30',
@@ -190,6 +194,7 @@ experiments.append(exp4)
 # exp4.add_session('14-44-22', None, 'noiseburst', 'am_tuning_curve')
 # exp4.add_session('14-45-56', None, 'laserpulse', 'am_tuning_curve')
 #Even longer latency to laser pulse response
+exp4.maxDepth = 3755
 
 exp5 = celldatabase.Experiment(subject,
                                '2017-03-31',
@@ -208,3 +213,4 @@ experiments.append(exp5)
 # exp5.add_site(3783, tetrodes=range(1, 9))
 # exp5.add_session('15-00-13', None, 'noiseburst', 'am_tuning_curve')
 # exp5.add_session('15-02-02', None, 'noiseburst', 'am_tuning_curve') #long latency laser responses
+exp5.maxDepth = 3783
