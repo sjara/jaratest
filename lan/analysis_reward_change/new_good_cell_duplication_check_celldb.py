@@ -1,5 +1,7 @@
 '''
-Calcualte the average waveform(4 channels) of clusters produced by spike-sorting, identify duplicate cells in the same session or in sessions of the same depth by cross correlation between waveforms.
+UPDATED FOR NEW CELLDB - only compare between pairs of good quality cells in the new celldb.
+Calcualte the average waveform(4 channels) of clusters produced by spike-sorting, identify duplicate cells in the same session or in consecutive sessions by cross correlation between waveforms.
+Lan Guo 2018-02
 '''
 import datetime
 import numpy as np

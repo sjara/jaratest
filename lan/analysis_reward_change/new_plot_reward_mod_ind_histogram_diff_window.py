@@ -27,14 +27,13 @@ movementDirections = ['Left', 'Right']
 maxZThreshold = 3
 #ISIcutoff = 0.02
 alphaLevel = 0.05
-checkModDir = True
+checkModDir = True #False
 
 plt.figure(figsize=(6,6))
 #dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 outputDir = '/home/languo/data/reports/reward_change/summaries'
 figFormat = 'png'
-
 
 celldbPath = os.path.join(dbFolder,'rc_database.h5')
 celldb = pd.read_hdf(celldbPath, key='reward_change')
@@ -61,6 +60,7 @@ for indRegion, brainRegion in enumerate(brainRegions):
         print 'Please provide which alignment you want to plot modulation index window with: sound or center-out'
     elif len( sys.argv) == 2:
         alignment = sys.argv[1]
+        # -- Plot reward modulation during sound only for sound-responsive cells -- #
         if alignment == 'sound':
             modWindow = modulationWindows['sound']
             lowFreqModIndName = 'modIndLow_'+modWindow+'_'+'sound'
@@ -94,7 +94,7 @@ for indRegion, brainRegion in enumerate(brainRegions):
             plt.clf()
             binsEdges = np.linspace(-1,1,20)
             plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-            figTitle = '{}_{}_sound_responsive_cells'.format(brainRegion,modWindow)
+            figTitle = '{}_{}_sound_sound_responsive_cells'.format(brainRegion,modWindow)
             #figTitle = '{}_{}_sound_responsive_cells'.format(animal,modWindow)
             plt.title(figTitle)
             plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} sound-responsive cells: {:.3f}%'.format(len(sigModI), sum(soundResp), 100*float(len(sigModI))/sum(soundResp)))  
@@ -107,7 +107,7 @@ for indRegion, brainRegion in enumerate(brainRegions):
             plt.savefig(figFullPath,format=figFormat)
 
 
-            # -- Plot reward modulation during movement only for movement-selective cells -- #
+        # -- Plot reward modulation during movement only for movement-selective cells -- #
         elif alignment == 'center-out':
             modWindow = modulationWindows['center-out']
             leftModIndName = 'modIndLow_'+modWindow+'_'+'center-out'
@@ -145,7 +145,7 @@ for indRegion, brainRegion in enumerate(brainRegions):
             plt.clf()
             binsEdges = np.linspace(-1,1,20)
             plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-            figTitle = '{}_{}_movement_selective_cells'.format(brainRegion,modWindow)
+            figTitle = '{}_{}_Cout_movement_selective_cells'.format(brainRegion,modWindow)
             #figTitle = '{}_{}_movement_selective_cells'.format(animal,modWindow)
             plt.title(figTitle)
             plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} movement-selective cells: {:.3f}%'.format(len(sigModI), sum(movementSelective), 100*float(len(sigModI))/sum(movementSelective))) 
@@ -158,5 +158,61 @@ for indRegion, brainRegion in enumerate(brainRegions):
             print 'Saving {} to {}'.format(figTitle, outputDir)
             plt.savefig(figFullPath,format=figFormat)
 
+        # -- Plot reward modulation before side-in separately for low and high freq for all good cells -- #
+        elif alignment == 'side-in':
+            modWindow = modulationWindows['side-in']
+            leftModIndName = 'modIndLow_'+modWindow+'_'+'side-in'
+            leftModSigName = 'modSigLow_'+modWindow+'_'+'side-in'
+            leftModDirName = 'modDirLow_'+modWindow+'_'+'side-in'
+            rightModIndName = 'modIndHigh_'+modWindow+'_'+'side-in'
+            rightModSigName = 'modSigHigh_'+modWindow+'_'+'side-in'
+            rightModDirName = 'modDirHigh_'+modWindow+'_'+'side-in'
 
+            goodLeftModInd = goodQualCells[leftModIndName]
+            goodLeftModSig = goodQualCells[leftModSigName]
+            goodLeftModDir = goodQualCells[leftModDirName]
+            goodRightModInd = goodQualCells[rightModIndName]
+            goodRightModSig = goodQualCells[rightModSigName]
+            goodRightModDir = goodQualCells[rightModDirName]
+                        
+            if checkModDir:
+                sigModulatedLeft = (goodLeftModSig < alphaLevel) & (goodLeftModDir > 0)
+                sigModulatedRight = (goodRightModSig < alphaLevel) & (goodRightModDir > 0)
+            else:
+                sigModulatedLeft = goodLeftModSig < alphaLevel
+                sigModulatedRight = goodRightModSig < alphaLevel
+
+            sigModILeft = goodLeftModInd[sigModulatedLeft].values
+            nonsigModILeft = goodLeftModInd[~sigModulatedLeft].values
+            sigModIRight = goodRightModInd[sigModulatedRight].values
+            nonsigModIRight = goodRightModInd[~sigModulatedRight]
+            
+            plt.clf()
+            binsEdges = np.linspace(-1,1,20)
+            plt.hist([sigModILeft,nonsigModILeft], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+            figTitle = '{}_{}_sideIn_lowfreq_good_cells'.format(brainRegion,modWindow)
+            #figTitle = '{}_{}_movement_selective_cells'.format(animal,modWindow)
+            plt.title(figTitle)
+            plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} good cells: {:.3f}%'.format(len(sigModILeft), len(goodQualCells), 100*float(len(sigModILeft))/len(goodQualCells))) 
+            
+            plt.xlabel('Modulation index')
+            plt.ylabel('Num of cells')
+            #plt.show()
+            figFullPath = os.path.join(outputDir, figTitle)
+            print 'Saving {} to {}'.format(figTitle, outputDir)
+            plt.savefig(figFullPath,format=figFormat)
+
+            plt.clf()
+            binsEdges = np.linspace(-1,1,20)
+            plt.hist([sigModIRight,nonsigModIRight], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+            figTitle = '{}_{}_sideIn_highfreq_good_cells'.format(brainRegion,modWindow)
+            plt.title(figTitle)
+            plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} good cells: {:.3f}%'.format(len(sigModIRight), len(goodQualCells), 100*float(len(sigModIRight))/len(goodQualCells))) 
+            
+            plt.xlabel('Modulation index')
+            plt.ylabel('Num of cells')
+            #plt.show()
+            figFullPath = os.path.join(outputDir, figTitle)
+            print 'Saving {} to {}'.format(figTitle, outputDir)
+            plt.savefig(figFullPath,format=figFormat)
 
