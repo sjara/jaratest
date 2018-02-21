@@ -2,8 +2,13 @@ import nrrd
 import numpy as np
 from matplotlib import pyplot as plt
 
-ccfData = nrrd.read('/home/nick/Dropbox/data/allenbrain/ccf/coronal_average_template_25.nrrd')
+ccfData = nrrd.read('/home/nick/data/jarahubdata/atlas/AllenCCF_25/coronal_average_template_25.nrrd')
 ccf = ccfData[0]
+
+# corticalBoundsData = nrrd.read('/home/nick/data/jarahubdata/atlas/AllenCCF_25/coronal_isocortex_boundary_25.nrrd')
+corticalBoundsData = nrrd.read('/home/nick/data/jarahubdata/atlas/AllenCCF_25/coronal_laplacian_25.nrrd')
+cortData = corticalBoundsData[0]
+
 
 # plt.clf()
 # plt.imshow(np.rot90(ccf[:,:,257], -1))
@@ -11,12 +16,15 @@ ccf = ccfData[0]
 
 class CCFDisplay(object):
 
-    def __init__(self, atlas):
+    def __init__(self, atlas, corticalBoundsAtlas=None):
 
         self.maxSlice = np.shape(atlas)[2]-1
         self.sliceNum=0
 
         self.atlas = atlas
+        self.corticalBoundsAtlas = corticalBoundsAtlas
+        if self.corticalBoundsAtlas is not None:
+            self.corticalBoundsAtlas = np.ma.masked_where(self.corticalBoundsAtlas==0, self.corticalBoundsAtlas)
 
         self.fig=plt.figure()
         self.ax = self.fig.add_subplot(111)
@@ -96,8 +104,13 @@ class CCFDisplay(object):
         #Draw the image
         self.ax.imshow(np.rot90(self.atlas[:,:,sliceNum], -1), 'gray')
 
+        self.ax.hold(1)
+        self.ax.imshow(np.rot90(self.corticalBoundsAtlas[:,:,sliceNum], -1), 'jet', alpha=0.2)
+
+
+
         #Label the axes and draw
         plt.title('< or > to move through the stack\nSlice: {}'.format(sliceNum))
         self.fig.canvas.draw()
 
-ccfd = CCFDisplay(ccf)
+ccfd = CCFDisplay(ccf, cortData)
