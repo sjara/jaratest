@@ -57,7 +57,7 @@ for indRegion, brainRegion in enumerate(brainRegions):
 
 
     if len(sys.argv) == 1:
-        print 'Please provide which alignment you want to plot modulation index window with: sound or center-out'
+        print 'Please provide which alignment you want to plot modulation index window with: sound, center-out, or side-in'
     elif len( sys.argv) == 2:
         alignment = sys.argv[1]
         # -- Plot reward modulation during sound only for sound-responsive cells -- #
