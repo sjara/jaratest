@@ -8,7 +8,7 @@ import matplotlib
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 
-STUDY_NAME = '2017rc'
+STUDY_NAME = '2018rc'
 
 fontSizeLabels = 12
 fontSizeTicks = 12
