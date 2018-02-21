@@ -16,6 +16,7 @@ from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
+reload(figparams)
 
 STUDY_NAME = figparams.STUDY_NAME
 
@@ -24,11 +25,14 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 
 if not os.path.exists(dataDir):
     os.mkdir(dataDir)
-
-colorDict = {'leftMoreLowFreq':'g',
+'''
+colorsDict = {'leftMoreLowFreq':'g',
              'rightMoreLowFreq':'m',
              'leftMoreHighFreq':'r',
              'rightMoreHighFreq':'b'}
+'''
+colorsDict = {'colorLMore':figparams.colp['MoreRewardL'], 
+              'colorRMore':figparams.colp['MoreRewardR']} 
 
 # -- These example cells I picked manually  --#
 cellParamsList = []
@@ -131,18 +135,18 @@ def get_trials_each_cond_reward_change(bdata, freqToPlot, colorCondDict, byBlock
                 labelEachCond[blockNum] = 'same_reward'
             if freqToPlot == 'low':
                 if currentBlockLabel == bdata.labels['currentBlock']['more_left']:
-                    colorEachCond[blockNum] = colorCondDict['leftMoreLowFreq'] 
-                    labelEachCond[blockNum] = 'low freq left more'
+                    colorEachCond[blockNum] = colorCondDict['colorLMore'] #colorCondDict['leftMoreLowFreq'] 
+                    labelEachCond[blockNum] = 'left more' #'low freq left more'
                 elif currentBlockLabel == bdata.labels['currentBlock']['more_right']:   
-                    colorEachCond[blockNum] = colorCondDict['rightMoreLowFreq']
-                    labelEachCond[blockNum] = 'low freq right more'
+                    colorEachCond[blockNum] = colorCondDict['colorRMore'] #colorCondDict['rightMoreLowFreq']
+                    labelEachCond[blockNum] = 'right more' #'low freq right more'
             elif freqToPlot == 'high':
                 if currentBlockLabel == bdata.labels['currentBlock']['more_left']:
-                    colorEachCond[blockNum] = colorCondDict['leftMoreHighFreq'] 
-                    labelEachCond[blockNum] = 'high freq left more'
+                    colorEachCond[blockNum] = colorCondDict['colorLMore'] #colorCondDict['leftMoreHighFreq'] 
+                    labelEachCond[blockNum] = 'left more' #'high freq left more'
                 elif currentBlockLabel == bdata.labels['currentBlock']['more_right']:   
-                    colorEachCond[blockNum] = colorCondDict['rightMoreHighFreq']
-                    labelEachCond[blockNum] = 'high freq right more'
+                    colorEachCond[blockNum] = colorCondDict['colorRMore'] #colorCondDict['rightMoreHighFreq']
+                    labelEachCond[blockNum] = 'right more' #'high freq right more'
 
     else:
         blockTypes = [bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']]
@@ -153,11 +157,11 @@ def get_trials_each_cond_reward_change(bdata, freqToPlot, colorCondDict, byBlock
         
         trialsEachCond = np.c_[oneFreqCorrectBlockMoreLeft,oneFreqCorrectBlockMoreRight]
         if freqToPlot == 'low':
-            colorEachCond = [colorCondDict['leftMoreLowFreq'],colorCondDict['rightMoreLowFreq']]
-            labelEachCond = [ 'low freq left more', 'low freq right more']
+            colorEachCond = [colorCondDict['colorLMore'], colorCondDict['colorRMore']] #[colorCondDict['leftMoreLowFreq'],colorCondDict['rightMoreLowFreq']]
+            labelEachCond = ['left more', 'right more'] #[ 'low freq left more', 'low freq right more']
         elif freqToPlot == 'high':
-            colorEachCond = [colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
-            labelEachCond = ['high freq left more', 'high freq right more']
+            colorEachCond = [colorCondDict['colorLMore'], colorCondDict['colorRMore']] #[colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
+            labelEachCond = ['left more', 'right more'] #['high freq left more', 'high freq right more']
     return trialsEachCond, colorEachCond, labelEachCond
 
 ###################################################################################
@@ -211,7 +215,7 @@ for cellParams in cellParamsList:
 
     # -- Select trials to plot from behavior file -- #
     for freq in freqsToPlot:
-        trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorDict)
+        trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
         # -- Load intermediate data -- #
         for alignment in alignmentsToPlot:
             evlockDataFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(animal, date, depth, tetrode, cluster, alignment)

@@ -21,8 +21,8 @@ colp['astrColor'] = cp.TangoPalette['Plum2']
 
 colp['sound'] = cp.TangoPalette['Butter2']
 
-colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
-colp['MidFreqL'] = cp.TangoPalette['Chameleon3']
+colp['MoreRewardR'] = cp.TangoPalette['ScarletRed1']
+colp['MoreRewardL'] = cp.TangoPalette['SkyBlue2']
 
 colp['stimLeft'] = cp.TangoPalette['Orange2']
 colp['stimRight'] = '#829910'
