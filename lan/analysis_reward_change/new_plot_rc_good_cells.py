@@ -105,7 +105,7 @@ for ind, cell in goodQualCells.iterrows():
     # Movement-selectivity plot
     ax10 = plt.subplot(gs04[0:2, :])
     rcfuncs.plot_movement_response_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, alignment='center-out', timeRange=[-0.3,0.5])
-    plt.title('Movement selectivity index {:.3f}, pVal {:.3f}'.format(cell['movementModI_[0.05, 0.15]', cell['movementModS_[0.05, 0.15]']))
+    plt.title('Movement selectivity index {:.3f}, pVal {:.3f}'.format(cell['movementModI_[0.05, 0.15]'], cell['movementModS_[0.05, 0.15]']))
     ax11 = plt.subplot(gs04[2, :])
     rcfuncs.plot_movement_response_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, alignment='center-out', timeRange=[-0.3,0.5])
 
