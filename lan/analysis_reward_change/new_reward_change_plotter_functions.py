@@ -24,9 +24,9 @@ colorDictRC = {'leftMoreLowFreq':'g',
                'rightMoreLowFreq':'m',
                #'sameRewardLowFreq':'y',
                'leftMoreHighFreq':'r',
-               'rightMoreHighFreq':'b',
+               'rightMoreHighFreq':'b'}
                #'sameRewardHighFreq':'darkgrey'
-}
+
 
 
 colorDictMovement = {'left':'g',
@@ -187,7 +187,7 @@ def get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock, colorCondDi
         freq = possibleFreq[0] 
 
     elif freqToPlot == 'high':
-        freq = possibleFreq[1]
+        freq = possibleFreq[-1]
 
     oneFreq = bdata['targetFrequency'] == freq #vector for selecing trials presenting this frequency
     correctOneFreq = oneFreq  & correct 
@@ -253,7 +253,7 @@ def load_intermediate_data_for_raster_psth(cell, evlockDir, alignment, timeRange
     :param arg2: A string for the path to event locked spiketime data.
     :param arg3: A string indicating the event to align the spike times to, can be 'sound', 'center-out', or 'side-in'.
     '''
-    evlockFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(cell.subject, cell.date, cell.depth, cell.tetrode, cell.cluster, alignment)
+    evlockFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(cell.subject, cell.dbRow['date'], cell.dbRow['depth'], cell.tetrode, cell.cluster, alignment)
     evlockFullPath = os.path.join(evlockDir, evlockFilename)
     if os.path.exists(evlockFullPath):
         evlockdata = np.load(evlockFullPath)
@@ -312,7 +312,7 @@ def plot_reward_change_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCa
     Function to plot reward change raster.
     '''
     spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = load_intermediate_data_for_raster_psth(cellObj, evlockDir, alignment, timeRange, behavClass)
-    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = calculate_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass) 
+    #spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = calculate_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass) 
     if np.any(spikeTimesFromEventOnset):
         if freqToPlot == 'low' or freqToPlot=='high':
             trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock, colorCondDict, behavClass) 
@@ -454,3 +454,34 @@ def plot_noisebursts_response_raster(cellObj, timeRange=[-0.1, 0.3]):
     plt.ylabel('Trials')
     plt.xlabel('Time from sound onset (s)')
     
+
+if __name__ == '__main__':
+    import pandas as pd
+    STUDY_NAME = '2018rc'
+    animal = 'adap012'
+    date = '2016-04-05'
+    tetrode = 4
+    cluster = 6
+    brainRegion = 'astr'
+    
+    dbKey = 'reward_change'
+    dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
+    celldbPath = os.path.join(dbFolder, 'rc_database.h5')
+    celldb = pd.read_hdf(celldbPath, key=dbKey)
+    sessionType = 'behavior'
+    behavClass = loadbehavior.FlexCategBehaviorData
+    evlockFolder = 'evlock_spktimes'
+    evlockDir = os.path.join(EPHYS_PATH, STUDY_NAME, evlockFolder)
+    cell = celldb.loc[(celldb.subject==animal) & (celldb.date==date) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)].iloc[0]
+    cellObj = ephyscore.Cell(cell)
+    depth = cellObj.dbRow['depth']
+    soundWindow = '0-0.1s'
+    freqToPlot='high'
+    trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock=True, colorCondDict=colorDictRC, behavClass=behavClass)
+    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = load_intermediate_data_for_raster_psth(cellObj, evlockDir, 'sound', [-0.5,1], behavClass)
+    plt.clf()
+    plot_reward_change_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, freqToPlot='high', byBlock=True, alignment='sound', timeRange=[-0.3,0.4])
+    plt.title('Modulation index {:.3f}\n p value {:.3f}\n Mod dir {}'.format(cell['modIndHigh_{}_sound'.format(soundWindow)],cell['modSigHigh_{}_sound'.format(soundWindow)],cell['modDirHigh_{}_sound'.format(soundWindow)]))
+    plt.figure()
+    plot_reward_change_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData,freqToPlot='high', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
+    plt.show()

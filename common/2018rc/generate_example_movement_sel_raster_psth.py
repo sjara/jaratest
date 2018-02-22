@@ -14,8 +14,10 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
+import figparams
+reload(figparams)
 
-STUDY_NAME = '2017rc'
+STUDY_NAME = figparams.STUDY_NAME
 FIGNAME = 'movement_selectivity'
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 
@@ -25,10 +27,9 @@ if not os.path.exists(outputDir):
 scriptFullPath = os.path.realpath(__file__)
 timeRange = [-0.5,1]
 binWidth = 0.010
-EPHYS_SAMPLING_RATE = 30000.0
-soundTriggerChannel = 0
 
-colorsDict = {'left':'r', 'right':'g'} 
+colorsDict = {'left': figparams.colp['MoveLeft'],
+              'right':figparams.colp['MoveRight']} 
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
@@ -43,6 +44,20 @@ if not os.path.ismount(EPHYS_PATH):
 
 # -- These example cells we picked manually  --#
 cellParamsList = []
+exampleCell = {'subject':'adap012',
+              'date':'2016-03-09',
+              'tetrode':3,
+               'cluster':2,
+               'brainRegion':'astr'} 
+cellParamsList.append(exampleCell)
+#
+exampleCell = {'subject':'adap012',
+              'date':'2016-03-24',
+              'tetrode':4,
+               'cluster':8,
+               'brainRegion':'astr'} 
+cellParamsList.append(exampleCell)
+
 exampleCell = {'subject':'gosi004',
               'date':'2017-02-13',
               'tetrode':7,
@@ -57,27 +72,7 @@ exampleCell = {'subject':'gosi004',
                'brainRegion':'ac'} 
 cellParamsList.append(exampleCell)
 
-exampleCell = {'subject':'gosi004',
-              'date':'2017-03-15',
-              'tetrode':4,
-               'cluster':8,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
-
-exampleCell = {'subject':'gosi004',
-              'date':'2017-03-18',
-              'tetrode':4,
-               'cluster':10,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
-
-exampleCell = {'subject':'gosi004',
-              'date':'2017-03-25',
-              'tetrode':8,
-               'cluster':3,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
-
+#
 exampleCell = {'subject':'gosi008',
               'date':'2017-03-07',
               'tetrode':1,
@@ -85,6 +80,7 @@ exampleCell = {'subject':'gosi008',
                'brainRegion':'ac'} 
 cellParamsList.append(exampleCell)
 
+#
 exampleCell = {'subject':'gosi008',
               'date':'2017-03-10',
               'tetrode':1,
@@ -92,19 +88,6 @@ exampleCell = {'subject':'gosi008',
                'brainRegion':'ac'} 
 cellParamsList.append(exampleCell)
 
-exampleCell = {'subject':'gosi008',
-              'date':'2017-03-14',
-              'tetrode':7,
-               'cluster':8,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
-
-exampleCell = {'subject':'gosi008',
-              'date':'2017-03-20',
-              'tetrode':4,
-               'cluster':12,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'gosi010',
               'date':'2017-05-02',
@@ -114,8 +97,24 @@ exampleCell = {'subject':'gosi010',
 cellParamsList.append(exampleCell)
 
 # -- Here we can choose to generate data for a specific cell instead of every cell -- #
-if len(sys.argv) > 1:
-    cellIndToGenerate = int(sys.argv[1])
+if len(sys.argv) == 1:
+    print 'You can also provide the index of the cell you want to generate intermediate data for as an argument to this script. Generating data for all cells...'
+    cellIndToGenerate = 'all'
+elif len( sys.argv) == 2:
+    cellIndToGenerate = int(sys.argv[1]) 
+####################################################################################
+dbKey = 'reward_change'
+dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
+celldbPath = os.path.join(dbFolder, 'rc_database.h5')
+celldb = pd.read_hdf(celldbPath, key=dbKey)
+sessionType = 'behavior'
+behavClass = loadbehavior.FlexCategBehaviorData
+evlockFolder = 'evlock_spktimes'
+evlockDataPath = os.path.join(EPHYS_PATH, STUDY_NAME, evlockFolder)
+soundChannelType = 'stim'
+####################################################################################
+
+if cellIndToGenerate != 'all':
     cellParamsList = [cellParamsList[cellIndToGenerate]]
 
 for cellParams in cellParamsList:
@@ -124,48 +123,20 @@ for cellParams in cellParamsList:
     tetrode = cellParams['tetrode']
     cluster = cellParams['cluster']
     brainRegion = cellParams['brainRegion']
-    celldbPath = os.path.join(settings.DATABASE_PATH, '{}_database.h5'.format(animal))
-    celldb = pd.read_hdf(celldbPath, key='reward_change')
     
     ### Using cellDB methode to find this cell in the cellDB ###
-    oneCell = celldb.loc[(celldb.subject==animal) & (celldb.date==date) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)]
-    sessionsThisCell = oneCell.iloc[0].sessiontype
-    rcInd = sessionsThisCell.index('behavior')
-    rcEphysThisCell = oneCell['ephys'].iloc[0][rcInd]
-    rcBehavThisCell = oneCell['behavior'].iloc[0][rcInd]
-
-    ## Get behavior data associated with 2afc session ###
-    behavFileName = rcBehavThisCell
-    behavFile = os.path.join(BEHAVIOR_PATH,animal,behavFileName)
-    bdata = loadbehavior.FlexCategBehaviorData(behavFile,readmode='full')
-
-    ### Get events data ###
-    fullEventFilename=os.path.join(EPHYS_PATH, animal, rcEphysThisCell, 'all_channels.events')
-    eventData = loadopenephys.Events(fullEventFilename)
-    ##### Get event onset times #####
-    eventData.timestamps = np.array(eventData.timestamps)/EPHYS_SAMPLING_RATE #hard-coded ephys sampling rate!!
-
-    ### GEt spike data of just this cluster ###
-    spikeFilename = os.path.join(EPHYS_PATH, animal, rcEphysThisCell, 'Tetrode{}.spikes'.format(tetrode))
-    spikeData = loadopenephys.DataSpikes(spikeFilename)
-    spikeData.timestamps = spikeData.timestamps/EPHYS_SAMPLING_RATE
-    clustersDir = os.path.join(EPHYS_PATH, animal, rcEphysThisCell)+'_kk'
-    clusterFilename = os.path.join(clustersDir, 'Tetrode{}.clu.1'.format(tetrode))
-    clusters = np.fromfile(clusterFilename, dtype='int32', sep=' ')[1:]
-    spikeData.timestamps = spikeData.timestamps[clusters==cluster]
-    spikeData.samples = spikeData.samples[clusters==cluster, :, :]
-    spikeData.samples = spikeData.samples.astype(float)-2**15# FIXME: this is specific to OpenEphys
-    # FIXME: This assumes the gain is the same for all channels and records
-    spikeData.samples = (1000.0/spikeData.gain[0,0]) * spikeData.samples
-    #spikeData = ephyscore.CellData(oneCell) #This defaults to settings ephys path
-    spikeTimestamps = spikeData.timestamps
-
-     # -- Check to see if ephys has skipped trials, if so remove trials from behav data -- #
-    eventOnsetTimes=np.array(eventData.timestamps)
-    soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
-    soundOnsetTimeEphys = eventOnsetTimes[soundOnsetEvents]
+    cell = celldb.loc[(celldb.subject==animal) & (celldb.date==date) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)].iloc[0]
+    cellObj = ephyscore.Cell(cell)
+    depth = cellObj.dbRow['depth']
+    sessionInd = cellObj.get_session_inds(sessionType)[0]
+    #bdata = cellObj.load_behavior_by_index(sessionInd, behavClass=behavClass)
+    ephysData, bdata = cellObj.load_by_index(sessionInd, behavClass=behavClass)
+    
+    eventsDict = ephysData['events']
+    spikeTimestamps = ephysData['spikeTimes']
+    soundOnsetTimeEphys = eventsDict['{}On'.format(soundChannelType)]
     soundOnsetTimeBehav = bdata['timeTarget']
-
+    
     # Find missing trials
     missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
     # Remove missing trials
@@ -180,32 +151,21 @@ for cellParams in cellParamsList:
     condLabels = ['go left', 'go right']
     trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
     colorEachCond = [colorsDict['left'],colorsDict['right']]
-
-    # -- Calculate eventOnsetTimes aligned to movement onset (CenterOut events) -- #
-    eventOnsetTimes=np.array(eventData.timestamps)
-    soundOnsetEvents = (eventData.eventID==1) & (eventData.eventChannel==soundTriggerChannel)
-    soundOnsetTimes = eventOnsetTimes[soundOnsetEvents]
-    diffTimes=bdata['timeCenterOut']-bdata['timeTarget']
-    movementOnsetTimes = soundOnsetTimes+diffTimes
-
-    # -- Calculate arrays for plotting raster -- #
-    (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
-    spikesanalysis.eventlocked_spiketimes(spikeTimestamps,movementOnsetTimes,timeRange)
-
+    
+    alignment = 'center-out'
+    evlockDataFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(animal, date, depth, tetrode, cluster, alignment)
+    evlockDataFullpath = os.path.join(evlockDataPath, evlockDataFilename) 
+    evlockSpktimes = np.load(evlockDataFullpath)
+    spikeTimesFromEventOnset = evlockSpktimes['spikeTimesFromEventOnset']
+    indexLimitsEachTrial = evlockSpktimes['indexLimitsEachTrial']
+    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
     # -- Save raster intermediate data -- #    
     #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-    outputFile = 'example_movement_sel_raster_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
+    outputFile = 'example_movement_sel_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
     np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 
 
 
-    # -- Calculate additional arrays for plotting psth -- #
-    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
-    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
-
-    # -- Save psth intermediate data -- #
-    #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-    outputFile = 'example_movement_sel_psth_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
-    outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeCountMat=spikeCountMat, timeVec=timeVec, condLabels=condLabels, trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,timeRange=timeRange, binWidth=binWidth, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], script=scriptFullPath, **cellParams) 
+    

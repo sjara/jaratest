@@ -70,7 +70,9 @@ for ind, cell in goodQualCells.iterrows():
     cellObj = ephyscore.Cell(cell)
     # Tuning raster
     ax1 = plt.subplot(gs[0:2, 0])
-    rcfuncs.plot_tuning_raster(cellObj, sessionType='tc', intensity=50, timeRange = [-0.5,1])   
+    rcfuncs.plot_tuning_raster(cellObj, sessionType='tc', intensity=50, timeRange = [-0.5,1])  
+    maxAbsSoundZ = max(min(cell.behavZscore),max(cell.behavZscore),key=abs)
+    plt.title('Max soundresp Zscore in 2afc:{:.3f}'.format(maxAbsSoundZ))
     
     # Sound-aligned low freq
     ax2 = plt.subplot(gs00[0:2, :])
@@ -87,23 +89,23 @@ for ind, cell in goodQualCells.iterrows():
     rcfuncs.plot_reward_change_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData,freqToPlot='high', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
 
     # Cout-aligned high freq
-    ax6 = plt.subplot(gs02[0:2, :])
+    ax6 = plt.subplot(gs03[0:2, :])
     rcfuncs.plot_reward_change_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, freqToPlot='high', byBlock=True, alignment='center-out', timeRange=[-0.3,0.5])
     plt.title('Modulation index {:.3f}\n p value {:.3f}\n Mod dir {}'.format(cell['modIndHigh_{}_center-out'.format(cOutWindow)],cell['modSigHigh_{}_center-out'.format(cOutWindow)],cell['modDirHigh_{}_center-out'.format(cOutWindow)]))
-    ax7 = plt.subplot(gs02[2, :])
+    ax7 = plt.subplot(gs03[2, :])
     rcfuncs.plot_reward_change_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, freqToPlot='high', byBlock=True, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010)
     
     # Cout-aligned low freq
-    ax8 = plt.subplot(gs03[0:2, :])
+    ax8 = plt.subplot(gs02[0:2, :])
     rcfuncs.plot_reward_change_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, freqToPlot='low', byBlock=True, alignment='center-out', timeRange=[-0.3,0.5])
     plt.title('Modulation index {:.3f}\n p value {:.3f}\n Mod dir {}'.format(cell['modIndLow_{}_center-out'.format(cOutWindow)],cell['modSigLow_{}_center-out'.format(cOutWindow)],cell['modDirLow_{}_center-out'.format(cOutWindow)]))
-    ax9 = plt.subplot(gs03[2, :])
+    ax9 = plt.subplot(gs02[2, :])
     rcfuncs.plot_reward_change_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, freqToPlot='low', byBlock=True, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010)
     
     # Movement-selectivity plot
     ax10 = plt.subplot(gs04[0:2, :])
     rcfuncs.plot_movement_response_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, alignment='center-out', timeRange=[-0.3,0.5])
-    plt.title('Movement selectivity index {:.3f}'.format(cell['movementModI_[0.05, 0.15]']))
+    plt.title('Movement selectivity index {:.3f}, pVal {:.3f}'.format(cell['movementModI_[0.05, 0.15]', cell['movementModS_[0.05, 0.15]']))
     ax11 = plt.subplot(gs04[2, :])
     rcfuncs.plot_movement_response_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, alignment='center-out', timeRange=[-0.3,0.5])
 

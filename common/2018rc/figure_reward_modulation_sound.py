@@ -31,8 +31,11 @@ soundColor = figparams.colp['sound']
 timeRangeToPlot = [-0.3,0.5]
 
 # -- Select example cells here -- #
-exampleModulatedAStr = 'lowfreq_adap017_2016-04-24_T6_c11'
+#exampleModulatedAStr = 'lowfreq_adap017_2016-04-24_T6_c11'
+exampleModulatedAStr = 'highfreq_adap012_2016-04-05_T4_c6'
 exampleModulatedAC = 'lowfreq_gosi004_2017-03-19_T6_c4'
+###############################################################
+
 
 PANELS = [1,1,1] # Which panels to plot
 
@@ -107,7 +110,7 @@ if PANELS[0]:
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
     '''
-    ax1.set_yticklabels([])
+    #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
@@ -121,7 +124,7 @@ if PANELS[0]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,30]
+    yLims = [0,35]
     soundBarHeight = 0.1*yLims[-1]
     plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
@@ -132,7 +135,7 @@ if PANELS[0]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 # -- Panel B: reward modulated cell during sound in AC -- #
@@ -197,56 +200,25 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 
 # -- Panel C: summary distribution of reward modulation index during sound -- #
 ax6 = plt.subplot(gs02[0,:])
 ax6.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-maxZThreshold = 3
-alphaLevel = 0.05
-modWindow = '0-0.1s'
+
 if PANELS[2]:
-    dbKey = 'reward_change'
-    dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
-    celldbPath = os.path.join(dbFolder, 'rc_database.h5')
-    celldb = pd.read_hdf(celldbPath, key=dbKey)
-    
-    brainArea = 'rightAStr'
-    goodQualCells = celldb.query("keepAfterDupTest==True and brainArea=='{}'".format(brainArea))
+    summaryFilename = 'summary_reward_modulation_sound_rightAStr.npz'
+    summaryFullPath = os.path.join(dataDir, summaryFilename)
+    summary = np.load(summaryFullPath)
+    soundRespAStr = summary['soundResponsive']
+    sigModIAStr = summary['sigModI']
+    nonsigModIAStr = summary['nonsigModI']
+    allModIAStr = summary['allModI']
 
-    soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x)) >=  maxZThreshold) #The bigger of the sound Z score is over threshold
-    moreRespLowFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[0]) > abs(x[1]))
-    moreRespHighFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[1]) > abs(x[0]))
-    goodLowFreqRespCells = goodQualCells[moreRespLowFreq]
-    goodHighFreqRespCells = goodQualCells[moreRespHighFreq]
-
-    lowFreqModIndName = 'modIndLow_'+modWindow+'_'+'sound'
-    lowFreqModSigName = 'modSigLow_'+modWindow+'_'+'sound'
-    lowFreqModDirName = 'modDirLow_'+modWindow+'_'+'sound'
-    highFreqModIndName = 'modIndHigh_'+modWindow+'_'+'sound'
-    highFreqModSigName = 'modSigHigh_'+modWindow+'_'+'sound'
-    highFreqModDirName = 'modDirHigh_'+modWindow+'_'+'sound'
-            
-    goodLowFreqRespModInd = (-1) * goodLowFreqRespCells[lowFreqModIndName]
-    goodLowFreqRespModSig = goodLowFreqRespCells[lowFreqModSigName]
-    goodLowFreqRespModDir = goodLowFreqRespCells[lowFreqModDirName]
-    goodHighFreqRespModInd = goodHighFreqRespCells[highFreqModIndName]
-    goodHighFreqRespModSig = goodHighFreqRespCells[highFreqModSigName]
-    goodHighFreqRespModDir = goodHighFreqRespCells[highFreqModDirName]
-    
-    sigModulatedLow = (goodLowFreqRespModSig < alphaLevel) & (goodLowFreqRespModDir > 0)
-    sigModulatedHigh = (goodHighFreqRespModSig < alphaLevel) & (goodHighFreqRespModDir > 0)
-    sigModI = np.concatenate((goodLowFreqRespModInd[sigModulatedLow].values,
-                                      goodHighFreqRespModInd[sigModulatedHigh].values))
-    nonsigModI = np.concatenate((goodLowFreqRespModInd[~sigModulatedLow].values,
-                                      goodHighFreqRespModInd[~sigModulatedHigh].values))
-
-    allModI = np.concatenate((goodLowFreqRespModInd.values, goodHighFreqRespModInd.values))
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-
+    plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
     yPosText = 0.95*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
@@ -258,45 +230,22 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
 
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of sound responsive good cells is:', sum(soundResp), '\nNumber of cells significantly modulated is:', len(sigModI)
-    (Z, pVal) = stats.wilcoxon(allModI)
-    print 'For {}: Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(brainArea, pVal)
+    print 'Total number of sound responsive good cells is:', sum(soundRespAStr), '\nNumber of cells significantly modulated is:', len(sigModIAStr)
+    (Z, pVal) = stats.wilcoxon(allModIAStr)
+    print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
+
 
     ax7 = plt.subplot(gs02[1,:])
-    brainArea = 'rightAC'
-    goodQualCells = celldb.query("keepAfterDupTest==True and brainArea=='{}'".format(brainArea))
+    summaryFilename = 'summary_reward_modulation_sound_rightAC.npz'
+    summaryFullPath = os.path.join(dataDir, summaryFilename)
+    summary = np.load(summaryFullPath)
+    soundRespAC = summary['soundResponsive']
+    sigModIAC = summary['sigModI']
+    nonsigModIAC = summary['nonsigModI']
+    allModIAC = summary['allModI']
 
-    soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x)) >=  maxZThreshold) #The bigger of the sound Z score is over threshold
-    moreRespLowFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[0]) > abs(x[1]))
-    moreRespHighFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[1]) > abs(x[0]))
-    goodLowFreqRespCells = goodQualCells[moreRespLowFreq]
-    goodHighFreqRespCells = goodQualCells[moreRespHighFreq]
-
-    lowFreqModIndName = 'modIndLow_'+modWindow+'_'+'sound'
-    lowFreqModSigName = 'modSigLow_'+modWindow+'_'+'sound'
-    lowFreqModDirName = 'modDirLow_'+modWindow+'_'+'sound'
-    highFreqModIndName = 'modIndHigh_'+modWindow+'_'+'sound'
-    highFreqModSigName = 'modSigHigh_'+modWindow+'_'+'sound'
-    highFreqModDirName = 'modDirHigh_'+modWindow+'_'+'sound'
-            
-    goodLowFreqRespModInd = (-1) * goodLowFreqRespCells[lowFreqModIndName]
-    goodLowFreqRespModSig = goodLowFreqRespCells[lowFreqModSigName]
-    goodLowFreqRespModDir = goodLowFreqRespCells[lowFreqModDirName]
-    goodHighFreqRespModInd = goodHighFreqRespCells[highFreqModIndName]
-    goodHighFreqRespModSig = goodHighFreqRespCells[highFreqModSigName]
-    goodHighFreqRespModDir = goodHighFreqRespCells[highFreqModDirName]
-    
-    sigModulatedLow = (goodLowFreqRespModSig < alphaLevel) & (goodLowFreqRespModDir > 0)
-    sigModulatedHigh = (goodHighFreqRespModSig < alphaLevel) & (goodHighFreqRespModDir > 0)
-    sigModI = np.concatenate((goodLowFreqRespModInd[sigModulatedLow].values,
-                                      goodHighFreqRespModInd[sigModulatedHigh].values))
-    nonsigModI = np.concatenate((goodLowFreqRespModInd[~sigModulatedLow].values,
-                                      goodHighFreqRespModInd[~sigModulatedHigh].values))
-
-    allModI = np.concatenate((goodLowFreqRespModInd.values, goodHighFreqRespModInd.values))
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-
+    plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
     yPosText = 0.95*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
@@ -308,10 +257,13 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
 
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of sound responsive good cells is:', sum(soundResp), '\nNumber of cells significantly modulated is:', len(sigModI)
-    (Z, pVal) = stats.wilcoxon(allModI)
-    print 'For {}: Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(brainArea, pVal)
-
+    print 'Total number of sound responsive good cells is:', sum(soundRespAC), '\nNumber of cells significantly modulated is:', len(sigModIAC)
+    (Z, pVal) = stats.wilcoxon(allModIAC)
+    print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
+    (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
+    print 'Using wilcoxon rank sum test to compare modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+    #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
+    #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
 plt.show()
 
 if SAVE_FIGURE:

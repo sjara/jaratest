@@ -44,6 +44,14 @@ exampleCell = {'subject':'adap012',
                'brainRegion':'astr'} # low freq, sound modulated
 cellParamsList.append(exampleCell)
 
+# strong sound response but not obvious modulated
+exampleCell = {'subject':'adap012',
+               'date':'2016-04-05',
+               'tetrode':4,
+               'cluster':6,
+               'brainRegion':'astr'} # high freq, sound modulated
+cellParamsList.append(exampleCell)
+
 # best example for astr
 exampleCell = {'subject':'adap017',
                'date':'2016-04-24',
@@ -72,7 +80,7 @@ if len(sys.argv) == 1:
     print 'You can also provide the index of the cell you want to generate intermediate data for as an argument to this script. Generating data for all cells...'
     cellIndToGenerate = 'all'
 elif len( sys.argv) == 2:
-    cellIndToGenerate = sys.argv[1] 
+    cellIndToGenerate = int(sys.argv[1]) 
 
 ####################################################################################
 scriptFullPath = os.path.realpath(__file__)
@@ -83,7 +91,7 @@ soundTriggerChannel = 0
 paradigm = '2afc'
 minBlockSize = 30
 freqsToPlot = ['low', 'high']
-alignmentsToPlot = ['sound', 'center-out']
+alignmentsToPlot = ['sound']#, 'center-out']
 ###################################################################################
 def get_trials_each_cond_reward_change(bdata, freqToPlot, colorCondDict, byBlock=True, minBlockSize=30):
     '''Function to generate selection vector showing which trials to plot for each behavior conditions and the color to use in the plot label.
