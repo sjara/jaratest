@@ -1,5 +1,5 @@
 '''
-Create figure about the activity of astr neurons during sound being modulated by reward expectation in the reward change task.
+Create figure about the activity of astr neurons during movement being modulated by reward expectation in the reward change task.
 '''
 import os
 import numpy as np
@@ -15,7 +15,7 @@ reload(figparams)
 import matplotlib.patches as mpatches
 import scipy.stats as stats
 
-FIGNAME = 'reward_modulation_sound'
+FIGNAME = 'reward_modulation_movement'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
 
@@ -31,18 +31,17 @@ soundColor = figparams.colp['sound']
 timeRangeToPlot = [-0.3,0.5]
 
 # -- Select example cells here -- #
-#exampleModulatedAStr = 'lowfreq_adap017_2016-04-24_T6_c11'
-exampleModulatedAStr = 'highfreq_adap012_2016-04-05_T4_c6'
-exampleModulatedAC = 'lowfreq_gosi004_2017-03-19_T6_c4'
+#exampleModulatedAStr = 
+exampleModulatedAStr = 'highfreq_adap012_2016-02-04_T3_c3'
+exampleModulatedAC = 'highfreq_gosi008_2017-03-14_T7_c8'
 ###############################################################
-
 
 PANELS = [1,1,1] # Which panels to plot
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 
-figFilename = 'figure_reward_modulation_sound'
+figFilename = 'figure_reward_modulation_movement'
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [10,3.5]
 
@@ -73,12 +72,12 @@ lwPsth = 2
 downsampleFactorPsth = 1
 
 
-# -- Panel A: reward modulated cell during sound in AStr -- #
+# -- Panel A: reward modulated cell during center-out in AStr -- #
 ax1 = plt.subplot(gs00[0:3, :])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
-    intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleModulatedAStr)
+    intDataFilename = 'example_rc_center-outaligned_{}.npz'.format(exampleModulatedAStr)
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
@@ -124,25 +123,25 @@ if PANELS[0]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,35]
-    soundBarHeight = 0.1*yLims[-1]
-    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    yLims = [0,23]
+    #soundBarHeight = 0.1*yLims[-1]
+    #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
     plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
-# -- Panel B: reward modulated cell during sound in AC -- #
+# -- Panel B: reward modulated cell during center-out in AC -- #
 ax3 = plt.subplot(gs01[0:3, :])
 ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
-    intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleModulatedAC)
+    intDataFilename = 'example_rc_center-outaligned_{}.npz'.format(exampleModulatedAC)
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
@@ -190,13 +189,13 @@ if PANELS[1]:
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
     yLims = [0,35]
-    soundBarHeight = 0.1*yLims[-1]
-    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    #soundBarHeight = 0.1*yLims[-1]
+    #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
@@ -204,15 +203,15 @@ if PANELS[1]:
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 
-# -- Panel C: summary distribution of reward modulation index during sound -- #
+# -- Panel C: summary distribution of reward modulation index during movement -- #
 ax6 = plt.subplot(gs02[0,:])
 ax6.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[2]:
-    summaryFilename = 'summary_reward_modulation_sound_rightAStr.npz'
+    summaryFilename = 'summary_reward_modulation_movement_rightAStr.npz'
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
-    soundRespAStr = summary['soundResponsive']
+    movementSelAStr = summary['movementSelective']
     sigModIAStr = summary['sigModI']
     nonsigModIAStr = summary['nonsigModI']
     allModIAStr = summary['allModI']
@@ -230,16 +229,16 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
 
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of sound responsive good cells is:', sum(soundRespAStr), '\nNumber of cells significantly modulated is:', len(sigModIAStr)
+    print 'Total number of movement selective good cells is:', sum(movementSelAStr), '\nNumber of cells significantly modulated is:', len(sigModIAStr)
     (Z, pVal) = stats.wilcoxon(allModIAStr)
     print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
 
 
     ax7 = plt.subplot(gs02[1,:])
-    summaryFilename = 'summary_reward_modulation_sound_rightAC.npz'
+    summaryFilename = 'summary_reward_modulation_movement_rightAC.npz'
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
-    soundRespAC = summary['soundResponsive']
+    movementSelAC = summary['movementSelective']
     sigModIAC = summary['sigModI']
     nonsigModIAC = summary['nonsigModI']
     allModIAC = summary['allModI']
@@ -257,12 +256,12 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
 
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of sound responsive good cells is:', sum(soundRespAC), '\nNumber of cells significantly modulated is:', len(sigModIAC)
+    print 'Total number of movement selective good cells is:', sum(movementSelAC), '\nNumber of cells significantly modulated is:', len(sigModIAC)
     (Z, pVal) = stats.wilcoxon(allModIAC)
     print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
     (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
     print 'Using wilcoxon rank sum test to compare modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
-    #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
+    #(oddRatio, pValFisher) = stats.fisher_exact([[sum(movementRespAC)-len(sigModIAC), len(sigModIAC)],[sum(movementRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
 plt.show()
 

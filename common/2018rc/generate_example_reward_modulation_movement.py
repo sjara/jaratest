@@ -19,7 +19,7 @@ import figparams
 
 STUDY_NAME = figparams.STUDY_NAME
 
-FIGNAME = 'modulation_reward_change_movement'
+FIGNAME = 'reward_modulation_movement'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 
 if not os.path.exists(dataDir):
@@ -96,14 +96,14 @@ elif len( sys.argv) == 2:
 
 ####################################################################################
 scriptFullPath = os.path.realpath(__file__)
-timeRange = [-0.5,1]
+timeRange = [-0.4,0.5]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
 paradigm = '2afc'
 minBlockSize = 30
 freqsToPlot = ['low', 'high']
-alignmentsToPlot = ['sound', 'center-out']
+alignmentsToPlot = ['center-out'] #'sound'
 ###################################################################################
 def get_trials_each_cond_reward_change(bdata, freqToPlot, colorCondDict, byBlock=True, minBlockSize=30):
     '''Function to generate selection vector showing which trials to plot for each behavior conditions and the color to use in the plot label.

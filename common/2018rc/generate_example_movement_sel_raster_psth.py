@@ -10,7 +10,7 @@ import sys
 import numpy as np
 import pandas as pd
 from jaratoolbox import loadbehavior
-from jaratoolbox import loadopenephys
+from jaratoolbox import ephyscore
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
@@ -25,7 +25,7 @@ if not os.path.exists(outputDir):
     os.mkdir(outputDir)
 
 scriptFullPath = os.path.realpath(__file__)
-timeRange = [-0.5,1]
+timeRange = [-0.4,0.5]
 binWidth = 0.010
 
 colorsDict = {'left': figparams.colp['MoveLeft'],
@@ -44,6 +44,14 @@ if not os.path.ismount(EPHYS_PATH):
 
 # -- These example cells we picked manually  --#
 cellParamsList = []
+
+exampleCell = {'subject':'adap005',
+              'date':'2015-12-24',
+              'tetrode':6,
+               'cluster':8,
+               'brainRegion':'astr'} 
+cellParamsList.append(exampleCell)
+
 exampleCell = {'subject':'adap012',
               'date':'2016-03-09',
               'tetrode':3,
@@ -163,9 +171,9 @@ for cellParams in cellParamsList:
 
     # -- Save raster intermediate data -- #    
     #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-    outputFile = 'example_movement_sel_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
+    outputFile = 'example_rc_movement_sel_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeTimestamps=spikeTimestamps, eventOnsetTimes=movementOnsetTimes, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, EPHYS_SAMPLING_RATE=EPHYS_SAMPLING_RATE, soundTriggerChannel=soundTriggerChannel, timeRange=timeRange, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 
+    np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 
 
 
     
