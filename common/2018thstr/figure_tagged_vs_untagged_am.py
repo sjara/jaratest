@@ -15,7 +15,8 @@ np.random.seed(0)
 
 FIGNAME = 'figure_tagged_untagged'
 SAVE_FIGURE = 1
-outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
+# outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
+outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_tagged_vs_untagged_am' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [12,8] # In inches
@@ -190,44 +191,44 @@ for indFeature, feature in enumerate(features):
 
 # -- Highest Sync plots -- #
 ################### Percent non-sync #####################
-axSummary = plt.subplot(gs[rowX, len(features)])
+# axSummary = plt.subplot(gs[rowX, len(features)])
 
-feature = 'highestSyncCorrected'
-dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
-dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
+# feature = 'highestSyncCorrected'
+# dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
+# dataUntagged = untaggedCells[feature][pd.notnull(untaggedCells[feature])]
 
-taggedSyncN = len(dataTagged[dataTagged > 0])
-taggedNonSyncN = len(dataUntagged[dataUntagged == 0])
-acSyncPercent = acSyncN/float(acSyncN + acNonSyncN) * 100
-acNonSyncPercent = acNonSyncN/float(acSyncN + acNonSyncN) * 100
+# taggedSyncN = len(dataTagged[dataTagged > 0])
+# taggedNonSyncN = len(dataUntagged[dataUntagged == 0])
+# acSyncPercent = acSyncN/float(acSyncN + acNonSyncN) * 100
+# acNonSyncPercent = acNonSyncN/float(acSyncN + acNonSyncN) * 100
 
-thalSyncN = len(thalPopStat[thalPopStat > 0])
-thalNonSyncN = len(thalPopStat[thalPopStat == 0])
-thalSyncPercent = thalSyncN/float(thalSyncN + thalNonSyncN)*100
-thalNonSyncPercent = thalNonSyncN/float(thalSyncN + thalNonSyncN)*100
+# thalSyncN = len(thalPopStat[thalPopStat > 0])
+# thalNonSyncN = len(thalPopStat[thalPopStat == 0])
+# thalSyncPercent = thalSyncN/float(thalSyncN + thalNonSyncN)*100
+# thalNonSyncPercent = thalNonSyncN/float(thalSyncN + thalNonSyncN)*100
 
-width = 0.5
-plt.hold(1)
-loc = [1, 2]
-axSummary.bar(loc[0]-width/2, thalNonSyncPercent, width, color=colorATh)
-axSummary.bar(loc[0]-width/2, thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
-axSummary.bar(loc[1]-width/2, acNonSyncPercent, width, color=colorAC)
-axSummary.bar(loc[1]-width/2, acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
-extraplots.boxoff(axSummary)
-
-extraplots.new_significance_stars([1, 2], 105, 2.5, starMarker='*',
-                                    fontSize=fontSizeStars, gapFactor=starGapFactor)
-
-axSummary.text(2.65, 30, 'Non-Sync.', rotation=90, fontweight='bold')
-axSummary.text(2.65, 75, 'Sync.', rotation=90, fontweight='bold', color='0.5')
-
-axSummary.set_xlim([0.5, 2.6])
+# width = 0.5
+# plt.hold(1)
+# loc = [1, 2]
+# axSummary.bar(loc[0]-width/2, thalNonSyncPercent, width, color=colorATh)
+# axSummary.bar(loc[0]-width/2, thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
+# axSummary.bar(loc[1]-width/2, acNonSyncPercent, width, color=colorAC)
+# axSummary.bar(loc[1]-width/2, acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
 # extraplots.boxoff(axSummary)
-axSummary.set_ylim([0, 100.5])
-axSummary.set_xticks([1, 2])
-tickLabels = ['ATh\nv\nStr', 'AC\nv\nAStr']
-axSummary.set_xticklabels(tickLabels)
-axSummary.set_ylabel('% neurons', labelpad=-5)
+
+# extraplots.new_significance_stars([1, 2], 105, 2.5, starMarker='*',
+#                                     fontSize=fontSizeStars, gapFactor=starGapFactor)
+
+# axSummary.text(2.65, 30, 'Non-Sync.', rotation=90, fontweight='bold')
+# axSummary.text(2.65, 75, 'Sync.', rotation=90, fontweight='bold', color='0.5')
+
+# axSummary.set_xlim([0.5, 2.6])
+# # extraplots.boxoff(axSummary)
+# axSummary.set_ylim([0, 100.5])
+# axSummary.set_xticks([1, 2])
+# tickLabels = ['ATh\nv\nStr', 'AC\nv\nAStr']
+# axSummary.set_xticklabels(tickLabels)
+# axSummary.set_ylabel('% neurons', labelpad=-5)
 
 
 ##########################################################

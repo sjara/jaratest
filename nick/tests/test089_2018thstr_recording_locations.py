@@ -3,6 +3,7 @@ import matplotlib.image as mpimg
 import numpy as np
 import pandas as pd
 from jaratoolbox import settings
+from jaratest.nick.utils import allenPlateNames
 
 STUDY_NAME = '2018thstr'
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
@@ -17,21 +18,20 @@ goodLaserACSR = goodLaser.query("brainArea=='rightAC' and noisePval<0.05")
 # groups = goodLaserThalSR.groupby(['subject', 'date', 'tetrode'])
 groups = goodLaserACSR.groupby(['subject', 'date', 'tetrode'])
 
-for name, group in groups:
-    print len(group)
-    print "Group: {} {} TT{}".format(name[0], name[1], name[2])
-    print "Max depth: {}".format(np.unique(group['maxDepth']))
-    print np.unique(group['info'])
-    print "\n"
+# for name, group in groups:
+#     print len(group)
+#     print "Group: {} {} TT{}".format(name[0], name[1], name[2])
+#     print "Max depth: {}".format(np.unique(group['maxDepth']))
+#     print np.unique(group['info'])
+#     print "\n"
 
-
-# def convertAllenZ(allenZ):
-#     '''
-#     '''
-#     startPlate = 576986019
-#     plateSpacing = 40
-#     webPlateInd = np.round((allenZ - 2) / 4.)
-#     return webPlateInd
+def convertAllenZ(allenZ):
+    '''
+    '''
+    startPlate = 576986019
+    plateSpacing = 40
+    webPlateInd = int(np.round((allenZ - 2) / 4.))
+    return allenPlateNames.allenPlateNames[webPlateInd]
 
 #     # atlasHTML = 'atlas.brain-map.org/atlas?atlas=602630314#atlas=602630314&plate={}'.format(plateNum)
 

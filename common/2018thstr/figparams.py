@@ -2,15 +2,18 @@
 Common parameters for figures and data related to these figures.
 '''
 
+import os
 from jaratoolbox import colorpalette as cp
+from jaratoolbox import settings
 import matplotlib
 from matplotlib import pyplot as plt
 
-plt.rcParams['svg.image_noscale'] = False
+# plt.rcParams['svg.image_noscale'] = False
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 
 STUDY_NAME = '2018thstr'
+FIGURE_OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'output')
 
 fontSizeLabels = 12
 fontSizeTicks = 12

@@ -15,8 +15,9 @@ np.random.seed(0)
 
 FIGNAME = 'figure_tagged_untagged'
 SAVE_FIGURE = 1
-outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
-figFilename = 'plots_tagged_vs_untagged' # Do not include extension
+# outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
+outputDir = figparams.FIGURE_OUTPUT_DIR
+figFilename = 'plots_tagged_vs_untagged_frequency' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [12,8] # In inches
 

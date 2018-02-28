@@ -46,7 +46,8 @@ dataframe = goodFitToUse
 PANELS = [1, 1, 1, 1, 1, 0, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
+# outputDir = '/tmp/'
+outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_frequency_tuning' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [12, 5] # In inches

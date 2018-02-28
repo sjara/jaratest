@@ -17,7 +17,8 @@ subject = 'anat036'
 PANELS = [1, 1, 1, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
-outputDir = '/tmp/'
+# outputDir = '/tmp/'
+outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_anatomy' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [7, 9] # In inches

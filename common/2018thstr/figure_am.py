@@ -42,7 +42,8 @@ PANELS=[1,1,1,1,1]
 
 SAVE_FIGURE = 1
 # outputDir = '/tmp/'
-outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
+# outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
+outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_am_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [16,8] # In inches
