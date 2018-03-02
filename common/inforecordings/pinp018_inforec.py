@@ -47,6 +47,7 @@ experiments.append(exp0)
 
 # exp0.add_site(1710, tetrodes=range(1, 9))
 # exp0.add_session('15-33-43', None, 'noiseburst', 'am_tuning_curve') 
+exp0.maxDepth = 1710
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-04-11',
@@ -92,6 +93,7 @@ exp1.add_session('16-06-06', 'h', 'am', 'am_tuning_curve')
 # exp1.add_site(1136, tetrodes=range(2, 9))
 # exp1.add_session('16-33-52', None, 'noiseburst', 'am_tuning_curve')
 # exp1.add_session('16-35-11', None, 'noiseburst', 'am_tuning_curve')
+exp1.maxDepth = 1136
 
 
 exp2 = celldatabase.Experiment(subject,
@@ -115,3 +117,4 @@ exp2.add_session('14-54-11', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('14-55-24', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('14-58-16', 'c', 'am', 'am_tuning_curve')
 exp2.add_session('15-13-28', 'd', 'tc', 'am_tuning_curve')
+exp2.maxDepth = 1023

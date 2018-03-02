@@ -24,9 +24,9 @@ colorDictRC = {'leftMoreLowFreq':'g',
                'rightMoreLowFreq':'m',
                #'sameRewardLowFreq':'y',
                'leftMoreHighFreq':'r',
-               'rightMoreHighFreq':'b',
+               'rightMoreHighFreq':'b'}
                #'sameRewardHighFreq':'darkgrey'
-}
+
 
 
 colorDictMovement = {'left':'g',
@@ -36,7 +36,7 @@ soundChannelType = 'stim'
 
 minBlockSize = 20 # Last blocks with valid trial number smaller than this is not plotted
 
-def plot_waveform_each_cluster(cellObj, sessionType='tc'):
+def plot_waveform_each_cluster(cellObj, sessionType='behavior'):
     '''Function to plot average and individual waveforms for one isolated cluster. 
     :param arg1: Cell object from ephyscore.
     :param arg2: A string of the type of the ephys session to use. 
@@ -47,7 +47,7 @@ def plot_waveform_each_cluster(cellObj, sessionType='tc'):
     spikesorting.plot_waveforms(wavesThisCluster)
 
 
-def plot_projections_each_cluster(cellObj, sessionType='tc'):
+def plot_projections_each_cluster(cellObj, sessionType='behavior'):
     '''Function to plot the projection cloud of a given cluster.
     :param arg1: Cell object from ephyscore.
     :param arg2: A string of the type of the ephys session to use. 
@@ -58,7 +58,7 @@ def plot_projections_each_cluster(cellObj, sessionType='tc'):
     spikesorting.plot_projections(wavesThisCluster)
 
 
-def plot_events_in_time_each_cluster(cellObj, sessionType='tc'):
+def plot_events_in_time_each_cluster(cellObj, sessionType='behavior'):
     '''Function to plot the average firing rate over time for a cluster in a recording session.
     :param arg1: Cell object from ephyscore.
     :param arg2: A string of the type of the ephys session to use. 
@@ -70,7 +70,7 @@ def plot_events_in_time_each_cluster(cellObj, sessionType='tc'):
     spikesorting.plot_events_in_time(spikeTimestamps)
 
 
-def plot_isi_loghist_each_cluster(cellObj, sessionType='tc'):
+def plot_isi_loghist_each_cluster(cellObj, sessionType='behavior'):
     '''Function to plot the ISI of a given cluster.
     :param arg1: Cell object from ephyscore.
     :param arg2: A string of the type of the ephys session to use.
@@ -187,7 +187,7 @@ def get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock, colorCondDi
         freq = possibleFreq[0] 
 
     elif freqToPlot == 'high':
-        freq = possibleFreq[1]
+        freq = possibleFreq[-1]
 
     oneFreq = bdata['targetFrequency'] == freq #vector for selecing trials presenting this frequency
     correctOneFreq = oneFreq  & correct 
@@ -212,6 +212,8 @@ def get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock, colorCondDi
             # Do not plot 'same_reward' blocks
             if currentBlockLabel == bdata.labels['currentBlock']['same_reward']:
                 trialsEachCond[:,blockNum] = False 
+                colorEachCond[blockNum] = 'none'
+                labelEachCond[blockNum] = 'same_reward'
             if freqToPlot == 'low':
                 if currentBlockLabel == bdata.labels['currentBlock']['more_left']:
                     colorEachCond[blockNum] = colorCondDict['leftMoreLowFreq'] 
@@ -244,7 +246,28 @@ def get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock, colorCondDi
     return trialsEachCond, colorEachCond, labelEachCond
 
 
-def get_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass=loadbehavior.FlexCategBehaviorData):
+def load_intermediate_data_for_raster_psth(cell, evlockDir, alignment, timeRange, behavClass=loadbehavior.FlexCategBehaviorData):
+    '''
+    Function to load saved event-locked spiketime data or to calculate them if they don't exist.
+    :param arg1: cell object from ephyscore.
+    :param arg2: A string for the path to event locked spiketime data.
+    :param arg3: A string indicating the event to align the spike times to, can be 'sound', 'center-out', or 'side-in'.
+    '''
+    evlockFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(cell.subject, cell.dbRow['date'], cell.dbRow['depth'], cell.tetrode, cell.cluster, alignment)
+    evlockFullPath = os.path.join(evlockDir, evlockFilename)
+    if os.path.exists(evlockFullPath):
+        evlockdata = np.load(evlockFullPath)
+        spikeTimesFromEventOnset = evlockdata['spikeTimesFromEventOnset']
+        trialIndexForEachSpike = evlockdata['trialIndexForEachSpike']
+        indexLimitsEachTrial = evlockdata['indexLimitsEachTrial']
+        #timeRange = evlockdata['timeRange']
+    else:
+        print('Event-locked spiketimes have not been calculated yet. Calculating and saving evlock data...')
+        (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = calculate_intermediate_data_for_raster_psth(cell, alignment, timeRange, behavClass)
+    return spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial
+
+        
+def calculate_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass=loadbehavior.FlexCategBehaviorData):
     '''Function to generate the intermediate data needed to plot raster and psth for reward_change_freq_dis task. 
     :param arg1: cell object from ephyscore
     :param arg2: A string indicating the event to align the spike times to, can be 'sound', 'center-out', or 'side-in'.
@@ -281,14 +304,15 @@ def get_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavCl
         (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
     spikesanalysis.eventlocked_spiketimes(spikeTimestamps,EventOnsetTimes,timeRange)
        
-    return spikeTimesFromEventOnset,indexLimitsEachTrial
+    return spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial
 
 
-def plot_reward_change_raster(cellObj, behavClass=loadbehavior.FlexCategBehaviorData, alignment='sound', timeRange=[-0.3,0.4], freqToPlot='low', byBlock=False, colorCondDict=colorDictRC):
+def plot_reward_change_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, alignment='sound', timeRange=[-0.3,0.4], freqToPlot='low', byBlock=False, colorCondDict=colorDictRC):
     '''
     Function to plot reward change raster.
     '''
-    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass) 
+    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = load_intermediate_data_for_raster_psth(cellObj, evlockDir, alignment, timeRange, behavClass)
+    #spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = calculate_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass) 
     if np.any(spikeTimesFromEventOnset):
         if freqToPlot == 'low' or freqToPlot=='high':
             trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock, colorCondDict, behavClass) 
@@ -313,11 +337,12 @@ def plot_reward_change_raster(cellObj, behavClass=loadbehavior.FlexCategBehavior
     else:
        pass
 
-def plot_reward_change_psth(cellObj, behavClass=loadbehavior.FlexCategBehaviorData, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010, freqToPlot='low', byBlock=False, colorCondDict=colorDictRC, smoothWinSize=3):
+def plot_reward_change_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010, freqToPlot='low', byBlock=False, colorCondDict=colorDictRC, smoothWinSize=3):
     '''
     Function to plot reward change psth.
     '''
-    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass)
+    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = load_intermediate_data_for_raster_psth(cellObj, evlockDir, alignment, timeRange, behavClass)
+    #spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = calculate_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass)
     if np.any(spikeTimesFromEventOnset):
         if freqToPlot == 'low' or freqToPlot=='high':
             trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock, colorCondDict, behavClass)
@@ -351,11 +376,12 @@ def plot_reward_change_psth(cellObj, behavClass=loadbehavior.FlexCategBehaviorDa
     else:
         pass
 
-def plot_movement_response_raster(cellObj, behavClass=loadbehavior.FlexCategBehaviorData, alignment='center-out', timeRange=[-0.3,0.5], colorCondDict=colorDictMovement):
+def plot_movement_response_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, alignment='center-out', timeRange=[-0.3,0.5], colorCondDict=colorDictMovement):
     '''
     Function to plot activity during movement as raster.
     '''
-    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass)
+    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = load_intermediate_data_for_raster_psth(cellObj, evlockDir, alignment, timeRange, behavClass)
+    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = calculate_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass)
     bdata = load_n_remove_missing_trials_2afc_behav(cellObj, behavClass)
     if np.any(spikeTimesFromEventOnset):
         # -- Select trials to plot from behavior file -- #
@@ -376,11 +402,12 @@ def plot_movement_response_raster(cellObj, behavClass=loadbehavior.FlexCategBeha
     else:
         pass
 
-def plot_movement_response_psth(cellObj, behavClass=loadbehavior.FlexCategBehaviorData, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010, colorCondDict=colorDictMovement, smoothWinSize=3):
+def plot_movement_response_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, alignment='center-out', timeRange=[-0.3,0.5], binWidth=0.010, colorCondDict=colorDictMovement, smoothWinSize=3):
     '''
     Function to plot activity during movement as psth.
     '''
-    spikeTimesFromEventOnset,indexLimitsEachTrial = get_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass)
+    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = load_intermediate_data_for_raster_psth(cellObj, evlockDir, alignment, timeRange, behavClass)
+    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = calculate_intermediate_data_for_raster_psth(cellObj, alignment, timeRange, behavClass)
     if np.any(spikeTimesFromEventOnset):
         bdata = load_n_remove_missing_trials_2afc_behav(cellObj, behavClass)
 
@@ -427,3 +454,34 @@ def plot_noisebursts_response_raster(cellObj, timeRange=[-0.1, 0.3]):
     plt.ylabel('Trials')
     plt.xlabel('Time from sound onset (s)')
     
+
+if __name__ == '__main__':
+    import pandas as pd
+    STUDY_NAME = '2018rc'
+    animal = 'adap012'
+    date = '2016-04-05'
+    tetrode = 4
+    cluster = 6
+    brainRegion = 'astr'
+    
+    dbKey = 'reward_change'
+    dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
+    celldbPath = os.path.join(dbFolder, 'rc_database.h5')
+    celldb = pd.read_hdf(celldbPath, key=dbKey)
+    sessionType = 'behavior'
+    behavClass = loadbehavior.FlexCategBehaviorData
+    evlockFolder = 'evlock_spktimes'
+    evlockDir = os.path.join(EPHYS_PATH, STUDY_NAME, evlockFolder)
+    cell = celldb.loc[(celldb.subject==animal) & (celldb.date==date) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)].iloc[0]
+    cellObj = ephyscore.Cell(cell)
+    depth = cellObj.dbRow['depth']
+    soundWindow = '0-0.1s'
+    freqToPlot='high'
+    trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(cellObj, freqToPlot, byBlock=True, colorCondDict=colorDictRC, behavClass=behavClass)
+    spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial = load_intermediate_data_for_raster_psth(cellObj, evlockDir, 'sound', [-0.5,1], behavClass)
+    plt.clf()
+    plot_reward_change_raster(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData, freqToPlot='high', byBlock=True, alignment='sound', timeRange=[-0.3,0.4])
+    plt.title('Modulation index {:.3f}\n p value {:.3f}\n Mod dir {}'.format(cell['modIndHigh_{}_sound'.format(soundWindow)],cell['modSigHigh_{}_sound'.format(soundWindow)],cell['modDirHigh_{}_sound'.format(soundWindow)]))
+    plt.figure()
+    plot_reward_change_psth(cellObj, evlockDir, behavClass=loadbehavior.FlexCategBehaviorData,freqToPlot='high', byBlock=True, alignment='sound', timeRange=[-0.3,0.4], binWidth=0.010)
+    plt.show()

@@ -20,14 +20,12 @@ db = pd.read_hdf(dbPath, key='dataframe')
 goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
 
 # popStatColumn = 'd_aMax'
-popStatCol = 'mutualInfoPerSpike'
 # popStatCol = 'mutualInfoBC'
 
 ac = goodLaser.groupby('brainArea').get_group('rightAC')
 thal = goodLaser.groupby('brainArea').get_group('rightThal')
 
-acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
-thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+np.random.seed(0)
 
 
 def jitter(arr, frac):
@@ -44,10 +42,11 @@ PANELS=[1,1,1,1,1]
 
 SAVE_FIGURE = 1
 # outputDir = '/tmp/'
-outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
+# outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
+outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_am_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [12,8] # In inches
+figSize = [16,8] # In inches
 
 thalHistColor = '0.4'
 acHistColor = '0.4'
@@ -55,6 +54,15 @@ acHistColor = '0.4'
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
+
+#Params for extraplots significance stars
+fontSizeNS = figparams.fontSizeNS
+fontSizeStars = figparams.fontSizeStars
+starHeightFactor = figparams.starHeightFactor
+starGapFactor = figparams.starGapFactor
+starYfactor = figparams.starYfactor
+
+dotEdgeColor = figparams.dotEdgeColor
 
 labelPosX = [0.04, 0.32, 0.62]   # Horiz position for panel labels
 labelPosY = [0.48, 0.95]    # Vert position for panel labels
@@ -68,7 +76,7 @@ fig = plt.gcf()
 plt.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 3)
+gs = gridspec.GridSpec(2, 6)
 gs.update(left=0.1, right=0.90, top=0.95, bottom=0.1, wspace=.4, hspace=0.4)
 
 #Load example data
@@ -145,10 +153,10 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
     # extraplots.boxoff(ax, keep='right')
     return (axRaster, axRate)
 
-spec = gs[0, 0]
+spec = gs[0, 0:2]
 if PANELS[0]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'Thal1', color=colorATh)
-    axRaster.set_title('ATh -> Str Example 1')
+    axRaster.set_title('ATh:Str example 1')
     axRate.set_xlim([0,200])
     axRate.set_xticks([0,200])
 # ax = plt.gc
@@ -157,21 +165,21 @@ axRaster.annotate('A', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction
 
 # -- Panel: Thalamus less synchronized --
 # axWide = plt.subplot(gs[0, 1])
-spec = gs[0, 1]
+spec = gs[0, 2:4]
 if PANELS[1]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'Thal2', color=colorATh)
-    axRaster.set_title('ATh -> Str Example 2')
+    axRaster.set_title('ATh : Str example 2')
     axRate.set_xlim([0,20])
     axRate.set_xticks([0,20])
 axRaster.annotate('B', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 
-spec = gs[1, 0]
+spec = gs[1, 0:2]
 # axSharp.annotate('D', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'AC1', color=colorAC)
-    axRaster.set_title('AC -> Str Example 1')
+    axRaster.set_title('AC > Str example 1')
     axRate.set_xlim([0, 25])
     axRate.set_xticks([0, 25])
 
@@ -179,50 +187,166 @@ axRaster.annotate('C', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction
              fontsize=fontSizePanel, fontweight='bold')
 # -- Panel: Cortex less synchronized --
 # axWide = plt.subplot(gs[1, 1])
-spec = gs[1, 1]
+spec = gs[1, 2:4]
 # axWide.annotate('E', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[3]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'AC2', color=colorAC)
-    axRaster.set_title('AC -> Str Example 2')
+    axRaster.set_title('AC>Str example 2')
     axRate.set_xlim([0, 30])
     axRate.set_xticks([0, 30])
 axRaster.annotate('D', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 
 
-axSummary = plt.subplot(gs[:, 2])
+############## Mutual info AM RATE #######################
+popStatCol = 'mutualInfoPerSpikeBits'
+acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+
+axSummary = plt.subplot(gs[1, 4])
 
 #REMOVE NEGATIVE MI VALUES, REPLACE WITH 0
 acPopStat[acPopStat < 0] = 0
 thalPopStat[thalPopStat < 0] = 0
-
 pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-axSummary.plot(pos, thalPopStat, 'o', mec = 'k', mfc = 'None')
+axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
 medline(np.median(thalPopStat), 0, 0.5)
-
 pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-axSummary.plot(pos, acPopStat, 'o', mec = 'k', mfc = 'None')
+axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
 medline(np.median(acPopStat), 1, 0.5)
-
-plt.ylabel('Mutual information between neuronal spike rate and AM rate (nats/spike)')
-
-tickLabels = ['ATh->Str', 'AC->AStr']
+plt.ylabel('MI, Spike rate / AM rate (bits/spike)')
+tickLabels = ['ATh:Str', 'AC:Str']
 axSummary.set_xticks(range(2))
 axSummary.set_xticklabels(tickLabels)
 axSummary.set_xlim([-0.5, 1.5])
 extraplots.boxoff(axSummary)
-axSummary.set_ylim([-0.001, 0.161])
-
+axSummary.set_ylim([-0.001, 0.25])
 
 zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
 
 print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
 
-plt.title('p = {}'.format(np.round(pVal, decimals=5)))
+# plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
 axSummary.annotate('E', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
-             fontsize=fontSizePanel, fontweight='bold')
+            fontsize=fontSizePanel, fontweight='bold')
+
+yDataMax = max([max(acPopStat), max(thalPopStat)])
+yStars = yDataMax + yDataMax*starYfactor
+yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                                    fontSize=fontSizeStars, gapFactor=starGapFactor)
+plt.hold(1)
+
+################### Mutual info PHASE #####################
+# popStatCol = 'mutualInfoPerSpike'
+# acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+# thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+
+axSummary = plt.subplot(gs[1, 5])
+
+# pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+# axSummary.plot(pos, thalPopStat, 'o', mec = 'k', mfc = 'None')
+# medline(np.median(thalPopStat), 0, 0.5)
+# pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+# axSummary.plot(pos, acPopStat, 'o', mec = 'k', mfc = 'None')
+# medline(np.median(acPopStat), 1, 0.5)
+# plt.ylabel('Mutual information between neuronal spike rate and AM rate (nats/spike)')
+# tickLabels = ['ATh->Str', 'AC->AStr']
+# axSummary.set_xticks(range(2))
+# axSummary.set_xticklabels(tickLabels)
+# axSummary.set_xlim([-0.5, 1.5])
+# extraplots.boxoff(axSummary)
+# axSummary.set_ylim([-0.001, 0.161])
+
+################### Highest Sync #####################
+popStatCol = 'highestSyncCorrected'
+acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+
+acPopStat = acPopStat[acPopStat>0]
+thalPopStat = thalPopStat[thalPopStat>0]
+
+possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
+
+acPopStat = np.log(acPopStat)
+thalPopStat = np.log(thalPopStat)
+
+axSummary = plt.subplot(gs[0, 4])
+
+pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
+medline(np.median(thalPopStat), 0, 0.5)
+pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
+medline(np.median(acPopStat), 1, 0.5)
+
+
+tickLabels = ['ATh\nv\nStr', 'AC\nv\nAStr']
+axSummary.set_xticks(range(2))
+axSummary.set_xticklabels(tickLabels)
+axSummary.set_xlim([-0.5, 1.5])
+extraplots.boxoff(axSummary)
+axSummary.set_yticks(np.unique(thalPopStat))
+axSummary.set_yticklabels(possibleFreqLabels)
+# axSummary.set_ylim([-0.001, 0.161])
+
+
+# yDataMax = max([max(acPopStat), max(thalPopStat)])
+# yStars = yDataMax + yDataMax*starYfactor
+# yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+extraplots.new_significance_stars([0, 1], np.log(170), np.log(1.1), starMarker='*',
+                                    fontSize=fontSizeStars, gapFactor=starGapFactor)
+axSummary.set_ylim([np.log(3.6), np.log(150)])
+axSummary.set_ylabel('Highest AM sync. rate (Hz)', labelpad=-5)
+plt.hold(1)
+
+################### Percent non-sync #####################
+axSummary = plt.subplot(gs[0, 5])
+
+popStatCol = 'highestSyncCorrected'
+acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+acPopStat = acPopStat[pd.notnull(acPopStat)]
+thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+thalPopStat = thalPopStat[pd.notnull(thalPopStat)]
+
+acSyncN = len(acPopStat[acPopStat > 0])
+acNonSyncN = len(acPopStat[acPopStat == 0])
+acSyncPercent = acSyncN/float(acSyncN + acNonSyncN) * 100
+acNonSyncPercent = acNonSyncN/float(acSyncN + acNonSyncN) * 100
+
+thalSyncN = len(thalPopStat[thalPopStat > 0])
+thalNonSyncN = len(thalPopStat[thalPopStat == 0])
+thalSyncPercent = thalSyncN/float(thalSyncN + thalNonSyncN)*100
+thalNonSyncPercent = thalNonSyncN/float(thalSyncN + thalNonSyncN)*100
+
+width = 0.5
+plt.hold(1)
+loc = [1, 2]
+axSummary.bar(loc[0]-width/2, thalNonSyncPercent, width, color=colorATh)
+axSummary.bar(loc[0]-width/2, thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
+axSummary.bar(loc[1]-width/2, acNonSyncPercent, width, color=colorAC)
+axSummary.bar(loc[1]-width/2, acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
+extraplots.boxoff(axSummary)
+
+extraplots.new_significance_stars([1, 2], 105, 2.5, starMarker='*',
+                                    fontSize=fontSizeStars, gapFactor=starGapFactor)
+
+axSummary.text(2.65, 30, 'Non-Sync.', rotation=90, fontweight='bold')
+axSummary.text(2.65, 75, 'Sync.', rotation=90, fontweight='bold', color='0.5')
+
+axSummary.set_xlim([0.5, 2.6])
+# extraplots.boxoff(axSummary)
+axSummary.set_ylim([0, 100.5])
+axSummary.set_xticks([1, 2])
+tickLabels = ['ATh\nv\nStr', 'AC\nv\nAStr']
+axSummary.set_xticklabels(tickLabels)
+axSummary.set_ylabel('% neurons', labelpad=-5)
+
+
+##########################################################
+
 
 plt.show()
 

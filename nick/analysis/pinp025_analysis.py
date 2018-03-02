@@ -8,18 +8,18 @@ from jaratest.nick.database import dataloader_v3 as dataloader
 from jaratest.nick.stats import am_funcs
 from scipy import stats
 
-inforecFn = '/home/nick/src/jaratest/common/inforecordings/pinp025_inforec.py'
+inforecFn = '/home/nick/src/jaratest/common/inforecordings/pinp029_inforec.py'
 db = celldatabase.generate_cell_database(inforecFn)
 
-#Calculate shape quality
-allShapeQuality = np.empty(len(db))
-for indCell, cell in db.iterrows():
-    peakAmplitudes = cell['clusterPeakAmplitudes']
-    spikeShapeSD = cell['clusterSpikeSD']
-    shapeQuality = abs(peakAmplitudes[1]/spikeShapeSD.mean())
-    allShapeQuality[indCell] = shapeQuality
-allShapeQuality[allShapeQuality==inf]=0
-db['shapeQuality'] = allShapeQuality
+# #Calculate shape quality
+# allShapeQuality = np.empty(len(db))
+# for indCell, cell in db.iterrows():
+#     peakAmplitudes = cell['spikeShapePeakAmplitudes']
+#     spikeShapeSD = cell['clusterSpikeSD']
+#     shapeQuality = abs(peakAmplitudes[1]/spikeShapeSD.mean())
+#     allShapeQuality[indCell] = shapeQuality
+# allShapeQuality[allShapeQuality==inf]=0
+# db['shapeQuality'] = allShapeQuality
 
 #Calculate noiseburst response
 #TODO: Response to things other than noise as well??

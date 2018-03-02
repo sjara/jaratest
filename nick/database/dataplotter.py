@@ -255,19 +255,11 @@ def two_axis_heatmap(spikeTimestamps,
         flipSecondAxis (bool): Will result in trials with high values for the second sorting array appearing in the top raster plot
         timeRange (list): A list containing the range of times relative to the stimulus onset over which the spike average will be computed
     '''
-    if not firstSortLabels:
-        firstSortLabels = []
-    if not secondSortLabels:
-        secondSortLabels = []
-    if not xlabel:
-        xlabel = ''
-    if not ylabel:
-        ylabel = ''
-    if not plotTitle:
+    if plotTitle is None:
         plotTitle = ''
-    if not firstPossibleVals:
+    if firstPossibleVals is None:
         firstPossibleVals = np.unique(firstSortArray)
-    if not secondPossibleVals:
+    if secondPossibleVals is None:
         secondPossibleVals = np.unique(secondSortArray)
     if firstSortLabels == None:
         firstSortLabels = []
@@ -365,7 +357,7 @@ def plot_array_as_heatmap(heatmapArray,
     if xtickLabels is not None:
         ax.set_xticks(range(len(xtickLabels)))
         ax.set_xticklabels(xtickLabels, rotation='vertical')
-    if ytickLabels:
+    if ytickLabels is not None:
         ax.set_yticks(range(len(ytickLabels)))
         ax.set_yticklabels(ytickLabels)
 

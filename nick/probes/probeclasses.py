@@ -38,6 +38,12 @@ class A4x2tetElectrode(NNDevice):
             [23, 18, 15, 10],
             [21, 17, 16, 12]
         ])
+        self.tetrodeLocations = np.array([
+            [-105.0, -255.0],
+            [-105.0, -255.0],
+            [-105.0, -255.0],
+            [-105.0, -255.0],
+        ])
 
 
 class A32_OM32_Adaptor(NNDevice):

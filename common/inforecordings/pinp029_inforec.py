@@ -33,6 +33,7 @@ exp0.add_site(2356, tetrodes=[1, 2])
 exp0.add_session('15-24-27', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('15-26-48', 'g', 'tc', 'am_tuning_curve')
 exp0.add_session('16-00-41', 'h', 'am', 'am_tuning_curve')
+exp0.maxDepth = 2356
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-11-09',
@@ -68,6 +69,7 @@ exp1.add_session('13-38-51', 'd', 'am', 'am_tuning_curve')
 
 # exp1.add_site(2706, tetrodes=[1, 2, 3])
 # exp1.add_session('14-06-24', None, 'noiseburst', 'am_tuning_curve') #No more responses, stopping here
+exp1.maxDepth = 2706
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-11-10',
@@ -98,3 +100,4 @@ exp2.add_site(2508, tetrodes=[7, 8])
 exp2.add_session('15-03-53', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('15-06-37', 'g', 'tc', 'am_tuning_curve')
 exp2.add_session('15-56-02', 'h', 'am', 'am_tuning_curve')
+exp2.maxDepth = 2508

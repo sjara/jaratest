@@ -1,14 +1,38 @@
 import os
+import numpy as np
 import pandas as pd
+from jaratoolbox import settings
 from jaratest.nick.reports import pinp_report
+reload(pinp_report)
 
-dbPath = '/home/nick/src/jaratest/common/2018thstr/celldatabase.h5'
+STUDY_NAME = '2018thstr'
+
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 
-soundResponsive = db.query('isiViolations<0.02 and shapeQuality>2 and noisePval<0.05')
-soundLaserResponsive = soundResponsive.query('pulsePval<0.05 and trainRatio>0.8')
+CASE=0
 
-testSet = soundResponsive[:5]
+if CASE==0:
+    #Plot cells in the frequency BW summary dataset
+    figGroup = '2018thstr_freqBW'
+
+    goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
+    goodFit = goodLaser.query('rsquaredFit > 0.08')
+
+    #Calculate the midpoint of the gaussian fit
+    goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
+    goodFitToUse = goodFit.query('fitMidPoint<32000')
+
+    #Which dataframe to use
+    # dataframe = goodFit
+    dbToUse = goodFitToUse
+
+elif CASE==1:
+    #plot cells in the AM highest sync summary dataset
+    figGroup = '2018thstr_AM'
+    goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
+    hsFeatureName = 'highestSync'
+    dbToUse = goodLaser[pd.notnull(goodLaser[hsFeatureName])]
 
 def already_plotted(cell, path):
     figName = '{}_{}_{}um_TT{}c{}.png'.format(cell['subject'],
@@ -19,20 +43,24 @@ def already_plotted(cell, path):
     fullpath = os.path.join(path, figName)
     return os.path.exists(fullpath)
 
-figPath = '/home/nick/data/reports/nick/2018thstr_thalamus'
-for indCell, cell in soundResponsive.groupby('brainarea').get_group('rightThal').iterrows():
+figPath = '/home/nick/data/reports/nick/{}/thalamus'.format(figGroup)
+if not os.path.exists(figPath):
+    os.makedirs(figPath)
+for indCell, cell in dbToUse.groupby('brainArea').get_group('rightThal').iterrows():
     if not already_plotted(cell, figPath):
         pinp_report.plot_pinp_report(cell, figPath)
 
-for indCell, cell in soundResponsive.groupby('brainarea').get_group('rightThalamus').iterrows():
+for indCell, cell in dbToUse.groupby('brainArea').get_group('rightThalamus').iterrows():
     if not already_plotted(cell, figPath):
         pinp_report.plot_pinp_report(cell, figPath)
 
-figPath = '/home/nick/data/reports/nick/2018thstr_cortex'
-for indCell, cell in soundResponsive.groupby('brainarea').get_group('rightAC').iterrows():
+figPath = '/home/nick/data/reports/nick/{}/cortex'.format(figGroup)
+if not os.path.exists(figPath):
+    os.makedirs(figPath)
+for indCell, cell in dbToUse.groupby('brainArea').get_group('rightAC').iterrows():
     if not already_plotted(cell, figPath):
         pinp_report.plot_pinp_report(cell, figPath)
 
 # figPath = '/home/nick/data/reports/nick/2018thstr_striatum'
-# for indCell, cell in soundResponsive.groupby('brainarea').get_group('rightAstr').iterrows():
+# for indCell, cell in dbToUse.groupby('brainarea').get_group('rightAstr').iterrows():
 #     pinp_report.plot_pinp_report(cell, figPath)
