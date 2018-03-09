@@ -8,7 +8,7 @@ import matplotlib
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 
-STUDY_NAME = '2017rc'
+STUDY_NAME = '2018rc'
 
 fontSizeLabels = 12
 fontSizeTicks = 12
@@ -21,11 +21,11 @@ colp['astrColor'] = cp.TangoPalette['Plum2']
 
 colp['sound'] = cp.TangoPalette['Butter2']
 
-colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
-colp['MidFreqL'] = cp.TangoPalette['Chameleon3']
+colp['MoreRewardR'] = cp.TangoPalette['ScarletRed1']
+colp['MoreRewardL'] = cp.TangoPalette['SkyBlue2']
 
-colp['stimLeft'] = cp.TangoPalette['Orange2']
-colp['stimRight'] = '#829910'
+colp['MoveLeft'] = cp.TangoPalette['Orange2']
+colp['MoveRight'] = '#829910'
 
 
 #7570B3 - blupurp

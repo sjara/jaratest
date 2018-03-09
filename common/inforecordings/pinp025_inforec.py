@@ -29,6 +29,7 @@ experiments.append(exp0)
 # exp0.add_session('18-54-55','e', 'tc', 'am_tuning_curve')
 # exp0.add_session('19-30-23', 'f', 'am', 'am_tuning_curve')
 # Done for the day
+exp0.maxDepth = 2229
 
 
 
@@ -74,6 +75,7 @@ exp1.add_session('14-58-44', 'h', 'am', 'am_tuning_curve')
 # exp1.add_session('16-31-14', None, 'noiseburst', 'am_tuning_curve')
 # # exp1.add_session('15-29-10', 'i', 'tc', 'am_tuning_curve')
 # # exp1.add_session('16-02-16', 'j', 'am', 'am_tuning_curve')
+exp1.maxDepth = 2598
 
 # exp2 = celldatabase.Experiment(subject,
 #                                '2017-09-05',

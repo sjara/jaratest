@@ -7,3 +7,5 @@ b = nrrd.read(aid)
 
 imshow(a[0][:,150,:])
 imshow(b[0][:,150,:])
+
+a == b

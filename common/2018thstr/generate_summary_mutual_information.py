@@ -208,10 +208,12 @@ if CASE==1:
             randomMIs[randomIter] = mutualInfoRandom
 
         mutualInfoBC = mutualInfo - np.mean(randomMIs)
+        mutualInfoBCBits = mutualInfoBC / np.log(2)
         mutualInfoPerSpike = mutualInfoBC/np.mean(spikeCountEachTrial)
+        mutualInfoPerSpikeBits = mutualInfoBCBits/np.mean(spikeCountEachTrial)
 
-        dataframe.loc[indRow, 'mutualInfoBC'] = mutualInfoBC
-        dataframe.loc[indRow, 'mutualInfoPerSpike'] = mutualInfoPerSpike
+        dataframe.loc[indRow, 'mutualInfoBCBits'] = mutualInfoBCBits
+        dataframe.loc[indRow, 'mutualInfoPerSpikeBits'] = mutualInfoPerSpikeBits
 
 savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 dataframe.to_hdf(savePath, 'dataframe')

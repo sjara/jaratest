@@ -39,6 +39,7 @@ exp0.add_session('15-07-21', None, 'noiseburst', 'am_tuning_curve') #Noise burst
 exp0.add_session('15-09-22', None, 'laserpulse', 'am_tuning_curve') #No laser response
 exp0.add_session('15-11-03', None, 'lasertrain', 'am_tuning_curve') #No laser response
 exp0.add_session('15-12-59', 'a', 'am', 'am_tuning_curve')
+exp0.maxDepth = 3552
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-04-27',
@@ -66,6 +67,7 @@ exp1.add_session('17-36-24', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('17-37-38', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('17-39-34', 'e', 'tc', 'am_tuning_curve')
 exp1.add_session('18-12-29', 'f', 'am', 'am_tuning_curve')
+exp1.maxDepth = 4003
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-05-02',
@@ -77,6 +79,7 @@ experiments.append(exp2)
 # exp2.add_session('11-32-32', None, 'noiseburst', 'am_tuning_curve')
 # exp2.add_session('11-36-19', 'a', 'am', 'am_tuning_curve')
 #I got all the way here and no response to sounds. Too lateral??
+exp2.maxDepth = 3905
 
 exp3 = celldatabase.Experiment(subject,
                                '2017-05-03',
@@ -90,3 +93,4 @@ exp3.add_session('14-21-47', None, 'laserpulse', 'am_tuning_curve')
 exp3.add_session('14-23-08', None, 'lasertrain', 'am_tuning_curve')
 exp3.add_session('14-25-11', 'a', 'am', 'am_tuning_curve')
 exp3.add_session('14-41-00', 'b', 'tc', 'am_tuning_curve')
+exp3.maxDepth = 3452
