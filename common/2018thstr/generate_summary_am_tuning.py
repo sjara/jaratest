@@ -22,7 +22,7 @@ def calc_MI(x, y, bins):
     mi = metrics.mutual_info_score(None, None, contingency=c_xy)
     return mi
 
-CASE=0
+CASE=1
 
 ########### Testing on examples #################
 if CASE==0:

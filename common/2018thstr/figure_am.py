@@ -17,6 +17,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 
 db = pd.read_hdf(dbPath, key='dataframe')
+# db = db.query("subject=='pinp015'")
 goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
 
 # popStatColumn = 'd_aMax'
@@ -26,7 +27,6 @@ ac = goodLaser.groupby('brainArea').get_group('rightAC')
 thal = goodLaser.groupby('brainArea').get_group('rightThal')
 
 np.random.seed(0)
-
 
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
@@ -200,6 +200,7 @@ axRaster.annotate('D', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction
 
 
 ############## Mutual info AM RATE #######################
+# popStatCol = 'mutualInfoBCBits'
 popStatCol = 'mutualInfoPerSpikeBits'
 acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
 thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
@@ -215,8 +216,9 @@ medline(np.median(thalPopStat), 0, 0.5)
 pos = jitter(np.ones(len(acPopStat))*1, 0.20)
 axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
 medline(np.median(acPopStat), 1, 0.5)
-plt.ylabel('MI, Spike rate / AM rate (bits/spike)')
-tickLabels = ['ATh:Str', 'AC:Str']
+plt.ylabel('MI, Spike rate vs. AM rate (bits/spike)')
+# tickLabels = ['ATh:Str', 'AC:Str']
+tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
 axSummary.set_xticks(range(2))
 axSummary.set_xticklabels(tickLabels)
 axSummary.set_xlim([-0.5, 1.5])
@@ -246,19 +248,60 @@ plt.hold(1)
 
 axSummary = plt.subplot(gs[1, 5])
 
-# pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-# axSummary.plot(pos, thalPopStat, 'o', mec = 'k', mfc = 'None')
-# medline(np.median(thalPopStat), 0, 0.5)
-# pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-# axSummary.plot(pos, acPopStat, 'o', mec = 'k', mfc = 'None')
-# medline(np.median(acPopStat), 1, 0.5)
-# plt.ylabel('Mutual information between neuronal spike rate and AM rate (nats/spike)')
-# tickLabels = ['ATh->Str', 'AC->AStr']
-# axSummary.set_xticks(range(2))
-# axSummary.set_xticklabels(tickLabels)
-# axSummary.set_xlim([-0.5, 1.5])
-# extraplots.boxoff(axSummary)
-# axSummary.set_ylim([-0.001, 0.161])
+possibleFreqKeys = [4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128]
+
+# dataframe = dataframe.query("pulsePval<0.05 and trainRatio>0.8")
+# ac = dataframe.groupby('brainArea').get_group('rightAC')
+# thal = dataframe.groupby('brainArea').get_group('rightThal')
+
+keys = ['mutualInfoPhase_{}Hz'.format(rate) for rate in possibleFreqKeys]
+
+acData = np.full((len(ac), len(possibleFreqKeys)), np.nan)
+thalData = np.full((len(thal), len(possibleFreqKeys)), np.nan)
+
+for externalInd, (indRow, row) in enumerate(ac.iterrows()):
+    for indKey, key in enumerate(keys):
+        acData[externalInd, indKey] = row[key]
+
+for externalInd, (indRow, row) in enumerate(thal.iterrows()):
+    for indKey, key in enumerate(keys):
+        thalData[externalInd, indKey] = row[key]
+
+acData[acData<0]=0
+thalData[thalData<0]=0
+
+allPval = []
+for indCol, freqKey in enumerate(possibleFreqKeys):
+    acDataThisFreq = acData[:,indCol][np.logical_not(np.isnan(acData[:,indCol]))]
+    thalDataThisFreq = thalData[:,indCol][np.logical_not(np.isnan(thalData[:,indCol]))]
+    zStat, pVal = stats.ranksums(acDataThisFreq, thalDataThisFreq)
+    allPval.append(int(pVal<0.05))
+    print "{}Hz, p={}".format(freqKey, pVal)
+
+acMean = np.nanmean(acData, axis=0)
+# acMean = np.nanmedian(acData, axis=0)
+acStd = np.nanstd(acData, axis=0)
+
+thalMean = np.nanmean(thalData, axis=0)
+# thalMean = np.nanmedian(thalData, axis=0)
+thalStd = np.nanstd(thalData, axis = 0)
+
+axSummary.plot(acMean, '-', color=colorAC, label='AC:Str')
+# plt.fill_between(range(len(possibleFreqKeys)), acMean+acStd/numAC, acMean-acStd/numAC, color='r', alpha=0.5)
+plt.hold(1)
+axSummary.plot(thalMean, '-', color=colorATh, label="ATh:Str")
+# plt.fill_between(range(len(possibleFreqKeys)), thalMean+thalStd/numThal, thalMean-thalStd/numThal, color='b', alpha=0.5)
+axSummary.set_xticks(range(len(possibleFreqKeys))[::2])
+axSummary.set_xticklabels(possibleFreqKeys[::2])
+axSummary.set_xlabel('AM rate (Hz)')
+
+for indRate, significant in enumerate(allPval):
+    if significant:
+        axSummary.plot(indRate, np.mean([thalMean[indRate],acMean[indRate]]), "k*")
+
+axSummary.set_ylabel('MI, Spike rate vs. stimulus phase (bits)')
+extraplots.boxoff(axSummary)
+axSummary.legend()
 
 ################### Highest Sync #####################
 popStatCol = 'highestSyncCorrected'
@@ -283,7 +326,7 @@ axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
 medline(np.median(acPopStat), 1, 0.5)
 
 
-tickLabels = ['ATh\nv\nStr', 'AC\nv\nAStr']
+tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
 axSummary.set_xticks(range(2))
 axSummary.set_xticklabels(tickLabels)
 axSummary.set_xlim([-0.5, 1.5])
@@ -303,7 +346,13 @@ axSummary.set_ylabel('Highest AM sync. rate (Hz)', labelpad=-5)
 plt.hold(1)
 
 ################### Percent non-sync #####################
-axSummary = plt.subplot(gs[0, 5])
+# axSummary = plt.subplot(gs[0, 5])
+
+pieChartGS = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs[0,5])
+
+axThalPie = plt.subplot(pieChartGS[0, 0])
+axACPie = plt.subplot(pieChartGS[1, 0])
+
 
 popStatCol = 'highestSyncCorrected'
 acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
@@ -313,36 +362,58 @@ thalPopStat = thalPopStat[pd.notnull(thalPopStat)]
 
 acSyncN = len(acPopStat[acPopStat > 0])
 acNonSyncN = len(acPopStat[acPopStat == 0])
-acSyncPercent = acSyncN/float(acSyncN + acNonSyncN) * 100
-acNonSyncPercent = acNonSyncN/float(acSyncN + acNonSyncN) * 100
+acSyncFrac = acSyncN/float(acSyncN + acNonSyncN)
+acNonSyncFrac = acNonSyncN/float(acSyncN + acNonSyncN)
+
+pieWedges = axACPie.pie([acNonSyncFrac, acSyncFrac], colors=[colorAC, 'w'], shadow=False, startangle=0)
+for wedge in pieWedges[0]:
+    wedge.set_edgecolor(colorAC)
+
+axACPie.annotate('Non-Sync.', xy=[0.8, 0.8], rotation=0, fontweight='bold', textcoords='axes fraction')
+axACPie.annotate('Sync.', xy=[0.05, 0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
+axACPie.set_aspect('equal')
 
 thalSyncN = len(thalPopStat[thalPopStat > 0])
 thalNonSyncN = len(thalPopStat[thalPopStat == 0])
-thalSyncPercent = thalSyncN/float(thalSyncN + thalNonSyncN)*100
-thalNonSyncPercent = thalNonSyncN/float(thalSyncN + thalNonSyncN)*100
+thalSyncFrac = thalSyncN/float(thalSyncN + thalNonSyncN)
+thalNonSyncFrac = thalNonSyncN/float(thalSyncN + thalNonSyncN)
 
-width = 0.5
-plt.hold(1)
-loc = [1, 2]
-axSummary.bar(loc[0]-width/2, thalNonSyncPercent, width, color=colorATh)
-axSummary.bar(loc[0]-width/2, thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
-axSummary.bar(loc[1]-width/2, acNonSyncPercent, width, color=colorAC)
-axSummary.bar(loc[1]-width/2, acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
-extraplots.boxoff(axSummary)
+pieWedges = axThalPie.pie([thalNonSyncFrac, thalSyncFrac], colors=[colorATh, 'w'], shadow=False, startangle=0)
+for wedge in pieWedges[0]:
+    wedge.set_edgecolor(colorATh)
 
-extraplots.new_significance_stars([1, 2], 105, 2.5, starMarker='*',
-                                    fontSize=fontSizeStars, gapFactor=starGapFactor)
+axThalPie.annotate('Non-Sync.', xy=[0.8, 0.8], rotation=0, fontweight='bold', textcoords='axes fraction')
+axThalPie.annotate('Sync.', xy=[0.05, 0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
+axThalPie.set_aspect('equal')
 
-axSummary.text(2.65, 30, 'Non-Sync.', rotation=90, fontweight='bold')
-axSummary.text(2.65, 75, 'Sync.', rotation=90, fontweight='bold', color='0.5')
-
-axSummary.set_xlim([0.5, 2.6])
+# width = 0.5
+# plt.hold(1)
+# loc = [1, 2]
+# # axSummary.bar(loc[0]-width/2, thalNonSyncPercent, width, color=colorATh)
+# # axSummary.bar(loc[0]-width/2, thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
+# # axSummary.bar(loc[1]-width/2, acNonSyncPercent, width, color=colorAC)
+# # axSummary.bar(loc[1]-width/2, acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
+# axSummary.bar(loc[0], thalNonSyncPercent, width, color=colorATh)
+# axSummary.bar(loc[0], thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
+# axSummary.bar(loc[1], acNonSyncPercent, width, color=colorAC)
+# axSummary.bar(loc[1], acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
 # extraplots.boxoff(axSummary)
-axSummary.set_ylim([0, 100.5])
-axSummary.set_xticks([1, 2])
-tickLabels = ['ATh\nv\nStr', 'AC\nv\nAStr']
-axSummary.set_xticklabels(tickLabels)
-axSummary.set_ylabel('% neurons', labelpad=-5)
+
+# extraplots.new_significance_stars([1, 2], 105, 2.5, starMarker='*',
+#                                     fontSize=fontSizeStars, gapFactor=starGapFactor)
+
+# axSummary.text(2.65, 30, 'Non-Sync.', rotation=90, fontweight='bold')
+# axSummary.text(2.65, 75, 'Sync.', rotation=90, fontweight='bold', color='0.5')
+
+# axSummary.set_xlim([0.5, 2.6])
+# # extraplots.boxoff(axSummary)
+# axSummary.set_ylim([0, 100.5])
+# axSummary.set_xticks([1, 2])
+# tickLabels = ['ATh:Str', 'AC:Str']
+# axSummary.set_xticklabels(tickLabels)
+# axSummary.set_ylabel('% neurons', labelpad=-5)
+
+
 
 
 ##########################################################

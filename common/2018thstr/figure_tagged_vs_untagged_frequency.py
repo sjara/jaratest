@@ -7,11 +7,15 @@ from jaratoolbox import settings
 from jaratoolbox import extraplots
 from jaratoolbox import colorpalette
 from scipy import stats
+import copy
 import pandas as pd
 import figparams
 reload(figparams)
 
 np.random.seed(0)
+
+selectUntagged = True
+invertUntaggedSelection = True
 
 FIGNAME = 'figure_tagged_untagged'
 SAVE_FIGURE = 1
@@ -20,7 +24,6 @@ outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_tagged_vs_untagged_frequency' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [12,8] # In inches
-
 
 labelPosX = [0.04, 0.48]   # Horiz position for panel labels
 labelPosY = [0.48, 0.95]    # Vert position for panel labels
@@ -120,6 +123,37 @@ taggedBool = (dataframe['pulsePval']<0.05) & (dataframe['trainRatio']>0.8)
 taggedCells = dataframe[taggedBool]
 untaggedCells = dataframe[~taggedBool]
 
+###########################################################
+#Select only untagged cell that come from shanks with tagged cells
+if selectUntagged:
+    if len(untaggedCells)>0:
+        sameShankAs = {1:2, 2:1, 3:4, 4:3, 5:6, 6:5, 7:8, 8:7}
+
+        untaggedCellsSSA = copy.deepcopy(untaggedCells)
+        newTetrode = [sameShankAs[tt] for tt in untaggedCellsSSA['tetrode']]
+        untaggedCellsSSA['tetrode'] = newTetrode
+
+        for indRow, row in untaggedCells.iterrows():
+            idString = "{}_{}_{}_{}".format(row['subject'], row['date'], row['depth'], row['tetrode'])
+            untaggedCells.loc[indRow, 'idString'] = idString
+            print untaggedCells.loc[indRow, 'idString']
+
+        for indRow, row in taggedCells.iterrows():
+            idString = "{}_{}_{}_{}".format(row['subject'], row['date'], row['depth'], row['tetrode'])
+            taggedCells.loc[indRow, 'idString'] = idString
+
+        for indRow, row in untaggedCellsSSA.iterrows():
+            idString = "{}_{}_{}_{}".format(row['subject'], row['date'], row['depth'], row['tetrode'])
+            untaggedCellsSSA.loc[indRow, 'idString'] = idString
+
+        untaggedBool = (untaggedCells['idString'].isin(taggedCells['idString']) | untaggedCellsSSA['idString'].isin(taggedCells['idString']))
+
+        if not invertUntaggedSelection:
+            untaggedCells = untaggedCells[untaggedBool]
+        elif invertUntaggedSelection:
+            untaggedCells = untaggedCells[~untaggedBool]
+###########################################################
+
 rowX = 0
 for indFeature, feature in enumerate(features):
     dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
@@ -142,7 +176,8 @@ for indFeature, feature in enumerate(features):
         ax.set_ylim([12, 62])
     elif indFeature==2:
         ax.set_ylim([0, 0.06])
-    zVal, pVal = stats.ranksums(dataTagged, dataUntagged)
+    # zVal, pVal = stats.ranksums(dataTagged, dataUntagged) #We can't use ranksums for discrete data (like the threshold, or the max sync rate) becuase it can't handle ties.
+    zVal, pVal = stats.mannwhitneyu(dataTagged, dataUntagged)
     plt.title('p={:.3f}'.format(pVal))
 
 # -- Highest Sync plots -- #
@@ -176,6 +211,36 @@ taggedBool = (dataframe['pulsePval']<0.05) & (dataframe['trainRatio']>0.8)
 taggedCells = dataframe[taggedBool]
 untaggedCells = dataframe[~taggedBool]
 
+###########################################################
+#Select only untagged cell that come from shanks with tagged cells
+if selectUntagged:
+    if len(untaggedCells)>0:
+        sameShankAs = {1:2, 2:1, 3:4, 4:3, 5:6, 6:5, 7:8, 8:7}
+
+        untaggedCellsSSA = copy.deepcopy(untaggedCells)
+        newTetrode = [sameShankAs[tt] for tt in untaggedCellsSSA['tetrode']]
+        untaggedCellsSSA['tetrode'] = newTetrode
+
+        for indRow, row in untaggedCells.iterrows():
+            idString = "{}_{}_{}_{}".format(row['subject'], row['date'], row['depth'], row['tetrode'])
+            untaggedCells.loc[indRow, 'idString'] = idString
+
+        for indRow, row in taggedCells.iterrows():
+            idString = "{}_{}_{}_{}".format(row['subject'], row['date'], row['depth'], row['tetrode'])
+            taggedCells.loc[indRow, 'idString'] = idString
+
+        for indRow, row in untaggedCellsSSA.iterrows():
+            idString = "{}_{}_{}_{}".format(row['subject'], row['date'], row['depth'], row['tetrode'])
+            untaggedCellsSSA.loc[indRow, 'idString'] = idString
+
+        untaggedBool = (untaggedCells['idString'].isin(taggedCells['idString']) | untaggedCellsSSA['idString'].isin(taggedCells['idString']))
+
+        if not invertUntaggedSelection:
+            untaggedCells = untaggedCells[untaggedBool]
+        elif invertUntaggedSelection:
+            untaggedCells = untaggedCells[~untaggedBool]
+###########################################################
+
 rowX = 1
 for indFeature, feature in enumerate(features):
     dataTagged = taggedCells[feature][pd.notnull(taggedCells[feature])]
@@ -198,7 +263,8 @@ for indFeature, feature in enumerate(features):
         ax.set_ylim([12, 62])
     elif indFeature==2:
         ax.set_ylim([0, 0.06])
-    zVal, pVal = stats.ranksums(dataTagged, dataUntagged)
+    # zVal, pVal = stats.ranksums(dataTagged, dataUntagged) #We can't use ranksums for discrete data (like the threshold, or the max sync rate) becuase it can't handle ties.
+    zVal, pVal = stats.mannwhitneyu(dataTagged, dataUntagged)
     plt.title('p={:.3f}'.format(pVal))
 
 # -- Highest Sync plots -- #

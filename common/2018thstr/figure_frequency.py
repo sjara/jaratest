@@ -27,13 +27,14 @@ exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME,
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_with_latency.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
+db = db.query("subject=='pinp015'")
 exData = np.load(exampleDataPath)
 np.random.seed(8)
 
 goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
-goodStriatum = db.groupby('brainArea').get_group('rightAstr').query('isiViolations<0.02 and spikeShapeQuality>2')
-goodLaserPlusStriatum = goodLaser.append(goodStriatum, ignore_index=True)
-goodFit = goodLaserPlusStriatum.query('rsquaredFit > 0.08')
+# goodStriatum = db.groupby('brainArea').get_group('rightAstr').query('isiViolations<0.02 and spikeShapeQuality>2')
+# goodLaserPlusStriatum = goodLaser.append(goodStriatum, ignore_index=True)
+goodFit = goodLaser.query('rsquaredFit > 0.08')
 
 #Calculate the midpoint of the gaussian fit
 goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
@@ -43,7 +44,7 @@ goodFitToUse = goodFit.query('fitMidPoint<32000')
 # dataframe = goodFit
 dataframe = goodFitToUse
 
-PANELS = [1, 1, 1, 1, 1, 0, 1, 1, 1] # Plot panel i if PANELS[i]==1
+PANELS = [0, 0, 0, 0, 0, 0, 0, 0, 1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 # outputDir = '/tmp/'
@@ -242,7 +243,7 @@ tickLabels = ['ATh\nv\nAStr', 'AC\nv\nAStr']       # Should match 'order'
 groups = dataframe.groupby('brainArea')
 
 plt.hold(True)
-if PANELS[2]:
+if PANELS[8]:
     column = 'BW10'
     order_n = []
     axBW.hold(True)
