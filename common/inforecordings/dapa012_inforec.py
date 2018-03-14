@@ -179,7 +179,7 @@ exp2.laserCalibration = {
 
 #Probe impedances were a bit high
 #Tetrode 7 has reference; threshold set to 55mV
-exp2.add_site(2500, tetrodes=[2])
+exp2.add_site(2500, tetrodes=[])
 exp2.add_session('10-34-54', None, 'noisebursts', 'am_tuning_curve')
 exp2.add_session('10-37-58', 'a', 'tuningCurve', 'am_tuning_curve')
 
