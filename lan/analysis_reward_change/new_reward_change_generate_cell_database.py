@@ -1,4 +1,5 @@
 import os
+import subprocess
 from jaratoolbox import celldatabase
 from jaratoolbox import spikesanalysis
 from jaratoolbox import settings
@@ -13,17 +14,19 @@ reload(ephyscore)
 import new_reward_change_behavior_criteria as behavCriteria
 import new_activity_consistency_score_celldb as consistentActivity
 import new_reward_change_cell_in_target_range_celldb as inTargetRangeCheck
+import new_good_cell_duplication_check_celldb as duplicationCheck
 import new_reward_change_evaluate_sound_response as evaluateSoundResp
 import new_reward_change_evaluate_movement_selectivity as evaluateMovementSel
 
-STUDY_NAME = '2017rc'
+STUDY_NAME = '2018rc'
 SAVE_FULL_DB = True
 RECALCULATE_TETRODESTATS = False
 FIND_TETRODES_WITH_NO_SPIKES = False
 dbKey = 'reward_change'
 
 #We need access to ALL of the neurons from all animals that have been recorded from.
-animals = ['adap013', 'adap012', 'adap015','adap017','gosi001','gosi004','gosi008','gosi010','adap067','adap071'] 
+animals = ['adap005','adap012','adap013','adap015','adap017','gosi001','gosi004','gosi008','gosi010','adap067','adap071']
+#'gosi010' completed 20180213
 inforecFolder = settings.INFOREC_PATH
 
 qualityThreshold = 3
@@ -42,7 +45,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 4
+CASE = 7
 
 if CASE == 1:
     for animal in animals:
@@ -65,8 +68,9 @@ if CASE == 1:
             print 'Saving database to {}'.format(fullDbFullPath)
             fullDb.to_hdf(fullDbFullPath, key=dbKey)
 
+
 if CASE == 2:
-    # -- check behavior criteria and cell depth is inside target region, save a subset of cells -- #
+    # -- check behavior criteria, cell depth is inside target region, consistent firing during behavior(2afc) session, generate a good quality cell db, save only subset of good qual cells on disk -- #
     for animal in animals:
         fullDbFullPath = os.path.join(dbFolder, '{}_database_all_clusters.h5'.format(animal)) 
         fullDb = pd.read_hdf(fullDbFullPath, key=dbKey) 
@@ -84,30 +88,24 @@ if CASE == 2:
 
         # calculate behav criteria, and depth in target region (by calling designated functions in a separate module), then save only the good qual cells as a celldb, keeping the noncontinuous indices from the original celldb:
         goodQualCells = fullDb.query('isiViolations<{} and spikeShapeQuality>{} and inTargetArea==True and metBehavCriteria==True'.format(ISIcutoff, qualityThreshold))
-        print 'Saving good quality cell database'
-        goodQualDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal))
-        goodQualCells.to_hdf(goodQualDbFullPath, key=dbKey)
-
-if CASE == 3:
-    # -- check firing consistency in 2afc session only in a subset of cells -- #
-    for animal in animals:
-        goodDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
-        goodDb = pd.read_hdf(goodDbFullPath, key=dbKey) 
         
         print 'Checking consistent firing'
-        consistentFiring = pd.Series(index=goodDb.index, dtype=bool)
-        for indCell, cell in goodDb.iterrows():
+        consistentFiring = pd.Series(index=goodQualCells.index, dtype=bool)
+        for indCell, cell in goodQualCells.iterrows():
             cellObj = ephyscore.Cell(cell)
             consistencyThisCell = consistentActivity.score_compare_ave_firing_vs_std(cellObj, sessionToUse='behavior', numBins=numBins, sd2mean=sdToMeanRatio)
             consistentFiring[indCell] = consistencyThisCell
-        goodDb['consistentFiring'] = consistentFiring
-        goodQualCells = goodDb.query('consistentFiring==True')
-        print 'Saving good quality cell database'
-        
+        goodQualCells['consistentFiring'] = consistentFiring
+        goodQualCells = goodQualCells.query('consistentFiring==True')
+
+        print 'Saving only cells that met behavior criterion, in target area, and have consistent firing during 2afc into a good quality cell database.'
+        goodDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
+        goodQualCells.reset_index(inplace=True)
         goodQualCells.to_hdf(goodDbFullPath, key=dbKey)
 
-if CASE == 4:
-    # -- evaluate sound responsiveness -- #
+
+if CASE == 3:
+    # -- evaluate sound responsiveness; pre-requisite to testing and discarding duplicates -- #
     for animal in animals:
         goodDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
         goodDb = pd.read_hdf(goodDbFullPath, key=dbKey) 
@@ -122,11 +120,30 @@ if CASE == 4:
         
         goodDb.to_hdf(goodDbFullPath, key=dbKey)
 
-#if CASE == 5:
-    # -- duplicate check and keep the one with largest sound Z score -- #
-    
 
-if CASE == 6:
+if CASE == 4:
+    # -- duplicate check and keep the one with largest sound Z score -- #
+    corrThreshold = 0.92
+    for animal in animals:
+        goodDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
+        goodDb = pd.read_hdf(goodDbFullPath, key=dbKey) 
+        print 'Checking within session duplicates'
+        excludeDfWithinSess = duplicationCheck.find_within_session_duplicates(goodDb, corrThreshold)
+        print 'Checking cross session duplicates'
+        excludeDfCrossSess = duplicationCheck.find_cross_session_duplicates(goodDb, corrThreshold)
+        goodDb['duplicateSelf'] = excludeDfWithinSess['duplicate_self']
+        goodDb['duplicateCross'] = excludeDfCrossSess['duplicate_cross']
+        goodDb['duplicateSelfDiscard'] = excludeDfWithinSess['duplicate_self_discard']
+        goodDb['duplicateCrossDiscard'] = excludeDfCrossSess['duplicate_cross_discard']
+        discardAfterDupTest = excludeDfWithinSess['duplicate_self_discard'] | excludeDfCrossSess['duplicate_cross_discard']
+        keepAfterDupTest = ~discardAfterDupTest.astype('bool')
+        goodDb['keepAfterDupTest'] = keepAfterDupTest
+        print 'Finished checking duplication for good cells, saving database...'
+        
+        goodDb.to_hdf(goodDbFullPath, key=dbKey)
+
+
+if CASE == 5:
     # -- evaluate movement selectivity -- #
     movementTimeRangeList = [[0.05, 0.15], [0.05, 0.25]] 
     for animal in animals:
@@ -138,3 +155,27 @@ if CASE == 6:
             goodDb['movementModI_{}'.format(movementTimeRange)] = movementModI
             goodDb['movementModS_{}'.format(movementTimeRange)] = movementModS
         goodDb.to_hdf(goodDbFullPath, key=dbKey)
+
+
+if CASE == 6:
+    # -- calculate reward modulation index and modulation direction -- #
+    for animal in animals:
+        modIndScriptPath = '/home/languo/src/jaratest/lan/analysis_reward_change/new_calculate_reward_modulation_celldb.py'
+        # -- Call to calculate modulation indices for different windows different alignments -- #
+        commandListCalculate = ['python'] + [modIndScriptPath] + ['--CASE', 'calculate'] + ['--MOUSE'] + animal
+        subprocess.call(commandListCalculate)
+        #subprocess.call('python /home/languo/src/jaratest/lan/.py --CASE calculate -MICE adap005 adap012 gosi001'.split(' '))
+        # -- Call to merge newly generated mod indices columns into database -- #
+        commandListMerge = ['python'] + [modIndScriptPath] + ['--CASE', 'merge'] + ['--MOUSE'] + animal
+        subprocess.call(commandListMerge)
+
+if CASE == 7:
+    # -- Merge all individual animal databases into one master db -- #
+    dfs = []
+    for animal in animals:
+        animalDbFullPath = os.path.join(dbFolder, '{}_database.h5'.format(animal)) 
+        animalDb = pd.read_hdf(animalDbFullPath, key=dbKey) 
+        dfs.append(animalDb)
+    masterDf = pd.concat(dfs, ignore_index=True)
+    masterDfFullPath = os.path.join(dbFolder, 'rc_database.h5')
+    masterDf.to_hdf(masterDfFullPath, key=dbKey)

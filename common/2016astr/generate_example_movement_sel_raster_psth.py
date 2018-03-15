@@ -28,7 +28,9 @@ binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
 
-colorsDict = {'left':'r', 'right':'g'} 
+#colorsDict = {'left':'r', 'right':'g'} 
+colorsDict = {'left':figparams.colp['MidFreqL'], 
+              'right':figparams.colp['MidFreqR']} 
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE

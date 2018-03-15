@@ -224,7 +224,7 @@ for inds,subject in enumerate(sessionsDict.iterkeys()):
     extraplots.boxoff(plt.gca())
     plt.hold(False)
     nSess = len(sessionsDict[subject])
-    plt.title('mouse {}\nn = {} sessions'.format(inds+1, nSess), fontsize=fontSizeLabels)
+    plt.title('Switching mouse {}\nn = {} sessions'.format(inds+1, nSess), fontsize=fontSizeLabels)
 
 plt.tight_layout(pad=0.2, w_pad=1.5, h_pad=1.5, rect=(0.05,0.05,0.98,0.95))
 plt.show()

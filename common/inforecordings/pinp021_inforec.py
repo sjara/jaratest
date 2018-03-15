@@ -37,6 +37,7 @@ experiments.append(exp0)
 # exp0.add_site(3708, tetrodes=range(1, 9))
 # exp0.add_session('15-31-43', None, 'noiseburst', 'am_tuning_curve')
 # exp0.add_session('15-34-34', None, 'laserpulse', 'am_tuning_curve') #There is nothing here. I am going to remove the probes, let the animal rest, and possibly do another penetration today farther back.
+exp0.maxDepth = 3708
 
 
 exp1 = celldatabase.Experiment(subject,
@@ -68,6 +69,7 @@ exp1.add_session('13-48-01', None, 'lasertrain', 'am_tuning_curve')#
 exp1.add_session('13-49-32', None, 'noiseburst', 'am_tuning_curve')#nothing much
 
 exp1.add_session('13-54-15', 'a', 'tc', 'am_tuning_curve') # I have to stop here.
+exp1.maxDepth = 3466
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-07-28',
@@ -118,6 +120,7 @@ exp2.add_session('15-17-20', 'b', 'tc', 'am_tuning_curve')
 
 # exp2.add_site(3905, tetrodes=range(1, 9))
 # exp2.add_session('16-04-09', None, 'noiseburst', 'am_tuning_curve') #Nothing really. I'm done
+exp2.maxDepth = 3905
 
 # exp3 = celldatabase.Experiment(subject,
 #                                '2017-08-08',

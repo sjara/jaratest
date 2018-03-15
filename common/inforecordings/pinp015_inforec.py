@@ -44,6 +44,7 @@ exp0.add_session('16-27-29', 'j', 'rlf', 'am_tuning_curve')
 exp0.add_session('16-33-05', 'k', 'tc', 'am_tuning_curve')
 exp0.add_session('16-49-40', 'l', 'am', 'am_tuning_curve') #only 30 trials each
 exp0.add_session('16-59-01',None, 'lasertrain', 'am_tuning_curve')
+exp0.maxDepth = 1146
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-01-27',
@@ -55,6 +56,7 @@ experiments.append(exp1)
 # exp1.add_site(3821, tetrodes=range(1, 9))
 # exp1.add_session('13-04-07', None, 'noiseburst', 'am_tuning_curve')
 # exp1.add_session('13-00-58', None, 'laserpulse', 'am_tuning_curve') #There are no laser responses here
+exp1.maxDepth = 3821
 
 
 exp2 = celldatabase.Experiment(subject,
@@ -116,6 +118,7 @@ exp2.add_session('16-54-10', None, 'laserpulse', 'am_tuning_curve')
 # exp2.add_session('17-02-17', None, 'noiseburst', 'am_tuning_curve')
 # exp2.add_session('17-05-42', None, 'lasertrain', 'am_tuning_curve')
 # exp2.add_session('17-09-16', 'r', 'rlf', 'am_tuning_curve') #not much going on, I am removing the trodes
+exp2.maxDepth = 1503
 
 exp3 = celldatabase.Experiment(subject,
                                '2017-02-08',
@@ -126,6 +129,7 @@ experiments.append(exp3)
 # exp3.add_site(1815, tetrodes=range(1, 9))
 # # exp3.add_session('11-23-08', None, 'noiseburst', 'am_tuning_curve') NEW OPEN EPHYS FILE FORMAT
 # exp3.add_session('12-08-45', None, 'noiseburst', 'am_tuning_curve') #There have been sites with great spikes, but no sound responses. I am removing the electrodes
+exp3.maxDepth = 1815
 
 exp4 = celldatabase.Experiment(subject,
                                '2017-02-15',
@@ -171,3 +175,4 @@ exp4.add_session('16-26-20', None, 'lasertrain', 'am_tuning_curve')
 exp4.add_session('16-31-24', 'g', 'am', 'am_tuning_curve')
 exp4.add_session('16-47-10', None, 'lasertrain', 'am_tuning_curve')
 exp4.add_session('16-50-58', None, 'laserpulse', 'am_tuning_curve')
+exp4.maxDepth = 3110

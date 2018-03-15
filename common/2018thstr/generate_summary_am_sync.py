@@ -35,6 +35,20 @@ STUDY_NAME = '2018thstr'
 #             angle_population_vec = angle_population_vector_weighted(angles, weights)
 #     return np.abs(angle_population_vec)
 
+def index_all_true_before(arr):
+    '''
+    Find the index for a boolean array where all the inds after are True
+    Args:
+        arr (1-d array of bool): an array of boolean vals
+    Returns:
+        ind (int): The index of the first True val where all subsequent vals are also True
+    '''
+    if any(~arr):
+        indLastTrue = np.min(np.where(~arr))-1
+    else:
+        indLastTrue = len(arr)-1
+    return indLastTrue
+
 def angle_population_vector_zar(angles):
     '''
     Copied directly from Biostatistical analysis, Zar, 3rd ed, pg 598 (Mike W has this book)
@@ -77,6 +91,10 @@ def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, 
 
 CASE=1
 SAVE=True
+
+significantFreqsArray = np.array([])
+
+
 # if CASE==0:
 #     cell = {'subject':'pinp015',
 #             'date':'2017-02-15',
@@ -198,12 +216,31 @@ if CASE==1:
 
         possibleFreq = np.unique(freqEachTrial)
         if any(allFreqPval<0.05):
+            sigPvals = np.array(allFreqPval)<0.05
+            highestSyncInd = index_all_true_before(sigPvals)
             dataframe.loc[indRow, 'highestSync'] = possibleFreq[allFreqPval<0.05].max()
+            dataframe.loc[indRow, 'highestUSync'] = possibleFreq[highestSyncInd]
             # print possibleFreq[pValThisCell<0.05].max()
         else:
             dataframe.loc[indRow, 'highestSync'] = 0
             # print 'ZERO'
+        correctedPval = 0.05/len(possibleFreq)
+        if any(allFreqPval<correctedPval):
+            dataframe.loc[indRow, 'highestSyncCorrected'] = possibleFreq[allFreqPval<correctedPval].max()
+            freqsBelowThresh = allFreqPval<correctedPval
+            freqsBelowThresh = freqsBelowThresh.astype(int)
+            if len(significantFreqsArray)==0:
+                significantFreqsArray = freqsBelowThresh
+            else:
+                # significantFreqsArray = np.concatenate([[significantFreqsArray], [freqsBelowThresh]])
+                significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
+        else:
+            dataframe.loc[indRow, 'highestSyncCorrected'] = 0
+
     if SAVE:
         savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
         dataframe.to_hdf(savePath, 'dataframe')
         print "SAVED DATAFRAME to {}".format(savePath)
+
+        saveDataArrayPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'significantFreqsArray.npy')
+        np.save(saveDataArrayPath, significantFreqsArray)

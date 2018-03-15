@@ -23,8 +23,8 @@ exp0.laserCalibration = {
 #Tetrode 6 has reference
 exp0.add_site(2100, tetrodes=[1,2,3,4,5,6,7,8])
 exp0.add_session('14-16-49', None, 'noisebursts', 'am_tuning_curve')
-exp0.add_session('14-20-13', 'a', 'tuningCurve', 'am_tuning_curve')
-exp0.add_session('14-24-30', 'b', 'tuningCurve', 'am_tuning_curve')
+exp0.add_session('14-20-13', 'a', 'tuningCurve', 'laser_am_tuning_curve')
+exp0.add_session('14-24-30', 'b', 'tuningCurve', 'laser_am_tuning_curve')
 
 
 exp1 = celldatabase.Experiment(subject, '2018-01-16', 'left_AudStr', info='AnteriorMedialDiD')
@@ -45,15 +45,15 @@ exp1.laserCalibration = {
 #Tetrode 1 has reference; threshold at 0 mV
 exp1.add_site(2100, tetrodes=[1,2,3,4,5,6,7,8])
 exp1.add_session('13-57-35', None, 'noisebursts', 'am_tuning_curve')
-exp1.add_session('13-59-29', 'a', 'tuningCurve', 'am_tuning_curve')
+exp1.add_session('13-59-29', 'a', 'tuningCurve', 'laser_am_tuning_curve')
 
 exp1.add_site(2150, tetrodes=[1,2,3,4,5,6,7,8])
 exp1.add_session('14-04-26', None, 'noisebursts', 'am_tuning_curve')
-exp1.add_session('14-06-10', 'b', 'tuningCurve', 'am_tuning_curve')
+exp1.add_session('14-06-10', 'b', 'tuningCurve', 'laser_am_tuning_curve')
 
 exp1.add_site(2200, tetrodes=[1,2,3,4,5,6,7,8])
 exp1.add_session('14-09-49', None, 'noisebursts', 'am_tuning_curve')
-exp1.add_session('14-11-27', 'c', 'tuningCurve', 'am_tuning_curve')
+exp1.add_session('14-11-27', 'c', 'tuningCurve', 'laser_am_tuning_curve')
 
 #Set threshold to 55 mV
 exp1.add_site(2250, tetrodes=[5,8])

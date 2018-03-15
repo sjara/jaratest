@@ -35,7 +35,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 2)
-gs.update(left=0.1, right=0.95, top=0.95, bottom=0.12, wspace=0.25, hspace=0.15)
+gs.update(left=0.15, right=0.95, top=0.95, bottom=0.12, wspace=0.25, hspace=0.15)
 
 PHOTOSTIMCOLORS = {'no_laser':'k',
                    'laser_left':figparams.colp['stimLeft'],
@@ -92,7 +92,7 @@ plt.ylim(ylim)
 xticks = [1,2]
 xticklabels = ['Left\nhemi', 'Right\nhemi']
 plt.xticks(xticks, xticklabels, fontsize=fontSizeTicks)
-plt.ylabel('Preferred frequency to boundary (octaves)', fontsize=fontSizeLabels) # labelpad=labelDis
+plt.ylabel('Distance from preferred frequency\n to boundary (octaves)', fontsize=fontSizeLabels) # labelpad=labelDis
 extraplots.boxoff(ax1)
 z,pVal = stats.ranksums(allLeftFreqs, allRightFreqs)
 print 'Comparing frequencies encoded in left vs right hemi with ranksum test, p value is {}'.format(pVal)

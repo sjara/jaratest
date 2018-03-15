@@ -5,7 +5,7 @@ from jaratoolbox import settings
 def rsync_session_data(subject,
                        session,
                        server = 'jarauser@jarastore',
-                       serverEphysPath = '/data2016/ephys',
+                       serverEphysPath = '/data/ephys',
                        skipIfExists=False):
     '''
     #DONE: server user and server name as one string

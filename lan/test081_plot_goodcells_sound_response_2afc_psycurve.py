@@ -1,16 +1,8 @@
 '''
-Generate and store intermediate data for plot showing frequency-selectivity of astr sound-responsive neurons (using 2afc data). Data for raster and psth are saved separately. 
-For raster data, output contains spikeTimestamps, eventOnsetTimes, freqEachTrial.
-For psth data, output contains spikeCountMat, timeVec, freqEachTrial.
+For good cells (nonduplicates) in the striatum recorded in psychometric 2afc task: plot suond response in tuning task, sound response to all frequencies in 2afc task, middle frequencies left vs right, waveform, and ISI.
 
-Lan Guo 20170302
+Lan Guo 20170310
 '''
-
-### To DO 
-
-# In the filename of the npz should include tetrode and cluster e.g. T6_c2
-# save the script name that generates the npz in the npz file, in the field called 'script' (using os.path.realpath(__file__)
-# Save the manually set params such as timeRange in npz file
 
 import os
 import sys
@@ -19,6 +11,7 @@ import numpy as np
 from jaratoolbox import loadbehavior
 from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
+from jaratoolbox import spikesorting
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 from jaratoolbox import extraplots
@@ -37,7 +30,7 @@ timeRange = [-0.3,0.4]
 binWidth = 0.010
 qualityList = [1,6]
 ISIcutoff = 0.02
-
+figSize = [12,8]
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
@@ -54,10 +47,11 @@ outputDir = os.path.join('/home/languo/tmp', FIGNAME)
 if not os.path.exists(outputDir):
     os.mkdir(outputDir)
 
-gs = gridspec.GridSpec(1,2)
-gs.update(left=0.15, right=0.85, wspace=0.5, hspace=0.2)
-gs00 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,0], hspace=0.2)
-gs01 = gridspec.GridSpecFromSubplotSpec(3, 3, subplot_spec=gs[:,1], hspace=0.2)
+plt.figure(figsize=figSize) 
+gs = gridspec.GridSpec(2,3)
+gs.update(left=0.1, right=0.9, wspace=0.55, hspace=0.6)
+gs00 = gridspec.GridSpecFromSubplotSpec(4, 3, subplot_spec=gs[:,0], hspace=0.2)
+gs01 = gridspec.GridSpecFromSubplotSpec(4, 3, subplot_spec=gs[:,1], hspace=0.2)
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
 EPHYS_PATH = settings.EPHYS_PATH_REMOTE
@@ -84,21 +78,20 @@ for ind, cell in cellsToPlot.iterrows():
     fig = plt.gcf()
     fig.clf()
     fig.set_facecolor('w')
-    
+    try:
     # -- Select a cell from allcells file -- #
-    cellParams = {'firstParam':str(cell['animalName']),
-                  'behavSession':str(cell['behavSession']),
-                  'tetrode':int(cell['tetrode']),
-                  'cluster':int(cell['cluster'])} 
+        cellParams = {'firstParam':str(cell['animalName']),
+                      'behavSession':str(cell['behavSession']),
+                      'tetrode':int(cell['tetrode']),
+                      'cluster':int(cell['cluster'])} 
 
-    figname = '{}_{}_T{}_c{}_tuning_2afc_soundres'.format(cell['animalName'],cell['behavSession'],cell['tetrode'],cell['cluster'])
-    fullFigname = os.path.join(outputDir, figname)
-    pdb.set_trace()
-    if os.path.exists(fullFigname): #Don't plot if already exists
-        print 'This cell has been plotted'
-        continue
+        figname = '{}_{}_T{}_c{}_tuning_2afc_soundres.png'.format(cell['animalName'],cell['behavSession'],cell['tetrode'],cell['cluster'])
+        fullFigname = os.path.join(outputDir, figname)
+        #pdb.set_trace()
+        #if os.path.exists(fullFigname): #Don't plot if already exists
+            #print 'This cell has been plotted'
+            #continue
 
-    try: #This is a hack, when some files cannot be open or anything goes wrong, just skip this cell
         print 'Plotting figure for cell', ind
         mouseName = cellParams['firstParam']
         allcellsFileName = 'allcells_'+mouseName+'_quality' #This is specific to Billy's final allcells files after adding cluster quality info 
@@ -165,6 +158,7 @@ for ind, cell in cellsToPlot.iterrows():
         ax2 = plt.subplot(gs00[2,:])
         freqScaleFactor = 3 #factor to reduce number of frequencies plotted by
         possibleFreq = possibleFreq[1::freqScaleFactor] #select just a subset of frequencies to plot
+        labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
         numFreqs = len(possibleFreq)
         trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
 
@@ -227,16 +221,15 @@ for ind, cell in cellsToPlot.iterrows():
         # -- Calculate and store intermediate data for tuning raster -- #
         freqEachTrial = bdata['targetFrequency']
         possibleFreq = np.unique(freqEachTrial)
-
+        numFreqs = len(possibleFreq)
         trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
 
         (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
-                spikesanalysis.eventlocked_spiketimes(spikeTimestamps,eventOnsetTimes,timeRange)
-        labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+                spikesanalysis.eventlocked_spiketimes(spikeTimestamps,soundOnsetTimeEphys,timeRange)
 
         # -- Plot 2afc raster -- #
         ax3 = plt.subplot(gs01[0:2,:])
-        labels = ['%.1f' % f for f in np.unique(possibleFreq)/1000.0]
+        labels = ['%.1f' % f for f in possibleFreq/1000.0]
         pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                        indexLimitsEachTrial,
                                                        timeRange,
@@ -249,12 +242,7 @@ for ind, cell in cellsToPlot.iterrows():
         plt.title('Psycurve 2afc', fontsize=fontSizeLabels)
 
         # -- Plot tuning PSTH -- #
-        ax4 = plt.subplot(gs01[2,:])
-        freqScaleFactor = 1 #factor to reduce number of frequencies plotted by
-        possibleFreq = possibleFreq[1::freqScaleFactor] #select just a subset of frequencies to plot
-        numFreqs = len(possibleFreq)
-        trialsEachFreq = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
-
+        ax4 = plt.subplot(gs01[2,:])   
         timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
         spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
         cm_subsection = np.linspace(0.0, 1.0, numFreqs)
@@ -270,9 +258,64 @@ for ind, cell in cellsToPlot.iterrows():
         plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
         plt.ylabel('Firing rate (spk/sec)',fontsize=fontSizeLabels, labelpad=labelDis)
 
+        # -- Plot raster for left vs righward trial at either middle frequencies -- #
+        rightward = bdata['choice']==bdata.labels['choice']['right']
+        leftward = bdata['choice']==bdata.labels['choice']['left']
+        middleFreqs = [possibleFreq[numFreqs/2-1], possibleFreq[numFreqs/2]]
+
+        ax5 = plt.subplot(gs[0,2])
+        oneFreq = bdata['targetFrequency'] == middleFreqs[0] #first mid freq
+        trialsToUseRight = rightward & oneFreq
+        trialsToUseLeft = leftward & oneFreq
+        condLabels = ['left choice', 'right choice']
+        trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
+        colorEachCond = ['g','r']
+
+        pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                       indexLimitsEachTrial,
+                                                       timeRange=timeRange,
+                                                       trialsEachCond=trialsEachCond,
+                                                       colorEachCond=colorEachCond,
+                                                       fillWidth=None,labels=None)
+        plt.setp(pRaster, ms=msRaster)
+        plt.title('freq:{}; modInd:{};\n modSig:{}; maxZ:{}'.format(middleFreqs[0],cell['modIndexMid1'],cell['modSigMid1'],cell['maxZSoundMid1']), fontsize=fontSizeLabels-2)
+        plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+        plt.ylabel('Trials',fontsize=fontSizeLabels,labelpad=labelDis)
+
+
+        ax6 = plt.subplot(gs[1,2])
+        oneFreq = bdata['targetFrequency'] == middleFreqs[1] #second mid freq
+        trialsToUseRight = rightward & oneFreq
+        trialsToUseLeft = leftward & oneFreq
+        condLabels = ['left choice', 'right choice']
+        trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
+        colorEachCond = ['g','r']
+
+        pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                       indexLimitsEachTrial,
+                                                       timeRange=timeRange,
+                                                       trialsEachCond=trialsEachCond,
+                                                       colorEachCond=colorEachCond,
+                                                       fillWidth=None,labels=None)
+        plt.setp(pRaster, ms=msRaster)
+        plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels, labelpad=labelDis)
+        plt.ylabel('Trials',fontsize=fontSizeLabels,labelpad=labelDis)
+        plt.title('freq:{}; modInd:{};\n modSig:{}; maxZ:{}'.format(middleFreqs[1],cell['modIndexMid2'],cell['modSigMid2'],cell['maxZSoundMid2']), fontsize=fontSizeLabels-2)
+
+        # -- Plot waveform -- #
+        ax7 = plt.subplot(gs00[3,:])
+        wavesThisCluster = spikeData.samples
+        spikesorting.plot_waveforms(wavesThisCluster)
+
+        # -- Plot ISI -- #
+        ax8 = plt.subplot(gs01[3,:])
+        spikesorting.plot_isi_loghist(spikeTimestamps)
+
+
         print 'Saving figure'
 
         plt.savefig(fullFigname)
-    
+
     except:
-        pass
+        continue
+

@@ -10,6 +10,7 @@ from jaratoolbox import settings
 import matplotlib.gridspec as gridspec
 import matplotlib
 import figparams
+reload(figparams)
 import matplotlib.patches as mpatches
 import scipy.stats as stats
 

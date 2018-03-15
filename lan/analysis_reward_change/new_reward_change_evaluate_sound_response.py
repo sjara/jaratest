@@ -6,17 +6,13 @@ The script is to be run after the database has been fully generated and good qua
 Lan 2018-01-02
 '''
 from jaratoolbox import ephyscore
-from jaratoolbox import celldatabase
 from jaratoolbox import settings
 reload(settings)
-from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 import os
 import pandas as pd
-import subprocess
 import numpy as np
-import importlib
 import sys
 from scipy import stats
 
@@ -59,7 +55,8 @@ def evaluate_tuning_sound_response_celldb(cellDb):
 
             try:
                 ephysData = cellObj.load_ephys_by_index(sessionInd)
-            except ValueError:
+            except (ValueError, IOError) as error:
+                print(error)
                 spikeData = (0, 0)
                 tuningDict['tuningFreqs'].append(possibleFreq)
                 tuningDict['tuningZscore'].append(np.zeros(numFreqs))
@@ -156,7 +153,8 @@ def evaluate_2afc_sound_response_celldb(cellDb):
 
             try:
                 ephysData = cellObj.load_ephys_by_index(sessionInd)
-            except ValueError:
+            except (ValueError, IOError) as error:
+                print(error)
                 spikeData = (0, 0)
                 behavDict['behavFreqs'].append(possibleFreq)
                 behavDict['behavZscore'].append(np.zeros(numFreqs))

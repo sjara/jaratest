@@ -21,8 +21,10 @@ colp['backStrColor'] = cp.TangoPalette['Plum2']
 
 colp['sound'] = cp.TangoPalette['Butter2']
 
+#colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
+#colp['MidFreqL'] = cp.TangoPalette['Chameleon3']
 colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
-colp['MidFreqL'] = cp.TangoPalette['Chameleon3']
+colp['MidFreqL'] = cp.TangoPalette['SkyBlue2']
 
 #colp['muscimol'] = cp.TangoPalette['Orange2']
 colp['muscimol'] = cp.TangoPalette['Chocolate2']

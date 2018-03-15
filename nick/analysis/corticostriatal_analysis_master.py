@@ -92,7 +92,6 @@ for mouse in mice:
         db['pulseZscore'] = pulseZscore
         db['pulsePval'] = pulsePval
 
-
         #Laser train response, ratio of pulse avg spikes
         trainRatio = np.empty(len(db))
         timeRange = [-0.1, 1] #For initial alignment
@@ -126,7 +125,6 @@ for mouse in mice:
             spikeData, eventData = dataloader.get_session_ephys(cell, 'am')
             eventOnsetTimes = eventData.get_event_onset_times()
             bdata = dataloader.get_session_bdata(cell, 'am')
-
             rateEachTrial = bdata['currentFreq'] #NOTE: bdata uses 'Freq' but this is AM so I'm calling it rate
             possibleRate = np.unique(rateEachTrial)
             timeRange = [0, 0.5]
@@ -143,13 +141,11 @@ for mouse in mice:
                                                                     indexLimitsEachTrial,
                                                                     timeRange)
                 respSpikeArrays.append(nspkResp.ravel())
-
             try:
                 statistic, pval = stats.kruskal(*respSpikeArrays)
             except ValueError:
                 pval=None
                 statistic=None
-
             amKWp[indCell] = pval
             amKWstat[indCell] = statistic
         db['amKWp'] = amKWp
@@ -170,7 +166,6 @@ for mouse in mice:
 masterdb = pandas.concat(dbs, ignore_index=True)
 
 masterdb['BW10'] = 1/masterdb['Q10']
-
 
 soundResponsive = masterdb.query('isiViolations<0.02 and shapeQuality>2 and noisePval<0.05')
 soundLaserResponsive = soundResponsive.query('pulsePval<0.05 and trainRatio>0.8')

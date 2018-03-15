@@ -80,6 +80,7 @@ exp0.add_session('17-17-39', 'f', 'am', 'am_tuning_curve')
 
 # exp0.add_site(4008, tetrodes=[1, 2, 3, 4, 6, 7, 8])
 # exp0.add_session('18-19-47', None, 'laserpulse', 'am_tuning_curve') #No more laser responses, done for the day
+exp0.maxDepth = 4008
 
 exp1 = celldatabase.Experiment(subject,
                                '2017-11-15',
@@ -135,6 +136,7 @@ exp1.add_session('18-12-22', 'j', 'am', 'am_tuning_curve')
 # exp1.add_session('18-35-54', None, 'lasertrain', 'am_tuning_curve') #Not good enough
 
 #Final depth 3605um
+exp1.maxDepth = 3605
 
 exp2 = celldatabase.Experiment(subject,
                                '2017-11-16',
@@ -169,3 +171,4 @@ exp2.add_session('14-14-04', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('14-16-11', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('14-23-21', 'g', 'tc', 'am_tuning_curve')
 exp2.add_session('14-56-42', 'h', 'am', 'am_tuning_curve')
+exp2.maxDepth = 3256
