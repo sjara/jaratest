@@ -62,7 +62,8 @@ if CASE==0:
 ######### Full dataset #########
 if CASE==1:
 
-    dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+    # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+    dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase_ALLCELLS.h5'
     dataframe = pd.read_hdf(dbPath, key='dataframe')
     for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         if not 'am' in dbRow['sessionType']:

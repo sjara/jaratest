@@ -10,9 +10,8 @@ from jaratoolbox import ephyscore
 import pandas as pd
 import matplotlib.pyplot as plt
 
-dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase_ALLCELLS.h5'
 db = pd.read_hdf(dbPath, key='dataframe')
-
 
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     failed=False

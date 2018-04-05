@@ -1,53 +1,59 @@
-import sys
 import os
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+from numpy import inf
+from scipy import optimize
+from scipy import stats
+from scipy import signal
+from jaratoolbox import spikesanalysis
+from jaratoolbox import behavioranalysis
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
-from jaratoolbox import spikesanalysis
-reload(spikesanalysis)
-from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
-import figparams
+from matplotlib import pyplot as plt
+from scipy import signal
+import pandas as pd
+reload(spikesanalysis)
 
-threshold = 0.2
+STUDY_NAME = '2018thstr'
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dbase = pd.read_hdf(dbPath, key='dataframe')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+db = pd.read_hdf(dbPath, key='dataframe')
 
-goodLaser = dbase.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
-goodStriatum = dbase.groupby('brainArea').get_group('rightAstr').query('isiViolations<0.02 and spikeShapeQuality>2')
-goodLaserPlusStriatum = goodLaser.append(goodStriatum, ignore_index=True)
-goodFit = goodLaserPlusStriatum.query('rsquaredFit > 0.08')
+# Examples of bad cells
+# pinp017_2017-03-23_1604.0_TT2c6
 
-#Calculate the midpoint of the gaussian fit
-goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
-goodFitToUse = goodFit.query('fitMidPoint<32000')
+# cellDict = {
+#     'subject':'pinp017',
+#     'date':'2017-03-23',
+#     'depth':1604,
+#     'tetrode':2,
+#     'cluster':6
+# }
 
-# thalCells = goodFitToUse.groupby('brainArea').get_group('rightThal')
-acCells = goodFitToUse.groupby('brainArea').get_group('rightAC')
+cellsToTest = [
+    'pinp017_2017-03-22_1338.0_TT3c4',
+    'pinp017_2017-03-23_1604.0_TT2c6',
+    'pinp017_2017-03-23_1518.0_TT8c2',
+    'pinp016_2017-03-16_3707.0_TT2c6',
+    'pinp015_2017-02-15_2902.0_TT8c4',
+    'pinp016_2017-03-15_3797.0_TT1c3',
+    'pinp026_2017-11-16_3256.0_TT6c3'
+]
 
-dataframe = acCells
+for cellName in cellsToTest:
+    (subject, date, depth, tetrodeCluster) = cellName.split('_')
+    depth = float(depth)
+    tetrode = int(tetrodeCluster[2])
+    cluster = int(tetrodeCluster[4:])
+    indRow, dbRow = celldatabase.find_cell(db, subject, date, depth, tetrode, cluster)
 
-cellDict = {'subject' : 'pinp017',
-            'date' : '2017-03-22',
-            'depth' : 1143,
-            'tetrode' : 2,
-            'cluster' : 4}
-
-for indRow, dbRow in dataframe.iterrows():
-
-    # cellInd, dbRow = celldatabase.find_cell(dataframe, **cellDict)
+    # indRow, dbRow = celldatabase.find_cell(db, **cellDict)
     cell = ephyscore.Cell(dbRow)
 
-    try:
-        ephysData, bdata = cell.load('tc')
-    except (IndexError, ValueError): #The cell does not have a tc or the tc session has no spikes
-        print "No tc for cell {}".format(indRow)
-        sys.exit()
+    ephysData, bdata = cell.load('tc')
 
-    eventOnsetTimes = ephysData['events']['soundDetectorOn']
+    # eventOnsetTimes = ephysData['events']['soundDetectorOn']
+    eventOnsetTimes = ephysData['events']['stimOn']
 
     eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
     spikeTimes = ephysData['spikeTimes']
@@ -59,10 +65,6 @@ for indRow, dbRow in dataframe.iterrows():
     #FIXME: I need to remove the last event here if there is an extra one
     if len(eventOnsetTimes) == len(freqEachTrial)+1:
         eventOnsetTimes = eventOnsetTimes[:-1]
-    elif len(eventOnsetTimes) < len(freqEachTrial):
-        print "Wrong number of events, probably caused by the original sound detector problems"
-        dataframe.loc[indRow, 'latency'] = np.nan
-        continue
 
     trialsEachCondition = behavioranalysis.find_trials_each_combination(intensityEachTrial, possibleIntensity,
                                                                         freqEachTrial, possibleFreq)
@@ -94,11 +96,11 @@ for indRow, dbRow in dataframe.iterrows():
     avgRespArray = np.sum(spikesFilteredByTrialType, 0) / np.sum(
         trialsEachCondition, 0).astype('float')
 
-    thresholdResponse = nspkBase.mean() + threshold*(avgRespArray.max()-nspkBase.mean())
+    thresholdFRA=0.2
+    thresholdResponse = nspkBase.mean() + thresholdFRA*(avgRespArray.max()-nspkBase.mean())
 
     if not np.any(avgRespArray > thresholdResponse):
         print "Nothing above the threshold"
-        sys.exit()
 
     #Determine trials that come from a I/F pair with a response above the threshold
     fra = avgRespArray > thresholdResponse
@@ -106,15 +108,13 @@ for indRow, dbRow in dataframe.iterrows():
 
     # -- Calculate response latency --
     indexLimitsSelectedTrials = indexLimitsEachTrial[:,selectedTrials]
-    timeRangeForLatency = [-0.1,0.2]
+    timeRangeForLatency = [-0.1,0.1]
     (respLatency,interim) = spikesanalysis.response_latency(spikeTimesFromEventOnset,
                                                             indexLimitsSelectedTrials,
-                                                            timeRangeForLatency, threshold=0.5)
+                                                            timeRangeForLatency, threshold=0.5,
+                                                            win=signal.hanning(11))
 
 
-    print 'Response latency: {:0.1f} ms'.format(1e3*respLatency)
-
-    # ------------ From here down is for plotting -------------
     selectedTrialsInds = np.flatnonzero(selectedTrials)
     # selectedSpikesInds = np.isin(trialIndexForEachSpike,selectedTrialsInds)#NOTE: Requires newer numpy
     selectedSpikesInds = np.in1d(trialIndexForEachSpike,selectedTrialsInds)
@@ -147,4 +147,3 @@ for indRow, dbRow in dataframe.iterrows():
     plt.xlim(timeRangeForLatency)
     plt.show()
     plt.waitforbuttonpress()
-
