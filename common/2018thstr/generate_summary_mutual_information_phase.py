@@ -10,8 +10,8 @@ from jaratoolbox import ephyscore
 from collections import Counter
 from scipy import stats
 import pandas as pd
-# import figparams
-# reload(figparams)
+import figparams
+reload(figparams)
 from sklearn import metrics
 
 STUDY_NAME = '2018thstr'
@@ -102,7 +102,9 @@ def spikes_each_trial(spikeTimes, trialIndicesEachSpike):
         spikesThisTrial = np.flatnonzero(trialIndicesEachSpike==trialInd)
         yield spikeTimes[spikesThisTrial]
 
-dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+# dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 dataframe = pd.read_hdf(dbPath, key='dataframe')
 
 #ITERATE THROUGH ALL CELLS IN THE DATABASE
@@ -237,7 +239,8 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'mutualInfoPhase_{}Hz'.format(int(freq))] = miCorrectedBits
         dataframe.loc[indRow, 'mutualInfoPerSpikePhase_{}Hz'.format(int(freq))] = miCorrectedBitsPerSpike
 
-savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+# savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 dataframe.to_hdf(savePath, 'dataframe')
 print "SAVED DATAFRAME to {}".format(savePath)
     #     miEachFreq.append(miCorrectedBits)

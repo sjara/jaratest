@@ -10,13 +10,13 @@ STUDY_NAME = '2018thstr'
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 
-CASE=0
+CASE=2
 
 if CASE==0:
     #Plot cells in the frequency BW summary dataset
     figGroup = '2018thstr_freqBW'
 
-    goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
+    goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and pulseZscore>0 and trainRatio>0.8')
     goodFit = goodLaser.query('rsquaredFit > 0.08')
 
     #Calculate the midpoint of the gaussian fit
@@ -30,8 +30,16 @@ if CASE==0:
 elif CASE==1:
     #plot cells in the AM highest sync summary dataset
     figGroup = '2018thstr_AM'
-    goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
-    hsFeatureName = 'highestSync'
+    goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and pulseZscore>0 and trainRatio>0.8')
+    hsFeatureName = 'highestSyncCorrected'
+    dbToUse = goodLaser[pd.notnull(goodLaser[hsFeatureName])]
+
+
+elif CASE==2:
+    #plot cells in the Far untagged group
+    figGroup = '2018thstr_FarUntagged'
+    goodLaser = db.query('isiViolations<0.02 and spikeShapeQuality>2 and farUntagged==True')
+    hsFeatureName = 'highestSyncCorrected'
     dbToUse = goodLaser[pd.notnull(goodLaser[hsFeatureName])]
 
 def already_plotted(cell, path):
@@ -43,23 +51,35 @@ def already_plotted(cell, path):
     fullpath = os.path.join(path, figName)
     return os.path.exists(fullpath)
 
-figPath = '/home/nick/data/reports/nick/{}/thalamus'.format(figGroup)
+REPLOT = True
+subfolder = '20180321_reports'
+figPath = '/home/nick/data/reports/nick/{}/{}/thalamus'.format(subfolder, figGroup)
 if not os.path.exists(figPath):
     os.makedirs(figPath)
 for indCell, cell in dbToUse.groupby('brainArea').get_group('rightThal').iterrows():
-    if not already_plotted(cell, figPath):
+    if REPLOT:
         pinp_report.plot_pinp_report(cell, figPath)
+    else:
+        if not already_plotted(cell, figPath):
+            pinp_report.plot_pinp_report(cell, figPath)
 
-for indCell, cell in dbToUse.groupby('brainArea').get_group('rightThalamus').iterrows():
-    if not already_plotted(cell, figPath):
-        pinp_report.plot_pinp_report(cell, figPath)
 
-figPath = '/home/nick/data/reports/nick/{}/cortex'.format(figGroup)
+# for indCell, cell in dbToUse.groupby('brainArea').get_group('rightThalamus').iterrows():
+#     if REPLOT:
+#         pinp_report.plot_pinp_report(cell, figPath)
+#     else:
+#         if not already_plotted(cell, figPath):
+#             pinp_report.plot_pinp_report(cell, figPath)
+
+figPath = '/home/nick/data/reports/nick/{}/{}/cortex'.format(subfolder, figGroup)
 if not os.path.exists(figPath):
     os.makedirs(figPath)
 for indCell, cell in dbToUse.groupby('brainArea').get_group('rightAC').iterrows():
-    if not already_plotted(cell, figPath):
+    if REPLOT:
         pinp_report.plot_pinp_report(cell, figPath)
+    else:
+        if not already_plotted(cell, figPath):
+            pinp_report.plot_pinp_report(cell, figPath)
 
 # figPath = '/home/nick/data/reports/nick/2018thstr_striatum'
 # for indCell, cell in dbToUse.groupby('brainarea').get_group('rightAstr').iterrows():

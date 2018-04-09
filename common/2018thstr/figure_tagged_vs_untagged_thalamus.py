@@ -36,7 +36,8 @@ labelPosY = [0.48, 0.95]    # Vert position for panel labels
 
 # exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 dbase = pd.read_hdf(dbPath, key='dataframe')
 
 fig = plt.gcf()
@@ -59,22 +60,24 @@ features = ['highestSyncCorrected', 'mutualInfoPerSpikeBits']
 yLabels = ['Highest AM sync. rate (Hz)', 'MI (AM Rate, bits)', 'MI (AM Phase, bits)']
 
 #Select only the cells from AC
-dataframe = dbase.query("brainArea == 'rightThal' and spikeShapeQuality>2 and isiViolations<0.02")
+dataframe = dbase.query("brainArea == 'rightThal'")
 
-goodFit = dataframe.query('rsquaredFit > 0.08')
+goodISI = dataframe.query('isiViolations<0.02 or modifiedISI<0.02')
+goodShape = goodISI.query('spikeShapeQuality > 2')
+
+goodFit = goodShape.query('rsquaredFit > 0.08')
 
 #Calculate the midpoint of the gaussian fit
 goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
 goodFitToUse = goodFit.query('fitMidPoint<32000')
 
-#Have to use diff sets of cells for freq and AM
-taggedCellsFreq = goodFitToUse[goodFitToUse['tagged']==1]
-closeUntaggedCellsFreq = goodFitToUse[goodFitToUse['closeUntagged']==1]
-farUntaggedCellsFreq = goodFitToUse[goodFitToUse['farUntagged']==1]
+taggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==0]
+closeUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==1]
+farUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==2]
 
-taggedCellsAM = dataframe[dataframe['tagged']==1]
-closeUntaggedCellsAM = dataframe[dataframe['closeUntagged']==1]
-farUntaggedCellsAM = dataframe[dataframe['farUntagged']==1]
+taggedCellsAM = goodShape[goodShape['taggedCond']==0]
+closeUntaggedCellsAM = goodShape[goodShape['taggedCond']==1]
+farUntaggedCellsAM = goodShape[goodShape['taggedCond']==2]
 
 ## Layout: Top: BW10, threshold, latency. Bottom: nsync percent, highestSync, MI rate, MI phase
 ## Layout needs to be 2, 12
@@ -148,7 +151,7 @@ yStarHeight = (yMax-yMin)*0.05
 starGapFactor = 0.1
 fontSizeStars = 9
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -159,7 +162,7 @@ else:
 
 #1-2
 zVal, pVal = stats.mannwhitneyu(dataCloseUntagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([1.1, 2], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -170,7 +173,7 @@ else:
 
 #0-2
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -233,7 +236,7 @@ starGapFactor = 0.1
 fontSizeStars = 9
 
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -245,7 +248,7 @@ else:
 
 #1-2
 zVal, pVal = stats.mannwhitneyu(dataCloseUntagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([1.1, 2], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -256,7 +259,7 @@ else:
 
 #0-2
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -271,7 +274,8 @@ ax.set_ylabel('Threshold (dB SPL)')
 ## -- Latency -- ##
 
 ### FIXME: Why is the latency sometimes <0
-latencyQuery = "noiseZscore>1 and latency>0"
+# latencyQuery = "noiseZscore>1 and latency>0"
+latencyQuery = "latency>0"
 taggedCellsLatency = taggedCellsFreq.query(latencyQuery)
 closeUntaggedCellsLatency = closeUntaggedCellsFreq.query(latencyQuery)
 farUntaggedCellsLatency = farUntaggedCellsFreq.query(latencyQuery)
@@ -325,7 +329,7 @@ starGapFactor = 0.1
 fontSizeStars = 9
 
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -337,7 +341,7 @@ else:
 
 #1-2
 zVal, pVal = stats.mannwhitneyu(dataCloseUntagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([1.1, 2], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -348,7 +352,7 @@ else:
 
 #0-2
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -505,7 +509,7 @@ starGapFactor = 0.1
 fontSizeStars = 9
 
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -515,7 +519,7 @@ else:
                                       ax=ax)
 #1-2
 zVal, pVal = stats.mannwhitneyu(dataCloseUntagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([1.1, 2], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -525,7 +529,7 @@ else:
                                       ax=ax)
 #0-2
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=ax)
@@ -592,7 +596,7 @@ starGapFactor = [0.1, 0.2]
 fontSizeStars = 9
 
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor[1],
                                       ax=ax)
@@ -602,7 +606,7 @@ else:
                                       ax=ax)
 #1-2
 zVal, pVal = stats.mannwhitneyu(dataCloseUntagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([1.1, 2], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor[1],
                                       ax=ax)
@@ -612,7 +616,7 @@ else:
                                       ax=ax)
 #0-2
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataFarUntagged)
-if pVal < 0.5:
+if pVal < 0.05:
     extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor[0],
                                       ax=ax)

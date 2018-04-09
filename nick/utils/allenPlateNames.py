@@ -1,3 +1,5 @@
+import numpy as np
+
 allenPlateNames = ['http://atlas.brain-map.org/atlas?atlas=602630314#atlas=602630314&plate=576991187&structure=957&x=7748&y=4989.86669921875&zoom=-4&resolution=16.00&z=4',
 
 'http://atlas.brain-map.org/atlas?atlas=602630314#atlas=602630314&plate=576991103&structure=957&x=7748&y=4989.86669921875&zoom=-4&resolution=16.00&z=4',
@@ -264,3 +266,17 @@ allenPlateNames = ['http://atlas.brain-map.org/atlas?atlas=602630314#atlas=60263
 
 #I added these in reverse order, so I need to reverse the list
 allenPlateNames = allenPlateNames[::-1]
+
+def convertAllenZ(allenZ):
+    '''
+    Convert a coronal Z-stack value into the corresponding plate in the web atlas
+    Args:
+        allenZ (int): The stack number in the allen CCF 25um volume
+    Returns:
+        webPlateURL (string): the URL of the closest-corresponding plate in the web viewer
+    '''
+    startPlate = 576986019
+    plateSpacing = 40
+    webPlateInd = int(np.round((allenZ - 2) / 4.))
+    webPlateURL = allenPlateNames[webPlateInd]
+    return webPlateURL

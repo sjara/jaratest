@@ -1,42 +1,92 @@
-import sys
 import os
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from jaratoolbox import celldatabase
-from jaratoolbox import ephyscore
-from jaratoolbox import spikesanalysis
-reload(spikesanalysis)
-from jaratoolbox import behavioranalysis
+import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
+from jaratoolbox import extraplots
+from jaratoolbox import behavioranalysis
+from jaratoolbox import spikesanalysis
+from jaratoolbox import ephyscore
+from jaratest.nick.reports import pinp_report
+from collections import Counter
+from scipy import stats
+from scipy import signal
+import pandas as pd
 import figparams
+reload(figparams)
+reload(pinp_report)
 
-threshold = 0.2
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dbase = pd.read_hdf(dbPath, key='dataframe')
+db = pd.read_hdf(dbPath, key='dataframe')
+# db = db.query("subject=='pinp015'")
+# goodLaser = db.query('pulsePval<0.05 and pulseZscore>0 and trainRatio>0.8')
+# goodLaser = db[db['taggedCond']==0]
+goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
+goodShape = goodISI.query('spikeShapeQuality > 2')
+goodLaser = goodShape.query('autoTagged==1')
 
-goodLaser = dbase.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
-goodStriatum = dbase.groupby('brainArea').get_group('rightAstr').query('isiViolations<0.02 and spikeShapeQuality>2')
-goodLaserPlusStriatum = goodLaser.append(goodStriatum, ignore_index=True)
-goodFit = goodLaserPlusStriatum.query('rsquaredFit > 0.08')
+goodLaserAM = goodLaser[~pd.isnull(goodLaser['highestSyncCorrected'])]
+### PLOT REPORTS FOR CELLS IN AM DATASET
+reportDirAM = '/tmp/20180402_AM_CELLS'
 
-#Calculate the midpoint of the gaussian fit
+# for indRow, dbRow in goodLaserAM.iterrows():
+
+#     subject = dbRow['subject']
+#     date = dbRow['date']
+#     depth = dbRow['depth']
+#     tetrode = dbRow['tetrode']
+#     cluster = int(dbRow['cluster'])
+#     brainArea = dbRow['brainArea']
+#     cellName = "{}_{}_{}_TT{}c{}".format(subject, date, depth, tetrode, cluster)
+#     print "Plotting report for {}".format(cellName)
+
+#     plt.clf()
+#     pinp_report.plot_pinp_report(dbRow, useModifiedClusters=True)
+#     figsize = (9, 11)
+#     plt.gcf().set_size_inches(figsize)
+#     fullDir = os.path.join(reportDirAM, brainArea)
+#     if not os.path.exists(fullDir):
+#         os.mkdir(fullDir)
+#     fullName = os.path.join(fullDir, cellName)
+#     plt.savefig(fullName,format='png')
+
+
+### PLOT REPORTS FOR CELLS IN FREQ DATASET
+# reportDirFreq = '/tmp/20180402_FREQ_CELLS'
+goodFit = goodLaser.query('rsquaredFit > 0.08')
+# #Calculate the midpoint of the gaussian fit
 goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
 goodFitToUse = goodFit.query('fitMidPoint<32000')
 
-# thalCells = goodFitToUse.groupby('brainArea').get_group('rightThal')
-acCells = goodFitToUse.groupby('brainArea').get_group('rightAC')
+# for indRow, dbRow in goodFitToUse.iterrows():
 
-dataframe = acCells
+#     subject = dbRow['subject']
+#     date = dbRow['date']
+#     depth = dbRow['depth']
+#     tetrode = dbRow['tetrode']
+#     cluster = int(dbRow['cluster'])
+#     brainArea = dbRow['brainArea']
+#     cellName = "{}_{}_{}_TT{}c{}".format(subject, date, depth, tetrode, cluster)
+#     print "Plotting report for {}".format(cellName)
 
-cellDict = {'subject' : 'pinp017',
-            'date' : '2017-03-22',
-            'depth' : 1143,
-            'tetrode' : 2,
-            'cluster' : 4}
+#     plt.clf()
+#     pinp_report.plot_pinp_report(dbRow, useModifiedClusters=True)
+#     figsize = (9, 11)
+#     plt.gcf().set_size_inches(figsize)
+#     fullDir = os.path.join(reportDirFreq, brainArea)
+#     if not os.path.exists(fullDir):
+#         os.mkdir(fullDir)
+#     fullName = os.path.join(fullDir, cellName)
+#     plt.savefig(fullName,format='png')
 
-for indRow, dbRow in dataframe.iterrows():
+
+### LATENCY PLOTS
+reportDirLatency = '/tmp/20180404_LATENCY_CELLS'
+if not os.path.exists(reportDirLatency):
+    os.mkdir(reportDirLatency)
+threshold = 0.2
+for indRow, dbRow in goodFitToUse.iterrows():
 
     # cellInd, dbRow = celldatabase.find_cell(dataframe, **cellDict)
     cell = ephyscore.Cell(dbRow)
@@ -47,7 +97,8 @@ for indRow, dbRow in dataframe.iterrows():
         print "No tc for cell {}".format(indRow)
         sys.exit()
 
-    eventOnsetTimes = ephysData['events']['soundDetectorOn']
+    # eventOnsetTimes = ephysData['events']['soundDetectorOn']
+    eventOnsetTimes = ephysData['events']['stimOn']
 
     eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
     spikeTimes = ephysData['spikeTimes']
@@ -61,7 +112,10 @@ for indRow, dbRow in dataframe.iterrows():
         eventOnsetTimes = eventOnsetTimes[:-1]
     elif len(eventOnsetTimes) < len(freqEachTrial):
         print "Wrong number of events, probably caused by the original sound detector problems"
-        dataframe.loc[indRow, 'latency'] = np.nan
+        # dataframe.loc[indRow, 'latency'] = np.nan
+        continue
+    else:
+        print "Something else wrong with the events"
         continue
 
     trialsEachCondition = behavioranalysis.find_trials_each_combination(intensityEachTrial, possibleIntensity,
@@ -109,7 +163,8 @@ for indRow, dbRow in dataframe.iterrows():
     timeRangeForLatency = [-0.1,0.2]
     (respLatency,interim) = spikesanalysis.response_latency(spikeTimesFromEventOnset,
                                                             indexLimitsSelectedTrials,
-                                                            timeRangeForLatency, threshold=0.5)
+                                                            timeRangeForLatency, threshold=0.5,
+                                                            win=signal.hanning(11))
 
 
     print 'Response latency: {:0.1f} ms'.format(1e3*respLatency)
@@ -145,6 +200,20 @@ for indRow, dbRow in dataframe.iterrows():
     plt.axhline(interim['maxResponse'],ls=':',color='0.75')
     plt.plot(interim['timeVec'],interim['psth'],'r-',mec='none',lw=3)
     plt.xlim(timeRangeForLatency)
-    plt.show()
-    plt.waitforbuttonpress()
+    # plt.show()
+    subject = dbRow['subject']
+    date = dbRow['date']
+    depth = dbRow['depth']
+    tetrode = dbRow['tetrode']
+    cluster = int(dbRow['cluster'])
+    brainArea = dbRow['brainArea']
+    cellName = "{}_{}_{}_TT{}c{}".format(subject, date, depth, tetrode, cluster)
 
+    figsize = (5, 5)
+    plt.gcf().set_size_inches(figsize)
+    fullDir = os.path.join(reportDirLatency, brainArea)
+    if not os.path.exists(fullDir):
+        os.mkdir(fullDir)
+    fullName = os.path.join(fullDir, cellName)
+    plt.savefig(fullName,format='png')
+    # plt.waitforbuttonpress()
