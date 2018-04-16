@@ -179,7 +179,7 @@ exp2.add_session('11-23-30', 'k', 'tuningCurve', 'am_tuning_curve')
 #Didn't find anything sound-responsive, so tried at a higher depth
 
 #Reference on tetrode 7
-exp2.add_site(2950, tetrodes=[1,2,3,4,8])
+exp2.add_site(2950, tetrodes=[1,2,4,8])
 exp2.add_session('11-38-43', None, 'noisebursts', 'am_tuning_curve')
 exp2.add_session('11-40-15', 'l', 'tuningCurve', 'am_tuning_curve')
 
