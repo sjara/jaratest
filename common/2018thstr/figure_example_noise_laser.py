@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 
 FIGNAME = 'figure_noise_laser'
@@ -55,26 +55,34 @@ axThalSites.axis('off')
 axACSites = plt.subplot(gs[1, 2])
 axACSites.axis('off')
 
-thalExample = {'cluster': 2,
-               'date': '2017-03-14',
-               'depth': 3703.0,
-               'subject': 'pinp016',
-               'tetrode': 2}
+# thalExample = {'cluster': 2,
+#                'date': '2017-03-14',
+#                'depth': 3703.0,
+#                'subject': 'pinp016',
+#                'tetrode': 2}
 
-acExample = {'cluster': 4,
-             'date': '2017-03-23',
-             'depth': 1604.0,
-             'subject': 'pinp017',
-             'tetrode': 7}
+thalExample = {'cluster': 5,
+               'date': '2017-02-15',
+               'depth': 2902.0,
+               'subject': 'pinp015',
+               'tetrode': 7}
+
+# acExample = {'cluster': 4,
+#              'date': '2017-03-23',
+#              'depth': 1604.0,
+#              'subject': 'pinp017',
+#              'tetrode': 7}
+
+acExample = {'cluster': 5,
+             'date': '2017-02-02',
+             'depth': 1275.0,
+             'subject': 'pinp015',
+             'tetrode': 4}
 
 indRowThal, rowThal = celldatabase.find_cell(db, **thalExample)
 indRowAC, rowAC = celldatabase.find_cell(db, **acExample)
 
 ## -- Plot colors -- ##
-colorAThNoise = 'k'
-colorAThLaser = 'k'
-colorACNoise = 'k'
-colorACLaser = 'k'
 colorNoise = figparams.colp['sound']
 colorLaser = figparams.colp['blueLaser']
 stimLineWidth = 4
@@ -123,7 +131,7 @@ if smoothPSTH:
     thisPSTH = np.convolve(thisPSTH, winShape, mode='same')
 ratePSTH = thisPSTH/float(binsize/1000.0)
 axThalNoisePSTH.plot(psthTimeBase, ratePSTH, '-',
-                     color=colorAThNoise, lw=psthLineWidth)
+                     color=colorNoise, lw=psthLineWidth)
 axThalNoisePSTH.set_xlim(displayRange)
 extraplots.boxoff(axThalNoisePSTH)
 axThalNoisePSTH.set_ylim([0, max(ratePSTH)])
@@ -159,7 +167,7 @@ if smoothPSTH:
     thisPSTH = np.convolve(thisPSTH, winShape, mode='same')
 ratePSTH = thisPSTH/float(binsize/1000.0)
 axThalLaserPSTH.plot(psthTimeBase, ratePSTH, '-',
-                     color=colorAThLaser, lw=psthLineWidth)
+                     color=colorLaser, lw=psthLineWidth)
 axThalLaserPSTH.set_xlim(displayRange)
 extraplots.boxoff(axThalLaserPSTH)
 axThalLaserPSTH.set_ylim([0, max(ratePSTH)])
@@ -196,7 +204,7 @@ if smoothPSTH:
     thisPSTH = np.convolve(thisPSTH, winShape, mode='same')
 ratePSTH = thisPSTH/float(binsize/1000.0)
 axACNoisePSTH.plot(psthTimeBase, ratePSTH, '-',
-                     color=colorAThNoise, lw=psthLineWidth)
+                     color=colorNoise, lw=psthLineWidth)
 axACNoisePSTH.set_xlim(displayRange)
 extraplots.boxoff(axACNoisePSTH)
 axACNoisePSTH.set_ylim([0, max(ratePSTH)])
@@ -232,7 +240,7 @@ if smoothPSTH:
     thisPSTH = np.convolve(thisPSTH, winShape, mode='same')
 ratePSTH = thisPSTH/float(binsize/1000.0)
 axACLaserPSTH.plot(psthTimeBase, ratePSTH, '-',
-                     color=colorAThLaser, lw=psthLineWidth)
+                     color=colorLaser, lw=psthLineWidth)
 axACLaserPSTH.set_xlim(displayRange)
 extraplots.boxoff(axACLaserPSTH)
 axACLaserPSTH.set_ylim([0, max(ratePSTH)])

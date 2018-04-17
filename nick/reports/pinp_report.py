@@ -94,7 +94,6 @@ def plot_example_with_rate(subplotSpec, spikeTimes, indexLimitsEachTrial, freqEa
     return (axRaster, axRate)
 
 def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
-
     #Init cell object
     cell = ephyscore.Cell(dbRow, useModifiedClusters=useModifiedClusters)
 

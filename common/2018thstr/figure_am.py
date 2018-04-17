@@ -14,7 +14,6 @@ reload(figparams)
 
 FIGNAME = 'figure_am'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
-# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 
 outputDir='/tmp'
@@ -26,15 +25,10 @@ db = pd.read_hdf(dbPath, key='dataframe')
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 goodLaser = goodShape.query('autoTagged==1')
+goodNSpikes = goodLaser.query('nSpikes>2000')
 
-# goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
-# goodLaser = goodISI.query('autoTagged==1')
-
-# popStatColumn = 'd_aMax'
-# popStatCol = 'mutualInfoBC'
-
-ac = goodLaser.groupby('brainArea').get_group('rightAC')
-thal = goodLaser.groupby('brainArea').get_group('rightThal')
+ac = goodNSpikes.groupby('brainArea').get_group('rightAC')
+thal = goodNSpikes.groupby('brainArea').get_group('rightThal')
 
 np.random.seed(0)
 

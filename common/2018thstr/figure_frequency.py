@@ -5,6 +5,7 @@ import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
 from jaratoolbox import extraplots
 from jaratoolbox import celldatabase
+from jaratest.nick.reports import pinp_report
 from scipy import stats
 import pandas as pd
 import figparams
@@ -24,18 +25,10 @@ def medline(ax, yval, midline, width, color='k', linewidth=3):
 FIGNAME = 'figure_frequency_tuning'
 titleExampleBW=True
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
-# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_with_latency.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 exData = np.load(exampleDataPath)
 np.random.seed(8)
-
-# goodLaser = db.query('pulsePval<0.05 and pulseZscore>0 and trainRatio>0.8')
-# goodLaser = db[db['taggedCond']==0]
-# goodLaser = db[db['autoTagged']==1]
-# goodStriatum = db.groupby('brainArea').get_group('rightAstr').query('isiViolations<0.02 and spikeShapeQuality>2')
-# goodLaserPlusStriatum = goodLaser.append(goodStriatum, ignore_index=True)
 
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
@@ -46,15 +39,13 @@ goodFit = goodLaser.query('rsquaredFit > 0.08')
 #Calculate the midpoint of the gaussian fit
 goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
 goodFitToUse = goodFit.query('fitMidPoint<32000')
+goodFitToUseNSpikes = goodFitToUse.query('nSpikes>2000')
 
 #Which dataframe to use
-# dataframe = goodFit
-dataframe = goodFitToUse
-# dataframe = goodLaser #NOTE: This is ignoring all the quality-control checks. We should use the one above, ideally
+dataframe = goodFitToUseNSpikes
 
 ac = dataframe.groupby('brainArea').get_group('rightAC')
 thal = dataframe.groupby('brainArea').get_group('rightThal')
-
 
 PANELS = [1, 1, 1, 1, 1, 1, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
@@ -149,20 +140,7 @@ plt.text(-0.3, 1.07, 'E', ha='center', va='center',
 #              fontsize=fontSizePanel, fontweight='bold')
 
 
-##### Cells to use #####
-# Criteria: Want cells where the threshold and flanks are well-captured.
-#AC1 - pinp016 2017-03-09 1904 TT6c6: Beautiful cell with wide looking tuning
-#AC2 - pinp017 2017-03-22 1143 TT6c5: Sharper looking tuning on this cell
-
-#Thal1 - pinp015 2017-02-15 3110 TT7c3
-#Thal2 - pinp016 2017-03-16 3880 TT3c6
-
-#Check these cells later to make sure they are in the striatum...
-#Str1 - pinp020 2017-05-10 2682 TT7c3: Good looking tuning but threshold at 15
-#Str2 - pinp025 2017-09-01 2111 TT4c3: High threshold but good tuning
-
 ##### Thalamus #####
-# -- Panel: Thalamus sharp tuning --
 
 lowFreq = 2
 highFreq = 40
@@ -177,7 +155,6 @@ intensities = np.linspace(15, 70, nIntenLabels)
 intenTickLocations = np.linspace(0, 11, nIntenLabels)
 
 if PANELS[0]:
-    # Plot stuff
     exampleKey = 'Thal0'
     exDataFR = exData[exampleKey]/0.1
     # cax = axThalamus.imshow(np.flipud(exDataFR), interpolation='nearest', cmap='Blues')
@@ -209,9 +186,7 @@ if PANELS[0]:
 
 
 ##### Cortex #####
-# -- Panel: Cortex sharp tuning --
 if PANELS[3]:
-    # Plot stuff
     exampleKey = 'AC0'
 
     exDataFR = exData[exampleKey]/0.1
