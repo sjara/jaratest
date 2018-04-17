@@ -90,11 +90,11 @@ for indRow, dbRow in acCells.iterrows():
     # print tract
 
 
-outputDir = '/mnt/jarahubdata/papers/2018thstr/figures/figure_noise_laser/'
+# outputDir = '/mnt/jarahubdata/papers/2018thstr/figures/figure_noise_laser/'
+outputDir = '/tmp'
 for indFig, fig in enumerate(figs):
     plt.figure(fig.number)
     extraplots.save_figure('AC_tracts{}'.format(indFig+1), 'svg', (5, 3), outputDir=outputDir)
-# extraplots.save_figure('tractsAC', 'svg', (5, 3), outputDir='/tmp')
 plt.show()
 
 # tracts = [

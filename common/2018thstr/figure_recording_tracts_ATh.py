@@ -68,6 +68,7 @@ lineWidth = 1
 markerColor = 'r'
 markerSize = 1
 
+allY = []
 # for tract in tracts:
 for indRow, dbRow in thalCells.iterrows():
 
@@ -95,13 +96,16 @@ for indRow, dbRow in thalCells.iterrows():
     plt.hold(1)
     # tractAx.plot([tract['tipCoords'][0], tract['brainSurfCoords'][0]], [tract['tipCoords'][1], tract['brainSurfCoords'][1]],
     #             color=lineColor, linewidth=lineWidth)
-    print dbRow['cellX']
-    print dbRow['cellY']
-    print "\n"
+    allY.append(dbRow['cellY'])
+    if dbRow['cellY']>200:
+        print dbRow
     tractAx.plot(dbRow['cellX'], dbRow['cellY'], '.', mfc=markerColor, mec=markerColor, ms=markerSize)
     plt.hold(1)
 
-outputDir = '/mnt/jarahubdata/papers/2018thstr/figures/figure_noise_laser/'
+
+# outputDir = '/mnt/jarahubdata/papers/2018thstr/figures/figure_noise_laser/'
+# outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+outputDir = '/tmp'
 for indFig, fig in enumerate(figs):
     plt.figure(fig.number)
     extraplots.save_figure('ATh_tracts{}'.format(indFig+1), 'svg', (5, 3), outputDir=outputDir)

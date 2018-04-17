@@ -76,6 +76,7 @@ acColorMap = 'Reds'
 
 colorATh = figparams.cp.TangoPalette['SkyBlue2']
 colorAC = figparams.cp.TangoPalette['ScarletRed1']
+markerAlpha = 0.5
 
 labelPosX = [0.03, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
 labelPosY = [0.92, 0.42]    # Vert position for panel labels
@@ -231,10 +232,10 @@ if PANELS[8]:
     thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
 
     pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-    axBW.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
+    axBW.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
     medline(axBW, np.median(thalPopStat), 0, 0.5)
     pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-    axBW.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
+    axBW.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
     medline(axBW, np.median(acPopStat), 1, 0.5)
     axBW.set_ylabel('BW10')
     # tickLabels = ['ATh:Str', 'AC:Str']
@@ -271,7 +272,7 @@ if PANELS[8]:
     # for position, groupName in enumerate(order):
     #     data = groups.get_group(groupName)[column].values
     #     pos = jitter(np.ones(len(data))*position, 0.20)
-    #     axBW.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=0.5)
+    #     axBW.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=markerAlpha)
     #     medline(axBW, np.median(data), position, 0.5)
     #     order_n.append(len(data))
     #     dataList.append(data)
@@ -305,10 +306,10 @@ if PANELS[8]:
     thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
 
     pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-    axThresh.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
+    axThresh.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
     medline(axThresh, np.median(thalPopStat), 0, 0.5)
     pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-    axThresh.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
+    axThresh.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
     medline(axThresh, np.median(acPopStat), 1, 0.5)
     axThresh.set_ylabel('Threshold (dB SPL)')
     # tickLabels = ['ATh:Str', 'AC:Str']
@@ -343,7 +344,7 @@ if PANELS[8]:
     # for position, groupName in enumerate(order):
     #     data = groups.get_group(groupName)[column].values
     #     pos = jitter(np.ones(len(data))*position, 0.20)
-    #     axThresh.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=0.5)
+    #     axThresh.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=markerAlpha)
     #     medline(axThresh, np.median(data), position, 0.5)
     #     order_n.append(len(data))
     #     dataList.append(data)
@@ -373,10 +374,10 @@ if PANELS[8]:
     thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
 
     pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-    axLatency.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
+    axLatency.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
     medline(axLatency, np.median(thalPopStat), 0, 0.5)
     pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-    axLatency.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
+    axLatency.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
     medline(axLatency, np.median(acPopStat), 1, 0.5)
     axLatency.set_ylabel('Latency (s)')
     # tickLabels = ['ATh:Str', 'AC:Str']
@@ -411,7 +412,7 @@ if PANELS[8]:
     # for position, groupName in enumerate(order):
     #     data = groups.get_group(groupName)[column].values * 1000
     #     pos = jitter(np.ones(len(data))*position, 0.20)
-    #     axLatency.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=0.5)
+    #     axLatency.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=markerAlpha)
     #     medline(axLatency, np.nanmedian(data), position, 0.5)
     #     order_n.append(len(data))
     #     dataList.append(data)

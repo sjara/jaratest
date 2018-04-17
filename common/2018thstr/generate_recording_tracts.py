@@ -19,9 +19,8 @@ def tract_fraction(tipCoords, brainSurfCoords, fractionFromSurface):
     coordsAtFraction = [brainSurfCoords[0]+vecToAdd[0], brainSurfCoords[1]+vecToAdd[1]]
     return coordsAtFraction
 
-
-# tractsDBPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'tracts_db.h5')
-# tractsDB = pd.read_hdf(tractsDBPath, key='dataframe')
+tractsDBPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'tracts_db.h5')
+tractsDB = pd.read_hdf(tractsDBPath, key='dataframe')
 # tractsDB = pd.DataFrame(allTracts)
 
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
@@ -87,8 +86,8 @@ for indRow, dbRow in goodLaser.iterrows():
         filenameSVG = os.path.join(settings.HISTOLOGY_PATH, tract['subject'].values[0], registrationFolder, '{}.svg'.format(tract['recordingTract'].values[0]))
 
         if not os.path.exists(filenameSVGpre): # Need to make the SVG file if the pre does not exist
-            print "Generating SVG file: {}".format(filenameSVG)
-            (atlasSize, sliceSize) = ha.save_svg_for_registration(filenameSVG, filenameAtlas, filenameSlice)
+            print "Generating SVG file: {}".format(filenameSVGpre)
+            (atlasSize, sliceSize) = ha.save_svg_for_registration(filenameSVGpre, filenameAtlas, filenameSlice)
 
         if not os.path.exists(filenameSVG): # If we have not registered the svg file yet
             print "Please register {}".format(filenameSVGpre)
@@ -138,7 +137,7 @@ for indRow, dbRow in goodLaser.iterrows():
                 print "Bad coords, skipping {}".format(tract)
                 continue
 
-            cellFracFromSurface = np.array(dbRow['depth'])/float(tract['maxDepth'].values[0])
+            cellFracFromSurface = np.array(dbRow['depth'])/float(dbRow['maxDepth'])
             cellCoords = tract_fraction(tipCoords, brainSurfCoords, cellFracFromSurface)
             print "Cell Coords:"
             # print cellCoords.append(tract['atlasZ'].values[0])
