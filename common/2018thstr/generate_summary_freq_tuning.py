@@ -65,7 +65,6 @@ def find_cf_inds(fra, resp, threshold=0.85):
         resultWithMaxFiring = resultsAtMinInten[resultSpikeCounts.index(max(resultSpikeCounts))]
         return resultWithMaxFiring
 
-
 #Example cells we want to show tuning curves for
 #AC
 examples = {}
