@@ -14,12 +14,13 @@ reload(ephyscore)
 
 SAVE=True
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 cellsToRescue = db.query('autoTagged==1 and isiViolations>0.02 and isiViolations<0.04')
 
 for indRow, dbRow in cellsToRescue.iterrows():
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=False)
     timestamps, samples, recordingNumber = cell.load_all_spikedata()
 
     isiViolations = spikesorting.calculate_ISI_violations(timestamps)
@@ -104,6 +105,6 @@ for indRow, dbRow in cellsToRescue.iterrows():
     db.loc[indRow, 'modifiedISI'] = thisISIviolation
 
 if SAVE:
-    savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-    db.to_hdf(savePath, 'dataframe')
-    print "SAVED DATAFRAME to {}".format(savePath)
+    # savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+    db.to_hdf(dbPath, 'dataframe')
+    print "SAVED DATAFRAME to {}".format(dbPath)

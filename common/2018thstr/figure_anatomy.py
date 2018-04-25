@@ -5,6 +5,7 @@ import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
 from jaratoolbox import extraplots
 from jaratoolbox import histologyanalysis as ha
+from scipy import stats
 import matplotlib.ticker as mticker
 import figparams
 reload(figparams)
@@ -95,8 +96,13 @@ axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals))+animalSplit, jitterFra
 axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, jitterFrac), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None')
 axThalHist.plot(jitter(np.ones(len(anat037VentralTotals))+animalSplit, jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None')
 
+allNonLemTotals = np.concatenate([anat036NonLemTotals, anat037NonLemTotals])
+allVentralTotals = np.concatenate([anat036VentralTotals, anat037VentralTotals])
 nonLemMean = np.mean([np.mean(anat036NonLemTotals), np.mean(anat037NonLemTotals)])
 ventralMean = np.mean([np.mean(anat036VentralTotals), np.mean(anat037VentralTotals)])
+
+statistic, pVal = stats.ranksums(allNonLemTotals, allVentralTotals)
+print("Ranksums test, NonLem vs Ventral totals, p={}".format(pVal))
 
 medline(nonLemMean, 0, 0.5, color='k')
 medline(ventralMean, 1, 0.5, color='k')

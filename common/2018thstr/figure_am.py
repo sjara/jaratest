@@ -14,7 +14,7 @@ reload(figparams)
 
 FIGNAME = 'figure_am'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 
 outputDir='/tmp'
 
@@ -27,10 +27,15 @@ goodShape = goodISI.query('spikeShapeQuality > 2')
 goodLaser = goodShape.query('autoTagged==1')
 goodNSpikes = goodLaser.query('nSpikes>2000')
 
+# goodSoundResponsiveBool = (~pd.isnull(goodNSpikes['BW10'])) | (~pd.isnull(goodNSpikes['highestSyncCorrected'])) | (goodNSpikes['noiseZscore']<0.05)
+# goodSoundResponsive = goodNSpikes[goodSoundResponsiveBool]
+
 ac = goodNSpikes.groupby('brainArea').get_group('rightAC')
 thal = goodNSpikes.groupby('brainArea').get_group('rightThal')
 
 np.random.seed(0)
+
+messages = []
 
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
@@ -81,7 +86,7 @@ plt.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 6)
-gs.update(left=0.1, right=0.90, top=0.95, bottom=0.1, wspace=.4, hspace=0.4)
+gs.update(left=0.1, right=0.90, top=0.95, bottom=0.1, wspace=.8, hspace=0.4)
 
 #Load example data
 exampleDataPath = os.path.join(dataDir, 'data_am_examples.npz')
@@ -114,7 +119,7 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
     ax = plt.gca()
     ax.set_xticks([0, 0.5])
     ax.set_xlabel('Time from\nsound onset (s)')
-    ax.set_ylabel('AM Rate (Hz)')
+    ax.set_ylabel('AM rate (Hz)')
 
     # ax.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
     #             fontsize=fontSizePanel, fontweight='bold')
@@ -172,7 +177,7 @@ axRaster.annotate('A', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction
 spec = gs[0, 2:4]
 if PANELS[1]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'Thal1', color=colorATh)
-    axRaster.set_title('ATh : Str example 2')
+    axRaster.set_title('ATh:Str example 2')
     axRate.set_xlim([0,35])
     axRate.set_xticks([0,35])
 axRaster.annotate('B', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
@@ -183,7 +188,7 @@ spec = gs[1, 0:2]
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[2]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'AC0', color=colorAC)
-    axRaster.set_title('AC > Str example 1')
+    axRaster.set_title('AC:Str example 1')
     axRate.set_xlim([0, 12])
     axRate.set_xticks([0, 12])
 
@@ -196,7 +201,7 @@ spec = gs[1, 2:4]
 #              fontsize=fontSizePanel, fontweight='bold')
 if PANELS[3]:
     (axRaster, axRate) = plot_example_with_rate(spec, 'AC1', color=colorAC)
-    axRaster.set_title('AC>Str example 2')
+    axRaster.set_title('AC:Str example 2')
     axRate.set_xlim([0, 12])
     axRate.set_xticks([0, 12])
 axRaster.annotate('D', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
@@ -221,9 +226,9 @@ pos = jitter(np.ones(len(acPopStat))*1, 0.20)
 axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
 medline(np.median(acPopStat), 1, 0.5)
 if popStatCol == 'mutualInfoPerSpikeBits':
-    plt.ylabel('MI, (Spike rate; AM rate, bits/spike)')
+    plt.ylabel('MI(Firing rate; AM rate) (bits/spike)')
 elif popStatCol == 'mutualInfoBCBits':
-    plt.ylabel('MI, (Spike rate; AM rate, bits)')
+    plt.ylabel('MI(Firing rate; AM rate) (bits)')
 # tickLabels = ['ATh:Str', 'AC:Str']
 tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
 axSummary.set_xticks(range(2))
@@ -234,7 +239,7 @@ extraplots.boxoff(axSummary)
 
 zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
 
-print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+messages.append("{} p={}".format(popStatCol, pVal))
 
 # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
@@ -304,19 +309,19 @@ axSummary.set_xticks(range(2))
 axSummary.set_xticklabels(tickLabels)
 axSummary.set_xlim([-0.5, 1.5])
 extraplots.boxoff(axSummary)
-axSummary.set_ylim([-0.0001, 0.025])
+# axSummary.set_ylim([-0.0001, 0.025])
 
 zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
 
-print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+messages.append("mutualInfoPhase for rates>22Hz,  p={}".format(pVal))
 
 # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
 axSummary.annotate('E', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
             fontsize=fontSizePanel, fontweight='bold')
 
-# yDataMax = max([max(acPopStat), max(thalPopStat)])
-yDataMax = 0.023
+yDataMax = max([max(acPopStat), max(thalPopStat)])
+# yDataMax = 0.023
 yStars = yDataMax + yDataMax*starYfactor
 yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
@@ -327,7 +332,7 @@ else:
     extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='n.s.',
                                         fontSize=fontSizeStars, gapFactor=starGapFactor)
 
-axSummary.set_ylabel('MI (spike rate;stimulus phase, bits)')
+axSummary.set_ylabel('MI(Firing rate;stimulus phase) (bits)')
 extraplots.boxoff(axSummary)
 
 ################### Highest Sync #####################
@@ -338,12 +343,14 @@ thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
 acPopStat = acPopStat[acPopStat>0]
 thalPopStat = thalPopStat[thalPopStat>0]
 
-possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
+# possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
+ytickLabels = [4, 8, 16, 32, 64, 128]
+yticks = np.log(ytickLabels)
 
 acPopStat = np.log(acPopStat)
 thalPopStat = np.log(thalPopStat)
 
-axSummary = plt.subplot(gs[0, 4])
+axSummary = plt.subplot(gs[0, 5])
 
 pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
 axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
@@ -356,14 +363,17 @@ plt.hold(1)
 medline(np.median(acPopStat), 1, 0.5)
 plt.hold(1)
 
+axSummary.set_yticks(yticks)
+axSummary.set_yticklabels(ytickLabels)
+
 
 tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
 axSummary.set_xticks(range(2))
 axSummary.set_xticklabels(tickLabels)
 axSummary.set_xlim([-0.5, 1.5])
 extraplots.boxoff(axSummary)
-axSummary.set_yticks(np.unique(thalPopStat))
-axSummary.set_yticklabels(possibleFreqLabels)
+# axSummary.set_yticks(np.unique(thalPopStat))
+# axSummary.set_yticklabels(possibleFreqLabels)
 # axSummary.set_ylim([-0.001, 0.161])
 
 
@@ -372,7 +382,7 @@ axSummary.set_yticklabels(possibleFreqLabels)
 # yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
 zVal, pVal = stats.mannwhitneyu(thalPopStat, acPopStat)
-print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+messages.append("{} p={}".format(popStatCol, pVal))
 if pVal < 0.05:
     extraplots.new_significance_stars([0, 1], np.log(170), np.log(1.1), starMarker='*',
                                         fontSize=fontSizeStars, gapFactor=starGapFactor)
@@ -387,7 +397,7 @@ plt.hold(1)
 ################### Percent non-sync #####################
 # axSummary = plt.subplot(gs[0, 5])
 
-pieChartGS = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs[0,5])
+pieChartGS = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs[0,4])
 
 axThalPie = plt.subplot(pieChartGS[0, 0])
 axACPie = plt.subplot(pieChartGS[1, 0])
@@ -404,12 +414,12 @@ acNonSyncN = len(acPopStat[acPopStat == 0])
 acSyncFrac = acSyncN/float(acSyncN + acNonSyncN)
 acNonSyncFrac = acNonSyncN/float(acSyncN + acNonSyncN)
 
-pieWedges = axACPie.pie([acNonSyncFrac, acSyncFrac], colors=[colorAC, 'w'], shadow=False, startangle=0)
+pieWedges = axACPie.pie([acNonSyncFrac, acSyncFrac], colors=['w', colorAC], shadow=False, startangle=0)
 for wedge in pieWedges[0]:
     wedge.set_edgecolor(colorAC)
 
-axACPie.annotate('Non-Sync.', xy=[0.8, 0.8], rotation=0, fontweight='bold', textcoords='axes fraction')
-axACPie.annotate('Sync.', xy=[0.05, 0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
+axACPie.annotate('Non-Sync\n{}%'.format(int(100*acNonSyncFrac)), xy=[0.8, 0.8], rotation=0, fontweight='bold', textcoords='axes fraction')
+axACPie.annotate('Sync\n{}%'.format(int(100*acSyncFrac)), xy=[-0.05, -0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
 axACPie.set_aspect('equal')
 
 thalSyncN = len(thalPopStat[thalPopStat > 0])
@@ -417,13 +427,43 @@ thalNonSyncN = len(thalPopStat[thalPopStat == 0])
 thalSyncFrac = thalSyncN/float(thalSyncN + thalNonSyncN)
 thalNonSyncFrac = thalNonSyncN/float(thalSyncN + thalNonSyncN)
 
-pieWedges = axThalPie.pie([thalNonSyncFrac, thalSyncFrac], colors=[colorATh, 'w'], shadow=False, startangle=0)
+pieWedges = axThalPie.pie([thalNonSyncFrac, thalSyncFrac], colors=['w', colorATh], shadow=False, startangle=0)
 for wedge in pieWedges[0]:
     wedge.set_edgecolor(colorATh)
 
-axThalPie.annotate('Non-Sync.', xy=[0.8, 0.8], rotation=0, fontweight='bold', textcoords='axes fraction')
-axThalPie.annotate('Sync.', xy=[0.05, 0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
+axThalPie.annotate('Non-Sync\n{}%'.format(int(100*thalNonSyncFrac)), xy=[0.8, 0.8], rotation=0, fontweight='bold', textcoords='axes fraction')
+axThalPie.annotate('Sync\n{}%'.format(int(100*thalSyncFrac)), xy=[-0.05, -0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
 axThalPie.set_aspect('equal')
+
+oddsratio, pValue = stats.fisher_exact([[acSyncN, thalSyncN],
+                                        [acNonSyncN, thalNonSyncN]])
+chi2, p, dof, expected = stats.chi2_contingency([[acSyncN, thalSyncN],
+                                        [acNonSyncN, thalNonSyncN]])
+# print "p-Val for fisher exact test: {}".format(pValue)
+# if pValue < 0.05:
+#     starMarker = '*'
+# else:
+#     starMarker = 'n.s.'
+
+
+# xBar = -2
+# #FarUntagged, CloseUntagged, tagged
+# yCircleCenters = [0, 3]
+# xTickWidth = 0.2
+# yGapWidth = 1.5
+
+# def plot_y_lines_with_ticks(ax, x, y1, y2, gapwidth, tickwidth, color='k', starMarker="*", fontSize=9):
+#     ax.plot([x, x], [y1, np.mean([y1, y2])-(gapwidth/2)], '-', clip_on=False, color=color)
+#     ax.hold(1)
+#     ax.plot([x, x], [np.mean([y1, y2])+(gapwidth/2), y2], '-', clip_on=False, color=color)
+#     ax.plot([x, x+xTickWidth], [y1, y1], '-', clip_on=False, color=color)
+#     ax.plot([x, x+xTickWidth], [y2, y2], '-', clip_on=False, color=color)
+
+#     ax.text(x, np.mean([y1, y2]), starMarker, fontsize=fontSize, va='center',
+#             ha='center', clip_on=False, rotation=90)
+
+# plot_y_lines_with_ticks(axACPie, xBar, yCircleCenters[0], yCircleCenters[1],
+#                         yGapWidth, xTickWidth, starMarker=starMarker)
 
 # width = 0.5
 # plt.hold(1)
@@ -452,13 +492,13 @@ axThalPie.set_aspect('equal')
 # axSummary.set_xticklabels(tickLabels)
 # axSummary.set_ylabel('% neurons', labelpad=-5)
 
-
-
-
 ##########################################################
 
-
 plt.show()
+print "\nSTATISTICS:\n"
+for message in messages:
+    print(message)
+print "\n"
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

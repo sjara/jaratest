@@ -104,7 +104,8 @@ def spikes_each_trial(spikeTimes, trialIndicesEachSpike):
 
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 dataframe = pd.read_hdf(dbPath, key='dataframe')
 
 #ITERATE THROUGH ALL CELLS IN THE DATABASE
@@ -113,7 +114,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'mutualInfo'] = np.nan
         print 'BREAKING, AM'
         continue
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
     # spikeData, eventData = celldatabase.get_session_ephys(cell, 'am')
     try:
         ephysData, bdata = cell.load('am')
@@ -240,9 +241,9 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'mutualInfoPerSpikePhase_{}Hz'.format(int(freq))] = miCorrectedBitsPerSpike
 
 # savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dataframe.to_hdf(savePath, 'dataframe')
-print "SAVED DATAFRAME to {}".format(savePath)
+# savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dataframe.to_hdf(dbPath, 'dataframe')
+print "SAVED DATAFRAME to {}".format(dbPath)
     #     miEachFreq.append(miCorrectedBits)
 
     # miEachFreq = np.array(miEachFreq)

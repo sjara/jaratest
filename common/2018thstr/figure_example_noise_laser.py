@@ -14,18 +14,27 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 
 FIGNAME = 'figure_noise_laser'
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 figFilename = 'plots_noise_laser' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [6, 3] # In inches
+figSize = [12, 6] # In inches
 SAVE_FIGURE=1
 
 gs = gridspec.GridSpec(2, 3)
 gs.update(hspace=0.4)
+plt.hold(1)
+
+labelPosX = [0.04, 0.355, 0.66]   # Horiz position for panel labels
+labelPosY = [0.43, 0.90]    # Vert position for panel labels
+
+fontSizeLabels = figparams.fontSizeLabels
+fontSizeTicks = figparams.fontSizeTicks
+fontSizePanel = figparams.fontSizePanel
 
 axThalCartoon = plt.subplot(gs[0,0])
 axThalCartoon.axis('off')
@@ -55,29 +64,32 @@ axThalSites.axis('off')
 axACSites = plt.subplot(gs[1, 2])
 axACSites.axis('off')
 
-# thalExample = {'cluster': 2,
-#                'date': '2017-03-14',
-#                'depth': 3703.0,
-#                'subject': 'pinp016',
-#                'tetrode': 2}
 
-thalExample = {'cluster': 5,
+thalExample = {'cluster': 2,
                'date': '2017-02-15',
                'depth': 2902.0,
                'subject': 'pinp015',
-               'tetrode': 7}
+               'tetrode': 8}
 
-# acExample = {'cluster': 4,
-#              'date': '2017-03-23',
-#              'depth': 1604.0,
-#              'subject': 'pinp017',
-#              'tetrode': 7}
+#Good noise response but only onset laser response
+# thalExample = {'cluster': 3,
+#                'date': '2017-11-16',
+#                'depth': 3046.0,
+#                'subject': 'pinp026',
+#                'tetrode': 4}
 
 acExample = {'cluster': 5,
              'date': '2017-02-02',
              'depth': 1275.0,
              'subject': 'pinp015',
-             'tetrode': 4}
+             'tetrode': 1}
+
+#This example is noisey and not as good
+# acExample = {'cluster': 6,
+#              'date': '2017-03-09',
+#              'depth': 1904.0,
+#              'subject': 'pinp016',
+#              'tetrode': 6}
 
 indRowThal, rowThal = celldatabase.find_cell(db, **thalExample)
 indRowAC, rowAC = celldatabase.find_cell(db, **acExample)
@@ -85,6 +97,8 @@ indRowAC, rowAC = celldatabase.find_cell(db, **acExample)
 ## -- Plot colors -- ##
 colorNoise = figparams.colp['sound']
 colorLaser = figparams.colp['blueLaser']
+colorPSTH = 'k'
+colorRaster = 'k'
 stimLineWidth = 4
 psthLineWidth = 2
 rasterMS = 1
@@ -131,7 +145,7 @@ if smoothPSTH:
     thisPSTH = np.convolve(thisPSTH, winShape, mode='same')
 ratePSTH = thisPSTH/float(binsize/1000.0)
 axThalNoisePSTH.plot(psthTimeBase, ratePSTH, '-',
-                     color=colorNoise, lw=psthLineWidth)
+                     color=colorPSTH, lw=psthLineWidth)
 axThalNoisePSTH.set_xlim(displayRange)
 extraplots.boxoff(axThalNoisePSTH)
 axThalNoisePSTH.set_ylim([0, max(ratePSTH)])
@@ -167,12 +181,13 @@ if smoothPSTH:
     thisPSTH = np.convolve(thisPSTH, winShape, mode='same')
 ratePSTH = thisPSTH/float(binsize/1000.0)
 axThalLaserPSTH.plot(psthTimeBase, ratePSTH, '-',
-                     color=colorLaser, lw=psthLineWidth)
+                     color=colorPSTH, lw=psthLineWidth)
 axThalLaserPSTH.set_xlim(displayRange)
 extraplots.boxoff(axThalLaserPSTH)
 axThalLaserPSTH.set_ylim([0, max(ratePSTH)])
 axThalLaserPSTH.set_yticks([0, np.floor(np.max(ratePSTH))])
 axThalLaserPSTH.set_ylabel('spk/sec')
+axThalLaserPSTH.set_xlabel('Time (s)')
 
 
 #AC Noise
@@ -204,7 +219,7 @@ if smoothPSTH:
     thisPSTH = np.convolve(thisPSTH, winShape, mode='same')
 ratePSTH = thisPSTH/float(binsize/1000.0)
 axACNoisePSTH.plot(psthTimeBase, ratePSTH, '-',
-                     color=colorNoise, lw=psthLineWidth)
+                     color=colorPSTH, lw=psthLineWidth)
 axACNoisePSTH.set_xlim(displayRange)
 extraplots.boxoff(axACNoisePSTH)
 axACNoisePSTH.set_ylim([0, max(ratePSTH)])
@@ -240,12 +255,28 @@ if smoothPSTH:
     thisPSTH = np.convolve(thisPSTH, winShape, mode='same')
 ratePSTH = thisPSTH/float(binsize/1000.0)
 axACLaserPSTH.plot(psthTimeBase, ratePSTH, '-',
-                     color=colorLaser, lw=psthLineWidth)
+                     color=colorPSTH, lw=psthLineWidth)
 axACLaserPSTH.set_xlim(displayRange)
 extraplots.boxoff(axACLaserPSTH)
 axACLaserPSTH.set_ylim([0, max(ratePSTH)])
 axACLaserPSTH.set_yticks([0, np.floor(np.max(ratePSTH))])
 axACLaserPSTH.set_ylabel('spk/sec')
+axACLaserPSTH.set_xlabel('Time (s)')
+
+
+
+axACLaserPSTH.annotate('A', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+axACLaserPSTH.annotate('B', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+axACLaserPSTH.annotate('C', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+axACLaserPSTH.annotate('D', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+axACLaserPSTH.annotate('E', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+axACLaserPSTH.annotate('F', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

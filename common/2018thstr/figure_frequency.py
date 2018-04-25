@@ -25,7 +25,8 @@ def medline(ax, yval, midline, width, color='k', linewidth=3):
 FIGNAME = 'figure_frequency_tuning'
 titleExampleBW=True
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 exData = np.load(exampleDataPath)
 np.random.seed(8)
@@ -34,7 +35,7 @@ goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 goodLaser = goodShape.query('autoTagged==1')
 
-goodFit = goodLaser.query('rsquaredFit > 0.08')
+goodFit = goodLaser.query('rsquaredFit > 0.04')
 
 #Calculate the midpoint of the gaussian fit
 goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
@@ -76,7 +77,7 @@ acColorMap = 'Reds'
 
 colorATh = figparams.cp.TangoPalette['SkyBlue2']
 colorAC = figparams.cp.TangoPalette['ScarletRed1']
-markerAlpha = 0.5
+markerAlpha = 1
 
 labelPosX = [0.03, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
 labelPosY = [0.92, 0.42]    # Vert position for panel labels
@@ -140,6 +141,7 @@ plt.text(-0.3, 1.07, 'E', ha='center', va='center',
 # axBW.annotate('H', xy=(labelPosX[4],labelPosY[0]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
 
+messages = []
 
 ##### Thalamus #####
 
@@ -248,7 +250,8 @@ if PANELS[8]:
 
     zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
 
-    print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+    # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+    messages.append("{} p={}".format(popStatCol, pVal))
 
     if pVal<0.05:
         starMarker='*'
@@ -305,11 +308,23 @@ if PANELS[8]:
     acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
     thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
 
-    pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-    axThresh.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
+    plt.sca(axThresh)
+
+    spacing = 0.05
+
+    # pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+    # axThresh.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
+    markers = extraplots.spread_plot(0, thalPopStat, spacing)
+    # plt.setp(markers, mec = colorATh, mfc = 'None', alpha=markerAlpha)
+    plt.setp(markers, mec = colorATh, mfc = 'None')
     medline(axThresh, np.median(thalPopStat), 0, 0.5)
-    pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-    axThresh.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
+
+    # pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+    # axThresh.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
+    markers = extraplots.spread_plot(1, acPopStat, spacing)
+    # plt.setp(markers, mec = colorAC, mfc = 'None', alpha=markerAlpha)
+    plt.setp(markers, mec = colorAC, mfc = 'None')
+
     medline(axThresh, np.median(acPopStat), 1, 0.5)
     axThresh.set_ylabel('Threshold (dB SPL)')
     # tickLabels = ['ATh:Str', 'AC:Str']
@@ -322,7 +337,8 @@ if PANELS[8]:
 
     zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
 
-    print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+    # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+    messages.append("{} p={}".format(popStatCol, pVal))
 
     if pVal<0.05:
         starMarker='*'
@@ -390,7 +406,8 @@ if PANELS[8]:
 
     zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
 
-    print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+    # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+    messages.append("{} p={}".format(popStatCol, pVal))
 
     if pVal<0.05:
         starMarker='*'
@@ -445,27 +462,12 @@ if PANELS[8]:
 # axThresh.annotate('N = {} ATh->Str \nN = {} AC->Str'.format(order_n[0], order_n[1]),
 #                 xy=(0.88, 0.82), xycoords='figure fraction', fontsize=fontSizeNLabel, fontweight='bold')
 
-
 plt.show()
 
-ath = dataframe.groupby('brainArea').get_group('rightThal')
-ac = dataframe.groupby('brainArea').get_group('rightAC')
-# thalBW = thal['BW10'][pd.notnull(thal['BW10'])]
-# ACBW = AC['BW10'][pd.notnull(thal['BW10'])]
-athBW = ath['BW10']
-acBW = ac['BW10']
-stat, pVal = stats.ranksums(athBW, acBW)
-print "p (BW10) = {}".format(pVal)
-
-athThresh = ath['threshold']
-acThresh = ac['threshold']
-stat, pVal = stats.ranksums(athThresh, acThresh)
-print "p (threshold) = {}".format(pVal)
-
-athLatency = ath['latency']
-acLatency = ac['latency']
-stat, pVal = stats.ranksums(athLatency, acLatency)
-print "p (latency) = {}".format(pVal)
+print "\nSTATISTICS:\n"
+for message in messages:
+    print(message)
+print "\n"
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
