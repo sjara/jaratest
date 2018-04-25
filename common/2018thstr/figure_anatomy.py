@@ -4,12 +4,9 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
 from jaratoolbox import extraplots
-from jaratoolbox import histologyanalysis as ha
 from scipy import stats
-import matplotlib.ticker as mticker
 import figparams
 reload(figparams)
-import random
 
 np.random.seed(54)
 
@@ -40,7 +37,8 @@ figFilename = 'plots_anatomy' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [3, 5] # In inches
 # outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
-outputDir = figparams.FIGURE_OUTPUT_DIR
+# outputDir = figparams.FIGURE_OUTPUT_DIR
+outputDir = '/tmp'
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -62,7 +60,7 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(3, 3)
 # gs.update(left=0.15, right=0.95, top=0.90, bottom=0.1, wspace=.3, hspace=0.5)
 
-annotationVolume = ha.AllenAnnotation()
+# annotationVolume = ha.AllenAnnotation()
 
 # -- Panel: Injection method --
 axInjectionCartoon = plt.subplot(gs[0, :])

@@ -1,9 +1,5 @@
 import os
 import numpy as np
-from numpy import inf
-from scipy import optimize
-from scipy import stats
-from scipy import signal
 from jaratoolbox import spikesanalysis
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
@@ -19,7 +15,8 @@ dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldat
 db = pd.read_hdf(dbPath, key='dataframe')
 
 FIGNAME = 'figure_noise_laser'
-outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+# outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+outputDir = '/tmp'
 figFilename = 'plots_noise_laser' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [12, 6] # In inches

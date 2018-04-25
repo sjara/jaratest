@@ -6,7 +6,6 @@ from jaratoolbox import settings
 from jaratoolbox import extraplots
 from jaratoolbox import behavioranalysis
 from jaratoolbox import spikesanalysis
-from collections import Counter
 from scipy import stats
 import pandas as pd
 import figparams
