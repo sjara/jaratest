@@ -400,7 +400,7 @@ if PANELS[8]:
     tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
     axLatency.set_xticks(range(2))
     axLatency.set_xticklabels(tickLabels)
-    # axLatency.set_xlim([-0.5, 1.5])
+    axLatency.set_xlim([-0.5, 1.5])
     extraplots.boxoff(axLatency)
     axLatency.set_ylim([-0.001, 0.07])
 

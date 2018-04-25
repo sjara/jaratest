@@ -435,10 +435,10 @@ axThalPie.annotate('Non-Sync\n{}%'.format(int(100*thalNonSyncFrac)), xy=[0.8, 0.
 axThalPie.annotate('Sync\n{}%'.format(int(100*thalSyncFrac)), xy=[-0.05, -0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
 axThalPie.set_aspect('equal')
 
-oddsratio, pValue = stats.fisher_exact([[acSyncN, thalSyncN],
-                                        [acNonSyncN, thalNonSyncN]])
-chi2, p, dof, expected = stats.chi2_contingency([[acSyncN, thalSyncN],
-                                        [acNonSyncN, thalNonSyncN]])
+# oddsratio, pValue = stats.fisher_exact([[acSyncN, thalSyncN],
+#                                         [acNonSyncN, thalNonSyncN]])
+# chi2, p, dof, expected = stats.chi2_contingency([[acSyncN, thalSyncN],
+#                                         [acNonSyncN, thalNonSyncN]])
 # print "p-Val for fisher exact test: {}".format(pValue)
 # if pValue < 0.05:
 #     starMarker = '*'
