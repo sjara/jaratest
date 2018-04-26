@@ -35,8 +35,9 @@ exp1.laserCalibration = {
     '1.5':2.1,
     '2.0':2.7,
     '2.5':3.3,
-exp3.add_site(2950, tetrodes=[1,2,3,4,6])
-exp3.add_session('12-41-14', None, 'noisebursts'
+    '3.0':4.3,
+    '3.5':5.3,
+    '4.0':6.4
 }
 
 #Tetrode 1 has reference; threshold set to 55mV
@@ -49,9 +50,9 @@ exp1.add_session('13-11-46', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('13-14-38', 'b', 'tuningCurve', 'am_tuning_curve')
 
 exp1.add_site(3000, tetrodes=[2,3,4,5,6])
-exp1.add_session('13-21-09', None, 'nois
-exp3.add_site(2950, tetrodes=[1,2,3,4,6])
-exp3.add_session('12-41-14', None, 'noisebursts'gCurve', 'am_tuning_curve')
+exp1.add_session('13-21-09', None, 'noisebursts', 'am_tuning_curve')
+exp1.add_session('13-23-10', 'c', 'tuningCurve', 'am_tuning_curve')
+exp1.add_session('13-29-00', 'd', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('13-43-51', 'e', 'laserTuningCurve', 'laser_am_tuning_curve')
 
 exp1.add_site(3050, tetrodes=[2,3,4,5,6])
