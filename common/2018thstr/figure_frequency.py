@@ -251,52 +251,15 @@ if PANELS[8]:
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
 
-    if pVal<0.05:
-        starMarker='*'
-    else:
-        starMarker='n.s.'
-
     yDataMax = max([max(acPopStat), max(thalPopStat)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker=starMarker,
-                                        fontSize=fontSizeStars, gapFactor=starGapFactor,
-                                      ax=axBW)
+    plt.sca(axBW)
+    starString = None if pVal<0.05 else 'n.s.'
+    extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                                  starSize=fontSizeStars+2, starString=starString,
+                                  gapFactor=starGapFactor)
     plt.hold(1)
-
-
-
-    # column = 'BW10'
-    # order_n = []
-    # axBW.hold(True)
-    # dataList = []
-    # for position, groupName in enumerate(order):
-    #     data = groups.get_group(groupName)[column].values
-    #     pos = jitter(np.ones(len(data))*position, 0.20)
-    #     axBW.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=markerAlpha)
-    #     medline(axBW, np.median(data), position, 0.5)
-    #     order_n.append(len(data))
-    #     dataList.append(data)
-    # axBW.set_xticks(range(2))
-    # axBW.set_xlim([-0.5, 1.5])
-
-    # yDataMax = max([np.nanmax(l) for l in dataList])
-    # yStars = yDataMax + yDataMax*starYfactor
-    # yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    # plt.sca(axBW)
-    # extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='ns',
-    #                                   fontSize=fontSizeNS, gapFactor=starGapFactor)
-    # axBW.set_ylim([0, yStars + yStarHeight])
-
-    # axBW.set_ylabel('BW10')
-    # zVal, pVal = stats.ranksums(*dataList)
-    # extraplots.boxoff(axBW)
-    # plt.hold(1)
-
-    # tickLabels = ['ATh:Str\nn={}'.format(order_n[0]), 'AC:Str\nn={}'.format(order_n[1])]       # Should match 'order'
-    # axBW.set_xticklabels(tickLabels)
-    # # plt.title('ATh -> Str N: {}\nAC -> Str N: {}'.format(order_n[0], order_n[1]))
-    # # plt.title('p = {:.03f}'.format(pVal), fontsize=fontSizeTitles)
 
 plt.hold(True)
 if PANELS[8]:
@@ -338,48 +301,25 @@ if PANELS[8]:
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
 
+    '''
     if pVal<0.05:
         starMarker='*'
     else:
         starMarker='n.s.'
-
+    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker=starMarker,
+                                      fontSize=fontSizeStars, gapFactor=starGapFactor,
+                                      ax=axThresh)
+    '''
     yDataMax = max([max(acPopStat), max(thalPopStat)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker=starMarker,
-                                        fontSize=fontSizeStars, gapFactor=starGapFactor,
-                                      ax=axThresh)
+    starString = None if pVal<0.05 else 'n.s.'
+    extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                                  starSize=fontSizeStars, starString=starString,
+                                  gapFactor=starGapFactor)
+
     plt.hold(1)
 
-
-    # column='threshold'
-    # order_n = []
-    # dataList = []
-    # for position, groupName in enumerate(order):
-    #     data = groups.get_group(groupName)[column].values
-    #     pos = jitter(np.ones(len(data))*position, 0.20)
-    #     axThresh.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=markerAlpha)
-    #     medline(axThresh, np.median(data), position, 0.5)
-    #     order_n.append(len(data))
-    #     dataList.append(data)
-    # axThresh.set_xticks(range(2))
-    # tickLabels = ['ATh:Str\nn={}'.format(order_n[0]), 'AC:Str\nn={}'.format(order_n[1])]       # Should match 'order'
-    # axThresh.set_xticklabels(tickLabels)
-    # axThresh.set_xlim([-0.5, 1.5])
-    # axThresh.set_ylabel('Threshold (dB SPL)')
-    # extraplots.boxoff(axThresh)
-    # zVal, pVal = stats.ranksums(*dataList)
-    # # plt.title('p = {:.03f}'.format(pVal), fontsize=fontSizeTitles)
-    # # extraplots.significance_stars([0, 1], 70, 2.5, starMarker='*')
-
-    # yDataMax = max([np.nanmax(l) for l in dataList])
-    # yStars = yDataMax + yDataMax*starYfactor
-    # yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    # plt.sca(axThresh)
-    # extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
-    #                                   fontSize=fontSizeStars, gapFactor=starGapFactor)
-    # axThresh.set_ylim([0, yStars + yStarHeight])
-    # plt.hold(1)
 
 if PANELS[8]:
 
@@ -407,58 +347,25 @@ if PANELS[8]:
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
 
+    '''
     if pVal<0.05:
         starMarker='*'
     else:
         starMarker='n.s.'
-
-    yDataMax = max([max(acPopStat), max(thalPopStat)])
-    yStars = yDataMax + yDataMax*starYfactor
-    yStarHeight = (yDataMax*starYfactor)*starHeightFactor
     extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker=starMarker,
                                         fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=axLatency)
+    '''
+    yDataMax = max([max(acPopStat), max(thalPopStat)])
+    yStars = yDataMax + yDataMax*starYfactor
+    yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+    starString = None if pVal<0.05 else 'n.s.'
+    plt.sca(axLatency)
+    extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                                  starSize=fontSizeStars, starString=starString,
+                                  gapFactor=starGapFactor)
     plt.hold(1)
 
-    # column='latency'
-    # order_n = []
-    # dataList = []
-
-    # for position, groupName in enumerate(order):
-    #     data = groups.get_group(groupName)[column].values * 1000
-    #     pos = jitter(np.ones(len(data))*position, 0.20)
-    #     axLatency.plot(pos, data, 'o', mec=colors[groupName], mfc='None', alpha=markerAlpha)
-    #     medline(axLatency, np.nanmedian(data), position, 0.5)
-    #     order_n.append(len(data))
-    #     dataList.append(data)
-    #     # 1/0
-
-    # extraplots.boxoff(axLatency)
-    # axLatency.set_xticks(range(2))
-    # tickLabels = ['ATh:Str\nn={}'.format(order_n[0]), 'AC:Str\nn={}'.format(order_n[1])]       # Should match 'order'
-    # axLatency.set_xticklabels(tickLabels)
-    # axLatency.set_xlim([-0.5, 1.5])
-    # axLatency.set_ylabel('Latency to first spike (ms)')
-
-    # zVal, pVal = stats.ranksums(*dataList)
-
-    # yDataMax = max([np.nanmax(l) for l in dataList])
-    # yStars = yDataMax + yDataMax*starYfactor
-    # yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    # plt.sca(axLatency)
-    # extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='ns',
-    #                                   fontSize=fontSizeNS, gapFactor=starGapFactor)
-    # axLatency.set_ylim([0, yStars + yStarHeight])
-    # plt.hold(1)
-
-    # #TODO: put font size in figparams?
-    # fontSizeNLabel = 10
-
-
-#TODO: put font size in figparams?
-# fontSizeNLabel = 10
-# axThresh.annotate('N = {} ATh->Str \nN = {} AC->Str'.format(order_n[0], order_n[1]),
-#                 xy=(0.88, 0.82), xycoords='figure fraction', fontsize=fontSizeNLabel, fontweight='bold')
 
 plt.show()
 
