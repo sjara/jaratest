@@ -31,7 +31,7 @@ np.random.seed(8)
 
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
-goodLaser = goodShape.query('autoTagged==1')
+goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018'")
 
 goodFit = goodLaser.query('rsquaredFit > 0.04')
 

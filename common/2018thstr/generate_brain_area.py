@@ -23,7 +23,7 @@ areas = []
 
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
-goodLaser = goodShape.query('autoTagged==1')
+goodLaser = goodShape.query("autoTagged==1 and subject not in ['pinp018', 'pinp021']")
 goodNSpikes = goodLaser.query('nSpikes>2000')
 
 goodSoundResponsiveBool = (~pd.isnull(goodNSpikes['BW10'])) | (~pd.isnull(goodNSpikes['highestSyncCorrected'])) | (goodNSpikes['noiseZscore']<0.05)
