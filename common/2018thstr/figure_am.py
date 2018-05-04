@@ -154,7 +154,7 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
     axRate.set_ylim([-0.5, nRates-0.5])
     axRate.set_yticks(range(nRates))
     axRate.set_yticklabels([])
-    
+
     #ax = plt.gca()
     axRate.set_xlabel('Firing rate\n(spk/s)')
     extraplots.boxoff(axRate)
@@ -219,10 +219,10 @@ axSummary = plt.subplot(gs[1, 4])
 acPopStat[acPopStat < 0] = 0
 thalPopStat[thalPopStat < 0] = 0
 pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
+axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=1)
 medline(np.median(thalPopStat), 0, 0.5)
 pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
+axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=1)
 medline(np.median(acPopStat), 1, 0.5)
 if popStatCol == 'mutualInfoPerSpikeBits':
     plt.ylabel('MI(Firing rate; AM rate) (bits/spike)')
@@ -249,12 +249,10 @@ yDataMax = max([max(acPopStat), max(thalPopStat)])
 yStars = yDataMax + yDataMax*starYfactor
 yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
-if pVal < 0.05:
-    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
-                                        fontSize=fontSizeStars, gapFactor=starGapFactor)
-else:
-    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='n.s.',
-                                        fontSize=fontSizeStars, gapFactor=starGapFactor)
+starString = None if pVal<0.05 else 'n.s.'
+extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                              starSize=fontSizeStars, starString=starString,
+                              gapFactor=starGapFactor)
 plt.hold(1)
 
 ################### Mutual info PHASE #####################
@@ -294,12 +292,12 @@ thalData[thalData<0]=0
 
 thalPopStat = thalData[~np.isnan(thalData)]
 pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
+axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=1)
 medline(np.median(thalPopStat), 0, 0.5)
 
 acPopStat = acData[~np.isnan(acData)]
 pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
+axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=1)
 medline(np.median(acPopStat), 1, 0.5)
 
 # tickLabels = ['ATh:Str', 'AC:Str']
@@ -324,12 +322,18 @@ yDataMax = max([max(acPopStat), max(thalPopStat)])
 yStars = yDataMax + yDataMax*starYfactor
 yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
+starString = None if pVal<0.05 else 'n.s.'
+extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                              starSize=fontSizeStars, starString=starString,
+                              gapFactor=starGapFactor)
+'''
 if pVal < 0.05:
     extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                         fontSize=fontSizeStars, gapFactor=starGapFactor)
 else:
     extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='n.s.',
                                         fontSize=fontSizeStars, gapFactor=starGapFactor)
+'''
 
 axSummary.set_ylabel('MI(Firing rate;stimulus phase) (bits)')
 extraplots.boxoff(axSummary)
