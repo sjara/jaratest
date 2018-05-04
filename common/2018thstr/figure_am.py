@@ -23,7 +23,7 @@ db = pd.read_hdf(dbPath, key='dataframe')
 # goodLaser = db[db['taggedCond']==0]
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
-goodLaser = goodShape.query('autoTagged==1')
+goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018'")
 goodNSpikes = goodLaser.query('nSpikes>2000')
 
 # goodSoundResponsiveBool = (~pd.isnull(goodNSpikes['BW10'])) | (~pd.isnull(goodNSpikes['highestSyncCorrected'])) | (goodNSpikes['noiseZscore']<0.05)
@@ -72,7 +72,7 @@ starYfactor = figparams.starYfactor
 
 dotEdgeColor = figparams.dotEdgeColor
 
-labelPosX = [0.04, 0.32, 0.62]   # Horiz position for panel labels
+labelPosX = [0.04, 0.32, 0.62, 0.795]   # Horiz position for panel labels
 labelPosY = [0.48, 0.95]    # Vert position for panel labels
 
 # Define colors, use figparams
@@ -350,14 +350,24 @@ acPopStat = np.log(acPopStat)
 thalPopStat = np.log(thalPopStat)
 
 axSummary = plt.subplot(gs[0, 5])
+spacing = 0.07
+plt.sca(axSummary)
 
-pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
+# pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+# axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
+plt.hold(1)
+markers = extraplots.spread_plot(0, thalPopStat, spacing)
+plt.setp(markers, mec = colorATh, mfc = 'None')
+
 plt.hold(1)
 medline(np.median(thalPopStat), 0, 0.5)
 plt.hold(1)
-pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
+
+# pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+# axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
+markers = extraplots.spread_plot(1, acPopStat, spacing)
+plt.setp(markers, mec = colorAC, mfc = 'None')
+
 plt.hold(1)
 medline(np.median(acPopStat), 1, 0.5)
 plt.hold(1)
@@ -434,35 +444,40 @@ axThalPie.annotate('Non-Sync\n{}%'.format(int(100*thalNonSyncFrac)), xy=[0.8, 0.
 axThalPie.annotate('Sync\n{}%'.format(int(100*thalSyncFrac)), xy=[-0.05, -0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
 axThalPie.set_aspect('equal')
 
-# oddsratio, pValue = stats.fisher_exact([[acSyncN, thalSyncN],
-#                                         [acNonSyncN, thalNonSyncN]])
-# chi2, p, dof, expected = stats.chi2_contingency([[acSyncN, thalSyncN],
-#                                         [acNonSyncN, thalNonSyncN]])
-# print "p-Val for fisher exact test: {}".format(pValue)
-# if pValue < 0.05:
-#     starMarker = '*'
-# else:
-#     starMarker = 'n.s.'
+oddsratio, pValue = stats.fisher_exact([[acSyncN, thalSyncN],
+                                        [acNonSyncN, thalNonSyncN]])
+print "p-Val for fisher exact test: {}".format(pValue)
+if pValue < 0.05:
+    starMarker = '*'
+else:
+    starMarker = 'n.s.'
 
 
-# xBar = -2
-# #FarUntagged, CloseUntagged, tagged
-# yCircleCenters = [0, 3]
-# xTickWidth = 0.2
-# yGapWidth = 1.5
+axThalPie.annotate('F', xy=(labelPosX[3],labelPosY[1]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+axThalPie.annotate('G', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+axThalPie.annotate('H', xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
 
-# def plot_y_lines_with_ticks(ax, x, y1, y2, gapwidth, tickwidth, color='k', starMarker="*", fontSize=9):
-#     ax.plot([x, x], [y1, np.mean([y1, y2])-(gapwidth/2)], '-', clip_on=False, color=color)
-#     ax.hold(1)
-#     ax.plot([x, x], [np.mean([y1, y2])+(gapwidth/2), y2], '-', clip_on=False, color=color)
-#     ax.plot([x, x+xTickWidth], [y1, y1], '-', clip_on=False, color=color)
-#     ax.plot([x, x+xTickWidth], [y2, y2], '-', clip_on=False, color=color)
+xBar = -2
+#FarUntagged, CloseUntagged, tagged
+yCircleCenters = [0, 3]
+xTickWidth = 0.2
+yGapWidth = 1.5
 
-#     ax.text(x, np.mean([y1, y2]), starMarker, fontsize=fontSize, va='center',
-#             ha='center', clip_on=False, rotation=90)
+def plot_y_lines_with_ticks(ax, x, y1, y2, gapwidth, tickwidth, color='k', starMarker="*", fontSize=9):
+    ax.plot([x, x], [y1, np.mean([y1, y2])-(gapwidth/2)], '-', clip_on=False, color=color)
+    ax.hold(1)
+    ax.plot([x, x], [np.mean([y1, y2])+(gapwidth/2), y2], '-', clip_on=False, color=color)
+    ax.plot([x, x+xTickWidth], [y1, y1], '-', clip_on=False, color=color)
+    ax.plot([x, x+xTickWidth], [y2, y2], '-', clip_on=False, color=color)
 
-# plot_y_lines_with_ticks(axACPie, xBar, yCircleCenters[0], yCircleCenters[1],
-#                         yGapWidth, xTickWidth, starMarker=starMarker)
+    ax.text(x, np.mean([y1, y2]), starMarker, fontsize=fontSize, va='center',
+            ha='center', clip_on=False, rotation=90)
+
+plot_y_lines_with_ticks(axACPie, xBar, yCircleCenters[0], yCircleCenters[1],
+                        yGapWidth, xTickWidth, starMarker=starMarker)
 
 # width = 0.5
 # plt.hold(1)
