@@ -127,7 +127,7 @@ eventOnsetTimes = ephysData['events']['stimOn']
                                                                 eventOnsetTimes,
                                                                 alignmentRange)
 axThalNoiseRaster.plot(spikeTimesFromEventOnset, trialIndexForEachSpike, 'k.',
-                       ms=rasterMS)
+                       ms=rasterMS, rasterized=True)
 axThalNoiseRaster.set_xlim(displayRange)
 axThalNoiseRaster.axis('off')
 
@@ -163,7 +163,7 @@ eventOnsetTimes = ephysData['events']['stimOn']
  indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
                                                                eventOnsetTimes,
                                                                alignmentRange)
-axThalLaserRaster.plot(spikeTimesFromEventOnset, trialIndexForEachSpike, 'k.', ms=rasterMS)
+axThalLaserRaster.plot(spikeTimesFromEventOnset, trialIndexForEachSpike, 'k.', ms=rasterMS, rasterized=True)
 axThalLaserRaster.set_xlim(displayRange)
 axThalLaserRaster.axis('off')
 
@@ -201,7 +201,7 @@ eventOnsetTimes = ephysData['events']['stimOn']
     indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
                                                                 eventOnsetTimes,
                                                                 alignmentRange)
-axACNoiseRaster.plot(spikeTimesFromEventOnset, trialIndexForEachSpike, 'k.', ms=rasterMS)
+axACNoiseRaster.plot(spikeTimesFromEventOnset, trialIndexForEachSpike, 'k.', ms=rasterMS, rasterized=True)
 axACNoiseRaster.set_xlim(displayRange)
 axACNoiseRaster.axis('off')
 
@@ -237,7 +237,7 @@ eventOnsetTimes = ephysData['events']['stimOn']
     indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
                                                                 eventOnsetTimes,
                                                                 alignmentRange)
-axACLaserRaster.plot(spikeTimesFromEventOnset, trialIndexForEachSpike, 'k.', ms=rasterMS)
+axACLaserRaster.plot(spikeTimesFromEventOnset, trialIndexForEachSpike, 'k.', ms=rasterMS, rasterized=True)
 axACLaserRaster.set_xlim(displayRange)
 axACLaserRaster.axis('off')
 
