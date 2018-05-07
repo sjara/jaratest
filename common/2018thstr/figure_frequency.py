@@ -32,6 +32,7 @@ np.random.seed(8)
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018'")
+# goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018' and subject != 'pinp019'")
 
 goodFit = goodLaser.query('rsquaredFit > 0.04')
 
@@ -239,7 +240,8 @@ if PANELS[8]:
     medline(axBW, np.median(acPopStat), 1, 0.5)
     axBW.set_ylabel('BW10')
     # tickLabels = ['ATh:Str', 'AC:Str']
-    tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
+    # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
+    tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
     axBW.set_xticks(range(2))
     axBW.set_xticklabels(tickLabels)
     axBW.set_xlim([-0.5, 1.5])
@@ -289,7 +291,8 @@ if PANELS[8]:
     medline(axThresh, np.median(acPopStat), 1, 0.5)
     axThresh.set_ylabel('Threshold (dB SPL)')
     # tickLabels = ['ATh:Str', 'AC:Str']
-    tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
+    # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
+    tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
     axThresh.set_xticks(range(2))
     axThresh.set_xticklabels(tickLabels)
     axThresh.set_xlim([-0.5, 1.5])
@@ -335,7 +338,7 @@ if PANELS[8]:
     medline(axLatency, np.median(acPopStat), 1, 0.5)
     axLatency.set_ylabel('Latency (s)')
     # tickLabels = ['ATh:Str', 'AC:Str']
-    tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
+    tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
     axLatency.set_xticks(range(2))
     axLatency.set_xticklabels(tickLabels)
     axLatency.set_xlim([-0.5, 1.5])
