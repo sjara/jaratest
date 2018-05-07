@@ -18,6 +18,8 @@ anat036ventral = np.load(os.path.join(dataDir, 'anat036ventral.npy'))
 anat037nonLem = np.load(os.path.join(dataDir, 'anat037NonLem.npy'))
 anat037ventral = np.load(os.path.join(dataDir, 'anat037ventral.npy'))
 
+cortexCellDepths = np.load(os.path.join(dataDir, 'anat036_p1d2_cellDepths.npy'))
+
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
     jitteredArr = arr + jitter
@@ -58,7 +60,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(3, 3)
-# gs.update(left=0.15, right=0.95, top=0.90, bottom=0.1, wspace=.3, hspace=0.5)
+gs.update(left=0.15, right=0.95, top=0.90, bottom=0.13, wspace=.1, hspace=0.5)
 
 # annotationVolume = ha.AllenAnnotation()
 
@@ -107,9 +109,9 @@ medline(ventralMean, 1, 0.5, color='k')
 
 axThalHist.set_xlim([-0.5, 1.5])
 axThalHist.set_yticks([0, 1])
-axThalHist.set_ylabel('Frac labeled neurons', labelpad=0, fontsize=fontSizeLabels)
+axThalHist.set_ylabel('Frac. labeled neurons', labelpad=0, fontsize=fontSizeLabels)
 axThalHist.set_xticks([0, 1])
-axThalHist.set_xticklabels(['Non-\nlemniscal', 'MGv'], fontsize=fontSizeLabels)
+axThalHist.set_xticklabels(['NL', 'MGv'], fontsize=fontSizeLabels)
 
 
 # -- Panel: Cortex detail image--
@@ -124,10 +126,6 @@ axCortexLayers.annotate('E', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fr
              fontsize=fontSizePanel, fontweight='bold')
 axCortexLayers.axis('off')
 
-plt.show()
-
-if SAVE_FIGURE:
-    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
 # thalDataPath = os.path.join(dataDir, 'thalamusAreaCounts.npz')
 # sliceCountSum = np.load(thalDataPath)['sliceCountSum'].item()
@@ -181,22 +179,48 @@ if SAVE_FIGURE:
 # acDataPath = os.path.join(dataDir, 'cortexCellDepths.npy')
 # allSliceDepths = np.load(acDataPath)
 
-# axP = plt.subplot(gs[1, 1])
+spec = gs[2, 2]
+axP = plt.subplot(gridspec.GridSpecFromSubplotSpec(1, 3, subplot_spec=spec)[2])
 # axP.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
-# # axP.set_xlabel('Cell density')
-# # axP.set_ylabel('Depth (um)')
-# if PANELS[2]:
-#     #Plot histogram of cell depths. The weights argument allows the heights of the bars to add to 1.
-#     axP.hist(allSliceDepths, bins=25, color=barColor, weights=np.ones_like(allSliceDepths)/float(len(allSliceDepths)))
-#     #Set custom formatter to get output in percent instead of fraction
-#     # formatter = mticker.FuncFormatter(lambda v, pos: str(v * 100))
-#     formatter = mticker.FuncFormatter(lambda v, pos: '{0:g}'.format(v * 100))
-#     axP.yaxis.set_major_formatter(formatter)
-#     axP.set_xlim([0, 1])
-#     axP.set_xticks([0, 0.5, 1])
-#     plt.ylabel('% labeled neurons')
-#     plt.xlabel('Normalized distance from pia')
-#     plt.show()
-#     extraplots.boxoff(axP)
-#     pass
+# axP.set_xlabel('Cell density')
+# axP.set_ylabel('Depth (um)')
+
+n, bins, patches = axP.hist(cortexCellDepths, bins=20, histtype='step', orientation='horizontal', color='k', lw=1,
+                            weights=np.ones_like(cortexCellDepths)/float(len(cortexCellDepths)))
+axP.invert_yaxis()
+axP.set_ylim([1, 0])
+
+plt.show()
+# extraplots.boxoff(axP)
+axP.spines['right'].set_visible(False)
+axP.spines['top'].set_visible(False)
+
+
+axP.set_yticks([])
+# extraplots.boxoff(axP, keep='none')
+
+#Probably can't get rid of the x-axis
+# axP.spines['bottom'].set_visible(False)
+axP.set_xticks([max(n)])
+axP.set_xticklabels(['{:.02f}'.format(max(n))])
+
+axP.annotate('E', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction',
+            fontsize=fontSizePanel, fontweight='bold')
+
+plt.show()
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+    #Plot histogram of cell depths. The weights argument allows the heights of the bars to add to 1.
+    # h, bin_edges = np.histogram(allSliceDepths, bins=50, weights=np.ones_like(allSliceDepths)/float(len(allSliceDepths)))
+    #Set custom formatter to get output in percent instead of fraction
+    # formatter = mticker.FuncFormatter(lambda v, pos: str(v * 100))
+    # formatter = mticker.FuncFormatter(lambda v, pos: '{0:g}'.format(v * 100))
+    # axP.yaxis.set_major_formatter(formatter)
+    # axP.plot(h[::-1], range(len(h)), '-', color='k')
+    # axP.set_xlim([0, 1])
+    # axP.set_xticks([0, 0.5, 1])
+    # plt.ylabel('% labeled neurons')
+    # plt.xlabel('Normalized distance from pia')
