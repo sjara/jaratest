@@ -16,9 +16,9 @@ STUDY_NAME = '2018thstr'
 # FIGURE_OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'output')
 FIGURE_OUTPUT_DIR = '/tmp/'
 
-fontSizeLabels = 9
-fontSizeTicks = 12
-fontSizePanel = 12
+fontSizeLabels = 7
+fontSizeTicks = 6
+fontSizePanel = 9
 fontSizeTitles = 12
 fontSizeNS = 10
 fontSizeStars = 9
@@ -27,13 +27,15 @@ starGapFactor = 0.3
 starYfactor = 0.1
 
 dotEdgeColor = '0.5'
+rasterMS = 1
 
 colp = {}
 colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
 colp['frontStrColor'] = cp.TangoPalette['Chameleon3']
 colp['backStrColor'] = cp.TangoPalette['Plum2']
 
-colp['sound'] = cp.TangoPalette['Butter2']
+# colp['sound'] = cp.TangoPalette['Butter2']
+colp['sound'] = cp.TangoPalette['Orange1']
 
 colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
 colp['MidFreqL'] = cp.TangoPalette['Chameleon3']

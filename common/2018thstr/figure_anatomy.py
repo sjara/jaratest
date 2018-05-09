@@ -37,14 +37,17 @@ SAVE_FIGURE = 1
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_anatomy' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [3, 5] # In inches
+# figSize = [3.25, 5.5] # In inches
+figSize = [6.5, 11] # In inches
 # outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 outputDir = '/tmp'
 
-fontSizeLabels = figparams.fontSizeLabels
-fontSizeTicks = figparams.fontSizeTicks
-fontSizePanel = figparams.fontSizePanel
+# fontSizeLabels = figparams.fontSizeLabels *3
+fontSizeLabels = 18
+fontSizeTicks = figparams.fontSizeTicks *3
+fontSizePanel = figparams.fontSizePanel *2
+dataMS = 8
 
 barColor = '0.5'
 anat036NonLemColor = 'k'
@@ -52,15 +55,15 @@ anat037NonLemColor = 'k'
 anat036VentralColor = 'k'
 anat037VentralColor = 'k'
 
-labelPosX = [0.04, 0.5]   # Horiz position for panel labels
-labelPosY = [0.95, 0.63, 0.3]    # Vert position for panel labels
+labelPosX = [0.03, 0.53]   # Horiz position for panel labels
+labelPosY = [0.97, 0.62, 0.32]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(3, 3)
-gs.update(left=0.15, right=0.95, top=0.90, bottom=0.13, wspace=.1, hspace=0.5)
+gs.update(left=0.15, right=0.92, top=0.90, bottom=0.08, wspace=.1, hspace=0.5)
 
 # annotationVolume = ha.AllenAnnotation()
 
@@ -90,11 +93,11 @@ anat037VentralTotals = anat037ventral/(np.sum(anat037nonLem, axis=0) + anat037ve
 
 animalSplit = 0.2
 jitterFrac = 0.08
-axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, jitterFrac), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None')
-axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals))+animalSplit, jitterFrac), anat037NonLemTotals, 'o', mec=anat037NonLemColor, mfc='None')
+axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, jitterFrac), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None', ms=dataMS)
+axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals))+animalSplit, jitterFrac), anat037NonLemTotals, 'o', mec=anat037NonLemColor, mfc='None', ms=dataMS)
 
-axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, jitterFrac), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None')
-axThalHist.plot(jitter(np.ones(len(anat037VentralTotals))+animalSplit, jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None')
+axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, jitterFrac), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None', ms=dataMS)
+axThalHist.plot(jitter(np.ones(len(anat037VentralTotals))+animalSplit, jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None', ms=dataMS)
 
 allNonLemTotals = np.concatenate([anat036NonLemTotals, anat037NonLemTotals])
 allVentralTotals = np.concatenate([anat036VentralTotals, anat037VentralTotals])
@@ -109,9 +112,12 @@ medline(ventralMean, 1, 0.5, color='k')
 
 axThalHist.set_xlim([-0.5, 1.5])
 axThalHist.set_yticks([0, 1])
-axThalHist.set_ylabel('Frac. labeled neurons', labelpad=0, fontsize=fontSizeLabels)
+axThalHist.set_ylabel('ATh labeled neurons (%)', fontsize=fontSizeLabels)
 axThalHist.set_xticks([0, 1])
-axThalHist.set_xticklabels(['NL', 'MGv'], fontsize=fontSizeLabels)
+axThalHist.set_yticklabels(['0', '100'], rotation=90, va='center')
+extraplots.set_ticks_fontsize(axThalHist, fontSizeTicks)
+
+axThalHist.set_xticklabels(['Non\nlem.', 'MGv'], fontsize=fontSizeLabels)
 
 
 # -- Panel: Cortex detail image--
@@ -186,7 +192,7 @@ axP = plt.subplot(gridspec.GridSpecFromSubplotSpec(1, 3, subplot_spec=spec)[2])
 # axP.set_xlabel('Cell density')
 # axP.set_ylabel('Depth (um)')
 
-n, bins, patches = axP.hist(cortexCellDepths, bins=20, histtype='step', orientation='horizontal', color='k', lw=1,
+n, bins, patches = axP.hist(cortexCellDepths, bins=20, histtype='step', orientation='horizontal', color='k', lw=2,
                             weights=np.ones_like(cortexCellDepths)/float(len(cortexCellDepths)))
 axP.invert_yaxis()
 axP.set_ylim([1, 0])
@@ -202,11 +208,15 @@ axP.set_yticks([])
 
 #Probably can't get rid of the x-axis
 # axP.spines['bottom'].set_visible(False)
-axP.set_xticks([max(n)])
-axP.set_xticklabels(['{:.02f}'.format(max(n))])
+axP.set_xticks([0.16])
+axP.set_xticklabels(['16'])
+
+extraplots.set_ticks_fontsize(axP, 10)
 
 axP.annotate('E', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction',
             fontsize=fontSizePanel, fontweight='bold')
+
+axP.set_xlabel('AC labeled\nneurons (%)', fontsize=fontSizeLabels)
 
 plt.show()
 

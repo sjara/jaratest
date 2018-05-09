@@ -54,12 +54,14 @@ outputDir = '/tmp/'
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'figure_frequency_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [12, 5] # In inches
+# figSize = [6.5, 3.25] # In inches
+figSize = [13, 6.5] # In inches
 
-fontSizeLabels = figparams.fontSizeLabels
-fontSizeTicks = figparams.fontSizeTicks
-fontSizePanel = figparams.fontSizePanel
-fontSizeTitles = figparams.fontSizeTitles
+fontSizeLabels = figparams.fontSizeLabels*2
+# fontSizeTicks = figparams.fontSizeTicks*2
+fontSizeTicks = fontSizeLabels
+fontSizePanel = figparams.fontSizePanel*2
+fontSizeTitles = figparams.fontSizeTitles*2
 
 #Params for extraplots significance stars
 fontSizeNS = figparams.fontSizeNS
@@ -78,7 +80,7 @@ colorATh = figparams.cp.TangoPalette['SkyBlue2']
 colorAC = figparams.cp.TangoPalette['ScarletRed1']
 markerAlpha = 1
 
-labelPosX = [0.03, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
+labelPosX = [0.05, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
 labelPosY = [0.92, 0.42]    # Vert position for panel labels
 
 # Define colors, use figparams
@@ -89,40 +91,40 @@ fig.clf()
 fig.set_facecolor('w')
 
 #Define the layout
-gs = gridspec.GridSpec(2, 6)
-gs.update(left=-0.2, right=0.98, top=0.88, bottom=0.125, wspace=0.4, hspace=0.5)
+gs = gridspec.GridSpec(2, 5)
+gs.update(left=0.02, right=0.98, top=0.95, bottom=0.125, wspace=0.7, hspace=0.5)
 
 # axBlank1 = plt.subplot(gs[0, 0:3])
 # axBlank1.axis('off')
 # axBlank2 = plt.subplot(gs[1, 0:3])
 # axBlank2.axis('off')
 
-axThalamus = plt.subplot(gs[0, 0:3])
-axCortex = plt.subplot(gs[1, 0:3])
+axThalamus = plt.subplot(gs[0, 0:2])
+axCortex = plt.subplot(gs[1, 0:2])
 
-axBW = plt.subplot(gs[0:2,3])
-axThresh = plt.subplot(gs[0:2, 4])
-axLatency = plt.subplot(gs[0:2, 5])
+axBW = plt.subplot(gs[0:2,2])
+axThresh = plt.subplot(gs[0:2, 3])
+axLatency = plt.subplot(gs[0:2, 4])
 
 # plt.text(0.1, 1.2, 'A', ha='center', va='center',
 #          fontsize=fontSizePanel, fontweight='bold',
 #          transform=axBlank1.transAxes)
-plt.text(-0.2, 1.2, 'A', ha='center', va='center',
+plt.text(-0.25, 1.03, 'A', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axThalamus.transAxes)
 # plt.text(0.1, 1.2, 'C', ha='center', va='center',
 #          fontsize=fontSizePanel, fontweight='bold',
 #          transform=axBlank2.transAxes)
-plt.text(-0.2, 1.2, 'B', ha='center', va='center',
+plt.text(-0.25, 1.03, 'B', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axCortex.transAxes)
-plt.text(-0.3, 1.07, 'C', ha='center', va='center',
+plt.text(-0.3, 1.01, 'C', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axBW.transAxes)
-plt.text(-0.3, 1.07, 'D', ha='center', va='center',
+plt.text(-0.3, 1.01, 'D', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axThresh.transAxes)
-plt.text(-0.3, 1.07, 'E', ha='center', va='center',
+plt.text(-0.3, 1.01, 'E', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axLatency.transAxes)
 
@@ -164,7 +166,7 @@ if PANELS[0]:
     # cbar = plt.colorbar(cax, ax=axThalamus, format='%.1f')
     cbar = plt.colorbar(cax, ax=axThalamus, format='%d')
     maxFR = np.max(exDataFR.ravel())
-    cbar.ax.set_ylabel('Firing rate\n(spk/sec)', fontsize = fontSizeTicks, labelpad=-10)
+    cbar.ax.set_ylabel('Firing rate\n(spk/sec)', fontsize = fontSizeLabels, labelpad=-10)
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
@@ -175,8 +177,9 @@ if PANELS[0]:
     freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
     # axThalamus.set_xticklabels(freqLabels, rotation='vertical')
     axThalamus.set_xticklabels(freqLabels)
-    axThalamus.set_xlabel('Frequency (kHz)')
-    axThalamus.set_ylabel('Intensity (dB SPL)')
+    axThalamus.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
+    axThalamus.set_ylabel('Intensity (dB SPL)', fontsize=fontSizeLabels)
+    extraplots.set_ticks_fontsize(axThalamus, fontSizeTicks)
 
     # cellDict = examples[exampleKey]
     # # cellInd, cell = celldatabase.find_cell(dataframe, **cellDict)
@@ -196,7 +199,7 @@ if PANELS[3]:
     cax = axCortex.imshow(np.flipud(exDataFR), interpolation='nearest', cmap=acColorMap)
     cbar = plt.colorbar(cax, ax=axCortex, format='%d')
     maxFR = np.max(exDataFR.ravel())
-    cbar.ax.set_ylabel('Firing rate\n(spk/sec)', fontsize = fontSizeTicks, labelpad=-10)
+    cbar.ax.set_ylabel('Firing rate\n(spk/sec)', fontsize = fontSizeLabels, labelpad=-10)
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
@@ -210,8 +213,9 @@ if PANELS[3]:
     freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
     # axCortex.set_xticklabels(freqLabels, rotation='vertical')
     axCortex.set_xticklabels(freqLabels)
-    axCortex.set_xlabel('Frequency (kHz)')
-    axCortex.set_ylabel('Intensity (dB SPL)')
+    axCortex.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
+    axCortex.set_ylabel('Intensity (dB SPL)', fontsize=fontSizeLabels)
+    extraplots.set_ticks_fontsize(axCortex, fontSizeTicks)
     # plt.title('AC->Str Example 1')
     # cellDict = examples[exampleKey]
     # cellInd, cell = celldatabase.find_cell(db, **cellDict)
@@ -238,14 +242,15 @@ if PANELS[8]:
     pos = jitter(np.ones(len(acPopStat))*1, 0.20)
     axBW.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
     medline(axBW, np.median(acPopStat), 1, 0.5)
-    axBW.set_ylabel('BW10')
+    axBW.set_ylabel('BW10', fontsize=fontSizeLabels)
     # tickLabels = ['ATh:Str', 'AC:Str']
     # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
     tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
     axBW.set_xticks(range(2))
-    axBW.set_xticklabels(tickLabels)
     axBW.set_xlim([-0.5, 1.5])
     extraplots.boxoff(axBW)
+    extraplots.set_ticks_fontsize(axBW, fontSizeTicks)
+    axBW.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
     # axBW.set_ylim([-0.001, 0.25])
 
     zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
@@ -289,15 +294,16 @@ if PANELS[8]:
     plt.setp(markers, mec = colorAC, mfc = 'None')
 
     medline(axThresh, np.median(acPopStat), 1, 0.5)
-    axThresh.set_ylabel('Threshold (dB SPL)')
+    axThresh.set_ylabel('Threshold (dB SPL)', fontsize=fontSizeLabels)
     # tickLabels = ['ATh:Str', 'AC:Str']
     # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
     tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
     axThresh.set_xticks(range(2))
-    axThresh.set_xticklabels(tickLabels)
     axThresh.set_xlim([-0.5, 1.5])
     extraplots.boxoff(axThresh)
+    extraplots.set_ticks_fontsize(axThresh, fontSizeTicks)
     # axThresh.set_ylim([-0.001, 0.25])
+    axThresh.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
     zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
 
@@ -336,14 +342,16 @@ if PANELS[8]:
     pos = jitter(np.ones(len(acPopStat))*1, 0.20)
     axLatency.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
     medline(axLatency, np.median(acPopStat), 1, 0.5)
-    axLatency.set_ylabel('Latency (s)')
+    axLatency.set_ylabel('Latency (s)', fontsize=fontSizeTicks)
     # tickLabels = ['ATh:Str', 'AC:Str']
     tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
     axLatency.set_xticks(range(2))
-    axLatency.set_xticklabels(tickLabels)
     axLatency.set_xlim([-0.5, 1.5])
     extraplots.boxoff(axLatency)
-    axLatency.set_ylim([-0.001, 0.07])
+    axLatency.set_ylim([-0.001, 0.065])
+
+    extraplots.set_ticks_fontsize(axLatency, fontSizeTicks)
+    axLatency.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
     zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
 

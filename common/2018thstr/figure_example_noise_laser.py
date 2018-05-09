@@ -6,6 +6,7 @@ from jaratoolbox import ephyscore
 from jaratoolbox import settings
 from jaratoolbox import extraplots
 import figparams
+reload(figparams)
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
@@ -19,19 +20,20 @@ FIGNAME = 'figure_noise_laser'
 outputDir = '/tmp'
 figFilename = 'plots_noise_laser' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [12, 6] # In inches
+figSize = [13, 6] # In inches
 SAVE_FIGURE=1
 
+plt.clf()
 gs = gridspec.GridSpec(2, 3)
-gs.update(hspace=0.4)
+gs.update(top=0.95, bottom=0.08, hspace=0.25)
 plt.hold(1)
 
-labelPosX = [0.04, 0.355, 0.66]   # Horiz position for panel labels
-labelPosY = [0.43, 0.90]    # Vert position for panel labels
+labelPosX = [0.02, 0.34, 0.66]   # Horiz position for panel labels
+labelPosY = [0.43, 0.94]    # Vert position for panel labels
 
-fontSizeLabels = figparams.fontSizeLabels
-fontSizeTicks = figparams.fontSizeTicks
-fontSizePanel = figparams.fontSizePanel
+fontSizeLabels = figparams.fontSizeLabels * 2
+fontSizeTicks = figparams.fontSizeTicks * 2
+fontSizePanel = figparams.fontSizePanel * 2
 
 axThalCartoon = plt.subplot(gs[0,0])
 axThalCartoon.axis('off')
@@ -98,12 +100,12 @@ colorPSTH = 'k'
 colorRaster = 'k'
 stimLineWidth = 4
 psthLineWidth = 2
-rasterMS = 1
+rasterMS = figparams.rasterMS
 
 ## -- Raster/PSTH parameters --##
 stimLineOffsetFrac = 0.2
 alignmentRange = [-0.2, 0.6]
-displayRange = [-0.1, 0.5]
+displayRange = [-0.1, 0.3]
 binsize = 10 #in milliseconds
 binEdges = np.around(np.arange(alignmentRange[0]-(binsize/1000.0), alignmentRange[1]+2*(binsize/1000.0), (binsize/1000.0)), decimals=2)
 smoothPSTH = True
@@ -147,7 +149,9 @@ axThalNoisePSTH.set_xlim(displayRange)
 extraplots.boxoff(axThalNoisePSTH)
 axThalNoisePSTH.set_ylim([0, max(ratePSTH)])
 axThalNoisePSTH.set_yticks([0, np.floor(np.max(ratePSTH))])
-axThalNoisePSTH.set_ylabel('spk/sec')
+axThalNoisePSTH.set_ylabel('spk/s', fontsize=fontSizeLabels)
+axThalNoisePSTH.set_xticks([0, 0.3])
+extraplots.set_ticks_fontsize(axThalNoisePSTH, fontSizeTicks)
 
 ## -- Thalamus Laser -- ##
 spikeTimesFromEventOnset = None
@@ -183,9 +187,10 @@ axThalLaserPSTH.set_xlim(displayRange)
 extraplots.boxoff(axThalLaserPSTH)
 axThalLaserPSTH.set_ylim([0, max(ratePSTH)])
 axThalLaserPSTH.set_yticks([0, np.floor(np.max(ratePSTH))])
-axThalLaserPSTH.set_ylabel('spk/sec')
-axThalLaserPSTH.set_xlabel('Time (s)')
-
+axThalLaserPSTH.set_ylabel('spk/s', fontsize=fontSizeLabels)
+axThalLaserPSTH.set_xlabel('Time (s)', fontsize=fontSizeLabels, labelpad=-8)
+axThalLaserPSTH.set_xticks([0, 0.3])
+extraplots.set_ticks_fontsize(axThalLaserPSTH, fontSizeTicks)
 
 #AC Noise
 spikeTimesFromEventOnset = None
@@ -221,7 +226,9 @@ axACNoisePSTH.set_xlim(displayRange)
 extraplots.boxoff(axACNoisePSTH)
 axACNoisePSTH.set_ylim([0, max(ratePSTH)])
 axACNoisePSTH.set_yticks([0, np.floor(np.max(ratePSTH))])
-axACNoisePSTH.set_ylabel('spk/sec')
+axACNoisePSTH.set_ylabel('spk/s', fontsize=fontSizeLabels)
+axACNoisePSTH.set_xticks([0, 0.3])
+extraplots.set_ticks_fontsize(axACNoisePSTH, fontSizeTicks)
 
 #AC Laser
 spikeTimesFromEventOnset = None
@@ -257,8 +264,10 @@ axACLaserPSTH.set_xlim(displayRange)
 extraplots.boxoff(axACLaserPSTH)
 axACLaserPSTH.set_ylim([0, max(ratePSTH)])
 axACLaserPSTH.set_yticks([0, np.floor(np.max(ratePSTH))])
-axACLaserPSTH.set_ylabel('spk/sec')
-axACLaserPSTH.set_xlabel('Time (s)')
+axACLaserPSTH.set_ylabel('spk/s', fontsize=fontSizeLabels)
+axACLaserPSTH.set_xlabel('Time (s)', fontsize=fontSizeLabels, labelpad=-8)
+axACLaserPSTH.set_xticks([0, 0.3])
+extraplots.set_ticks_fontsize(axACLaserPSTH, fontSizeTicks)
 
 
 
