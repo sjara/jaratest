@@ -4,6 +4,9 @@ import numpy as np
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesorting
+from jaratoolbox import spikesanalysis
+
+from scipy import stats
 
 
 subject = 'band045'
@@ -11,7 +14,7 @@ subject = 'band045'
 inforec = '/home/jarauser/src/jaratest/common/inforecordings/{0}_inforec.py'.format(subject)
 db = celldatabase.generate_cell_database(inforec)
 
-db = db.reindex(columns=np.concatenate((db.columns.values,['gaussFreqFitHigh','gaussFreqFitLow','bestFreqTuningWindow','bandAmps'])))
+db = db.reindex(columns=np.concatenate((db.columns.values,['gaussFreqFit','bestFreqTuningWindow'])))
 db['gaussFreqFit'] = db['gaussFreqFit'].astype(object) 
 db['bestFreqTuningWindow'] = db['bestFreqTuningWindow'].astype(object)
         
@@ -24,7 +27,7 @@ laserPVal = np.empty(len(db))
 
 for indRow, dbRow in db.iterrows():
     
-    cell = ephyscore.Cell(dbRow)
+    cellObj = ephyscore.Cell(dbRow)
     
     try:
         laserEphysData, noBehav = cellObj.load('laserPulse')
@@ -38,7 +41,7 @@ for indRow, dbRow in db.iterrows():
         baseRange = [-0.05,-0.04]              # Baseline range (in seconds)
         binTime = baseRange[1]-baseRange[0]         # Time-bin size
         responseRange = [0, 0+binTime]
-        fullRange = [baseRange[0], responseRange[1]]
+        fullTimeRange = [baseRange[0], responseRange[1]]
         spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(laserSpikeTimestamps, 
                                                                                                                    laserEventOnsetTimes, 
                                                                                                                    fullTimeRange)
@@ -59,7 +62,7 @@ laserTrainPVal = np.empty(len(db))
 
 for indRow, dbRow in db.iterrows():
     
-    cell = ephyscore.Cell(dbRow)
+    cellObj = ephyscore.Cell(dbRow)
     
     try:
         laserTrainEphysData, noBehav = cellObj.load('laserTrain')
@@ -74,7 +77,7 @@ for indRow, dbRow in db.iterrows():
         baseRange = [-0.05,-0.04]              # Baseline range (in seconds)
         binTime = baseRange[1]-baseRange[0]         # Time-bin size
         responseRange = [0, 0+binTime]
-        fullRange = [baseRange[0], responseRange[1]]
+        fullTimeRange = [baseRange[0], responseRange[1]]
         spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(laserTrainSpikeTimestamps, 
                                                                                                                    laserTrainEventOnsetTimes, 
                                                                                                                    fullTimeRange)
@@ -90,5 +93,5 @@ db['laserTrainUStat'] = laserTrainTestStatistic
 # --- determine sound frequency tuning (gaussian fit for high amplitude trials) ---
 
 # save db as h5 and csv
-db.to_hdf('/home/jarauser/data/database/{0}_clusters.h5'.format(subject), 'database')
-db.to_csv('/home/jarauser/data/database/{0}_clusters.csv'.format(subject))        
+db.to_hdf('/home/jarauser/data/database/{0}_test.h5'.format(subject), 'database')
+db.to_csv('/home/jarauser/data/database/{0}_test.csv'.format(subject))        
