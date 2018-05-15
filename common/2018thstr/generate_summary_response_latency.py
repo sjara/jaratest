@@ -23,7 +23,7 @@ reload(spikesanalysis)
 
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 dataframe = db
 thresholdFRA = 0.2
@@ -31,7 +31,7 @@ latencyDataList = []
 
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
 
     try:
         ephysData, bdata = cell.load('tc')
@@ -121,7 +121,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
 
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 print 'Saving database to {}'.format(dbPath)
 dataframe.to_hdf(dbPath, 'dataframe')
 

@@ -17,12 +17,13 @@ reload(figparams)
 STUDY_NAME = '2018thstr'
 SAVE = True
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 dataframe = pd.read_hdf(dbPath, key='dataframe')
 
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
 
     try:
         pulseData, _ = cell.load('laserpulse')
@@ -118,6 +119,6 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'autoTagged'] = 0
 
 if SAVE:
-    savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-    dataframe.to_hdf(savePath, 'dataframe')
-    print "SAVED DATAFRAME to {}".format(savePath)
+    # savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+    dataframe.to_hdf(dbPath, 'dataframe')
+    print "SAVED DATAFRAME to {}".format(dbPath)

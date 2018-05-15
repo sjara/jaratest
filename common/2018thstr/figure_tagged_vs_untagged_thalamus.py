@@ -37,12 +37,13 @@ labelPosY = [0.48, 0.95]    # Vert position for panel labels
 # exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 dbase = pd.read_hdf(dbPath, key='dataframe')
 
 fig = plt.gcf()
 plt.clf()
 fig.set_facecolor('w')
+plt.hold(1)
 
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
@@ -60,12 +61,13 @@ features = ['highestSyncCorrected', 'mutualInfoPerSpikeBits']
 yLabels = ['Highest AM sync. rate (Hz)', 'MI (AM Rate, bits)', 'MI (AM Phase, bits)']
 
 #Select only the cells from AC
-dataframe = dbase.query("brainArea == 'rightThal'")
+dataframe = dbase.query("brainArea == 'rightThal' and nSpikes>2000")
 
 goodISI = dataframe.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 
-goodFit = goodShape.query('rsquaredFit > 0.08')
+# goodFit = goodShape.query('rsquaredFit > 0.08')
+goodFit = goodShape.query('rsquaredFit > 0.04')
 
 #Calculate the midpoint of the gaussian fit
 goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
@@ -73,11 +75,13 @@ goodFitToUse = goodFit.query('fitMidPoint<32000')
 
 taggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==0]
 closeUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==1]
-farUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==2]
+# farUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==2]
+farUntaggedCellsFreq = goodFitToUse[(goodFitToUse['taggedCond']==1) | (goodFitToUse['taggedCond']==2)]
 
 taggedCellsAM = goodShape[goodShape['taggedCond']==0]
 closeUntaggedCellsAM = goodShape[goodShape['taggedCond']==1]
-farUntaggedCellsAM = goodShape[goodShape['taggedCond']==2]
+# farUntaggedCellsAM = goodShape[goodShape['taggedCond']==2]
+farUntaggedCellsAM = goodShape[(goodShape['taggedCond']==1) | (goodShape['taggedCond']==2)]
 
 ## Layout: Top: BW10, threshold, latency. Bottom: nsync percent, highestSync, MI rate, MI phase
 ## Layout needs to be 2, 12
@@ -529,6 +533,7 @@ else:
                                       ax=ax)
 #0-2
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataFarUntagged)
+print("Highest Sync Rate, Tagged/FarUntagged zVal:{}, pVal:{}".format(zVal, pVal))
 if pVal < 0.05:
     extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,

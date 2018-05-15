@@ -23,18 +23,22 @@ tractsDBPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 't
 tractsDB = pd.read_hdf(tractsDBPath, key='dataframe')
 # tractsDB = pd.DataFrame(allTracts)
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 goodLaser = goodShape.query('autoTagged==1')
+goodNSpikes = goodLaser.query('nSpikes>2000')
+
+dataframe = goodNSpikes
 
 #The shank number for each tetrode number
 shankNum = {1:1, 2:1, 3:2, 4:2, 5:3, 6:3, 7:4, 8:4}
 
 allFiles = []
-for indRow, dbRow in goodLaser.iterrows():
+for indRow, dbRow in dataframe.iterrows():
     # print dbRow
     info = dbRow['info']
     if isinstance(info, list):
@@ -87,6 +91,11 @@ for indRow, dbRow in goodLaser.iterrows():
 
         if not os.path.exists(filenameSVGpre): # Need to make the SVG file if the pre does not exist
             print "Generating SVG file: {}".format(filenameSVGpre)
+
+            #NOTE: Just to fix some pinp017 alignment issues
+            atlasZ = input("Enter Atlas Z: ")
+            filenameAtlas = '/mnt/jarahubdata/atlas/AllenCCF_25/JPEG/allenCCF_Z{}.jpg'.format(atlasZ)
+
             (atlasSize, sliceSize) = ha.save_svg_for_registration(filenameSVGpre, filenameAtlas, filenameSlice)
 
         if not os.path.exists(filenameSVG): # If we have not registered the svg file yet

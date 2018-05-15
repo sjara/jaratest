@@ -98,12 +98,43 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
     cell = ephyscore.Cell(dbRow, useModifiedClusters=useModifiedClusters)
 
     plt.clf()
-    gs = gridspec.GridSpec(9, 6)
+    gs = gridspec.GridSpec(11, 6)
     gs.update(left=0.15, right=0.95, bottom=0.15, wspace=1, hspace=1)
+
+    if 'noiseburst' in dbRow['sessionType']: #DONE
+        ax0 = plt.subplot(gs[0:2, 0:3])
+        ephysData, bdata = cell.load('noiseburst')
+        eventOnsetTimes = ephysData['events']['stimOn']
+        timeRange = [-0.3, 0.5]
+        (spikeTimesFromEventOnset,
+         trialIndexForEachSpike,
+         indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(ephysData['spikeTimes'],
+                                                                       eventOnsetTimes,
+                                                                       timeRange)
+        pRaster, hCond, zLine = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                       indexLimitsEachTrial,
+                                                       timeRange)
+        plt.setp(pRaster, ms=1)
+        ax0.set_xlim(timeRange)
+        ax0.set_xticks([])
+
+        #Laser pulse psth
+        ax1 = plt.subplot(gs[4:6, 0:3])
+        win = np.array([0, 0.25, 0.75, 1, 0.75, 0.25, 0]) # scipy.signal.hanning(7)
+        win = win/np.sum(win)
+        binEdges = np.arange(timeRange[0],timeRange[-1],0.001)
+        timeVec = binEdges[1:]  # FIXME: is this the best way to define the time axis?
+        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                                 indexLimitsEachTrial,binEdges)
+        avResp = np.mean(spikeCountMat,axis=0)
+        smoothPSTH = np.convolve(avResp,win, mode='same')
+        plt.plot(timeVec, smoothPSTH,'k-', mec='none' ,lw=2)
+        ax1.set_xlim(timeRange)
+        ax1.set_xlabel('Time from noise onset (s)')
 
     if 'laserpulse' in dbRow['sessionType']: #DONE
         #Laser pulse raster
-        ax0 = plt.subplot(gs[0:2, 0:3])
+        ax0 = plt.subplot(gs[2:4, 0:3])
         ephysData, bdata = cell.load('laserpulse')
         eventOnsetTimes = ephysData['events']['stimOn']
         timeRange = [-0.3, 0.5]
@@ -120,7 +151,7 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
         ax0.set_xticks([])
 
         #Laser pulse psth
-        ax1 = plt.subplot(gs[2:4, 0:3])
+        ax1 = plt.subplot(gs[4:6, 0:3])
         win = np.array([0, 0.25, 0.75, 1, 0.75, 0.25, 0]) # scipy.signal.hanning(7)
         win = win/np.sum(win)
         binEdges = np.arange(timeRange[0],timeRange[-1],0.001)
@@ -135,7 +166,7 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
 
     if 'lasertrain' in dbRow['sessionType']: #DONE
         #Laser train raster
-        ax2 = plt.subplot(gs[0:2, 3:6])
+        ax2 = plt.subplot(gs[2:4, 3:6])
         ephysData, bdata = cell.load('lasertrain')
         eventOnsetTimes = ephysData['events']['stimOn']
         eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, 0.5)
@@ -157,7 +188,7 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
         ax2.set_xticks(pulseTimes)
 
         #Laser train psth
-        ax3 = plt.subplot(gs[2:4, 3:6])
+        ax3 = plt.subplot(gs[4:6, 3:6])
         win = np.array([0, 0.25, 0.75, 1, 0.75, 0.25, 0]) # scipy.signal.hanning(7)
         win = win/np.sum(win)
         binEdges = np.arange(timeRange[0],timeRange[-1],0.001)
@@ -173,7 +204,7 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
 
     #Sorted tuning raster
     if 'tc' in dbRow['sessionType']: #DONE
-        ax4 = plt.subplot(gs[4:6, 0:3])
+        ax4 = plt.subplot(gs[6:8, 0:3])
         ephysData, bdata = cell.load('tc')
         eventOnsetTimes = ephysData['events']['stimOn']
         timeRange = [-0.5, 1]
@@ -196,7 +227,7 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
         ax4.set_ylabel('Frequency (kHz)')
 
         #TC heatmap
-        ax5 = plt.subplot(gs[6:8, 0:3])
+        ax5 = plt.subplot(gs[8:10, 0:3])
 
         baseRange = [-0.1, 0]
         responseRange = [0, 0.1]
@@ -285,7 +316,7 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
     if 'am' in dbRow['sessionType']: #DONE
         #Sorted am raster
         # ax6 = plt.subplot(gs[4:6, 3:6])
-        ax6spec = gs[4:6, 3:6]
+        ax6spec = gs[6:8, 3:6]
         ephysData, bdata = cell.load('am')
         eventOnsetTimes = ephysData['events']['stimOn']
 
@@ -309,7 +340,7 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
 
         #AM cycle average hist
         psthLineWidth = 2
-        ax7 = plt.subplot(gs[6:8, 3:6])
+        ax7 = plt.subplot(gs[8:10, 3:6])
 
         colorEachCond = colors
         plt.hold(True)
@@ -351,7 +382,7 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
      recordingNumber) = cell.load_all_spikedata()
 
     #ISI loghist
-    ax8 = plt.subplot(gs[8, 0:2])
+    ax8 = plt.subplot(gs[10, 0:2])
     if timestamps is not None:
         try:
             spikesorting.plot_isi_loghist(timestamps)
@@ -360,12 +391,12 @@ def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
             print "problem with isi vals"
 
     #Waveforms
-    ax9 = plt.subplot(gs[8, 2:4])
+    ax9 = plt.subplot(gs[10, 2:4])
     if len(samples)>0:
         spikesorting.plot_waveforms(samples)
 
     #Events in time
-    ax10 = plt.subplot(gs[8, 4:6])
+    ax10 = plt.subplot(gs[10, 4:6])
     if timestamps is not None:
         try:
             spikesorting.plot_events_in_time(timestamps)
