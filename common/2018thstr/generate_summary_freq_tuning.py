@@ -92,7 +92,8 @@ exampleSpikeData = {}
 
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 
 soundResponsive = db.query('isiViolations<0.02 and spikeShapeQuality>2 and noisePval<0.05')
@@ -126,7 +127,7 @@ sparklyCells = []
 #We want to iterate through each row in the dataframe. indRow is the dataframe index column, not a climbing iteration index
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     failed=False
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
     try:
         ephysData, bdata = cell.load('tc')
     except (IndexError, ValueError): #The cell does not have a tc or the tc session has no spikes
@@ -220,7 +221,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         exampleSpikeData.update({exampleKeys[exampleInd]:allIntenResp})
 
 
-    # TODO: Remove sparkly cells NOTE: Not doing this for now, losing too many cells this way...
+    # Remove sparkly cells
     # if allIntenResp.max()<0.2:
     #     thresholds[indIter] = None
     #     cfs[indIter] = None

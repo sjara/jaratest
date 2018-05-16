@@ -26,9 +26,11 @@ goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 goodNSpikes = goodShape.query('nSpikes>2000')
 
+# cellsToUse = goodNSpikes.query('taggedCond==0 or taggedCond==1 or taggedCond==2')
+cellsToUse = goodNSpikes.query('taggedCond==1 or taggedCond==2')
 # cellsToUse = goodNSpikes.query('taggedCond==0 or taggedCond==1')
-cellsToUse = goodNSpikes.query('taggedCond==0')
-# cellsToUse = goodNSpikes.query('taggedCond==2')
+# cellsToUse = goodNSpikes.query('taggedCond==0')
+# cellsToUse = goodNSpikes.query('taggedCond==1')
 
 ac = cellsToUse.groupby('brainArea').get_group('rightAC')
 thal = cellsToUse.groupby('brainArea').get_group('rightThal')
@@ -40,7 +42,9 @@ for indFeature, feature in enumerate(features):
     dataThal = thal[feature][pd.notnull(thal[feature])]
 
     zStat, pVal = stats.mannwhitneyu(dataAC, dataThal)
-    print "{}: p={}".format(feature, pVal)
+
+    print "{}: z={}, p={}".format(feature, zStat, pVal)
+    # print "{}: p={}".format(feature, pVal)
 
 yLabels = ['Highest AM sync. rate (Hz)', 'MI (AM Rate, bits)', 'MI (AM Phase, bits)']
 
@@ -58,4 +62,4 @@ for indFeature, feature in enumerate(features):
     dataThal = thal[feature][pd.notnull(thal[feature])]
 
     zStat, pVal = stats.mannwhitneyu(dataAC, dataThal)
-    print "{}: p={}".format(feature, pVal)
+    print "{}: z={}, p={}".format(feature, zStat, pVal)

@@ -4,11 +4,9 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
 from jaratoolbox import extraplots
-from jaratoolbox import histologyanalysis as ha
-import matplotlib.ticker as mticker
+from scipy import stats
 import figparams
 reload(figparams)
-import random
 
 np.random.seed(54)
 
@@ -19,6 +17,8 @@ anat036nonLem = np.load(os.path.join(dataDir, 'anat036NonLem.npy'))
 anat036ventral = np.load(os.path.join(dataDir, 'anat036ventral.npy'))
 anat037nonLem = np.load(os.path.join(dataDir, 'anat037NonLem.npy'))
 anat037ventral = np.load(os.path.join(dataDir, 'anat037ventral.npy'))
+
+cortexCellDepths = np.load(os.path.join(dataDir, 'anat036_p1d2_cellDepths.npy'))
 
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
@@ -37,13 +37,17 @@ SAVE_FIGURE = 1
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_anatomy' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [3, 5] # In inches
+# figSize = [3.25, 5.5] # In inches
+figSize = [6.5, 11] # In inches
 # outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
-outputDir = figparams.FIGURE_OUTPUT_DIR
+# outputDir = figparams.FIGURE_OUTPUT_DIR
+outputDir = '/tmp'
 
-fontSizeLabels = figparams.fontSizeLabels
-fontSizeTicks = figparams.fontSizeTicks
-fontSizePanel = figparams.fontSizePanel
+# fontSizeLabels = figparams.fontSizeLabels *3
+fontSizeLabels = 18
+fontSizeTicks = figparams.fontSizeTicks *3
+fontSizePanel = figparams.fontSizePanel *2
+dataMS = 8
 
 barColor = '0.5'
 anat036NonLemColor = 'k'
@@ -51,17 +55,17 @@ anat037NonLemColor = 'k'
 anat036VentralColor = 'k'
 anat037VentralColor = 'k'
 
-labelPosX = [0.04, 0.5]   # Horiz position for panel labels
-labelPosY = [0.95, 0.63, 0.3]    # Vert position for panel labels
+labelPosX = [0.03, 0.53]   # Horiz position for panel labels
+labelPosY = [0.97, 0.62, 0.32]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(3, 3)
-# gs.update(left=0.15, right=0.95, top=0.90, bottom=0.1, wspace=.3, hspace=0.5)
+gs.update(left=0.15, right=0.92, top=0.90, bottom=0.08, wspace=.1, hspace=0.5)
 
-annotationVolume = ha.AllenAnnotation()
+# annotationVolume = ha.AllenAnnotation()
 
 # -- Panel: Injection method --
 axInjectionCartoon = plt.subplot(gs[0, :])
@@ -89,23 +93,31 @@ anat037VentralTotals = anat037ventral/(np.sum(anat037nonLem, axis=0) + anat037ve
 
 animalSplit = 0.2
 jitterFrac = 0.08
-axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, jitterFrac), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None')
-axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals))+animalSplit, jitterFrac), anat037NonLemTotals, 'o', mec=anat037NonLemColor, mfc='None')
+axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, jitterFrac), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None', ms=dataMS)
+axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals))+animalSplit, jitterFrac), anat037NonLemTotals, 'o', mec=anat037NonLemColor, mfc='None', ms=dataMS)
 
-axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, jitterFrac), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None')
-axThalHist.plot(jitter(np.ones(len(anat037VentralTotals))+animalSplit, jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None')
+axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, jitterFrac), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None', ms=dataMS)
+axThalHist.plot(jitter(np.ones(len(anat037VentralTotals))+animalSplit, jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None', ms=dataMS)
 
+allNonLemTotals = np.concatenate([anat036NonLemTotals, anat037NonLemTotals])
+allVentralTotals = np.concatenate([anat036VentralTotals, anat037VentralTotals])
 nonLemMean = np.mean([np.mean(anat036NonLemTotals), np.mean(anat037NonLemTotals)])
 ventralMean = np.mean([np.mean(anat036VentralTotals), np.mean(anat037VentralTotals)])
+
+statistic, pVal = stats.ranksums(allNonLemTotals, allVentralTotals)
+print("Ranksums test, NonLem vs Ventral totals, p={}".format(pVal))
 
 medline(nonLemMean, 0, 0.5, color='k')
 medline(ventralMean, 1, 0.5, color='k')
 
 axThalHist.set_xlim([-0.5, 1.5])
 axThalHist.set_yticks([0, 1])
-axThalHist.set_ylabel('Frac labeled neurons', labelpad=0, fontsize=fontSizeLabels)
+axThalHist.set_ylabel('ATh labeled neurons (%)', fontsize=fontSizeLabels)
 axThalHist.set_xticks([0, 1])
-axThalHist.set_xticklabels(['Non-\nlemniscal', 'MGv'], fontsize=fontSizeLabels)
+axThalHist.set_yticklabels(['0', '100'], rotation=90, va='center')
+extraplots.set_ticks_fontsize(axThalHist, fontSizeTicks)
+
+axThalHist.set_xticklabels(['Non\nlem.', 'MGv'], fontsize=fontSizeLabels)
 
 
 # -- Panel: Cortex detail image--
@@ -120,10 +132,6 @@ axCortexLayers.annotate('E', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fr
              fontsize=fontSizePanel, fontweight='bold')
 axCortexLayers.axis('off')
 
-plt.show()
-
-if SAVE_FIGURE:
-    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
 # thalDataPath = os.path.join(dataDir, 'thalamusAreaCounts.npz')
 # sliceCountSum = np.load(thalDataPath)['sliceCountSum'].item()
@@ -177,22 +185,52 @@ if SAVE_FIGURE:
 # acDataPath = os.path.join(dataDir, 'cortexCellDepths.npy')
 # allSliceDepths = np.load(acDataPath)
 
-# axP = plt.subplot(gs[1, 1])
+spec = gs[2, 2]
+axP = plt.subplot(gridspec.GridSpecFromSubplotSpec(1, 3, subplot_spec=spec)[2])
 # axP.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
-# # axP.set_xlabel('Cell density')
-# # axP.set_ylabel('Depth (um)')
-# if PANELS[2]:
-#     #Plot histogram of cell depths. The weights argument allows the heights of the bars to add to 1.
-#     axP.hist(allSliceDepths, bins=25, color=barColor, weights=np.ones_like(allSliceDepths)/float(len(allSliceDepths)))
-#     #Set custom formatter to get output in percent instead of fraction
-#     # formatter = mticker.FuncFormatter(lambda v, pos: str(v * 100))
-#     formatter = mticker.FuncFormatter(lambda v, pos: '{0:g}'.format(v * 100))
-#     axP.yaxis.set_major_formatter(formatter)
-#     axP.set_xlim([0, 1])
-#     axP.set_xticks([0, 0.5, 1])
-#     plt.ylabel('% labeled neurons')
-#     plt.xlabel('Normalized distance from pia')
-#     plt.show()
-#     extraplots.boxoff(axP)
-#     pass
+# axP.set_xlabel('Cell density')
+# axP.set_ylabel('Depth (um)')
+
+n, bins, patches = axP.hist(cortexCellDepths, bins=20, histtype='step', orientation='horizontal', color='k', lw=2,
+                            weights=np.ones_like(cortexCellDepths)/float(len(cortexCellDepths)))
+axP.invert_yaxis()
+axP.set_ylim([1, 0])
+
+plt.show()
+# extraplots.boxoff(axP)
+axP.spines['right'].set_visible(False)
+axP.spines['top'].set_visible(False)
+
+
+axP.set_yticks([])
+# extraplots.boxoff(axP, keep='none')
+
+#Probably can't get rid of the x-axis
+# axP.spines['bottom'].set_visible(False)
+axP.set_xticks([0.16])
+axP.set_xticklabels(['16'])
+
+extraplots.set_ticks_fontsize(axP, 10)
+
+axP.annotate('E', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction',
+            fontsize=fontSizePanel, fontweight='bold')
+
+axP.set_xlabel('AC labeled\nneurons (%)', fontsize=fontSizeLabels)
+
+plt.show()
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+    #Plot histogram of cell depths. The weights argument allows the heights of the bars to add to 1.
+    # h, bin_edges = np.histogram(allSliceDepths, bins=50, weights=np.ones_like(allSliceDepths)/float(len(allSliceDepths)))
+    #Set custom formatter to get output in percent instead of fraction
+    # formatter = mticker.FuncFormatter(lambda v, pos: str(v * 100))
+    # formatter = mticker.FuncFormatter(lambda v, pos: '{0:g}'.format(v * 100))
+    # axP.yaxis.set_major_formatter(formatter)
+    # axP.plot(h[::-1], range(len(h)), '-', color='k')
+    # axP.set_xlim([0, 1])
+    # axP.set_xticks([0, 0.5, 1])
+    # plt.ylabel('% labeled neurons')
+    # plt.xlabel('Normalized distance from pia')
