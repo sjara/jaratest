@@ -138,3 +138,99 @@ exp1.add_session('16-37-06', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('16-38-22', 'q', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('16-41-32', 'r', 'laserTuningCurve', 'laser_am_tuning_curve')
 exp1.add_session('17-10-37', 's', 'laserAM', 'laser_am_tuning_curve')
+
+
+exp2 = celldatabase.Experiment(subject, '2018-05-28', 'right_AudStr', info=['FacingPosterior', 'PosteriorDiI'])
+experiments.append(exp2)
+#Used both speakers; 2.5 mW for laser; probe DAF6
+
+exp2.laserCalibration = {
+    '0.5':0.75,
+    '1.0':1.05,
+    '1.5':1.4,
+    '2.0':1.85,
+    '2.5':2.15,
+    '3.0':2.6,
+    '3.5':3.05,
+    '4.0':3.8
+}
+
+#Tetrode 5 has reference; threshold set to 55mV
+exp2.add_site(2900, tetrodes=[1,2,6,7,8])
+exp2.add_session('10-50-00', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('10-51-55', 'a', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('10-54-58', 'b', 'laserTuningCurve', 'laser_am_tuning_curve')
+exp2.add_session('11-24-57', 'c', 'laserAM', 'laser_am_tuning_curve')
+
+#Tetrode 8 has reference; threshold set to 55mV
+exp2.add_site(2950, tetrodes=[1,2,6,7,8])
+exp2.add_session('12-50-05', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('12-51-31', 'd', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('12-54-51', 'e', 'laserTuningCurve', 'laser_am_tuning_curve')
+exp2.add_session('13-25-46', 'f', 'laserTuningCurve', 'laser_am_tuning_curve') #control
+
+exp2.add_site(3000, tetrodes=[1,2,6,7,8])
+exp2.add_session('14-15-28', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('14-16-44', 'g', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('14-19-14', 'h', 'laserTuningCurve', 'laser_am_tuning_curve')
+exp2.add_session('14-48-27', 'i', 'laserAM', 'laser_am_tuning_curve')
+
+exp2.add_site(3050, tetrodes=[1,2,6,7,8])
+exp2.add_session('15-06-08', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('15-07-25', 'j', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('15-09-52', 'k', 'laserTuningCurve', 'laser_am_tuning_curve')
+exp2.add_session('15-41-02', 'l', 'laserTuningCurve', 'laser_am_tuning_curve')
+
+
+exp3 = celldatabase.Experiment(subject, '2018-05-29', 'left_AudStr', info=['FacingPosterior', 'AnteriorDiI'])
+experiments.append(exp3)
+#Used both speakers; 2.5 mW for laser; probe DAF6
+
+exp3.laserCalibration = {
+    '0.5':0.75,
+    '1.0':1.1,
+    '1.5':1.5,
+    '2.0':1.9,
+    '2.5':2.25,
+    '3.0':2.75,
+    '3.5':3.25,
+    '4.0':4.0
+}
+
+#Tetrode 5 has reference; threshold set to 55mV
+exp3.add_site(2900, tetrodes=[1,2,6,7,8])
+exp3.add_session('13-39-03', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('13-40-48', 'a', 'tuningCurve', 'am_tuning_curve')
+
+exp3.add_site(2950, tetrodes=[1,2,6,7,8])
+exp3.add_session('13-57-54', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('13-59-25', 'b', 'tuningCurve', 'am_tuning_curve')
+#exp3.add_session('14-02-38', 'c', 'laserTuningCurve', 'laser_am_tuning_curve') #had to stop early due to issues with extreme noise
+exp3.add_session('14-02-38', 'd', 'laserAM', 'laser_am_tuning_curve')
+
+#Tetrode 7 has reference
+exp3.add_site(3000, tetrodes=[1,2,5,6,8])
+exp3.add_session('14-44-23', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('14-45-47', 'e', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('14-49-07', 'f', 'laserTuningCurve', 'laser_am_tuning_curve')
+exp3.add_session('15-22-44', 'g', 'laserAM', 'laser_am_tuning_curve')
+
+#Tetrode 7 has reference
+exp3.add_site(3050, tetrodes=[1,2,5,6,8])
+exp3.add_session('15-45-06', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('15-46-47', 'h', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('15-50-19', 'i', 'laserTuningCurve', 'laser_am_tuning_curve')
+exp3.add_session('16-19-24', 'j', 'laserTuningCurve', 'laser_am_tuning_curve')
+
+#Tetrode 6 has reference
+exp3.add_site(3100, tetrodes=[1,2,5,7,8])
+exp3.add_session('16-50-42', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('16-51-59', 'k', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('16-55-19', 'l', 'laserTuningCurve', 'laser_am_tuning_curve')
+exp3.add_session('17-25-00', 'm', 'laserAM', 'laser_am_tuning_curve')
+
+exp3.add_site(3150, tetrodes=[1,2,5,7,8])
+exp3.add_session('17-41-54', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('17-43-08', 'n', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('17-47-08', 'o', 'laserTuningCurve', 'laser_am_tuning_curve')
+exp3.add_session('18-21-04', 'p', 'laserAM', 'laser_am_tuning_curve')
