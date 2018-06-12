@@ -5,7 +5,7 @@ subject = 'dapa012'
 experiments=[]
 
 
-exp0 = celldatabase.Experiment(subject, '2018-02-27', 'left_AudStr', info='AnteriorMiddleDiI')
+exp0 = celldatabase.Experiment(subject, '2018-02-27', 'left_AudStr', info=['facingPosterior', 'AnteriorMiddleDiI'])
 experiments.append(exp0)
 #Used both speakers; 2.5 mW for laser; probe CEC4
 
@@ -77,7 +77,7 @@ exp0.add_session('13-38-23', None, 'noisebursts', 'am_tuning_curve')
 #noise issues were gone again
 exp0.maxDepth = 3050
 
-exp1 = celldatabase.Experiment(subject, '2018-02-28', 'left_AudStr', info='AntMidMiddleDiD')
+exp1 = celldatabase.Experiment(subject, '2018-02-28', 'left_AudStr', info=['facingPosterior', 'AntMidMiddleDiD'])
 experiments.append(exp1)
 #Used both speakers; 2.5 mW for laser; probe CEC4
 
@@ -163,7 +163,7 @@ exp1.add_session('14-32-23', 'q', 'tuningCurve', 'am_tuning_curve')
 
 exp1.maxDepth = 3300
 
-exp2 = celldatabase.Experiment(subject, '2018-03-04', 'left_AudStr', info='PostMidMiddleDiI')
+exp2 = celldatabase.Experiment(subject, '2018-03-04', 'left_AudStr', info=['facingPosterior', 'PostMidMiddleDiI'])
 experiments.append(exp2)
 #Used both speakers; 2.5 mW for laser; probe CEC4
 
