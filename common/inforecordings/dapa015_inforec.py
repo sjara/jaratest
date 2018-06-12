@@ -294,3 +294,21 @@ exp4.add_session('15-01-48', None, 'noisebursts', 'am_tuning_curve')
 exp4.add_session('15-03-16', 'l', 'tuningCurve', 'am_tuning_curve')
 exp4.add_session('15-06-29', 'm', 'laserTuningCurve', 'laser_am_tuning_curve')
 exp4.add_session('15-35-45', 'n', 'laserTuningCurve', 'laser_am_tuning_curve')
+
+
+exp5 = celldatabase.Experiment(subject, '2018-06-05', 'left_AudStr', info=['FacingPosterior', 'PosteriorDiI'])
+experiments.append(exp4)
+#Used both speakers; 2.5 mW for laser; probe DD45
+
+exp5.laserCalibration = {
+    '0.5':1.05,
+    '1.0':1.9,
+    '1.5':2.75,
+    '2.0':4.05,
+    '2.5':5.15,
+    '3.0':6.5,
+    '3.5':7.5,
+    '4.0':9.8
+}
+
+#Didn't find any signals down to a depth of 3000 nm
