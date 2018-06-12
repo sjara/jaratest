@@ -217,7 +217,7 @@ exp4.laserCalibration = {
 
 #Didn't end up recording
 #Tetrode 1 has reference; threshold set to 55mV
-
+exp4.maxDepth = 0
 
 exp5 = celldatabase.Experiment(subject, '2018-05-08', 'right_AudStr', info=['FacingPosterior', 'AnteriorMidDiI'])
 experiments.append(exp5)

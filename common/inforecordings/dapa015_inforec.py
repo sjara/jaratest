@@ -79,6 +79,8 @@ exp0.add_session('14-36-55', 'o', 'tuningCurve', 'am_tuning_curve')
 exp0.add_session('14-40-49', 'p', 'laserTuningCurve', 'laser_am_tuning_curve')
 exp0.add_session('15-13-41', 'q', 'laserTuningCurve', 'laser_am_tuning_curve') #Control test
 
+exp0.maxDepth = 3450
+
 
 exp1 = celldatabase.Experiment(subject, '2018-05-24', 'right_AudStr', info=['FacingPosterior', 'PosteriorMidDiD'])
 experiments.append(exp1)
@@ -139,6 +141,8 @@ exp1.add_session('16-38-22', 'q', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('16-41-32', 'r', 'laserTuningCurve', 'laser_am_tuning_curve')
 exp1.add_session('17-10-37', 's', 'laserAM', 'laser_am_tuning_curve')
 
+exp1.maxDepth = 3250
+
 
 exp2 = celldatabase.Experiment(subject, '2018-05-28', 'right_AudStr', info=['FacingPosterior', 'PosteriorDiI'])
 experiments.append(exp2)
@@ -180,6 +184,8 @@ exp2.add_session('15-06-08', None, 'noisebursts', 'am_tuning_curve')
 exp2.add_session('15-07-25', 'j', 'tuningCurve', 'am_tuning_curve')
 exp2.add_session('15-09-52', 'k', 'laserTuningCurve', 'laser_am_tuning_curve')
 exp2.add_session('15-41-02', 'l', 'laserTuningCurve', 'laser_am_tuning_curve')
+
+exp2.maxDepth = 3050
 
 
 exp3 = celldatabase.Experiment(subject, '2018-05-29', 'left_AudStr', info=['FacingPosterior', 'AnteriorMidDiI'])
@@ -232,6 +238,8 @@ exp3.add_session('17-41-54', None, 'noisebursts', 'am_tuning_curve')
 exp3.add_session('17-43-08', 'n', 'tuningCurve', 'am_tuning_curve')
 exp3.add_session('17-47-08', 'o', 'laserTuningCurve', 'laser_am_tuning_curve')
 exp3.add_session('18-21-04', 'p', 'laserAM', 'laser_am_tuning_curve')
+
+exp3.maxDepth = 3150
 
 
 exp4 = celldatabase.Experiment(subject, '2018-05-30', 'left_AudStr', info=['FacingPosterior', 'PosteriorMidDiD'])
@@ -295,6 +303,8 @@ exp4.add_session('15-03-16', 'l', 'tuningCurve', 'am_tuning_curve')
 exp4.add_session('15-06-29', 'm', 'laserTuningCurve', 'laser_am_tuning_curve')
 exp4.add_session('15-35-45', 'n', 'laserTuningCurve', 'laser_am_tuning_curve')
 
+exp4.maxDepth = 3350
+
 
 exp5 = celldatabase.Experiment(subject, '2018-06-05', 'left_AudStr', info=['FacingPosterior', 'PosteriorDiI'])
 experiments.append(exp4)
@@ -310,5 +320,7 @@ exp5.laserCalibration = {
     '3.5':7.5,
     '4.0':9.8
 }
+
+exp5.maxDepth = 0
 
 #Didn't find any signals down to a depth of 3000 nm
