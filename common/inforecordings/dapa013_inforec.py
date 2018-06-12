@@ -65,6 +65,8 @@ exp0.add_session('16-27-15', 'm', 'laserTuningCurve', 'laser_am_tuning_curve')
 exp0.add_site(3000, tetrodes=[1,2,4,8])
 exp0.add_session('17-00-31', None, 'noisebursts', 'am_tuning_curve')
 
+exp0.maxDepth = 3000
+
 
 exp1 = celldatabase.Experiment(subject, '2018-04-04', 'left_AudStr', info=['FacingPosterior', 'AntMidDiD'])
 experiments.append(exp1)
@@ -119,6 +121,8 @@ exp1.add_session('15-07-58', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('15-10-22', 'l', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('15-13-45', 'm', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('15-27-00', 'n', 'laserTuningCurve', 'laser_am_tuning_curve')
+
+exp1.maxDepth = 3300
 
 
 exp2 = celldatabase.Experiment(subject, '2018-04-05', 'left_AudStr', info=['FacingPosterior', 'PostMidDiI'])
@@ -200,6 +204,8 @@ exp2.add_site(3500, tetrodes=[1,2,3,4,6,8])
 exp2.add_session('12-21-28', None, 'noisebursts', 'am_tuning_curve')
 exp2.add_session('12-23-00', 'p', 'tuningCurve', 'am_tuning_curve')
 
+exp2.maxDepth = 3500
+
 
 exp3 = celldatabase.Experiment(subject, '2018-04-10', 'right_AudStr', info=['FacingPosterior', 'AnteriorDiI'])
 experiments.append(exp3)
@@ -272,6 +278,8 @@ exp3.add_site(3300, tetrodes=[1,2,5,6,7,8])
 exp3.add_session('17-05-08', None, 'noisebursts', 'am_tuning_curve')
 exp3.add_session('17-06-48', 'r', 'tuningCurve', 'am_tuning_curve')
 
+exp3.maxDepth = 3300
+
 
 exp4 = celldatabase.Experiment(subject, '2018-04-12', 'right_AudStr', info=['FacingPosterior', 'AnteriorMidDiD'])
 experiments.append(exp4)
@@ -335,6 +343,8 @@ exp4.add_session('16-09-55', None, 'noisebursts', 'am_tuning_curve')
 exp4.add_session('16-11-29', 't', 'tuningCurve', 'am_tuning_curve')
 exp4.add_session('16-14-37', 'u', 'tuningCurve', 'am_tuning_curve')
 exp4.add_session('16-28-25', 'v', 'laserTuningCurve', 'laser_am_tuning_curve')
+
+exp4.maxDepth = 3250
 
 
 exp5 = celldatabase.Experiment(subject, '2018-04-13', 'right_AudStr', info=['FacingPosterior', 'PosteriorMidDiI'])
@@ -415,6 +425,8 @@ exp5.add_site(3500, tetrodes=[7,8])
 exp5.add_session('15-50-26', None, 'noisebursts', 'am_tuning_curve')
 exp5.add_session('15-51-43', 'v', 'tuningCurve', 'am_tuning_curve')
 
+exp5.maxDepth = 3500
+
 
 exp6 = celldatabase.Experiment(subject, '2018-04-17', 'right_AudStr', info=['FacingPosterior', 'PosteriorDiD'])
 experiments.append(exp6)
@@ -482,3 +494,5 @@ exp6.add_session('16-47-16', 'p', 'tuningCurve', 'am_tuning_curve')
 exp6.add_site(3400, tetrodes=[1,2,3,4,6])
 exp6.add_session('16-51-56', None, 'noisebursts', 'am_tuning_curve')
 exp6.add_session('16-53-03', 'q', 'tuningCurve', 'am_tuning_curve')
+
+exp6.maxDepth = 3400

@@ -75,7 +75,7 @@ exp0.add_session('13-38-23', None, 'noisebursts', 'am_tuning_curve')
 
 #After removing the mouse and letting the probe soak in trypsin for a bit, the
 #noise issues were gone again
-
+exp0.maxDepth = 3050
 
 exp1 = celldatabase.Experiment(subject, '2018-02-28', 'left_AudStr', info='AntMidMiddleDiD')
 experiments.append(exp1)
@@ -158,9 +158,10 @@ exp1.add_site(3300, tetrodes=[1,2,4])
 exp1.add_session('14-28-14', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('14-29-39', 'p', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('14-32-23', 'q', 'tuningCurve', 'am_tuning_curve')
-exp1.add_session('14-46-44', 'r', 'laserTuningCurve', 'laser_am_tuning_curve')
+#exp1.add_session('14-46-44', 'r', 'laserTuningCurve', 'laser_am_tuning_curve')
 #Stopped early because noise started showing up
 
+exp1.maxDepth = 3300
 
 exp2 = celldatabase.Experiment(subject, '2018-03-04', 'left_AudStr', info='PostMidMiddleDiI')
 experiments.append(exp2)
@@ -183,6 +184,7 @@ exp2.add_site(2500, tetrodes=[])
 exp2.add_session('10-34-54', None, 'noisebursts', 'am_tuning_curve')
 exp2.add_session('10-37-58', 'a', 'tuningCurve', 'am_tuning_curve')
 
+exp2.maxDepth = 2500
 
 exp3 = celldatabase.Experiment(subject, '2018-03-13', 'right_AudStr', info=['facingPosterior','PostMidMiddleDiI'])
 experiments.append(exp3)
@@ -224,6 +226,7 @@ exp3.add_session('15-55-03', None, 'noisebursts', 'am_tuning_curve')
 exp3.add_site(2900, tetrodes=[7,8])
 exp3.add_session('16-01-38', None, 'noisebursts', 'am_tuning_curve')
 
+exp3.maxDepth = 2900
 
 exp4 = celldatabase.Experiment(subject, '2018-03-14', 'right_AudStr', info=['facingPosterior','AntMidMiddleDiD'])
 experiments.append(exp4)
@@ -302,3 +305,5 @@ exp4.add_session('14-15-06', None, 'noisebursts', 'am_tuning_curve')
 exp4.add_session('14-16-28', 'p', 'tuningCurve', 'am_tuning_curve')
 #exp4.add_session('13-26-16', 'n', 'tuningCurve', 'am_tuning_curve')
 #exp4.add_session('13-40-30', 'o', 'laserTuningCurve', 'laser_am_tuning_curve')
+
+exp4.maxDepth = 3150
