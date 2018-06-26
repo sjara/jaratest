@@ -172,4 +172,70 @@ exp1.add_session('21-26-10', None, 'lasertrain', 'am_tuning_curve') #Strong lock
 exp1.add_session('21-30-45', None, 'laserpulse', 'am_tuning_curve') #Nice cell here.
 exp1.add_session('21-33-22', None, 'noiseburst', 'am_tuning_curve')
 
-#Done for the day. 
+#Done for the day.
+
+
+# Mouse on the rig at 1508hrs
+# Probes and pipette in the brain at 1400um, 1529hrs
+exp1 = celldatabase.Experiment(subject,
+                               '2018-06-25',
+                               brainarea='rightAC',
+                               info='NBQX')
+
+experiments.append(exp1)
+exp1.add_site(1400, tetrodes=[1, 2, 3, 4, 5, 7])
+exp1.add_session('15-32-26', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('15-35-34', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('15-37-18', None, 'lasertrain', 'am_tuning_curve')
+#This is a good site, waiting 20 mins
+exp1.add_session('15-59-24', None, 'noiseburst', 'am_tuning_curve') #100 trials
+exp1.add_session('16-01-41', None, 'laserpulse', 'am_tuning_curve') #100 trials
+exp1.add_session('16-03-48', None, 'lasertrain', 'am_tuning_curve') #100 trials
+#Injected 180nl of 10mM NBQX at 1609hrs
+exp1.add_session('16-08-09', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('16-12-19', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('16-13-45', None, 'noiseburst', 'am_tuning_curve')
+
+exp1.add_session('16-15-43', None, 'noiseburst', 'am_tuning_curve')#Real data time
+exp1.add_session('16-17-57', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('16-20-08', None, 'lasertrain', 'am_tuning_curve')
+
+exp1.add_session('16-24-13', None, 'noiseburst', 'am_tuning_curve') #Noise responses coming back
+exp1.add_session('16-27-56', None, 'laserpulse', 'am_tuning_curve') #Looks totally different
+exp1.add_session('16-30-51', None, 'lasertrain', 'am_tuning_curve')
+
+exp1.add_session('16-34-47', None, 'noiseburst', 'am_tuning_curve') #Reliable 100msec latency responses
+exp1.add_session('16-44-58', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('16-47-53', None, 'laserpulse', 'am_tuning_curve') #Responses are back??
+exp1.add_session('16-50-42', None, 'lasertrain', 'am_tuning_curve')
+
+#Big injection PRE
+exp1.add_session('17-30-53', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('17-34-03', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('17-36-36', None, 'lasertrain', 'am_tuning_curve')
+#Finished injecting 360nL 10mM NBQX at 1742hrs - injection went very slow (like there was a clog)
+
+exp1.add_session('17-45-14', None, 'noiseburst', 'am_tuning_curve') #50 trials
+exp1.add_session('17-46-41', None, 'laserpulse', 'am_tuning_curve') #100 trials
+exp1.add_session('17-49-07', None, 'lasertrain', 'am_tuning_curve') #100 trials
+exp1.add_session('17-52-53', None, 'noiseburst', 'am_tuning_curve') #100 trials
+exp1.add_session('17-56-56', None, 'lasertrain', 'am_tuning_curve') #100 trials
+
+exp1.add_session('18-05-36', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('18-19-30', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('18-38-25', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('18-56-13', None, 'noiseburst', 'am_tuning_curve')
+
+#Removed the pipette, put a new one with saline, and re-inserted it at 1906hrs
+exp1.add_session('19-14-41', None, 'noiseburst', 'am_tuning_curve')
+
+exp1.add_session('19-19-47', None, 'noiseburst', 'am_tuning_curve')#100 trials
+exp1.add_session('19-22-39', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('19-24-53', None, 'lasertrain', 'am_tuning_curve')
+# Added 360nL saline at 1929hrs
+
+exp1.add_session('19-32-37', None, 'noiseburst', 'am_tuning_curve')#100 trials
+exp1.add_session('19-35-15', None, 'laserpulse', 'am_tuning_curve')#100 trials
+exp1.add_session('19-37-54', None, 'lasertrain', 'am_tuning_curve')#100 trials
+
+exp1.add_session('19-47-36', None, 'noiseburst', 'am_tuning_curve')#100 trials
