@@ -344,9 +344,6 @@ experiment.add_session('16-44-45', None, 'noiseburst', 'laser_tuning_curve')#ref
 
 experiment.maxDepth = 2220
 
-for ind, experiment in enumerate(experiments):
-    for site in experiment.sites:
-        site.clusterFolder = 'multisession_exp{}site0'.format(ind)
 
 tetrodeLengthList = [270, 0, 50, 270, 500, 270, 40, 40] #0 is the longest tetrode, other numbers means tetrode is x mm shorter than longest tetrode.
 targetRangeLongestTt = (580, 2220)

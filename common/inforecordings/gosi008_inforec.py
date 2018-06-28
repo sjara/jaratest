@@ -279,9 +279,6 @@ experiment.add_session('14-40-14', 'a', 'tc', 'laser_tuning_curve') #ref=6  Move
 
 experiment.maxDepth = 1300
 
-for ind, exp in enumerate(experiments):
-    for site in exp.sites:
-        site.clusterFolder = 'multisession_exp{}site0'.format(ind)
 
 #For gosi008 implant tetrode 6 was bad, use an arbitrary number of length just to exclude cells form this tetrode (should have not included it in the exps) 
 tetrodeLengthList = [0, 170, 120, 60, 110, 1000, 120, 110] #0 is the longest tetrode, other numbers means tetrode is x um shorter than longest tetrode.

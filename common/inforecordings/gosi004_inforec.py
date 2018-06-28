@@ -476,9 +476,6 @@ experiment.add_session('18-52-26', 'a', 'behavior', '2afc')# 150 trials/block
 
 experiment.maxDepth = 1700
 
-for ind, exp in enumerate(experiments):
-    for site in exp.sites:
-        site.clusterFolder = 'multisession_exp{}site0'.format(ind)
 
 tetrodeLengthList = [110, 110, 220, 220, 220, 330, 0, 130] #0 is the longest tetrode, other numbers means tetrode is x um shorter than longest tetrode.
 targetRangeLongestTt = (500, 1660)
