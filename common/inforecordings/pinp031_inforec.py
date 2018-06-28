@@ -239,3 +239,103 @@ exp1.add_session('19-35-15', None, 'laserpulse', 'am_tuning_curve')#100 trials
 exp1.add_session('19-37-54', None, 'lasertrain', 'am_tuning_curve')#100 trials
 
 exp1.add_session('19-47-36', None, 'noiseburst', 'am_tuning_curve')#100 trials
+
+
+#1506 Just put the pipette with 10mM NBQX
+exp3 = celldatabase.Experiment(subject,
+                               '2018-06-26',
+                               brainarea='rightAC',
+                               info='NBQX')
+experiments.append(exp3)
+exp3.add_site(1400, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp3.add_session('15-34-48', None, 'noiseburst', 'am_tuning_curve')
+
+exp3.add_site(1551, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp3.add_session('15-43-38', None, 'noiseburst', 'am_tuning_curve')
+
+exp3.add_site(1803, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp3.add_session('15-56-22', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('15-59-47', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('16-01-18', None, 'lasertrain', 'am_tuning_curve')
+# Looks like a good site, I'm going to wait for 20 mins starting at 1604hrs
+
+exp3.add_session('16-27-28', None, 'noiseburst', 'am_tuning_curve') # testing
+# Several electrodes started to be extremely noisy. I restarted the recording software,
+# which fixed the problem.
+exp3.add_session('16-40-06', None, 'noiseburst', 'am_tuning_curve') # 100 trials
+exp3.add_session('16-42-47', None, 'laserpulse', 'am_tuning_curve') # 100 trials
+# I lost almost everything I was recording. I'm not sure what happened
+
+exp3.add_session('16-46-13', None, 'laserpulse', 'am_tuning_curve') # 100 trials
+#Now things are coming back
+exp3.add_session('16-49-14', None, 'noiseburst', 'am_tuning_curve') # 100 trials
+exp3.add_session('16-51-31', None, 'lasertrain', 'am_tuning_curve') # 100 trials
+exp3.add_session('16-57-24', None, 'noiseburst', 'am_tuning_curve') # 100 trials
+#Had to change reference, collecing again
+
+exp3.add_session('17-05-01', None, 'noiseburst', 'am_tuning_curve') # 100 trials
+exp3.add_session('17-07-37', None, 'laserpulse', 'am_tuning_curve') # 100 trials
+
+exp3.add_site(1901, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp3.add_session('17-27-08', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('17-29-36', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('17-31-58', None, 'lasertrain', 'am_tuning_curve')
+#Finished injecting 180nL 10mM NBQX at 1741hrs. The injection took a very long time and was
+# slow and steady. At the end, I dropped the syringe and the tube probably pulled on the pipette.
+exp3.add_session('17-42-13', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('17-44-24', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('17-46-50', None, 'lasertrain', 'am_tuning_curve')
+exp3.add_session('17-50-35', None, 'laserpulse', 'am_tuning_curve')
+# The responses are gone. I am going to wait to see if I get the cells back at all.
+exp3.add_session('17-56-32', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('18-03-53', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('18-11-03', None, 'noiseburst', 'am_tuning_curve') #Responses are coming back, we can see if our cells are still here.
+
+
+# New experiment, Mouse on the rig chilling out from 1555hrs.
+# Pipette with 10mM NBQX inserted along with probe at 1611hrs.
+exp4 = celldatabase.Experiment(subject,
+                               '2018-06-27',
+                               brainarea='rightAC',
+                               info='NBQX')
+experiments.append(exp4)
+exp4.add_site(1436, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp4.add_session('16-25-59', None, 'noiseburst', 'am_tuning_curve')
+
+exp4.add_site(1604, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp4.add_session('16-39-09', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('16-46-46', None, 'laserpulse', 'am_tuning_curve')
+exp4.add_session('16-48-33', None, 'lasertrain', 'am_tuning_curve')
+
+exp4.add_session('17-00-22', None, 'noiseburst_pre', 'am_tuning_curve')
+exp4.add_session('17-02-43', None, 'laserpulse_pre', 'am_tuning_curve')
+exp4.add_session('17-05-14', None, 'lasertrain_pre', 'am_tuning_curve')
+#180nL 10mM NBQX injected at 1709hrs
+exp4.add_session('17-10-39', None, 'noiseburst', 'am_tuning_curve')
+
+exp4.add_session('17-12-13', None, 'noiseburst_post', 'am_tuning_curve')
+exp4.add_session('17-15-18', None, 'laserpulse_post', 'am_tuning_curve')
+exp4.add_session('17-17-27', None, 'lasertrain_post', 'am_tuning_curve')
+
+exp4.add_session('17-43-22', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('17-53-10', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('17-55-50', None, 'laserpulse', 'am_tuning_curve')
+exp4.add_session('17-58-34', None, 'lasertrain', 'am_tuning_curve')
+
+exp4.add_site(1879, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp4.add_session('18-50-57', None, 'noiseburst', 'am_tuning_curve') #100 trials
+exp4.add_session('18-53-13', None, 'laserpulse', 'am_tuning_curve') #100 trials
+exp4.add_session('18-56-10', None, 'lasertrain', 'am_tuning_curve') #100 trials
+# The pipette was clogged, so I had to remove and change it. I am filling the new pipette with new 10mM NBQX
+
+exp4.add_session('19-16-41', None, 'noiseburst_pre', 'am_tuning_curve') #100 trials
+exp4.add_session('19-19-29', None, 'laserpulse_pre', 'am_tuning_curve') #100 trials
+exp4.add_session('19-22-28', None, 'lasertrain_pre', 'am_tuning_curve') #100 trials
+#Infused 180nL 10mM NBQX
+exp4.add_session('19-27-16', None, 'noiseburst_post', 'am_tuning_curve') #100 trials
+exp4.add_session('19-30-40', None, 'laserpulse_post', 'am_tuning_curve') #100 trials
+exp4.add_session('19-33-54', None, 'lasertrain_post', 'am_tuning_curve') #100 trials
+
+exp4.add_session('19-47-12', None, 'noiseburst', 'am_tuning_curve') #100 trials
+exp4.add_session('20-01-49', None, 'noiseburst', 'am_tuning_curve') #100 trials
+exp4.add_session('20-17-18', None, 'noiseburst', 'am_tuning_curve') #100 trials
