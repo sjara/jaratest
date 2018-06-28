@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from jaratoolbox import settings
-from jaratest.lan.analysis_reward_change import reward_change_loader_plotter_functions as rcfuncs
 
 #animalLists = [['adap005','adap012', 'adap013', 'adap015', 'adap017'], ['gosi001','gosi004', 'gosi008','gosi010']]
 #animalLabels = ['astr', 'ac']
