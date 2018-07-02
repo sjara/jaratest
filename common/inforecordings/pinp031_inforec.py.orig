@@ -243,8 +243,11 @@ exp2.add_session('19-32-37', None, 'noiseburst_post', 'am_tuning_curve')#100 tri
 exp2.add_session('19-35-15', None, 'laserpulse_post', 'am_tuning_curve')#100 trials
 exp2.add_session('19-37-54', None, 'lasertrain_post', 'am_tuning_curve')#100 trials
 
+<<<<<<< HEAD
 exp2.add_site(1400.5, tetrodes=[1, 2, 3, 4, 5, 7])
 exp2.add_session('19-47-36', None, 'noiseburst', 'am_tuning_curve')#100 trials
+=======
+exp1.add_session('19-47-36', None, 'noiseburst', 'am_tuning_curve')#100 trials
 
 
 #1506 Just put the pipette with 10mM NBQX
@@ -491,3 +494,4 @@ exp6.add_session('15-15-49', None, 'lasertrain_post', 'am_tuning_curve')
 
 exp6.add_session('15-28-21', None, 'noiseburst', 'am_tuning_curve')
 exp6.add_session('15-49-04', None, 'noiseburst', 'am_tuning_curve')
+>>>>>>> 091bf4c08a0f9e1352880993e0580fc59389fdde

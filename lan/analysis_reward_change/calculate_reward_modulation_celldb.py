@@ -19,6 +19,7 @@ from jaratoolbox import settings
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import ephyscore
+from jaratoolbox import celldatabase
   
 # -- Global variables -- #
 #mouseNameList = ['gosi010'] #['adap005','adap012','adap013','adap015','adap017','gosi001','gosi004','gosi008','gosi010','adap067','adap071'] 

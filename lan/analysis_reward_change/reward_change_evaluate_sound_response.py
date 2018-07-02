@@ -1,7 +1,7 @@
 '''
 Updated to use new celldb.
 This script take a cell database for reward-change mice that includes only the good quality cells that passed shape quality, isi, consistent firing, in target area check. The database includes basic information such as subject, date, behavior sessions, ephys sessions, sessiontype, tetrode, cluster, depth, brainarea recorded from, inforecPath etc. Also includes measurements calculated while clustering: 'clusterPeakAmplitudes', 'clusterPeakTimes', 'clusterSpikeSD', 'clusterSpikeShape', 'isiViolations', 'nSpikes'.
-Measurements calculated to reflect sound responsiveness from this script: 'tuningFreqs', 'tuningZscore', 'tuningPval', 'tuningRespIndex', 'tuningResp', 'behavFreqs', 'behavZscore', 'behavPval', 'behavRespIndex', 'behavResp'.
+Measurements calculated to reflect sound responsiveness from this script: 'tuningFreqs', 'tuningZscore', 'tuningPval', 'tuningRespIndex', 'tuningAveResp', 'behavFreqs', 'behavZscore', 'behavPval', 'behavRespIndex', 'behavAveResp'.
 The script is to be run after the database has been fully generated and good quality cells database saved. 
 Lan 2018-01-02
 '''
@@ -42,7 +42,7 @@ def evaluate_tuning_sound_response_celldb(cellDb):
                       'tuningZscore':[],
                       'tuningPval':[],
                       'tuningRespIndex':[],
-                      'tuningResp':[]}
+                      'tuningAveResp':[]}
 
         for indCell, cell in cellDb.iterrows():
             cellObj = ephyscore.Cell(cell)
@@ -62,7 +62,7 @@ def evaluate_tuning_sound_response_celldb(cellDb):
                 tuningDict['tuningZscore'].append(np.zeros(numFreqs))
                 tuningDict['tuningPval'].append(np.ones(numFreqs))
                 tuningDict['tuningRespIndex'].append(np.zeros(numFreqs))
-                tuningDict['tuningResp'].append(np.zeros(numFreqs))
+                tuningDict['tuningAveResp'].append(np.zeros(numFreqs))
                 continue
 
             eventsDict = ephysData['events']
@@ -73,7 +73,7 @@ def evaluate_tuning_sound_response_celldb(cellDb):
                 tuningDict['tuningZscore'].append(np.zeros(numFreqs))
                 tuningDict['tuningPval'].append(np.ones(numFreqs))
                 tuningDict['tuningRespIndex'].append(np.zeros(numFreqs))
-                tuningDict['tuningResp'].append(np.zeros(numFreqs))
+                tuningDict['tuningAveResp'].append(np.zeros(numFreqs))
                 continue
 
             soundOnsetTimes = eventsDict['{}On'.format(soundChannelType)]
@@ -87,7 +87,7 @@ def evaluate_tuning_sound_response_celldb(cellDb):
                     tuningDict['tuningZscore'].append(np.zeros(numFreqs))
                     tuningDict['tuningPval'].append(np.ones(numFreqs))
                     tuningDict['tuningRespIndex'].append(np.zeros(numFreqs))
-                    tuningDict['tuningResp'].append(np.zeros(numFreqs))
+                    tuningDict['tuningAveResp'].append(np.zeros(numFreqs))
 
                     continue #skip all subsequent analysis if the two files did not recorded same number of trials
 
@@ -109,7 +109,7 @@ def evaluate_tuning_sound_response_celldb(cellDb):
                 # Calculate response index (S-B)/(S+B) where S and B are ave response during the sound window and baseline window, respectively
                 responseIndex = (np.mean(nspkResp) - np.mean(nspkBase))/(np.mean(nspkResp) + np.mean(nspkBase))
                 responseInds.append(responseIndex)
-                responseEachFreq.append(nspkResp) #Store response to each stim frequency (all trials) as a list of lists
+                responseEachFreq.append(np.mean(nspkResp)) #Store mean response to each stim frequency
                 print 'ave firing rate for baseline and sound periods are', np.mean(nspkBase), np.mean(nspkResp), 'response index is', responseIndex
 
                 # Calculate statistic using ranksums test
@@ -122,7 +122,7 @@ def evaluate_tuning_sound_response_celldb(cellDb):
             tuningDict['tuningZscore'].append(zScores)
             tuningDict['tuningPval'].append(pVals)
             tuningDict['tuningRespIndex'].append(responseInds)
-            tuningDict['tuningResp'].append(responseEachFreq)
+            tuningDict['tuningAveResp'].append(responseEachFreq)
 
     return tuningDict
 
@@ -138,7 +138,7 @@ def evaluate_2afc_sound_response_celldb(cellDb):
                      'behavZscore':[],
                      'behavPval':[],
                      'behavRespIndex':[],
-                     'behavResp':[]}
+                     'behavAveResp':[]}
         #movementModI = np.zeros(len(cellDb)) #default value 0
         #movementModS = np.ones(len(cellDb)) #default value 1
 
@@ -160,7 +160,7 @@ def evaluate_2afc_sound_response_celldb(cellDb):
                 behavDict['behavZscore'].append(np.zeros(numFreqs))
                 behavDict['behavPval'].append(np.ones(numFreqs))
                 behavDict['behavRespIndex'].append(np.zeros(numFreqs))
-                behavDict['behavResp'].append(np.zeros(numFreqs))
+                behavDict['behavAveResp'].append(np.zeros(numFreqs))
                 continue
 
             eventsDict = ephysData['events']
@@ -171,7 +171,7 @@ def evaluate_2afc_sound_response_celldb(cellDb):
                 behavDict['behavZscore'].append(np.zeros(numFreqs))
                 behavDict['behavPval'].append(np.ones(numFreqs))
                 behavDict['behavRespIndex'].append(np.zeros(numFreqs))
-                behavDict['behavResp'].append(np.zeros(numFreqs))
+                behavDict['behavAveResp'].append(np.zeros(numFreqs))
                 continue
 
             soundOnsetTimes = eventsDict['{}On'.format(soundChannelType)]
@@ -188,7 +188,7 @@ def evaluate_2afc_sound_response_celldb(cellDb):
                 behavDict['behavZscore'].append(np.zeros(numFreqs))
                 behavDict['behavPval'].append(np.ones(numFreqs))
                 behavDict['behavRespIndex'].append(np.zeros(numFreqs))
-                behavDict['behavResp'].append(np.zeros(numFreqs))
+                behavDict['behavAveResp'].append(np.zeros(numFreqs))
                 continue
 
             # -- Calculate Z score of sound response for each frequency -- #
@@ -212,7 +212,7 @@ def evaluate_2afc_sound_response_celldb(cellDb):
                 # Calculate response index (S-B)/(S+B) where S and B are ave response during the sound window and baseline window, respectively
                 responseIndex = (np.mean(nspkResp) - np.mean(nspkBase))/(np.mean(nspkResp) + np.mean(nspkBase))
                 responseInds.append(responseIndex)
-                responseEachFreq.append(nspkResp) #Store response to each stim frequency (all trials) in a list
+                responseEachFreq.append(np.mean(nspkResp)) #Store mean response to each stim frequency 
                 print 'ave firing rate for baseline and sound periods are', np.mean(nspkBase), np.mean(nspkResp), 'response index is', responseIndex
 
                 # Calculate statistic using ranksums test 
@@ -225,29 +225,7 @@ def evaluate_2afc_sound_response_celldb(cellDb):
             behavDict['behavZscore'].append(zScores)
             behavDict['behavPval'].append(pVals)
             behavDict['behavRespIndex'].append(responseInds)
-            behavDict['behavResp'].append(responseEachFreq)
+            behavDict['behavAveResp'].append(responseEachFreq)
  
     return behavDict
  
-'''    
-cellDb['tuningFreqs'] = tuningDict['tuningFreqs']
-cellDb['tuningZscore'] = tuningDict['tuningZscore'] #tuningZscore
-cellDb['tuningPval'] = tuningDict['tuningPval'] #tuningPval
-cellDb['tuningRespIndex'] = tuningDict['tuningRespIndex'] #tuningRespIndex
-cellDb['tuningResp'] = tuningDict['tuningResp'] #tuningResp
-cellDb.to_hdf(databaseFullPath, key=key)
-'''       
-'''
-cellDb['behavFreqs'] =  behavDict['behavFreqs']
-cellDb['behavZscore'] = behavDict['behavZscore']
-cellDb['behavPval'] = behavDict['behavPval']
-cellDb['behavRespIndex'] = behavDict['behavRespIndex']
-cellDb['behavResp'] = behavDict['behavResp']
-
-#cellDb['movementModI'] = movementModI
-#cellDb['movementModS'] = movementModS
-cellDb.to_hdf(databaseFullPath, key=key)
-'''
-
-
-
