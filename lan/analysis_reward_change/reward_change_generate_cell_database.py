@@ -27,7 +27,7 @@ FIND_TETRODES_WITH_NO_SPIKES = False
 dbKey = 'reward_change'
 
 #We need access to ALL of the neurons from all animals that have been recorded from. 
-animals = ['adap013','adap015','adap017','gosi001','gosi004','gosi008','gosi010','adap067','adap071', 'adap005','adap012']
+animals = ['adap005','adap012','adap013','adap015','adap017','gosi001','gosi004','gosi008','gosi010','adap067','adap071']
 inforecFolder = settings.INFOREC_PATH
 
 qualityThreshold = 3
@@ -46,7 +46,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 5
+CASE = 7
 
 if CASE == 1:
     # -- Cluster and generate database with all clusters -- #
@@ -171,11 +171,11 @@ if CASE == 6:
     for animal in animals:
         modIndScriptPath = '/home/languo/src/jaratest/lan/analysis_reward_change/calculate_reward_modulation_celldb.py'
         # -- Call to calculate modulation indices for different windows different alignments -- #
-        commandListCalculate = ['python'] + [modIndScriptPath] + ['--CASE', 'calculate'] + ['--MOUSE'] + animal
+        commandListCalculate = ['python'] + [modIndScriptPath] + ['--CASE', 'calculate'] + ['--MOUSE', animal]
         subprocess.call(commandListCalculate)
 
         # -- Call to merge newly generated mod indices columns into database -- #
-        commandListMerge = ['python'] + [modIndScriptPath] + ['--CASE', 'merge'] + ['--MOUSE'] + animal
+        commandListMerge = ['python'] + [modIndScriptPath] + ['--CASE', 'merge'] + ['--MOUSE', animal]
         subprocess.call(commandListMerge)
 
 if CASE == 7:
@@ -187,6 +187,10 @@ if CASE == 7:
         animalDb = celldatabase.load_hdf(animalDbFullPath)
         dfs.append(animalDb)
     masterDf = pd.concat(dfs, ignore_index=True)
+    for onecol in masterDf.columns:
+        onevalue = masterDf.iloc[0][onecol]
+        if isinstance(onevalue, np.ndarray):
+            masterDf[onecol] = extrafuncs.pad_float_list(masterDf[onecol])
     masterDfFullPath = os.path.join(dbFolder, 'rc_database.h5')
     #masterDf.to_hdf(masterDfFullPath, key=dbKey)
-    celldatabase.save_hdf(masterDb, masterDbFullPath)
+    celldatabase.save_hdf(masterDf, masterDfFullPath)

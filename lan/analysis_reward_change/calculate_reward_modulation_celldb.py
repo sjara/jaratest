@@ -37,7 +37,7 @@ recalculate = False
 # -- Takes command line arguments for script params -- #
 parser = argparse.ArgumentParser()
 parser.add_argument('--CASE', type=str, required=True, help="CASE can be 'calculate' or 'merge'")
-parser.add_argument('--MOUSE', type=str, nargs='*', help="Enter the name of the mouse to process")
+parser.add_argument('--MOUSE', type=str, required=True, help="Enter the name of the mouse to process")
 args = parser.parse_args()
 CASE = args.CASE
 mouseName = args.MOUSE
@@ -87,7 +87,7 @@ if CASE == 'calculate':
                       'tetrode': [],
                       'cluster': []}
 
-    cellDb = pd.read_hdf(databaseFullPath, key=dbKey)
+    cellDb = celldatabase.load_hdf(databaseFullPath) #pd.read_hdf(databaseFullPath, key=dbKey)
 
     newTime=time.time(); print 'Elapsed time: {0:0.2f}  ALLCELLS'.format(newTime-zeroTime); zeroTime=newTime; sys.stdout.flush()  ### PROFILER
 
@@ -330,7 +330,7 @@ if CASE == 'merge':
     outFilePath = '/var/tmp/'
     outFilenames = [os.path.join(outFilePath,filename) for filename in os.listdir(outFilePath) if mouseName in filename]
 
-    dfThisMouse = pd.read_hdf(databaseFullPath,key='reward_change')
+    dfThisMouse = celldatabase.load_hdf(databaseFullPath) #pd.read_hdf(databaseFullPath,key='reward_change')
     # -- replacing certain columns -- #
     #colsToDrop = [col for col in dfThisMouse.columns if '-0.2-0s' in col]
     #dfThisMouse = dfThisMouse.drop(columns=colsToDrop)
@@ -350,7 +350,7 @@ if CASE == 'merge':
     dfAllThisMouse.reset_index(inplace=True)
     if 'level_0' in dfAllThisMouse.columns:
         dfAllThisMouse.drop('level_0', 1, inplace=True)
-    dfAllThisMouse.to_hdf(databaseFullPath, key='reward_change')
-
+    #dfAllThisMouse.to_hdf(databaseFullPath, key='reward_change')
+    celldatabase.save_hdf(dfAllThisMouse, databaseFullPath)
     #when saving to hdf, using (format='table',data_columns=True) is slower but enable on disk queries
 
