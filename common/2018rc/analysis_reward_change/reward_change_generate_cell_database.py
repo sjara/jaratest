@@ -143,8 +143,9 @@ if CASE == 4:
         goodDb['duplicateCross'] = excludeDfCrossSess['duplicate_cross']
         goodDb['duplicateSelfDiscard'] = excludeDfWithinSess['duplicate_self_discard']
         goodDb['duplicateCrossDiscard'] = excludeDfCrossSess['duplicate_cross_discard']
-        discardAfterDupTest = excludeDfWithinSess['duplicate_self_discard'] | excludeDfCrossSess['duplicate_cross_discard']
-        keepAfterDupTest = ~discardAfterDupTest.astype('bool')
+        discardAfterDupTest = excludeDfWithinSess['duplicate_self_discard'].astype(bool) | excludeDfCrossSess['duplicate_cross_discard'].astype(bool)
+        keepAfterDupTest = ~discardAfterDupTest
+        keepAfterDupTest = keepAfterDupTest.astype(int)
         goodDb['keepAfterDupTest'] = keepAfterDupTest
         print 'Finished checking duplication for good cells, saving database...'
         celldatabase.save_hdf(goodDb, goodDbFullPath)
