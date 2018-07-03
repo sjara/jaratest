@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from jaratoolbox import settings
 from jaratoolbox import extraplots
+from jaratoolbox import celldatabase
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import scipy.stats as stats
@@ -36,15 +37,16 @@ outputDir = '/home/languo/data/reports/reward_change/summaries'
 figFormat = 'png'
 
 celldbPath = os.path.join(dbFolder,'rc_database.h5')
-celldb = pd.read_hdf(celldbPath, key='reward_change')
+#celldb = pd.read_hdf(celldbPath, key='reward_change')
+celldb = celldatabase.load_hdf(celldbPath)
 
 for indRegion, brainRegion in enumerate(brainRegions):    
     # -- For histogram of modulation index for sound-responsive cells, take the most responsive frequency -- #
-    goodQualCells = celldb.query("keepAfterDupTest==True and brainArea=='{}'".format(brainRegion))
-
-    soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x)) >=  maxZThreshold) #The bigger of the sound Z score is over threshold
-    moreRespLowFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[0]) > abs(x[1]))
-    moreRespHighFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[1]) > abs(x[0]))
+    goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainRegion))
+    print brainRegion, ', number of good qual non-duplicated cell is ', len(goodQualCells)
+    soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x[~np.isnan(x)])) >=  maxZThreshold) #The bigger of the sound Z score is over threshold
+    moreRespLowFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[~np.isnan(x)][0]) > abs(x[~np.isnan(x)][-1]))
+    moreRespHighFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[~np.isnan(x)][-1]) > abs(x[~np.isnan(x)][0]))
     goodLowFreqRespCells = goodQualCells[moreRespLowFreq]
     goodHighFreqRespCells = goodQualCells[moreRespHighFreq]
 

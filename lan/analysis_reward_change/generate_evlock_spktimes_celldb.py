@@ -10,7 +10,7 @@ from jaratoolbox import ephyscore
 from jaratoolbox import celldatabase
 from jaratoolbox import loadbehavior
 reload(ephyscore)
-import new_reward_change_plotter_functions as rcfuncs
+import reward_change_plotter_functions as rcfuncs
 
 
 
