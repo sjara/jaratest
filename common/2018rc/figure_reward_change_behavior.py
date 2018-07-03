@@ -18,7 +18,7 @@ outputDir = '/tmp/'
 figFilename = 'plots_reward_change_behavior' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
-figSize = [10, 2.5]
+figSize = [10, 5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -44,11 +44,12 @@ fig.set_facecolor('w')
 
 panelsToPlot=[0, 1]
 
-gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.09, right=0.98, top=0.92, bottom=0.18, wspace=0.3, hspace=0.1)
-ax0 = plt.subplot(gs[0, 0])
-ax1 = plt.subplot(gs[0, 1])
+gs = gridspec.GridSpec(2, 3)
+gs.update(left=0.09, right=0.98, top=0.92, bottom=0.18, wspace=0.3, hspace=0.3)
+ax0 = plt.subplot(gs[:, 0])
+ax1 = plt.subplot(gs[:, 1])
 ax2 = plt.subplot(gs[0, 2])
+ax3 = plt.subplot(gs[1, 2])
 
 # -- Panel A: task schematic -- #
 ax0.set_axis_off()
@@ -109,6 +110,7 @@ if 0 in panelsToPlot:
 
 # #Panel: Summary bar plots for each animal
 if 1 in panelsToPlot:
+    '''
     summaryFilename = 'rc_rightward_choice_each_condition_summary.npz'
     summaryFullPath = os.path.join(dataDir,summaryFilename)
     summaryFile = np.load(summaryFullPath)
@@ -155,6 +157,45 @@ if 1 in panelsToPlot:
     #ax2.axes.get_xaxis().set_visible(False)
     ax2.spines['bottom'].set_visible(False)
     [t.set_visible(False) for t in ax2.get_xticklines()]
+    '''
+    summaryFilename = 'rc_rightward_choice_each_condition_by_freq_summary.npz'
+    summaryFullPath = os.path.join(dataDir,summaryFilename)
+    summaryFile = np.load(summaryFullPath)
+
+    dataMat = summaryFile['resultAllAnimals']
+    subjects = summaryFile['animalsUsed']
+    conditions = summaryFile['blockLabels']
+    condColors = [colorsDict['more_left'], colorsDict['more_right']]
+
+    rChoiceEachConcEachFreqEachAnimal = np.mean(dataMat, axis=1)
+    freqToPlot = 0 #lowest freq
+    rChoiceEachConcThisFreqEachAnimal = rChoiceEachConcEachFreqEachAnimal[:, freqToPlot, :]
+    for animalInd in range(len(subjects)):
+        ax2.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
+    ax2.set_xticks([0,1])
+    ax2.set_xticklabels([])
+    #ax2.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+    ax2.set_yticks([0, 25]) 
+    ax2.set_xlim([-0.5, 1.5])
+    ax2.set_ylim([-10, 40])
+    ax2.text(0.1, 30,'Lowest frequency')
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    extraplots.boxoff(ax2) 
+
+    freqToPlot = 2 # middle low freq
+    rChoiceEachConcThisFreqEachAnimal = rChoiceEachConcEachFreqEachAnimal[:, freqToPlot, :]
+    for animalInd in range(len(subjects)):
+        ax3.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
+    ax3.set_xticks([0,1])
+    ax3.set_xticklabels(conditions, fontsize=fontSizeLabels)
+    #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+    ax3.set_yticks([50, 100])
+    ax3.set_ylim([25, 110]) 
+    ax3.set_xlim([-0.5, 1.5])
+    ax3.text(0.1, 105,'Middle frequency')
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    extraplots.boxoff(ax3) 
+
 ax2.annotate('C', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction', fontsize=fontSizePanel, fontweight='bold')
 
     
@@ -167,6 +208,7 @@ import numpy as np
 from scipy import stats
 
 ##SATS
+'''
 for indSubject in range(len(subjects)):
     subDataMoreLeft = dataMat[0, :, indSubject]
     subDataMoreRight = dataMat[1, :, indSubject]
@@ -177,3 +219,4 @@ for indSubject in range(len(subjects)):
     Z, pVal = stats.ranksums(subDataMoreLeft, subDataMoreRight)
 
     print "\n\nWilcoxon rank-sum test of fraction right choice for mouse {}, p={:.3f}".format(indSubject, pVal)
+'''
