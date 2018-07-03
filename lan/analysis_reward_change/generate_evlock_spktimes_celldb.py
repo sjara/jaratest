@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from jaratoolbox import settings
 from jaratoolbox import ephyscore
+from jaratoolbox import celldatabase
 from jaratoolbox import loadbehavior
 reload(ephyscore)
 import new_reward_change_plotter_functions as rcfuncs
@@ -23,11 +24,12 @@ def save_evlock_spktimes_cell(cell, sessiontype, alignment, timeRange, recalcula
     :param arg6: A string for old output directory.
     :param arg7: A string for new output directory.
     '''
-    subject = cell.dbRow['sudbject']
+    subject = cell.dbRow['subject']
     depth = cell.dbRow['depth']
-    oldOutputFile = 'eventlocked_{0}_{1}_T{2}c{3}_{4}.npz'.format(subject, cell.date, cell.tetrode, cell.cluster, alignment)
+    date = cell.dbRow['date']
+    oldOutputFile = 'eventlocked_{0}_{1}_T{2}c{3}_{4}.npz'.format(subject, date, cell.tetrode, cell.cluster, alignment)
     oldOutputFullPath = os.path.join(oldOutputDir,oldOutputFile)
-    newOutputFile = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(subject, cell.date, depth, cell.tetrode, cell.cluster, alignment)
+    newOutputFile = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(subject, date, depth, cell.tetrode, cell.cluster, alignment)
     newOutputFullPath = os.path.join(newOutputDir,newOutputFile)
     if os.path.isfile(oldOutputFullPath) and not recalculate:
         #copy to new dir with new name
@@ -47,10 +49,10 @@ timeRange = [-0.5,0.5] # In seconds. Time range for to calculate spikeTimesFromE
 newOutputDir = '/home/languo/data/ephys/evlock_spktimes'
 oldOutputDir = '/var/tmp/processed_data'
 
-dbKey = 'reward_change'
+#dbKey = 'reward_change'
 NEW_DATABASE_FOLDER = 'new_celldb'
 databaseFullPath = os.path.join(settings.DATABASE_PATH, NEW_DATABASE_FOLDER, 'rc_database.h5')
-cellDb = pd.read_hdf(databaseFullPath, key=dbKey)
+cellDb = celldatabase.load_hdf(databaseFullPath)
 
 alignments = ['sound', 'center-out', 'side-in']
 

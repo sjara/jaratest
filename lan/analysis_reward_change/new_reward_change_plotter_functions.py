@@ -262,7 +262,7 @@ def load_intermediate_data_for_raster_psth(cell, evlockDir, alignment, timeRange
         indexLimitsEachTrial = evlockdata['indexLimitsEachTrial']
         #timeRange = evlockdata['timeRange']
     else:
-        print('Event-locked spiketimes have not been calculated yet. Calculating and saving evlock data...')
+        print('Event-locked spiketimes have not been calculated yet. Calculating evlock data...')
         (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = calculate_intermediate_data_for_raster_psth(cell, alignment, timeRange, behavClass)
     return spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial
 
