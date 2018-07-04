@@ -15,6 +15,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
+from jaratoolbox import celldatabase
 import figparams
 reload(figparams)
 
@@ -36,15 +37,15 @@ colorsDict = {'colorLMore':figparams.colp['MoreRewardL'],
 
 # -- These example cells I picked manually  --#
 cellParamsList = []
-
-exampleCell = {'subject':'adap012',
-               'date':'2016-03-24',
-               'tetrode':1,
-               'cluster':4,
+# sustained sound response
+exampleCell = {'subject':'adap015',
+               'date':'2016-03-18',
+               'tetrode':3,
+               'cluster':9,
                'brainRegion':'astr'} # low freq, sound modulated
 cellParamsList.append(exampleCell)
 
-# strong sound response but not obvious modulated
+# strong onset sound response 
 exampleCell = {'subject':'adap012',
                'date':'2016-04-05',
                'tetrode':4,
@@ -54,10 +55,10 @@ cellParamsList.append(exampleCell)
 
 # best example for astr
 exampleCell = {'subject':'adap017',
-               'date':'2016-04-24',
-               'tetrode':6,
-               'cluster':11,
-               'brainRegion':'astr'} # low freq, sound modulated
+               'date':'2016-04-21',
+               'tetrode':5,
+               'cluster':9,
+               'brainRegion':'astr'} # high freq, sound modulated
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'adap067',
@@ -183,10 +184,9 @@ if not os.path.ismount(BEHAVIOR_PATH):
 if not os.path.ismount(EPHYS_PATH):
     os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
 
-dbKey = 'reward_change'
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
-celldb = pd.read_hdf(celldbPath, key=dbKey)
+celldb = celldatabase.load_hdf(celldbPath)
 sessionType = 'behavior'
 behavClass = loadbehavior.FlexCategBehaviorData
 evlockFolder = 'evlock_spktimes'
