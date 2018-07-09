@@ -25,7 +25,7 @@ SAVE_FIGURE=1
 
 plt.clf()
 gs = gridspec.GridSpec(2, 3)
-gs.update(top=0.95, bottom=0.08, hspace=0.25)
+gs.update(top=0.95, bottom=0.08, hspace=0.5)
 plt.hold(1)
 
 labelPosX = [0.02, 0.34, 0.66]   # Horiz position for panel labels

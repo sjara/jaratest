@@ -166,7 +166,7 @@ if PANELS[0]:
     # cbar = plt.colorbar(cax, ax=axThalamus, format='%.1f')
     cbar = plt.colorbar(cax, ax=axThalamus, format='%d')
     maxFR = np.max(exDataFR.ravel())
-    cbar.ax.set_ylabel('Firing rate\n(spk/sec)', fontsize = fontSizeLabels, labelpad=-10)
+    cbar.ax.set_ylabel('Firing rate\n(spk/s)', fontsize = fontSizeLabels, labelpad=-10)
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
@@ -199,7 +199,7 @@ if PANELS[3]:
     cax = axCortex.imshow(np.flipud(exDataFR), interpolation='nearest', cmap=acColorMap)
     cbar = plt.colorbar(cax, ax=axCortex, format='%d')
     maxFR = np.max(exDataFR.ravel())
-    cbar.ax.set_ylabel('Firing rate\n(spk/sec)', fontsize = fontSizeLabels, labelpad=-10)
+    cbar.ax.set_ylabel('Firing rate\n(spk/s)', fontsize = fontSizeLabels, labelpad=-10)
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
@@ -238,10 +238,14 @@ if PANELS[8]:
 
     pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
     axBW.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
+    # axBW.plot(pos, thalPopStat, 'o', mec = '0.5', mfc = 'None', alpha=markerAlpha)
     medline(axBW, np.median(thalPopStat), 0, 0.5)
+    # medline(axBW, np.median(thalPopStat), 0, 0.8, color=colorATh)
     pos = jitter(np.ones(len(acPopStat))*1, 0.20)
     axBW.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
+    # axBW.plot(pos, acPopStat, 'o', mec = '0.5', mfc = 'None', alpha=markerAlpha)
     medline(axBW, np.median(acPopStat), 1, 0.5)
+    # medline(axBW, np.median(acPopStat), 1, 0.8, color=colorAC)
     axBW.set_ylabel('BW10', fontsize=fontSizeLabels)
     # tickLabels = ['ATh:Str', 'AC:Str']
     # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
@@ -280,20 +284,18 @@ if PANELS[8]:
 
     spacing = 0.05
 
-    # pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-    # axThresh.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
     markers = extraplots.spread_plot(0, thalPopStat, spacing)
-    # plt.setp(markers, mec = colorATh, mfc = 'None', alpha=markerAlpha)
     plt.setp(markers, mec = colorATh, mfc = 'None')
+    # plt.setp(markers, mec = '0.5', mfc = 'None')
     medline(axThresh, np.median(thalPopStat), 0, 0.5)
+    # medline(axThresh, np.median(thalPopStat), 0, 0.8, color=colorATh)
 
-    # pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-    # axThresh.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
     markers = extraplots.spread_plot(1, acPopStat, spacing)
-    # plt.setp(markers, mec = colorAC, mfc = 'None', alpha=markerAlpha)
     plt.setp(markers, mec = colorAC, mfc = 'None')
+    # plt.setp(markers, mec = '0.5', mfc = 'None')
 
     medline(axThresh, np.median(acPopStat), 1, 0.5)
+    # medline(axThresh, np.median(acPopStat), 1, 0.8, color=colorAC)
     axThresh.set_ylabel('Threshold (dB SPL)', fontsize=fontSizeLabels)
     # tickLabels = ['ATh:Str', 'AC:Str']
     # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
@@ -337,18 +339,18 @@ if PANELS[8]:
     thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
 
     pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-    axLatency.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
-    medline(axLatency, np.median(thalPopStat), 0, 0.5)
+    axLatency.plot(pos, thalPopStat*1000, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
+    medline(axLatency, np.median(thalPopStat)*1000, 0, 0.5)
     pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-    axLatency.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
-    medline(axLatency, np.median(acPopStat), 1, 0.5)
-    axLatency.set_ylabel('Latency (s)', fontsize=fontSizeTicks)
+    axLatency.plot(pos, acPopStat*1000, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
+    medline(axLatency, np.median(acPopStat)*1000, 1, 0.5)
+    axLatency.set_ylabel('Latency (ms)', fontsize=fontSizeTicks)
     # tickLabels = ['ATh:Str', 'AC:Str']
     tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
     axLatency.set_xticks(range(2))
     axLatency.set_xlim([-0.5, 1.5])
     extraplots.boxoff(axLatency)
-    axLatency.set_ylim([-0.001, 0.065])
+    axLatency.set_ylim([-0.001, 65])
 
     extraplots.set_ticks_fontsize(axLatency, fontSizeTicks)
     axLatency.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
@@ -367,7 +369,7 @@ if PANELS[8]:
                                         fontSize=fontSizeStars, gapFactor=starGapFactor,
                                       ax=axLatency)
     '''
-    yDataMax = max([max(acPopStat), max(thalPopStat)])
+    yDataMax = max([max(acPopStat*1000), max(thalPopStat*1000)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
     starString = None if pVal<0.05 else 'n.s.'

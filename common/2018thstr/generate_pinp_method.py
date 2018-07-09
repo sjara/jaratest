@@ -1,42 +1,42 @@
 import os
 import numpy as np
-from collections import Counter
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from jaratoolbox import settings
-from jaratoolbox import extraplots
-from jaratoolbox import colorpalette
+from matplotlib import pyplot as plt
+from matplotlib import gridspec
+from jaratoolbox import celldatabase
 from jaratoolbox import spikesanalysis
+from jaratoolbox import spikesorting
 from jaratoolbox import ephyscore
+from jaratoolbox import extraplots
+from jaratoolbox import colorpalette as cp
+from jaratoolbox import settings
 from scipy import stats
-import copy
-import pandas as pd
-import figparams
-reload(figparams)
 
 STUDY_NAME = '2018thstr'
-SAVE = True
+SAVE = 1
 
-# dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-dataframe = pd.read_hdf(dbPath, key='dataframe')
+inforecPath = '/home/nick/src/jaratest/common/inforecordings/pinp031_inforec.py'
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_NBQX.h5')
+dataframe = celldatabase.generate_cell_database(inforecPath)
+
+dataframe['autoTagged'] = 0
+dataframe['autoTagged'] = dataframe['autoTagged'].astype(int)
 
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
-    cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
+    cell = ephyscore.Cell(dbRow)
 
     try:
-        pulseData, _ = cell.load('laserpulse')
+        pulseData, _ = cell.load('laserpulse_pre')
     except (IndexError, ValueError):
         print "Cell has no laserpulse session, loading laser train session for pulse data"
         try:
-            pulseData, _ = cell.load('lasertrain') ##FIXME!!! Loading train if we have no pulse. Bad idea??
+            pulseData, _ = cell.load('lasertrain_pre') ##FIXME!!! Loading train if we have no pulse. Bad idea??
         except (IndexError, ValueError):
             print "Cell has no laser train session or no spikes. FAIL!"
             dataframe.loc[indRow, 'autoTagged'] = 0
             continue
     try:
-        trainData, _ = cell.load('lasertrain')
+        trainData, _ = cell.load('lasertrain_pre')
     except (IndexError, ValueError):
         print "Cell has no laser train session or no spikes. FAIL!"
         dataframe.loc[indRow, 'autoTagged'] = 0
@@ -104,8 +104,6 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
             zStats[indPulse], pVals[indPulse] = stats.mannwhitneyu(nspkResp, nspkBase)
         except ValueError: #All numbers identical will cause mann whitney to fail
             zStats[indPulse], pVals[indPulse] = [0, 1]
-    numSignificant = sum( pVals<0.05 )
-    dataframe.loc[indRow, 'numSignificantTrainResponses'] = numSignificant
 
     # if (pVals[0] < 0.05) and (sum(pVals[1:]<0.05) >= 3) and all(zStats>0):
     if (pVals[0] < 0.05) and (sum(pVals[1:]<0.05) >= 3) and (all(respSpikeMean > nspkBase.ravel().mean())):
@@ -121,6 +119,9 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'autoTagged'] = 0
 
 if SAVE:
-    # savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-    dataframe.to_hdf(dbPath, 'dataframe')
-    print "SAVED DATAFRAME to {}".format(dbPath)
+    print 'Saving database to {}'.format(dbPath)
+    celldatabase.save_hdf(dataframe, dbPath)
+
+
+
+
