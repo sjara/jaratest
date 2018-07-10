@@ -24,8 +24,8 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.02, 0.35]   # Horiz position for panel labels
-labelPosY = [1, 1]    # Vert position for panel labels
+labelPosX = [0.015, 0.45]   # Horiz position for panel labels
+labelPosY = [0.9, 0.35]    # Vert position for panel labels
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 
               'more_right':figparams.colp['MoreRewardR']} 
@@ -45,7 +45,7 @@ fig.set_facecolor('w')
 panelsToPlot=[0, 1]
 
 gs = gridspec.GridSpec(3, 6)
-gs.update(left=0.09, right=0.98, top=0.9, bottom=0.1, wspace=0.3, hspace=0.6)
+gs.update(left=0.08, right=0.98, top=0.9, bottom=0.1, wspace=0.3, hspace=0.6)
 ax0 = plt.subplot(gs[0:2, 0:3])
 ax1 = plt.subplot(gs[0:2, 3:])
 ax2 = plt.subplot(gs[2, 0:2])
@@ -54,12 +54,12 @@ ax4 = plt.subplot(gs[2, 4:6])
 
 # -- Panel A: task schematic -- #
 ax0.set_axis_off()
-ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
+ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
                 fontsize=fontSizePanel, fontweight='bold')
 
 # -- Panel B: Example rc psychometric -- # 
 if 0 in panelsToPlot:
-    ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='axes fraction',
+    ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
                  fontsize=fontSizePanel, fontweight='bold')
 
     exampleFilename = 'example_rc_ave_pycurve_adap071.npz' #'example_rc_ave_pycurve_adap012.npz'
@@ -185,17 +185,17 @@ if 1 in panelsToPlot:
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(ax2) 
 
-    freqToPlot =  numFreqs / 2 # middle freq
+    freqToPlot = numFreqs / 2 # middle freq
     rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
     for animalInd in range(len(subjects)):
         ax3.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax3.set_xticks([0,1])
     ax3.set_xticklabels(conditions, fontsize=fontSizeLabels)
     #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
-    ax3.set_yticks([50, 100])
+    ax3.set_yticks([25, 50, 75, 100])
     ax3.set_ylim([0, 100]) 
     ax3.set_xlim([-0.5, 1.5])
-    ax3.text(0.1, 105,'Middle frequency')
+    ax3.text(0.1, 100,'Middle frequency')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(ax3) 
 
@@ -207,19 +207,19 @@ if 1 in panelsToPlot:
     ax4.set_xticklabels(conditions, fontsize=fontSizeLabels)
     #ax4.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax4.set_yticks([75, 100])
-    ax4.set_ylim([75, 110]) 
+    ax4.set_ylim([70, 105]) 
     ax4.set_xlim([-0.5, 1.5])
-    ax4.text(0.1, 110,'Highest frequency')
+    ax4.text(0.1, 105,'Highest frequency')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(ax4) 
 
-ax2.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='axes fraction', fontsize=fontSizePanel, fontweight='bold')
+ax2.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
     
-plt.show()
-
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+plt.show()
 
 import numpy as np
 from scipy import stats

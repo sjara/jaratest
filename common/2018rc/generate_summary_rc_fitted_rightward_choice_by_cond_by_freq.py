@@ -19,10 +19,11 @@ if not os.path.exists(outputDir):
 scriptFullPath = os.path.realpath(__file__)
 
 numSessionsToInclude = 6
-numFreqs = 3
+numFreqs = 9
 blockLabels = ['more_left','more_right'] #['same_reward','more_left','more_right']
 animalsUsed = [animalName for animalName in sorted(animals.keys())]
 resultAllAnimals = np.empty((len(blockLabels), numFreqs, len(animalsUsed)))
+freqsAllAnimals = np.empty((numFreqs, len(animalsUsed)))
 
 for indA,animalName in enumerate(animalsUsed):
     sessions = animals[animalName][:numSessionsToInclude]
@@ -59,14 +60,16 @@ for indA,animalName in enumerate(animalsUsed):
             midFreq = np.logspace(np.log2(possibleValues[0]), np.log2(possibleValues[-1]), 
                 base=2, num=len(possibleValues)+1)[(len(possibleValues)+1)/2]
             midFreqLog = np.log2(midFreq)
-            xValues = [logPossibleValues[0], midFreqLog, logPossibleValues[-1]]
-            fittedRightwardChoiceThisBlock = 100 * psyCurveInference.evaluate(x=xValues)
-            
+            freqsToFit = np.logspace(logPossibleValues[0], logPossibleValues[-1], num=9, base=2) #[logPossibleValues[0], midFreqLog, logPossibleValues[-1]]
+            fittedRightwardChoiceThisBlock = 100 * psyCurveInference.evaluate(x=np.log2(freqsToFit))
             resultThisAnimal[indB, :] = fittedRightwardChoiceThisBlock
         elif not np.any(trialsEachType[:, indB]):
             resultThisAnimal[indB, :] = np.repeat(np.NaN, numFreqs)
+    freqsAllAnimals[:, indA] = freqsToFit
     resultAllAnimals[:,:,indA] = resultThisAnimal
 
 summaryFilename = 'rc_fitted_rightward_choice_each_condition_by_freq_summary.npz'
 summaryFullPath = os.path.join(outputDir,summaryFilename)
-np.savez(summaryFullPath, animalsUsed=animalsUsed, numSessionsToInclude=numSessionsToInclude, blockLabels=blockLabels, freqs=['lowest','middle','highest'], script=scriptFullPath, resultAllAnimals=resultAllAnimals)
+np.savez(summaryFullPath, animalsUsed=animalsUsed, numSessionsToInclude=numSessionsToInclude, 
+    blockLabels=blockLabels, freqs=['lowest','middle','highest'], script=scriptFullPath, 
+    resultAllAnimals=resultAllAnimals, fittedFreqsAllAnimals=freqsAllAnimals)
