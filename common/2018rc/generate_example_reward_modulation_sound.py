@@ -220,7 +220,7 @@ for cellParams in cellParamsList:
     missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
     # Remove missing trials
     bdata.remove_trials(missingTrials)
-
+    diffTimes = bdata['timeCenterOut'] - bdata['timeTarget']
     # -- Select trials to plot from behavior file -- #
     for freq in freqsToPlot:
         trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
@@ -238,4 +238,9 @@ for cellParams in cellParamsList:
             #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
             outputFile = 'example_rc_{}aligned_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
             outputFullPath = os.path.join(dataDir,outputFile)
-            np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams)
+            np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
+                movementTimesFromEventOnset=diffTimes,
+                indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, 
+                timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, 
+                trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
+                script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams)

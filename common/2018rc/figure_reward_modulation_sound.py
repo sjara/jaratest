@@ -96,8 +96,8 @@ if PANELS[0]:
 
     plt.setp(pRaster, ms=msRaster)
 
-    '''
-    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    
+    movementTimesFromEventOnset = intData['movementTimesFromEventOnset']
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
@@ -109,7 +109,8 @@ if PANELS[0]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    '''
+    
+    plt.text(-0.2, yLims[-1]+5, 'AStr')
     #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
@@ -160,8 +161,7 @@ if PANELS[1]:
 
     plt.setp(pRaster, ms=msRaster)
 
-    '''
-    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    movementTimesFromEventOnset = intData['movementTimesFromEventOnset']
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
@@ -173,7 +173,8 @@ if PANELS[1]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    '''
+    plt.text(-0.2, yLims[-1]+5, 'AC')
+    
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
