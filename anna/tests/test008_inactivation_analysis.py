@@ -3,6 +3,7 @@ import sys
 import os
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 from jaratoolbox import celldatabase
@@ -13,6 +14,8 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 from scipy import stats
+
+from jaratest.anna.analysis import band_plots
 
 import subjects_info
 
@@ -60,12 +63,17 @@ def calculate_tuning_curve_inputs(spikeTimeStamps, eventOnsetTimes, firstSort, s
                   'timeRange':timeRange}
     return tuningDict
 
-def change_FR_by_bins(tuningDict, lowBandInds=[0,1,2], highBandInds=[4,5,6], timeRange=[0.2,1.0]):
+def change_FR_by_bins(tuningDict, lowBandInds=[0,1,2], highBandInds=[4,5,6]):
     import pdb
     spikeCountMat = tuningDict['spikeCountMat']
     
     diffs = np.zeros(2)
+    timeRange = tuningDict['timeRange']
     soundDuration = timeRange[1]-timeRange[0]
+    
+    #plt.clf()
+    #band_plots.plot_tuning_curve(tuningDict['responseArray'], tuningDict['errorArray'], range(7))
+    #plt.show()
     
     lowBandCounts = []
     lowBandLaserCounts = []
@@ -92,12 +100,12 @@ def change_FR_by_bins(tuningDict, lowBandInds=[0,1,2], highBandInds=[4,5,6], tim
         highBandLaserCounts.extend(thisBandLaserCounts)
     
     diffs[1] = (np.mean(highBandLaserCounts) - np.mean(highBandCounts))/soundDuration
-    pdb.set_trace()
+    #pdb.set_trace()
     
     return diffs
 
 
-dbFilename = os.path.join(settings.DATABASE_PATH,'inactivation_cells2.h5')
+dbFilename = os.path.join(settings.DATABASE_PATH,'inactivation_cells.h5')
 db = celldatabase.load_hdf(dbFilename)
 
 bestCells = db[db['sustainedSuppressionIndexLaser'].notnull()]
@@ -155,5 +163,18 @@ for indRow, (dbIndex, dbRow) in enumerate(noSOM.iterrows()):
     spearman = stats.spearmanr(laserDiff, numBands)
     SOMspearman[indRow] = spearman[0]
     SOMbinDiff[indRow,:] = binDiffs
-    
-    
+
+goodSOM = np.sum(SOMbinDiff>=0,axis=1)==2
+goodPV = np.sum(PVbinDiff>=0,axis=1)==2
+
+SOMbinDiff2 = SOMbinDiff[goodSOM]
+PVbinDiff2 = PVbinDiff[goodPV]
+
+plt.figure()
+band_plots.plot_paired_scatter_with_median([SOMbinDiff2[:,0],SOMbinDiff2[:,1]], ['low bands', 'high bands'])
+plt.title('no SOM')
+
+plt.figure()
+band_plots.plot_paired_scatter_with_median([PVbinDiff2[:,0],PVbinDiff2[:,1]], ['low bands', 'high bands'])
+plt.title('no PV')
+plt.show()
