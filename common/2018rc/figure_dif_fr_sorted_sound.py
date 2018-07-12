@@ -50,6 +50,8 @@ startInd = list(timeBinEdges).index(timePeriodToPlot[0])
 endInd = list(timeBinEdges).index(timePeriodToPlot[1])
 numOfBins = endInd - startInd
 absSpikeDifEachCell = np.abs(aveSpikeCountByBlock[0,:,:] - aveSpikeCountByBlock[1,:,:])
+spikeDifIndEachCell = (aveSpikeCountByBlock[0,:,:] - aveSpikeCountByBlock[1,:,:])/(aveSpikeCountByBlock[0,:,:] + aveSpikeCountByBlock[1,:,:])
+
 absSpikeDifEachCell = absSpikeDifEachCell[startInd:endInd, :]
 sortedAbsSpikeDifEachCell = np.zeros(absSpikeDifEachCell.shape)
 brainAreaLabels = np.unique(brainAreaEachCell)

@@ -37,7 +37,22 @@ colorsDict = {'colorLMore':figparams.colp['MoreRewardL'],
 # -- These example cells I picked manually  --#
 cellParamsList = []
 
-# best example for astr
+exampleCell = {'subject':'gosi004',
+               'date':'2017-03-07',
+               'tetrode':7,
+               'cluster':10,
+               'brainRegion':'ac'} # rightward, not modulated
+cellParamsList.append(exampleCell)
+
+exampleCell = {'subject':'adap017',
+               'date':'2016-04-06',
+               'tetrode':7,
+               'cluster':12,
+               'brainRegion':'astr'} # rightward, not modulated
+cellParamsList.append(exampleCell)
+
+
+# best modulated example for astr
 exampleCell = {'subject':'adap012',
                'date':'2016-02-04',
                'tetrode':3,

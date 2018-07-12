@@ -37,6 +37,21 @@ colorsDict = {'colorLMore':figparams.colp['MoreRewardL'],
 
 # -- These example cells I picked manually  --#
 cellParamsList = []
+
+exampleCell = {'subject':'gosi004',
+               'date':'2017-03-15',
+               'tetrode':6,
+               'cluster':4,
+               'brainRegion':'ac'} # low freq, not modulated
+cellParamsList.append(exampleCell)
+
+exampleCell = {'subject':'adap017',
+               'date':'2016-04-06',
+               'tetrode':4,
+               'cluster':3,
+               'brainRegion':'astr'} # high freq, not modulated
+cellParamsList.append(exampleCell)
+
 # sustained sound response
 exampleCell = {'subject':'adap015',
                'date':'2016-03-18',
