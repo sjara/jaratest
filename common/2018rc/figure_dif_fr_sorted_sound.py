@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import figparams
 reload(figparams)
+import pdb
 
 FIGNAME = 'dif_fr_sorted_sound'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
@@ -51,7 +52,7 @@ endInd = list(timeBinEdges).index(timePeriodToPlot[1])
 numOfBins = endInd - startInd
 absSpikeDifEachCell = np.abs(aveSpikeCountByBlock[0,:,:] - aveSpikeCountByBlock[1,:,:])
 spikeDifIndEachCell = (aveSpikeCountByBlock[0,:,:] - aveSpikeCountByBlock[1,:,:])/(aveSpikeCountByBlock[0,:,:] + aveSpikeCountByBlock[1,:,:])
-
+pdb.set_trace()
 absSpikeDifEachCell = absSpikeDifEachCell[startInd:endInd, :]
 sortedAbsSpikeDifEachCell = np.zeros(absSpikeDifEachCell.shape)
 brainAreaLabels = np.unique(brainAreaEachCell)

@@ -61,6 +61,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 3)
+#gs = gridspec.GridSpec(3, 2)
 gs.update(left=0.1, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.4)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[0,0], hspace=0.15)
@@ -267,8 +268,8 @@ if PANELS[2]:
     print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
     (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
     print 'Using wilcoxon rank sum test to compare modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
-    #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
-    #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
+    (oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
+    print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
 
 # -- Cells that are not modulated by reward -- #
 ax8 = plt.subplot(gs03[0:3, :])
