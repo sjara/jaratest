@@ -8,7 +8,7 @@ from scipy import stats
 import figparams
 reload(figparams)
 
-np.random.seed(54)
+np.random.seed(1001)
 
 FIGNAME = 'figure_anatomy'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
@@ -49,6 +49,13 @@ fontSizeTicks = figparams.fontSizeTicks *3
 fontSizePanel = figparams.fontSizePanel *2
 dataMS = 8
 
+fontSizeNS = figparams.fontSizeNS
+fontSizeStars = figparams.fontSizeStars
+starHeightFactor = figparams.starHeightFactor
+starGapFactor = figparams.starGapFactor
+starYfactor = figparams.starYfactor * 2
+dotEdgeColor = figparams.dotEdgeColor
+
 barColor = '0.5'
 anat036NonLemColor = 'k'
 anat037NonLemColor = 'k'
@@ -81,6 +88,7 @@ axThal.axis('off')
 
 # -- Panel: Thalamus histogram --
 axThalHist = plt.subplot(gs[1, 2])
+axThalHist.hold(1)
 axThalHist.annotate('C', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 extraplots.boxoff(axThalHist)
@@ -92,12 +100,14 @@ anat036VentralTotals = anat036ventral/(np.sum(anat036nonLem, axis=0) + anat036ve
 anat037VentralTotals = anat037ventral/(np.sum(anat037nonLem, axis=0) + anat037ventral).astype(float)
 
 animalSplit = 0.2
-jitterFrac = 0.08
-axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, jitterFrac), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None', ms=dataMS)
-axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals))+animalSplit, jitterFrac), anat037NonLemTotals, 'o', mec=anat037NonLemColor, mfc='None', ms=dataMS)
+jitterFrac = 0.08 * 1.5
+# axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, jitterFrac), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None', ms=dataMS, clip_on=False)
+axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, 0), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None', ms=dataMS, clip_on=False)
+axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals))+animalSplit, jitterFrac), anat037NonLemTotals, 'o', mec=anat037NonLemColor, mfc='None', ms=dataMS, clip_on=False)
 
-axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, jitterFrac), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None', ms=dataMS)
-axThalHist.plot(jitter(np.ones(len(anat037VentralTotals))+animalSplit, jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None', ms=dataMS)
+# axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, jitterFrac), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None', ms=dataMS, clip_on=False)
+axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, 0), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None', ms=dataMS, clip_on=False)
+axThalHist.plot(jitter(np.ones(len(anat037VentralTotals))+animalSplit, jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None', ms=dataMS, clip_on=False)
 
 allNonLemTotals = np.concatenate([anat036NonLemTotals, anat037NonLemTotals])
 allVentralTotals = np.concatenate([anat036VentralTotals, anat037VentralTotals])
@@ -107,12 +117,25 @@ ventralMean = np.mean([np.mean(anat036VentralTotals), np.mean(anat037VentralTota
 statistic, pVal = stats.ranksums(allNonLemTotals, allVentralTotals)
 print("Ranksums test, NonLem vs Ventral totals, p={}".format(pVal))
 
+
+yDataMax = max([max(allNonLemTotals), max(allVentralTotals)])
+yStars = yDataMax + yDataMax*starYfactor
+yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+
+plt.hold(1)
+starString = None if pVal<0.05 else 'n.s.'
+extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                              starSize=fontSizeStars, starString=starString,
+                              gapFactor=starGapFactor)
+plt.hold(1)
+
 medline(nonLemMean, 0, 0.5, color='k')
 medline(ventralMean, 1, 0.5, color='k')
 
 axThalHist.set_xlim([-0.5, 1.5])
-axThalHist.set_yticks([0, 1])
 axThalHist.set_ylabel('ATh labeled neurons (%)', fontsize=fontSizeLabels)
+axThalHist.set_ylim([-0.025, 1])
+axThalHist.set_yticks([0, 1])
 axThalHist.set_xticks([0, 1])
 axThalHist.set_yticklabels(['0', '100'], rotation=90, va='center')
 extraplots.set_ticks_fontsize(axThalHist, fontSizeTicks)

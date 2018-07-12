@@ -8,6 +8,7 @@ import sys
 import numpy as np
 import pandas as pd
 from jaratoolbox import settings
+from jaratoolbox import celldatabase
 import figparams
 reload(figparams)
 
@@ -27,13 +28,13 @@ alphaLevel = 0.05
 movementWindow = [0.05, 0.15] # in seconds
 
 ###################################################################################
-dbKey = 'reward_change'
+#dbKey = 'reward_change'
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
-celldb = pd.read_hdf(celldbPath, key=dbKey)
+celldb = celldatabase.load_hdf(celldbPath)
 
 for brainArea in brainAreas:
-    goodQualCells = celldb.query("keepAfterDupTest==True and brainArea=='{}'".format(brainArea))
+    goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
 
     movementModI = goodQualCells['movementModI_{}'.format(movementWindow)]
     movementModS = goodQualCells['movementModS_{}'.format(movementWindow)]

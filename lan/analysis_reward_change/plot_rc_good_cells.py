@@ -5,6 +5,7 @@ import numpy as np
 from scipy import stats
 from jaratoolbox import settings
 from jaratoolbox import ephyscore
+from jaratoolbox import celldatabase
 from jaratoolbox import loadbehavior
 import new_reward_change_plotter_functions as rcfuncs
 reload(rcfuncs)
@@ -18,14 +19,15 @@ evlockDir = '/home/languo/data/ephys/evlock_spktimes'
 
 #databaseFullPath = os.path.join(settings.DATABASE_PATH, animal, '{}_database.h5'.format(animal))
 databaseFullPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', 'rc_database.h5')
-key = 'reward_change'
+#key = 'reward_change'
 qualityThreshold = 2
 maxZThreshold = 3
 ISIcutoff = 0.02
 
-celldb = pd.read_hdf(databaseFullPath, key=key)
+#celldb = pd.read_hdf(databaseFullPath, key=key)
+celldb = celldatabase.load_hdf(databaseFullPath)
 
-goodQualCells = celldb.query('keepAfterDupTest==True') # Non-duplicate cells
+goodQualCells = celldb.loc[celldb['keepAfterDupTest']==1]  # Non-duplicate cells
 #celldb.query('isiViolations<{} and shapeQuality>{}'.format(ISIcutoff, qualityThreshold))
 
 cOutWindow = '0.05-0.15s'

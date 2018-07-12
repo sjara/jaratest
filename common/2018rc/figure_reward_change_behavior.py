@@ -18,14 +18,14 @@ outputDir = '/tmp/'
 figFilename = 'plots_reward_change_behavior' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
-figSize = [10, 5]
+figSize = [10, 8]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [-0.25]   # Horiz position for panel labels
-labelPosY = [1]    # Vert position for panel labels
+labelPosX = [0.015, 0.45]   # Horiz position for panel labels
+labelPosY = [0.9, 0.35]    # Vert position for panel labels
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 
               'more_right':figparams.colp['MoreRewardR']} 
@@ -44,21 +44,22 @@ fig.set_facecolor('w')
 
 panelsToPlot=[0, 1]
 
-gs = gridspec.GridSpec(2, 3)
-gs.update(left=0.09, right=0.98, top=0.92, bottom=0.18, wspace=0.3, hspace=0.3)
-ax0 = plt.subplot(gs[:, 0])
-ax1 = plt.subplot(gs[:, 1])
-ax2 = plt.subplot(gs[0, 2])
-ax3 = plt.subplot(gs[1, 2])
+gs = gridspec.GridSpec(3, 6)
+gs.update(left=0.08, right=0.98, top=0.9, bottom=0.1, wspace=0.3, hspace=0.6)
+ax0 = plt.subplot(gs[0:2, 0:3])
+ax1 = plt.subplot(gs[0:2, 3:])
+ax2 = plt.subplot(gs[2, 0:2])
+ax3 = plt.subplot(gs[2, 2:4])
+ax4 = plt.subplot(gs[2, 4:6])
 
 # -- Panel A: task schematic -- #
 ax0.set_axis_off()
-ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
+ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
                 fontsize=fontSizePanel, fontweight='bold')
 
 # -- Panel B: Example rc psychometric -- # 
 if 0 in panelsToPlot:
-    ax1.annotate('B', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
+    ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
                  fontsize=fontSizePanel, fontweight='bold')
 
     exampleFilename = 'example_rc_ave_pycurve_adap071.npz' #'example_rc_ave_pycurve_adap012.npz'
@@ -158,7 +159,8 @@ if 1 in panelsToPlot:
     ax2.spines['bottom'].set_visible(False)
     [t.set_visible(False) for t in ax2.get_xticklines()]
     '''
-    summaryFilename = 'rc_rightward_choice_each_condition_by_freq_summary.npz'
+    summaryFilename = 'rc_fitted_rightward_choice_each_condition_by_freq_summary.npz'
+    #'rc_rightward_choice_each_condition_by_freq_summary.npz'
     summaryFullPath = os.path.join(dataDir,summaryFilename)
     summaryFile = np.load(summaryFullPath)
 
@@ -166,43 +168,58 @@ if 1 in panelsToPlot:
     subjects = summaryFile['animalsUsed']
     conditions = summaryFile['blockLabels']
     condColors = [colorsDict['more_left'], colorsDict['more_right']]
+    numFreqs = dataMat.shape[1]
 
-    rChoiceEachConcEachFreqEachAnimal = np.mean(dataMat, axis=1)
     freqToPlot = 0 #lowest freq
-    rChoiceEachConcThisFreqEachAnimal = rChoiceEachConcEachFreqEachAnimal[:, freqToPlot, :]
+    rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
     for animalInd in range(len(subjects)):
         ax2.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax2.set_xticks([0,1])
     ax2.set_xticklabels([])
-    #ax2.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+    ax2.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax2.set_yticks([0, 25]) 
     ax2.set_xlim([-0.5, 1.5])
-    ax2.set_ylim([-10, 40])
+    ax2.set_xticklabels(conditions, fontsize=fontSizeLabels)
+    ax2.set_ylim([-5, 30])
     ax2.text(0.1, 30,'Lowest frequency')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(ax2) 
 
-    freqToPlot = 2 # middle low freq
-    rChoiceEachConcThisFreqEachAnimal = rChoiceEachConcEachFreqEachAnimal[:, freqToPlot, :]
+    freqToPlot = numFreqs / 2 # middle freq
+    rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
     for animalInd in range(len(subjects)):
         ax3.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax3.set_xticks([0,1])
     ax3.set_xticklabels(conditions, fontsize=fontSizeLabels)
     #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
-    ax3.set_yticks([50, 100])
-    ax3.set_ylim([25, 110]) 
+    ax3.set_yticks([25, 50, 75, 100])
+    ax3.set_ylim([0, 100]) 
     ax3.set_xlim([-0.5, 1.5])
-    ax3.text(0.1, 105,'Middle frequency')
+    ax3.text(0.1, 100,'Middle frequency')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     extraplots.boxoff(ax3) 
 
-ax2.annotate('C', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction', fontsize=fontSizePanel, fontweight='bold')
+    freqToPlot = -1 # highest freq
+    rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
+    for animalInd in range(len(subjects)):
+        ax4.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
+    ax4.set_xticks([0,1])
+    ax4.set_xticklabels(conditions, fontsize=fontSizeLabels)
+    #ax4.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+    ax4.set_yticks([75, 100])
+    ax4.set_ylim([70, 105]) 
+    ax4.set_xlim([-0.5, 1.5])
+    ax4.text(0.1, 105,'Highest frequency')
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    extraplots.boxoff(ax4) 
+
+ax2.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
     
-plt.show()
-
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+plt.show()
 
 import numpy as np
 from scipy import stats

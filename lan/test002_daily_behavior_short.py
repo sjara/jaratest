@@ -13,7 +13,7 @@ reload(settings)
 #settings.DEFAULT_EXPERIMENTER = 'billy'
 
 #subjects = ['d1pi014','d1pi018','d1pi019','d1pi020']
-subjects = ['test053']
+subjects = ['gosi010']
 
 if len(sys.argv)>1:
     sessions = sys.argv[1:]

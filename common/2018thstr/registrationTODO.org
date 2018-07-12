@@ -1,0 +1,102 @@
+
+
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiI_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/medialDiI_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationATh/medialDiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiD_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationATh/medialDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/DiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/lateralDiI_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationATh/extraLateralDiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationATh/lateralDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationAC/lateralDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/lateralDiI_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationAC/lateralDiI_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/DiD_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/lateralDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiI_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/medialDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiD_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/medialDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp018/registrationAC/DiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationATh/medialDiD_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiD_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationATh/medialDiD_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationATh/medialDiD_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/DiD_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationATh/medialDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/DiD_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationAC/lateralDiI_shank4.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp021/registrationATh/posteriorDiI_shank2.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp016/registrationATh/extraLateralDiD_shank3.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/lateralDiI_shank2.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp016/registrationATh/extraLateralDiD_shank1.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/posteriorDiI_shank3.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp018/registrationAC/DiD_shank3.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/DiD_shank1.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/posteriorDiI_shank2.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp016/registrationAC/extralateralDiD_shank1.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp017/registrationATh/medialDiI_shank3.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp021/registrationATh/anteriorDiD_shank2.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/posteriorDiI_shank4.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/medialDiI_shank3.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp018/registrationAC/lateralDiI_shank4.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp017/registrationATh/medialDiI_shank4.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp019/registrationATh/DiD_shank1.svg
+TODO: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/DiD_shank2.svgDONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiI_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/medialDiI_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationATh/medialDiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiD_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationATh/medialDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/DiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/lateralDiI_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationATh/extraLateralDiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationATh/lateralDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationAC/lateralDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/lateralDiI_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationAC/lateralDiI_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/DiD_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/lateralDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiI_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/medialDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiD_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/medialDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp018/registrationAC/DiD_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationATh/medialDiD_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/medialDiD_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationATh/medialDiD_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationATh/medialDiD_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/DiD_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationATh/medialDiI_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/DiD_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationAC/lateralDiI_shank4.svg
+
+DONE: /mnt/jarahubdata/jarashare/histology/pinp021/registrationATh/posteriorDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp021/registrationATh/anteriorDiD_shank2.svg
+
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationATh/extraLateralDiD_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationATh/extraLateralDiD_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp016/registrationAC/extralateralDiD_shank1.svg
+
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationAC/lateralDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationATh/medialDiI_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp017/registrationATh/medialDiI_shank4.svg
+
+DONE: /mnt/jarahubdata/jarashare/histology/pinp018/registrationAC/DiD_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp018/registrationAC/lateralDiI_shank4.svg
+
+DONE: /mnt/jarahubdata/jarashare/histology/pinp015/registrationAC/medialDiI_shank3.svg
+
+DONE: /mnt/jarahubdata/jarashare/histology/pinp019/registrationATh/DiD_shank1.svg
+
+DONE: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/posteriorDiI_shank3.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/DiD_shank1.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/posteriorDiI_shank2.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/posteriorDiI_shank4.svg
+DONE: /mnt/jarahubdata/jarashare/histology/pinp026/registrationATh/DiD_shank2.svg

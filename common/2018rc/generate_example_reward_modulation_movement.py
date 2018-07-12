@@ -15,6 +15,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
+from jaratoolbox import celldatabase
 import figparams
 
 STUDY_NAME = figparams.STUDY_NAME
@@ -196,10 +197,10 @@ if not os.path.ismount(BEHAVIOR_PATH):
 if not os.path.ismount(EPHYS_PATH):
     os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
 
-dbKey = 'reward_change'
+#dbKey = 'reward_change'
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
-celldb = pd.read_hdf(celldbPath, key=dbKey)
+celldb = celldatabase.load_hdf(celldbPath)
 sessionType = 'behavior'
 behavClass = loadbehavior.FlexCategBehaviorData
 evlockFolder = 'evlock_spktimes'
@@ -233,7 +234,8 @@ for cellParams in cellParamsList:
     missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
     # Remove missing trials
     bdata.remove_trials(missingTrials)
-
+    
+    diffTimes = bdata['timeCenterOut'] - bdata['timeTarget']
     # -- Select trials to plot from behavior file -- #
     for freq in freqsToPlot:
         trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
@@ -251,4 +253,9 @@ for cellParams in cellParamsList:
             #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
             outputFile = 'example_rc_{}aligned_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
             outputFullPath = os.path.join(dataDir,outputFile)
-            np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams)
+            np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
+              soundTimesFromEventOnset=-(diffTimes),
+              indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, 
+              timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, 
+              trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, 
+              frequencyPloted=freq, alignedTo=alignment, **cellParams)
