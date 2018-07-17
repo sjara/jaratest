@@ -10,14 +10,16 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import figparams
 reload(figparams)
+import pdb
 
 FIGNAME = 'dif_fr_sorted_center-out'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
+binWidth = 0.025
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_dif_fr_sorted_centerout' # Do not include extension
+figFilename = 'figure_dif_fr_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
 figSize = [5, 10]
@@ -33,14 +35,15 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-dataFilename = 'average_spike_count_by_rc_cond_preferred_direction.npz'
+
+dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
 aveSpikeCountByBlock = data['aveSpikeCountByBlock']
 timeBinEdges = np.around(data['timeVec'], decimals=2)
 brainAreaEachCell = data['brainAreaEachCell']
 #soundRespInds = data['soundRespInds']
-binWidth = np.around(data['binWidth'], decimals=2)
+#binWidth = np.around(data['binWidth'], decimals=2)
 timePeriodToPlot = [0, 0.3]
 startInd = list(timeBinEdges).index(timePeriodToPlot[0])
 endInd = list(timeBinEdges).index(timePeriodToPlot[1])
@@ -48,6 +51,11 @@ numOfBins = endInd - startInd
 absSpikeDifEachCell = np.abs(aveSpikeCountByBlock[0,:,:] - aveSpikeCountByBlock[1,:,:])
 absSpikeDifEachCell = absSpikeDifEachCell[startInd:endInd, :]
 sortedAbsSpikeDifEachCell = np.zeros(absSpikeDifEachCell.shape)
+# more left - more right
+spikeDifIndEachCell = (aveSpikeCountByBlock[0,:,:] - aveSpikeCountByBlock[1,:,:]) / (aveSpikeCountByBlock[0,:,:] + aveSpikeCountByBlock[1,:,:])
+spikeDifIndEachCell[np.isnan(spikeDifIndEachCell)] = 0 # for those bins that does not have a spike, set index to 0
+spikeDifIndEachCell = spikeDifIndEachCell[startInd:endInd, :]
+
 brainAreaLabels = np.unique(brainAreaEachCell)
 
 for indA,brainArea in enumerate(brainAreaLabels):
@@ -58,8 +66,21 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	sortedAbsSpikeDifEachCellThisArea = absSpikeDifEachCellThisArea[:, cellReInd]
 	sortedAbsSpikeDifEachCell[:, cellsThisArea] = sortedAbsSpikeDifEachCellThisArea
 
+	spikeDifIndEachCellThisArea = spikeDifIndEachCell[:, cellsThisArea]
+	maxDifBinEachCellThisArea = np.argmax(np.abs(spikeDifIndEachCellThisArea), axis=0)
+	maxDifEachCellThisArea = spikeDifIndEachCellThisArea[maxDifBinEachCellThisArea, range(len(maxDifBinEachCellThisArea))]
+	negPeakDifCells = maxDifEachCellThisArea < 0
+	posPeakDifCells = maxDifEachCellThisArea > 0
+	cellReIndNeg = np.argsort(maxDifBinEachCellThisArea[negPeakDifCells])
+	cellReIndPos = np.argsort(maxDifBinEachCellThisArea[posPeakDifCells])
+	#pdb.set_trace()
+	sortedSpikeDifIndEachNegPeakCell = spikeDifIndEachCellThisArea[:, negPeakDifCells][:, cellReIndNeg]
+	sortedSpikeDifIndEachPosPeakCell = spikeDifIndEachCellThisArea[:, posPeakDifCells][:, cellReIndPos]
+	sortedSpikeDifIndEachCellThisArea = np.hstack((sortedSpikeDifIndEachPosPeakCell, sortedSpikeDifIndEachNegPeakCell))
+	
 	ax = plt.subplot(1,2,indA+1)
-	ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
+	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
+	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', vmin=-1, vmax=1, interpolation='nearest')
 	ax.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
 	ax.set_xticklabels([0. , 0.1, 0.2, 0.3])
 	#xticklabels = ['{:.1f}'.format(x) for x in xticks]
@@ -69,7 +90,7 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	ax.set_ylabel('{}\nCell number'.format(brainArea))
 	ax.set_xlabel('Time from movement onset (sec)')
 
-plt.tight_layout()
+#plt.tight_layout()
 if SAVE_FIGURE:
 	extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 

@@ -22,7 +22,7 @@ blockLabels = ['more_left','more_right']
 sessionType = 'behavior'
 soundChannelType = 'stim'
 timeRange = [-0.2, 0.5]
-binWidth = 0.010 #10 msec
+binWidth = 0.025 #0.010 #10 msec
 timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 alphaLevel = 0.05
 movementSelWindow = [0.05, 0.15]
@@ -130,7 +130,7 @@ for indC, cell in goodRightMovementSelCells.iterrows():
     print 'ave spike count by block for cell {}'.format(indC), aveSpikeCountByBlock
 aveSpikeCountByBlockMSCells = aveSpikeCountByBlockAllCells[:,:,movementSelInds]
 brainAreaEachCell = brainAreaEachCell[movementSelInds]
-outputFilename = 'average_spike_count_by_rc_cond_preferred_direction.npz'
+outputFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
 outputFilePath = os.path.join(dataDir, outputFilename)
 np.savez(outputFilePath, rightMovementSelInds=goodRightMovementSelCells.index, leftMovementSelInds=goodLeftMovementSelCells.index, 
     timeVec=timeVec, binWidth=binWidth, brainAreaEachCell=np.array(brainAreaEachCell), 
