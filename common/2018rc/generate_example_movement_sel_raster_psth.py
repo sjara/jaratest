@@ -12,6 +12,7 @@ import pandas as pd
 from jaratoolbox import loadbehavior
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesanalysis
+from jaratoolbox import celldatabase
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
@@ -44,6 +45,13 @@ if not os.path.ismount(EPHYS_PATH):
 
 # -- These example cells we picked manually  --#
 cellParamsList = []
+
+exampleCell = {'subject':'adap013',
+              'date':'2016-03-30',
+              'tetrode':8,
+               'cluster':5,
+               'brainRegion':'astr'}  # leftward very strong
+cellParamsList.append(exampleCell) 
 
 exampleCell = {'subject':'adap005',
               'date':'2015-12-24',
@@ -111,10 +119,9 @@ if len(sys.argv) == 1:
 elif len( sys.argv) == 2:
     cellIndToGenerate = int(sys.argv[1]) 
 ####################################################################################
-dbKey = 'reward_change'
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
-celldb = pd.read_hdf(celldbPath, key=dbKey)
+celldb = celldatabase.load_hdf(celldbPath)
 sessionType = 'behavior'
 behavClass = loadbehavior.FlexCategBehaviorData
 evlockFolder = 'evlock_spktimes'
@@ -150,6 +157,8 @@ for cellParams in cellParamsList:
     # Remove missing trials
     bdata.remove_trials(missingTrials)
 
+    diffTimes = bdata['timeTarget'] - bdata['timeCenterOut'] 
+
     # -- Select trials to plot from behavior file -- #
     rightward = bdata['choice']==bdata.labels['choice']['right']
     leftward = bdata['choice']==bdata.labels['choice']['left']
@@ -173,7 +182,11 @@ for cellParams in cellParamsList:
     #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_rc_movement_sel_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 
+    np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
+      soundTimesFromEventOnset=diffTimes, indexLimitsEachTrial=indexLimitsEachTrial, 
+      spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, 
+      condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
+      script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 
 
 
     

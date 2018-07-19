@@ -26,14 +26,14 @@ colorsDict = {'left': figparams.colp['MoveLeft'],
               'right':figparams.colp['MoveRight']} 
 
 soundColor = figparams.colp['sound']
-timeRangeToPlot = [-0.3,0.5]
+timeRangeToPlot = [-0.2,0.4]
 
 # -- Select example cells here -- #
-exampleMovSelAStr = 'adap005_2015-12-24_T6_c8'
-#exampleMovSelAStr = 'adap012_2016-03-09_T3_c2'
+#exampleMovSelAStr = 'adap005_2015-12-24_T6_c8'
+exampleMovSelAStr = 'adap013_2016-03-30_T8_c5'
 
 exampleMovSelAC = 'gosi008_2017-03-10_T1_c10'
-#exampleMovSelAC = 'gosi008_2017-03-07_T1_c4'
+#exampleMovSelAC = 'gosi004_2017-02-13_T7_c8'
 ###############################################################
 
 
@@ -96,12 +96,11 @@ if PANELS[0]:
 
     plt.setp(pRaster, ms=msRaster)
 
-    '''
-    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    soundTimesFromEventOnset = intData['soundTimesFromEventOnset']
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[5])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -109,7 +108,8 @@ if PANELS[0]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    '''
+    plt.text(0.2, yLims[-1]+5, 'AStr')
+
     #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
     plt.ylabel('Trials grouped by\nmovement direction', fontsize=fontSizeLabels)
@@ -124,13 +124,15 @@ if PANELS[0]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,6]
+    yLims = [0,65]
     #soundBarHeight = 0.1*yLims[-1]
     #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
+    plt.text(0.2, yLims[-1]+5, 'AStr')
+
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
@@ -160,12 +162,11 @@ if PANELS[1]:
 
     plt.setp(pRaster, ms=msRaster)
 
-    '''
-    movementTimesFromEventOnset = rasterExample['movementTimesFromEventOnset']
+    soundTimesFromEventOnset = intData['soundTimesFromEventOnset']
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[5])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -173,7 +174,8 @@ if PANELS[1]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    '''
+    plt.text(0.2, yLims[-1]+5, 'AC')
+
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
     plt.ylabel('Trials grouped by\nmovement direction', fontsize=fontSizeLabels)
@@ -196,6 +198,7 @@ if PANELS[1]:
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
+    
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
@@ -262,7 +265,9 @@ if PANELS[2]:
     print 'Using wilcoxon rank sum test to compare movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
-plt.show()
+
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+plt.show()

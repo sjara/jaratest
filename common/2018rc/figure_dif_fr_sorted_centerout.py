@@ -10,19 +10,19 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import figparams
 reload(figparams)
-import pdb
+import scipy.stats as stats
 
 FIGNAME = 'dif_fr_sorted_center-out'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
-binWidth = 0.025
+binWidth = 0.01
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'figure_dif_fr_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
-figSize = [5, 10]
+figSize = [8, 10]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -57,17 +57,21 @@ spikeDifIndEachCell[np.isnan(spikeDifIndEachCell)] = 0 # for those bins that doe
 spikeDifIndEachCell = spikeDifIndEachCell[startInd:endInd, :]
 
 brainAreaLabels = np.unique(brainAreaEachCell)
-
+maxDifBinEachCellBothAreas = []
 for indA,brainArea in enumerate(brainAreaLabels):
 	cellsThisArea = brainAreaEachCell==brainArea
-	absSpikeDifEachCellThisArea = absSpikeDifEachCell[:, cellsThisArea]
-	maxDifBinEachCellThisArea = np.argmax(absSpikeDifEachCellThisArea, axis=0)
-	cellReInd = np.argsort(maxDifBinEachCellThisArea)
-	sortedAbsSpikeDifEachCellThisArea = absSpikeDifEachCellThisArea[:, cellReInd]
-	sortedAbsSpikeDifEachCell[:, cellsThisArea] = sortedAbsSpikeDifEachCellThisArea
+	#absSpikeDifEachCellThisArea = absSpikeDifEachCell[:, cellsThisArea]
+	#maxDifBinEachCellThisArea = np.argmax(absSpikeDifEachCellThisArea, axis=0)
+	#cellReInd = np.argsort(maxDifBinEachCellThisArea)
+	#sortedAbsSpikeDifEachCellThisArea = absSpikeDifEachCellThisArea[:, cellReInd]
+	#sortedAbsSpikeDifEachCell[:, cellsThisArea] = sortedAbsSpikeDifEachCellThisArea
 
 	spikeDifIndEachCellThisArea = spikeDifIndEachCell[:, cellsThisArea]
 	maxDifBinEachCellThisArea = np.argmax(np.abs(spikeDifIndEachCellThisArea), axis=0)
+	maxDifBinEachCellBothAreas.append(maxDifBinEachCellThisArea)
+	meanPeakBinNum = np.mean(maxDifBinEachCellThisArea)
+	medianPeakBinNum = np.median(maxDifBinEachCellThisArea)
+	print('For {}, mean peak bin number is {}, median peak bin number is {}'.format(brainArea, meanPeakBinNum, medianPeakBinNum))
 	maxDifEachCellThisArea = spikeDifIndEachCellThisArea[maxDifBinEachCellThisArea, range(len(maxDifBinEachCellThisArea))]
 	negPeakDifCells = maxDifEachCellThisArea < 0
 	posPeakDifCells = maxDifEachCellThisArea > 0
@@ -89,6 +93,12 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	ax.set_yticks([0,50,100])
 	ax.set_ylabel('{}\nCell number'.format(brainArea))
 	ax.set_xlabel('Time from movement onset (sec)')
+
+plt.subplots_adjust(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.5)
+
+# Stats #
+zScore, pVal = stats.ranksums(*maxDifBinEachCellBothAreas)
+print('Using bin width of {}s, compare time bin number for peak difference between the two brain areas yielded p value of {:.3f} using Wilcoxon rank sums test.'.format(binWidth, pVal))
 
 #plt.tight_layout()
 if SAVE_FIGURE:
