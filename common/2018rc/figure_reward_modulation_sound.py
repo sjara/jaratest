@@ -53,8 +53,8 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
 
-labelPosX = [0.015, 0.5]   # Horiz position for panel labels
-labelPosY = [0.96, 0.55, 0.16]    # Vert position for panel labels
+labelPosX = [0.015, 0.55]   # Horiz position for panel labels
+labelPosY = [0.97, 0.58, 0.2]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
@@ -62,7 +62,7 @@ fig.set_facecolor('w')
 
 #gs = gridspec.GridSpec(2, 3)
 gs = gridspec.GridSpec(5, 2)
-gs.update(left=0.15, right=0.98, top=0.98, bottom=0.05, wspace=0.4, hspace=1)
+gs.update(left=0.15, right=0.96, top=0.98, bottom=0.06, wspace=0.55, hspace=0.5)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[0:2,0], hspace=0.15)
 gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[0:2,1], hspace=0.15)
@@ -83,7 +83,7 @@ ax1 = plt.subplot(gs00[0:3, :])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
-    intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleModulatedAStr)
+    intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleModulatedAC)
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
@@ -115,7 +115,7 @@ if PANELS[0]:
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
     
-    plt.text(-0.1, yLims[-1]+5, 'AStr')
+    plt.text(-0.1, yLims[-1]+5, 'AC')
     #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
@@ -148,7 +148,7 @@ if PANELS[0]:
 ax3 = plt.subplot(gs01[0:3, :])
 ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
-    intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleModulatedAC)
+    intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleModulatedAStr)
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
@@ -178,7 +178,7 @@ if PANELS[1]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    plt.text(-0.1, yLims[-1]+5, 'AC')
+    plt.text(-0.1, yLims[-1]+5, 'AStr')
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
@@ -215,37 +215,6 @@ if PANELS[2]:
     ax6 = plt.subplot(gs[4,0])
     ax6.annotate('E', xy=(labelPosX[0],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
-    summaryFilename = 'summary_reward_modulation_sound_rightAStr.npz'
-    summaryFullPath = os.path.join(dataDir, summaryFilename)
-    summary = np.load(summaryFullPath)
-    soundRespAStr = summary['soundResponsive']
-    sigModIAStr = summary['sigModI']
-    nonsigModIAStr = summary['nonsigModI']
-    allModIAStr = summary['allModI']
-
-    binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
-    #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
-    #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(-0.5,yPosText,'AStr',ha='center',fontsize=fontSizeLabels)
-    plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.xlabel('Modulation index', fontsize=fontSizeLabels)
-    plt.ylabel('Number of cells', fontsize=fontSizeLabels)
-    extraplots.boxoff(plt.gca())
-
-    # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of sound responsive good cells is:', sum(soundRespAStr), '\nNumber of cells significantly modulated is:', len(sigModIAStr)
-    (Z, pVal) = stats.wilcoxon(allModIAStr)
-    print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
-    (Z, pVal) = stats.wilcoxon(sigModIAStr)
-    print 'For significantly modulated cells in AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIAStr), pVal)
-    
-    #ax7 = plt.subplot(gs02[:,1])
-    ax7 = plt.subplot(gs[4,1])
-    ax7.annotate('F', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-
     summaryFilename = 'summary_reward_modulation_sound_rightAC.npz'
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
@@ -262,7 +231,7 @@ if PANELS[2]:
     plt.text(-0.5,yPosText,'AC',ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.xlabel('Modulation index', fontsize=fontSizeLabels)
+    plt.xlabel('Reward modulation index\n(sound period)', fontsize=fontSizeLabels)
     plt.ylabel('Number of cells', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca())
 
@@ -273,6 +242,37 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(sigModIAC)
     print 'For significantly modulated cells in AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIAC), pVal)
     
+    #ax7 = plt.subplot(gs02[:,1])
+    ax7 = plt.subplot(gs[4,1])
+    ax7.annotate('F', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
+    summaryFilename = 'summary_reward_modulation_sound_rightAStr.npz'
+    summaryFullPath = os.path.join(dataDir, summaryFilename)
+    summary = np.load(summaryFullPath)
+    soundRespAStr = summary['soundResponsive']
+    sigModIAStr = summary['sigModI']
+    nonsigModIAStr = summary['nonsigModI']
+    allModIAStr = summary['allModI']
+
+    binsEdges = np.linspace(-1,1,20)
+    plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+    yPosText = 0.9*plt.ylim()[1]
+    #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
+    #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.5,yPosText,'AStr',ha='center',fontsize=fontSizeLabels)
+    plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.xlabel('Reward modulation index\n(sound period)', fontsize=fontSizeLabels)
+    plt.ylabel('Number of cells', fontsize=fontSizeLabels)
+    extraplots.boxoff(plt.gca())
+
+    # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
+    print 'Total number of sound responsive good cells is:', sum(soundRespAStr), '\nNumber of cells significantly modulated is:', len(sigModIAStr)
+    (Z, pVal) = stats.wilcoxon(allModIAStr)
+    print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
+    (Z, pVal) = stats.wilcoxon(sigModIAStr)
+    print 'For significantly modulated cells in AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIAC), pVal)
+    
     (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
     print 'Using wilcoxon rank sum test to compare modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
@@ -281,70 +281,6 @@ if PANELS[2]:
 # -- Cells that are not modulated by reward -- #
 ax8 = plt.subplot(gs03[0:3, :])
 ax8.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-if PANELS[1]:
-    intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleNonModulatedAStr)
-    intDataFullPath = os.path.join(dataDir, intDataFilename)
-    intData =np.load(intDataFullPath)
-
-    trialsEachCond = intData['trialsEachCond']
-    colorEachCond = intData['colorEachCond']
-    spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
-    indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
-    pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
-                                                   indexLimitsEachTrial,
-                                                   timeRange=timeRangeToPlot,
-                                                   trialsEachCond=trialsEachCond,
-                                                   colorEachCond=colorEachCond,
-                                                   fillWidth=None,labels=None)
-
-    plt.setp(pRaster, ms=msRaster)
-
-    movementTimesFromEventOnset = intData['movementTimesFromEventOnset']
-    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
-    yLims = plt.gca().get_ylim()
-    plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
-    extraplots.boxoff(plt.gca())
-    plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
-    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
-        plt.setp(bplot[element], color='grey', linewidth=1)
-    plt.setp(bplot['whiskers'], linestyle='-')
-    plt.setp(bplot['medians'], color='orange')
-    plt.text(-0.1, yLims[-1]+5, 'AStr')
-
-    ax8.set_yticklabels([])
-    ax8.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
-
-
-    ax9 = plt.subplot(gs03[3, :])
-    condLabels = intData['condLabels']
-    spikeCountMat = intData['spikeCountMat']
-    timeVec = intData['timeVec']
-    binWidth = intData['binWidth']
-    
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,85]
-    soundBarHeight = 0.1*yLims[-1]
-    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
-    plt.ylim(yLims)
-    plt.yticks(yLims)
-    plt.xlim(timeRangeToPlot)
-    plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
-    extraplots.boxoff(plt.gca())
-    
-    #plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
-    #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
-
-ax10 = plt.subplot(gs04[0:3, :])
-ax10.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleNonModulatedAC)
     intDataFullPath = os.path.join(dataDir, intDataFilename)
@@ -378,6 +314,70 @@ if PANELS[1]:
     plt.setp(bplot['medians'], color='orange')
     plt.text(-0.1, yLims[-1]+5, 'AC')
 
+    ax8.set_yticklabels([])
+    ax8.set_xticklabels([])
+    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+
+
+    ax9 = plt.subplot(gs03[3, :])
+    condLabels = intData['condLabels']
+    spikeCountMat = intData['spikeCountMat']
+    timeVec = intData['timeVec']
+    binWidth = intData['binWidth']
+    
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.axvline(x=0,linewidth=1, color='darkgrey')
+    yLims = [0,60]
+    soundBarHeight = 0.1*yLims[-1]
+    plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    plt.ylim(yLims)
+    plt.yticks(yLims)
+    plt.xlim(timeRangeToPlot)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
+    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
+    extraplots.boxoff(plt.gca())
+    
+    #plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+
+ax10 = plt.subplot(gs04[0:3, :])
+ax10.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+if PANELS[1]:
+    intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleNonModulatedAStr)
+    intDataFullPath = os.path.join(dataDir, intDataFilename)
+    intData =np.load(intDataFullPath)
+
+    trialsEachCond = intData['trialsEachCond']
+    colorEachCond = intData['colorEachCond']
+    spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
+    indexLimitsEachTrial = intData['indexLimitsEachTrial']
+    
+    pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                   indexLimitsEachTrial,
+                                                   timeRange=timeRangeToPlot,
+                                                   trialsEachCond=trialsEachCond,
+                                                   colorEachCond=colorEachCond,
+                                                   fillWidth=None,labels=None)
+
+    plt.setp(pRaster, ms=msRaster)
+
+    movementTimesFromEventOnset = intData['movementTimesFromEventOnset']
+    trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
+    yLims = plt.gca().get_ylim()
+    plt.hold('on')
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+    plt.text(-0.1, yLims[-1]+5, 'AStr')
+
     ax10.set_yticklabels([])
     ax10.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
@@ -393,7 +393,7 @@ if PANELS[1]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,60]
+    yLims = [0,85]
     soundBarHeight = 0.1*yLims[-1]
     plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
