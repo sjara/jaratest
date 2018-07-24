@@ -7,6 +7,7 @@ reload(settings)
 from jaratoolbox import extraplots
 from jaratoolbox import extrastats
 import figparams
+from scipy import stats
 reload(figparams)
 
 
@@ -49,8 +50,11 @@ gs.update(left=0.08, right=0.98, top=0.9, bottom=0.1, wspace=0.3, hspace=0.6)
 ax0 = plt.subplot(gs[0:2, 0:3])
 ax1 = plt.subplot(gs[0:2, 3:])
 ax2 = plt.subplot(gs[2, 0:2])
+ax2.hold(True)
 ax3 = plt.subplot(gs[2, 2:4])
+ax3.hold(True)
 ax4 = plt.subplot(gs[2, 4:6])
+ax4.hold(True)
 
 # -- Panel A: task schematic -- #
 ax0.set_axis_off()
@@ -102,7 +106,7 @@ if 0 in panelsToPlot:
     
     ax1.set_ylim([0, 100])
     ax1.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    extraplots.set_ticks_fontsize(ax1,fontSizeTicks)
     ax1.set_yticks([0, 50, 100])
 
     leg = ax1.legend([plotHandles[1],plotHandles[0]], ['More_left','More_right'], loc='upper left', frameon=False,
@@ -182,7 +186,9 @@ if 1 in panelsToPlot:
     ax2.set_xticklabels(conditions, fontsize=fontSizeLabels)
     ax2.set_ylim([-5, 30])
     ax2.text(0.1, 30,'Lowest frequency')
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.sca(ax2)
+    extraplots.significance_stars([0,1], 26, 2, starSize=7, gapFactor=0.4, color='0.5')
+    extraplots.set_ticks_fontsize(ax2,fontSizeTicks)
     extraplots.boxoff(ax2) 
 
     freqToPlot = numFreqs / 2 # middle freq
@@ -193,10 +199,12 @@ if 1 in panelsToPlot:
     ax3.set_xticklabels(conditions, fontsize=fontSizeLabels)
     #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax3.set_yticks([25, 50, 75, 100])
-    ax3.set_ylim([0, 100]) 
+    ax3.set_ylim([0, 118]) 
     ax3.set_xlim([-0.5, 1.5])
-    ax3.text(0.1, 100,'Middle frequency')
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    ax3.text(0.1, 118, 'Middle frequency')
+    plt.sca(ax3)
+    extraplots.significance_stars([0,1], 108, 5, starSize=7, gapFactor=0.4, color='0.5')
+    extraplots.set_ticks_fontsize(ax3,fontSizeTicks)
     extraplots.boxoff(ax3) 
 
     freqToPlot = -1 # highest freq
@@ -207,10 +215,12 @@ if 1 in panelsToPlot:
     ax4.set_xticklabels(conditions, fontsize=fontSizeLabels)
     #ax4.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax4.set_yticks([75, 100])
-    ax4.set_ylim([70, 105]) 
+    ax4.set_ylim([70, 106]) 
     ax4.set_xlim([-0.5, 1.5])
-    ax4.text(0.1, 105,'Highest frequency')
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    ax4.text(0.1, 106, 'Highest frequency')
+    plt.sca(ax4)
+    extraplots.significance_stars([0,1], 103, 2, starSize=7, gapFactor=0.4, color='0.5')
+    extraplots.set_ticks_fontsize(ax4,fontSizeTicks)
     extraplots.boxoff(ax4) 
 
 ax2.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
@@ -219,12 +229,15 @@ ax2.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fo
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
+
+##STATS
+for freqToPlot in [0, numFreqs / 2, -1]:
+    rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
+    zScore, pVal = stats.ranksums(rChoiceEachConcThisFreqEachAnimal[0,:], rChoiceEachConcThisFreqEachAnimal[1,:])
+    print('Using Wilcoxon ranksum test on percent right choice for more_left vs. more_right\n For freq {} the p value is {}'
+        .format(freqToPlot, pVal))
+
 plt.show()
-
-import numpy as np
-from scipy import stats
-
-##SATS
 '''
 for indSubject in range(len(subjects)):
     subDataMoreLeft = dataMat[0, :, indSubject]

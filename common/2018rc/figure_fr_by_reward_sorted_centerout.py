@@ -19,7 +19,7 @@ binWidth = 0.01
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_dif_fr_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
+figFilename = 'figure_fr_sorted_by_reward_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
 figSize = [8, 10]
@@ -65,7 +65,7 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	#cellReInd = np.argsort(maxDifBinEachCellThisArea)
 	#sortedAbsSpikeDifEachCellThisArea = absSpikeDifEachCellThisArea[:, cellReInd]
 	#sortedAbsSpikeDifEachCell[:, cellsThisArea] = sortedAbsSpikeDifEachCellThisArea
-
+	aveSpikeCountThisArea = aveSpikeCountByBlock[:, :, cellsThisArea]
 	spikeDifIndEachCellThisArea = spikeDifIndEachCell[:, cellsThisArea]
 	maxDifBinEachCellThisArea = np.argmax(np.abs(spikeDifIndEachCellThisArea), axis=0)
 	maxDifBinEachCellBothAreas.append(maxDifBinEachCellThisArea)
@@ -82,19 +82,48 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	sortedSpikeDifIndEachPosPeakCell = spikeDifIndEachCellThisArea[:, posPeakDifCells][:, cellReIndPos]
 	sortedSpikeDifIndEachCellThisArea = np.hstack((sortedSpikeDifIndEachPosPeakCell, sortedSpikeDifIndEachNegPeakCell))
 	
-	ax = plt.subplot(1,2,indA+1)
+	sortedAveSpikeEachNegPeakCellLeftMoreReward = aveSpikeCountThisArea[0, startInd:endInd, negPeakDifCells][cellReIndNeg, :]
+	sortedAveSpikeEachPosPeakCellLeftMoreReward = aveSpikeCountThisArea[0, startInd:endInd, posPeakDifCells][cellReIndPos, :]
+	sortedAveSpikeEachCellLeftMoreReward = np.vstack((sortedAveSpikeEachPosPeakCellLeftMoreReward, sortedAveSpikeEachNegPeakCellLeftMoreReward)) 
+	sortedAveSpikeEachNegPeakCellRightMoreReward = aveSpikeCountThisArea[1, startInd:endInd, negPeakDifCells][cellReIndNeg, :]
+	sortedAveSpikeEachPosPeakCellRightMoreReward = aveSpikeCountThisArea[1, startInd:endInd, posPeakDifCells][cellReIndPos, :]
+	sortedAveSpikeEachCellRightMoreReward = np.vstack((sortedAveSpikeEachPosPeakCellRightMoreReward, sortedAveSpikeEachNegPeakCellRightMoreReward)) 
+	
+	ax1 = plt.subplot(2,3,indA*3+1)
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
-	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', vmin=-1, vmax=1, interpolation='nearest')
-	ax.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
-	ax.set_xticklabels([0. , 0.1, 0.2, 0.3])
+	ax1.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', vmin=-1, vmax=1, interpolation='nearest')
+	ax1.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
+	ax1.set_xticklabels([0. , 0.1, 0.2, 0.3])
 	#xticklabels = ['{:.1f}'.format(x) for x in xticks]
 	#ax.xaxis.set_major_formatter(ticker.StrMethodFormatter("{x:g}"))
 	#plt.yticks([150, 50], brainAreaLabels)
-	ax.set_yticks([0,50,100])
-	ax.set_ylabel('{}\nCell number'.format(brainArea))
-	ax.set_xlabel('Time from movement onset (sec)')
+	ax1.set_yticks([0,50,100])
+	ax1.set_ylabel('{}\nCell number'.format(brainArea))
+	ax1.set_xlabel('Time from movement onset (sec)')
+	ax1.set_title('(left_more - right_more)/\n(left_more + right_more)')
 
-plt.subplots_adjust(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.5)
+	ax2 = plt.subplot(2,3,indA*3+2)
+	ax2.imshow(sortedAveSpikeEachCellLeftMoreReward, origin='lower', cmap='viridis', interpolation='nearest')
+	ax2.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
+	ax2.set_xticklabels([0. , 0.1, 0.2, 0.3])
+	ax2.set_yticks([0,50,100])
+	ax2.set_ylabel('{}\nCell number'.format(brainArea))
+	ax2.set_xlabel('Time from movement onset (sec)')
+	ax2.set_title('left_more')
+
+	ax3 = plt.subplot(2,3,indA*3+3)
+	ax3.imshow(sortedAveSpikeEachCellRightMoreReward, origin='lower', cmap='viridis', interpolation='nearest')
+	ax3.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
+	ax3.set_xticklabels([0. , 0.1, 0.2, 0.3])
+	ax3.set_yticks([0,50,100])
+	ax3.set_ylabel('{}\nCell number'.format(brainArea))
+	ax3.set_xlabel('Time from movement onset (sec)')
+	ax3.set_title('right_more')
+
+
+
+
+plt.subplots_adjust(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.2, hspace=0.2)
 
 # Stats #
 zScore, pVal = stats.ranksums(*maxDifBinEachCellBothAreas)
