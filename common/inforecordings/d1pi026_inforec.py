@@ -158,3 +158,8 @@ exp4.laserCalibration = {
 }
 
 #Aborted due to hemorrhaging after cleaning the craniotomy. Gel foam was needed to reduce the bleeding and was left under the silguard
+
+exp5 = celldatabase.Experiment(subject, '2018-07-24', 'left_AudStr', info=['FacingPosterior', 'PosteriorMid'])
+experiments.append(exp5)
+
+#Used left speaker; 2.5 mW for laser; probe DAF9; Rig 1
