@@ -20,7 +20,7 @@ scriptFullPath = os.path.realpath(__file__)
 
 numSessionsToInclude = 6
 numFreqs = 9
-blockLabels = ['more_left','more_right'] #['same_reward','more_left','more_right']
+blockLabels = ['same_reward','more_left','more_right'] #['same_reward','more_left','more_right']
 animalsUsed = [animalName for animalName in sorted(animals.keys())]
 resultAllAnimals = np.empty((len(blockLabels), numFreqs, len(animalsUsed)))
 freqsAllAnimals = np.empty((numFreqs, len(animalsUsed)))
@@ -35,7 +35,7 @@ for indA,animalName in enumerate(animalsUsed):
     freqEachTrial = bdata['targetFrequency']
     choiceRight = choice==bdata.labels['choice']['right']
     currentBlock = bdata['currentBlock']
-    blockTypes = [bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']] 
+    blockTypes = [bdata.labels['currentBlock'][blockLabel] for blockLabel in blockLabels] 
     trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
 
     for indB,blockLabel in enumerate(blockLabels):

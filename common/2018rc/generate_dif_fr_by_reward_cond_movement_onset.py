@@ -11,7 +11,7 @@ import pdb
 ephysDir = settings.EPHYS_PATH_REMOTE
 STUDY_NAME = figparams.STUDY_NAME
 alignment = 'center-out'
-FIGNAME = 'dif_fr_sorted_{}'.format(alignment)
+FIGNAME = 'dif_fr_by_reward_sorted_{}'.format(alignment)
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 
 if not os.path.exists(dataDir):

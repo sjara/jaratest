@@ -106,7 +106,7 @@ if PANELS[0]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -170,7 +170,7 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -225,10 +225,12 @@ if PANELS[2]:
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
+    yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(-0.5,yPosText,'AC',ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
+    plt.text(0.5,yPosText,'AC\nn={}\n{:.3f}% modulated'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
+  
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(sound period)', fontsize=fontSizeLabels)
@@ -256,10 +258,11 @@ if PANELS[2]:
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
+    yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(-0.5,yPosText,'AStr',ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
+    plt.text(0.5,yPosText,'AStr\nn={}\n{:.3f}% modulated'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(sound period)', fontsize=fontSizeLabels)
@@ -304,7 +307,7 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -368,7 +371,7 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')

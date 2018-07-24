@@ -51,7 +51,7 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
 
-labelPosX = [0.015, 0.355, 0.68]   # Horiz position for panel labels
+labelPosX = [0.015, 0.355, 0.65]   # Horiz position for panel labels
 labelPosY = [0.92]    # Vert position for panel labels
 
 fig = plt.gcf()
@@ -100,7 +100,7 @@ if PANELS[0]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -108,7 +108,18 @@ if PANELS[0]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    plt.text(0.2, yLims[-1]+5, 'AC')
+
+    sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
+    plt.hold('on')
+    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+    plt.text(0, yLims[-1]+5, 'AC')
 
     #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
@@ -166,7 +177,7 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -174,7 +185,18 @@ if PANELS[1]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    plt.text(0.2, yLims[-1]+5, 'AStr')
+
+    sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
+    plt.hold('on')
+    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+    plt.text(0, yLims[-1]+5, 'AStr')
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
@@ -221,13 +243,14 @@ if PANELS[2]:
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
+    yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(0.5,yPosText,'AC',ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
+    plt.text(0.5,yPosText,'AC\nn={}\n{:.2f}% selective'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
+    #plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
     plt.ylabel('Number of cells', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca())
 
@@ -247,10 +270,11 @@ if PANELS[2]:
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
+    yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(0.5,yPosText,'AStr',ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
+    plt.text(0.5,yPosText,'AStr\nn={}\n{:.2f}% selective'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)

@@ -12,14 +12,14 @@ import figparams
 reload(figparams)
 import scipy.stats as stats
 
-FIGNAME = 'dif_fr_sorted_center-out'
+FIGNAME = 'dif_fr_by_reward_sorted_center-out'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
 binWidth = 0.01
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_dif_fr_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
+figFilename = 'figure_dif_fr_by_reward_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
 figSize = [8, 10]

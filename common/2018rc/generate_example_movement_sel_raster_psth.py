@@ -157,7 +157,8 @@ for cellParams in cellParamsList:
     # Remove missing trials
     bdata.remove_trials(missingTrials)
 
-    diffTimes = bdata['timeTarget'] - bdata['timeCenterOut'] 
+    diffTimesSound = bdata['timeTarget'] - bdata['timeCenterOut'] 
+    diffTimesSideIn = bdata['timeSideIn'] - bdata['timeCenterOut']
 
     # -- Select trials to plot from behavior file -- #
     rightward = bdata['choice']==bdata.labels['choice']['right']
@@ -183,7 +184,8 @@ for cellParams in cellParamsList:
     outputFile = 'example_rc_movement_sel_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
     np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
-      soundTimesFromEventOnset=diffTimes, indexLimitsEachTrial=indexLimitsEachTrial, 
+      soundTimesFromEventOnset=diffTimesSound, sideInTimesFromEventOnset=diffTimesSideIn,
+      indexLimitsEachTrial=indexLimitsEachTrial, 
       spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, 
       condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
       script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 
