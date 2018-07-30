@@ -157,19 +157,10 @@ exp3.maxDepth = 3300
 #     '4.0':6.65
 # }
 
-#Used left speaker; 2.5 mW for laser; probe DAF9; Rig 1
-
-exp4.laserCalibration = {
-    '0.5':1.0,
-    '1.0':1.6,
-    '1.5':2.3,
-    '2.0':3.0,
-    '2.5':3.8,
-    '3.0':4.8,
-    '3.5':5.85,
-    '4.0':6.65
-}
-
+<<<<<<< HEAD
+#exp4.maxDepth = 0
+#Aborted due to hemorrhaging after cleaning the craniotomy. Gel-foam was needed to reduce the bleeding and was left under the silguard
+=======
 #Aborted due to hemorrhaging after cleaning the craniotomy. Gel foam was needed to reduce the bleeding and was left under the silguard
 
 exp5 = celldatabase.Experiment(subject, '2018-07-24', 'left_AudStr', info=['FacingPosterior', 'Anterior'])
@@ -347,3 +338,4 @@ exp7.add_site(3800, tetrodes=[5,6,7,8])
 exp7.add_session('16-08-45', None, 'noiseburst', 'am_tuning_curve')
 
 exp7.maxDepth = 3800 #T5 and T6 saw the most neurons
+>>>>>>> d2c4e252fc29b1814a4c4f5ac1d4286dde22a7e8
