@@ -12,12 +12,11 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import settings
 from jaratoolbox import colorpalette
 
-
-def plot_ave_psycurve_reward_change(animal, sessions):    
-    FREQCOLORS =  [colorpalette.TangoPalette['Chameleon3'],
+FREQCOLORS =  [colorpalette.TangoPalette['Chameleon3'],
                    colorpalette.TangoPalette['ScarletRed1'],
                    colorpalette.TangoPalette['SkyBlue2']]
 
+def plot_ave_psycurve_reward_change(animal, sessions):    
     allBehavDataThisAnimal = behavioranalysis.load_many_sessions(animal,sessions)
     targetFrequency = allBehavDataThisAnimal['targetFrequency']
     choice=allBehavDataThisAnimal['choice']
@@ -95,7 +94,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     plt.style.use(['seaborn-white','seaborn-talk'])
 
-    CASE = 1
+    CASE = 2
     # -- For checking a particular animal's performance on a particular date -- #
     if CASE == 1:
         subjects = ['gosi010']
@@ -129,16 +128,27 @@ if __name__ == '__main__':
         numOfAnimals = len(sujectSessionsDict.keys())
         avePsycurveMoreLeft = np.empty((numOfAnimals,8)) #We used 8 frequencies in the psy curve
         avePsycurveMoreRight = np.empty((numOfAnimals,8))
-
+        summaryFilename = 'rc_fitted_rightward_choice_each_condition_by_freq_summary.npz'
+        summaryFullPath = os.path.join('/home/languo/data/mnt/figuresdata/2018rc/reward_change_behavior',summaryFilename)
+        fittedSummary = np.load(summaryFullPath)
+        allAnimalMat = fittedSummary['resultAllAnimals']
+        fittedFreqsMat = fittedSummary['fittedFreqsAllAnimals']
+        subjectsFitted = fittedSummary['animalsUsed']
         for ind, (subject, sessions) in enumerate(sujectSessionsDict.items()):
             sessions = sessions[:numSessionsToInclude]
             plt.gcf().clf()
             fractionHitsEachValueAllBlocks = plot_ave_psycurve_reward_change(subject, sessions)
+            indA = list(subjectsFitted).index(subject)
+            fittedValsThisAnimal = allAnimalMat[:,:,indA]
+            freqsThisAnimal = fittedFreqsMat[:,indA]
+            for indB in range(allAnimalMat.shape[0]):
+                plt.gca().plot(freqsThisAnimal/1000, fittedValsThisAnimal[indB,:], 'o-', mfc=None, mec='k', linewidth=0.5)
+                plt.hold(True)
             save_svg_psycurve_reward_change(subject, sessions)
-            avePsycurveMoreLeft[ind,:] = fractionHitsEachValueAllBlocks[1,:] #The second row is more_left block
-            avePsycurveMoreRight[ind,:] = fractionHitsEachValueAllBlocks[2,:]#The third row is more_right block
+            #avePsycurveMoreLeft[ind,:] = fractionHitsEachValueAllBlocks[1,:] #The second row is more_left block
+            #avePsycurveMoreRight[ind,:] = fractionHitsEachValueAllBlocks[2,:]#The third row is more_right block
 
-       
+        '''
         # -- This plots an average psycurve for all the mice -- #    
         import scipy.stats as stats
         fontsize = 12
@@ -151,4 +161,4 @@ if __name__ == '__main__':
         plt.ylim((-0.1,1.1))
         extraplots.set_ticks_fontsize(plt.gca(),fontsize)
         plt.show()
-      
+        '''

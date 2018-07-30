@@ -50,34 +50,7 @@ if CASE == 'calculate':
 
 
     # -- Define the alignment and countTimeRange windows to use for calculating modulation -- #
-    #allAlignments = ['sound','center-out','side-in'] #the first argument is alignment, choices are 'sound', 'center-out' and 'side-in'
-    #allCountTimeRanges = ([0,0.1],[-0.1,0])
-    #allCountTimeRanges = ([0.05,0.15],[0.05,0.25],[0.05,0.35],[0.15,0.25],[0.05,0.2])
-
-    # -- Generate conditions for calculating modulation in by taking all possible combinations from all alignments and countTimeRanges -- #
-    #conditions = list(itertools.product(allAlignments,allCountTimeRanges))
-    '''
-    conditions = [('sound', [-0.1,0]), 
-                  ('sound', [0,0.1]), 
-                  ('center-out', [-0.1,0]), 
-                  ('center-out', [0.05,0.15]), 
-                  ('center-out', [0.15,0.25]),
-                  ('center-out', [0.05,0.2]),
-                  ('center-out', [0.05,0.25]),
-                  ('center-out', [0.05,0.35]),
-                  ('side-in',[-0.1,0]),
-                  ('side-in',[-0.15,0]),
-                  ('side-in',[-0.2,0]),
-                  ('side-in',[0,0.1])
-    ]
-    '''
-    conditions = [('sound', [-0.2,0]), 
-                  ('center-out', [0,0.1]), 
-                  ('center-out', [0,0.2]),
-                  ('center-out', [0,0.3]),
-                  ('center-out', [0.1,0.2]),
-                  ('center-out', [0.2,0.3])
-    ]
+    conditions = [('center-out', [0,0.3])]
     modulationDfAllMice = pd.DataFrame()
 
     #for mouseName in mouseNameList:
@@ -194,6 +167,11 @@ if CASE == 'calculate':
                 currentBlock = bdata['currentBlock']
                 blockTypes = [bdata.labels['currentBlock']['same_reward'],bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']]
                 trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes) # trialsEachType is an ndarray of dimension nTrials*nblockTypes where boolean vector (in a column) indicates which trials are in each type of block
+                
+                reactionTimesEachTrial = bdata['timeSideIn'] - bdata['timeCenterOut'] 
+                reactionTimesEachTrial[np.isnan(reactionTimesEachTrial)] = 0 # replace the nans
+                sideInTrials = (reactionTimesEachTrial <= countTimeRange[1])
+
                 # -- Find trials each type each block to evaluate Modulation Direction -- #
                 nTrials = len(bdata['currentBlock'])
                 blockBoundaries = np.flatnonzero(np.diff(bdata['currentBlock']))
@@ -284,8 +262,8 @@ if CASE == 'calculate':
 
                     freqLabels = ['Low','High']
                     for indf,freq in enumerate([lowFreq, highFreq]):
-                        trialsMoreLeft = trialsEachType[:,1] & freq & correct 
-                        trialsMoreRight = trialsEachType[:,2] & freq & correct 
+                        trialsMoreLeft = trialsEachType[:,1] & freq & correct & (~sideInTrials)
+                        trialsMoreRight = trialsEachType[:,2] & freq & correct & (~sideInTrials)
                         trialsEachCond = [trialsMoreRight,trialsMoreLeft]
 
                         # -- Calculate modulation index and significance p value -- #
@@ -301,7 +279,7 @@ if CASE == 'calculate':
                         # -- Evaluate modulation direction -- #
                         aveSpikeEachBlock = np.zeros(nRcBlocks)
                         for block in range(nRcBlocks):
-                            trialsThisBlock = trialsEachBlockLeftOrRightMore[:, block] & freq & correct
+                            trialsThisBlock = trialsEachBlockLeftOrRightMore[:, block] & freq & correct & (~sideInTrials)
                             aveSpikeThisBlock = np.average(spikeCountEachTrial[trialsThisBlock])
                             aveSpikeEachBlock[block] = aveSpikeThisBlock
                         aveSpikeDiffEachBlock = np.diff(aveSpikeEachBlock)

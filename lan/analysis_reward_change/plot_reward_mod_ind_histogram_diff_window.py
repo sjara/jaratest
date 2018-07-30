@@ -18,8 +18,8 @@ STUDY_NAME = '2018rc'
 brainRegions = ['rightAStr', 'rightAC']
 #animalList = ['adap005', 'adap012', 'adap013', 'adap015', 'adap017'] #['gosi001','gosi004','gosi008','gosi010','adap067','adap071']
 
-modulationWindows = {'sound':'0-0.1s',
-                     'center-out': '0.05-0.25s',
+modulationWindows = {'sound':'-0.2-0s',
+                     'center-out': '0-0.3s',
                      'side-in': '-0.2-0s'}
 freqLabels = ['Low','High']
 movementDirections = ['Left', 'Right']

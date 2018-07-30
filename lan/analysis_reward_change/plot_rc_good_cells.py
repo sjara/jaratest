@@ -30,7 +30,7 @@ celldb = celldatabase.load_hdf(databaseFullPath)
 goodQualCells = celldb.loc[celldb['keepAfterDupTest']==1]  # Non-duplicate cells
 #celldb.query('isiViolations<{} and shapeQuality>{}'.format(ISIcutoff, qualityThreshold))
 
-cOutWindow = '0.05-0.15s'
+cOutWindow = '0-0.3s'
 soundWindow = '0-0.1s'
 
 sigModSound = goodQualCells.loc[(goodQualCells['modSigHigh_{}_sound'.format(soundWindow)]<=0.05) | (goodQualCells['modSigLow_{}_sound'.format(soundWindow)]<=0.05)]
