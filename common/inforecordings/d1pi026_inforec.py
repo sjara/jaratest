@@ -159,7 +159,178 @@ exp4.laserCalibration = {
 
 #Aborted due to hemorrhaging after cleaning the craniotomy. Gel foam was needed to reduce the bleeding and was left under the silguard
 
-exp5 = celldatabase.Experiment(subject, '2018-07-24', 'left_AudStr', info=['FacingPosterior', 'PosteriorMid'])
+exp5 = celldatabase.Experiment(subject, '2018-07-24', 'left_AudStr', info=['FacingPosterior', 'Anterior'])
 experiments.append(exp5)
 
-#Used left speaker; 2.5 mW for laser; probe DAF9; Rig 1
+#Used left speaker; 2.5 mW for laser; probe D621 Rig 1; DiD
+
+exp5.laserCalibration = {
+    '0.5':0.90,
+    '1.0':1.50,
+    '1.5':2.25,
+    '2.0':2.95,
+    '2.5':3.95,
+    '3.0':4.90,
+    '3.5':6.00,
+    '4.0':6.75
+}
+
+#Tetrode 6 has reference; threshold set to 55mV
+exp5.add_site(2900, tetrodes=[1,2,3,4,5,7,8])
+exp5.add_session('16-44-08', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('16-45-41', None, 'laserpulse', 'am_tuning_curve')#Possible photoelectric effect
+#exp5.add_session('16-52-20', 'a', 'tuningTest', 'am_tuning_curve') Behavior not saved
+
+exp5.add_site(2950, tetrodes=[1,2,3,4,5])
+exp5.add_session('17-00-11', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('17-04-20', None, 'laserpulse', 'am_tuning_curve')#Stopped at 50 trials from artifacting
+exp5.add_session('17-06-26', None, 'laserpulse', 'am_tuning_curve')#Reduced laser power to 1.5 mW in an attempt to reduce the PEE. No luck. Returning to 2.5 mW
+exp5.add_session('17-10-37', 'b', 'tuningTest', 'am_tuning_curve')
+
+exp5.add_site(3000, tetrodes=[1,2,3,4,5])
+exp5.add_session('17-27-57', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('17-30-06', 'c', 'tuningTest', 'am_tuning_curve')
+
+exp5.add_site(3050, tetrodes=[1,2,3,4,5])
+exp5.add_session('17-42-53', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('17-44-20', 'd', 'tuningTest', 'am_tuning_curve') #Possibly sound-responsive cell
+
+exp5.add_site(3100, tetrodes=[1,2,3,4,5])
+exp5.add_session('17-57-06', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('17-58-58', 'e', 'tuningTest', 'am_tuning_curve')
+
+exp5.add_site(3150, tetrodes=[1,2,3,4,5])
+exp5.add_session('18-14-40', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('18-20-21', 'f', 'tuningTest', 'am_tuning_curve')
+exp5.add_session('18-34-11', None, 'laserpulse', 'am_tuning_curve') #Possibly light responsive
+
+exp5.maxDepth = 3150
+
+exp6 = celldatabase.Experiment(subject, '2018-07-26', 'left_AudStr', info=['FacingPosterior', 'midline'])
+experiments.append(exp6)
+
+#Used left speaker; 2.5 mW for laser; probe D621 Rig 1; DiI
+
+exp6.laserCalibration = {
+    '0.5':1.00,
+    '1.0':1.75,
+    '1.5':2.50,
+    '2.0':3.45,
+    '2.5':4.55,
+    '3.0':5.75,
+    '3.5':6.65,
+    '4.0':7.50
+}
+
+#Tetrode 4 has reference; threshold set to 55mV
+exp6.add_site(2900, tetrodes=[1,2,3,5,6,7,8])
+exp6.add_session('15-40-15', None, 'noiseburst', 'am_tuning_curve')
+exp6.add_session('15-48-01', None, 'noiseburst', 'am_tuning_curve')
+
+exp6.add_site(2950, tetrodes=[1,2,3,5,6,7,8])
+exp6.add_session('15-52-26', None, 'noiseburst', 'am_tuning_curve')
+
+exp6.add_site(3000, tetrodes=[1,2,5,6,7,8])
+exp6.add_session('15-58-22', None, 'noiseburst', 'am_tuning_curve')
+
+exp6.add_site(3050, tetrodes=[1,2,5,6,7,8])
+exp6.add_session('16-01-49', None, 'noiseburst', 'am_tuning_curve')
+
+exp6.add_site(3100, tetrodes=[1,2,5,6,7,8])
+exp6.add_session('16-05-34', None, 'noiseburst', 'am_tuning_curve')
+
+exp6.add_site(3150, tetrodes=[1,2,5,6,7])#3 Has the reference
+exp6.add_session('16-08-31', None, 'noiseburst', 'am_tuning_curve')
+
+exp6.add_site(3200, tetrodes=[5,6,7]) #Shank 1 with tetrodes 1 and 2 broke off
+exp6.add_session('16-18-32', None, 'noiseburst', 'am_tuning_curve')
+
+exp6.add_site(3250, tetrodes=[4,5,6,7,8])
+exp6.add_session('16-25-22', None, 'noiseburst', 'am_tuning_curve')
+
+exp6.maxDepth = 3250 #Had to stop because broken shank was close to impacting the other shanks
+
+exp7 = celldatabase.Experiment(subject, '2018-07-27', 'left_AudStr', info=['FacingPosterior', 'Posterior'])
+experiments.append(exp7)
+
+#Used left speaker; 2.5 mW for laser; probe D621 Rig 1; DiD
+
+exp7.laserCalibration = {
+    '0.5':0.85,
+    '1.0':1.45,
+    '1.5':2.10,
+    '2.0':2.80,
+    '2.5':3.80,
+    '3.0':4.70,
+    '3.5':5.80,
+    '4.0':6.50
+}
+
+#Tetrode 3 has reference; threshold set to 51mV
+exp7.add_site(2900, tetrodes=[5,6,7,8])
+exp7.add_session('13-54-31', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(2950, tetrodes=[5,6,7,8])
+exp7.add_session('13-58-43', None, 'noiseburst', 'am_tuning_curve')
+
+#Threshold set to 55mV
+exp7.add_site(3000, tetrodes=[5,6,7,8])
+exp7.add_session('14-01-40', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3050, tetrodes=[5,6,7,8])
+exp7.add_session('14-04-37', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3100, tetrodes=[5,6,7,8])
+exp7.add_session('14-08-09', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3150, tetrodes=[5,6,7,8])
+exp7.add_session('14-13-43', None, 'noiseburst', 'am_tuning_curve')#Not sound-responsive, but testing to see if in striatum
+exp7.add_session('14-15-43', None, 'laserpulse', 'am_tuning_curve')#Definitely laser-responsive. Increase in activation followed by refractory periods
+
+exp7.add_site(3200, tetrodes=[5,6,7,8])
+exp7.add_session('14-18-14', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3250, tetrodes=[5,6,7,8])
+exp7.add_session('14-21-31', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3300, tetrodes=[5,6,7,8])
+exp7.add_session('14-24-45', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3350, tetrodes=[5,6,7,8])
+exp7.add_session('14-28-38', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3400, tetrodes=[5,6,7,8])
+exp7.add_session('14-47-30', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3450, tetrodes=[5,6,7,8])
+exp7.add_session('14-54-06', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('14-55-56', None, 'laserpulse', 'am_tuning_curve')
+exp7.add_session('14-58-15', None, 'lasertrain', 'am_tuning_curve')
+exp7.add_session('15-00-46', None, 'noiseburst', 'am_tuning_curve')#100 trials
+exp7.add_session('15-03-23', None, 'laserpulse', 'am_tuning_curve')
+exp7.add_session('15-06-22', None, 'lasertrain', 'am_tuning_curve')
+exp7.add_session('15-10-24', 'a', 'tuningTest', 'am_tuning_curve') #No sound-responsive cells. They are still light-responsive
+
+exp7.add_site(3500, tetrodes=[5,6,7,8])
+exp7.add_session('15-33-34', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3550, tetrodes=[5,6,7,8])
+exp7.add_session('15-37-04', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3600, tetrodes=[5,6,7,8])
+exp7.add_session('15-49-01', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3650, tetrodes=[5,6,7,8])
+exp7.add_session('15-58-37', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3700, tetrodes=[5,6,7,8])
+exp7.add_session('16-08-45', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.add_site(3750, tetrodes=[5,6,7,8])
+exp7.add_session('16-14-24', None, 'noiseburst', 'am_tuning_curve')
+exp7.add_session('16-16-04', None, 'laserpulse', 'am_tuning_curve')#Still light-responsive
+
+exp7.add_site(3800, tetrodes=[5,6,7,8])
+exp7.add_session('16-08-45', None, 'noiseburst', 'am_tuning_curve')
+
+exp7.maxDepth = 3800 #T5 and T6 saw the most neurons
