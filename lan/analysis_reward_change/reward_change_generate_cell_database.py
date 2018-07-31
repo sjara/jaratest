@@ -46,7 +46,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 7
+CASE = 8
 
 if CASE == 1:
     # -- Cluster and generate database with all clusters -- #
@@ -195,3 +195,14 @@ if CASE == 7:
     masterDfFullPath = os.path.join(dbFolder, 'rc_database.h5')
     #masterDf.to_hdf(masterDfFullPath, key=dbKey)
     celldatabase.save_hdf(masterDf, masterDfFullPath)
+
+if CASE == 8:
+    # -- calculate reward modulation index for the merged database during movement while removing trials with side-in -- #
+    modIndScriptPath = '/home/languo/src/jaratest/lan/analysis_reward_change/calculate_reward_modulation_during_movement_remove_sidein_trials.py'
+    # -- Call to calculate modulation indices for different windows different alignments -- #
+    commandListCalculate = ['python'] + [modIndScriptPath] + ['--CASE', 'calculate'] + ['--DBNAME', 'rc_database.h5']
+    subprocess.call(commandListCalculate)
+
+    # -- Call to merge newly generated mod indices columns into database -- #
+    commandListMerge = ['python'] + [modIndScriptPath] + ['--CASE', 'merge'] + ['--DBNAME', 'rc_database.h5']
+    subprocess.call(commandListMerge)

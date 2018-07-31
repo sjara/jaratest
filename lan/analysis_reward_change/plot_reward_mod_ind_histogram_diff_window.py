@@ -112,12 +112,12 @@ for indRegion, brainRegion in enumerate(brainRegions):
         # -- Plot reward modulation during movement only for movement-selective cells -- #
         elif alignment == 'center-out':
             modWindow = modulationWindows['center-out']
-            leftModIndName = 'modIndLow_'+modWindow+'_'+'center-out'
-            leftModSigName = 'modSigLow_'+modWindow+'_'+'center-out'
-            leftModDirName = 'modDirLow_'+modWindow+'_'+'center-out'
-            rightModIndName = 'modIndHigh_'+modWindow+'_'+'center-out'
-            rightModSigName = 'modSigHigh_'+modWindow+'_'+'center-out'
-            rightModDirName = 'modDirHigh_'+modWindow+'_'+'center-out'
+            leftModIndName = 'modIndLow_'+modWindow+'_'+'center-out'+'_removedsidein'
+            leftModSigName = 'modSigLow_'+modWindow+'_'+'center-out'+'_removedsidein'
+            leftModDirName = 'modDirLow_'+modWindow+'_'+'center-out'+'_removedsidein'
+            rightModIndName = 'modIndHigh_'+modWindow+'_'+'center-out'+'_removedsidein'
+            rightModSigName = 'modSigHigh_'+modWindow+'_'+'center-out'+'_removedsidein'
+            rightModDirName = 'modDirHigh_'+modWindow+'_'+'center-out'+'_removedsidein'
 
             goodMovementSelCells = goodQualCells[movementSelective]
             sigModEitherDirection = (goodMovementSelCells[leftModSigName] < alphaLevel) | (goodMovementSelCells[rightModSigName] < alphaLevel)  
