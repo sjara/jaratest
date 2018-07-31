@@ -21,8 +21,9 @@ evlockFileFolder = 'evlock_spktimes'
 blockLabels = ['more_left','more_right']
 sessionType = 'behavior'
 soundChannelType = 'stim'
-timeRange = [-0.2, 0.5]
-binWidth = 0.025 #0.010 #10 msec
+timeRange = [0, 0.31]
+removeSideInTrials = True
+binWidth = 0.010 
 timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 alphaLevel = 0.05
 movementSelWindow = [0.05, 0.15]
@@ -30,7 +31,7 @@ movementSelWindow = [0.05, 0.15]
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
-goodQualCells = celldb.query('keepAfterDupTest==1 and missingTrialsBehav==0') # only calculate for non-duplicated cells
+goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
 movementSelective = goodQualCells['movementModS_{}'.format(movementSelWindow)] < alphaLevel
 moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] < 0)
 moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] > 0)
@@ -75,12 +76,18 @@ for indC, cell in goodLeftMovementSelCells.iterrows():
     trialsEachBlock = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
     choiceEachTrial = bdata['choice']
     leftwardTrials = choiceEachTrial==bdata.labels['choice']['left'] 
-    
+    reactionTimesEachTrial = bdata['timeSideIn'] - bdata['timeCenterOut'] 
+    reactionTimesEachTrial[np.isnan(reactionTimesEachTrial)] = 0
+    sideInTrials = (reactionTimesEachTrial <= timeVec[-1])
+
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
     aveSpikeCountByBlock = np.zeros((2,len(timeVec)-1))
     for indB, block in enumerate(blockLabels):
-        trialsThisBlock = trialsEachBlock[:, indB] & leftwardTrials
+        if removeSideInTrials:
+            trialsThisBlock = trialsEachBlock[:, indB] & leftwardTrials & (~sideInTrials)
+        else:
+            trialsThisBlock = trialsEachBlock[:, indB] & leftwardTrials
         spikeCountThisBlock = spikeCountMat[trialsThisBlock, :]
         aveSpikeCountThisBlock = np.mean(spikeCountThisBlock, axis=0)
         aveSpikeCountByBlock[indB, :] = aveSpikeCountThisBlock
@@ -117,20 +124,31 @@ for indC, cell in goodRightMovementSelCells.iterrows():
     trialsEachBlock = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
     choiceEachTrial = bdata['choice']
     rightwardTrials = choiceEachTrial==bdata.labels['choice']['right']
+    reactionTimesEachTrial = bdata['timeSideIn'] - bdata['timeCenterOut'] 
+    reactionTimesEachTrial[np.isnan(reactionTimesEachTrial)] = 0
+    sideInTrials = (reactionTimesEachTrial <= timeVec[-1])
 
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
     aveSpikeCountByBlock = np.zeros((2,len(timeVec)-1))
     for indB, block in enumerate(blockLabels):
-        trialsThisBlock = trialsEachBlock[:, indB] & rightwardTrials
+        if removeSideInTrials:
+            trialsThisBlock = trialsEachBlock[:, indB] & rightwardTrials & (~sideInTrials)
+        else:
+            trialsThisBlock = trialsEachBlock[:, indB] & rightwardTrials
         spikeCountThisBlock = spikeCountMat[trialsThisBlock, :]
         aveSpikeCountThisBlock = np.mean(spikeCountThisBlock, axis=0)
         aveSpikeCountByBlock[indB, :] = aveSpikeCountThisBlock
     aveSpikeCountByBlockAllCells[:, :, indC] = aveSpikeCountByBlock
     print 'ave spike count by block for cell {}'.format(indC), aveSpikeCountByBlock
+
 aveSpikeCountByBlockMSCells = aveSpikeCountByBlockAllCells[:,:,movementSelInds]
 brainAreaEachCell = brainAreaEachCell[movementSelInds]
-outputFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+if removeSideInTrials:
+    outputFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin_removed_sidein_trials.npz'.format(int(binWidth*1000))
+else:
+    outputFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+
 outputFilePath = os.path.join(dataDir, outputFilename)
 np.savez(outputFilePath, rightMovementSelInds=goodRightMovementSelCells.index, leftMovementSelInds=goodLeftMovementSelCells.index, 
     timeVec=timeVec, binWidth=binWidth, brainAreaEachCell=np.array(brainAreaEachCell), 

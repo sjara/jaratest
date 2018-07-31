@@ -16,6 +16,7 @@ FIGNAME = 'dif_fr_by_movement_sorted_center-out'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
 binWidth = 0.01
+removeSideInTrials = True
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -35,8 +36,10 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-
-dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+if removeSideInTrials:
+	dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin_removed_sidein_trials.npz'.format(int(binWidth*1000))
+else:
+	dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin.npz'.format(int(binWidth*1000))
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
 aveSpikeCountByBlock = data['aveSpikeCountByBlock']
@@ -51,13 +54,14 @@ numOfBins = endInd - startInd
 absSpikeDifEachCell = np.abs(aveSpikeCountByBlock[0,:,:] - aveSpikeCountByBlock[1,:,:])
 absSpikeDifEachCell = absSpikeDifEachCell[startInd:endInd, :]
 sortedAbsSpikeDifEachCell = np.zeros(absSpikeDifEachCell.shape)
-# more left - more right
+# move left - move right
 spikeDifIndEachCell = (aveSpikeCountByBlock[0,:,:] - aveSpikeCountByBlock[1,:,:]) / (aveSpikeCountByBlock[0,:,:] + aveSpikeCountByBlock[1,:,:])
 spikeDifIndEachCell[np.isnan(spikeDifIndEachCell)] = 0 # for those bins that does not have a spike, set index to 0
 spikeDifIndEachCell = spikeDifIndEachCell[startInd:endInd, :]
 
 brainAreaLabels = np.unique(brainAreaEachCell)
 maxDifBinEachCellBothAreas = []
+posNegPeakCountBothAreas = []
 for indA,brainArea in enumerate(brainAreaLabels):
 	cellsThisArea = brainAreaEachCell==brainArea
 	
@@ -66,10 +70,14 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	maxDifBinEachCellBothAreas.append(maxDifBinEachCellThisArea)
 	meanPeakBinNum = np.mean(maxDifBinEachCellThisArea)
 	medianPeakBinNum = np.median(maxDifBinEachCellThisArea)
-	print('For {}, mean peak bin number is {}, median peak bin number is {}'.format(brainArea, meanPeakBinNum, medianPeakBinNum))
+	print('For {}, mean peak bin number is {}, median peak bin number is {}'
+		.format(brainArea, meanPeakBinNum, medianPeakBinNum))
 	maxDifEachCellThisArea = spikeDifIndEachCellThisArea[maxDifBinEachCellThisArea, range(len(maxDifBinEachCellThisArea))]
 	negPeakDifCells = maxDifEachCellThisArea < 0
 	posPeakDifCells = maxDifEachCellThisArea > 0
+	posNegPeakCountBothAreas.append([sum(posPeakDifCells), sum(negPeakDifCells)])
+	print('For {}, there are {} positive peak cells and {} negative peak cells'
+		.format(brainArea, sum(posPeakDifCells), sum(negPeakDifCells)))
 	cellReIndNeg = np.argsort(maxDifBinEachCellThisArea[negPeakDifCells])
 	cellReIndPos = np.argsort(maxDifBinEachCellThisArea[posPeakDifCells])
 	#pdb.set_trace()

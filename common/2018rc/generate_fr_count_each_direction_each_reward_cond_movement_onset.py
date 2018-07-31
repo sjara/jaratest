@@ -31,7 +31,7 @@ movementSelWindow = [0.05, 0.15]
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
-goodQualCells = celldb.query('keepAfterDupTest==1 and missingTrialsBehav==0') # only calculate for non-duplicated cells
+goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
 movementSelective = goodQualCells['movementModS_{}'.format(movementSelWindow)] < alphaLevel
 goodMovementSelCells = goodQualCells[movementSelective]
 moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] < 0)

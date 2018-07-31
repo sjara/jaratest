@@ -16,6 +16,7 @@ FIGNAME = 'dif_fr_by_reward_sorted_center-out'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
 binWidth = 0.01
+removeSideInTrials = True
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -36,7 +37,11 @@ fig.clf()
 fig.set_facecolor('w')
 
 
-dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+if removeSideInTrials:
+	dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin_removed_sidein_trials.npz'.format(int(binWidth*1000))
+else:
+	dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
 aveSpikeCountByBlock = data['aveSpikeCountByBlock']
@@ -44,7 +49,7 @@ timeBinEdges = np.around(data['timeVec'], decimals=2)
 brainAreaEachCell = data['brainAreaEachCell']
 #soundRespInds = data['soundRespInds']
 #binWidth = np.around(data['binWidth'], decimals=2)
-timePeriodToPlot = [0, 0.3]
+timePeriodToPlot = [0.0, 0.3]
 startInd = list(timeBinEdges).index(timePeriodToPlot[0])
 endInd = list(timeBinEdges).index(timePeriodToPlot[1])
 numOfBins = endInd - startInd
@@ -85,8 +90,9 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	ax = plt.subplot(1,2,indA+1)
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
 	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', vmin=-1, vmax=1, interpolation='nearest')
-	ax.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
-	ax.set_xticklabels([0. , 0.1, 0.2, 0.3])
+	ax.set_xticks([0,numOfBins])#np.arange(len(timeBinEdges))[::10])
+	ax.set_xticklabels(timePeriodToPlot)
+	#ax.set_xticklabels([0, 0.1, 0.2])
 	#xticklabels = ['{:.1f}'.format(x) for x in xticks]
 	#ax.xaxis.set_major_formatter(ticker.StrMethodFormatter("{x:g}"))
 	#plt.yticks([150, 50], brainAreaLabels)
@@ -98,7 +104,8 @@ plt.subplots_adjust(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hs
 
 # Stats #
 zScore, pVal = stats.ranksums(*maxDifBinEachCellBothAreas)
-print('Using bin width of {}s, compare time bin number for peak difference between the two brain areas yielded p value of {:.3f} using Wilcoxon rank sums test.'.format(binWidth, pVal))
+print('Using bin width of {}s in time period {}, compare time bin number for peak difference between the two brain areas yielded p value of {:.3f} using Wilcoxon rank sums test.'
+	.format(binWidth, timePeriodToPlot, pVal))
 
 #plt.tight_layout()
 if SAVE_FIGURE:
