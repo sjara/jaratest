@@ -18,6 +18,7 @@ import scipy.stats as stats
 FIGNAME = 'movement_selectivity'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
+removeSideIn = True
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
@@ -234,12 +235,15 @@ ax6 = plt.subplot(gs02[0,:])
 ax6.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[2]:
-    summaryFilename = 'summary_rc_movement_selectivity_rightAC.npz'
+    if removeSideIn:
+        summaryFilename = 'summary_rc_movement_selectivity_rightAC_removed_sidein_trials.npz'
+    else:
+        summaryFilename = 'summary_rc_movement_selectivity_rightAC.npz'
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
-    sigModIAC = summary['sigModI']
-    nonsigModIAC = summary['nonsigModI']
-    allModIAC = summary['allModI']
+    sigModIAC = -(summary['sigModI']) # Inverting the sign of movement selectivity index
+    nonsigModIAC = -(summary['nonsigModI']) # Inverting the sign of movement selectivity index
+    allModIAC = -(summary['allModI'])
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
@@ -261,12 +265,15 @@ if PANELS[2]:
 
 
     ax7 = plt.subplot(gs02[1,:])
-    summaryFilename = 'summary_rc_movement_selectivity_rightAStr.npz'
+    if removeSideIn:
+        summaryFilename = 'summary_rc_movement_selectivity_rightAStr_removed_sidein_trials.npz'
+    else:
+        summaryFilename = 'summary_rc_movement_selectivity_rightAStr.npz'
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
-    sigModIAStr = summary['sigModI']
-    nonsigModIAStr = summary['nonsigModI']
-    allModIAStr = summary['allModI']
+    sigModIAStr = -(summary['sigModI'])
+    nonsigModIAStr = -(summary['nonsigModI'])
+    allModIAStr = -(summary['allModI'])
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)

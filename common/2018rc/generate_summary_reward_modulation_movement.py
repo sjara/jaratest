@@ -25,8 +25,9 @@ scriptFullPath = os.path.realpath(__file__)
 brainAreas = ['rightAC','rightAStr']
 #maxZThreshold = 3
 alphaLevel = 0.05
-movementSelWindow = [0.05, 0.15] #[0.05, 0.25]
-modWindow = '0.05-0.25s' #'0.05-0.15s'
+removeSideInTrials = False
+movementSelWindow = [0.0,0.3] #[0.05, 0.15] #[0.05, 0.25]
+modWindow = '0.05-0.25s' #'0.05-0.15s' '0-0.3s'
 ###################################################################################
 #dbKey = 'reward_change'
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
@@ -35,20 +36,29 @@ celldb = celldatabase.load_hdf(celldbPath)
 
 for brainArea in brainAreas:
     goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
+    if removeSideInTrials:
+        movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
+        moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
+        moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+        leftModIndName = 'modIndLow_'+modWindow+'_'+'center-out'+'_removedsidein'
+        leftModSigName = 'modSigLow_'+modWindow+'_'+'center-out'+'_removedsidein'
+        leftModDirName = 'modDirLow_'+modWindow+'_'+'center-out'+'_removedsidein'
+        rightModIndName = 'modIndHigh_'+modWindow+'_'+'center-out'+'_removedsidein'
+        rightModSigName = 'modSigHigh_'+modWindow+'_'+'center-out'+'_removedsidein'
+        rightModDirName = 'modDirHigh_'+modWindow+'_'+'center-out'+'_removedsidein'
+    else:   
+        movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
+        moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
+        moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+        leftModIndName = 'modIndLow_'+modWindow+'_'+'center-out'
+        leftModSigName = 'modSigLow_'+modWindow+'_'+'center-out'
+        leftModDirName = 'modDirLow_'+modWindow+'_'+'center-out'
+        rightModIndName = 'modIndHigh_'+modWindow+'_'+'center-out'
+        rightModSigName = 'modSigHigh_'+modWindow+'_'+'center-out'
+        rightModDirName = 'modDirHigh_'+modWindow+'_'+'center-out'
 
-    movementSelective = goodQualCells['movementModS_{}'.format(movementSelWindow)] < alphaLevel
-    moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] < 0)
-    moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] > 0)
     goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
-    goodRightMovementSelCells = goodQualCells[moreRespMoveRight]
-
-    leftModIndName = 'modIndLow_'+modWindow+'_'+'center-out'
-    leftModSigName = 'modSigLow_'+modWindow+'_'+'center-out'
-    leftModDirName = 'modDirLow_'+modWindow+'_'+'center-out'
-    rightModIndName = 'modIndHigh_'+modWindow+'_'+'center-out'
-    rightModSigName = 'modSigHigh_'+modWindow+'_'+'center-out'
-    rightModDirName = 'modDirHigh_'+modWindow+'_'+'center-out'
-     
+    goodRightMovementSelCells = goodQualCells[moreRespMoveRight] 
     goodMovementSelCells = goodQualCells[movementSelective]
     sigModEitherDirection = (goodMovementSelCells[leftModSigName] < alphaLevel) | (goodMovementSelCells[rightModSigName] < alphaLevel)  
     print 'Out of {} movement-selective cells, {} were modulated by reward either going left or going right'.format(len(goodMovementSelCells), sum(sigModEitherDirection))
@@ -67,7 +77,10 @@ for brainArea in brainAreas:
                                          goodRightMovementSelModInd[~sigModulatedRight].values))
     allModI = np.concatenate((goodLeftMovementSelModInd.values, goodRightMovementSelModInd.values))
     
-    # -- Save summary data -- #    
-    outputFile = 'summary_reward_modulation_movement_{}.npz'.format(brainArea)
+    # -- Save summary data -- # 
+    if removeSideInTrials:
+        outputFile = 'summary_reward_modulation_movement_{}_{}_win_removed_sidein_trials.npz'.format(brainArea, modWindow)
+    else:   
+        outputFile = 'summary_reward_modulation_movement_{}_{}_win.npz'.format(brainArea, modWindow)
     outputFullPath = os.path.join(dataDir,outputFile)
     np.savez(outputFullPath, brainArea=brainArea, movementSelective=movementSelective, goodLeftMovementSelCells=goodLeftMovementSelCells, goodRightMovementSelCells=goodRightMovementSelCells, sigModulatedLeft=sigModulatedLeft, sigModulatedRight=sigModulatedRight, sigModI=sigModI, nonsigModI=nonsigModI, allModI=allModI, script=scriptFullPath)

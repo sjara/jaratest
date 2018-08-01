@@ -17,6 +17,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 STUDY_NAME = figparams.STUDY_NAME
 binWidth = 0.01
 removeSideInTrials = True
+movementSelWin = [0.0,0.3]
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -38,9 +39,9 @@ fig.set_facecolor('w')
 
 
 if removeSideInTrials:
-	dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin_removed_sidein_trials.npz'.format(int(binWidth*1000))
+	dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWin)
 else:
-	dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+	dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin_{}_win.npz'.format(int(binWidth*1000), movementSelWin)
 
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
@@ -89,7 +90,8 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	
 	ax = plt.subplot(1,2,indA+1)
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
-	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', vmin=-1, vmax=1, interpolation='nearest')
+	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', 
+		vmin=-1, vmax=1, interpolation='nearest', aspect='auto')
 	ax.set_xticks([0,numOfBins])#np.arange(len(timeBinEdges))[::10])
 	ax.set_xticklabels(timePeriodToPlot)
 	#ax.set_xticklabels([0, 0.1, 0.2])

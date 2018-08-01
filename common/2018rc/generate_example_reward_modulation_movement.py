@@ -19,18 +19,14 @@ from jaratoolbox import celldatabase
 import figparams
 
 STUDY_NAME = figparams.STUDY_NAME
-
 FIGNAME = 'reward_modulation_movement'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 
 if not os.path.exists(dataDir):
     os.mkdir(dataDir)
-'''
-colorDict = {'leftMoreLowFreq':'g',
-             'rightMoreLowFreq':'m',
-             'leftMoreHighFreq':'r',
-             'rightMoreHighFreq':'b'}
-'''
+
+removeSideInTrials = True
+
 colorsDict = {'colorLMore':figparams.colp['MoreRewardL'], 
               'colorRMore':figparams.colp['MoreRewardR']} 
 
@@ -112,7 +108,8 @@ elif len( sys.argv) == 2:
 
 ####################################################################################
 scriptFullPath = os.path.realpath(__file__)
-timeRange = [-0.4,0.8]
+timeRange = [-0.4,0.5]
+modulationWindow = [0, 0.3]
 binWidth = 0.010
 EPHYS_SAMPLING_RATE = 30000.0
 soundTriggerChannel = 0
@@ -250,11 +247,17 @@ for cellParams in cellParamsList:
     # Remove missing trials
     bdata.remove_trials(missingTrials)
     
+    responseTimesEachTrial = bdata['timeSideIn'] - bdata['timeCenterOut'] 
+    responseTimesEachTrial[np.isnan(responseTimesEachTrial)] = 0
+    sideInTrials = (responseTimesEachTrial <= modulationWindow[-1])
+
     diffTimesSound = bdata['timeTarget'] - bdata['timeCenterOut'] 
     diffTimesSideIn = bdata['timeSideIn'] - bdata['timeCenterOut'] 
     # -- Select trials to plot from behavior file -- #
     for freq in freqsToPlot:
         trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
+        if removeSideInTrials:
+          trialsEachCond = trialsEachCond & ~sideInTrials[:,np.newaxis]
         # -- Load intermediate data -- #
         for alignment in alignmentsToPlot:
             evlockDataFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(animal, date, depth, tetrode, cluster, alignment)
@@ -267,7 +270,10 @@ for cellParams in cellParamsList:
 
             # -- Save raster and psth intermediate data -- #    
             #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
-            outputFile = 'example_rc_{}aligned_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
+            if removeSideInTrials:
+                outputFile = 'example_rc_{}aligned_{}freq_{}_{}_T{}_c{}_removed_sidein.npz'.format(alignment, freq, animal, date, tetrode, cluster)
+            else:
+                outputFile = 'example_rc_{}aligned_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
             outputFullPath = os.path.join(dataDir,outputFile)
             np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
               soundTimesFromEventOnset=diffTimesSound,

@@ -36,10 +36,11 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
+movementSelWin = [0.0,0.3] #[0.05,0.15]
 if removeSideInTrials:
-	dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin_removed_sidein_trials.npz'.format(int(binWidth*1000))
+	dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWin)
 else:
-	dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+	dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win.npz'.format(int(binWidth*1000), movementSelWin)
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
 aveSpikeCountByBlock = data['aveSpikeCountByBlock']
@@ -87,7 +88,8 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	
 	ax = plt.subplot(1,2,indA+1)
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
-	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', vmin=-1, vmax=1, interpolation='nearest')
+	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', 
+		vmin=-1, vmax=1, interpolation='nearest', aspect='auto')
 	ax.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
 	ax.set_xticklabels([0. , 0.1, 0.2, 0.3])
 	#xticklabels = ['{:.1f}'.format(x) for x in xticks]

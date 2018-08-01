@@ -26,13 +26,18 @@ binWidth = 0.010
 removeSideInTrials = True
 timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 alphaLevel = 0.05
-movementSelWindow = [0.05, 0.15]
+movementSelWindow = [0.0, 0.3]#[0.05, 0.15]
 
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
 goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
-movementSelective = goodQualCells['movementModS_{}'.format(movementSelWindow)] < alphaLevel
+
+if removeSideInTrials:
+    movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
+else:
+    movementSelective = goodQualCells['movementModS_{}'.format(movementSelWindow)] < alphaLevel
+
 movementSelInds = goodQualCells.index[movementSelective]
 goodMovementSelCells = goodQualCells[movementSelective]
 
@@ -73,9 +78,9 @@ for indC, cell in goodMovementSelCells.iterrows():
     rightwardTrials = choiceEachTrial==bdata.labels['choice']['right']
     trialsEachBlock = np.column_stack((leftwardTrials, rightwardTrials))
     
-    reactionTimesEachTrial = bdata['timeSideIn'] - bdata['timeCenterOut'] 
-    reactionTimesEachTrial[np.isnan(reactionTimesEachTrial)] = 0
-    sideInTrials = (reactionTimesEachTrial <= timeVec[-1])
+    responseTimesEachTrial = bdata['timeSideIn'] - bdata['timeCenterOut'] 
+    responseTimesEachTrial[np.isnan(responseTimesEachTrial)] = 0
+    sideInTrials = (responseTimesEachTrial <= timeVec[-1])
 
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
@@ -94,9 +99,10 @@ for indC, cell in goodMovementSelCells.iterrows():
 aveSpikeCountByBlockMSCells = aveSpikeCountByBlockAllCells[:,:,movementSelInds]
 brainAreaEachCell = brainAreaEachCell[movementSelInds]
 if removeSideInTrials:
-    outputFilename = 'average_spike_count_by_movement_direction_{}ms_bin_removed_sidein_trials.npz'.format(int(binWidth*1000))
+    outputFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWindow)
 else:
-    outputFilename = 'average_spike_count_by_movement_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+    outputFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win.npz'.format(int(binWidth*1000), movementSelWindow)
+
 outputFilePath = os.path.join(dataDir, outputFilename)
 np.savez(outputFilePath, movementDirections=movementDirections,
     timeVec=timeVec, binWidth=binWidth, 

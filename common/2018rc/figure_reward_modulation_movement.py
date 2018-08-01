@@ -29,6 +29,8 @@ colorsDict = {'colorLMore':figparams.colp['MoreRewardL'],
 
 soundColor = figparams.colp['sound']
 timeRangeToPlot = [-0.2,0.5]
+removeSideIn = True
+modWindow = '0-0.3s'
 
 # -- Select example cells here -- #
 #exampleModulatedAStr = 
@@ -234,8 +236,10 @@ if PANELS[1]:
 if PANELS[2]:
     ax6 = plt.subplot(gs[4,0])
     ax6.annotate('E', xy=(labelPosX[0],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-
-    summaryFilename = 'summary_reward_modulation_movement_rightAC.npz'
+    if removeSideIn:
+        summaryFilename = 'summary_reward_modulation_movement_rightAC_{}_win_removed_sidein_trials.npz'.format(modWindow)
+    else:
+        summaryFilename = 'summary_reward_modulation_movement_rightAC_{}_win.npz'.format(modWindow)
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
     movementSelAC = summary['movementSelective']
@@ -266,8 +270,11 @@ if PANELS[2]:
 
     ax7 = plt.subplot(gs[4,1])
     ax7.annotate('F', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
-
-    summaryFilename = 'summary_reward_modulation_movement_rightAStr.npz'
+    if removeSideIn:
+        summaryFilename = 'summary_reward_modulation_movement_rightAStr_{}_win_removed_sidein_trials.npz'.format(modWindow)
+    else:
+        summaryFilename = 'summary_reward_modulation_movement_rightAStr_{}_win.npz'.format(modWindow)
+    
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
     movementSelAStr = summary['movementSelective']

@@ -57,7 +57,7 @@ for inda, animal in enumerate(animalList):
         blockTypes = [bdata.labels['currentBlock']['same_reward'],bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']]
         trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
         
-        reactionTimeAll = bdata['timeSideIn'] - bdata['timeCenterOut'] 
+        reactionTimeAll = bdata['timeCenterOut'] - bdata['timeTarget'] - soundDuration
         if np.any(reactionTimeAll[validTrials] > rewardAvailability):
             inds = np.flatnonzero(reactionTimeAll[validTrials] > rewardAvailability)
             print '{} session {}, found valid reaction time larger than the reward availability at trial(s):'.format(animal, date), inds
@@ -77,7 +77,7 @@ for inda, animal in enumerate(animalList):
             reactionTimeLeftChoiceMoreRightAll = np.append(reactionTimeLeftChoiceMoreRightAll, reactionTimeLeftChoiceMoreRight)
             reactionTimeRightChoiceMoreRightAll = np.append(reactionTimeRightChoiceMoreRightAll, reactionTimeRightChoiceMoreRight)
         
-        responseTimeAll = bdata['timeCenterOut'] - bdata['timeTarget'] - soundDuration
+        responseTimeAll = bdata['timeSideIn'] - bdata['timeCenterOut'] 
         if np.any(responseTimeAll[validTrials] < 0):
             inds = np.flatnonzero(responseTimeAll[validTrials] < 0) 
             print '{} session {}, found valid response time shorter than the sound duration at trial(s):'.format(animal, date), inds
