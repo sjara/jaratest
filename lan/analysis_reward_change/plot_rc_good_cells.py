@@ -23,7 +23,7 @@ databaseFullPath = os.path.join(settings.DATABASE_PATH, 'new_celldb', 'rc_databa
 qualityThreshold = 2
 maxZThreshold = 3
 ISIcutoff = 0.02
-
+alphaLevel = 0.05
 #celldb = pd.read_hdf(databaseFullPath, key=key)
 celldb = celldatabase.load_hdf(databaseFullPath)
 
@@ -32,14 +32,38 @@ goodQualCells = celldb.loc[celldb['keepAfterDupTest']==1]  # Non-duplicate cells
 
 cOutWindow = '0-0.3s'
 soundWindow = '0-0.1s'
+movementSelWindow = [0.0,0.3]
 
+#movementSelective = goodQualCells.loc[goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < 0.05]
 sigModSound = goodQualCells.loc[(goodQualCells['modSigHigh_{}_sound'.format(soundWindow)]<=0.05) | (goodQualCells['modSigLow_{}_sound'.format(soundWindow)]<=0.05)]
-sigModCenterOut = goodQualCells.loc[(goodQualCells['modSigLow_{}_center-out'.format(cOutWindow)]<=0.05) | (goodQualCells['modSigHigh_{}_center-out'.format(cOutWindow)]<=0.05)]
+#sigModCenterOut = goodQualCells.loc[(goodQualCells['modSigLow_{}_center-out_removedsidein'.format(cOutWindow)]<=0.05) | (goodQualCells['modSigHigh_{}_center-out'.format(cOutWindow)]<=0.05)]
+
+movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
+moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
+moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+leftModIndName = 'modIndLow_'+cOutWindow+'_'+'center-out'+'_removedsidein'
+leftModSigName = 'modSigLow_'+cOutWindow+'_'+'center-out'+'_removedsidein'
+leftModDirName = 'modDirLow_'+cOutWindow+'_'+'center-out'+'_removedsidein'
+rightModIndName = 'modIndHigh_'+cOutWindow+'_'+'center-out'+'_removedsidein'
+rightModSigName = 'modSigHigh_'+cOutWindow+'_'+'center-out'+'_removedsidein'
+rightModDirName = 'modDirHigh_'+cOutWindow+'_'+'center-out'+'_removedsidein'
+goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
+goodRightMovementSelCells = goodQualCells[moreRespMoveRight] 
+goodMovementSelCells = goodQualCells[movementSelective]
+goodLeftMovementSelModSig = goodLeftMovementSelCells[leftModSigName]
+goodLeftMovementSelModDir = goodLeftMovementSelCells[leftModDirName]
+goodRightMovementSelModSig = goodRightMovementSelCells[rightModSigName]
+goodRightMovementSelModDir = goodRightMovementSelCells[rightModDirName]
+sigModulatedLeft = (goodLeftMovementSelModSig < alphaLevel) & (goodLeftMovementSelModDir > 0)
+sigModulatedRight = (goodRightMovementSelModSig < alphaLevel) & (goodRightMovementSelModDir > 0)
+sigModLeftCells = goodLeftMovementSelCells[sigModulatedLeft]
+sigModRightCells = goodRightMovementSelCells[sigModulatedRight]
 
 outputDir = '/home/languo/data/reports/reward_change/all_good_cells/'
 
+movementSelOutputDir = '/home/languo/data/reports/reward_change/movement_sel_{}_removedsidein/'.format(movementSelWindow)
 soundOutputDir = '/home/languo/data/reports/reward_change/sig_mod_sound_{}/'.format(soundWindow)
-cOutOutputDir = '/home/languo/data/reports/reward_change/sig_mod_cOut_{}/'.format(cOutWindow)
+cOutOutputDir = '/home/languo/data/reports/reward_change/sig_mod_cOut_{}_removedsidein/'.format(cOutWindow)
 
 
 # -- Plot all reports -- #
@@ -138,17 +162,52 @@ for ind, cell in sigModSound.iterrows():
     animal = cell.subject
     figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
     figFullPath = os.path.join(outputDir, figname)
+    if not os.path.exists(soundOutputDir):
+        os.mkdir(soundOutputDir)
     newOutputFullPath = os.path.join(soundOutputDir, figname)
     shutil.copyfile(figFullPath, newOutputFullPath)
         
-for ind, cell in sigModCenterOut.iterrows():
+# for ind, cell in sigModCenterOut.iterrows():
+#     tetrode = cell.tetrode
+#     cluster = cell.cluster
+#     date = cell.date
+#     animal = cell.subject
+#     figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
+#     figFullPath = os.path.join(outputDir, figname)
+#     if not os.path.exists(cOutOutputDir):
+#         os.mkdir(cOutOutputDir)
+#     newOutputFullPath = os.path.join(cOutOutputDir, figname)
+#     shutil.copyfile(figFullPath, newOutputFullPath)
+
+            
+# for ind, cell in movementSelective.iterrows():
+#     tetrode = cell.tetrode
+#     cluster = cell.cluster
+#     date = cell.date
+#     animal = cell.subject
+#     figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
+#     figFullPath = os.path.join(outputDir, figname)
+#     if not os.path.exists(movementSelOutputDir):
+#         os.mkdir(movementSelOutputDir)
+#     newOutputFullPath = os.path.join(movementSelOutputDir, figname)
+#     shutil.copyfile(figFullPath, newOutputFullPath)
+
+for ind, cell in sigModLeftCells.iterrows():
     tetrode = cell.tetrode
     cluster = cell.cluster
     date = cell.date
     animal = cell.subject
     figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
     figFullPath = os.path.join(outputDir, figname)
-    newOutputFullPath = os.path.join(cOutOutputDir, figname)
+    newOutputFullPath = os.path.join(cOutOutputDir, 'sigModLeft', figname)
     shutil.copyfile(figFullPath, newOutputFullPath)
 
-            
+for ind, cell in sigModRightCells.iterrows():
+    tetrode = cell.tetrode
+    cluster = cell.cluster
+    date = cell.date
+    animal = cell.subject
+    figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
+    figFullPath = os.path.join(outputDir, figname)
+    newOutputFullPath = os.path.join(cOutOutputDir, 'sigModRight', figname)
+    shutil.copyfile(figFullPath, newOutputFullPath)

@@ -46,7 +46,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 8
+CASE = 10
 
 if CASE == 1:
     # -- Cluster and generate database with all clusters -- #
@@ -197,7 +197,7 @@ if CASE == 7:
     celldatabase.save_hdf(masterDf, masterDfFullPath)
 
 if CASE == 8:
-    # -- calculate reward modulation index for the merged database during movement while removing trials with side-in -- #
+    # -- For the merged database: calculate reward modulation index during movement while removing trials with side-in -- #
     modIndScriptPath = '/home/languo/src/jaratest/lan/analysis_reward_change/calculate_reward_modulation_during_movement_remove_sidein_trials.py'
     # -- Call to calculate modulation indices for different windows different alignments -- #
     commandListCalculate = ['python'] + [modIndScriptPath] + ['--CASE', 'calculate'] + ['--DBNAME', 'rc_database.h5']
@@ -206,3 +206,48 @@ if CASE == 8:
     # -- Call to merge newly generated mod indices columns into database -- #
     commandListMerge = ['python'] + [modIndScriptPath] + ['--CASE', 'merge'] + ['--DBNAME', 'rc_database.h5']
     subprocess.call(commandListMerge)
+
+if CASE == 9:
+    # -- For the merged database: evaluate movement selectivity while removing trials with side-in -- #
+    movementTimeRangeList = [[0.0, 0.3]] 
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    for movementTimeRange in movementTimeRangeList:
+        movementModI, movementModS = evaluateMovementSel.evaluate_movement_selectivity_celldb(db, movementTimeRange, removeSideIn=True)
+        db['movementModI_{}_removedsidein'.format(movementTimeRange)] = movementModI
+        db['movementModS_{}_removedsidein'.format(movementTimeRange)] = movementModS
+    #goodDb.to_hdf(goodDbFullPath, key=dbKey)
+    celldatabase.save_hdf(db, dbFullPath)
+
+if CASE == 10:
+    # -- For the merged database: evaluate movement compared to baseline zScore and pVal while removing trials with side-in -- #
+    baselineAlignment = 'sound'
+    baselineTimeRange = [-0.1, 0]
+    movementAlignment = 'center-out'
+    movementTimeRange = [0.0, 0.3]
+    removeSideIn = True
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    movementZscore, movementPval = evaluateMovementSel.evaluate_movement_zScore_celldb(db, baselineAlignment=baselineAlignment, 
+        baselineTimeRange=baselineTimeRange, movementAlignment=movementAlignment, movementTimeRange=movementTimeRange, 
+        removeSideIn=removeSideIn)
+    movementZscoreLeft = movementZscore[:,0]
+    movementZscoreRight = movementZscore[:,1]
+    movementPvalLeft = movementPval[:,0]
+    movementPvalRight = movementPval[:,1]
+
+    if removeSideIn:
+        db['movementZscoreLeft_{}_removedsidein'.format(movementTimeRange)] = movementZscoreLeft
+        db['movementPvalLeft_{}_removedsidein'.format(movementTimeRange)] = movementPvalLeft
+        db['movementZscoreRight_{}_removedsidein'.format(movementTimeRange)] = movementZscoreRight
+        db['movementPvalRight_{}_removedsidein'.format(movementTimeRange)] = movementPvalRight
+    
+    else:
+        db['movementZscoreLeft_{}'.format(movementTimeRange)] = movementZscoreLeft
+        db['movementPvalLeft_{}'.format(movementTimeRange)] = movementPvalLeft
+        db['movementZscoreRight_{}'.format(movementTimeRange)] = movementZscoreRight
+        db['movementPvalRight_{}'.format(movementTimeRange)] = movementPvalRight
+    
+    celldatabase.save_hdf(db, dbFullPath)

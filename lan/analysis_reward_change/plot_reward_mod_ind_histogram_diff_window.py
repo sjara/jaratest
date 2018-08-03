@@ -40,6 +40,8 @@ celldbPath = os.path.join(dbFolder,'rc_database.h5')
 #celldb = pd.read_hdf(celldbPath, key='reward_change')
 celldb = celldatabase.load_hdf(celldbPath)
 
+movementSelWindow = [0.0, 0.3]
+
 for indRegion, brainRegion in enumerate(brainRegions):    
     # -- For histogram of modulation index for sound-responsive cells, take the most responsive frequency -- #
     goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainRegion))
@@ -51,9 +53,13 @@ for indRegion, brainRegion in enumerate(brainRegions):
     goodHighFreqRespCells = goodQualCells[moreRespHighFreq]
 
     # -- For histogram of modulation index for movement-selective cells, take the preferred movement direction -- #
-    movementSelective = goodQualCells['movementModS_[0.05, 0.15]'] < alphaLevel
-    moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_[0.05, 0.15]'] < 0)
-    moreRespMoveRight = movementSelective & (goodQualCells['movementModI_[0.05, 0.15]'] > 0)
+    #movementSelective = goodQualCells['movementModS_[0.05, 0.15]'] < alphaLevel
+    #moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_[0.05, 0.15]'] < 0)
+    #moreRespMoveRight = movementSelective & (goodQualCells['movementModI_[0.05, 0.15]'] > 0)
+    movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
+    moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
+    moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+
     goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
     goodRightMovementSelCells = goodQualCells[moreRespMoveRight]
 

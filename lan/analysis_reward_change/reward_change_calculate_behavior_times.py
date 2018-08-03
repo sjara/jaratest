@@ -27,6 +27,7 @@ rewardAvailability = 4
 soundDuration = 0.098  #Due to a precision problem some trials were at 0.099999... ,not 0.1
 
 plt.figure()
+percentLessThanThresholdAllMice = []
 for inda, animal in enumerate(animalList):
     #celldbPath = os.path.join(settings.DATABASE_PATH,'reward_change_{}.h5'.format(label))
     celldbThisAnimal = celldb.query('subject=="{}"'.format(animal))
@@ -53,9 +54,9 @@ for inda, animal in enumerate(animalList):
         blockTypes = [bdata.labels['currentBlock']['same_reward'],bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']]
         trialsEachType = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
         
-        reactionTimeAll = bdata['timeSideIn'] - bdata['timeCenterOut'] 
-        if np.any((reactionTimeAll > rewardAvailability) & validTrials):
-            inds = np.flatnonzero((reactionTimeAll > rewardAvailability) & validTrials)
+        reactionTimeAll = bdata['timeCenterOut'] - bdata['timeTarget'] - soundDuration
+        if np.any((reactionTimeAll[validTrials] < 0)):
+            inds = np.flatnonzero((reactionTimeAll[validTrials]<0))
             print '{} session {}, found valid reaction time larger than the reward availability at trial(s):'.format(animal, date), inds
         else:
             reactionTimeLeftChoiceMoreLeft = reactionTimeAll[choiceLeftTrials & trialsEachType[:,1]]
@@ -73,9 +74,9 @@ for inda, animal in enumerate(animalList):
             reactionTimeLeftChoiceMoreRightAll = np.append(reactionTimeLeftChoiceMoreRightAll, reactionTimeLeftChoiceMoreRight)
             reactionTimeRightChoiceMoreRightAll = np.append(reactionTimeRightChoiceMoreRightAll, reactionTimeRightChoiceMoreRight)
         
-        responseTimeAll = bdata['timeCenterOut'] - bdata['timeTarget'] - soundDuration
-        if np.any((responseTimeAll < 0) & validTrials):
-            inds = np.flatnonzero((responseTimeAll < 0) & validTrials)
+        responseTimeAll = bdata['timeSideIn'] - bdata['timeCenterOut']  
+        if np.any((responseTimeAll[validTrials] > rewardAvailability)):
+            inds = np.flatnonzero((responseTimeAll[validTrials] > rewardAvailability))
             print '{} session {}, found valid response time shorter than the sound duration at trial(s):'.format(animal, date), inds
         else:
             responseTimeLeftChoiceMoreLeft = responseTimeAll[choiceLeftTrials & trialsEachType[:,1]]
@@ -103,10 +104,13 @@ for inda, animal in enumerate(animalList):
         plt.legend()
     else:
         plt.title('All sessions have dubious reaction times')
-    threshold = 0.25
-    percentLessThanThreshold = [100*np.sum(reactionTime<=threshold)/float(len(reactionTime)) for reactionTime in [reactionTimeLeftChoiceMoreLeftAll, reactionTimeLeftChoiceMoreRightAll, reactionTimeRightChoiceMoreLeftAll, reactionTimeRightChoiceMoreRightAll]]
-    print('For {}, {}% of trials were less than {}sec for each condition'.format(animal, percentLessThanThreshold, threshold))
     
+    # -- Compare between left-more and right-more conditions -- #
+    zScore, pVal = stats.ranksums(reactionTimeLeftChoiceMoreLeftAll, reactionTimeLeftChoiceMoreRightAll)    
+    print('For {}, in leftward trials, comparing reaction time between left-more vs right-more, p={:.3f}'.format(animal,pVal))
+    zScore, pVal = stats.ranksums(reactionTimeRightChoiceMoreLeftAll, reactionTimeRightChoiceMoreRightAll)
+    print('For {}, in rightward trials, comparing reaction time between left-more vs right-more, p={:.3f}'.format(animal,pVal))
+
     plt.subplot(212)
     if np.any(responseTimeLeftChoiceMoreLeftAll):
         plt.hist([responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll], 
@@ -117,10 +121,23 @@ for inda, animal in enumerate(animalList):
         plt.legend()
     else:
         plt.title('All sessions have dubious reaction times')
-    #threshold = 0.15
-    #percentLessThanThreshold = [100*np.sum(responseTime<=threshold)/float(len(responseTime)) for responseTime in [responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll]]
-    #print('For {}, {}% of trials were less than {}sec for each condition'.format(animal, percentLessThanThreshold, threshold))
     
+    # -- Print percent of trials with reaction time less than a certain length -- #
+    threshold = 0.3
+    responseTimeAllThisMouse = np.concatenate([responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll])
+    #responseTimeAllThisMouse = responseTimeAllThisMouse[~np.isnan(responseTimeAllThisMouse)] 
+    percentLessThanThreshold = 100*np.sum(responseTimeAllThisMouse<=threshold)/float(len(responseTimeAllThisMouse))
+    percentLessThanThresholdAllMice.append(percentLessThanThreshold)
+    print('For {}, {:.2f}% of trials were less than {}sec for all conditions'.format(animal, percentLessThanThreshold, threshold))
+    percentLessThanThreshold = [100*np.sum(responseTime<=threshold)/float(len(responseTime)) for responseTime in [responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll]]
+    print('For {}, {}% of trials were less than {}sec for each condition'.format(animal, percentLessThanThreshold, threshold))
+    # -- Compare between left-more and right-more conditions -- #
+    zScore, pVal = stats.ranksums(responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll)    
+    print('For {}, in leftward trials, comparing response time between left-more vs right-more, p={:.3f}'.format(animal,pVal))
+    zScore, pVal = stats.ranksums(responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll)
+    print('For {}, in rightward trials, comparing response time between left-more vs right-more, p={:.3f}'.format(animal,pVal))
+
+
     plt.suptitle(animal)
     #plt.show()
     figFullPath = os.path.join(outputDir, animal+'_density')
@@ -140,6 +157,8 @@ for inda, animal in enumerate(animalList):
         plt.title('Time from center-out to side-in')
     else:
         plt.title('All sessions have dubious reaction times')
+
+
     plt.subplot(212)
     if np.any(responseTimeLeftChoiceMoreLeftAll):
         sns.violinplot(data=[responseTimeLeftChoiceMoreLeftAll, responseTimeLeftChoiceMoreRightAll, responseTimeRightChoiceMoreLeftAll, responseTimeRightChoiceMoreRightAll])
@@ -157,4 +176,5 @@ for inda, animal in enumerate(animalList):
     plt.savefig(figFullPath,format='png')
 
     
-    
+print('For all mice, average percent of trials less than {} is {} p/m {}%'
+    .format(threshold, np.mean(percentLessThanThresholdAllMice), np.std(percentLessThanThresholdAllMice)))
