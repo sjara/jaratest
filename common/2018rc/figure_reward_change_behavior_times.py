@@ -53,10 +53,13 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(2, 2)
 gs.update(left=0.08, right=0.98, top=0.9, bottom=0.1, wspace=0.3, hspace=0.6)
 ax0 = plt.subplot(gs[0, 0])
+ax0.hold(True)
 ax1 = plt.subplot(gs[0, 1])
+ax1.hold(True)
 ax2 = plt.subplot(gs[1, 0])
+ax2.hold(True)
 ax3 = plt.subplot(gs[1, 1])
-
+ax3.hold(True)
 summaryFilename = 'rc_behavior_reaction_and_response_times.npz'
 #'rc_rightward_choice_each_condition_by_freq_summary.npz'
 summaryFullPath = os.path.join(dataDir,summaryFilename)
@@ -90,8 +93,9 @@ for (animal,shape) in animalShapes.items():
      marker=shape, color='k')
 ax0.set_ylabel('Reaction time (s)')
 ax0.set_xlim([0.5, 2.5])
+ax0.set_title('Leftward trials')
 extraplots.boxoff(ax0)
-zScore,pVal = stats.ranksums(allMiceMeanLeftMore, allMiceMeanRightMore)
+zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('reaction time leftward p={}'.format(pVal))
 
 ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
@@ -110,8 +114,9 @@ for (animal,shape) in animalShapes.items():
     ax1.plot([1,2], [meanReactionTimeRightwardRightMore,meanReactionTimeRightwardLeftMore], 
         marker=shape, color='k')
 ax1.set_xlim([0.5, 2.5])
+ax1.set_title('Rightward trials')
 extraplots.boxoff(ax1)
-zScore,pVal = stats.ranksums(allMiceMeanLeftMore, allMiceMeanRightMore)
+zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('reaction time rightward p={}'.format(pVal))
 
 
@@ -139,10 +144,10 @@ for (animal,shape) in animalShapes.items():
 ax2.set_ylabel('Response time (s)')
 ax2.set_xticks([1,2])
 ax2.set_xticklabels(['More same side', 'More contra side'], fontsize=fontSizeLabels)
-ax2.set_xlabel('Leftward trials', fontsize=fontSizeLabels)
+#ax2.set_xlabel('Leftward trials', fontsize=fontSizeLabels)
 ax2.set_xlim([0.5, 2.5])
 extraplots.boxoff(ax2)
-zScore,pVal = stats.ranksums(allMiceMeanLeftMore, allMiceMeanRightMore)
+zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('response time leftward p={}'.format(pVal))
 print('response time leftward left more {}%, right more {}% shorter than {}s'
     .format(np.mean(allMiceLeftMoreRemoved)*100, np.mean(allMiceRightMoreRemoved)*100, modulationWindow[-1]))
@@ -171,10 +176,10 @@ for (animal,shape) in animalShapes.items():
         marker=shape, color='k')
 ax3.set_xticks([1,2])
 ax3.set_xticklabels(['More same side', 'More contra side'], fontsize=fontSizeLabels)
-ax3.set_xlabel('Rightward trials', fontsize=fontSizeLabels)
+#ax3.set_xlabel('Rightward trials', fontsize=fontSizeLabels)
 ax3.set_xlim([0.5, 2.5])
 extraplots.boxoff(ax3)
-zScore,pVal = stats.ranksums(allMiceMeanLeftMore, allMiceMeanRightMore)
+zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('response time rightward p={}'.format(pVal))
 print('response time rightward left more {}%, right more {}% shorter than {}s'
     .format(np.mean(allMiceLeftMoreRemoved)*100, np.mean(allMiceRightMoreRemoved)*100, modulationWindow[-1]))

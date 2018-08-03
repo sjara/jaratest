@@ -33,8 +33,8 @@ timeRangeToPlot = [-0.2,0.4]
 #exampleMovSelAStr = 'adap005_2015-12-24_T6_c8'
 exampleMovSelAStr = 'adap013_2016-03-30_T8_c5'
 
-exampleMovSelAC = 'gosi008_2017-03-10_T1_c10'
-#exampleMovSelAC = 'gosi004_2017-02-13_T7_c8'
+#exampleMovSelAC = 'gosi008_2017-03-10_T1_c10'
+exampleMovSelAC = 'gosi004_2017-02-13_T7_c8'
 ###############################################################
 
 
