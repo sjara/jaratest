@@ -23,7 +23,6 @@ if not os.path.exists(outputDir):
     os.mkdir(outputDir)
 
 scriptFullPath = os.path.realpath(__file__)
-movementTimeRange = [0,0.3]
 
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
@@ -60,14 +59,14 @@ difCountHighSoundLvR = np.zeros(len(goodMovementSelCells))
 difCountLowSoundLvR = np.zeros(len(goodMovementSelCells))
 difCountLowvHighLeft = np.zeros(len(goodMovementSelCells))
 difCountLowvHighRight = np.zeros(len(goodMovementSelCells))
-brainArea = goodMovementSelCells['brainArea']
+brainArea = goodMovementSelCells['brainArea'].values
 
-for indC, cell in goodMovementSelCells.iterrows():
-    animal = cellParams['subject']
-    date = cellParams['date']
-    tetrode = cellParams['tetrode']
-    cluster = cellParams['cluster']
-    brainRegion = cellParams['brainRegion']
+for indC, (indr, cell) in enumerate(goodMovementSelCells.iterrows()):
+    print('Cell {}'.format(indC))
+    animal = cell['subject']
+    date = cell['date']
+    tetrode = cell['tetrode']
+    cluster = cell['cluster']
     
     ### Using cellDB methode to find this cell in the cellDB ###
     cell = celldb.loc[(celldb.subject==animal) & (celldb.date==date) & (celldb.tetrode==tetrode) & (celldb.cluster==cluster)].iloc[0]
@@ -96,9 +95,9 @@ for indC, cell in goodMovementSelCells.iterrows():
 
     responseTimesEachTrial = bdata['timeSideIn'] - bdata['timeCenterOut'] 
     responseTimesEachTrial[np.isnan(responseTimesEachTrial)] = 0
-    sideInTrials = (responseTimesEachTrial <= timeVec[-1])
+    sideInTrials = (responseTimesEachTrial <= movementSelWindow[-1])
 
-    trialsLeftCorrct = leftward & lowFreq & (~sideInTrials)
+    trialsLeftCorrect = leftward & lowFreq & (~sideInTrials)
     trialsLeftError = leftward & highFreq & (~sideInTrials)
     trialsRightCorrect = rightward & highFreq & (~sideInTrials)
     trialsRightError = rightward & lowFreq & (~sideInTrials)
@@ -111,7 +110,7 @@ for indC, cell in goodMovementSelCells.iterrows():
     indexLimitsEachTrial = evlockSpktimes['indexLimitsEachTrial']
     
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-        indexLimitsEachTrial,movementTimeRange)
+        indexLimitsEachTrial,movementSelWindow)
     spikeCountEachTrial = spikeCountMat.flatten()
 
     difCountHighSoundLvR[indC] = np.abs(np.mean(spikeCountEachTrial[trialsRightCorrect]) - np.mean(spikeCountEachTrial[trialsLeftError]))
