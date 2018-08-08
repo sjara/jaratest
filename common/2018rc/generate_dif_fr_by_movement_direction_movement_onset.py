@@ -22,7 +22,7 @@ movementDirections = ['left', 'right']
 sessionType = 'behavior'
 soundChannelType = 'stim'
 timeRange = [0, 0.31]
-binWidth = 0.010 
+binWidth = 0.010 #0.05  
 removeSideInTrials = True
 timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 alphaLevel = 0.05
@@ -32,6 +32,8 @@ dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
 goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
+encodeMv = (celldb['movementSelective_moredif_Mv'] + celldb['movementSelective_samedif_MvSd']).astype(bool)
+encodeSd = celldb['movementSelective_moredif_Sd'].astype(bool)
 
 if removeSideInTrials:
     movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
@@ -98,6 +100,9 @@ for indC, cell in goodMovementSelCells.iterrows():
 
 aveSpikeCountByBlockMSCells = aveSpikeCountByBlockAllCells[:,:,movementSelInds]
 brainAreaEachCell = brainAreaEachCell[movementSelInds]
+encodeMv = encodeMv[movementSelInds]
+encodeSd = encodeSd[movementSelInds]
+
 if removeSideInTrials:
     outputFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWindow)
 else:
@@ -107,5 +112,6 @@ outputFilePath = os.path.join(dataDir, outputFilename)
 np.savez(outputFilePath, movementDirections=movementDirections,
     timeVec=timeVec, binWidth=binWidth, 
     brainAreaEachCell=np.array(brainAreaEachCell), 
+    encodeMv=encodeMv, encodeSd=encodeSd,
     aveSpikeCountByBlock=aveSpikeCountByBlockMSCells)
 

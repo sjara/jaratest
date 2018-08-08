@@ -75,11 +75,11 @@ ax0.set_title('AC')
 extraplots.boxoff(ax0)
 zScore,pVal = stats.wilcoxon(aveDifSameSoundLvR[cellsAC], aveDifLowvHighSameMovement[cellsAC])
 print('AC p={}'.format(pVal))
-careAboutMv = aveDifSameSoundLvR[cellsAC] > aveDifLowvHighSameMovement[cellsAC]
+careAboutMv = aveDifSameSoundLvR[cellsAC] >= aveDifLowvHighSameMovement[cellsAC]
 careAboutSound = aveDifSameSoundLvR[cellsAC] < aveDifLowvHighSameMovement[cellsAC]
 percentMvRelated = sum(careAboutMv) / float(len(careAboutMv)) * 100
 percentSoundRelated = sum(careAboutSound) / float(len(careAboutSound)) * 100
-print('AC {:.2f}% cells showed larger difference between different movement directions,\n{:.2f}% show larger difference between different sounds'
+print('AC {:.2f}% cells showed larger or equal difference between different movement directions,\n{:.2f}% show larger difference between different sounds'
     .format(percentMvRelated, percentSoundRelated))
 
 
@@ -98,11 +98,11 @@ ax1.set_title('AStr')
 extraplots.boxoff(ax1)
 zScore,pVal = stats.wilcoxon(aveDifSameSoundLvR[cellsAStr], aveDifLowvHighSameMovement[cellsAStr])
 print('AStr p={}'.format(pVal))
-careAboutMv = aveDifSameSoundLvR[cellsAStr] > aveDifLowvHighSameMovement[cellsAStr]
+careAboutMv = aveDifSameSoundLvR[cellsAStr] >= aveDifLowvHighSameMovement[cellsAStr]
 careAboutSound = aveDifSameSoundLvR[cellsAStr] < aveDifLowvHighSameMovement[cellsAStr]
 percentMvRelated = sum(careAboutMv) / float(len(careAboutMv)) * 100
 percentSoundRelated = sum(careAboutSound) / float(len(careAboutSound)) * 100
-print('AStr {:.2f}% cells showed larger difference between different movement directions,\n{:.2f}% show larger difference between different sounds'
+print('AStr {:.2f}% cells showed larger or equal difference between different movement directions,\n{:.2f}% show larger difference between different sounds'
     .format(percentMvRelated, percentSoundRelated))
 
     

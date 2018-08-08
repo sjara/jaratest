@@ -39,19 +39,32 @@ for brainArea in brainAreas:
     if removeSideIn:
         movementModI = goodQualCells['movementModI_{}_removedsidein'.format(movementWindow)]
         movementModS = goodQualCells['movementModS_{}_removedsidein'.format(movementWindow)]
+        encodeMv = (goodQualCells['movementSelective_moredif_Mv'] + goodQualCells['movementSelective_samedif_MvSd']).astype(bool)
+        encodeSd =  goodQualCells['movementSelective_moredif_Sd'].astype(bool) 
     else:
         movementModI = goodQualCells['movementModI_{}'.format(movementWindow)]
         movementModS = goodQualCells['movementModS_{}'.format(movementWindow)]
     
     sigMovSel = (movementModS < alphaLevel) 
-    
     sigModI = movementModI[sigMovSel]
     nonsigModI = movementModI[~sigMovSel]
+
+    allModIEncodeMv = movementModI[encodeMv]
+    sigModIEncodeMv = sigModI[encodeMv]
+    nonsigModIEncodeMv = nonsigModI[encodeMv]
    
+    allModIEncodeSd = movementModI[encodeSd]
+    sigModIEncodeSd = sigModI[encodeSd]
+    nonsigModIEncodeSd = nonsigModI[encodeSd]
+
     # -- Save summary data -- #
     if removeSideIn:
         outputFile = 'summary_rc_movement_selectivity_{}_removed_sidein_trials.npz'.format(brainArea)
     else:    
         outputFile = 'summary_rc_movement_selectivity_{}.npz'.format(brainArea)
     outputFullPath = os.path.join(dataDir,outputFile)
-    np.savez(outputFullPath, brainArea=brainArea, sigModI=sigModI, nonsigModI=nonsigModI, allModI=movementModI, script=scriptFullPath)
+    np.savez(outputFullPath, brainArea=brainArea, 
+        sigModI=sigModI, nonsigModI=nonsigModI, allModI=movementModI, 
+        sigModIEncodeMv=sigModIEncodeMv, nonsigModIEncodeMv=nonsigModIEncodeMv, allModIEncodeMv=allModIEncodeMv, 
+        sigModIEncodeSd=sigModIEncodeSd, nonsigModIEncodeSd=nonsigModIEncodeSd, allModIEncodeSd=allModIEncodeSd, 
+        script=scriptFullPath)

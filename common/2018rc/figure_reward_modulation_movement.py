@@ -31,6 +31,7 @@ soundColor = figparams.colp['sound']
 timeRangeToPlot = [-0.2,0.5]
 removeSideIn = True
 modWindow = '0-0.3s'
+controlForSound = True
 
 # -- Select example cells here -- #
 #exampleModulatedAStr = 
@@ -243,29 +244,41 @@ if PANELS[2]:
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
     movementSelAC = summary['movementSelective']
+    encodeMv = summary['encodeMv']
+    encodeSd = summary['encodeSd']
     sigModIAC = summary['sigModI']
     nonsigModIAC = summary['nonsigModI']
     allModIAC = summary['allModI']
+    sigModIEncodeMvAC = summary['sigModIEncodeMv'] 
+    nonsigModIEncodeMvAC = summary['nonsigModIEncodeMv'] 
+    allModIEncodeMvAC = summary['allModIEncodeMv']
+    sigModIEncodeSdAC = summary['sigModIEncodeSd'] 
+    nonsigModIEncodeSdAC = summary['nonsigModIEncodeSd'] 
+    allModIEncodeSdAC = summary['allModIEncodeSd']
 
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+    plt.hist([sigModIEncodeMvAC,nonsigModIEncodeMvAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
     yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
-    plt.text(0.5,yPosText,'AC\nn={}\n{:.3f}% modulated'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIEncodeMvAC)/float(len(allModIEncodeMvAC))
+    plt.text(0.5,yPosText,'AC\nn={}\n{:.2f}% modulated'.format(len(allModIEncodeMvAC), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(movement period)', fontsize=fontSizeLabels)
     plt.ylabel('Number of cells', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca())
 
+    # -- Sound encoding 'movement-selective' cells -- #
+    percentSelective = 100*len(sigModIEncodeSdAC)/float(len(allModIEncodeSdAC))
+    print('AC movement-selective cells that encode sound\nn={}\n{:.2f}% modulated'.format(len(allModIEncodeSdAC), percentSelective))
+
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of movement selective good cells is:', sum(movementSelAC), '\nNumber of cells significantly modulated is:', len(sigModIAC)
-    (Z, pVal) = stats.wilcoxon(allModIAC)
-    print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
-    (Z, pVal) = stats.wilcoxon(sigModIAC)
-    print 'For significantly modulated cells in AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIAC), pVal)
+    print 'Total number of movement selective good cells is:', sum(movementSelAC&encodeMv), '\nNumber of cells significantly modulated is:', len(sigModIEncodeMvAC)
+    (Z, pVal) = stats.wilcoxon(allModIEncodeMvAC)
+    print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIEncodeMvAC), pVal)
+    (Z, pVal) = stats.wilcoxon(sigModIEncodeMvAC)
+    print 'For significantly modulated cells in AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIEncodeMvAC), pVal)
     
 
     ax7 = plt.subplot(gs[4,1])
@@ -281,28 +294,41 @@ if PANELS[2]:
     sigModIAStr = summary['sigModI']
     nonsigModIAStr = summary['nonsigModI']
     allModIAStr = summary['allModI']
+    encodeMv = summary['encodeMv']
+    encodeSd = summary['encodeSd']
+    
+    sigModIEncodeMvAStr = summary['sigModIEncodeMv'] 
+    nonsigModIEncodeMvAStr = summary['nonsigModIEncodeMv'] 
+    allModIEncodeMvAStr = summary['allModIEncodeMv']
+    sigModIEncodeSdAStr = summary['sigModIEncodeSd'] 
+    nonsigModIEncodeSdAStr = summary['nonsigModIEncodeSd'] 
+    allModIEncodeSdAStr = summary['allModIEncodeSd']
 
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+    plt.hist([sigModIEncodeMvAStr,nonsigModIEncodeMvAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
     yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
-    plt.text(0.5,yPosText,'AStr\nn={}\n{:.3f}% modulated'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIEncodeMvAStr)/float(len(allModIEncodeMvAStr))
+    plt.text(0.5,yPosText,'AStr\nn={}\n{:.2f}% modulated'.format(len(allModIEncodeMvAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(movement period)', fontsize=fontSizeLabels)
     plt.ylabel('Number of cells', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca())
 
+    # -- Sound encoding 'movement-selective' cells -- #
+    percentSelective = 100*len(sigModIEncodeSdAStr)/float(len(allModIEncodeSdAStr))
+    print('AStr movement-selective cells that encode sound\nn={}\n{:.2f}% modulated'.format(len(allModIEncodeSdAStr), percentSelective))
+
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of movement selective good cells is:', sum(movementSelAStr), '\nNumber of cells significantly modulated is:', len(sigModIAStr)
-    (Z, pVal) = stats.wilcoxon(allModIAStr)
-    print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
-    (Z, pVal) = stats.wilcoxon(sigModIAStr)
-    print 'For significantly modulated cells in AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIAStr), pVal)
+    print 'Total number of movement selective good cells is:', sum(movementSelAStr&encodeMv), '\nNumber of cells significantly modulated is:', len(sigModIEncodeMvAStr)
+    (Z, pVal) = stats.wilcoxon(allModIEncodeMvAStr)
+    print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIEncodeMvAStr), pVal)
+    (Z, pVal) = stats.wilcoxon(sigModIEncodeMvAStr)
+    print 'For significantly modulated cells in AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIEncodeMvAStr), pVal)
     
-    (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
+    (Z, pValBtAreas) = stats.ranksums(allModIEncodeMvAC, allModIEncodeMvAStr)
     print 'Using wilcoxon rank sum test to compare modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(movementRespAC)-len(sigModIAC), len(sigModIAC)],[sum(movementRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)

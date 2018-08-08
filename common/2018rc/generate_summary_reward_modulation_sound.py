@@ -24,7 +24,8 @@ if not os.path.exists(dataDir):
 scriptFullPath = os.path.realpath(__file__)
 brainAreas = ['rightAC','rightAStr']
 maxZThreshold = 3
-alphaLevel = 0.05
+numFreqs = 2
+alphaLevel = 0.05 
 modWindow = '0-0.1s'
 ###################################################################################
 #dbKey = 'reward_change'
@@ -36,7 +37,8 @@ celldb = celldatabase.load_hdf(celldbPath)
 for brainArea in brainAreas:
     goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
 
-    soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x[~np.isnan(x)])) >=  maxZThreshold) #The bigger of the sound Z score is over threshold
+    #soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x[~np.isnan(x)])) >=  maxZThreshold) #The biggest of the sound Z score is over threshold
+    soundResp = goodQualCells.behavPval.apply(lambda x: np.min(x[~np.isnan(x)]) < alphaLevel / numFreqs) # Bonforroni correction for multiple comparison # The smallest of the p value is less than 0.05
     moreRespLowFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[~np.isnan(x)][0]) > abs(x[~np.isnan(x)][-1]))
     moreRespHighFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[~np.isnan(x)][-1]) > abs(x[~np.isnan(x)][0]))
     goodLowFreqRespCells = goodQualCells[moreRespLowFreq]

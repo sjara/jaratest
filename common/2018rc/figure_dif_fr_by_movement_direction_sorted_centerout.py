@@ -15,8 +15,11 @@ import scipy.stats as stats
 FIGNAME = 'dif_fr_by_movement_sorted_center-out'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
-binWidth = 0.01
+binWidth = 0.01 #0.01
 removeSideInTrials = True
+controlForSound = True
+
+colorMap = 'bwr' #'PiYG'#'RdYlBu'
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -44,6 +47,7 @@ else:
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
 aveSpikeCountByBlock = data['aveSpikeCountByBlock']
+encodeMv = data['encodeMv']
 timeBinEdges = np.around(data['timeVec'], decimals=2)
 brainAreaEachCell = data['brainAreaEachCell']
 #soundRespInds = data['soundRespInds']
@@ -64,13 +68,18 @@ brainAreaLabels = np.unique(brainAreaEachCell)
 maxDifBinEachCellBothAreas = []
 posNegPeakCountBothAreas = []
 for indA,brainArea in enumerate(brainAreaLabels):
-	cellsThisArea = brainAreaEachCell==brainArea
-	
+	if controlForSound:
+		cellsThisArea = ((brainAreaEachCell==brainArea) & encodeMv)
+	else:
+		cellsThisArea = (brainAreaEachCell==brainArea)
 	spikeDifIndEachCellThisArea = spikeDifIndEachCell[:, cellsThisArea]
 	maxDifBinEachCellThisArea = np.argmax(np.abs(spikeDifIndEachCellThisArea), axis=0)
 	maxDifBinEachCellBothAreas.append(maxDifBinEachCellThisArea)
 	meanPeakBinNum = np.mean(maxDifBinEachCellThisArea)
 	medianPeakBinNum = np.median(maxDifBinEachCellThisArea)
+	chisq, pVal = stats.chisquare(maxDifBinEachCellThisArea)
+	print('For {}, using chi square test for uniform distribution of max dif bin, p={}'
+		.format(brainArea, pVal))
 	print('For {}, mean peak bin number is {}, median peak bin number is {}'
 		.format(brainArea, meanPeakBinNum, medianPeakBinNum))
 	maxDifEachCellThisArea = spikeDifIndEachCellThisArea[maxDifBinEachCellThisArea, range(len(maxDifBinEachCellThisArea))]
@@ -88,7 +97,7 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	
 	ax = plt.subplot(1,2,indA+1)
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
-	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', 
+	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap=colorMap, 
 		vmin=-1, vmax=1, interpolation='nearest', aspect='auto')
 	ax.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
 	ax.set_xticklabels([0. , 0.1, 0.2, 0.3])
