@@ -250,12 +250,12 @@ if PANELS[2]:
     allModIEncodeMvAC = -(summary['allModIEncodeMv'])
     
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModIEncodeMvAC,nonsigModIEncodeMvAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+    plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
     yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    percentSelective = 100*len(sigModIEncodeMvAC)/float(len(allModIEncodeMvAC))
-    plt.text(0.5,yPosText,'AC\nn={}\n{:.2f}% selective'.format(len(allModIEncodeMvAC), percentSelective),ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
+    plt.text(0.5,yPosText,'AC\nn={}\n{:.2f}% selective'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     #plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
@@ -263,9 +263,9 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
 
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of good cells is:', len(allModIEncodeMvAC), '\nNumber of cells movement selective is:', len(sigModIEncodeMvAC)
-    (Z, pVal) = stats.wilcoxon(allModIEncodeMvAC)
-    print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIEncodeMvAC), pVal)
+    print 'Total number of good cells is:', len(allModIAC), '\nNumber of cells movement selective is:', len(sigModIAC)
+    (Z, pVal) = stats.wilcoxon(allModIAC)
+    print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
 
 
     ax7 = plt.subplot(gs02[1,:])
@@ -283,12 +283,12 @@ if PANELS[2]:
     allModIEncodeMvAStr = -(summary['allModIEncodeMv'])
 
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModIEncodeMvAStr,nonsigModIEncodeMvAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+    plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
     yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    percentSelective = 100*len(sigModIEncodeMvAStr)/float(len(allModIEncodeMvAStr))
-    plt.text(0.5,yPosText,'AStr\nn={}\n{:.2f}% selective'.format(len(allModIEncodeMvAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
+    plt.text(0.5,yPosText,'AStr\nn={}\n{:.2f}% selective'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
@@ -296,10 +296,10 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
 
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of good cells is:', len(allModIEncodeMvAStr), '\nNumber of cells movement selective is:', len(sigModIEncodeMvAStr)
-    (Z, pVal) = stats.wilcoxon(allModIEncodeMvAStr)
-    print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIEncodeMvAStr), pVal)
-    (Z, pValBtAreas) = stats.ranksums(allModIEncodeMvAC, allModIEncodeMvAStr)
+    print 'Total number of good cells is:', len(allModIAStr), '\nNumber of cells movement selective is:', len(sigModIAStr)
+    (Z, pVal) = stats.wilcoxon(allModIAStr)
+    print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
+    (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
     print 'Using wilcoxon rank sum test to compare movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)

@@ -48,7 +48,7 @@ outputDir = '/tmp/'
 
 figFilename = 'figure_reward_modulation_movement'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [5,10]
+figSize = [8,10]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -65,11 +65,11 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(5, 2)
 gs.update(left=0.15, right=0.96, top=0.98, bottom=0.06, wspace=0.55, hspace=0.5)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[0:2,0], hspace=0.15)
-gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[0:2,1], hspace=0.15)
+gs00 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,0], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,1], hspace=0.15)
 #gs02 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[4,:], hspace=0.5)
-gs03 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[2:4,0], hspace=0.15)
-gs04 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[2:4,1], hspace=0.15)
+gs03 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[2:4,0], hspace=0.15)
+gs04 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[2:4,1], hspace=0.15)
 
 msRaster = 2
 msMvStart = 3
@@ -79,7 +79,7 @@ downsampleFactorPsth = 1
 
 
 # -- Panel A: reward modulated cell during center-out in AStr -- #
-ax1 = plt.subplot(gs00[0:3, :])
+ax1 = plt.subplot(gs00[0:2, :])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
@@ -131,7 +131,7 @@ if PANELS[0]:
     ax1.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
-    ax2 = plt.subplot(gs00[3, :])
+    ax2 = plt.subplot(gs00[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -156,7 +156,7 @@ if PANELS[0]:
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 # -- Panel B: reward modulated cell during center-out in AC -- #
-ax3 = plt.subplot(gs01[0:3, :])
+ax3 = plt.subplot(gs01[0:2, :])
 ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     intDataFilename = 'example_rc_center-outaligned_{}.npz'.format(exampleModulatedAStr)
@@ -208,7 +208,7 @@ if PANELS[1]:
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
 
-    ax4 = plt.subplot(gs01[3, :])
+    ax4 = plt.subplot(gs01[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -334,7 +334,7 @@ if PANELS[2]:
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
 
 # -- Cells that are not modulated by reward -- #
-ax8 = plt.subplot(gs03[0:3, :])
+ax8 = plt.subplot(gs03[0:2, :])
 ax8.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     intDataFilename = 'example_rc_center-outaligned_{}.npz'.format(exampleNonModulatedAC)
@@ -386,7 +386,7 @@ if PANELS[1]:
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
 
-    ax9 = plt.subplot(gs03[3, :])
+    ax9 = plt.subplot(gs03[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -410,7 +410,7 @@ if PANELS[1]:
     #plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
            #frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
-ax10 = plt.subplot(gs04[0:3, :])
+ax10 = plt.subplot(gs04[0:2, :])
 ax10.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     intDataFilename = 'example_rc_center-outaligned_{}.npz'.format(exampleNonModulatedAStr)
@@ -462,7 +462,7 @@ if PANELS[1]:
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
 
-    ax11 = plt.subplot(gs04[3, :])
+    ax11 = plt.subplot(gs04[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']

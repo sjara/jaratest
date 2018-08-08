@@ -15,8 +15,9 @@ import scipy.stats as stats
 FIGNAME = 'dif_fr_by_reward_sorted_center-out'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
-binWidth = 0.01
+binWidth = 0.05 #0.01
 removeSideInTrials = True
+controlForSound = True
 movementSelWin = [0.0,0.3]
 
 SAVE_FIGURE = 1
@@ -46,6 +47,7 @@ else:
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
 aveSpikeCountByBlock = data['aveSpikeCountByBlock']
+encodeMv = data['encodeMv']
 timeBinEdges = np.around(data['timeVec'], decimals=2)
 brainAreaEachCell = data['brainAreaEachCell']
 #soundRespInds = data['soundRespInds']
@@ -65,7 +67,10 @@ spikeDifIndEachCell = spikeDifIndEachCell[startInd:endInd, :]
 brainAreaLabels = np.unique(brainAreaEachCell)
 maxDifBinEachCellBothAreas = []
 for indA,brainArea in enumerate(brainAreaLabels):
-	cellsThisArea = brainAreaEachCell==brainArea
+	if controlForSound:
+		cellsThisArea = ((brainAreaEachCell==brainArea) & encodeMv)
+	else:
+		cellsThisArea = brainAreaEachCell==brainArea
 	#absSpikeDifEachCellThisArea = absSpikeDifEachCell[:, cellsThisArea]
 	#maxDifBinEachCellThisArea = np.argmax(absSpikeDifEachCellThisArea, axis=0)
 	#cellReInd = np.argsort(maxDifBinEachCellThisArea)

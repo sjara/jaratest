@@ -23,7 +23,7 @@ sessionType = 'behavior'
 soundChannelType = 'stim'
 timeRange = [0, 0.31]
 removeSideInTrials = True
-binWidth = 0.010 
+binWidth = 0.05 #0.010 
 timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 alphaLevel = 0.05
 movementSelWindow = [0.0,0.3]#[0.05, 0.15]
@@ -32,24 +32,37 @@ dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
 goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
+encodeMv = (celldb['movementSelective_moredif_Mv'] + celldb['movementSelective_samedif_MvSd']).astype(bool)
+encodeSd = celldb['movementSelective_moredif_Sd'].astype(bool)
+
 if removeSideInTrials:
     movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
     moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
     moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+    # encodeMv = (goodQualCells['movementSelective_moredif_Mv'] + goodQualCells['movementSelective_samedif_MvSd']).astype(bool)
+    # encodeSd =  goodQualCells['movementSelective_moredif_Sd'].astype(bool)
+    # moreRespMoveLeftEncodeMv = movementSelective & encodeMv & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
+    # moreRespMoveRightEncodeMv = movementSelective & encodeMv & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+    # moreRespMoveLeftEncodeSd = movementSelective & encodeSd & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
+    # moreRespMoveRightEncodeSd = movementSelective & encodeSd & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
 else:
     movementSelective = goodQualCells['movementModS_{}'.format(movementSelWindow)] < alphaLevel
     moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] < 0)
     moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] > 0)
 
-goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
-goodRightMovementSelCells = goodQualCells[moreRespMoveRight]
 movementSelInds = goodQualCells.index[movementSelective]
+goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
+goodRightMovementSelCells = goodQualCells[moreRespMoveRight] 
+# goodLeftMovementSelCellsEncodeMv = goodQualCells[moreRespMoveLeftEncodeMv]
+# goodRightMovementSelCellsEncodeMv = goodQualCells[moreRespMoveRightEncodeMv]
+# goodLeftMovementSelCellsEncodeSd = goodQualCells[moreRespMoveLeftEncodeSd]
+# goodRightMovementSelCellsEncodeSd = goodQualCells[moreRespMoveRightEncodeSd] 
+
 
 print '{} cells were movement selective for both areas'.format(sum(movementSelective))
 
 aveSpikeCountByBlockAllCells = np.zeros((2,len(timeVec)-1,len(celldb)))
 brainAreaEachCell = np.chararray(len(celldb), itemsize=9)
-
 
 print('Caculating for all movement selective cells using only trials with preferred direction.')
 for indC, cell in goodLeftMovementSelCells.iterrows():
@@ -150,6 +163,9 @@ for indC, cell in goodRightMovementSelCells.iterrows():
 
 aveSpikeCountByBlockMSCells = aveSpikeCountByBlockAllCells[:,:,movementSelInds]
 brainAreaEachCell = brainAreaEachCell[movementSelInds]
+encodeMv = encodeMv[movementSelInds]
+encodeSd = encodeSd[movementSelInds]
+
 if removeSideInTrials:
     outputFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWindow)
 else:
@@ -158,5 +174,6 @@ else:
 outputFilePath = os.path.join(dataDir, outputFilename)
 np.savez(outputFilePath, rightMovementSelInds=goodRightMovementSelCells.index, leftMovementSelInds=goodLeftMovementSelCells.index, 
     timeVec=timeVec, binWidth=binWidth, brainAreaEachCell=np.array(brainAreaEachCell), 
+    encodeMv=encodeMv, encodeSd=encodeSd,
     aveSpikeCountByBlock=aveSpikeCountByBlockMSCells)
 

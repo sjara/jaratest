@@ -50,12 +50,12 @@ for brainArea in brainAreas:
     nonsigModI = movementModI[~sigMovSel]
 
     allModIEncodeMv = movementModI[encodeMv]
-    sigModIEncodeMv = sigModI[encodeMv]
-    nonsigModIEncodeMv = nonsigModI[encodeMv]
+    sigModIEncodeMv = movementModI[sigMovSel & encodeMv]
+    nonsigModIEncodeMv = movementModI[~sigMovSel & encodeMv]
    
     allModIEncodeSd = movementModI[encodeSd]
-    sigModIEncodeSd = sigModI[encodeSd]
-    nonsigModIEncodeSd = nonsigModI[encodeSd]
+    sigModIEncodeSd = movementModI[sigMovSel & encodeSd]
+    nonsigModIEncodeSd = movementModI[~sigMovSel & encodeSd]
 
     # -- Save summary data -- #
     if removeSideIn:
