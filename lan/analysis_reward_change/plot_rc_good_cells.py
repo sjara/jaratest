@@ -39,32 +39,54 @@ sigModSound = goodQualCells.loc[(goodQualCells['modSigHigh_{}_sound'.format(soun
 #sigModCenterOut = goodQualCells.loc[(goodQualCells['modSigLow_{}_center-out_removedsidein'.format(cOutWindow)]<=0.05) | (goodQualCells['modSigHigh_{}_center-out'.format(cOutWindow)]<=0.05)]
 
 movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
-moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
-moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+moreSelMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
+moreSelMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+goodLeftMovementSelCells = goodQualCells[moreSelMoveLeft]
+goodRightMovementSelCells = goodQualCells[moreSelMoveRight] 
+goodMovementSelCells = goodQualCells[movementSelective]
+
+movementResponsive = (np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)]) >=3) | (np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]) >= 3)
+moreRespMoveLeft = movementResponsive & (np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)]) > np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]))
+moreRespMoveRight = movementResponsive & (np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]) > np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)])) 
+goodLeftMovementRespCells = goodQualCells[moreRespMoveLeft]
+goodRightMovementRespCells = goodQualCells[moreRespMoveRight]
+
 leftModIndName = 'modIndLow_'+cOutWindow+'_'+'center-out'+'_removedsidein'
 leftModSigName = 'modSigLow_'+cOutWindow+'_'+'center-out'+'_removedsidein'
 leftModDirName = 'modDirLow_'+cOutWindow+'_'+'center-out'+'_removedsidein'
 rightModIndName = 'modIndHigh_'+cOutWindow+'_'+'center-out'+'_removedsidein'
 rightModSigName = 'modSigHigh_'+cOutWindow+'_'+'center-out'+'_removedsidein'
 rightModDirName = 'modDirHigh_'+cOutWindow+'_'+'center-out'+'_removedsidein'
-goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
-goodRightMovementSelCells = goodQualCells[moreRespMoveRight] 
-goodMovementSelCells = goodQualCells[movementSelective]
+
 goodLeftMovementSelModSig = goodLeftMovementSelCells[leftModSigName]
 goodLeftMovementSelModDir = goodLeftMovementSelCells[leftModDirName]
 goodRightMovementSelModSig = goodRightMovementSelCells[rightModSigName]
 goodRightMovementSelModDir = goodRightMovementSelCells[rightModDirName]
-sigModulatedLeft = (goodLeftMovementSelModSig < alphaLevel) & (goodLeftMovementSelModDir > 0)
-sigModulatedRight = (goodRightMovementSelModSig < alphaLevel) & (goodRightMovementSelModDir > 0)
-sigModLeftCells = goodLeftMovementSelCells[sigModulatedLeft]
-sigModRightCells = goodRightMovementSelCells[sigModulatedRight]
+
+goodLeftMovementRespModInd = (-1) * goodLeftMovementRespCells[leftModIndName]
+goodLeftMovementRespModSig = goodLeftMovementRespCells[leftModSigName]
+goodLeftMovementRespModDir = goodLeftMovementRespCells[leftModDirName]
+goodRightMovementRespModInd = goodRightMovementRespCells[rightModIndName]
+goodRightMovementRespModSig = goodRightMovementRespCells[rightModSigName]
+goodRightMovementRespModDir = goodRightMovementRespCells[rightModDirName]
+
+sigModulatedLeft = (goodLeftMovementRespModSig < alphaLevel) & (goodLeftMovementRespModDir > 0)
+sigModulatedRight = (goodRightMovementRespModSig < alphaLevel) & (goodRightMovementRespModDir > 0)
+sigModLeftCells = goodLeftMovementRespCells[sigModulatedLeft]
+sigModRightCells = goodRightMovementRespCells[sigModulatedRight]
+
+#sigModulatedLeft = (goodLeftMovementSelModSig < alphaLevel) & (goodLeftMovementSelModDir > 0)
+#sigModulatedRight = (goodRightMovementSelModSig < alphaLevel) & (goodRightMovementSelModDir > 0)
+
+#sigModLeftCells = goodLeftMovementSelCells[sigModulatedLeft]
+#sigModRightCells = goodRightMovementSelCells[sigModulatedRight]
+
 
 outputDir = '/home/languo/data/reports/reward_change/all_good_cells/'
 
 movementSelOutputDir = '/home/languo/data/reports/reward_change/movement_sel_{}_removedsidein/'.format(movementSelWindow)
 soundOutputDir = '/home/languo/data/reports/reward_change/sig_mod_sound_{}/'.format(soundWindow)
 cOutOutputDir = '/home/languo/data/reports/reward_change/sig_mod_cOut_{}_removedsidein/'.format(cOutWindow)
-
 
 # -- Plot all reports -- #
 print('Plotting all good quality non-duplicated cells')
@@ -155,17 +177,17 @@ for ind, cell in goodQualCells.iterrows():
 
 
 # -- Copy significantly modulated reports into different folders -- #
-for ind, cell in sigModSound.iterrows():
-    tetrode = cell.tetrode
-    cluster = cell.cluster
-    date = cell.date
-    animal = cell.subject
-    figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
-    figFullPath = os.path.join(outputDir, figname)
-    if not os.path.exists(soundOutputDir):
-        os.mkdir(soundOutputDir)
-    newOutputFullPath = os.path.join(soundOutputDir, figname)
-    shutil.copyfile(figFullPath, newOutputFullPath)
+# for ind, cell in sigModSound.iterrows():
+#     tetrode = cell.tetrode
+#     cluster = cell.cluster
+#     date = cell.date
+#     animal = cell.subject
+#     figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
+#     figFullPath = os.path.join(outputDir, figname)
+#     if not os.path.exists(soundOutputDir):
+#         os.mkdir(soundOutputDir)
+#     newOutputFullPath = os.path.join(soundOutputDir, figname)
+#     shutil.copyfile(figFullPath, newOutputFullPath)
         
 # for ind, cell in sigModCenterOut.iterrows():
 #     tetrode = cell.tetrode
@@ -199,7 +221,7 @@ for ind, cell in sigModLeftCells.iterrows():
     animal = cell.subject
     figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
     figFullPath = os.path.join(outputDir, figname)
-    newOutputFullPath = os.path.join(cOutOutputDir, 'sigModLeft', figname)
+    newOutputFullPath = os.path.join(cOutOutputDir, 'sigModLeft_resp', figname)
     shutil.copyfile(figFullPath, newOutputFullPath)
 
 for ind, cell in sigModRightCells.iterrows():
@@ -209,5 +231,5 @@ for ind, cell in sigModRightCells.iterrows():
     animal = cell.subject
     figname = '{}_{}_T{}_c{}_reward_change.png'.format(animal,date,tetrode,cluster)
     figFullPath = os.path.join(outputDir, figname)
-    newOutputFullPath = os.path.join(cOutOutputDir, 'sigModRight', figname)
+    newOutputFullPath = os.path.join(cOutOutputDir, 'sigModRight_resp', figname)
     shutil.copyfile(figFullPath, newOutputFullPath)

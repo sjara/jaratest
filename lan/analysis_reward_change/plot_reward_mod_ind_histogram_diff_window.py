@@ -57,11 +57,16 @@ for indRegion, brainRegion in enumerate(brainRegions):
     #moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_[0.05, 0.15]'] < 0)
     #moreRespMoveRight = movementSelective & (goodQualCells['movementModI_[0.05, 0.15]'] > 0)
     movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
-    moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
-    moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+    moreSelMoveLeft = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] < 0)
+    moreSelMoveRight = movementSelective & (goodQualCells['movementModI_{}_removedsidein'.format(movementSelWindow)] > 0)
+    goodLeftMovementSelCells = goodQualCells[moreSelMoveLeft]
+    goodRightMovementSelCells = goodQualCells[moreSelMoveRight]
 
-    goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
-    goodRightMovementSelCells = goodQualCells[moreRespMoveRight]
+    movementResponsive = (np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)]) >=3) | (np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]) >= 3)
+    moreRespMoveLeft = movementResponsive & (np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)]) > np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]))
+    moreRespMoveRight = movementResponsive & (np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]) > np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)])) 
+    goodLeftMovementRespCells = goodQualCells[moreRespMoveLeft]
+    goodRightMovementRespCells = goodQualCells[moreRespMoveRight]
 
 
     if len(sys.argv) == 1:
@@ -157,7 +162,7 @@ for indRegion, brainRegion in enumerate(brainRegions):
             #figTitle = '{}_{}_movement_selective_cells'.format(animal,modWindow)
             plt.title(figTitle)
             plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} movement-selective cells: {:.3f}%'.format(len(sigModI), sum(movementSelective), 100*float(len(sigModI))/sum(movementSelective))) 
-            plt.text(-0.9, 0.8*plt.ylim()[1], 'Out of {} movement-selective cells, {} were modulated \nby reward either going left or going right'.format(len(goodMovementSelCells), sum(sigModEitherDirection)))
+            #plt.text(-0.9, 0.8*plt.ylim()[1], 'Out of {} movement-selective cells, {} were modulated \nby reward either going left or going right'.format(len(goodMovementSelCells), sum(sigModEitherDirection)))
 
             plt.xlabel('Modulation index')
             plt.ylabel('Num of cells')
@@ -165,6 +170,49 @@ for indRegion, brainRegion in enumerate(brainRegions):
             figFullPath = os.path.join(outputDir, figTitle)
             print 'Saving {} to {}'.format(figTitle, outputDir)
             plt.savefig(figFullPath,format=figFormat)
+
+
+            goodMovementRespCells = goodQualCells[movementResponsive]
+            sigModEitherDirection = (goodMovementRespCells[leftModSigName] < alphaLevel) | (goodMovementRespCells[rightModSigName] < alphaLevel)  
+            print 'Out of {} movement-responsive cells, {} were modulated by reward either going left or going right'.format(len(goodMovementRespCells), sum(sigModEitherDirection))
+            goodLeftMovementRespModInd = (-1) * goodLeftMovementRespCells[leftModIndName]
+            goodLeftMovementRespModSig = goodLeftMovementRespCells[leftModSigName]
+            goodLeftMovementRespModDir = goodLeftMovementRespCells[leftModDirName]
+            
+            goodRightMovementRespModInd = goodRightMovementRespCells[rightModIndName]
+            goodRightMovementRespModSig = goodRightMovementRespCells[rightModSigName]
+            goodRightMovementRespModDir = goodRightMovementRespCells[rightModDirName]
+            
+            if checkModDir:
+                sigModulatedLeft = (goodLeftMovementRespModSig < alphaLevel) & (goodLeftMovementRespModDir > 0)
+                sigModulatedRight = (goodRightMovementRespModSig < alphaLevel) & (goodRightMovementRespModDir > 0)
+            else:
+                sigModulatedLeft = goodLeftMovementRespModSig < alphaLevel
+                sigModulatedRight = goodRightMovementRespModSig < alphaLevel
+
+            sigModI = np.concatenate((goodLeftMovementRespModInd[sigModulatedLeft].values,
+                                      goodRightMovementRespModInd[sigModulatedRight].values))
+            nonsigModI = np.concatenate((goodLeftMovementRespModInd[~sigModulatedLeft].values,
+                                         goodRightMovementRespModInd[~sigModulatedRight].values))
+            allModI = np.concatenate((goodLeftMovementRespModInd.values, goodRightMovementRespModInd.values))
+            Z, pVal = stats.wilcoxon(allModI)
+            print 'Population mod ind mean: {:.2f}, compared to zero p value: {:.3f}'.format(np.mean(allModI), pVal)
+            plt.clf()
+            binsEdges = np.linspace(-1,1,20)
+            plt.hist([sigModI,nonsigModI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+            figTitle = '{}_{}_Cout_movement_responsive_cells'.format(brainRegion,modWindow)
+            #figTitle = '{}_{}_movement_responsive_cells'.format(animal,modWindow)
+            plt.title(figTitle)
+            plt.text(-0.85, 0.5*plt.ylim()[1], '{} modulated out of {} movement-responsive cells: {:.3f}%'.format(len(sigModI), sum(movementResponsive), 100*float(len(sigModI))/sum(movementResponsive))) 
+            #plt.text(-0.9, 0.8*plt.ylim()[1], 'Out of {} movement-responsive cells, {} were modulated \nby reward either going left or going right'.format(len(goodMovementRespCells), sum(sigModEitherDirection)))
+
+            plt.xlabel('Modulation index')
+            plt.ylabel('Num of cells')
+            #plt.show()
+            figFullPath = os.path.join(outputDir, figTitle)
+            print 'Saving {} to {}'.format(figTitle, outputDir)
+            plt.savefig(figFullPath,format=figFormat)
+
 
         # -- Plot reward modulation before side-in separately for low and high freq for all good cells -- #
         elif alignment == 'side-in':

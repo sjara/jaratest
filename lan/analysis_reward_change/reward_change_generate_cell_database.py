@@ -46,7 +46,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 10
+CASE = 11
 
 if CASE == 1:
     # -- Cluster and generate database with all clusters -- #
@@ -251,3 +251,41 @@ if CASE == 10:
         db['movementPvalRight_{}'.format(movementTimeRange)] = movementPvalRight
     
     celldatabase.save_hdf(db, dbFullPath)
+
+if CASE == 11:
+    # -- For movement-selective cells, mark whether activity is more different based on sound or movement direction -- #
+    summaryDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'movement_selectivity')
+    summaryFileName = 'summary_movement_sel_cells_control_sound_resp.npz'
+    summaryFullPath = os.path.join(summaryDir, summaryFileName)
+    summary = np.load(summaryFullPath)
+
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    celldb = celldatabase.load_hdf(dbFullPath)
+
+    brainAreaEachCell = summary['brainAreaEachCell']
+    difCountHighSoundLvR = summary['difCountHighSoundLvR']
+    difCountLowSoundLvR = summary['difCountLowSoundLvR']
+    difCountLowvHighLeft = summary['difCountLowvHighLeft']
+    difCountLowvHighRight = summary['difCountLowvHighRight']
+    aveDifSameSoundLvR = np.mean(np.c_[difCountHighSoundLvR, difCountLowSoundLvR], axis=1)
+    aveDifLowvHighSameMovement = np.mean(np.c_[difCountLowvHighLeft, difCountLowvHighRight], axis=1)
+
+    careMoreAboutMv = (aveDifSameSoundLvR > aveDifLowvHighSameMovement)
+    careMoreAboutSound = (aveDifSameSoundLvR < aveDifLowvHighSameMovement)
+    careEquallyAboutMvAndSound = (aveDifSameSoundLvR == aveDifLowvHighSameMovement)
+    
+    movementSelWindow = [0.0, 0.3]
+    alphaLevel = 0.05
+    goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
+    movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
+    movementSelInds = goodQualCells.index[movementSelective]
+
+    celldb['movementSelective_moredif_Mv'] = np.zeros(len(celldb), dtype=int)
+    celldb['movementSelective_moredif_Sd'] = np.zeros(len(celldb), dtype=int)
+    celldb['movementSelective_samedif_MvSd'] = np.zeros(len(celldb), dtype=int)
+
+    celldb.loc[movementSelInds, 'movementSelective_moredif_Mv'] = careMoreAboutMv.astype(int)
+    celldb.loc[movementSelInds, 'movementSelective_moredif_Sd'] = careMoreAboutSound.astype(int)
+    celldb.loc[movementSelInds, 'movementSelective_samedif_MvSd'] = careEquallyAboutMvAndSound.astype(int)
+
+    celldatabase.save_hdf(celldb, dbFullPath)
