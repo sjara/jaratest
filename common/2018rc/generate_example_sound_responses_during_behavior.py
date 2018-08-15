@@ -163,7 +163,7 @@ for cellParams in cellParamsList:
     numFreqs = len(possibleFreq)
     freqsEachTrial = bdata['targetFrequency']
     lowFreqTrials = (freqsEachTrial == possibleFreq[0]) & correct
-    highFreqTrials = freqsEachTrial == possibleFreq[-1] & correct
+    highFreqTrials = (freqsEachTrial == possibleFreq[-1]) & correct
     trialsEachCond = np.column_stack((lowFreqTrials, highFreqTrials))
     colorEachCond = [colorsDict['left'], colorsDict['right']]
     labelEachCond = ['low freq', 'high freq']
