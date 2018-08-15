@@ -15,10 +15,12 @@ import scipy.stats as stats
 FIGNAME = 'dif_fr_by_reward_sorted_center-out'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
-binWidth = 0.05 #0.01
+binWidth = 0.01 #0.05
 removeSideInTrials = True
 controlForSound = True
 movementSelWin = [0.0,0.3]
+
+colorMap = 'bwr' #'PiYG'#'RdYlBu'
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
@@ -34,10 +36,8 @@ fontSizePanel = figparams.fontSizePanel
 labelPosX = [0.015, 0.45]   
 labelPosY = [0.9]    
 
-fig = plt.gcf()
-fig.clf()
-fig.set_facecolor('w')
-
+# fig = plt.gcf()
+# fig.clf()
 
 if removeSideInTrials:
 	dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWin)
@@ -66,6 +66,10 @@ spikeDifIndEachCell = spikeDifIndEachCell[startInd:endInd, :]
 
 brainAreaLabels = np.unique(brainAreaEachCell)
 maxDifBinEachCellBothAreas = []
+
+fig, axes = plt.subplots(1, 2)
+fig.set_facecolor('w')
+
 for indA,brainArea in enumerate(brainAreaLabels):
 	if controlForSound:
 		cellsThisArea = ((brainAreaEachCell==brainArea) & encodeMv)
@@ -93,9 +97,10 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	sortedSpikeDifIndEachPosPeakCell = spikeDifIndEachCellThisArea[:, posPeakDifCells][:, cellReIndPos]
 	sortedSpikeDifIndEachCellThisArea = np.hstack((sortedSpikeDifIndEachPosPeakCell, sortedSpikeDifIndEachNegPeakCell))
 	
-	ax = plt.subplot(1,2,indA+1)
+	#ax = plt.subplot(1,2,indA+1)
+	ax = axes[indA]
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
-	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', 
+	im = ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap=colorMap, 
 		vmin=-1, vmax=1, interpolation='nearest', aspect='auto')
 	ax.set_xticks([0,numOfBins])#np.arange(len(timeBinEdges))[::10])
 	ax.set_xticklabels(timePeriodToPlot)
@@ -104,10 +109,14 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	#ax.xaxis.set_major_formatter(ticker.StrMethodFormatter("{x:g}"))
 	#plt.yticks([150, 50], brainAreaLabels)
 	ax.set_yticks([0,50,100])
-	ax.set_ylabel('{}\nCell number'.format(brainArea))
-	ax.set_xlabel('Time from movement onset (sec)')
+	ax.set_ylabel('{}\nCell number'.format(brainArea), size=fontSizeLabels)
+	ax.set_xlabel('Time from movement onset (sec)', size=fontSizeLabels)
 
-plt.subplots_adjust(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.5)
+plt.subplots_adjust(left=0.1, right=0.9, top=0.95, bottom=0.15, wspace=0.4, hspace=0.5)
+#cbar_ax = fig.add_axes([0.95, 0.15, 0.05, 0.7])
+cbar = fig.colorbar(im, ticks=[-1, 0, 1], ax=axes.ravel().tolist())
+cbar.ax.set_yticklabels(['-1', '0', '1'])
+cbar.set_label('modulation index',size=fontSizeTicks)
 
 # Stats #
 zScore, pVal = stats.ranksums(*maxDifBinEachCellBothAreas)

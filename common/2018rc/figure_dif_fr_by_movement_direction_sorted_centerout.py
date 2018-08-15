@@ -35,9 +35,9 @@ fontSizePanel = figparams.fontSizePanel
 labelPosX = [0.015, 0.45]   
 labelPosY = [0.9]    
 
-fig = plt.gcf()
-fig.clf()
-fig.set_facecolor('w')
+# fig = plt.gcf()
+# fig.clf()
+# fig.set_facecolor('w')
 
 movementSelWin = [0.0,0.3] #[0.05,0.15]
 if removeSideInTrials:
@@ -67,6 +67,10 @@ spikeDifIndEachCell = spikeDifIndEachCell[startInd:endInd, :]
 brainAreaLabels = np.unique(brainAreaEachCell)
 maxDifBinEachCellBothAreas = []
 posNegPeakCountBothAreas = []
+
+fig, axes = plt.subplots(1, 2)
+fig.set_facecolor('w')
+
 for indA,brainArea in enumerate(brainAreaLabels):
 	if controlForSound:
 		cellsThisArea = ((brainAreaEachCell==brainArea) & encodeMv)
@@ -95,9 +99,10 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	sortedSpikeDifIndEachPosPeakCell = spikeDifIndEachCellThisArea[:, posPeakDifCells][:, cellReIndPos]
 	sortedSpikeDifIndEachCellThisArea = np.hstack((sortedSpikeDifIndEachPosPeakCell, sortedSpikeDifIndEachNegPeakCell))
 	
-	ax = plt.subplot(1,2,indA+1)
+	#ax = plt.subplot(1,2,indA+1)
+	ax = axes[indA]
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
-	ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap=colorMap, 
+	im = ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap=colorMap, 
 		vmin=-1, vmax=1, interpolation='nearest', aspect='auto')
 	ax.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
 	ax.set_xticklabels([0. , 0.1, 0.2, 0.3])
@@ -108,7 +113,11 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	ax.set_ylabel('{}\nCell number'.format(brainArea))
 	ax.set_xlabel('Time from movement onset (sec)')
 
-plt.subplots_adjust(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.5)
+plt.subplots_adjust(left=0.1, right=0.9, top=0.95, bottom=0.15, wspace=0.4, hspace=0.5)
+#cbar_ax = fig.add_axes([0.95, 0.15, 0.05, 0.7])
+cbar = fig.colorbar(im, ticks=[-1, 0, 1], ax=axes.ravel().tolist())
+cbar.ax.set_yticklabels(['-1', '0', '1'])
+cbar.set_label('direction selectivity index',size=fontSizeTicks)
 
 # Stats #
 zScore, pVal = stats.ranksums(*maxDifBinEachCellBothAreas)

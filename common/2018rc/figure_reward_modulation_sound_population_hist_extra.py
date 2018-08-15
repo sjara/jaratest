@@ -86,6 +86,25 @@ for indA, brainArea in enumerate(brainAreas):
 			#print('For significantly modulated {} cells in {}: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'
 			#	.format(cellType, brainArea, np.mean(sigModI), pVal))
 
+summaryFilename = 'summary_reward_modulation_sound_-0.1-0s_rightAC_responsive_cells.npz'
+summaryFullPath = os.path.join(dataDir, summaryFilename)
+summary = np.load(summaryFullPath)
+# soundResp = summary['soundResponsive']
+# sigModI = summary['sigModI']
+# nonsigModI = summary['nonsigModI']
+allModIAC = summary['allModI']
+
+summaryFilename = 'summary_reward_modulation_sound_-0.1-0s_rightAStr_responsive_cells.npz'
+summaryFullPath = os.path.join(dataDir, summaryFilename)
+summary = np.load(summaryFullPath)
+# soundResp = summary['soundResponsive']
+# sigModI = summary['sigModI']
+# nonsigModI = summary['nonsigModI']
+allModIAStr = summary['allModI']
+
+z, pVal = stats.ranksums(allModIAC, allModIAStr)
+print('Comparing mod indices from responsive cells in -0.1-0 window between AC and AStr,\n p={}'.format(pVal))
+
 if SAVE_FIGURE:
 	extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
