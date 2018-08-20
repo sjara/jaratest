@@ -18,7 +18,7 @@ scriptFullPath = os.path.realpath(__file__)
 
 numSessionsToInclude = 6
 blockLabels = ['more_left','more_right'] #['same_reward','more_left','more_right']
-animalsUsed = ['adap012', 'adap071']
+animalsUsed = ['adap012', 'adap071', 'gosi008']
 #resultsDict = {}
 for indA,animalName in enumerate(animalsUsed):
     psycurveDict = {}

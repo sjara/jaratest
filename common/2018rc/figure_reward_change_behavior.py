@@ -66,7 +66,7 @@ if 0 in panelsToPlot:
     ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
                  fontsize=fontSizePanel, fontweight='bold')
 
-    exampleFilename = 'example_rc_ave_pycurve_adap071.npz' #'example_rc_ave_pycurve_adap012.npz'
+    exampleFilename = 'example_rc_ave_pycurve_gosi008.npz' #'example_rc_ave_pycurve_adap012.npz' #'example_rc_ave_pycurve_adap071.npz'
     exampleFullPath = os.path.join(dataDir,exampleFilename)
     exampleData = np.load(exampleFullPath)
 
@@ -171,11 +171,11 @@ if 1 in panelsToPlot:
     dataMat = summaryFile['resultAllAnimals']
     subjects = summaryFile['animalsUsed']
     conditions = summaryFile['blockLabels']
-    condColors = [colorsDict['more_left'], colorsDict['more_right']]
+    firstCondToPlot = 1
     numFreqs = dataMat.shape[1]
 
     freqToPlot = 0 #lowest freq
-    rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
+    rChoiceEachConcThisFreqEachAnimal = dataMat[firstCondToPlot:, freqToPlot, :]
     for animalInd in range(len(subjects)):
         ax2.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax2.set_xticks([0,1])
@@ -183,7 +183,7 @@ if 1 in panelsToPlot:
     ax2.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax2.set_yticks([0, 25]) 
     ax2.set_xlim([-0.5, 1.5])
-    ax2.set_xticklabels(conditions, fontsize=fontSizeLabels)
+    ax2.set_xticklabels(conditions[firstCondToPlot:], fontsize=fontSizeLabels)
     ax2.set_ylim([-5, 30])
     ax2.text(0.1, 30,'Lowest frequency')
     plt.sca(ax2)
@@ -192,11 +192,11 @@ if 1 in panelsToPlot:
     extraplots.boxoff(ax2) 
 
     freqToPlot = numFreqs / 2 # middle freq
-    rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
+    rChoiceEachConcThisFreqEachAnimal = dataMat[firstCondToPlot:, freqToPlot, :]
     for animalInd in range(len(subjects)):
         ax3.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax3.set_xticks([0,1])
-    ax3.set_xticklabels(conditions, fontsize=fontSizeLabels)
+    ax3.set_xticklabels(conditions[firstCondToPlot:], fontsize=fontSizeLabels)
     #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax3.set_yticks([25, 50, 75, 100])
     ax3.set_ylim([0, 118]) 
@@ -208,11 +208,11 @@ if 1 in panelsToPlot:
     extraplots.boxoff(ax3) 
 
     freqToPlot = -1 # highest freq
-    rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
+    rChoiceEachConcThisFreqEachAnimal = dataMat[firstCondToPlot:, freqToPlot, :]
     for animalInd in range(len(subjects)):
         ax4.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax4.set_xticks([0,1])
-    ax4.set_xticklabels(conditions, fontsize=fontSizeLabels)
+    ax4.set_xticklabels(conditions[firstCondToPlot:], fontsize=fontSizeLabels)
     #ax4.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax4.set_yticks([75, 100])
     ax4.set_ylim([70, 106]) 
@@ -232,10 +232,14 @@ if SAVE_FIGURE:
 
 ##STATS
 for freqToPlot in [0, numFreqs / 2, -1]:
-    rChoiceEachConcThisFreqEachAnimal = dataMat[:, freqToPlot, :]
+    rChoiceEachConcThisFreqEachAnimal = dataMat[firstCondToPlot:, freqToPlot, :]
     zScore, pVal = stats.ranksums(rChoiceEachConcThisFreqEachAnimal[0,:], rChoiceEachConcThisFreqEachAnimal[1,:])
     print('Using Wilcoxon ranksum test on percent right choice for more_left vs. more_right\n For freq {} the p value is {}'
         .format(freqToPlot, pVal))
+rChoiceSameRwExtremeFreqEachAnimal = np.concatenate((100-dataMat[0,0,:],dataMat[0,-1,:]))
+rChoiceSameRwExtremeFreqEachAnimal = rChoiceSameRwExtremeFreqEachAnimal[~np.isnan(rChoiceSameRwExtremeFreqEachAnimal)]
+print('The accuracy of discrimination at the two extreme frequencies is {} +/- {}%'
+    .format(np.mean(rChoiceSameRwExtremeFreqEachAnimal), np.std(rChoiceSameRwExtremeFreqEachAnimal)))
 
 plt.show()
 '''

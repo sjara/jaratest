@@ -19,7 +19,7 @@ binWidth = 0.01
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_fr_sorted_by_reward_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
+figFilename = 'figure_fr_sorted_by_reward_centerout_{}ms_bin_fake'.format(int(binWidth*1000)) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
 figSize = [8, 10]
@@ -39,7 +39,8 @@ fig.set_facecolor('w')
 dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
-aveSpikeCountByBlock = data['aveSpikeCountByBlock']
+aveSpikeCountByBlockOriginal = data['aveSpikeCountByBlock']
+aveSpikeCountByBlock = np.random.exponential(0.1,size=aveSpikeCountByBlockOriginal.shape)
 #maxEach = np.max(aveSpikeCountByBlock, axis=1)
 #aveSpikeCountByBlock = aveSpikeCountByBlock/maxEach[:,np.newaxis,:]
 
@@ -92,7 +93,7 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	sortedAveSpikeEachCellRightMoreReward = np.vstack((sortedAveSpikeEachPosPeakCellRightMoreReward, sortedAveSpikeEachNegPeakCellRightMoreReward)) 
 	maxEach = np.max(sortedAveSpikeEachCellRightMoreReward, axis=1)
 	sortedAveSpikeEachCellRightMoreReward = sortedAveSpikeEachCellRightMoreReward/maxEach[:,np.newaxis]
-	
+
 	ax1 = plt.subplot(2,3,indA*3+1)
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
 	ax1.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', vmin=-1, vmax=1, interpolation='nearest')

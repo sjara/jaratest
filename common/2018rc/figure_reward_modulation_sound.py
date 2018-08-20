@@ -46,7 +46,7 @@ outputDir = '/tmp/'
 
 figFilename = 'figure_reward_modulation_sound'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [5,10]
+figSize = [8,10]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -64,11 +64,11 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(5, 2)
 gs.update(left=0.15, right=0.96, top=0.98, bottom=0.06, wspace=0.55, hspace=0.5)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[0:2,0], hspace=0.15)
-gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[0:2,1], hspace=0.15)
+gs00 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,0], hspace=0.15)
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,1], hspace=0.15)
 #gs02 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[4,:], hspace=0.5)
-gs03 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[2:4,0], hspace=0.15)
-gs04 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[2:4,1], hspace=0.15)
+gs03 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[2:4,0], hspace=0.15)
+gs04 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[2:4,1], hspace=0.15)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -79,7 +79,7 @@ downsampleFactorPsth = 1
 
 
 # -- Panel A: reward modulated cell during sound in AStr -- #
-ax1 = plt.subplot(gs00[0:3, :])
+ax1 = plt.subplot(gs00[0:2, :])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
@@ -106,7 +106,7 @@ if PANELS[0]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -120,13 +120,14 @@ if PANELS[0]:
     ax1.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
-    ax2 = plt.subplot(gs00[3, :])
+    ax2 = plt.subplot(gs00[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
     
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,
+        timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
@@ -136,7 +137,7 @@ if PANELS[0]:
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
-    plt.xticks(np.arange(-0.2,0.6,0.2))
+    #plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
@@ -145,7 +146,7 @@ if PANELS[0]:
     #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 # -- Panel B: reward modulated cell during sound in AC -- #
-ax3 = plt.subplot(gs01[0:3, :])
+ax3 = plt.subplot(gs01[0:2, :])
 ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleModulatedAStr)
@@ -170,7 +171,7 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -185,7 +186,7 @@ if PANELS[1]:
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
 
-    ax4 = plt.subplot(gs01[3, :])
+    ax4 = plt.subplot(gs01[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -201,7 +202,7 @@ if PANELS[1]:
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
-    plt.xticks(np.arange(-0.2,0.6,0.2))
+    #plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
@@ -225,10 +226,12 @@ if PANELS[2]:
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
+    yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(-0.5,yPosText,'AC',ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
+    plt.text(0.5,yPosText,'AC\nn={}\n{:.3f}% modulated'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
+  
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(sound period)', fontsize=fontSizeLabels)
@@ -256,10 +259,11 @@ if PANELS[2]:
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
+    yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(-0.5,yPosText,'AStr',ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
+    plt.text(0.5,yPosText,'AStr\nn={}\n{:.3f}% modulated'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(sound period)', fontsize=fontSizeLabels)
@@ -279,7 +283,7 @@ if PANELS[2]:
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
 
 # -- Cells that are not modulated by reward -- #
-ax8 = plt.subplot(gs03[0:3, :])
+ax8 = plt.subplot(gs03[0:2, :])
 ax8.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleNonModulatedAC)
@@ -304,7 +308,7 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -312,14 +316,14 @@ if PANELS[1]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    plt.text(-0.1, yLims[-1]+5, 'AC')
+    #plt.text(-0.1, yLims[-1]+5, 'AC')
 
     ax8.set_yticklabels([])
     ax8.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
 
-    ax9 = plt.subplot(gs03[3, :])
+    ax9 = plt.subplot(gs03[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -335,7 +339,7 @@ if PANELS[1]:
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
-    plt.xticks(np.arange(-0.2,0.6,0.2))
+    #plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
@@ -343,7 +347,7 @@ if PANELS[1]:
     #plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
     #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
-ax10 = plt.subplot(gs04[0:3, :])
+ax10 = plt.subplot(gs04[0:2, :])
 ax10.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     intDataFilename = 'example_rc_soundaligned_{}.npz'.format(exampleNonModulatedAStr)
@@ -368,7 +372,7 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -376,14 +380,14 @@ if PANELS[1]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    plt.text(-0.1, yLims[-1]+5, 'AStr')
+    #plt.text(-0.1, yLims[-1]+5, 'AStr')
 
     ax10.set_yticklabels([])
     ax10.set_xticklabels([])
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
 
-    ax11 = plt.subplot(gs04[3, :])
+    ax11 = plt.subplot(gs04[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -399,7 +403,7 @@ if PANELS[1]:
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
-    plt.xticks(np.arange(-0.2,0.6,0.2))
+    #plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())

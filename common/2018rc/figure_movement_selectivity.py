@@ -18,6 +18,7 @@ import scipy.stats as stats
 FIGNAME = 'movement_selectivity'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 STUDY_NAME = figparams.STUDY_NAME
+removeSideIn = True
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'
@@ -32,8 +33,8 @@ timeRangeToPlot = [-0.2,0.4]
 #exampleMovSelAStr = 'adap005_2015-12-24_T6_c8'
 exampleMovSelAStr = 'adap013_2016-03-30_T8_c5'
 
-exampleMovSelAC = 'gosi008_2017-03-10_T1_c10'
-#exampleMovSelAC = 'gosi004_2017-02-13_T7_c8'
+#exampleMovSelAC = 'gosi008_2017-03-10_T1_c10'
+exampleMovSelAC = 'gosi004_2017-02-13_T7_c8'
 ###############################################################
 
 
@@ -49,9 +50,9 @@ figSize = [10,3.5]
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
-#labelDis = 0.1
+labelDis = 0.1
 
-labelPosX = [0.015, 0.355, 0.68]   # Horiz position for panel labels
+labelPosX = [0.015, 0.355, 0.65]   # Horiz position for panel labels
 labelPosY = [0.92]    # Vert position for panel labels
 
 fig = plt.gcf()
@@ -61,8 +62,8 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(1, 3)
 gs.update(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.15)
-gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.15)
+gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.3)
+gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.2)
 gs02 = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs[:,2], hspace=0.5)
 
 #timeRangeSound = [-0.2, 0.4]
@@ -74,7 +75,7 @@ downsampleFactorPsth = 1
 
 
 # -- Panel A: movement selective cell in AStr -- #
-ax1 = plt.subplot(gs00[0:3, :])
+ax1 = plt.subplot(gs00[0:2, :])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[0]:
@@ -82,8 +83,8 @@ if PANELS[0]:
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
-    trialsEachCond = intData['trialsEachCond']
-    colorEachCond = intData['colorEachCond']
+    trialsEachCond = intData['trialsEachCond'][:,0:2]
+    colorEachCond = intData['colorEachCond'][0:2]
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
     
@@ -100,7 +101,7 @@ if PANELS[0]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[1.05*yLims[-1]], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -108,48 +109,81 @@ if PANELS[0]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    plt.text(0.2, yLims[-1]+5, 'AC')
+
+    sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
+    plt.hold('on')
+    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[1.05*yLims[-1]], widths=[yLims[-1]*0.04])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+    plt.text(0, yLims[-1]+5, 'AC', fontsize=fontSizeLabels)
 
     #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nmovement direction', fontsize=fontSizeLabels)
+    ax1.set_ylabel('Trials grouped by\nmovement direction', fontsize=fontSizeLabels)
 
-    ax2 = plt.subplot(gs00[3, :])
+    ax2 = plt.subplot(gs00[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
     
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec,
+        trialsEachCond=trialsEachCond, colorEachCond=colorEachCond,
+        linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,20]
+    yLims = [0,35]
     #soundBarHeight = 0.1*yLims[-1]
     #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
-    plt.xticks(np.arange(-0.2,0.6,0.2))
+    plt.xticks([], [])
+    #plt.xticks(np.arange(-0.2,0.6,0.2))
     #plt.text(0.2, yLims[-1]+5, 'AStr')
-
-    plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
+    #ax2.set_title('Correct trials', fontsize=fontSizeLabels)
+    #plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
+    plt.ylabel('FR\ncorrect\n(spk/s)',fontsize=fontSizeLabels,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
-    
+
     plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
+    trialsEachCond = intData['trialsEachCond'][:,2:]
+    colorEachCond = intData['colorEachCond'][2:]
+    ax = plt.subplot(gs00[3, :])
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec,
+        trialsEachCond=trialsEachCond, colorEachCond=colorEachCond,
+        linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+    #ax.set_title('Error trials', fontsize=fontSizeLabels)
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.axvline(x=0,linewidth=1, color='darkgrey')
+    yLims = [0,35]
+    plt.ylim(yLims)
+    plt.yticks(yLims)
+    plt.xlim(timeRangeToPlot)
+    plt.xticks(np.arange(-0.2,0.6,0.2))
+    plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
+    plt.ylabel('FR\nerror\n(spk/s)',fontsize=fontSizeLabels,labelpad=labelDis)
+    
+    extraplots.boxoff(plt.gca())
+
 # -- Panel B: movement selective cell in AC -- #
-ax3 = plt.subplot(gs01[0:3, :])
+ax3 = plt.subplot(gs01[0:2, :])
 ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
     intDataFilename = 'example_rc_movement_sel_{}.npz'.format(exampleMovSelAStr)
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
-    trialsEachCond = intData['trialsEachCond']
-    colorEachCond = intData['colorEachCond']
+    trialsEachCond = intData['trialsEachCond'][:,:2]
+    colorEachCond = intData['colorEachCond'][:2]
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
     
@@ -166,7 +200,7 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.02])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
@@ -174,14 +208,25 @@ if PANELS[1]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    plt.text(0.2, yLims[-1]+5, 'AStr')
+
+    sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
+    plt.hold('on')
+    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
+    extraplots.boxoff(plt.gca())
+    plt.autoscale(enable=True, axis='y', tight=True)
+    plt.axis('off')
+    for element in ['boxes', 'whiskers', 'fliers', 'caps']:
+        plt.setp(bplot[element], color='grey', linewidth=1)
+    plt.setp(bplot['whiskers'], linestyle='-')
+    plt.setp(bplot['medians'], color='orange')
+    plt.text(0, yLims[-1]+5, 'AStr', fontsize=fontSizeLabels)
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
     plt.ylabel('Trials grouped by\nmovement direction', fontsize=fontSizeLabels)
 
 
-    ax4 = plt.subplot(gs01[3, :])
+    ax4 = plt.subplot(gs01[2, :])
     condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -197,12 +242,29 @@ if PANELS[1]:
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
+    plt.xticks([],[])
+    #plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
+    plt.ylabel('FR\ncorrect\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
+    extraplots.boxoff(plt.gca())
+    
+    trialsEachCond = intData['trialsEachCond'][:,2:]
+    colorEachCond = intData['colorEachCond'][2:]
+    ax = plt.subplot(gs01[3, :])
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    plt.axvline(x=0,linewidth=1, color='darkgrey')
+    yLims = [0,65]
+    #soundBarHeight = 0.1*yLims[-1]
+    #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    plt.ylim(yLims)
+    plt.yticks(yLims)
+    plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
     
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
+    plt.ylabel('FR\nerror\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
-    
+
     plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
@@ -212,22 +274,30 @@ ax6 = plt.subplot(gs02[0,:])
 ax6.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[2]:
-    summaryFilename = 'summary_rc_movement_selectivity_rightAC.npz'
+    if removeSideIn:
+        summaryFilename = 'summary_rc_movement_selectivity_rightAC_removed_sidein_trials.npz'
+    else:
+        summaryFilename = 'summary_rc_movement_selectivity_rightAC.npz'
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
-    sigModIAC = summary['sigModI']
-    nonsigModIAC = summary['nonsigModI']
-    allModIAC = summary['allModI']
-
+    sigModIAC = -(summary['sigModI']) # Inverting the sign of movement selectivity index
+    nonsigModIAC = -(summary['nonsigModI']) # Inverting the sign of movement selectivity index
+    allModIAC = -(summary['allModI'])
+    
+    sigModIEncodeMvAC = -(summary['sigModIEncodeMv']) # Inverting the sign of movement selectivity index
+    nonsigModIEncodeMvAC = -(summary['nonsigModIEncodeMv']) # Inverting the sign of movement selectivity index
+    allModIEncodeMvAC = -(summary['allModIEncodeMv'])
+    
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
+    yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(0.5,yPosText,'AC',ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
+    plt.text(0.5,yPosText,'AC\nn={}\n{:.2f}% selective'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
+    #plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
     plt.ylabel('Number of cells', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca())
 
@@ -238,19 +308,26 @@ if PANELS[2]:
 
 
     ax7 = plt.subplot(gs02[1,:])
-    summaryFilename = 'summary_rc_movement_selectivity_rightAStr.npz'
+    if removeSideIn:
+        summaryFilename = 'summary_rc_movement_selectivity_rightAStr_removed_sidein_trials.npz'
+    else:
+        summaryFilename = 'summary_rc_movement_selectivity_rightAStr.npz'
     summaryFullPath = os.path.join(dataDir, summaryFilename)
     summary = np.load(summaryFullPath)
-    sigModIAStr = summary['sigModI']
-    nonsigModIAStr = summary['nonsigModI']
-    allModIAStr = summary['allModI']
+    sigModIAStr = -(summary['sigModI'])
+    nonsigModIAStr = -(summary['nonsigModI'])
+    allModIAStr = -(summary['allModI'])
+    sigModIEncodeMvAStr = -(summary['sigModIEncodeMv']) # Inverting the sign of movement selectivity index
+    nonsigModIEncodeMvAStr = -(summary['nonsigModIEncodeMv']) # Inverting the sign of movement selectivity index
+    allModIEncodeMvAStr = -(summary['allModIEncodeMv'])
 
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
-    yPosText = 0.9*plt.ylim()[1]
+    yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
-    plt.text(0.5,yPosText,'AStr',ha='center',fontsize=fontSizeLabels)
+    percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
+    plt.text(0.5,yPosText,'AStr\nn={}\n{:.2f}% selective'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)

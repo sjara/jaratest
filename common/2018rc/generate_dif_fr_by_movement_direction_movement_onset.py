@@ -11,41 +11,44 @@ import pdb
 ephysDir = settings.EPHYS_PATH_REMOTE
 STUDY_NAME = figparams.STUDY_NAME
 alignment = 'center-out'
-FIGNAME = 'dif_fr_sorted_{}'.format(alignment)
+FIGNAME = 'dif_fr_by_movement_sorted_{}'.format(alignment)
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 
 if not os.path.exists(dataDir):
     os.mkdir(dataDir)
 
 evlockFileFolder = 'evlock_spktimes'
-blockLabels = ['more_left', 'more_right']
 movementDirections = ['left', 'right']
 sessionType = 'behavior'
 soundChannelType = 'stim'
-timeRange = [-0.2, 0.5]
-binWidth = 0.010 #0.025 #10 msec
+timeRange = [0, 0.31]
+binWidth = 0.010 #0.05  
+removeSideInTrials = True
 timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
 alphaLevel = 0.05
-movementSelWindow = [0.05, 0.15]
+movementSelWindow = [0.0, 0.3]#[0.05, 0.15]
 
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
 goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
-movementSelective = goodQualCells['movementModS_{}'.format(movementSelWindow)] < alphaLevel
-goodMovementSelCells = goodQualCells[movementSelective]
-moreRespMoveLeft = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] < 0)
-moreRespMoveRight = movementSelective & (goodQualCells['movementModI_{}'.format(movementSelWindow)] > 0)
-goodLeftMovementSelCells = goodQualCells[moreRespMoveLeft]
-goodRightMovementSelCells = goodQualCells[moreRespMoveRight]
+encodeMv = (celldb['movementSelective_moredif_Mv'] + celldb['movementSelective_samedif_MvSd']).astype(bool)
+encodeSd = celldb['movementSelective_moredif_Sd'].astype(bool)
+
+if removeSideInTrials:
+    movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
+else:
+    movementSelective = goodQualCells['movementModS_{}'.format(movementSelWindow)] < alphaLevel
+
 movementSelInds = goodQualCells.index[movementSelective]
+goodMovementSelCells = goodQualCells[movementSelective]
 
 print '{} cells were movement selective for both areas'.format(sum(movementSelective))
 
-aveFrByDirByRwAllCells = np.zeros((len(movementDirections), len(blockLabels), len(timeVec)-1, len(celldb)))
+aveSpikeCountByBlockAllCells = np.zeros((len(movementDirections),len(timeVec)-1,len(celldb)))
 brainAreaEachCell = np.chararray(len(celldb), itemsize=9)
 
-print('Caculating for all movement selective cells per movement direction and reward contingency')
+print('Caculating for all movement selective cells using only trials with preferred direction.')
 for indC, cell in goodMovementSelCells.iterrows():
     cellObj = ephyscore.Cell(cell)
     print 'Calculating ave spike count by block for cell {}'.format(indC)
@@ -71,33 +74,44 @@ for indC, cell in goodMovementSelCells.iterrows():
     missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
     # Remove missing trials
     bdata.remove_trials(missingTrials)
-    currentBlock = bdata['currentBlock']
-    blockTypes = [bdata.labels['currentBlock']['more_left'],bdata.labels['currentBlock']['more_right']] 
-    trialsEachBlock = behavioranalysis.find_trials_each_type(currentBlock,blockTypes)
+    
     choiceEachTrial = bdata['choice']
     leftwardTrials = choiceEachTrial==bdata.labels['choice']['left'] 
-    rightwardTrials = choiceEachTrial==bdata.labels['choice']['right'] 
-    trialsEachDir = np.column_stack((leftwardTrials, rightwardTrials))
+    rightwardTrials = choiceEachTrial==bdata.labels['choice']['right']
+    trialsEachBlock = np.column_stack((leftwardTrials, rightwardTrials))
+    
+    responseTimesEachTrial = bdata['timeSideIn'] - bdata['timeCenterOut'] 
+    responseTimesEachTrial[np.isnan(responseTimesEachTrial)] = 0
+    sideInTrials = (responseTimesEachTrial <= timeVec[-1])
+
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
 
-    for indD, direction in enumerate(movementDirections):
-        for indB, block in enumerate(blockLabels):
-            trialsThisCond = trialsEachBlock[:, indB] & trialsEachDir[:, indD]
-            spikeCountThisCond = spikeCountMat[trialsThisCond, :]
-            aveSpikeCountThisCond = np.mean(spikeCountThisCond, axis=0)
-            aveFrByDirByRwAllCells[indD, indB, :, indC] = aveSpikeCountThisCond
+    aveSpikeCountByBlock = np.zeros((len(movementDirections),len(timeVec)-1))
+    for indD,direction in enumerate(movementDirections):
+        if removeSideInTrials:
+            trialsThisBlock = trialsEachBlock[:, indD] & (~sideInTrials)
+        else:
+            trialsThisBlock = trialsEachBlock[:, indD] 
+        spikeCountThisBlock = spikeCountMat[trialsThisBlock, :]
+        aveSpikeCountThisBlock = np.mean(spikeCountThisBlock, axis=0)
+        aveSpikeCountByBlock[indD, :] = aveSpikeCountThisBlock
+    aveSpikeCountByBlockAllCells[:, :, indC] = aveSpikeCountByBlock
+    print 'ave spike count by block for cell {}'.format(indC), aveSpikeCountByBlock
 
-aveFrLeftwardLeftMoreAllCells = aveFrByDirByRwAllCells[0, 0, :, movementSelInds]
-aveFrLeftwardRightMoreAllCells = aveFrByDirByRwAllCells[0, 1, :, movementSelInds]
-aveFrRightwardLeftMoreAllCells = aveFrByDirByRwAllCells[1, 0, :, movementSelInds]
-aveFrRightwardRightMoreAllCells = aveFrByDirByRwAllCells[1, 1, :, movementSelInds]
+aveSpikeCountByBlockMSCells = aveSpikeCountByBlockAllCells[:,:,movementSelInds]
 brainAreaEachCell = brainAreaEachCell[movementSelInds]
-outputFilename = 'average_spike_count_by_rc_cond_by_direction_{}ms_bin.npz'.format(int(binWidth*1000))
+encodeMv = encodeMv[movementSelInds]
+encodeSd = encodeSd[movementSelInds]
+
+if removeSideInTrials:
+    outputFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWindow)
+else:
+    outputFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win.npz'.format(int(binWidth*1000), movementSelWindow)
+
 outputFilePath = os.path.join(dataDir, outputFilename)
-np.savez(outputFilePath, movementSelInds=movementSelInds, 
-    timeVec=timeVec, binWidth=binWidth, brainAreaEachCell=np.array(brainAreaEachCell), 
-    aveFrLeftwardLeftMoreAllCells=aveFrLeftwardLeftMoreAllCells,
-    aveFrLeftwardRightMoreAllCells=aveFrLeftwardRightMoreAllCells,
-    aveFrRightwardLeftMoreAllCells=aveFrRightwardLeftMoreAllCells,
-    aveFrRightwardRightMoreAllCells=aveFrRightwardRightMoreAllCells)
+np.savez(outputFilePath, movementDirections=movementDirections,
+    timeVec=timeVec, binWidth=binWidth, 
+    brainAreaEachCell=np.array(brainAreaEachCell), 
+    encodeMv=encodeMv, encodeSd=encodeSd,
+    aveSpikeCountByBlock=aveSpikeCountByBlockMSCells)
 

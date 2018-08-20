@@ -1,9 +1,7 @@
 '''
-Generate and store intermediate data for plot showing movement-aligned firing activity of astr neurons recorded in psychometric/switching task. Data for raster and psth are saved separately. 
-For raster data, output contains spikeTimestamps, eventOnsetTimes, freqEachTrial.
-For psth data, output contains spikeCountMat, timeVec, freqEachTrial.
-Trials from all frequencies that have either a valid left or right choice are plotted
-Lan Guo20161223
+Generate and store intermediate data for plot showing movement-aligned firing activity of astr neurons recorded in reward change task.  
+Spike counts are done separately for low vs high freq trials and left vs right movement trials (4 conditions total).
+Lan Guo 2018-08-03
 '''
 import os
 import sys
@@ -157,17 +155,27 @@ for cellParams in cellParamsList:
     # Remove missing trials
     bdata.remove_trials(missingTrials)
 
-    diffTimes = bdata['timeTarget'] - bdata['timeCenterOut'] 
+    diffTimesSound = bdata['timeTarget'] - bdata['timeCenterOut'] 
+    diffTimesSideIn = bdata['timeSideIn'] - bdata['timeCenterOut']
 
     # -- Select trials to plot from behavior file -- #
     rightward = bdata['choice']==bdata.labels['choice']['right']
     leftward = bdata['choice']==bdata.labels['choice']['left']
+    freqEachTrial = bdata['targetFrequency']
+    lowFreq = freqEachTrial == bdata['lowFreq'][0]
+    highFreq = freqEachTrial == bdata['highFreq'][0]
 
-    trialsToUseRight = rightward
-    trialsToUseLeft = leftward
-    condLabels = ['go left', 'go right']
-    trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
-    colorEachCond = [colorsDict['left'],colorsDict['right']]
+    trialsToUseLeftCorrct = leftward & lowFreq
+    trialsToUseLeftError = leftward & highFreq
+    trialsToUseRightCorrect = rightward & highFreq
+    trialsToUseRightError = rightward & lowFreq
+
+    condLabels = ['go left correct', 'go right correct', 'go left error', 'go right error']
+    #condLabels = ['go left', 'go right']
+    trialsEachCond = np.c_[trialsToUseLeftCorrct, trialsToUseRightCorrect, trialsToUseLeftError, trialsToUseRightError] 
+    #trialsEachCond = np.c_[leftward, rightward]
+    colorEachCond = [colorsDict['left'],colorsDict['right'],colorsDict['left'],colorsDict['right']]
+    #colorEachCond = [colorsDict['left'],colorsDict['right']]
     
     alignment = 'center-out'
     evlockDataFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(animal, date, depth, tetrode, cluster, alignment)
@@ -183,7 +191,8 @@ for cellParams in cellParamsList:
     outputFile = 'example_rc_movement_sel_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
     np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
-      soundTimesFromEventOnset=diffTimes, indexLimitsEachTrial=indexLimitsEachTrial, 
+      soundTimesFromEventOnset=diffTimesSound, sideInTimesFromEventOnset=diffTimesSideIn,
+      indexLimitsEachTrial=indexLimitsEachTrial, 
       spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, 
       condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
       script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 

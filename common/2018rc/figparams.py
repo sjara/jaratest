@@ -25,7 +25,7 @@ colp['MoreRewardR'] = cp.TangoPalette['ScarletRed1']
 colp['MoreRewardL'] = cp.TangoPalette['SkyBlue2']
 
 colp['MoveLeft'] = cp.TangoPalette['Orange2']
-colp['MoveRight'] = '#829910'
+colp['MoveRight'] = cp.TangoPalette['Plum2'] #'#829910'
 
 
 #7570B3 - blupurp
