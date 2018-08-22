@@ -35,10 +35,10 @@ controlForSound = True
 
 # -- Select example cells here -- #
 #exampleModulatedAStr = 
-exampleModulatedAStr = 'highfreq_adap012_2016-02-04_T3_c3'
-exampleModulatedAC = 'highfreq_gosi008_2017-03-14_T7_c8'
-exampleNonModulatedAStr = 'highfreq_adap017_2016-04-06_T7_c12'
-exampleNonModulatedAC = 'highfreq_gosi004_2017-03-07_T7_c10'
+exampleModulatedAStr = 'highfreq_adap012_2016-02-04_T3_c3_removed_sidein'
+exampleModulatedAC = 'highfreq_gosi008_2017-03-14_T7_c8_removed_sidein'
+exampleNonModulatedAStr = 'highfreq_adap017_2016-04-06_T7_c12_removed_sidein'
+exampleNonModulatedAC = 'highfreq_gosi004_2017-03-07_T7_c10_removed_sidein'
 ###############################################################
 
 PANELS = [1,1,1] # Which panels to plot
@@ -48,7 +48,7 @@ outputDir = '/tmp/'
 
 figFilename = 'figure_reward_modulation_movement'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [8,10]
+figSize = [5,7]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -56,14 +56,14 @@ fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
 
 labelPosX = [0.015, 0.5]   # Horiz position for panel labels
-labelPosY = [0.97, 0.58, 0.2]    # Vert position for panel labels
+labelPosY = [0.97, 0.55, 0.2]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(5, 2)
-gs.update(left=0.15, right=0.96, top=0.98, bottom=0.06, wspace=0.55, hspace=0.5)
+gs.update(left=0.13, right=0.93, top=0.98, bottom=0.06, wspace=0.5, hspace=1)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,0], hspace=0.15)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,1], hspace=0.15)
@@ -141,7 +141,7 @@ if PANELS[0]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,35]
+    yLims = [0,45]
     #soundBarHeight = 0.1*yLims[-1]
     #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
@@ -262,7 +262,7 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIEncodeMvAC)/float(len(allModIEncodeMvAC))
-    plt.text(0.5,yPosText,'AC\nn={}\n{:.2f}% modulated'.format(len(allModIEncodeMvAC), percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'AC\nn={}'.format(len(allModIEncodeMvAC)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(movement period)', fontsize=fontSizeLabels)
@@ -310,7 +310,7 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIEncodeMvAStr)/float(len(allModIEncodeMvAStr))
-    plt.text(0.5,yPosText,'AStr\nn={}\n{:.2f}% modulated'.format(len(allModIEncodeMvAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'AStr\nn={}'.format(len(allModIEncodeMvAStr)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(movement period)', fontsize=fontSizeLabels)
