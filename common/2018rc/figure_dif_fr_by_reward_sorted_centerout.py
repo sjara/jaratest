@@ -24,7 +24,7 @@ colorMap = 'bwr' #'PiYG'#'RdYlBu'
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_dif_fr_by_reward_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
+figFilename = 'figure_reward_modulation_movement_overtime'#'figure_dif_fr_by_reward_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
 figSize = [5, 6]

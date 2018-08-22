@@ -48,7 +48,7 @@ outputDir = '/tmp/'
 
 figFilename = 'figure_reward_modulation_movement'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [5,7]
+figSize = [7, 10]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -56,14 +56,14 @@ fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
 
 labelPosX = [0.015, 0.5]   # Horiz position for panel labels
-labelPosY = [0.97, 0.55, 0.2]    # Vert position for panel labels
+labelPosY = [0.97, 0.6, 0.2]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(5, 2)
-gs.update(left=0.13, right=0.93, top=0.98, bottom=0.06, wspace=0.5, hspace=1)
+gs.update(left=0.13, right=0.93, top=0.98, bottom=0.06, wspace=0.5, hspace=0.6)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,0], hspace=0.15)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,1], hspace=0.15)
