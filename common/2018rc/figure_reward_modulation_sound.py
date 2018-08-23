@@ -46,15 +46,15 @@ outputDir = '/tmp/'
 
 figFilename = 'figure_reward_modulation_sound'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [8,10]
+figSize = [7,10]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
 
-labelPosX = [0.015, 0.55]   # Horiz position for panel labels
-labelPosY = [0.97, 0.58, 0.2]    # Vert position for panel labels
+labelPosX = [0.015, 0.5]   # Horiz position for panel labels
+labelPosY = [0.97, 0.6, 0.2]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
@@ -62,7 +62,7 @@ fig.set_facecolor('w')
 
 #gs = gridspec.GridSpec(2, 3)
 gs = gridspec.GridSpec(5, 2)
-gs.update(left=0.15, right=0.96, top=0.98, bottom=0.06, wspace=0.55, hspace=0.5)
+gs.update(left=0.13, right=0.93, top=0.98, bottom=0.06, wspace=0.5, hspace=0.6)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,0], hspace=0.15)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,1], hspace=0.15)
@@ -230,7 +230,7 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
-    plt.text(0.5,yPosText,'AC\nn={}\n{:.3f}% modulated'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'AC\nn={}'.format(len(allModIAC)),ha='center',fontsize=fontSizeLabels)
   
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -263,7 +263,7 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
-    plt.text(0.5,yPosText,'AStr\nn={}\n{:.3f}% modulated'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'AStr\nn={}'.format(len(allModIAStr)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(sound period)', fontsize=fontSizeLabels)

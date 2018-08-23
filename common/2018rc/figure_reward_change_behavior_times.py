@@ -19,13 +19,13 @@ outputDir = '/tmp/'
 figFilename = 'figure_reward_change_behavior_times' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
-figSize = [10, 8]
+figSize = [7, 5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.015, 0.5]   # Horiz position for panel labels
+labelPosX = [0.015, 0.3, 0.63]   # Horiz position for panel labels
 labelPosY = [0.95, 0.48]    # Vert position for panel labels
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 
@@ -50,15 +50,15 @@ fig.clf()
 fig.set_facecolor('w')
 
 
-gs = gridspec.GridSpec(2, 2)
-gs.update(left=0.08, right=0.98, top=0.9, bottom=0.1, wspace=0.3, hspace=0.6)
-ax0 = plt.subplot(gs[0, 0])
+gs = gridspec.GridSpec(2, 3)
+gs.update(left=0.08, right=0.95, top=0.9, bottom=0.1, wspace=0.35, hspace=0.15)
+ax0 = plt.subplot(gs[0, 1])
 ax0.hold(True)
-ax1 = plt.subplot(gs[0, 1])
+ax1 = plt.subplot(gs[0, 2])
 ax1.hold(True)
-ax2 = plt.subplot(gs[1, 0])
+ax2 = plt.subplot(gs[1, 1])
 ax2.hold(True)
-ax3 = plt.subplot(gs[1, 1])
+ax3 = plt.subplot(gs[1, 2])
 ax3.hold(True)
 summaryFilename = 'rc_behavior_reaction_and_response_times.npz'
 #'rc_rightward_choice_each_condition_by_freq_summary.npz'
@@ -76,7 +76,7 @@ modulationWindow = [0, 0.3]
 #                     .format(item, len(summary[item]), np.mean(summary[item])))
 
 
-ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
+ax0.annotate('C', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
                 fontsize=fontSizePanel, fontweight='bold')
 allMiceMeanLeftMore = []
 allMiceMeanRightMore = []
@@ -90,15 +90,17 @@ for (animal,shape) in animalShapes.items():
     allMiceMeanLeftMore.append(meanReactionTimeLeftwardLeftMore)
     allMiceMeanRightMore.append(meanReactionTimeLeftwardRightMore)
     ax0.plot([1,2], [meanReactionTimeLeftwardLeftMore,meanReactionTimeLeftwardRightMore],
-     marker=shape, color='k')
-ax0.set_ylabel('Reaction time (s)')
-ax0.set_xlim([0.5, 2.5])
-ax0.set_title('Leftward trials')
+     marker='o', color='k')
+ax0.set_ylabel('Reaction time (s)', fontsize=fontSizeLabels)
+ax0.set_xlim([0.8, 2.2])
+ax0.set_xticks([1,2])
+ax0.set_xticklabels([])
+ax0.set_title('Leftward trials', fontsize=fontSizeLabels)
 extraplots.boxoff(ax0)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('reaction time leftward p={}'.format(pVal))
 
-ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
+ax1.annotate('D', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
                  fontsize=fontSizePanel, fontweight='bold')
 allMiceMeanLeftMore = []
 allMiceMeanRightMore = []
@@ -112,15 +114,17 @@ for (animal,shape) in animalShapes.items():
     allMiceMeanLeftMore.append(meanReactionTimeRightwardLeftMore)
     allMiceMeanRightMore.append(meanReactionTimeRightwardRightMore)
     ax1.plot([1,2], [meanReactionTimeRightwardRightMore,meanReactionTimeRightwardLeftMore], 
-        marker=shape, color='k')
-ax1.set_xlim([0.5, 2.5])
-ax1.set_title('Rightward trials')
+        marker='o', color='k')
+ax1.set_xlim([0.8, 2.2])
+ax1.set_xticks([1,2])
+ax1.set_xticklabels([])
+ax1.set_title('Rightward trials', fontsize=fontSizeLabels)
 extraplots.boxoff(ax1)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('reaction time rightward p={}'.format(pVal))
 
 
-ax2.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
+ax2.annotate('E', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
                 fontsize=fontSizePanel, fontweight='bold')
 allMiceMeanLeftMore = []
 allMiceMeanRightMore = []
@@ -140,12 +144,12 @@ for (animal,shape) in animalShapes.items():
     proportionSideInBeforeModWindow = sum(responseTimeLeftwardRightMore< modulationWindow[-1]) / float(len(responseTimeLeftwardRightMore))
     allMiceRightMoreRemoved.append(proportionSideInBeforeModWindow)
     ax2.plot([1,2], [meanResponseTimeLeftwardLeftMore,meanResponseTimeLeftwardRightMore], 
-        marker=shape, color='k')
-ax2.set_ylabel('Response time (s)')
+        marker='o', color='k')
+ax2.set_ylabel('Response time (s)', fontsize=fontSizeLabels)
 ax2.set_xticks([1,2])
-ax2.set_xticklabels(['More same side', 'More contra side'], fontsize=fontSizeLabels)
+ax2.set_xticklabels(['More ipsi', 'More contra'], fontsize=fontSizeLabels)
 #ax2.set_xlabel('Leftward trials', fontsize=fontSizeLabels)
-ax2.set_xlim([0.5, 2.5])
+ax2.set_xlim([0.8, 2.2])
 extraplots.boxoff(ax2)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('response time leftward p={}'.format(pVal))
@@ -153,7 +157,7 @@ print('response time leftward left more {}%, right more {}% shorter than {}s'
     .format(np.mean(allMiceLeftMoreRemoved)*100, np.mean(allMiceRightMoreRemoved)*100, modulationWindow[-1]))
 
 
-ax3.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction',
+ax3.annotate('F', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
                  fontsize=fontSizePanel, fontweight='bold')
 allMiceMeanLeftMore = []
 allMiceMeanRightMore = []
@@ -173,11 +177,11 @@ for (animal,shape) in animalShapes.items():
     proportionSideInBeforeModWindow = sum(responseTimeRightwardRightMore< modulationWindow[-1]) / float(len(responseTimeRightwardRightMore))
     allMiceRightMoreRemoved.append(proportionSideInBeforeModWindow)
     ax3.plot([1,2], [meanResponseTimeRightwardRightMore,meanResponseTimeRightwardLeftMore], 
-        marker=shape, color='k')
+        marker='o', color='k')
 ax3.set_xticks([1,2])
-ax3.set_xticklabels(['More same side', 'More contra side'], fontsize=fontSizeLabels)
+ax3.set_xticklabels(['More ipsi', 'More contra'], fontsize=fontSizeLabels)
 #ax3.set_xlabel('Rightward trials', fontsize=fontSizeLabels)
-ax3.set_xlim([0.5, 2.5])
+ax3.set_xlim([0.8, 2.2])
 extraplots.boxoff(ax3)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('response time rightward p={}'.format(pVal))

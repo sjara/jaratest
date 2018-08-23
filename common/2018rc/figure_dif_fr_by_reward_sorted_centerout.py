@@ -24,17 +24,17 @@ colorMap = 'bwr' #'PiYG'#'RdYlBu'
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_dif_fr_by_reward_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
+figFilename = 'figure_reward_modulation_movement_overtime'#'figure_dif_fr_by_reward_sorted_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 #figSize = [7, 5]
-figSize = [8, 10]
+figSize = [5, 6]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
 labelPosX = [0.015, 0.45]   
-labelPosY = [0.9]    
+labelPosY = [0.95] 
 
 # fig = plt.gcf()
 # fig.clf()
@@ -69,6 +69,11 @@ maxDifBinEachCellBothAreas = []
 
 fig, axes = plt.subplots(1, 2)
 fig.set_facecolor('w')
+
+ax0 = axes[0]
+ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+ax1 = axes[1]
+ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 for indA,brainArea in enumerate(brainAreaLabels):
 	if controlForSound:
@@ -109,14 +114,17 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	#ax.xaxis.set_major_formatter(ticker.StrMethodFormatter("{x:g}"))
 	#plt.yticks([150, 50], brainAreaLabels)
 	ax.set_yticks([0,50,100])
-	ax.set_ylabel('{}\nCell number'.format(brainArea), size=fontSizeLabels)
-	ax.set_xlabel('Time from movement onset (sec)', size=fontSizeLabels)
+	if indA == 0:
+		ax.set_ylabel('Cell number')
+	#ax.set_xlabel('Time from movement onset (s)')
+	ax.set_title(brainArea[5:])
 
-plt.subplots_adjust(left=0.1, right=0.9, top=0.95, bottom=0.15, wspace=0.4, hspace=0.5)
+fig.text(0.3, 0.08, 'Time from movement onset (s)')
+plt.subplots_adjust(left=0.15, right=0.95, top=0.95, bottom=0.15, wspace=0.4, hspace=0.2)
 #cbar_ax = fig.add_axes([0.95, 0.15, 0.05, 0.7])
 cbar = fig.colorbar(im, ticks=[-1, 0, 1], ax=axes.ravel().tolist())
 cbar.ax.set_yticklabels(['-1', '0', '1'])
-cbar.set_label('modulation index',size=fontSizeTicks)
+cbar.set_label('Reward modulation index',size=fontSizeTicks)
 
 # Stats #
 zScore, pVal = stats.ranksums(*maxDifBinEachCellBothAreas)
