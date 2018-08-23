@@ -116,3 +116,94 @@ exp1.add_session('15-11-17', 'f', 'AM', 'am_tuning_curve')
 exp1.add_session('15-15-33', None, 'longLaser', 'am_tuning_curve')
 exp1.add_session('15-18-59', 'g', 'laserBandwidth', 'bandwidth_am')
 exp1.add_session('15-42-58', 'h', 'noiseAmps', 'am_tuning_curve')
+
+exp2 = celldatabase.Experiment(subject, '2018-08-21', 'right_AC', info=['lateralDiI','TT1ant','soundleft'])
+experiments.append(exp2)
+
+exp2.laserCalibration = {
+    '1.0':3.15,
+    '2.0':3.6,
+    '3.0':4.00,
+    '4.0':4.5,
+    '5.0':4.95,
+    '7.5':6.1,
+    '10.0':7.2
+    }
+#tetrode 5 has the reference. Threshold set to 47 mV
+# exp2.add_site(1200, tetrodes=[1,2,3,4])
+# exp2.add_session('15-45-43', None, 'noisebursts', 'am_tuning_curve')
+#
+# #tetrode 3 has the reference
+# exp2.add_site(1250, tetrodes=[1,2,4])
+# exp2.add_session('16-01-17', None, 'noisebursts', 'am_tuning_curve')
+#
+# exp2.add_site(1300, tetrodes=[1,2,4])
+# exp2.add_session('16-15-10', None, 'noisebursts', 'am_tuning_curve')
+#
+# exp2.add_site(1350, tetrodes=[1,2,4])
+# exp2.add_session('16-25-56', None, 'noisebursts', 'am_tuning_curve')
+# exp2.add_session('16-28-41', None, 'lasernoisebursts', 'bandwidth_am')
+# exp2.add_session('16-31-26', 'a', 'tuningCurve', 'am_tuning_curve')
+# #shanks 3 and 4 are not penetrating
+#
+# exp2.add_site(1400, tetrodes=[1,2,4])
+# exp2.add_session('16-44-05', None, 'noisebursts', 'am_tuning_curve')
+# exp2.add_session('16-46-35', None, 'lasernoisebursts', 'bandwidth_am')
+# exp2.add_session('16-49-23', 'b', 'tuningCurve', 'am_tuning_curve')
+
+exp2.add_site(1500, tetrodes=[1,2,4])
+exp2.add_session('17-05-45', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('17-07-12', None, 'lasernoisebursts', 'bandwidth_am')
+exp2.add_session('17-09-42', 'c', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('17-14-37', 'd', 'AM', 'am_tuning_curve')
+exp2.add_session('17-18-53', None, 'longLaser', 'am_tuning_curve')
+exp2.add_session('17-21-42', 'e', 'laserBandwidth', 'bandwidth_am')
+exp2.add_session('17-45-46', 'f', 'noiseAmps', 'am_tuning_curve')
+
+exp2.maxDepth = 1500
+
+exp3 = celldatabase.Experiment(subject, '2018-08-22', 'left_AC', info=['medialDiD','TT8ant','soundright'])
+experiments.append(exp3)
+
+exp3.laserCalibration = {
+    '1.0':3.25,
+    '2.0':3.7,
+    '3.0':4.15,
+    '4.0':4.65,
+    '5.0':5.10,
+    '7.5':6.35,
+    '10.0':7.5
+    }
+
+#tetrode 5 has the reference. Threshold ste to 47 mV
+# exp3.add_site(900, tetrodes=[1,2,3,4])
+# exp3.add_session('14-33-44', None, 'noisebursts', 'am_tuning_curve')
+#
+# exp3.add_site(1000, tetrodes=[1,2,4])
+# exp3.add_session('14-49-15', None, 'noisebursts', 'am_tuning_curve')
+#
+# exp3.add_site(1100, tetrodes=[1,2,4])
+# exp3.add_session('15-00-56', None, 'noisebursts', 'am_tuning_curve')
+# exp3.add_session('15-02-58', None, 'lasernoisebursts', 'bandwidth_am')
+# exp3.add_session('15-06-43', 'a', 'tuningCurve', 'am_tuning_curve')
+
+#Trode 3 has the reference
+exp3.add_site(1200, tetrodes=[1,2])
+exp3.add_session('15-26-11', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('15-34-16', None, 'lasernoisebursts', 'bandwidth_am')
+exp3.add_session('15-46-13', 'b', 'tuningCurve', 'am_tuning_curve')#240
+exp3.add_session('15-50-55', 'c', 'AM', 'am_tuning_curve')#150
+exp3.add_session('15-55-30', None, 'longLaser', 'am_tuning_curve')#50
+exp3.add_session('16-06-41', 'd', 'laserBandwidth', 'bandwidth_am')#420
+exp3.add_session('16-55-04', 'e', 'noiseAmps', 'am_tuning_curve') #150 trials
+
+exp3.add_site(1300, tetrodes=[1,2,8])
+exp3.add_session('17-12-08', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('17-14-36', None, 'lasernoisebursts', 'bandwidth_am')
+exp3.add_session('17-17-16', 'f', 'tuningCurve', 'am_tuning_curve')#240
+exp3.add_session('17-22-49', 'g', 'AM', 'am_tuning_curve')#150
+exp3.add_session('17-29-33', None, 'longLaser', 'am_tuning_curve')#50
+exp3.add_session('17-33-28', 'h', 'laserBandwidth', 'bandwidth_am')#420
+exp3.add_session('17-59-16', 'i', 'noiseAmps', 'am_tuning_curve') #150 trials
+
+exp3.maxDepth = 1300
