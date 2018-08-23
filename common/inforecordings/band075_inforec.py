@@ -19,18 +19,18 @@ exp0.laserCalibration = {
 
 # exp0.add_site(1000, tetrodes=[2,4,6,8])
 # exp0.add_session('13-52-57', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1050, tetrodes=[1,2,4,6])
 # exp0.add_session('14-12-12', None, 'noisebursts', 'am_tuning_curve')
 # exp0.add_session('14-13-24', None, 'lasernoisebursts', 'bandwidth_am')
-# 
+#
 # exp0.add_site(1100, tetrodes=[1,2,4,6])
 # exp0.add_session('14-45-35', None, 'lasernoisebursts', 'bandwidth_am')
 # exp0.add_session('14-46-48', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1150, tetrodes=[1,2,4,6,8])
 # exp0.add_session('14-52-50', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1175, tetrodes=[1,2,3,4,6,8])
 # exp0.add_session('14-58-24', None, 'noisebursts', 'am_tuning_curve')
 # exp0.add_session('14-59-47', None, 'lasernoisebursts', 'bandwidth_am')
@@ -90,7 +90,7 @@ exp1.laserCalibration = {
 # exp1.add_site(1100, tetrodes=[2])
 # exp1.add_session('13-28-11', None, 'noisebursts', 'am_tuning_curve')
 # exp1.add_session('13-29-52', None, 'lasernoisebursts', 'bandwidth_am')
-# 
+#
 # exp1.add_site(1200, tetrodes=[2,4,6])
 # exp1.add_session('13-38-59', None, 'noisebursts', 'am_tuning_curve')
 
@@ -105,7 +105,7 @@ exp1.add_session('14-24-00', 'd', 'noiseAmps', 'am_tuning_curve')
 
 # exp1.add_site(1350, tetrodes=[1,2,3,4,6])
 # exp1.add_session('14-39-23', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1450, tetrodes=[1,2,3,4,5,6,8])
 # exp1.add_session('14-50-03', None, 'noisebursts', 'am_tuning_curve')
 # exp1.add_session('14-51-46', None, 'lasernoisebursts', 'bandwidth_am')
@@ -119,7 +119,9 @@ exp1.add_session('15-15-33', None, 'longLaser', 'am_tuning_curve')
 exp1.add_session('15-18-59', 'g', 'laserBandwidth', 'bandwidth_am')
 exp1.add_session('15-42-58', 'h', 'noiseAmps', 'am_tuning_curve')
 
-<<<<<<< HEAD
+exp1.maxDepth = 1500
+
+
 exp2 = celldatabase.Experiment(subject, '2018-08-21', 'right_AC', info=['lateralDiI','TT1ant','soundleft'])
 experiments.append(exp2)
 
@@ -210,6 +212,3 @@ exp3.add_session('17-33-28', 'h', 'laserBandwidth', 'bandwidth_am')#420
 exp3.add_session('17-59-16', 'i', 'noiseAmps', 'am_tuning_curve') #150 trials
 
 exp3.maxDepth = 1300
-=======
-exp1.maxDepth = 1500
->>>>>>> e9e439f50aac7d65569acc0c89de518f5d67270b
