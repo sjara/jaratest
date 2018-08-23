@@ -18,7 +18,8 @@ fontSizePanel = 16
 fontSizeTitles = 12
 
 colp = {}
-colp['excitatoryCell'] = cp.TangoPalette['Chameleon3']
+#colp['excitatoryCell'] = cp.TangoPalette['Chameleon3']
+colp['excitatoryCell'] = 'k'
 colp['SOMcell'] = cp.TangoPalette['ScarletRed1']
 colp['PVcell'] = cp.TangoPalette['SkyBlue2']
 

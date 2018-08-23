@@ -182,6 +182,31 @@ def calculate_tuning_curve_inputs(spikeTimeStamps, eventOnsetTimes, firstSort, s
                   'trialsEachCond':trialsEachCond}
     return tuningDict
 
+def inactivated_cells_baselines(spikeTimeStamps, eventOnsetTimes, laserEachTrial, baselineRange=[-0.05, 0.0]):
+    # Baseline firing rate with and without laser
+    bandSpikeTimesFromEventOnset, trialIndexForEachSpike, bandIndexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+                                                                                                        spikeTimeStamps, 
+                                                                                                        eventOnsetTimes,
+                                                                                                        baselineRange)
+    
+    numLaser = np.unique(laserEachTrial)
+    baselineDuration = baselineRange[1]-baselineRange[0]
+    baselineSpikeRates = np.zeros(len(numLaser))
+    baselineSEMs = np.zeros_like(baselineSpikeRates)
+    trialsEachLaser = behavioranalysis.find_trials_each_type(laserEachTrial, numLaser)
+    baselineSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset,
+                                                                         bandIndexLimitsEachTrial, baselineRange)
+    for las in range(len(numLaser)):
+        trialsThisLaser = trialsEachLaser[:,las]
+        baselineCounts = baselineSpikeCountMat[trialsThisLaser].flatten()
+        baselineMean = np.mean(baselineCounts)/baselineDuration
+        baselineSEM = stats.sem(baselineCounts)/baselineDuration
+        
+        baselineSpikeRates[las] = baselineMean
+        baselineSEMs[las] = baselineSEM
+    
+    return baselineSpikeRates, baselineSEMs
+
 def bandwidth_suppression_from_peak(tuningDict, subtractBaseline=False):
     spikeArray = tuningDict['responseArray']
     baselineSpikeRate = tuningDict['baselineSpikeRate']
@@ -189,6 +214,7 @@ def bandwidth_suppression_from_peak(tuningDict, subtractBaseline=False):
     
     suppressionIndex = np.zeros(spikeArray.shape[1])
     facilitationIndex = np.zeros_like(suppressionIndex)
+    peakInds = np.zeros_like(suppressionIndex)
     
     suppressionpVal = np.zeros_like(suppressionIndex)
     facilitationpVal = np.zeros_like(suppressionIndex)
@@ -203,6 +229,8 @@ def bandwidth_suppression_from_peak(tuningDict, subtractBaseline=False):
         trialsThisSeconsVal = tuningDict['trialsEachCond'][:,:,ind]
         peakInd = np.argmax(spikeArray[:,ind])
         
+        peakInds[ind] = peakInd
+        
         peakSpikeCounts = spikeCountMat[trialsThisSeconsVal[:,peakInd]].flatten()
         whiteNoiseSpikeCounts = spikeCountMat[trialsThisSeconsVal[:,-1]].flatten()
         pureToneSpikeCounts = spikeCountMat[trialsThisSeconsVal[:,0]].flatten()
@@ -214,7 +242,8 @@ def bandwidth_suppression_from_peak(tuningDict, subtractBaseline=False):
     suppressionDict = {'suppressionIndex':suppressionIndex,
                        'suppressionpVal':suppressionpVal,
                        'facilitationIndex':facilitationIndex,
-                       'facilitationpVal':facilitationpVal}
+                       'facilitationpVal':facilitationpVal,
+                       'peakInd':peakInds}
     
     return suppressionDict
 

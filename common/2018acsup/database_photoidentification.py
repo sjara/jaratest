@@ -15,6 +15,7 @@ TO DO:
 import os
 import pandas as pd
 import numpy as np
+import time
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
@@ -25,16 +26,118 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import database_generation_funcs as funcs
+import database_bandwidth_tuning_fit_funcs as fitfuncs
+reload(fitfuncs)
 
 R2CUTOFF = 0.1
 OCTAVESCUTOFF = 0.3
 
 
-def photoIDdatabase(db, baseStats = False, indices = True, filename = 'photoidentification_cells.h5'):
+def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices = True, filename = 'photoidentification_cells.h5'):
     if type(db) == str:
         dbPath = os.path.join(settings.DATABASE_PATH,db)
         db = celldatabase.load_hdf(dbPath)
-        
+    
+    if clusterRescue:
+        from sklearn import neighbors
+        cellsToRescue = db.query('isiViolations>0.02')
+        for indRow, dbRow in cellsToRescue.iterrows():
+            cell = ephyscore.Cell(dbRow)
+            print dbRow['subject'], dbRow['date'], dbRow['depth']
+            timestamps, samples, recordingNumber = cell.load_all_spikedata()
+            tetrode = dbRow['tetrode']
+            cluster = dbRow['cluster']
+
+            isiViolations = spikesorting.calculate_ISI_violations(timestamps)
+            print "isi violations: %{}".format(isiViolations*100)
+            print "nSpikes: {}".format(len(timestamps))
+            if len(timestamps)!=0:
+                featuresMat = spikesorting.calculate_features(samples, ['peakFirstHalf', 'valleyFirstHalf', 'energy'])
+            
+                #To sort by nearest-neighbor distance
+                print "Calculating NN distance"
+                tic = time.time()
+                #This will use all the processors
+                nbrs = neighbors.NearestNeighbors(n_neighbors=2, algorithm='auto', n_jobs=-1).fit(featuresMat)
+                distances, indices = nbrs.kneighbors(featuresMat)
+                toc = time.time()
+                elapsed = toc-tic
+                print "NN done, elapsed time: {}".format(elapsed/60.)
+                sortArray = np.argsort(distances[:,1]) #Take second neighbor distance because first is self (0)
+            
+                #To sort by mahalanobis distance to the cluster centroid
+                # centroid = featuresMat.mean(axis=0)
+            
+                spikesToRemove = 0
+                thisISIviolation = isiViolations #The isi violations including all the spikes
+                jumpBy = int(len(timestamps)*0.01) #Jump by 1% of spikes each time
+                if jumpBy == 0:
+                    jumpBy = 1 #remove at least 1 spike
+                while thisISIviolation>0.02:
+                    spikesToRemove+=jumpBy
+                    #We start to throw spikes at the end of the sort array away
+                    includeBool = sortArray < (len(sortArray)-spikesToRemove)
+                    # timestampsToInclude = sortedTimestamps[:-1*spikesToRemove]
+                    timestampsToInclude = timestamps[includeBool]
+                    thisISIviolation = spikesorting.calculate_ISI_violations(np.sort(timestampsToInclude))
+                    print "Removing {} spikes, ISI violations: {}".format(spikesToRemove, thisISIviolation)
+                print "Final included spikes: {} out of {}".format(len(timestampsToInclude), len(timestamps))
+            
+                #The inds of all the spikes that get to stay (have to have a low number in sort array)
+                #Sort array is in chronological order, so this include bool array is also chronological
+                # includeBool = sortArray < (len(sortArray)-spikesToRemove)
+            
+                try:
+                    for thisRecordingNum in np.unique(recordingNumber):
+                        #Which spikes in the total come from this recording
+                        indsThisRecording = np.flatnonzero(recordingNumber == thisRecordingNum)
+                        #What are the values in includeBool for those inds?
+                        includeThisRecording = includeBool[indsThisRecording]
+                
+                        #load the .clu file
+                        #Need the recording info
+                        subject = cell.dbRow['subject']
+                        date = cell.dbRow['date']
+                        ephysTimeThisRecording = cell.dbRow['ephysTime'][thisRecordingNum]
+                        clusterDir = "{}_kk".format("_".join([date, ephysTimeThisRecording]))
+                        clusterFullPath = os.path.join(settings.EPHYS_PATH, subject, clusterDir)
+                        clusterFile = os.path.join(clusterFullPath,'Tetrode{}.clu.1'.format(tetrode))
+                
+                        allClustersThisTetrode = np.fromfile(clusterFile,dtype='int32',sep=' ')[1:]
+                
+                        nClusters = len(np.unique(allClustersThisTetrode))
+                
+                        #The inds of the spikes from the cluster we are working on
+                        indsThisCluster = np.flatnonzero(allClustersThisTetrode == cluster)
+                
+                        #For each spike from this cluster we have a bool value to include it or not
+                        assert len(indsThisCluster) == len(includeThisRecording)
+                
+                        #For every spike in the cluster, we determine whether to keep or remove
+                        for indIter, indThisSpike in enumerate(indsThisCluster):
+                            includeThisSpike = includeThisRecording[indIter]
+                            if includeThisSpike == 0: #If we remove, just set the value in allClustersThisTetrode to 0
+                                allClustersThisTetrode[indThisSpike] = 0
+                
+                        #Then just re-save the allClustersThisTetrode as a modified clu file
+                        modifiedClusterFile = os.path.join(clusterFullPath,'Tetrode{}.clu.modified'.format(tetrode))
+                
+                        # FIXME: Make sure that adding cluster 0 does not mess up creating databases or
+                        #        other processes where we need to read the clu file
+                        fid = open(modifiedClusterFile,'w')
+                        #We added a new garbage cluster (0)
+                        fid.write('{0}\n'.format(nClusters+1))
+                        print "Writing .clu.modified file for session {}".format(ephysTimeThisRecording)
+                        for cn in allClustersThisTetrode:
+                            fid.write('{0}\n'.format(cn))
+                        fid.close()
+                    
+                        #Save the new ISI violation
+                        db.loc[indRow, 'modifiedISI'] = thisISIviolation
+                    
+                except:
+                    print "Could not save modified .clu files"
+    
     if baseStats:
         laserTestStatistic = np.empty(len(db))
         laserPVal = np.empty(len(db))
@@ -56,7 +159,7 @@ def photoIDdatabase(db, baseStats = False, indices = True, filename = 'photoiden
         bestBandSession = np.empty(len(db))
         
         for indRow, (dbIndex, dbRow) in enumerate(db.iterrows()):
-            cellObj = ephyscore.Cell(dbRow)
+            cellObj = ephyscore.Cell(dbRow, useModifiedClusters=True)
             print "Now processing", dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster']
     
             # --- Determine laser responsiveness of each cell (using laser pulse) ---
@@ -184,15 +287,16 @@ def photoIDdatabase(db, baseStats = False, indices = True, filename = 'photoiden
         db['octavesFromPrefFreq'] = octavesFromPrefFreq
         db['bestBandSession'] = bestBandSession
         
-    if indices:
-        bestCells = db.query("isiViolations<0.02 and spikeShapeQuality>2.5")
-        bestCells = bestCells.loc[bestCells['soundResponsePVal']<0.05]
+    if computeIndices:
+        bestCells = db.query("isiViolations<0.02 or modifiedISI<0.02")
+        bestCells = bestCells.loc[bestCells['spikeShapeQuality']>2]
+        bestCells = bestCells.query('soundResponsePVal<0.05 or onsetSoundResponsePVal<0.05 or sustainedSoundResponsePVal<0.05')
         bestCells = bestCells.loc[bestCells['tuningFitR2']>R2CUTOFF]
         bestCells = bestCells.loc[bestCells['octavesFromPrefFreq']<OCTAVESCUTOFF]
         
         for dbIndex, dbRow in bestCells.iterrows():
             
-            cell = ephyscore.Cell(dbRow) #, useModifiedClusters=True)
+            cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
             
             bandEphysData, bandBehavData = cell.load_by_index(int(dbRow['bestBandSession']))
             bandEventOnsetTimes = funcs.get_sound_onset_times(bandEphysData, 'bandwidth')
@@ -214,12 +318,49 @@ def photoIDdatabase(db, baseStats = False, indices = True, filename = 'photoiden
             db.at[dbIndex, 'onsetSuppressionpVal'] = onsetStats['suppressionpVal'][-1]
             db.at[dbIndex, 'onsetFacilitationIndex'] = onsetStats['facilitationIndex'][-1]
             db.at[dbIndex, 'onsetFacilitationpVal'] = onsetStats['facilitationpVal'][-1]
+            db.at[dbIndex, 'onsetPrefBandwidth'] = bandEachTrial[onsetStats['peakInd'][-1]]
             
             sustainedStats = funcs.bandwidth_suppression_from_peak(sustainedTuningDict)
             db.at[dbIndex, 'sustainedSuppressionIndex'] = sustainedStats['suppressionIndex'][-1]
             db.at[dbIndex, 'sustainedSuppressionpVal'] = sustainedStats['suppressionpVal'][-1]
             db.at[dbIndex, 'sustainedFacilitationIndex'] = sustainedStats['facilitationIndex'][-1]
             db.at[dbIndex, 'sustainedFacilitationpVal'] = sustainedStats['facilitationpVal'][-1]
+            db.at[dbIndex, 'sustainedPrefBandwidth'] = bandEachTrial[sustainedStats['peakInd'][-1]]
+            
+            #only interested in high amp responses
+            sustainedResponse = sustainedTuningDict['responseArray'][:,-1]
+            sustainedError = sustainedTuningDict['errorArray'][:,-1]
+            baselineFiringRate = sustainedTuningDict['baselineSpikeRate']
+            baselineError = sustainedTuningDict['baselineSpikeError']
+            
+            #replace pure tone with baseline
+            sustainedResponse[0] = baselineFiringRate
+            sustainedError[0] = baselineError
+            bandsForFit = np.unique(bandEachTrial)
+            bandsForFit[-1] = 6
+            mFixed = 1
+            
+            fitParams, R2 = fitfuncs.diff_of_gauss_fit(bandsForFit, sustainedResponse, mFixed=mFixed)
+            
+            print fitParams
+            
+            #fit params
+            db.at[dbIndex, 'R0'] = fitParams[0]
+            db.at[dbIndex, 'RD'] = fitParams[3]
+            db.at[dbIndex, 'RS'] = fitParams[4]
+            db.at[dbIndex, 'm'] = mFixed
+            db.at[dbIndex, 'sigmaD'] = fitParams[1]
+            db.at[dbIndex, 'sigmaS'] = fitParams[2]
+            db.at[dbIndex, 'bandwidthTuningR2'] = R2
+            
+            testBands = np.linspace(bandsForFit[0],bandsForFit[-1],50)
+            allFitParams = [mFixed]
+            allFitParams.extend(fitParams)
+            suppInd, prefBW = fitfuncs.extract_stats_from_fit(allFitParams, testBands)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndex'] = suppInd
+            db.at[dbIndex, 'fitSustainedPrefBandwidth'] = prefBW
+            
             
     dbFilename = os.path.join(settings.DATABASE_PATH,filename)
     celldatabase.save_hdf(db, dbFilename)
