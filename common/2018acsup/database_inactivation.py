@@ -24,7 +24,9 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import database_generation_funcs as funcs
+import database_bandwidth_tuning_fit_funcs as fitfuncs
 reload(funcs)
+reload(fitfuncs)
 
 import pdb
 
@@ -33,7 +35,7 @@ OCTAVESCUTOFF = 0.3
 
 
 
-def inactivation_database(db, baseStats = False, indices = True, filename = 'inactivation_cells.h5'):
+def inactivation_database(db, baseStats = False, computeIndices = True, filename = 'inactivation_cells.h5'):
     if type(db) == str:
         dbPath = os.path.join(settings.DATABASE_PATH,db)
         db = celldatabase.load_hdf(dbPath)
@@ -156,9 +158,10 @@ def inactivation_database(db, baseStats = False, indices = True, filename = 'ina
         db['octavesFromPrefFreq'] = octavesFromPrefFreq
         db['bestBandSession'] = bestBandSession
         
-    if indices:
-        bestCells = db.query("isiViolations<0.02 and spikeShapeQuality>2.5")
-        bestCells = bestCells.loc[bestCells['soundResponsePVal']<0.05]
+    if computeIndices:
+        bestCells = db.query("isiViolations<0.02")# or modifiedISI<0.02")
+        bestCells = bestCells.loc[bestCells['spikeShapeQuality']>2]
+        bestCells = bestCells.query('soundResponsePVal<0.05 or onsetSoundResponsePVal<0.05 or sustainedSoundResponsePVal<0.05')
         bestCells = bestCells.loc[bestCells['tuningFitR2']>R2CUTOFF]
         bestCells = bestCells.loc[bestCells['octavesFromPrefFreq']<OCTAVESCUTOFF]
         
@@ -202,6 +205,69 @@ def inactivation_database(db, baseStats = False, indices = True, filename = 'ina
             db.at[dbIndex, 'sustainedSuppressionpValNoLaser'] = sustainedStats['suppressionpVal'][0]
             db.at[dbIndex, 'sustainedFacilitationIndexNoLaser'] = sustainedStats['facilitationIndex'][0]
             db.at[dbIndex, 'sustainedFacilitationpValNoLaser'] = sustainedStats['facilitationpVal'][0]
+            
+            #find baselines with and without laser
+            baselineRange = [-0.05, 0.0]
+            baselineRates, baselineSEMs = funcs.inactivated_cells_baselines(bandSpikeTimestamps, bandEventOnsetTimes, secondSort, baselineRange)
+            db.at[dbIndex, 'baselineFRnoLaser'] = baselineRates[0]
+            db.at[dbIndex, 'baselineFRLaser'] = baselineRates[1]
+            db.at[dbIndex, 'baselineFRnoLaserSEM'] = baselineSEMs[0]
+            db.at[dbIndex, 'baselineFRLaserSEM'] = baselineSEMs[1]
+            
+            #no laser fit
+            sustainedResponseNoLaser = sustainedTuningDict['responseArray'][:,0]
+            
+            #replace pure tone with baseline
+            sustainedResponseNoLaser[0] = baselineRates[0]
+            bandsForFit = np.unique(bandEachTrial)
+            bandsForFit[-1] = 6
+            mFixed = 1
+            
+            fitParams, R2 = fitfuncs.diff_of_gauss_fit(bandsForFit, sustainedResponseNoLaser, mFixed=mFixed)
+            print fitParams
+            
+            #fit params
+            db.at[dbIndex, 'R0noLaser'] = fitParams[0]
+            db.at[dbIndex, 'RDnoLaser'] = fitParams[3]
+            db.at[dbIndex, 'RSnoLaser'] = fitParams[4]
+            db.at[dbIndex, 'mnoLaser'] = mFixed
+            db.at[dbIndex, 'sigmaDnoLaser'] = fitParams[1]
+            db.at[dbIndex, 'sigmaSnoLaser'] = fitParams[2]
+            db.at[dbIndex, 'bandwidthTuningR2noLaser'] = R2
+            
+            testBands = np.linspace(bandsForFit[0],bandsForFit[-1],50)
+            allFitParams = [mFixed]
+            allFitParams.extend(fitParams)
+            suppInd, prefBW = fitfuncs.extract_stats_from_fit(allFitParams, testBands)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndexNoLaser'] = suppInd
+            db.at[dbIndex, 'fitSustainedPrefBandwidthNoLaser'] = prefBW
+            
+            #laser fit
+            sustainedResponseLaser = sustainedTuningDict['responseArray'][:,1]
+            
+            #replace pure tone with baseline
+            sustainedResponseLaser[0] = baselineRates[1]
+            
+            fitParams, R2 = fitfuncs.diff_of_gauss_fit(bandsForFit, sustainedResponseLaser, mFixed=mFixed)
+            print fitParams
+            
+            #fit params
+            db.at[dbIndex, 'R0laser'] = fitParams[0]
+            db.at[dbIndex, 'RDlaser'] = fitParams[3]
+            db.at[dbIndex, 'RSlaser'] = fitParams[4]
+            db.at[dbIndex, 'mlaser'] = mFixed
+            db.at[dbIndex, 'sigmaDlaser'] = fitParams[1]
+            db.at[dbIndex, 'sigmaSlaser'] = fitParams[2]
+            db.at[dbIndex, 'bandwidthTuningR2laser'] = R2
+            
+            testBands = np.linspace(bandsForFit[0],bandsForFit[-1],50)
+            allFitParams = [mFixed]
+            allFitParams.extend(fitParams)
+            suppInd, prefBW = fitfuncs.extract_stats_from_fit(allFitParams, testBands)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndexLaser'] = suppInd
+            db.at[dbIndex, 'fitSustainedPrefBandwidthLaser'] = prefBW
             
     dbFilename = os.path.join(settings.DATABASE_PATH,filename)
     celldatabase.save_hdf(db, dbFilename)

@@ -1,5 +1,5 @@
 '''
-This module contains generic database generation funcitons that will eventually be implemented in jaratoolbox.
+This module contains generic database generation funcitons that may eventually be implemented in jaratoolbox.
 '''
 
 import os

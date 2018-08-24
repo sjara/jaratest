@@ -21,29 +21,47 @@ from jaratoolbox import ephyscore
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
+import database_bandwidth_tuning_fit_funcs as fitfuncs
 import figparams
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
-dbase = pd.read_hdf(dbPath, 'database',index_col=0)
+dbPath = os.path.join(settings.DATABASE_PATH, 'photoidentification_cells.h5')
+dbase = celldatabase.load_hdf(dbPath)
 
-allACFigName = 'figure_all_AC_suppression'
-photoFigName = 'figure_PV_SOM_suppression'
+figName = 'figure_characterisation_of_responses_by_cell_type'
 
-allACDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', allACFigName)
-photoDataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', photoFigName)
+#dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', allACFigName)
+dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
 
 # -- Example cells -- #
-cellList = [{'subject' : 'band031',
+cellList = [{'subject' : 'band016',
+            'date' : '2016-12-11',
+            'depth' : 950,
+            'tetrode' : 6,
+            'cluster' : 6}, #example AC cell
+            
+            {'subject' : 'band029',
+            'date' : '2017-05-25',
+            'depth' : 1240,
+            'tetrode' : 2,
+            'cluster' : 2}, #another AC cell
+            
+            {'subject' : 'band031',
             'date' : '2017-06-29',
-            'depth' : 1280,
+            'depth' : 1140,
             'tetrode' : 1,
-            'cluster' : 3}, #example AC cell
+            'cluster' : 3}, #another AC cell
             
             {'subject' : 'band044',
             'date' : '2018-01-16',
             'depth' : 975,
             'tetrode' : 7,
             'cluster' : 4}, #another AC cell
+            
+            {'subject' : 'band060',
+            'date' : '2018-04-02',
+            'depth' : 1275,
+            'tetrode' : 4,
+            'cluster' : 2}, #another AC cell
             
             {'subject' : 'band026',
             'date' : '2017-04-27',
@@ -52,30 +70,48 @@ cellList = [{'subject' : 'band031',
             'cluster' : 2}, #PV cell
             
             {'subject' : 'band026',
-            'date' : '2017-04-27',
-            'depth' : 1410,
+            'date' : '2017-04-26',
+            'depth' : 1470,
             'tetrode' : 4,
-            'cluster' : 6}, #PV cell
+            'cluster' : 5}, #PV cell
             
-            {'subject' : 'band028',
-            'date' : '2017-05-21',
-            'depth' : 1450,
-            'tetrode' : 2,
+            {'subject' : 'band032',
+            'date' : '2017-07-21',
+            'depth' : 1200,
+            'tetrode' : 6,
+            'cluster' : 2}, #PV cell
+            
+            {'subject' : 'band033',
+            'date' : '2017-07-27',
+            'depth' : 1700,
+            'tetrode' : 4,
+            'cluster' : 5}, #PV cell
+            
+            {'subject' : 'band015',
+            'date' : '2016-11-12',
+            'depth' : 1000,
+            'tetrode' : 8,
             'cluster' : 4}, #SOM cell
             
-            {'subject' : 'band028',
-            'date' : '2017-05-21',
-            'depth' : 1625,
-            'tetrode' : 6,
-            'cluster' : 6}, #SOM cell
+            {'subject' : 'band029',
+            'date' : '2017-05-22',
+            'depth' : 1320,
+            'tetrode' : 4,
+            'cluster' : 2}, #SOM cell
             
             {'subject' : 'band031',
             'date' : '2017-06-29',
             'depth' : 1280,
             'tetrode' : 1,
+            'cluster' : 4}, #SOM cell
+            
+            {'subject' : 'band060',
+            'date' : '2018-04-04',
+            'depth' : 1225,
+            'tetrode' : 3,
             'cluster' : 4}] #SOM cell
 
-cellTypes = ['AC', 'AC', 'PV', 'PV', 'SOM', 'SOM', 'SOM']
+cellTypes = ['Exc', 'Exc', 'Exc', 'Exc', 'Exc', 'PV', 'PV', 'PV', 'PV', 'SOM', 'SOM', 'SOM', 'SOM']
 
 # -- select which cells to generate --
 args = sys.argv[1:]
@@ -89,10 +125,10 @@ print cellsToGenerate
 for indCell in cellsToGenerate:
     # -- find the cell we want based on dictionary --
     cellInd, dbRow = celldatabase.find_cell(dbase, **cellList[indCell])
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
     
     # --- loads spike and event data for bandwidth ephys sessions ---
-    bandEphysData, bandBData = cell.load_by_index(int(dbRow['bestBandIndexHigh'])) #make them ints in the first place
+    bandEphysData, bandBData = cell.load_by_index(int(dbRow['bestBandSession'])) #make them ints in the first place
     bandEventOnsetTimes = bandEphysData['events']['soundDetectorOn']
     if len(bandEventOnsetTimes)==0: #some cells recorded before sound detector installed
         bandEventOnsetTimes = bandEphysData['events']['stimOn'] + 0.0093 #correction for bandwidth trials, determined by comparing sound detector onset to stim event onset
@@ -106,7 +142,10 @@ for indCell in cellsToGenerate:
     secondSort = bandBData['currentAmp']
     numSec = np.unique(secondSort)
         
-    bandTimeRange = [-0.5, 1.5]
+    rasterTimeRange = [-0.5, 1.5]
+    baselineRange = [-1.0, -0.2]
+    fullTimeRange = [baselineRange[0], rasterTimeRange[1]]
+    
     bandTrialsEachCond = behavioranalysis.find_trials_each_combination(bandEachTrial, 
                                                                            numBands, 
                                                                            secondSort, 
@@ -114,7 +153,7 @@ for indCell in cellsToGenerate:
     bandSpikeTimesFromEventOnset, trialIndexForEachSpike, bandIndexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
                                                                                                         bandSpikeTimestamps, 
                                                                                                         bandEventOnsetTimes,
-                                                                                                        bandTimeRange)
+                                                                                                        fullTimeRange)
     
     
     
@@ -130,11 +169,11 @@ for indCell in cellsToGenerate:
     sustainedSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, sustainedTimeRange)
     
     onsetResponseArray = np.zeros(len(numBands))
-    onsetSTD = np.zeros_like(onsetResponseArray)
+    onsetSEM = np.zeros_like(onsetResponseArray)
     sustainedResponseArray = np.zeros_like(onsetResponseArray)
-    sustainedSTD = np.zeros_like(onsetResponseArray)
+    sustainedSEM = np.zeros_like(onsetResponseArray)
     
-    # Average firing rate for high amplitude trials and stdev
+    # Average firing rate for high amplitude trials and SEM
     trialsHighAmp = bandTrialsEachCond[:,:,-1] #only using high amplitude trials (-1 in list of amps)
     for band in range(len(numBands)):
         trialsThisBand = trialsHighAmp[:,band]
@@ -148,34 +187,43 @@ for indCell in cellsToGenerate:
             onsetResponseArray[band] = np.mean(thisBandOnsetCounts)/onsetDuration
             sustainedResponseArray[band] = np.mean(thisBandSustainedCounts)/sustainedDuration
             
-            onsetSTD[band] = np.std(thisBandOnsetCounts)/onsetDuration
-            sustainedSTD[band] = np.std(thisBandSustainedCounts)/sustainedDuration # Error is standard error of the mean
+            onsetSEM[band] = stats.sem(thisBandOnsetCounts)/onsetDuration
+            sustainedSEM[band] = stats.sem(thisBandSustainedCounts)/sustainedDuration # Error is standard error of the mean
 
-    # Baseline firing rate and stdev
-    baselineRange = [-1.1, -0.1]
+    # Baseline firing rate and SEM
     baselineDuration = baselineRange[1]-baselineRange[0]
     baselineSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset,
                                                                      bandIndexLimitsEachTrial, baselineRange)
     baselineMean = baselineSpikeCountMat.mean()/baselineDuration
-    baselineSTD = np.std(baselineSpikeCountMat)/baselineDuration
+    baselineSEM = stats.sem(baselineSpikeCountMat)/baselineDuration
+    
+    # Replace 0 bandwidth condition with baseline
+    onsetResponseArray[0] = baselineMean
+    sustainedResponseArray[0] = baselineMean
+    
+    onsetSEM[0] = baselineSEM
+    sustainedSEM[0] = baselineSEM
+    
+    numBands[-1] = 6 #white noise is 6 octaves
+    
+    
+    # --- produce difference of gaussian curve for sustained response of each cell ---
+    testBands = np.linspace(numBands[0],numBands[-1],50)
+    testResps = fitfuncs.diff_gauss_form(testBands, dbRow['m'], dbRow['R0'], dbRow['sigmaD'], dbRow['sigmaS'], dbRow['RD'], dbRow['RS'])
     
     ### Save bandwidth data ###    
     outputFile = 'example_{}_bandwidth_tuning_{}_{}_{}um_T{}_c{}.npz'.format(cellTypes[indCell],dbRow['subject'], dbRow['date'],
                                                                          int(dbRow['depth']),dbRow['tetrode'],dbRow['cluster'])
-        
-    dirDict = {'AC':allACDataDir,
-               'PV':photoDataDir,
-               'SOM':photoDataDir}
 
-    outputFullPath = os.path.join(dirDict[cellTypes[indCell]],outputFile)
+    outputFullPath = os.path.join(dataDir,outputFile)
     np.savez(outputFullPath,
-             onsetResponseArray=onsetResponseArray, onsetSTD=onsetSTD,
-             sustainedResponseArray=sustainedResponseArray, sustainedSTD=sustainedSTD,
+             onsetResponseArray=onsetResponseArray, onsetSEM=onsetSEM,
+             sustainedResponseArray=sustainedResponseArray, sustainedSEM=sustainedSEM,
              possibleBands=numBands,
              spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset,
-             indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,
-             baselineRange=baselineRange, baselineMean=baselineMean, baselineSTD=baselineSTD,
+             indexLimitsEachTrial=bandIndexLimitsEachTrial,
              trialsEachCond=trialsHighAmp,
-             onsetTimeRange=onsetTimeRange, sustainedTimeRange=sustainedTimeRange)
+             onsetTimeRange=onsetTimeRange, sustainedTimeRange=sustainedTimeRange, rasterTimeRange=rasterTimeRange,
+             fitBands = testBands, fitResponse = testResps)
     print outputFile + " saved"
 
