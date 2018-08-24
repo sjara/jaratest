@@ -212,3 +212,59 @@ exp3.add_session('17-33-28', 'h', 'laserBandwidth', 'bandwidth_am')#420
 exp3.add_session('17-59-16', 'i', 'noiseAmps', 'am_tuning_curve') #150 trials
 
 exp3.maxDepth = 1300
+
+exp4 = celldatabase.Experiment(subject, '2018-08-23', 'left_AC', info=['middleDiI','TT8ant','soundright'])
+experiments.append(exp4)
+
+exp4.laserCalibration = {
+    '1.0':3.20,
+    '2.0':3.65,
+    '3.0':4.15,
+    '4.0':4.65,
+    '5.0':5.15,
+    '7.5':6.4,
+    '10.0':7.6
+    }
+
+# exp4.add_site(900, tetrodes=[2,4,6,8])
+# exp4.add_session('13-34-49', None, 'noisebursts', 'am_tuning_curve')
+# exp4.add_session('13-36-26', None, 'lasernoisebursts', 'bandwidth_am')
+# exp4.add_session('13-39-03', 'a', 'tuningCurve', 'am_tuning_curve')
+# exp4.add_session('13-43-48', 'b', 'AM', 'am_tuning_curve')
+# exp4.add_session('13-48-15', None, 'longLaser', 'am_tuning_curve')
+# # no good freq tuning
+
+exp4.add_site(1000, tetrodes=[2,4,6,8])
+exp4.add_session('13-58-51', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('14-00-24', None, 'lasernoisebursts', 'bandwidth_am')
+exp4.add_session('14-02-56', 'c', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('14-07-29', 'd', 'AM', 'am_tuning_curve')
+exp4.add_session('14-11-54', None, 'longLaser', 'am_tuning_curve')
+exp4.add_session('14-15-05', 'e', 'laserBandwidth', 'bandwidth_am')
+exp4.add_session('14-39-05', 'f', 'noiseAmps', 'am_tuning_curve')
+
+exp4.add_site(1100, tetrodes=[2,4,6,7,8])
+exp4.add_session('14-55-02', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('14-56-51', None, 'lasernoisebursts', 'bandwidth_am')
+exp4.add_session('14-59-38', 'g', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('15-03-52', 'h', 'AM', 'am_tuning_curve')
+exp4.add_session('15-08-19', None, 'longLaser', 'am_tuning_curve')
+exp4.add_session('15-14-01', 'i', 'laserBandwidth', 'bandwidth_am')
+exp4.add_session('15-40-19', 'j', 'noiseAmps', 'am_tuning_curve')
+
+exp4.add_site(1200, tetrodes=[1,2,4,6,7,8])
+exp4.add_session('15-54-21', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('15-56-02', None, 'lasernoisebursts', 'bandwidth_am')
+exp4.add_session('15-57-44', 'k', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('16-02-23', 'l', 'AM', 'am_tuning_curve')
+exp4.add_session('16-06-36', None, 'longLaser', 'am_tuning_curve')
+exp4.add_session('16-11-04', 'm', 'laserBandwidth', 'bandwidth_am')
+exp4.add_session('16-35-04', 'n', 'noiseAmps', 'am_tuning_curve')
+
+# exp4.add_site(1300, tetrodes=[1,2,3,4,6,7,8]) #Matt is now recording
+# exp4.add_session('16-35-04', None, 'noisebursts', 'am_tuning_curve')#This trial is recorded in the ephys with the noiseAmps because SOMEBODY doesnt start a new session everytime they finish an ephys recording
+# exp4.add_session('17-15-39', None, 'noisebursts', 'am_tuning_curve')#This is the actual nosieburst for this site
+# #Both on- and off-set response to sound
+# exp4.add_session('17-18-13', None, 'lasernoisebursts', 'bandwidth_am') #No notable laser responses on plausible cells. Is that possible?
+#
+# exp4.maxDepth = 1300
