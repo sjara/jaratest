@@ -40,7 +40,7 @@ outputDir = '/tmp/'
 
 figFilename = 'figure_recording_tracks_n_sound_responses'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [8,8]
+figSize = [5,5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -56,7 +56,7 @@ fig.set_facecolor('w')
 
 #gs = gridspec.GridSpec(2, 3)
 gs = gridspec.GridSpec(2, 2)
-gs.update(left=0.1, right=0.9, top=0.9, bottom=0.1, wspace=0.4, hspace=0.3)
+gs.update(left=0.13, right=0.95, top=0.95, bottom=0.1, wspace=0.5, hspace=0.3)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[1,0], hspace=0.15)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[1,1], hspace=0.15)
@@ -206,7 +206,7 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.legend(condLabels[0:2], loc='upper left', fontsize=10, handlelength=0.2,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 

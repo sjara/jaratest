@@ -26,10 +26,11 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
 labelPosX = [0.015, 0.45]   # Horiz position for panel labels
-labelPosY = [0.95, 0.35]    # Vert position for panel labels
+labelPosY = [0.95, 0.5]    # Vert position for panel labels
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 
-              'more_right':figparams.colp['MoreRewardR']} 
+              'more_right':figparams.colp['MoreRewardR'],
+              'same_reward': 'gray'} 
 
 '''
 animalNumbers = {'adap021':'Mouse 1',
@@ -45,15 +46,15 @@ fig.set_facecolor('w')
 
 panelsToPlot=[0, 1]
 
-gs = gridspec.GridSpec(3, 6)
-gs.update(left=0.08, right=0.98, top=0.95, bottom=0.05, wspace=0.3, hspace=0.8)
-ax0 = plt.subplot(gs[0:2, 0:3])
-ax1 = plt.subplot(gs[0:2, 3:])
-ax2 = plt.subplot(gs[2, 0:2])
+gs = gridspec.GridSpec(2, 6)
+gs.update(left=0.08, right=0.98, top=0.95, bottom=0.05, wspace=0.3, hspace=0.4)
+ax0 = plt.subplot(gs[0, 0:3])
+ax1 = plt.subplot(gs[0, 3:])
+ax2 = plt.subplot(gs[1, 0:2])
 ax2.hold(True)
-ax3 = plt.subplot(gs[2, 2:4])
+ax3 = plt.subplot(gs[1, 2:4])
 ax3.hold(True)
-ax4 = plt.subplot(gs[2, 4:6])
+ax4 = plt.subplot(gs[1, 4:6])
 ax4.hold(True)
 
 # -- Panel A: task schematic -- #
@@ -109,7 +110,7 @@ if 0 in panelsToPlot:
     extraplots.set_ticks_fontsize(ax1,fontSizeTicks)
     ax1.set_yticks([0, 50, 100])
 
-    leg = ax1.legend([plotHandles[1],plotHandles[0]], ['Left more','Right more'], loc='upper left', frameon=False,
+    leg = ax1.legend(plotHandles, ['Same reward','Left more','Right more'], loc='upper left', frameon=False,
                      labelspacing=0.1, handlelength=1.5, handletextpad=0.2, borderaxespad=0.1, fontsize=12)
     
 

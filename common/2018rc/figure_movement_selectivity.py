@@ -45,7 +45,7 @@ outputDir = '/tmp/'
 
 figFilename = 'figure_movement_selectivity'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [10,3.5]
+figSize = [7,3.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -60,7 +60,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
+gs.update(left=0.12, right=0.95, top=0.95, bottom=0.13, wspace=0.7, hspace=0.1)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.3)
 gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.2)
@@ -74,7 +74,7 @@ lwPsth = 2
 downsampleFactorPsth = 1
 
 
-# -- Panel A: movement selective cell in AStr -- #
+# -- Panel A: movement selective cell in AC -- #
 ax1 = plt.subplot(gs00[0:2, :])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
@@ -84,6 +84,8 @@ if PANELS[0]:
     intData =np.load(intDataFullPath)
 
     trialsEachCond = intData['trialsEachCond'][:,0:2]
+    numCorrectTrials = trialsEachCond.sum()
+    print('Number of correct trials: {}'.format(numCorrectTrials))
     colorEachCond = intData['colorEachCond'][0:2]
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
@@ -152,10 +154,9 @@ if PANELS[0]:
     plt.ylabel('FR\ncorrect\n(spk/s)',fontsize=fontSizeLabels,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
-           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
-
     trialsEachCond = intData['trialsEachCond'][:,2:]
+    numErrorTrials = trialsEachCond.sum()
+    print('Number of correct trials: {}'.format(numErrorTrials))
     colorEachCond = intData['colorEachCond'][2:]
     ax = plt.subplot(gs00[3, :])
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec,
@@ -172,9 +173,12 @@ if PANELS[0]:
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('FR\nerror\n(spk/s)',fontsize=fontSizeLabels,labelpad=labelDis)
     
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+
     extraplots.boxoff(plt.gca())
 
-# -- Panel B: movement selective cell in AC -- #
+# -- Panel B: movement selective cell in AStr -- #
 ax3 = plt.subplot(gs01[0:2, :])
 ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
@@ -183,6 +187,8 @@ if PANELS[1]:
     intData =np.load(intDataFullPath)
 
     trialsEachCond = intData['trialsEachCond'][:,:2]
+    numCorrectTrials = trialsEachCond.sum()
+    print('Number of correct trials: {}'.format(numCorrectTrials))
     colorEachCond = intData['colorEachCond'][:2]
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
@@ -248,6 +254,8 @@ if PANELS[1]:
     extraplots.boxoff(plt.gca())
     
     trialsEachCond = intData['trialsEachCond'][:,2:]
+    numErrorTrials = trialsEachCond.sum()
+    print('Number of correct trials: {}'.format(numErrorTrials))
     colorEachCond = intData['colorEachCond'][2:]
     ax = plt.subplot(gs01[3, :])
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
@@ -294,7 +302,7 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
-    plt.text(0.5,yPosText,'AC\nn={}\n{:.2f}% selective'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'AC\nn={}'.format(len(allModIAC)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     #plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
@@ -327,7 +335,7 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
-    plt.text(0.5,yPosText,'AStr\nn={}\n{:.2f}% selective'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'AStr\nn={}'.format(len(allModIAStr)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
