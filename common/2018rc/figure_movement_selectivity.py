@@ -346,11 +346,14 @@ if PANELS[2]:
     print 'Total number of good cells is:', len(allModIAStr), '\nNumber of cells movement selective is:', len(sigModIAStr)
     (Z, pVal) = stats.wilcoxon(allModIAStr)
     print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
-    (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
-    print 'Using wilcoxon rank sum test to compare movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+    
+    (Z, pValBtAreas) = stats.ranksums(np.abs(allModIAC), np.abs(allModIAStr))
+    print 'Using wilcoxon rank sum test to compare ABSOLUTE movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
-
+    #(Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
+    #print 'Using wilcoxon rank sum test to compare movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+   
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

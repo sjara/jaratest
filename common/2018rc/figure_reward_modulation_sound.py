@@ -277,10 +277,13 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(sigModIAStr)
     print 'For significantly modulated cells in AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIAC), pVal)
     
-    (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
-    print 'Using wilcoxon rank sum test to compare modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+    (Z, pValBtAreas) = stats.ranksums(np.abs(allModIAC), np.abs(allModIAStr))
+    print 'Using wilcoxon rank sum test to compare ABSOLUTE modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
+    (Z, pValBtAreasSig) = stats.ranksums(np.abs(sigModIAC), np.abs(sigModIAStr))
+    print 'Using wilcoxon rank sum test to compare ABSOLUTE modulation indices between significantly modulated cells in AC and AStr, p value is {:.3f}'.format(pValBtAreasSig)
+    
 
 # -- Cells that are not modulated by reward -- #
 ax8 = plt.subplot(gs03[0:2, :])
