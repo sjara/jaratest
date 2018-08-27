@@ -279,11 +279,16 @@ if PANELS[2]:
     
     (Z, pValBtAreas) = stats.ranksums(np.abs(allModIAC), np.abs(allModIAStr))
     print 'Using wilcoxon rank sum test to compare ABSOLUTE modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+    print 'Median absolute mod index for AC: {}'.format(np.median(np.abs(allModIAC)))
+    print 'Median absolute mod index for AStr: {}'.format(np.median(np.abs(allModIAStr)))
+
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
     (Z, pValBtAreasSig) = stats.ranksums(np.abs(sigModIAC), np.abs(sigModIAStr))
     print 'Using wilcoxon rank sum test to compare ABSOLUTE modulation indices between significantly modulated cells in AC and AStr, p value is {:.3f}'.format(pValBtAreasSig)
-    
+    print 'Median absolute mod index for modulated cells in AC: {}'.format(np.median(np.abs(sigModIAC)))
+    print 'Median absolute mod index for modulated cells in AStr: {}'.format(np.median(np.abs(sigModIAStr)))
+
 
 # -- Cells that are not modulated by reward -- #
 ax8 = plt.subplot(gs03[0:2, :])

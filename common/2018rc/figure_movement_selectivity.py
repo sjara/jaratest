@@ -353,7 +353,9 @@ if PANELS[2]:
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
     #(Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
     #print 'Using wilcoxon rank sum test to compare movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
-   
+    print 'Median absolute mod index for AC: {}'.format(np.median(np.abs(allModIAC)))
+    print 'Median absolute mod index for AStr: {}'.format(np.median(np.abs(allModIAStr)))
+
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
