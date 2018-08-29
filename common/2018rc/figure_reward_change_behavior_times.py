@@ -27,6 +27,7 @@ fontSizePanel = figparams.fontSizePanel
 
 labelPosX = [0.015, 0.3, 0.63]   # Horiz position for panel labels
 labelPosY = [0.95, 0.48]    # Vert position for panel labels
+labelDis = 0.2
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 
               'more_right':figparams.colp['MoreRewardR']} 
@@ -96,9 +97,11 @@ ax0.set_xlim([0.8, 2.2])
 ax0.set_xticks([1,2])
 ax0.set_xticklabels([])
 ax0.set_title('Leftward trials', fontsize=fontSizeLabels+1)
+ax0.set_yticks([0, 0.20])
 extraplots.boxoff(ax0)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('reaction time leftward p={}'.format(pVal))
+
 
 ax1.annotate('D', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
                  fontsize=fontSizePanel, fontweight='bold')
@@ -117,6 +120,7 @@ for (animal,shape) in animalShapes.items():
         marker='o', color='k')
 ax1.set_xlim([0.8, 2.2])
 ax1.set_xticks([1,2])
+ax1.set_yticks([0, 0.20])
 ax1.set_xticklabels([])
 ax1.set_title('Rightward trials', fontsize=fontSizeLabels+1)
 extraplots.boxoff(ax1)
@@ -145,9 +149,11 @@ for (animal,shape) in animalShapes.items():
     allMiceRightMoreRemoved.append(proportionSideInBeforeModWindow)
     ax2.plot([1,2], [meanResponseTimeLeftwardLeftMore,meanResponseTimeLeftwardRightMore], 
         marker='o', color='k')
-ax2.set_ylabel('Response time (s)', fontsize=fontSizeLabels)
+ax2.set_ylabel('Movement time (s)', fontsize=fontSizeLabels)
 ax2.set_xticks([1,2])
+ax2.set_yticks([0.3, 0.7])
 ax2.set_xticklabels(['More ipsi', 'More contra'], fontsize=fontSizeLabels)
+ax2.tick_params(axis='x', which='major', pad=10)
 #ax2.set_xlabel('Leftward trials', fontsize=fontSizeLabels)
 ax2.set_xlim([0.8, 2.2])
 extraplots.boxoff(ax2)
@@ -180,7 +186,9 @@ for (animal,shape) in animalShapes.items():
         marker='o', color='k')
 ax3.set_xticks([1,2])
 ax3.set_xticklabels(['More ipsi', 'More contra'], fontsize=fontSizeLabels)
+ax3.tick_params(axis='x', which='major', pad=10)
 #ax3.set_xlabel('Rightward trials', fontsize=fontSizeLabels)
+ax3.set_yticks([0.30, 0.70])
 ax3.set_xlim([0.8, 2.2])
 extraplots.boxoff(ax3)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
