@@ -16,7 +16,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'figure_reward_change_behavior_times' # Do not include extension
+figFilename = 'plots_reward_change_behavior_times' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 figSize = [7, 5]
 
@@ -24,8 +24,8 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.015, 0.3, 0.63]   # Horiz position for panel labels
-labelPosY = [0.95, 0.46]    # Vert position for panel labels
+labelPosX = [0.015, 0.33, 0.66]   # Horiz position for panel labels
+labelPosY = [0.95, 0.47]    # Vert position for panel labels
 labelDis = 0.2
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 

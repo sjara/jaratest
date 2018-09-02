@@ -38,17 +38,17 @@ PANELS = [1,1,1] # Which panels to plot
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 
-figFilename = 'figure_recording_tracks_n_sound_responses'
+figFilename = 'plots_recording_tracks_n_sound_responses'
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [5,5]
+figSize = [7,7]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
 
-labelPosX = [0.015, 0.5]   # Horiz position for panel labels
-labelPosY = [0.95, 0.5]    # Vert position for panel labels
+labelPosX = [0.015, 0.54]   # Horiz position for panel labels
+labelPosY = [0.95, 0.49]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
@@ -56,7 +56,7 @@ fig.set_facecolor('w')
 
 #gs = gridspec.GridSpec(2, 3)
 gs = gridspec.GridSpec(2, 2)
-gs.update(left=0.13, right=0.95, top=0.95, bottom=0.1, wspace=0.5, hspace=0.3)
+gs.update(left=0.1, right=0.98, top=0.95, bottom=0.08, wspace=0.5, hspace=0.05)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[1,0], hspace=0.15)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[1,1], hspace=0.15)
@@ -114,10 +114,11 @@ if PANELS[0]:
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
     
-    plt.text(-0.1, yLims[-1]+5, 'AC')
+    #plt.text(-0.1, yLims[-1]+5, 'AC')
     #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #plt.ylabel('AC', fontsize=fontSizeLabels, rotation=0)
 
     ax2 = plt.subplot(gs00[2, :])
     condLabels = intData['condLabels']
@@ -139,10 +140,12 @@ if PANELS[0]:
     #plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
+    
     extraplots.boxoff(plt.gca())
     
-    #plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
-    #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
+    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
+           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 # -- Panel D: sound response in AStr -- #
 ax3 = plt.subplot(gs01[0:2, :])
@@ -178,7 +181,7 @@ if PANELS[1]:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
-    plt.text(-0.1, yLims[-1]+5, 'AStr')
+    #plt.text(-0.1, yLims[-1]+5, 'AStr')
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
@@ -206,8 +209,11 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.legend(condLabels[0:2], loc='upper left', fontsize=10, handlelength=0.2,
+    plt.text(-0.1, 0.7*yLims[-1], 'pStr', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
+    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+    #plt.legend(condLabels[0:2], loc='upper left', fontsize=10, handlelength=0.2,
+    #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 
 
