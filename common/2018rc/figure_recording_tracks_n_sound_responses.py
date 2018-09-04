@@ -26,6 +26,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'
 
 soundColor = figparams.colp['sound']
 timeRangeToPlot = [-0.2,0.3]
+condDict = {'low freq':'Low freq', 'high freq':'High freq'}
 
 # -- Select example cells here -- #
 exampleAStr = 'adap017_2016-04-06_T4_c3'
@@ -67,7 +68,6 @@ msMvStart = 3
 smoothWinSizePsth = 3
 lwPsth = 2
 downsampleFactorPsth = 1
-
 
 ax = plt.subplot(gs[0, 0])
 ax.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
@@ -121,10 +121,12 @@ if PANELS[0]:
     #plt.ylabel('AC', fontsize=fontSizeLabels, rotation=0)
 
     ax2 = plt.subplot(gs00[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
     
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,
         timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
@@ -144,7 +146,7 @@ if PANELS[0]:
     extraplots.boxoff(plt.gca())
     
     plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
-    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
+    plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 # -- Panel D: sound response in AStr -- #
@@ -159,7 +161,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+   
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -189,11 +191,13 @@ if PANELS[1]:
 
 
     ax4 = plt.subplot(gs01[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
-    
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
+  
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -210,7 +214,7 @@ if PANELS[1]:
     extraplots.boxoff(plt.gca())
     
     plt.text(-0.1, 0.7*yLims[-1], 'pStr', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
-    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
+    plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     #plt.legend(condLabels[0:2], loc='upper left', fontsize=10, handlelength=0.2,
     #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)

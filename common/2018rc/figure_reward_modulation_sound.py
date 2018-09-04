@@ -26,6 +26,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'
 
 colorsDict = {'colorLMore':figparams.colp['MoreRewardL'], 
               'colorRMore':figparams.colp['MoreRewardR']} 
+condDict = {'left more':'More left', 'right more':'More right'}
 
 soundColor = figparams.colp['sound']
 timeRangeToPlot = [-0.2,0.3]
@@ -121,11 +122,13 @@ if PANELS[0]:
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
     ax2 = plt.subplot(gs00[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
-    
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
+
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,
         timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
@@ -212,10 +215,12 @@ if PANELS[0]:
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
 
     ax2 = plt.subplot(gs00[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
     
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,
         timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
@@ -233,8 +238,8 @@ if PANELS[0]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
-    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
+    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks+2)
+    plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     #plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
     #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
@@ -281,10 +286,12 @@ if PANELS[1]:
 
 
     ax4 = plt.subplot(gs01[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
     
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
@@ -301,8 +308,8 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.text(-0.1, 0.7*yLims[-1], 'pStr', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
-    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
+    plt.text(-0.1, 0.7*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeLabels+2)
+    plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 
@@ -427,10 +434,12 @@ if PANELS[1]:
 
 
     ax9 = plt.subplot(gs03[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
     
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
@@ -447,8 +456,8 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
-    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
+    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeLabels+2)
+    plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 ax10 = plt.subplot(gs04[0:2, :])
@@ -492,10 +501,12 @@ if PANELS[1]:
 
 
     ax11 = plt.subplot(gs04[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
     
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
@@ -512,8 +523,8 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.text(-0.1, 0.7*yLims[-1], 'pStr', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
-    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
+    plt.text(-0.1, 0.7*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeLabels+2)
+    plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 if SAVE_FIGURE:
