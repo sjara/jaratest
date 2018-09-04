@@ -18,18 +18,18 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_reward_change_behavior' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-#figSize = [7, 5]
 figSize = [7, 5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.015, 0.45]   # Horiz position for panel labels
-labelPosY = [0.95, 0.35]    # Vert position for panel labels
+labelPosX = [0.01, 0.45]   # Horiz position for panel labels
+labelPosY = [0.95, 0.45]    # Vert position for panel labels
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 
-              'more_right':figparams.colp['MoreRewardR']} 
+              'more_right':figparams.colp['MoreRewardR'],
+              'same_reward': figparams.colp['SameReward']} 
 
 '''
 animalNumbers = {'adap021':'Mouse 1',
@@ -45,15 +45,15 @@ fig.set_facecolor('w')
 
 panelsToPlot=[0, 1]
 
-gs = gridspec.GridSpec(3, 6)
-gs.update(left=0.08, right=0.98, top=0.95, bottom=0.05, wspace=0.3, hspace=0.8)
-ax0 = plt.subplot(gs[0:2, 0:3])
-ax1 = plt.subplot(gs[0:2, 3:])
-ax2 = plt.subplot(gs[2, 0:2])
+gs = gridspec.GridSpec(2, 6)
+gs.update(left=0.09, right=0.98, top=0.95, bottom=0.08, wspace=0.5, hspace=0.5)
+ax0 = plt.subplot(gs[0, 0:3])
+ax1 = plt.subplot(gs[0, 3:])
+ax2 = plt.subplot(gs[1, 0:2])
 ax2.hold(True)
-ax3 = plt.subplot(gs[2, 2:4])
+ax3 = plt.subplot(gs[1, 2:4])
 ax3.hold(True)
-ax4 = plt.subplot(gs[2, 4:6])
+ax4 = plt.subplot(gs[1, 4:6])
 ax4.hold(True)
 
 # -- Panel A: task schematic -- #
@@ -109,7 +109,7 @@ if 0 in panelsToPlot:
     extraplots.set_ticks_fontsize(ax1,fontSizeTicks)
     ax1.set_yticks([0, 50, 100])
 
-    leg = ax1.legend([plotHandles[1],plotHandles[0]], ['Left more','Right more'], loc='upper left', frameon=False,
+    leg = ax1.legend(plotHandles, ['Same reward','More left','More right'], loc='upper left', frameon=False,
                      labelspacing=0.1, handlelength=1.5, handletextpad=0.2, borderaxespad=0.1, fontsize=12)
     
 
@@ -183,12 +183,12 @@ if 1 in panelsToPlot:
     ax2.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax2.set_yticks([0, 25]) 
     ax2.set_xlim([-0.5, 1.5])
-    ax2.set_xticklabels(['Left more', 'Right more'], fontsize=fontSizeLabels) #conditions[firstCondToPlot:]
+    ax2.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels) #conditions[firstCondToPlot:]
     ax2.set_ylim([-5, 30])
     #ax2.text(0, 30,'Lowest frequency')
     ax2.set_title('Lowest frequency', fontsize=fontSizeLabels)
     plt.sca(ax2)
-    extraplots.significance_stars([0,1], 26, 2, starSize=8, gapFactor=0.4, color='0.5')
+    extraplots.significance_stars([0,1], 26, 1, starSize=8, gapFactor=0.2, color='0.5')
     extraplots.set_ticks_fontsize(ax2,fontSizeTicks)
     extraplots.boxoff(ax2) 
 
@@ -197,7 +197,8 @@ if 1 in panelsToPlot:
     for animalInd in range(len(subjects)):
         ax3.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax3.set_xticks([0,1])
-    ax3.set_xticklabels(['Left more', 'Right more'], fontsize=fontSizeLabels)
+    #ax3.set_xticklabels(['Left more', 'Right more'], fontsize=fontSizeLabels)
+    ax3.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
     #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax3.set_yticks([25, 50, 75, 100])
     ax3.set_ylim([0, 118]) 
@@ -205,7 +206,7 @@ if 1 in panelsToPlot:
     #ax3.text(0.1, 118, 'Middle frequency')
     ax3.set_title('Middle frequency', fontsize=fontSizeLabels)
     plt.sca(ax3)
-    extraplots.significance_stars([0,1], 108, 5, starSize=8, gapFactor=0.4, color='0.5')
+    extraplots.significance_stars([0,1], 108, 4, starSize=8, gapFactor=0.2, color='0.5')
     extraplots.set_ticks_fontsize(ax3,fontSizeTicks)
     extraplots.boxoff(ax3) 
 
@@ -214,7 +215,7 @@ if 1 in panelsToPlot:
     for animalInd in range(len(subjects)):
         ax4.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax4.set_xticks([0,1])
-    ax4.set_xticklabels(['Left more', 'Right more'], fontsize=fontSizeLabels)
+    ax4.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
     #ax4.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax4.set_yticks([75, 100])
     ax4.set_ylim([70, 106]) 
@@ -222,7 +223,7 @@ if 1 in panelsToPlot:
     #ax4.text(0.1, 106, 'Highest frequency')
     ax4.set_title('Highest frequency', fontsize=fontSizeLabels)
     plt.sca(ax4)
-    extraplots.significance_stars([0,1], 103, 2, starSize=8, gapFactor=0.4, color='0.5')
+    extraplots.significance_stars([0,1], 103, 1, starSize=8, gapFactor=0.2, color='0.5')
     extraplots.set_ticks_fontsize(ax4,fontSizeTicks)
     extraplots.boxoff(ax4) 
 

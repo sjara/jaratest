@@ -328,8 +328,18 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(sigModIEncodeMvAStr)
     print 'For significantly modulated cells in AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIEncodeMvAStr), pVal)
     
-    (Z, pValBtAreas) = stats.ranksums(allModIEncodeMvAC, allModIEncodeMvAStr)
-    print 'Using wilcoxon rank sum test to compare modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+    (Z, pValBtAreas) = stats.ranksums(np.abs(allModIEncodeMvAC), np.abs(allModIEncodeMvAStr))
+    print 'Using wilcoxon rank sum test to compare ABSOLUTE modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+    (Z, pValBtAreasSig) = stats.ranksums(np.abs(sigModIEncodeMvAC), np.abs(sigModIEncodeMvAStr))
+    print 'Using wilcoxon rank sum test to compare ABSOLUTE modulation indices between significantly modulated cells in AC and AStr, p value is {:.3f}'.format(pValBtAreasSig)
+    print 'Median absolute mod index for AC: {}'.format(np.median(np.abs(allModIEncodeMvAC)))
+    print 'Median absolute mod index for AStr: {}'.format(np.median(np.abs(allModIEncodeMvAStr)))
+
+    print 'Median absolute mod index for modulated cells in AC: {}'.format(np.median(np.abs(sigModIEncodeMvAC)))
+    print 'Median absolute mod index for modulated cells in AStr: {}'.format(np.median(np.abs(sigModIEncodeMvAStr)))
+
+    #(Z, pValBtAreas) = stats.ranksums(allModIEncodeMvAC, allModIEncodeMvAStr)
+    #print 'Using wilcoxon rank sum test to compare modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(movementRespAC)-len(sigModIAC), len(sigModIAC)],[sum(movementRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
 

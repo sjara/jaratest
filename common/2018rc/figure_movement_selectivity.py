@@ -39,32 +39,33 @@ exampleMovSelAC = 'gosi004_2017-02-13_T7_c8'
 
 
 PANELS = [1,1,1] # Which panels to plot
+#PANELS = [0,0,0] # Which panels to plot
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 
 figFilename = 'figure_movement_selectivity'
-figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [10,3.5]
+figFormat = 'pdf' # 'pdf' or 'svg'
+figSize = [7,8]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 labelDis = 0.1
 
-labelPosX = [0.015, 0.355, 0.65]   # Horiz position for panel labels
-labelPosY = [0.92]    # Vert position for panel labels
+labelPosX = [0.012, 0.53]   # Horiz position for panel labels
+labelPosY = [0.95, 0.3]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.08, right=0.98, top=0.95, bottom=0.15, wspace=0.4, hspace=0.1)
+gs = gridspec.GridSpec(6, 2)
+gs.update(left=0.1, right=0.97, top=0.97, bottom=0.06, wspace=0.5, hspace=1.7)
 
-gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,0], hspace=0.3)
-gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:,1], hspace=0.2)
-gs02 = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs[:,2], hspace=0.5)
+gs00 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:4,0], hspace=0.3)
+gs01 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=gs[:4,1], hspace=0.3)
+#gs02 = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs[:,2], hspace=0.5)
 
 #timeRangeSound = [-0.2, 0.4]
 msRaster = 2
@@ -74,7 +75,7 @@ lwPsth = 2
 downsampleFactorPsth = 1
 
 
-# -- Panel A: movement selective cell in AStr -- #
+# -- Panel A: movement selective cell in AC -- #
 ax1 = plt.subplot(gs00[0:2, :])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
@@ -84,6 +85,8 @@ if PANELS[0]:
     intData =np.load(intDataFullPath)
 
     trialsEachCond = intData['trialsEachCond'][:,0:2]
+    numCorrectTrials = trialsEachCond.sum()
+    print('Number of correct trials: {}'.format(numCorrectTrials))
     colorEachCond = intData['colorEachCond'][0:2]
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
@@ -106,9 +109,9 @@ if PANELS[0]:
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
-        plt.setp(bplot[element], color='grey', linewidth=1)
+        plt.setp(bplot[element], color='grey', linewidth=1, clip_on=True)
     plt.setp(bplot['whiskers'], linestyle='-')
-    plt.setp(bplot['medians'], color='orange')
+    plt.setp(bplot['medians'], color='red')
 
     sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
     plt.hold('on')
@@ -117,10 +120,10 @@ if PANELS[0]:
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
-        plt.setp(bplot[element], color='grey', linewidth=1)
+        plt.setp(bplot[element], color='grey', linewidth=1, clip_on=True)
     plt.setp(bplot['whiskers'], linestyle='-')
-    plt.setp(bplot['medians'], color='orange')
-    plt.text(0, yLims[-1]+5, 'AC', fontsize=fontSizeLabels)
+    plt.setp(bplot['medians'], color='red')
+    #plt.text(0, yLims[-1]+5, 'AC', fontsize=fontSizeLabels)
 
     #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
@@ -149,13 +152,16 @@ if PANELS[0]:
     #plt.text(0.2, yLims[-1]+5, 'AStr')
     #ax2.set_title('Correct trials', fontsize=fontSizeLabels)
     #plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('FR\ncorrect\n(spk/s)',fontsize=fontSizeLabels,labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
-
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.text(-0.1, 0.85*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks)
+    plt.text(-0.1, 0.6*yLims[-1], 'correct\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
     trialsEachCond = intData['trialsEachCond'][:,2:]
+    numErrorTrials = trialsEachCond.sum()
+    print('Number of correct trials: {}'.format(numErrorTrials))
     colorEachCond = intData['colorEachCond'][2:]
     ax = plt.subplot(gs00[3, :])
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec,
@@ -170,11 +176,16 @@ if PANELS[0]:
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('FR\nerror\n(spk/s)',fontsize=fontSizeLabels,labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels,labelpad=labelDis)
     
+    plt.text(-0.1, 0.85*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks)
+    plt.text(-0.1, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
+           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+
     extraplots.boxoff(plt.gca())
 
-# -- Panel B: movement selective cell in AC -- #
+# -- Panel B: movement selective cell in AStr -- #
 ax3 = plt.subplot(gs01[0:2, :])
 ax3.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 if PANELS[1]:
@@ -183,6 +194,8 @@ if PANELS[1]:
     intData =np.load(intDataFullPath)
 
     trialsEachCond = intData['trialsEachCond'][:,:2]
+    numCorrectTrials = trialsEachCond.sum()
+    print('Number of correct trials: {}'.format(numCorrectTrials))
     colorEachCond = intData['colorEachCond'][:2]
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
@@ -205,9 +218,9 @@ if PANELS[1]:
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
-        plt.setp(bplot[element], color='grey', linewidth=1)
+        plt.setp(bplot[element], color='grey', linewidth=1, clip_on=True)
     plt.setp(bplot['whiskers'], linestyle='-')
-    plt.setp(bplot['medians'], color='orange')
+    plt.setp(bplot['medians'], color='red')
 
     sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
     plt.hold('on')
@@ -216,10 +229,10 @@ if PANELS[1]:
     plt.autoscale(enable=True, axis='y', tight=True)
     plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
-        plt.setp(bplot[element], color='grey', linewidth=1)
+        plt.setp(bplot[element], color='grey', linewidth=1, clip_on=True)
     plt.setp(bplot['whiskers'], linestyle='-')
-    plt.setp(bplot['medians'], color='orange')
-    plt.text(0, yLims[-1]+5, 'AStr', fontsize=fontSizeLabels)
+    plt.setp(bplot['medians'], color='red')
+    #plt.text(0, yLims[-1]+5, 'AStr', fontsize=fontSizeLabels)
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
@@ -244,10 +257,17 @@ if PANELS[1]:
     plt.xlim(timeRangeToPlot)
     plt.xticks([],[])
     #plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('FR\ncorrect\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
+
+    plt.text(-0.1, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
+    plt.text(-0.1, 0.6*yLims[-1], 'correct\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks-2, handlelength=0.4,
+           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     
     trialsEachCond = intData['trialsEachCond'][:,2:]
+    numErrorTrials = trialsEachCond.sum()
+    print('Number of correct trials: {}'.format(numErrorTrials))
     colorEachCond = intData['colorEachCond'][2:]
     ax = plt.subplot(gs01[3, :])
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
@@ -262,16 +282,20 @@ if PANELS[1]:
     plt.xticks(np.arange(-0.2,0.6,0.2))
     
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
-    plt.ylabel('FR\nerror\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
+    plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+    plt.text(-0.07, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
+    plt.text(-0.07, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks-2, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 
 # -- Panel C: summary distribution of movement selectivity index -- #
-ax6 = plt.subplot(gs02[0,:])
-ax6.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+#ax6 = plt.subplot(gs02[0,:])
+ax6 = plt.subplot(gs[4:,0])
+ax6.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+
 
 if PANELS[2]:
     if removeSideIn:
@@ -289,15 +313,16 @@ if PANELS[2]:
     allModIEncodeMvAC = -(summary['allModIEncodeMv'])
     
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+    plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], rwidth=0.9, stacked=True)
     yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
-    plt.text(0.5,yPosText,'AC\nn={}\n{:.2f}% selective'.format(len(allModIAC), percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.7,yPosText,'AC',ha='center',fontweight='normal',fontsize=fontSizeLabels)
+    plt.text(0.7,yPosText,'n={}'.format(len(allModIAC)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    #plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
+    plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
     plt.ylabel('Number of cells', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca())
 
@@ -307,7 +332,11 @@ if PANELS[2]:
     print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
 
 
-    ax7 = plt.subplot(gs02[1,:])
+#ax7 = plt.subplot(gs02[1,:])
+ax7 = plt.subplot(gs[4:,1])
+ax6.annotate('D', xy=(labelPosX[1],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
+if PANELS[2]:
+
     if removeSideIn:
         summaryFilename = 'summary_rc_movement_selectivity_rightAStr_removed_sidein_trials.npz'
     else:
@@ -322,12 +351,14 @@ if PANELS[2]:
     allModIEncodeMvAStr = -(summary['allModIEncodeMv'])
 
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+    plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], rwidth=0.9, stacked=True)
     yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
-    plt.text(0.5,yPosText,'AStr\nn={}\n{:.2f}% selective'.format(len(allModIAStr), percentSelective),ha='center',fontsize=fontSizeLabels)
+    #plt.text(0.5,yPosText,'AStr\nn={}'.format(len(allModIAStr)),ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.7,yPosText,'pStr',ha='center',fontweight='normal',fontsize=fontSizeLabels)
+    plt.text(0.7,yPosText,'n={}'.format(len(allModIAStr)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
@@ -338,10 +369,15 @@ if PANELS[2]:
     print 'Total number of good cells is:', len(allModIAStr), '\nNumber of cells movement selective is:', len(sigModIAStr)
     (Z, pVal) = stats.wilcoxon(allModIAStr)
     print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
-    (Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
-    print 'Using wilcoxon rank sum test to compare movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+    
+    (Z, pValBtAreas) = stats.ranksums(np.abs(allModIAC), np.abs(allModIAStr))
+    print 'Using wilcoxon rank sum test to compare ABSOLUTE movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])
     #print 'Using Fishers exact test to compare fraction of modulated cells between AC and AStr, p value is {:.3f}'.format(pValFisher)
+    #(Z, pValBtAreas) = stats.ranksums(allModIAC, allModIAStr)
+    #print 'Using wilcoxon rank sum test to compare movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
+    print 'Median absolute mod index for AC: {}'.format(np.median(np.abs(allModIAC)))
+    print 'Median absolute mod index for AStr: {}'.format(np.median(np.abs(allModIAStr)))
 
 
 if SAVE_FIGURE:
