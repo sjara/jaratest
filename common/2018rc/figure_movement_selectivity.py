@@ -105,9 +105,8 @@ if PANELS[0]:
     yLims = plt.gca().get_ylim()
     plt.hold('on')
     bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[1.05*yLims[-1]], widths=[yLims[-1]*0.04])
-    extraplots.boxoff(plt.gca())
+    #extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1, clip_on=True)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -116,18 +115,17 @@ if PANELS[0]:
     sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
     plt.hold('on')
     bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[1.05*yLims[-1]], widths=[yLims[-1]*0.04])
-    extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1, clip_on=True)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='red')
     #plt.text(0, yLims[-1]+5, 'AC', fontsize=fontSizeLabels)
 
-    #ax1.set_yticklabels([])
+    ax1.set_yticklabels([])
     ax1.set_xticklabels([])
-    ax1.set_ylabel('Trials grouped by\nmovement direction', fontsize=fontSizeLabels)
+    ax1.set_ylabel('Trials grouped by\nchoice direction', fontsize=fontSizeLabels)
+    extraplots.boxoff(plt.gca(), keep='none')
 
     ax2 = plt.subplot(gs00[2, :])
     condLabels = intData['condLabels']
@@ -156,8 +154,8 @@ if PANELS[0]:
     extraplots.boxoff(plt.gca())
     plt.text(-0.1, 0.85*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'correct\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
-           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
 
     trialsEachCond = intData['trialsEachCond'][:,2:]
     numErrorTrials = trialsEachCond.sum()
@@ -180,8 +178,8 @@ if PANELS[0]:
     
     plt.text(-0.1, 0.85*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
-           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
 
     extraplots.boxoff(plt.gca())
 
@@ -216,7 +214,7 @@ if PANELS[1]:
     bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1, clip_on=True)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -225,9 +223,8 @@ if PANELS[1]:
     sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
     plt.hold('on')
     bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
-    extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1, clip_on=True)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -236,8 +233,8 @@ if PANELS[1]:
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nmovement direction', fontsize=fontSizeLabels)
-
+    plt.ylabel('Trials grouped by\nchoice direction', fontsize=fontSizeLabels)
+    extraplots.boxoff(plt.gca(), keep='none')
 
     ax4 = plt.subplot(gs01[2, :])
     condLabels = intData['condLabels']
@@ -262,8 +259,8 @@ if PANELS[1]:
 
     plt.text(-0.1, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'correct\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks-2, handlelength=0.4,
-           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
     
     trialsEachCond = intData['trialsEachCond'][:,2:]
     numErrorTrials = trialsEachCond.sum()
@@ -287,8 +284,8 @@ if PANELS[1]:
 
     plt.text(-0.07, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.07, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks-2, handlelength=0.4,
-           frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
+    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
 
 
 # -- Panel C: summary distribution of movement selectivity index -- #
