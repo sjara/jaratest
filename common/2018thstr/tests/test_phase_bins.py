@@ -163,8 +163,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
 
     # timeRange = [0.1, 0.5] #DONE: Use this to cut out onset responses
-    timeRange = [0.05, 0.5]
-    #TODO Check the removal of onset responses in the final dataset.
+    timeRange = [0, 0.5] 
     (spikeTimesFromEventOnset,
     trialIndexForEachSpike,
     indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
@@ -194,12 +193,12 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
             ## Split out spikes in each period
             for indPeriod, spikesThisPeriod in enumerate(spikes_each_period(spikeTimesThisTrial, period)):
 
+                ## Div up into ~6 bins
                 ### Subtract indPeriod * period to get spiketimes relative to the start of the period
                 spikesThisPeriod = spikesThisPeriod - period * indPeriod
                 spikesPerPeriod.append(len(spikesThisPeriod))
-                ### Bins to count the spikes are from 0 to period
-                # nBins = 5
-                nBins = 4
+                ### Bins to count the spikes are from 0 to period, 6 bins
+                nBins = 7
                 binEdges = np.linspace(0, period, nBins+1)
                 ### Hist spikes into each bin
                 hist, binEdges = np.histogram(spikesThisPeriod, bins=binEdges)
@@ -217,7 +216,6 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
         if len(binRates)==0:
             print "Why tf is this happening?? cell ind #{}".format(indRow)
-            # raise ValueError
             continue
 
 
@@ -243,23 +241,74 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'mutualInfoPerSpikePhase_{}Hz'.format(int(freq))] = miCorrectedBitsPerSpike
 
 # savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+# savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+
+savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU_phase_test.h5')
 dataframe.to_hdf(savePath, 'dataframe')
-print "SAVED DATAFRAME to {}".format(dbPath)
-    #     miEachFreq.append(miCorrectedBits)
-
-    # miEachFreq = np.array(miEachFreq)
-    # ######################################
-
-    # possibleFreq = 
-
-    # for freq in pos
-
-#####
+print "SAVED DATAFRAME to {}".format(savePath)
 
 
+goodISI = dataframe.query('isiViolations<0.02 or modifiedISI<0.02')
+goodShape = goodISI.query('spikeShapeQuality > 2')
+goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018'")
+goodNSpikes = goodLaser.query('nSpikes>2000')
+ac = goodNSpikes.groupby('brainArea').get_group('rightAC')
+thal = goodNSpikes.groupby('brainArea').get_group('rightThal')
 
+def jitter(arr, frac):
+    jitter = (np.random.random(len(arr))-0.5)*2*frac
+    jitteredArr = arr + jitter
+    return jitteredArr
 
+def medline(yval, midline, width, color='k', linewidth=3):
+    start = midline-(width/2)
+    end = midline+(width/2)
+    plt.plot([start, end], [yval, yval], color=color, lw=linewidth)
 
+plt.clf()
+axSummary = plt.subplot(111)
 
+possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
+rateThreshold = 22
+ratesToUse = possibleRateKeys[possibleRateKeys>rateThreshold]
 
+colorAC = 'r'
+colorATh = 'b'
+dataMS=5
+
+# dataframe = dataframe.query("pulsePval<0.05 and trainRatio>0.8")
+# ac = dataframe.groupby('brainArea').get_group('rightAC')
+# thal = dataframe.groupby('brainArea').get_group('rightThal')
+
+keys = ['mutualInfoPhase_{}Hz'.format(rate) for rate in ratesToUse]
+
+acData = np.full((len(ac), len(ratesToUse)), np.nan)
+thalData = np.full((len(thal), len(ratesToUse)), np.nan)
+
+for externalInd, (indRow, row) in enumerate(ac.iterrows()):
+    for indKey, key in enumerate(keys):
+        acData[externalInd, indKey] = row[key]
+
+for externalInd, (indRow, row) in enumerate(thal.iterrows()):
+    for indKey, key in enumerate(keys):
+        thalData[externalInd, indKey] = row[key]
+
+acData = np.nanmean(acData, axis=1)
+thalData = np.nanmean(thalData, axis=1)
+
+acData[acData<0]=0
+thalData[thalData<0]=0
+l
+thalPopStat = thalData[~np.isnan(thalData)]
+pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=1, ms=dataMS)
+medline(np.median(thalPopStat), 0, 0.5)
+
+acPopStat = acData[~np.isnan(acData)]
+pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=1, ms=dataMS)
+medline(np.median(acPopStat), 1, 0.5)
+
+plt.title('{} phase bins'.format(nBins))
+
+plt.show()

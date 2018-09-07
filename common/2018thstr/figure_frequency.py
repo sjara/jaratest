@@ -25,6 +25,8 @@ titleExampleBW=True
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+# dbPath = '/tmp/celldatabase_new_20180830.h5'
+
 db = pd.read_hdf(dbPath, key='dataframe')
 exData = np.load(exampleDataPath)
 np.random.seed(8)
@@ -49,11 +51,12 @@ thal = dataframe.groupby('brainArea').get_group('rightThal')
 
 PANELS = [1, 1, 1, 1, 1, 1, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
-SAVE_FIGURE = 1
+SAVE_FIGURE = 0
 outputDir = '/tmp/'
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'figure_frequency_tuning' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
+# figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg' # 'pdf' or 'svg'
 # figSize = [6.5, 3.25] # In inches
 figSize = [13, 6.5] # In inches
 

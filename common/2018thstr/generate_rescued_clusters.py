@@ -15,7 +15,8 @@ reload(ephyscore)
 SAVE=True
 
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = '/tmp/celldatabase_new_20180830.h5'
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 cellsToRescue = db.query('autoTagged==1 and isiViolations>0.02 and isiViolations<0.04')
 
@@ -41,6 +42,10 @@ for indRow, dbRow in cellsToRescue.iterrows():
     jumpBy = int(len(timestamps)*0.01) #Jump by 1% of spikes each time
     if jumpBy==0:
         jumpBy = 1 #Jump by at least 1 spike FIXME: This is probably a terrible cluster if this happens
+
+    #Including these outside first, in case we never enter the while loop. Otherwise they will be from a previous loop.
+    includeBool = sortArray < (len(sortArray)-spikesToRemove)
+    timestampsToInclude = timestamps[includeBool]
     while thisISIviolation>0.02:
         spikesToRemove+=jumpBy
         #We start to throw spikes at the end of the sort array away

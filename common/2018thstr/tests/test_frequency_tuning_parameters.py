@@ -13,6 +13,8 @@ import pandas as pd
 
 FIGNAME = 'figure_frequency_tuning'
 
+
+
 def gaussian(x, a, x0, sigma, y0):
     return a*np.exp(-(x-x0)**2/(2*sigma**2)) + y0
 
@@ -67,21 +69,21 @@ def find_cf_inds(fra, resp, threshold=0.85):
 
 #Example cells we want to show tuning curves for
 #AC
-examples = {}
-examples.update({'AC1' : 'pinp016_2017-03-09_1904_6_6'})
-examples.update({'AC2' : 'pinp017_2017-03-22_1143_6_5'})
+# examples = {}
+# examples.update({'AC1' : 'pinp016_2017-03-09_1904_6_6'})
+# examples.update({'AC2' : 'pinp017_2017-03-22_1143_6_5'})
 
-#Thalamus
-examples.update({'Thal1' : 'pinp015_2017-02-15_3110_7_3'})
-examples.update({'Thal2' : 'pinp016_2017-03-16_3800_3_6'})
+# #Thalamus
+# examples.update({'Thal1' : 'pinp015_2017-02-15_3110_7_3'})
+# examples.update({'Thal2' : 'pinp016_2017-03-16_3800_3_6'})
 
-#Striatum
-examples.update({'Str1' : 'pinp020_2017-05-10_2682_7_3'})
-examples.update({'Str2' : 'pinp025_2017-09-01_2111_4_3'})
+# #Striatum
+# examples.update({'Str1' : 'pinp020_2017-05-10_2682_7_3'})
+# examples.update({'Str2' : 'pinp025_2017-09-01_2111_4_3'})
 
-exampleList = [val for key, val in examples.iteritems()]
-exampleKeys = [key for key, val in examples.iteritems()]
-exampleSpikeData = {}
+# exampleList = [val for key, val in examples.iteritems()]
+# exampleKeys = [key for key, val in examples.iteritems()]
+# exampleSpikeData = {}
 
 #THE METHOD
 # Calculate response range spikes for each combo
@@ -93,8 +95,7 @@ exampleSpikeData = {}
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-dbPath = '/tmp/celldatabase_new_20180830.h5'
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 db = pd.read_hdf(dbPath, key='dataframe')
 
 soundResponsive = db.query('isiViolations<0.02 and spikeShapeQuality>2 and noisePval<0.05')
@@ -103,7 +104,7 @@ dataframe = db
 # dataframe = db.query('cellLabel in @exampleList')
 
 #Make labels for all the cells
-dataframe['cellLabel'] = dataframe.apply(lambda row:'{}_{}_{}_{}_{}'.format(row['subject'], row['date'], int(row['depth']), int(row['tetrode']), int(row['cluster'])), axis=1)
+# dataframe['cellLabel'] = dataframe.apply(lambda row:'{}_{}_{}_{}_{}'.format(row['subject'], row['date'], int(row['depth']), int(row['tetrode']), int(row['cluster'])), axis=1)
 
 # exampleDBinds = []
 # for exName, exInfo in examples.iteritems():
@@ -111,6 +112,12 @@ dataframe['cellLabel'] = dataframe.apply(lambda row:'{}_{}_{}_{}_{}'.format(row[
 #     print exCell
 
 #Init arrays to hold the vals we will calculate here
+
+#Params to experiment with
+# thresholdFRA = 0.2
+cfIndThresh = 0.85
+
+#We want to iterate through each row in the dataframe. indRow is the dataframe index column, not a climbing iteration index
 cfs = np.full(len(dataframe), np.nan)
 thresholds = np.full(len(dataframe), np.nan)
 lowerFreqs = np.full(len(dataframe), np.nan)
@@ -125,7 +132,6 @@ threshButNo10Above = [] #Cells where we were not able to capture 10dB above thre
 no10dbAboveInds = []
 sparklyCells = []
 
-#We want to iterate through each row in the dataframe. indRow is the dataframe index column, not a climbing iteration index
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     failed=False
     cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
@@ -217,9 +223,9 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
             continue
 
     ### ----- Save the example cells out to an NPZ ---- ###
-    if dbRow['cellLabel'] in exampleList:
-        exampleInd = exampleList.index(dbRow['cellLabel'])
-        exampleSpikeData.update({exampleKeys[exampleInd]:allIntenResp})
+    # if dbRow['cellLabel'] in exampleList:
+    #     exampleInd = exampleList.index(dbRow['cellLabel'])
+    #     exampleSpikeData.update({exampleKeys[exampleInd]:allIntenResp})
 
 
     # Remove sparkly cells
@@ -235,93 +241,110 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     respMax = np.percentile(allIntenResp, 90)
     respRatio = respMax/respMeanLowestInten
 
-    #TODO: Choose which FRA to use
-    thresholdFRA = 0.2
-    thresholdResponse = allIntenBase.mean() + thresholdFRA*(allIntenResp.max()-allIntenBase.mean())
-    # threshMedian = allIntenBase.mean() + 0.2*(allIntenRespMedian.max()-allIntenBase.mean())
-    fra = allIntenResp > thresholdResponse
-    # fraMedian = allIntenRespMedian > threshMedian
 
-    #TODO: Determine threshold intensity of cell from the FRA
-    # indThreshInt = None
-    # for indInten, inten in enumerate(possibleIntensity):
-    #     boolThisInten = fra[indInten, :]
-    #     if any(boolThisInten):
-    #         indThreshInt = indInten
-    #         break
+    for thresholdFRA in [0.1, 0.2, 0.3, 0.4]:
 
-    indThreshInt, indFreqCF = find_cf_inds(fra, allIntenResp)
+        thresholdResponse = allIntenBase.mean() + thresholdFRA*(allIntenResp.max()-allIntenBase.mean())
+        # threshMedian = allIntenBase.mean() + 0.2*(allIntenRespMedian.max()-allIntenBase.mean())
+        fra = allIntenResp > thresholdResponse
+        # fraMedian = allIntenRespMedian > threshMedian
 
-    if indThreshInt is None: #None of the intensities had anything
-        #TODO: Do something better than just skip?
-        thresholds[indIter] = None
-        cfs[indIter] = None
-        lowerFreqs[indIter] = None
-        upperFreqs[indIter] = None
-        noFreqAboveThreshInds.append(indRow)
-        continue
+        #TODO: Determine threshold intensity of cell from the FRA
+        # indThreshInt = None
+        # for indInten, inten in enumerate(possibleIntensity):
+        #     boolThisInten = fra[indInten, :]
+        #     if any(boolThisInten):
+        #         indThreshInt = indInten
+        #         break
 
-    threshold = possibleIntensity[indThreshInt]
-    poptThreshold = popts[indThreshInt]
-    #The CF is the mean of the gaussian for the threshold intensity
+        indThreshInt, indFreqCF = find_cf_inds(fra, allIntenResp)
 
-    # cf = 2**poptThreshold[1] #Use the x0 param
-    cf = possibleFreq[indFreqCF]
+        if indThreshInt is None: #None of the intensities had anything
+            #TODO: Do something better than just skip?
+            thresholds[indIter] = None
+            cfs[indIter] = None
+            lowerFreqs[indIter] = None
+            upperFreqs[indIter] = None
+            noFreqAboveThreshInds.append(indRow)
+            continue
 
-    ind10Above = indThreshInt + int(10/np.diff(possibleIntensity)[0]) #How many inds to go above the threshold intensity ind
-    try:
-        Rsquared10Above = Rsquareds[ind10Above]
-        popt10AboveThreshold = popts[ind10Above]
-        #TODO: Need to do something if we can't get 10dB above threshold
-    except IndexError:
-        print "Failure indexerror didn't get 10 above"
-        print threshold
-        failed=True
-        #We were not able to catch 10db above threshold. In this case, we can still get cf and thresh, but not uF/lF
-        no10dbAboveInds.append(indIter)
-        upperFreq = None
-        lowerFreq = None
-        Rsquared10Above = np.nan
-    else:
-        result = inverse_gaussian(thresholdResponse, *popt10AboveThreshold)
-        if result is not None:
-            lower, upper = result
-            lowerFreq = 2**lower
-            upperFreq = 2**upper
+        threshold = possibleIntensity[indThreshInt]
+        poptThreshold = popts[indThreshInt]
+        #The CF is the mean of the gaussian for the threshold intensity
+
+        # cf = 2**poptThreshold[1] #Use the x0 param
+        cf = possibleFreq[indFreqCF]
+
+        ind10Above = indThreshInt + int(10/np.diff(possibleIntensity)[0]) #How many inds to go above the threshold intensity ind
+        try:
+            Rsquared10Above = Rsquareds[ind10Above]
+            popt10AboveThreshold = popts[ind10Above]
+            #TODO: Need to do something if we can't get 10dB above threshold
+        except IndexError:
+            print "Failure indexerror didn't get 10 above"
+            print threshold
+            failed=True
+            #We were not able to catch 10db above threshold. In this case, we can still get cf and thresh, but not uF/lF
+            no10dbAboveInds.append(indIter)
+            upperFreq = None
+            lowerFreq = None
+            Rsquared10Above = np.nan
         else:
-            #If this returns none, then the threshold passed but 10dB above did not pass.
-            threshButNo10Above.append(indIter)
-            lowerFreq=None
-            upperFreq=None
-    #Things to save
-    rsquaredFit[indIter] = Rsquared10Above
-    thresholds[indIter] = threshold
-    cfs[indIter] = cf
-    lowerFreqs[indIter] = lowerFreq
-    upperFreqs[indIter] = upperFreq
+            result = inverse_gaussian(thresholdResponse, *popt10AboveThreshold)
+            if result is not None:
+                lower, upper = result
+                lowerFreq = 2**lower
+                upperFreq = 2**upper
+            else:
+                #If this returns none, then the threshold passed but 10dB above did not pass.
+                threshButNo10Above.append(indIter)
+                lowerFreq=None
+                upperFreq=None
+        #Things to save
+        # rsquaredFit[indIter] = Rsquared10Above
+        # thresholds[indIter] = threshold
+        # cfs[indIter] = cf
+        # lowerFreqs[indIter] = lowerFreq
+        # upperFreqs[indIter] = upperFreq
 
-dataframe['threshold'] = thresholds
-dataframe['cf'] = cfs
-dataframe['lowerFreq'] = lowerFreqs
-dataframe['upperFreq'] = upperFreqs
-dataframe['rsquaredFit'] = rsquaredFit
+        try:
+            bw10 = (upperFreq - lowerFreq) / cf
+        except TypeError:
+            continue
 
-dataframe['BW10'] = (dataframe['upperFreq']-dataframe['lowerFreq'])/dataframe['cf']
+        dataframe.at[indRow, 'threshold_{}'.format(thresholdFRA)] = threshold
+        dataframe.at[indRow, 'cf_{}'.format(thresholdFRA)] = cf
+        dataframe.at[indRow, 'lowerFreq_{}'.format(thresholdFRA)] = lowerFreq
+        dataframe.at[indRow, 'upperFreq_{}'.format(thresholdFRA)] = upperFreq
+        dataframe.at[indRow, 'rsquaredFit_{}'.format(thresholdFRA)] = Rsquared10Above
+        dataframe.at[indRow, 'BW10_{}'.format(thresholdFRA)] = bw10
 
-dataframe.to_hdf(dbPath, key='dataframe')
+goodISI = dataframe.query('isiViolations<0.02 or modifiedISI<0.02')
+goodShape = goodISI.query('spikeShapeQuality > 2')
+goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018'")
+# goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018' and subject != 'pinp019'")
 
-# exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
-# np.savez(exampleDataPath, **exampleSpikeData)
+for thresholdFRA in ['0.1', '0.2', '0.3', '0.4']:
 
-# thalDB = dataframe.groupby('brainArea').get_group('rightThal')
-# acDB = dataframe.groupby('brainArea').get_group('rightAC')
-# astrDB = dataframe.groupby('brainArea').get_group('rightAstr')
+    goodFit = goodLaser[goodLaser['rsquaredFit_{}'.format(thresholdFRA)]>0.04]
+    #Calculate the midpoint of the gaussian fit
+    goodFit['fitMidPoint_{}'.format(thresholdFRA)] = np.sqrt(goodFit['upperFreq_{}'.format(thresholdFRA)]*goodFit['lowerFreq_{}'.format(thresholdFRA)])
+    goodFitToUse = goodFit[goodFit['fitMidPoint_{}'.format(thresholdFRA)]<32000]
+    goodFitToUseNSpikes = goodFitToUse.query('nSpikes>2000')
 
-# plt.subplot(311)
-# plt.hist(thalDB['BW10'][pd.notnull(thalDB['BW10'])])
-# plt.subplot(312)
-# plt.hist(acDB['BW10'][pd.notnull(acDB['BW10'])])
-# plt.subplot(313)
-# plt.hist(astrDB['BW10'][pd.notnull(astrDB['BW10'])])
+    ac = goodFitToUseNSpikes.groupby('brainArea').get_group('rightAC')
+    thal = goodFitToUseNSpikes.groupby('brainArea').get_group('rightThal')
+
+    for feature in ['threshold', 'BW10']:
+        popStatCol = '{}_{}'.format(feature, thresholdFRA)
+        acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+        thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+
+        zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
+
+        print "Feature: {}\nThreshold (FRA): {}\np-Value: {}\n".format(feature, thresholdFRA, pVal)
+        print "n Thalamus = {}, n Cortex = {}".format(len(thalPopStat), len(acPopStat))
+
+
 
 
