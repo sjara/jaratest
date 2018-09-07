@@ -7,43 +7,45 @@ from collections import Counter
 import operator
 
 HISTOLOGY_DIR = '/mnt/jarahubdata/jarashare/histology'
-subject = 'anat036'
+subject = 'anat043'
 barColor = '0.5'
 
 AREA='ATh'
-CASE=2
 
 if AREA=='AC':
     jpgFolder = '5xAC_JPEG'
     registrationFolder = 'registrationAC'
     slices = ['p1d5', 'p1d6', 'p2a1', 'p2a2']
     #What I used for cortex. A first pass that might have been 50um off in places
-    ccfSlice = {'p1d5':205, 'p1d6':213, 'p2a1':217, 'p2a2':219}
+    ccfSlice = {'p1d5':196, 'p1d6':199, 'p2a1':202, 'p2a2':205}
+
 elif AREA=="ATh":
     jpgFolder = '5xATh_JPEG'
     registrationFolder = 'registrationATh'
-    slices = ['p1b6', 'p1c1', 'p1c2', 'p1c3', 'p1c4', 'p1c5', 'p1c6',
-              'p1d1', 'p1d2', 'p1d3', 'p1d4', 'p1d5', 'p1d6', 'p2a1',
-              'p2a2', 'p2a3', 'p2a4', 'p2a5', 'p2a6']
-    ccfSlice = {'p1b6':163,
-                'p1c1':167,
-                'p1c2':171,
-                'p1c3':175,
-                'p1c4':179,
-                'p1c5':183,
-                'p1c6':184, #DONE
-                'p1d1':185, #DONE
-                'p1d2':192, #DONE
-                'p1d3':196, #DONE
-                'p1d4':199, #DONE
-                'p1d5':200, #DONE
-                'p1d6':202, #DONE
-                'p2a1':204, #DONE
-                'p2a2':207, #DONE.
-                'p2a3':210, #DONE.
-                'p2a4':213, #DONE
-                'p2a5':217, #DONE
-                'p2a6':220} #DONE
+    slices = ['p1c2', 'p1c3', 'p1c4', 'p1c5', 'p1c6', 'p1d1', 'p1d2',
+              'p1d3', 'p1d4', 'p1d5', 'p1d6', 'p2a1', 'p2a2', 'p2a3',
+              'p2a4', 'p2a5', 'p2a6', 'p2b1', 'p2b2', 'p2b3']
+
+    ccfSlice = {'p1c2':169,
+                'p1c3':173,
+                'p1c4':176,
+                'p1c5':180,
+                'p1c6':184,
+                'p1d1':186,
+                'p1d2':188,
+                'p1d3':190,
+                'p1d4':191,
+                'p1d5':196,
+                'p1d6':199,
+                'p2a1':202,
+                'p2a2':205,
+                'p2a3':209,
+                'p2a4':212,
+                'p2a5':215,
+                'p2a6':219,
+                'p2b1':222,
+                'p2b2':226,
+                'p2b3':230}
 
 def counter_values(counterList):
     '''
@@ -61,9 +63,10 @@ def counter_values(counterList):
             resultDict[key].append(countThisKey)
     return resultDict
 
+CASE = 2
 
 #Save svg files for registration
-if CASE==0:
+if CASE == 0:
     for sliceNum in slices:
         filenameAtlas = '/mnt/jarahubdata/atlas/AllenCCF_25/JPEG/allenCCF_Z{}.jpg'.format(ccfSlice[sliceNum])
         filenameSlice = os.path.join(HISTOLOGY_DIR, subject, jpgFolder, '{}tl.jpg'.format(sliceNum))
@@ -136,8 +139,11 @@ elif CASE==2:
         filenameSVGPost = '/mnt/jarahubdata/jarashare/histology/{}/{}/{}.svg'.format(subject, registrationFolder, sliceNum)
         (scale, translate, affine) = ha.get_svg_transform(filenameSVGPost, sliceSize=[1388, 1040])
         filenameCSV = '/mnt/jarahubdata/jarashare/histology/{}/{}/{}.csv'.format(subject, registrationFolder, sliceNum)
-        coords = ha.get_coords_from_fiji_csv(filenameCSV, pixelSize=4.0048)
+        # coords = ha.get_coords_from_fiji_csv(filenameCSV, pixelSize=4.0048)
+        coords = ha.get_coords_from_fiji_csv(filenameCSV, pixelSize=1.29)
         newCoords = ha.apply_svg_transform(scale, translate, affine, coords)
+        # newCoords = np.dot(affine, coords)
+        # newCoords = coords
         filenameAtlas = '/mnt/jarahubdata/atlas/AllenCCF_25/JPEG/allenCCF_Z{}.jpg'.format(ccfSlice[sliceNum])
         atlasIm = mpimg.imread(filenameAtlas)
         plt.clf()
