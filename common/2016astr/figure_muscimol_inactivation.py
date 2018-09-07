@@ -202,8 +202,8 @@ if 1 in panelsToPlot:
                      clip_on=False)
             ax2.hold(1)
 
-    rects1 = ax2.bar(ind, 100*(dataMat[:, :, 0].mean(1)-0.5), width, bottom=50, edgecolor='k', facecolor='w', lw=2)
-    rects2 = ax2.bar(ind+width, 100*(dataMat[:, :, 1].mean(1)-0.5), width, bottom=50, edgecolor=muscimolColor, facecolor='w', lw=2)
+    rects1 = ax2.bar(ind, 100*(dataMat[:, :, 0].mean(1)-0.5), width, bottom=50, edgecolor='k', facecolor='w', lw=2, align='edge')
+    rects2 = ax2.bar(ind+width, 100*(dataMat[:, :, 1].mean(1)-0.5), width, bottom=50, edgecolor=muscimolColor, facecolor='w', lw=2, align='edge')
     for i in ind:
         extraplots.significance_stars([i+0.5*width,i+1.5*width], 95, 1, starSize=6, gapFactor=0.4, color='0.5')
     

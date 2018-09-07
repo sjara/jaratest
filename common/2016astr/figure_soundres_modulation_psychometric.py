@@ -273,7 +273,7 @@ if PANELS[2]:
     nonsigMI = summary['modulationIndex'][~sigModulated]
     #binsEdges = np.linspace(-1,1,30)
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigMI,nonsigMI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True)
+    plt.hist([sigMI,nonsigMI], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], stacked=True, rwidth=0.8)
     '''
     sig_patch = mpatches.Patch(color='k', label='Modulated')
     nonsig_patch = mpatches.Patch(color='darkgrey', label='Not modulated')

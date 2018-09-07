@@ -5,7 +5,7 @@ for each session.
 
 import os
 import numpy as np
-import cv2
+# import cv2
 import matplotlib.pyplot as plt
 from jaratoolbox import settings
 from jaratoolbox import videoanalysis

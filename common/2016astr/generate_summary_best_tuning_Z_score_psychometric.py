@@ -31,15 +31,15 @@ ISIcutoff = 0.02
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
 EPHYS_PATH = settings.EPHYS_PATH_REMOTE
 
-if not os.path.ismount(BEHAVIOR_PATH):
-    os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
+# if not os.path.ismount(BEHAVIOR_PATH):
+#     os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
 
-if not os.path.ismount(EPHYS_PATH):
-    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
+# if not os.path.ismount(EPHYS_PATH):
+#     os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
 
 
 # -- Read in databases storing all measurements from psycurve mice -- #
-psychometricFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+psychometricFilePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME)
 psychometricFileName = 'all_cells_all_measures_waveform_psychometric.h5'
 psychometricFullPath = os.path.join(psychometricFilePath,psychometricFileName)
 allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')

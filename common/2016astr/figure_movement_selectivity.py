@@ -264,7 +264,8 @@ sigModulated = summary['movementSelective']
 sigMI = summary['movementModI'][sigModulated]
 nonsigMI = summary['movementModI'][~sigModulated]
 binsEdges = np.linspace(-1,1,20)
-plt.hist([sigMI,nonsigMI], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True)
+plt.hist([sigMI,nonsigMI], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True, rwidth=0.8)
+# plt.hist([sigMI,nonsigMI], bins=binsEdges, color=['k','darkgrey'],edgecolor='w',stacked=True)
 
 '''
 sig_patch = mpatches.Patch(color='k', label='Selective')
