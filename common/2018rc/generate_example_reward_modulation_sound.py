@@ -186,7 +186,7 @@ def get_trials_each_cond_reward_change(bdata, freqToPlot, colorCondDict, byBlock
         elif freqToPlot == 'high':
             colorEachCond = [colorCondDict['colorLMore'], colorCondDict['colorRMore']] #[colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
             labelEachCond = ['left more', 'right more'] #['high freq left more', 'high freq right more']
-    return trialsEachCond, colorEachCond, labelEachCond
+    return freq, trialsEachCond, colorEachCond, labelEachCond
 
 ###################################################################################
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
@@ -238,7 +238,7 @@ for cellParams in cellParamsList:
     diffTimes = bdata['timeCenterOut'] - bdata['timeTarget']
     # -- Select trials to plot from behavior file -- #
     for freq in freqsToPlot:
-        trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
+        actualFreq, trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
         # -- Load intermediate data -- #
         for alignment in alignmentsToPlot:
             evlockDataFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(animal, date, depth, tetrode, cluster, alignment)
@@ -258,4 +258,4 @@ for cellParams in cellParamsList:
                 indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, 
                 timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, 
                 trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
-                script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams)
+                script=scriptFullPath, frequencyPloted=actualFreq, alignedTo=alignment, **cellParams)
