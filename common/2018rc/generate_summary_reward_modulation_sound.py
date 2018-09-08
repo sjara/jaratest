@@ -44,6 +44,10 @@ for brainArea in brainAreas:
     goodLowFreqRespCells = goodQualCells[moreRespLowFreq]
     goodHighFreqRespCells = goodQualCells[moreRespHighFreq]
 
+    soundFreqSel = (goodQualCells['soundFreqSelectivityPval'] < 0.05) & soundResp
+    print('{}:{} out of {} sound responsive cells responded differently to low vs high frequency'
+        .format(brainArea, sum(soundFreqSel), sum(soundResp)))
+
     lowFreqModIndName = 'modIndLow_'+modWindow+'_'+'sound'
     lowFreqModSigName = 'modSigLow_'+modWindow+'_'+'sound'
     lowFreqModDirName = 'modDirLow_'+modWindow+'_'+'sound'
@@ -68,4 +72,9 @@ for brainArea in brainAreas:
     # -- Save summary data -- #    
     outputFile = 'summary_reward_modulation_sound_{}.npz'.format(brainArea)
     outputFullPath = os.path.join(dataDir,outputFile)
-    np.savez(outputFullPath, brainArea=brainArea, soundResponsive=soundResp, goodLowFreqRespCells=goodLowFreqRespCells, goodHighFreqRespCells=goodHighFreqRespCells, sigModulatedLow=sigModulatedLow, sigModulatedHigh=sigModulatedHigh, sigModI=sigModI, nonsigModI=nonsigModI, allModI=allModI, script=scriptFullPath)
+    np.savez(outputFullPath, brainArea=brainArea, soundResponsive=soundResp, 
+        goodLowFreqRespCells=goodLowFreqRespCells, goodHighFreqRespCells=goodHighFreqRespCells, 
+        sigModulatedLow=sigModulatedLow, sigModulatedHigh=sigModulatedHigh, 
+        sigModI=sigModI, nonsigModI=nonsigModI, allModI=allModI, 
+        soundFreqSelective=soundFreqSel,
+        script=scriptFullPath)
