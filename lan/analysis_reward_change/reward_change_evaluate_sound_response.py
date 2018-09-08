@@ -228,4 +228,61 @@ def evaluate_2afc_sound_response_celldb(cellDb):
             behavDict['behavAveResp'].append(responseEachFreq)
  
     return behavDict
+
  
+def evaluate_2afc_sound_selectivity_celldb(cellDb):
+    '''
+    Analyse 2afc sound selectivity: use wilcoxon rank sum test to compare response to high vs low freqs.
+    '''
+    soundFreqSelPVal = np.ones(len(cellDb)) #default value 0
+    for indCell, cell in cellDb.iterrows():
+        cellObj = ephyscore.Cell(cell)
+        sessiontype = 'behavior'  #2afc behavior
+        #ephysData, bata = cellObj.load(sessiontype)
+        sessionInd = cellObj.get_session_inds(sessiontype)[0]
+        bdata = cellObj.load_behavior_by_index(sessionInd)
+        possibleFreq = np.unique(bdata['targetFrequency'])
+        numFreqs = len(possibleFreq)
+
+        try:
+            ephysData = cellObj.load_ephys_by_index(sessionInd)
+        except (ValueError, IOError) as error:
+            print(error)
+            continue
+
+        eventsDict = ephysData['events']
+        spikeTimestamps = ephysData['spikeTimes']
+
+        if spikeTimestamps.ndim == 0: #There is only one spike, ! spikesanalysis.eventlocked_spiketimes cannot handle only one spike !
+            continue
+
+        soundOnsetTimes = eventsDict['{}On'.format(soundChannelType)]
+        soundOnsetTimeBehav = bdata['timeTarget']
+
+        # -- Check to see if ephys and behav recordings have same number of trials, remove missing trials from behav file -- #
+        # Find missing trials
+        missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimes,soundOnsetTimeBehav)
+        # Remove missing trials
+        bdata.remove_trials(missingTrials)
+
+        if len(soundOnsetTimes) != len(bdata['timeTarget']): #some error not handled by remove missing trials
+            continue
+
+        # -- Compare sound response for low vs high frequency -- #
+        lowFreq = possibleFreq[0]
+        highFreq = possibleFreq[1]
+        lowFreqTrials = bdata['targetFrequency'] == lowFreq
+        highFreqTrials = bdata['targetFrequency'] == highFreq
+        (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = \
+                spikesanalysis.eventlocked_spiketimes(spikeTimestamps,soundOnsetTimes,[0,0.1])
+        nspkRespEachTrial = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,[0,0.1])
+        nspkRespEachTrial = nspkRespEachTrial.flatten()
+        lowFreqRespEachTrial = nspkRespEachTrial[lowFreqTrials]
+        highFreqRespEachTrial = nspkRespEachTrial[highFreqTrials]
+
+        W, pVal = stats.ranksums(lowFreqRespEachTrial, highFreqRespEachTrial)
+
+        soundFreqSelPVal[indCell] = pVal
+
+    return soundFreqSelPVal
+
