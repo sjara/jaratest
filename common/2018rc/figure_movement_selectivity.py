@@ -328,6 +328,9 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(allModIAC)
     print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
 
+    print('AC movement selective cells higher activity during ipsi choice/negative: {}, contral choice/positive: {}'
+        .format(sum(sigModIEncodeMvAC < 0), sum(sigModIEncodeMvAC > 0)))
+
 
 #ax7 = plt.subplot(gs02[1,:])
 ax7 = plt.subplot(gs[4:,1])
@@ -367,6 +370,9 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(allModIAStr)
     print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
     
+    print('AStr movement selective cells higher activity during ipsi choice/negative: {}, contral choice/positive: {}'
+        .format(sum(sigModIEncodeMvAStr < 0), sum(sigModIEncodeMvAStr > 0)))
+
     (Z, pValBtAreas) = stats.ranksums(np.abs(allModIAC), np.abs(allModIAStr))
     print 'Using wilcoxon rank sum test to compare ABSOLUTE movement selectivity indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     #(oddRatio, pValFisher) = stats.fisher_exact([[sum(soundRespAC)-len(sigModIAC), len(sigModIAC)],[sum(soundRespAStr)-len(sigModIAStr), len(sigModIAStr)]])

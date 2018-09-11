@@ -92,7 +92,8 @@ if PANELS[0]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    directionPloted = intData['directionPloted']
+
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -130,6 +131,7 @@ if PANELS[0]:
     
     ax1.set_yticklabels([])
     ax1.set_xticklabels([])
+    ax1.set_title(directionPloted)
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 
@@ -172,7 +174,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    directionPloted = intData['directionPloted']
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -210,6 +212,7 @@ if PANELS[1]:
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
+    ax3.set_title(directionPloted)
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 
@@ -289,7 +292,6 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(sigModIEncodeMvAC)
     print 'For significantly modulated cells in AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIEncodeMvAC), pVal)
     
-
     ax7 = plt.subplot(gs[4,1])
     ax7.annotate('F', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
     if removeSideIn:
@@ -337,6 +339,7 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(sigModIEncodeMvAStr)
     print 'For significantly modulated cells in AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIEncodeMvAStr), pVal)
     
+    
     (Z, pValBtAreas) = stats.ranksums(np.abs(allModIEncodeMvAC), np.abs(allModIEncodeMvAStr))
     print 'Using wilcoxon rank sum test to compare ABSOLUTE modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
     (Z, pValBtAreasSig) = stats.ranksums(np.abs(sigModIEncodeMvAC), np.abs(sigModIEncodeMvAStr))
@@ -364,7 +367,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    directionPloted = intData['directionPloted']
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -402,6 +405,7 @@ if PANELS[1]:
 
     ax8.set_yticklabels([])
     ax8.set_xticklabels([])
+    ax8.set_title(directionPloted)
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 
@@ -444,7 +448,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    directionPloted = intData['directionPloted']
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -482,6 +486,7 @@ if PANELS[1]:
 
     ax10.set_yticklabels([])
     ax10.set_xticklabels([])
+    ax10.set_title(directionPloted)
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 

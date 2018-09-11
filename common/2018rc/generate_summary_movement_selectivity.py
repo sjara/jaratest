@@ -41,6 +41,14 @@ for brainArea in brainAreas:
         movementModS = goodQualCells['movementModS_{}_removedsidein'.format(movementWindow)]
         encodeMv = (goodQualCells['movementSelective_moredif_Mv'] + goodQualCells['movementSelective_samedif_MvSd']).astype(bool)
         encodeSd =  goodQualCells['movementSelective_moredif_Sd'].astype(bool) 
+        zScoreRight = goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementWindow)]
+        zScoreLeft = goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementWindow)]
+        pValLeft = goodQualCells['movementPvalLeft_{}_removedsidein'.format(movementWindow)]
+        pValRight = goodQualCells['movementPvalRight_{}_removedsidein'.format(movementWindow)]
+        aveFrMvLeft = goodQualCells['movementAveFrLeft_{}_removedsidein'.format(movementWindow)]
+        aveFrMvRight = goodQualCells['movementAveFrRight_{}_removedsidein'.format(movementWindow)]
+        aveFrBaselineLeft = goodQualCells['movementBaselineAveFrLeft_removedsidein']
+        aveFrBaselineRight = goodQualCells['movementBaselineAveFrRight_removedsidein']
     else:
         movementModI = goodQualCells['movementModI_{}'.format(movementWindow)]
         movementModS = goodQualCells['movementModS_{}'.format(movementWindow)]
@@ -57,6 +65,14 @@ for brainArea in brainAreas:
     sigModIEncodeSd = movementModI[sigMovSel & encodeSd]
     nonsigModIEncodeSd = movementModI[~sigMovSel & encodeSd]
 
+    # allPvalLeftEncodeMv = pValLeft[encodeMv]
+    # allPvalRightEncodeMv = pValRight[encodeMv]
+    sigDifMvFromBaseline = (pValLeft < 0.025) | (pValRight < 0.025)
+    print('{}:{} out of {} cells show significantly different firing rate during movement compared to baseline'
+        .format(brainArea, sum(sigDifMvFromBaseline), len(sigDifMvFromBaseline)))
+    increasedActivityDuringMv = ((aveFrBaselineLeft < aveFrMvLeft) | (aveFrBaselineRight < aveFrMvRight)) & sigDifMvFromBaseline
+    print('{}:{} out of {} cells show increased activity during movement (either to left or right side)'
+        .format(brainArea, sum(increasedActivityDuringMv), sum(sigDifMvFromBaseline)))
     # -- Save summary data -- #
     if removeSideIn:
         outputFile = 'summary_rc_movement_selectivity_{}_removed_sidein_trials.npz'.format(brainArea)
@@ -67,4 +83,6 @@ for brainArea in brainAreas:
         sigModI=sigModI, nonsigModI=nonsigModI, allModI=movementModI, 
         sigModIEncodeMv=sigModIEncodeMv, nonsigModIEncodeMv=nonsigModIEncodeMv, allModIEncodeMv=allModIEncodeMv, 
         sigModIEncodeSd=sigModIEncodeSd, nonsigModIEncodeSd=nonsigModIEncodeSd, allModIEncodeSd=allModIEncodeSd, 
+        sigDifMvFromBaseline=sigDifMvFromBaseline,
+        increasedActivityDuringMv=increasedActivityDuringMv,
         script=scriptFullPath)

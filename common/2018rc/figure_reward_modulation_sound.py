@@ -184,7 +184,8 @@ if PANELS[0]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    frequencyPloted = intData['frequencyPloted']
+
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -211,6 +212,7 @@ if PANELS[0]:
     #plt.text(-0.1, yLims[-1]+5, 'AC')
     ax1.set_yticklabels([])
     ax1.set_xticklabels([])
+    ax1.set_title(frequencyPloted)
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 
@@ -256,7 +258,8 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    frequencyPloted = intData['frequencyPloted']
+
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -282,6 +285,8 @@ if PANELS[1]:
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
+    ax3.set_title(frequencyPloted)
+
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 
@@ -405,7 +410,8 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    frequencyPloted = intData['frequencyPloted']
+
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -431,6 +437,7 @@ if PANELS[1]:
 
     ax8.set_yticklabels([])
     ax8.set_xticklabels([])
+    ax8.set_title(frequencyPloted)
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 
@@ -473,7 +480,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    frequencyPloted = intData['frequencyPloted']
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -499,6 +506,7 @@ if PANELS[1]:
 
     ax10.set_yticklabels([])
     ax10.set_xticklabels([])
+    ax10.set_title(frequencyPloted)
     plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 

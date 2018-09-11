@@ -46,7 +46,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 11
+CASE = 12
 
 if CASE == 1:
     # -- Cluster and generate database with all clusters -- #
@@ -230,20 +230,28 @@ if CASE == 10:
     dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
     db = celldatabase.load_hdf(dbFullPath)
 
-    movementZscore, movementPval = evaluateMovementSel.evaluate_movement_zScore_celldb(db, baselineAlignment=baselineAlignment, 
+    movementZscore, movementPval, baselineAveFr, movementAveFr = evaluateMovementSel.evaluate_movement_zScore_celldb(db, baselineAlignment=baselineAlignment, 
         baselineTimeRange=baselineTimeRange, movementAlignment=movementAlignment, movementTimeRange=movementTimeRange, 
         removeSideIn=removeSideIn)
     movementZscoreLeft = movementZscore[:,0]
     movementZscoreRight = movementZscore[:,1]
     movementPvalLeft = movementPval[:,0]
     movementPvalRight = movementPval[:,1]
+    aveFrLeftwardBaseline = baselineAveFr[:,0] 
+    aveFrRightwardBaseline = baselineAveFr[:,1] 
+    aveFrLeftwardMovement = movementAveFr[:,0]  
+    aveFrRightwardMovement = movementAveFr[:,1]
 
     if removeSideIn:
         db['movementZscoreLeft_{}_removedsidein'.format(movementTimeRange)] = movementZscoreLeft
         db['movementPvalLeft_{}_removedsidein'.format(movementTimeRange)] = movementPvalLeft
         db['movementZscoreRight_{}_removedsidein'.format(movementTimeRange)] = movementZscoreRight
         db['movementPvalRight_{}_removedsidein'.format(movementTimeRange)] = movementPvalRight
-    
+        db['movementAveFrLeft_{}_removedsidein'.format(movementTimeRange)] = aveFrLeftwardMovement
+        db['movementAveFrRight_{}_removedsidein'.format(movementTimeRange)] = aveFrRightwardMovement
+        db['movementBaselineAveFrLeft_removedsidein'] = aveFrLeftwardBaseline
+        db['movementBaselineAveFrRight_removedsidein'] = aveFrRightwardBaseline
+        
     else:
         db['movementZscoreLeft_{}'.format(movementTimeRange)] = movementZscoreLeft
         db['movementPvalLeft_{}'.format(movementTimeRange)] = movementPvalLeft
@@ -289,3 +297,13 @@ if CASE == 11:
     celldb.loc[movementSelInds, 'movementSelective_samedif_MvSd'] = careEquallyAboutMvAndSound.astype(int)
 
     celldatabase.save_hdf(celldb, dbFullPath)
+
+if CASE == 12:
+    # -- For the merged database: evaluate sound frequency selectivity in 2afc task -- #
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    soundFreqSelPval = evaluateSoundResp.evaluate_2afc_sound_selectivity_celldb(db)
+    db['soundFreqSelectivityPval'] = soundFreqSelPval
+    
+    celldatabase.save_hdf(db, dbFullPath)

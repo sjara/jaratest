@@ -47,9 +47,9 @@ gs.update(left=0.1, right=1, top=0.95, bottom=0.08, wspace=0.4, hspace=1.7)
 
 movementSelWin = [0.0,0.3] #[0.05,0.15]
 if removeSideInTrials:
-	dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWin)
+    dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win_removed_sidein_trials.npz'.format(int(binWidth*1000), movementSelWin)
 else:
-	dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win.npz'.format(int(binWidth*1000), movementSelWin)
+    dataFilename = 'average_spike_count_by_movement_direction_{}ms_bin_{}_win.npz'.format(int(binWidth*1000), movementSelWin)
 dataFilePath = os.path.join(dataDir, dataFilename)
 data = np.load(dataFilePath)
 aveSpikeCountByBlock = data['aveSpikeCountByBlock']
@@ -88,50 +88,53 @@ ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction', fo
 allAxes = [ax0,ax1]
 
 for indA,brainArea in enumerate(brainAreaLabels):
-	if controlForSound:
-		cellsThisArea = ((brainAreaEachCell==brainArea) & encodeMv)
-	else:
-		cellsThisArea = (brainAreaEachCell==brainArea)
-	spikeDifIndEachCellThisArea = spikeDifIndEachCell[:, cellsThisArea]
-	maxDifBinEachCellThisArea = np.argmax(np.abs(spikeDifIndEachCellThisArea), axis=0)
-	maxDifBinEachCellBothAreas.append(maxDifBinEachCellThisArea)
-	meanPeakBinNum = np.mean(maxDifBinEachCellThisArea)
-	medianPeakBinNum = np.median(maxDifBinEachCellThisArea)
-	chisq, pVal = stats.chisquare(maxDifBinEachCellThisArea)
-	print('For {}, using chi square test for uniform distribution of max dif bin, p={}'
-		.format(brainArea, pVal))
-	print('For {}, mean peak bin number is {}, median peak bin number is {}'
-		.format(brainArea, meanPeakBinNum, medianPeakBinNum))
-	maxDifEachCellThisArea = spikeDifIndEachCellThisArea[maxDifBinEachCellThisArea, range(len(maxDifBinEachCellThisArea))]
-	negPeakDifCells = maxDifEachCellThisArea < 0
-	posPeakDifCells = maxDifEachCellThisArea > 0
-	posNegPeakCountBothAreas.append([sum(posPeakDifCells), sum(negPeakDifCells)])
-	print('For {}, there are {} positive peak cells and {} negative peak cells'
-		.format(brainArea, sum(posPeakDifCells), sum(negPeakDifCells)))
-	cellReIndNeg = np.argsort(maxDifBinEachCellThisArea[negPeakDifCells])
-	cellReIndPos = np.argsort(maxDifBinEachCellThisArea[posPeakDifCells])
-	#pdb.set_trace()
-	sortedSpikeDifIndEachNegPeakCell = spikeDifIndEachCellThisArea[:, negPeakDifCells][:, cellReIndNeg]
-	sortedSpikeDifIndEachPosPeakCell = spikeDifIndEachCellThisArea[:, posPeakDifCells][:, cellReIndPos]
-	sortedSpikeDifIndEachCellThisArea = np.hstack((sortedSpikeDifIndEachPosPeakCell, sortedSpikeDifIndEachNegPeakCell))
-	
-	#ax = plt.subplot(1,2,indA+1)
-	ax = allAxes[indA]
-	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
-	im = ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap=colorMap, 
-		vmin=-1, vmax=1, interpolation='nearest', aspect='auto')
-	ax.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
-	#ax.set_xticklabels([0. , 0.1, 0.2, 0.3])
-        xTickLabels = [str(x) for x in np.arange(timePeriodToPlot[0],timePeriodToPlot[1]+0.1,0.1)]
-	ax.set_xticklabels(xTickLabels)
-	#xticklabels = ['{:.1f}'.format(x) for x in xticks]
-	#ax.xaxis.set_major_formatter(ticker.StrMethodFormatter("{x:g}"))
-	#plt.yticks([150, 50], brainAreaLabels)
-	ax.set_yticks([0,50,100])
-	if indA == 0:
-		ax.set_ylabel('Cell number')
-	ax.set_xlabel('Time from movement onset (s)')
-	ax.set_title(brainArea[5:])
+    if controlForSound:
+        cellsThisArea = ((brainAreaEachCell==brainArea) & encodeMv)
+    else:
+        cellsThisArea = (brainAreaEachCell==brainArea)
+    spikeDifIndEachCellThisArea = spikeDifIndEachCell[:, cellsThisArea]
+    maxDifBinEachCellThisArea = np.argmax(np.abs(spikeDifIndEachCellThisArea), axis=0)
+    maxDifBinEachCellBothAreas.append(maxDifBinEachCellThisArea)
+    meanPeakBinNum = np.mean(maxDifBinEachCellThisArea)
+    medianPeakBinNum = np.median(maxDifBinEachCellThisArea)
+    chisq, pVal = stats.chisquare(maxDifBinEachCellThisArea)
+    print('For {}, using chi square test for uniform distribution of max dif bin, p={}'
+        .format(brainArea, pVal))
+    print('For {}, mean peak bin number is {}, median peak bin number is {}'
+        .format(brainArea, meanPeakBinNum, medianPeakBinNum))
+    maxDifEachCellThisArea = spikeDifIndEachCellThisArea[maxDifBinEachCellThisArea, range(len(maxDifBinEachCellThisArea))]
+    negPeakDifCells = maxDifEachCellThisArea < 0
+    posPeakDifCells = maxDifEachCellThisArea > 0
+    posNegPeakCountBothAreas.append([sum(posPeakDifCells), sum(negPeakDifCells)])
+    print('For {}, there are {} positive peak cells and {} negative peak cells'
+        .format(brainArea, sum(posPeakDifCells), sum(negPeakDifCells)))
+    cellReIndNeg = np.argsort(maxDifBinEachCellThisArea[negPeakDifCells])
+    cellReIndPos = np.argsort(maxDifBinEachCellThisArea[posPeakDifCells])
+    #pdb.set_trace()
+    sortedSpikeDifIndEachNegPeakCell = spikeDifIndEachCellThisArea[:, negPeakDifCells][:, cellReIndNeg]
+    sortedSpikeDifIndEachPosPeakCell = spikeDifIndEachCellThisArea[:, posPeakDifCells][:, cellReIndPos]
+    sortedSpikeDifIndEachCellThisArea = np.hstack((sortedSpikeDifIndEachPosPeakCell, sortedSpikeDifIndEachNegPeakCell))
+    
+    #ax = plt.subplot(1,2,indA+1)
+    ax = allAxes[indA]
+    #ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
+    im = ax.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap=colorMap, 
+        vmin=-1, vmax=1, interpolation='nearest', aspect='auto')
+    ax.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])
+    #ax.set_xticklabels([0. , 0.1, 0.2, 0.3])
+    xTickLabels = ['{:.1f}'.format(x) for x in np.arange(timePeriodToPlot[0],timePeriodToPlot[1]+0.1,0.1)]
+    ax.set_xticklabels(xTickLabels)
+    #xticklabels = ['{:.1f}'.format(x) for x in xticks]
+    #ax.xaxis.set_major_formatter(ticker.StrMethodFormatter("{x:g}"))
+    #plt.yticks([150, 50], brainAreaLabels)
+    ax.set_yticks([0,50,100])
+    if indA == 0:
+        ax.set_ylabel('Cell number')
+    ax.set_xlabel('Time from movement onset (s)')
+    ax.set_title(brainArea[5:])
+
+ax0.set_title('AC')
+ax1.set_title('pStr')
 
 #fig.text(0.3, 0.08, 'Time from movement onset (s)')
 plt.subplots_adjust(left=0.15, right=0.95, top=0.95, bottom=0.15, wspace=0.4, hspace=0.2)
@@ -147,6 +150,6 @@ print('Using bin width of {}s, compare time bin number for peak difference betwe
 
 #plt.tight_layout()
 if SAVE_FIGURE:
-	extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
 plt.show()
