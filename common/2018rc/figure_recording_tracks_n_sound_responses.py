@@ -90,7 +90,8 @@ if PANELS[0]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    freqsPloted = intData['freqsPloted']
+    print('AC cells freqs: {}'.format(freqsPloted))
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -161,7 +162,8 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-   
+    freqsPloted = intData['freqsPloted']
+    print('AStr cells freqs: {}'.format(freqsPloted))
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -189,7 +191,7 @@ if PANELS[1]:
     ax3.set_yticklabels([])
     ax3.set_ylabel('Trials grouped by\nsound frequency', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
-    
+
     ax4 = plt.subplot(gs01[2, :])
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']

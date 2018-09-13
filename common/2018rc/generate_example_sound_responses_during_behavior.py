@@ -167,7 +167,7 @@ for cellParams in cellParamsList:
     trialsEachCond = np.column_stack((lowFreqTrials, highFreqTrials))
     colorEachCond = [colorsDict['left'], colorsDict['right']]
     labelEachCond = ['low freq', 'high freq']
-
+    freqs = [possibleFreq[0], possibleFreq[-1]]
     for alignment in alignmentsToPlot:
         evlockDataFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(animal, date, depth, tetrode, cluster, alignment)
         evlockDataFullpath = os.path.join(evlockDataPath, evlockDataFilename) 
@@ -182,7 +182,7 @@ for cellParams in cellParamsList:
         outputFile = 'example_sound_resp_{}aligned_{}_{}_T{}_c{}.npz'.format(alignment, animal, date, tetrode, cluster)
         outputFullPath = os.path.join(dataDir,outputFile)
         np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
-            movementTimesFromEventOnset=diffTimes,
+            movementTimesFromEventOnset=diffTimes, freqsPloted=freqs,
             indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, 
             timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, 
             trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
