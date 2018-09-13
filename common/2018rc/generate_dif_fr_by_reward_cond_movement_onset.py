@@ -31,7 +31,8 @@ movementSelWindow = [0.0,0.3]#[0.05, 0.15]
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
-goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
+#goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
+goodQualCells = celldb.query('keepAfterDupTest==1 and cellInTargetArea==1')
 encodeMv = (celldb['movementSelective_moredif_Mv'] + celldb['movementSelective_samedif_MvSd']).astype(bool)
 encodeSd = celldb['movementSelective_moredif_Sd'].astype(bool)
 

@@ -329,6 +329,8 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(allModIAC)
     print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
 
+    print('For AC: {} out of {} movement selective cells encode movement regardless of sound'
+        .format(len(sigModIEncodeMvAC), len(sigModIAC)))
     print('AC movement selective cells higher activity during ipsi choice/negative: {}, contral choice/positive: {}'
         .format(sum(sigModIEncodeMvAC < 0), sum(sigModIEncodeMvAC > 0)))
 
@@ -370,7 +372,8 @@ if PANELS[2]:
     print 'Total number of good cells is:', len(allModIAStr), '\nNumber of cells movement selective is:', len(sigModIAStr)
     (Z, pVal) = stats.wilcoxon(allModIAStr)
     print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
-    
+    print('For AStr: {} out of {} movement selective cells encode movement regardless of sound'
+        .format(len(sigModIEncodeMvAStr), len(sigModIAStr)))
     print('AStr movement selective cells higher activity during ipsi choice/negative: {}, contral choice/positive: {}'
         .format(sum(sigModIEncodeMvAStr < 0), sum(sigModIEncodeMvAStr > 0)))
 

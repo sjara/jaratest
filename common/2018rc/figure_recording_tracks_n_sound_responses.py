@@ -117,9 +117,9 @@ if PANELS[0]:
     #plt.text(-0.1, yLims[-1]+5, 'AC')
     #ax1.set_yticklabels([])
     ax1.set_xticklabels([])
-    #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
-    #plt.ylabel('AC', fontsize=fontSizeLabels, rotation=0)
-
+    ax1.set_yticklabels([])
+    ax1.set_ylabel('Trials grouped by\nsound frequency', fontsize=fontSizeLabels)
+    
     ax2 = plt.subplot(gs00[2, :])
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -145,7 +145,7 @@ if PANELS[0]:
     
     extraplots.boxoff(plt.gca())
     
-    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
+    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeLabels+2)
     plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
@@ -185,11 +185,11 @@ if PANELS[1]:
     plt.setp(bplot['medians'], color='orange')
     #plt.text(-0.1, yLims[-1]+5, 'AStr')
 
-    ax3.set_yticklabels([])
     ax3.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
-
-
+    ax3.set_yticklabels([])
+    ax3.set_ylabel('Trials grouped by\nsound frequency', fontsize=fontSizeLabels)
+    extraplots.boxoff(plt.gca(), keep='none')
+    
     ax4 = plt.subplot(gs01[2, :])
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
@@ -213,7 +213,7 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
-    plt.text(-0.1, 0.7*yLims[-1], 'pStr', fontweight='bold', ha='center', fontsize=fontSizeLabels+2)
+    plt.text(-0.1, 0.7*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeLabels+2)
     plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.4,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
     #plt.legend(condLabels[0:2], loc='upper left', fontsize=10, handlelength=0.2,
