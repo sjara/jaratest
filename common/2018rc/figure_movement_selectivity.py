@@ -31,10 +31,11 @@ timeRangeToPlot = [-0.2,0.4]
 
 # -- Select example cells here -- #
 #exampleMovSelAStr = 'adap005_2015-12-24_T6_c8'
-exampleMovSelAStr = 'adap013_2016-03-30_T8_c5'
+#exampleMovSelAStr = 'adap013_2016-03-30_T8_c5'
+exampleMovSelAStr = 'adap017_2016-04-21_T1_c7' #'adap012_2016-03-29_T4_c11'
 
-#exampleMovSelAC = 'gosi008_2017-03-10_T1_c10'
-exampleMovSelAC = 'gosi004_2017-02-13_T7_c8'
+exampleMovSelAC = 'gosi004_2017-02-25_T1_c8'
+#exampleMovSelAC = 'gosi004_2017-02-13_T7_c8'
 ###############################################################
 
 
@@ -139,9 +140,9 @@ if PANELS[0]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,35]
-    #soundBarHeight = 0.1*yLims[-1]
-    #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    yLims = [0,10]
+    # #soundBarHeight = 0.1*yLims[-1]
+    # #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
@@ -168,9 +169,9 @@ if PANELS[0]:
     #ax.set_title('Error trials', fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,35]
-    plt.ylim(yLims)
-    plt.yticks(yLims)
+    # yLims = [0,35]
+    # plt.ylim(yLims)
+    # plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
@@ -191,7 +192,7 @@ if PANELS[1]:
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
-    trialsEachCond = intData['trialsEachCond'][:,:2]
+    trialsEachCond = intData['trialsEachCond'][:,:2] #np.column_stack(intData['trialsEachCond'][:,0]&intData['trialsEachCond'][:,2], intData['trialsEachCond'][:,1]&intData['trialsEachCond'][:,3])
     numCorrectTrials = trialsEachCond.sum()
     print('Number of correct trials: {}'.format(numCorrectTrials))
     colorEachCond = intData['colorEachCond'][:2]
@@ -246,11 +247,11 @@ if PANELS[1]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,65]
-    #soundBarHeight = 0.1*yLims[-1]
-    #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
-    plt.ylim(yLims)
-    plt.yticks(yLims)
+    # yLims = [0,65]
+    # #soundBarHeight = 0.1*yLims[-1]
+    # #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    # plt.ylim(yLims)
+    # plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks([],[])
     #plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
@@ -270,11 +271,11 @@ if PANELS[1]:
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,65]
-    #soundBarHeight = 0.1*yLims[-1]
-    #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
-    plt.ylim(yLims)
-    plt.yticks(yLims)
+    # yLims = [0,65]
+    # #soundBarHeight = 0.1*yLims[-1]
+    # #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
+    # plt.ylim(yLims)
+    # plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
     
@@ -319,7 +320,7 @@ if PANELS[2]:
     plt.text(0.7,yPosText,'n={}'.format(len(allModIAC)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
+    plt.xlabel('Choice selectivity index', fontsize=fontSizeLabels)
     plt.ylabel('Number of cells', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca())
 
@@ -361,7 +362,7 @@ if PANELS[2]:
     plt.text(0.7,yPosText,'n={}'.format(len(allModIAStr)),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
-    plt.xlabel('Movement selectivity index', fontsize=fontSizeLabels)
+    plt.xlabel('Choice selectivity index', fontsize=fontSizeLabels)
     plt.ylabel('Number of cells', fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca())
 

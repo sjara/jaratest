@@ -34,15 +34,51 @@ colorsDict = {'left': figparams.colp['MoveLeft'],
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
 EPHYS_PATH = settings.EPHYS_PATH_REMOTE
 
-if not os.path.ismount(BEHAVIOR_PATH):
-    os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
+# if not os.path.ismount(BEHAVIOR_PATH):
+#     os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
 
-if not os.path.ismount(EPHYS_PATH):
-    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
+# if not os.path.ismount(EPHYS_PATH):
+#     os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
 
 
 # -- These example cells we picked manually  --#
 cellParamsList = []
+
+exampleCell = {'subject':'adap012',
+              'date':'2016-03-29',
+              'tetrode':4,
+               'cluster':11,
+               'brainRegion':'astr'}  # sustained
+cellParamsList.append(exampleCell) 
+
+exampleCell = {'subject':'adap017',
+              'date':'2016-04-21',
+              'tetrode':1,
+               'cluster':7,
+               'brainRegion':'astr'}  # sustained
+cellParamsList.append(exampleCell) 
+
+exampleCell = {'subject':'gosi004',
+              'date':'2017-03-07',
+              'tetrode':7,
+               'cluster':10,
+               'brainRegion':'ac'}  # sustained
+cellParamsList.append(exampleCell) 
+
+exampleCell = {'subject':'gosi004',
+              'date':'2017-02-25',
+              'tetrode':1,
+               'cluster':8,
+               'brainRegion':'ac'}  # sustained
+cellParamsList.append(exampleCell) 
+
+exampleCell = {'subject':'gosi008',
+              'date':'2017-03-10',
+              'tetrode':1,
+               'cluster':10,
+               'brainRegion':'ac'}  # sustained
+cellParamsList.append(exampleCell) 
+
 
 exampleCell = {'subject':'adap013',
               'date':'2016-03-30',
