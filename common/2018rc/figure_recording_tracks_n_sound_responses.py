@@ -107,9 +107,9 @@ if PANELS[0]:
     yLims = plt.gca().get_ylim()
     plt.hold('on')
     bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
-    extraplots.boxoff(plt.gca())
+    #extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
