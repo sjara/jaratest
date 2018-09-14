@@ -44,12 +44,12 @@ EPHYS_PATH = settings.EPHYS_PATH_REMOTE
 # -- These example cells we picked manually  --#
 cellParamsList = []
 
-exampleCell = {'subject':'adap012',
-              'date':'2016-03-29',
-              'tetrode':4,
-               'cluster':11,
-               'brainRegion':'astr'}  # sustained
-cellParamsList.append(exampleCell) 
+# exampleCell = {'subject':'adap012',
+#               'date':'2016-03-29',
+#               'tetrode':4,
+#                'cluster':11,
+#                'brainRegion':'astr'}  # sustained
+# cellParamsList.append(exampleCell) 
 
 exampleCell = {'subject':'adap017',
               'date':'2016-04-21',
@@ -58,12 +58,12 @@ exampleCell = {'subject':'adap017',
                'brainRegion':'astr'}  # sustained
 cellParamsList.append(exampleCell) 
 
-exampleCell = {'subject':'gosi004',
-              'date':'2017-03-07',
-              'tetrode':7,
-               'cluster':10,
-               'brainRegion':'ac'}  # sustained
-cellParamsList.append(exampleCell) 
+# exampleCell = {'subject':'gosi004',
+#               'date':'2017-03-07',
+#               'tetrode':7,
+#                'cluster':10,
+#                'brainRegion':'ac'}  # sustained
+# cellParamsList.append(exampleCell) 
 
 exampleCell = {'subject':'gosi004',
               'date':'2017-02-25',
@@ -72,79 +72,79 @@ exampleCell = {'subject':'gosi004',
                'brainRegion':'ac'}  # sustained
 cellParamsList.append(exampleCell) 
 
-exampleCell = {'subject':'gosi008',
-              'date':'2017-03-10',
-              'tetrode':1,
-               'cluster':10,
-               'brainRegion':'ac'}  # sustained
-cellParamsList.append(exampleCell) 
+# exampleCell = {'subject':'gosi008',
+#               'date':'2017-03-10',
+#               'tetrode':1,
+#                'cluster':10,
+#                'brainRegion':'ac'}  # sustained
+# cellParamsList.append(exampleCell) 
 
 
-exampleCell = {'subject':'adap013',
-              'date':'2016-03-30',
-              'tetrode':8,
-               'cluster':5,
-               'brainRegion':'astr'}  # leftward very strong
-cellParamsList.append(exampleCell) 
+# exampleCell = {'subject':'adap013',
+#               'date':'2016-03-30',
+#               'tetrode':8,
+#                'cluster':5,
+#                'brainRegion':'astr'}  # leftward very strong
+# cellParamsList.append(exampleCell) 
 
-exampleCell = {'subject':'adap005',
-              'date':'2015-12-24',
-              'tetrode':6,
-               'cluster':8,
-               'brainRegion':'astr'} 
-cellParamsList.append(exampleCell)
+# exampleCell = {'subject':'adap005',
+#               'date':'2015-12-24',
+#               'tetrode':6,
+#                'cluster':8,
+#                'brainRegion':'astr'} 
+# cellParamsList.append(exampleCell)
 
-exampleCell = {'subject':'adap012',
-              'date':'2016-03-09',
-              'tetrode':3,
-               'cluster':2,
-               'brainRegion':'astr'} 
-cellParamsList.append(exampleCell)
-#
-exampleCell = {'subject':'adap012',
-              'date':'2016-03-24',
-              'tetrode':4,
-               'cluster':8,
-               'brainRegion':'astr'} 
-cellParamsList.append(exampleCell)
+# exampleCell = {'subject':'adap012',
+#               'date':'2016-03-09',
+#               'tetrode':3,
+#                'cluster':2,
+#                'brainRegion':'astr'} 
+# cellParamsList.append(exampleCell)
+# #
+# exampleCell = {'subject':'adap012',
+#               'date':'2016-03-24',
+#               'tetrode':4,
+#                'cluster':8,
+#                'brainRegion':'astr'} 
+# cellParamsList.append(exampleCell)
 
-exampleCell = {'subject':'gosi004',
-              'date':'2017-02-13',
-              'tetrode':7,
-               'cluster':8,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
+# exampleCell = {'subject':'gosi004',
+#               'date':'2017-02-13',
+#               'tetrode':7,
+#                'cluster':8,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
 
-exampleCell = {'subject':'gosi004',
-              'date':'2017-03-11',
-              'tetrode':4,
-               'cluster':5,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
+# exampleCell = {'subject':'gosi004',
+#               'date':'2017-03-11',
+#               'tetrode':4,
+#                'cluster':5,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
 
-#
-exampleCell = {'subject':'gosi008',
-              'date':'2017-03-07',
-              'tetrode':1,
-               'cluster':4,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
+# #
+# exampleCell = {'subject':'gosi008',
+#               'date':'2017-03-07',
+#               'tetrode':1,
+#                'cluster':4,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
 
-#
-exampleCell = {'subject':'gosi008',
-              'date':'2017-03-10',
-              'tetrode':1,
-               'cluster':10,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
+# #
+# exampleCell = {'subject':'gosi008',
+#               'date':'2017-03-10',
+#               'tetrode':1,
+#                'cluster':10,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
 
 
-exampleCell = {'subject':'gosi010',
-              'date':'2017-05-02',
-              'tetrode':4,
-               'cluster':12,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
+# exampleCell = {'subject':'gosi010',
+#               'date':'2017-05-02',
+#               'tetrode':4,
+#                'cluster':12,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
 
 # -- Here we can choose to generate data for a specific cell instead of every cell -- #
 if len(sys.argv) == 1:
@@ -229,6 +229,7 @@ for cellParams in cellParamsList:
     np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
       soundTimesFromEventOnset=diffTimesSound, sideInTimesFromEventOnset=diffTimesSideIn,
       indexLimitsEachTrial=indexLimitsEachTrial, 
+      lowFreq=bdata['lowFreq'][0], highFreq=bdata['highFreq'][0],
       spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, 
       condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
       script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 

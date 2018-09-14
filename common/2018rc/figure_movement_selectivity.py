@@ -85,7 +85,10 @@ if PANELS[0]:
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
-    trialsEachCond = intData['trialsEachCond'][:,0:2]
+    #trialsEachCond = intData['trialsEachCond'][:,:2]
+    trialsEachCond = np.column_stack((intData['trialsEachCond'][:,0]|intData['trialsEachCond'][:,2], 
+    intData['trialsEachCond'][:,1]|intData['trialsEachCond'][:,3]))
+    
     numCorrectTrials = trialsEachCond.sum()
     print('Number of correct trials: {}'.format(numCorrectTrials))
     colorEachCond = intData['colorEachCond'][0:2]
@@ -133,7 +136,11 @@ if PANELS[0]:
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
-    
+    trialsEachCond = intData['trialsEachCond'][:,:2]
+    lowFreq = intData['lowFreq']
+    highFreq = intData['highFreq']
+    print('low freq: {}, high freq: {}'.format(lowFreq, highFreq))
+
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec,
         trialsEachCond=trialsEachCond, colorEachCond=colorEachCond,
         linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
@@ -155,7 +162,7 @@ if PANELS[0]:
     extraplots.boxoff(plt.gca())
     plt.text(-0.1, 0.85*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'correct\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+    plt.legend(['{}Hz left'.format(lowFreq),'{}Hz right'.format(highFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
            frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
 
     trialsEachCond = intData['trialsEachCond'][:,2:]
@@ -169,9 +176,9 @@ if PANELS[0]:
     #ax.set_title('Error trials', fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    # yLims = [0,35]
-    # plt.ylim(yLims)
-    # plt.yticks(yLims)
+    yLims = [0,10]
+    plt.ylim(yLims)
+    plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
@@ -179,10 +186,11 @@ if PANELS[0]:
     
     plt.text(-0.1, 0.85*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+    plt.legend(['{}Hz left'.format(highFreq),'{}Hz right'.format(lowFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
            frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
 
     extraplots.boxoff(plt.gca())
+
 
 # -- Panel B: movement selective cell in AStr -- #
 ax3 = plt.subplot(gs01[0:2, :])
@@ -192,7 +200,9 @@ if PANELS[1]:
     intDataFullPath = os.path.join(dataDir, intDataFilename)
     intData =np.load(intDataFullPath)
 
-    trialsEachCond = intData['trialsEachCond'][:,:2] #np.column_stack(intData['trialsEachCond'][:,0]&intData['trialsEachCond'][:,2], intData['trialsEachCond'][:,1]&intData['trialsEachCond'][:,3])
+    # trialsEachCond = intData['trialsEachCond'][:,:2] 
+    trialsEachCond = np.column_stack((intData['trialsEachCond'][:,0]|intData['trialsEachCond'][:,2], 
+    intData['trialsEachCond'][:,1]|intData['trialsEachCond'][:,3]))
     numCorrectTrials = trialsEachCond.sum()
     print('Number of correct trials: {}'.format(numCorrectTrials))
     colorEachCond = intData['colorEachCond'][:2]
@@ -242,16 +252,18 @@ if PANELS[1]:
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
+    trialsEachCond = intData['trialsEachCond'][:,:2] 
+    lowFreq = intData['lowFreq']
+    highFreq = intData['highFreq']
+    print('low freq: {}, high freq: {}'.format(lowFreq, highFreq))
     
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    # yLims = [0,65]
-    # #soundBarHeight = 0.1*yLims[-1]
-    # #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
-    # plt.ylim(yLims)
-    # plt.yticks(yLims)
+    yLims = [0,40]
+    plt.ylim(yLims)
+    plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks([],[])
     #plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
@@ -260,7 +272,7 @@ if PANELS[1]:
 
     plt.text(-0.1, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'correct\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+    plt.legend(['{}Hz left'.format(lowFreq),'{}Hz right'.format(highFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
            frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
     
     trialsEachCond = intData['trialsEachCond'][:,2:]
@@ -271,11 +283,9 @@ if PANELS[1]:
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    # yLims = [0,65]
-    # #soundBarHeight = 0.1*yLims[-1]
-    # #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
-    # plt.ylim(yLims)
-    # plt.yticks(yLims)
+    yLims = [0,40]
+    plt.ylim(yLims)
+    plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
     
@@ -285,7 +295,7 @@ if PANELS[1]:
 
     plt.text(-0.07, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.07, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['Left','Right'], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+    plt.legend(['{}Hz left'.format(highFreq),'{}Hz right'.format(lowFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
            frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
 
 
@@ -325,7 +335,7 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
 
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of good cells is:', len(allModIAC), '\nNumber of cells movement selective is:', len(sigModIAC)
+    print 'AC: Total number of good cells is:', len(allModIAC), '\nNumber of cells movement selective is:', len(sigModIAC)
     (Z, pVal) = stats.wilcoxon(allModIAC)
     print 'For AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAC), pVal)
 
@@ -369,7 +379,7 @@ if PANELS[2]:
     extraplots.boxoff(plt.gca())
 
     # -- Stats: test whether the modulation index distribution for all good cells is centered at zero -- #
-    print 'Total number of good cells is:', len(allModIAStr), '\nNumber of cells movement selective is:', len(sigModIAStr)
+    print 'AStr: Total number of good cells is:', len(allModIAStr), '\nNumber of cells movement selective is:', len(sigModIAStr)
     (Z, pVal) = stats.wilcoxon(allModIAStr)
     print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIAStr), pVal)
     print('For AStr: {} out of {} movement selective cells encode movement regardless of sound'
