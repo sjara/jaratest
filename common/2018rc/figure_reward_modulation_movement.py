@@ -131,8 +131,8 @@ if PANELS[0]:
     
     ax1.set_yticklabels([])
     ax1.set_xticklabels([])
-    ax1.set_title(directionPloted)
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #ax1.set_title(directionPloted)
+    plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
     extraplots.boxoff(plt.gca(), keep='none')
 
     ax2 = plt.subplot(gs00[2, :])
@@ -212,8 +212,10 @@ if PANELS[1]:
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
-    ax3.set_title(directionPloted)
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #ax3.set_title(directionPloted)
+    #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+
     extraplots.boxoff(plt.gca(), keep='none')
 
 
@@ -408,7 +410,9 @@ if PANELS[1]:
     ax8.set_yticklabels([])
     ax8.set_xticklabels([])
     ax8.set_title(directionPloted)
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+
     extraplots.boxoff(plt.gca(), keep='none')
 
 
@@ -488,8 +492,10 @@ if PANELS[1]:
 
     ax10.set_yticklabels([])
     ax10.set_xticklabels([])
-    ax10.set_title(directionPloted)
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #ax10.set_title(directionPloted)
+    #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+
     extraplots.boxoff(plt.gca(), keep='none')
 
 
