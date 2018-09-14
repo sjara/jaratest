@@ -46,7 +46,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 12
+CASE = 13
 
 if CASE == 1:
     # -- Cluster and generate database with all clusters -- #
@@ -307,3 +307,46 @@ if CASE == 12:
     db['soundFreqSelectivityPval'] = soundFreqSelPval
     
     celldatabase.save_hdf(db, dbFullPath)
+
+if CASE == 13:
+    # -- For the merged database: add a column to reflect whether cell fall inside AC for AC mice -- #
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    cellInsideAC = np.ones(len(db), dtype=int) # default to 1, meaning inside AC
+
+    gosi010MaxDepth = 1660
+    gosi010PortionOfTrackInsideAC = 1 - float(1/2.5) # Between 1/3 and 1/2 of the track from the deepest point is outside AC
+    gosi004MaxDepth = 1700
+    gosi004PortionOfTrackOutsideAC = float(1/3) # 1/3 of the track from the surface of the brain is not in AC
+
+    gosi010Cells = db.query("subject=='gosi010'")
+    actualDepthEachCellGosi010 = gosi010Cells['depth_this_cell']
+    gosi010cellsOutsideAC = gosi010Cells[actualDepthEachCellGosi010 > gosi010MaxDepth * gosi010PortionOfTrackInsideAC]
+
+    gosi004Cells = db.query("subject=='gosi004'")
+    actualDepthEachCellGosi004 = gosi004Cells['depth_this_cell']
+    gosi004cellsOutsideAC = gosi004Cells[actualDepthEachCellGosi004 < gosi004MaxDepth * gosi004PortionOfTrackOutsideAC]
+
+    cellInsideAC[gosi010cellsOutsideAC.index] = 0
+    cellInsideAC[gosi004cellsOutsideAC.index] = 0
+    
+    db['cellInsideAC'] = cellInsideAC
+    celldatabase.save_hdf(db, dbFullPath)
+
+if CASE == 14:
+    # -- For the merged database: add a column to reflect whether cell fall inside AC or AStr -- #
+    # -- Cell inside Astr was checked in CASE==2 and cell was only saved in this database if inside AStr -- #
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    cellInTargetArea = np.ones(len(db), dtype=bool) # default to 1, meaning inside target
+    cellInsideAC = db['cellInsideAC'].astype(bool)
+
+    cellInTargetArea = cellInTargetArea & cellInsideAC
+    cellInTargetArea = cellInTargetArea.astype(int) # cast it back to int for saving in hdf5
+    
+    db['cellInTargetArea'] = cellInTargetArea
+    celldatabase.save_hdf(db, dbFullPath)
+
+    
