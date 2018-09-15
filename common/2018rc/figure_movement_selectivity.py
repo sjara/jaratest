@@ -171,7 +171,7 @@ if PANELS[0]:
 
     trialsEachCond = intData['trialsEachCond'][:,2:]
     numErrorTrials = trialsEachCond.sum()
-    print('Number of correct trials: {}'.format(numErrorTrials))
+    print('Number of error trials: {}'.format(numErrorTrials))
     colorEachCond = intData['colorEachCond'][2:]
     ax = plt.subplot(gs00[3, :])
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec,
@@ -292,7 +292,7 @@ if PANELS[1]:
    
     trialsEachCond = intData['trialsEachCond'][:,2:]
     numErrorTrials = trialsEachCond.sum()
-    print('Number of correct trials: {}'.format(numErrorTrials))
+    print('Number of error trials: {}'.format(numErrorTrials))
     colorEachCond = intData['colorEachCond'][2:]
     ax = plt.subplot(gs01[3, :])
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
