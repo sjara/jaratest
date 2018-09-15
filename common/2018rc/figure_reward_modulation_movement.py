@@ -27,6 +27,7 @@ matplotlib.rcParams['svg.fonttype'] = 'none'
 colorsDict = {'colorLMore':figparams.colp['MoreRewardL'], 
               'colorRMore':figparams.colp['MoreRewardR']} 
 condDict = {'left more':'More left', 'right more':'More right'}
+choiceDict = {'left':'leftward', 'right':'rightward'}
 
 soundColor = figparams.colp['sound']
 timeRangeToPlot = [-0.2,0.5]
@@ -92,7 +93,7 @@ if PANELS[0]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    directionPloted = intData['directionPloted']
+    directionPloted = str(intData['directionPloted'])
 
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
@@ -132,7 +133,8 @@ if PANELS[0]:
     ax1.set_yticklabels([])
     ax1.set_xticklabels([])
     #ax1.set_title(directionPloted)
-    plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    plt.ylabel('Correct {}\ntrials grouped by \nreward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+
     extraplots.boxoff(plt.gca(), keep='none')
 
     ax2 = plt.subplot(gs00[2, :])
@@ -174,7 +176,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    directionPloted = intData['directionPloted']
+    directionPloted = str(intData['directionPloted'])
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -214,7 +216,9 @@ if PANELS[1]:
     ax3.set_xticklabels([])
     #ax3.set_title(directionPloted)
     #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
-    plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{} trials grouped\nby reward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+    plt.ylabel('Correct {}\ntrials grouped by \nreward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
 
     extraplots.boxoff(plt.gca(), keep='none')
 
@@ -276,8 +280,8 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIEncodeMvAC)/float(len(allModIEncodeMvAC))
-    plt.text(-0.5,yPosText,'AC\nN={}\n6 mice'.format(len(allModIEncodeMvAC)),ha='center',fontsize=fontSizeLabels)
-    plt.text(0.5,yPosText,'{:.2f}%\np<0.05'.format(percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.5,yPosText,'AC\nN={}'.format(len(allModIEncodeMvAC)),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'{:.1f}%\np<0.05'.format(percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(movement period)', fontsize=fontSizeLabels)
@@ -324,8 +328,8 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIEncodeMvAStr)/float(len(allModIEncodeMvAStr))
-    plt.text(-0.5,yPosText,'pStr\nN={}\n5 mice'.format(len(allModIEncodeMvAStr)),ha='center',fontsize=fontSizeLabels)
-    plt.text(0.5,yPosText,'{:.2f}%\np<0.05'.format(percentSelective),ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.5,yPosText,'pStr\nN={}'.format(len(allModIEncodeMvAStr)),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'{:.1f}%\np<0.05'.format(percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(movement period)', fontsize=fontSizeLabels)
@@ -371,7 +375,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    directionPloted = intData['directionPloted']
+    directionPloted = str(intData['directionPloted'])
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -409,9 +413,11 @@ if PANELS[1]:
 
     ax8.set_yticklabels([])
     ax8.set_xticklabels([])
-    ax8.set_title(directionPloted)
+    #ax8.set_title(directionPloted)
     #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
-    plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{} trials grouped\nby reward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+    plt.ylabel('Correct {}\ntrials grouped by \nreward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
 
     extraplots.boxoff(plt.gca(), keep='none')
 
@@ -454,7 +460,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    directionPloted = intData['directionPloted']
+    directionPloted = str(intData['directionPloted'])
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -494,7 +500,9 @@ if PANELS[1]:
     ax10.set_xticklabels([])
     #ax10.set_title(directionPloted)
     #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
-    plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{} trials grouped\nby reward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+    plt.ylabel('Correct {}\ntrials grouped by \nreward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
 
     extraplots.boxoff(plt.gca(), keep='none')
 

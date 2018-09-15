@@ -147,7 +147,7 @@ if PANELS[0]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,10]
+    yLims = [0,15]
     # #soundBarHeight = 0.1*yLims[-1]
     # #plt.fill([0,0.1,0.1,0],yLims[-1]+np.array([0,0,soundBarHeight,soundBarHeight]), ec='none', fc=soundColor, clip_on=False)
     plt.ylim(yLims)
@@ -162,8 +162,12 @@ if PANELS[0]:
     extraplots.boxoff(plt.gca())
     plt.text(-0.1, 0.85*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'correct\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['{}Hz left'.format(lowFreq),'{}Hz right'.format(highFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
-           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
+    #plt.legend(['{}Hz left'.format(lowFreq),'{}Hz right'.format(highFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+    #           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0, bbox_to_anchor=(1, 1.1))
+    lowFreqStr = 'low freq'
+    highFreqStr = 'high freq'
+    plt.legend(['Left ({})'.format(lowFreqStr),'Right ({})'.format(highFreqStr)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+               frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0, bbox_to_anchor=(1, 1.1))
 
     trialsEachCond = intData['trialsEachCond'][:,2:]
     numErrorTrials = trialsEachCond.sum()
@@ -176,7 +180,7 @@ if PANELS[0]:
     #ax.set_title('Error trials', fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,10]
+    yLims = [0,15]
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
@@ -186,9 +190,16 @@ if PANELS[0]:
     
     plt.text(-0.1, 0.85*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['{}Hz left'.format(highFreq),'{}Hz right'.format(lowFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
-           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
-
+    #plt.legend(['{}Hz left'.format(highFreq),'{}Hz right'.format(lowFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+    #       frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
+    lowFreqStr = 'low freq'
+    highFreqStr = 'high freq'
+    pleg = plt.legend(['Left ({})'.format(highFreqStr),'Right ({})'.format(lowFreqStr)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+                      frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0, bbox_to_anchor=(1, 1.1))
+    pleg.set_frame_on(True)
+    pleg.get_frame().set_facecolor('w')
+    pleg.get_frame().set_edgecolor('none')
+    
     extraplots.boxoff(plt.gca())
 
 
@@ -261,7 +272,7 @@ if PANELS[1]:
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,40]
+    yLims = [0,60]
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
@@ -272,9 +283,13 @@ if PANELS[1]:
 
     plt.text(-0.1, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
     plt.text(-0.1, 0.6*yLims[-1], 'correct\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['{}Hz left'.format(lowFreq),'{}Hz right'.format(highFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
-           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
-    
+    #plt.legend(['{}Hz left'.format(lowFreq),'{}Hz right'.format(highFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+    #       frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
+    lowFreqStr = 'low freq'
+    highFreqStr = 'high freq'
+    plt.legend(['Left ({})'.format(lowFreqStr),'Right ({})'.format(highFreqStr)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+               frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0, bbox_to_anchor=(1, 1.1))
+   
     trialsEachCond = intData['trialsEachCond'][:,2:]
     numErrorTrials = trialsEachCond.sum()
     print('Number of correct trials: {}'.format(numErrorTrials))
@@ -283,7 +298,7 @@ if PANELS[1]:
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.axvline(x=0,linewidth=1, color='darkgrey')
-    yLims = [0,40]
+    yLims = [0,60]
     plt.ylim(yLims)
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
@@ -293,10 +308,19 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
 
-    plt.text(-0.07, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
-    plt.text(-0.07, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
-    plt.legend(['{}Hz left'.format(highFreq),'{}Hz right'.format(lowFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
-           frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
+    plt.text(-0.1, 0.85*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks)
+    plt.text(-0.1, 0.6*yLims[-1], 'error\ntrials', fontweight='normal', ha='center', va='center', fontsize=fontSizeTicks-2)
+    #plt.legend(['{}Hz left'.format(highFreq),'{}Hz right'.format(lowFreq)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+    #       frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0)
+    lowFreqStr = 'low freq'
+    highFreqStr = 'high freq'
+    pleg = plt.legend(['Left ({})'.format(highFreqStr),'Right ({})'.format(lowFreqStr)], loc='upper right', fontsize=fontSizeTicks, handlelength=0.1,
+                      frameon=False, handletextpad=0.5, labelspacing=0, borderaxespad=0, bbox_to_anchor=(1, 1.1))
+    pleg.set_frame_on(True)
+    pleg.get_frame().set_facecolor('w')
+    pleg.get_frame().set_edgecolor('none')
+    pleg.set_zorder(-4)
+    plt.draw()
 
 
 # -- Panel C: summary distribution of movement selectivity index -- #
@@ -319,15 +343,17 @@ if PANELS[2]:
     sigModIEncodeMvAC = -(summary['sigModIEncodeMv']) # Inverting the sign of movement selectivity index
     nonsigModIEncodeMvAC = -(summary['nonsigModIEncodeMv']) # Inverting the sign of movement selectivity index
     allModIEncodeMvAC = -(summary['allModIEncodeMv'])
-    
+
+    fractionModulatedAC = len(sigModIAC)/float(len(allModIAC))
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAC,nonsigModIAC], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], rwidth=0.9, stacked=True)
     yPosText = 0.7*plt.ylim()[1]
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIAC)/float(len(allModIAC))
-    plt.text(-0.7,yPosText,'AC',ha='center',fontweight='normal',fontsize=fontSizeLabels)
-    plt.text(0.7,yPosText,'n={}'.format(len(allModIAC)),ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.5,yPosText,'AC\nN={}'.format(len(allModIAC)),ha='center',fontweight='normal',fontsize=fontSizeLabels)
+    #plt.text(0.7,yPosText,'n={}'.format(len(allModIAC)),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'{:0.1%}\np<0.05'.format(fractionModulatedAC),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Choice selectivity index', fontsize=fontSizeLabels)
@@ -363,6 +389,7 @@ if PANELS[2]:
     nonsigModIEncodeMvAStr = -(summary['nonsigModIEncodeMv']) # Inverting the sign of movement selectivity index
     allModIEncodeMvAStr = -(summary['allModIEncodeMv'])
 
+    fractionModulatedAStr = len(sigModIAStr)/float(len(allModIAStr))
     binsEdges = np.linspace(-1,1,20)
     plt.hist([sigModIAStr,nonsigModIAStr], bins=binsEdges, edgecolor='None', color=['k','darkgrey'], rwidth=0.9, stacked=True)
     yPosText = 0.7*plt.ylim()[1]
@@ -370,8 +397,9 @@ if PANELS[2]:
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIAStr)/float(len(allModIAStr))
     #plt.text(0.5,yPosText,'AStr\nn={}'.format(len(allModIAStr)),ha='center',fontsize=fontSizeLabels)
-    plt.text(-0.7,yPosText,'pStr',ha='center',fontweight='normal',fontsize=fontSizeLabels)
-    plt.text(0.7,yPosText,'n={}'.format(len(allModIAStr)),ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.5,yPosText,'pStr\nN={}'.format(len(allModIAStr)),ha='center',fontweight='normal',fontsize=fontSizeLabels)
+    #plt.text(0.7,yPosText,'n={}'.format(len(allModIAStr)),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'{:0.1%}\np<0.05'.format(fractionModulatedAStr),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Choice selectivity index', fontsize=fontSizeLabels)

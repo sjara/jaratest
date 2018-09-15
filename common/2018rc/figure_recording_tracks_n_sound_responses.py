@@ -107,9 +107,7 @@ if PANELS[0]:
     yLims = plt.gca().get_ylim()
     plt.hold('on')
     bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
-    #extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -120,6 +118,7 @@ if PANELS[0]:
     ax1.set_xticklabels([])
     ax1.set_yticklabels([])
     ax1.set_ylabel('Trials grouped by\nsound frequency', fontsize=fontSizeLabels)
+    extraplots.boxoff(plt.gca(), keep='none')
     
     ax2 = plt.subplot(gs00[2, :])
     spikeCountMat = intData['spikeCountMat']
@@ -178,9 +177,7 @@ if PANELS[1]:
     yLims = plt.gca().get_ylim()
     plt.hold('on')
     bplot = plt.boxplot(movementTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
-    extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
