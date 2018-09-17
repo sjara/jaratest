@@ -35,7 +35,8 @@ celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
 
 for brainArea in brainAreas:
-    goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
+    #goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
+    goodQualCells = celldb.query("keepAfterDupTest==1 and cellInTargetArea==1 and brainArea=='{}'".format(brainArea))
 
     # -- Cells responsive to sound -- #
     #soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x[~np.isnan(x)])) >=  maxZThreshold) #The bigger of the sound Z score is over threshold

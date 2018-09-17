@@ -255,6 +255,8 @@ for cellParams in cellParamsList:
     diffTimesSideIn = bdata['timeSideIn'] - bdata['timeCenterOut'] 
     # -- Select trials to plot from behavior file -- #
     for freq in freqsToPlot:
+        if freq == 'low':
+            directionPloted = 'left'  
         trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
         if removeSideInTrials:
           trialsEachCond = trialsEachCond & ~sideInTrials[:,np.newaxis]
@@ -281,4 +283,4 @@ for cellParams in cellParamsList:
               indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, 
               timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, 
               trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, 
-              frequencyPloted=freq, alignedTo=alignment, **cellParams)
+              directionPloted=directionPloted, alignedTo=alignment, **cellParams)

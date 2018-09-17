@@ -85,8 +85,8 @@ def plot_bars(ax, dataMat, label):
                     sessionsThisCondThisSubject, marker='o', linestyle='none', mec=condColors[indCond], mfc='none')
             ax.hold(1)
 
-    rects1 = ax.bar(ind, dataMat[:, :, 0].mean(1)-0.5, width, bottom=0.5, edgecolor='k', facecolor='w', lw=2, label='Saline')
-    rects2 = ax.bar(ind+width+0.015, dataMat[:, :, 1].mean(1)-0.5, width, bottom=0.5, edgecolor=muscimolColor, lw=2, facecolor='w', label='Muscimol')
+    rects1 = ax.bar(ind, dataMat[:, :, 0].mean(1)-0.5, width, bottom=0.5, edgecolor='k', facecolor='w', lw=2, label='Saline', align='edge')
+    rects2 = ax.bar(ind+width+0.015, dataMat[:, :, 1].mean(1)-0.5, width, bottom=0.5, edgecolor=muscimolColor, lw=2, facecolor='w', label='Muscimol', align='edge')
 
     ymax = 1000
     ymin = 0
@@ -171,8 +171,8 @@ for indSubject, subject in enumerate(subjects):
         ax3.hold(1)
         subjectMeans[indSubject, indCond] = np.mean(thisSubjectThisCondValid)
 
-rects1 = ax3.bar(ind, 1000*subjectMeans[:,0], width, bottom=0.5, edgecolor='k', facecolor='w', lw=2, label='Saline')
-rects2 = ax3.bar(ind+width+0.015, 1000*subjectMeans[:,1], width, bottom=0.5, edgecolor=muscimolColor, lw=2, facecolor='w', label='Muscimol')
+rects1 = ax3.bar(ind, 1000*subjectMeans[:,0], width, bottom=0.5, edgecolor='k', facecolor='w', lw=2, label='Saline', align='edge')
+rects2 = ax3.bar(ind+width+0.015, 1000*subjectMeans[:,1], width, bottom=0.5, edgecolor=muscimolColor, lw=2, facecolor='w', label='Muscimol', align='edge')
 
 # plt.ylim([250,730])
 ymax = 730
@@ -218,7 +218,8 @@ conditions = soundToCoutFile['conditions']
 subjectMeans = np.empty((len(subjects), len(conditions)))
 for indSubject, subject in enumerate(subjects):
     for indCond, condition in enumerate(conditions):
-        thisSubjectThisCondValid = soundToCoutFile['{}allmean{}'.format(subject,condition)]
+        # thisSubjectThisCondValid = soundToCoutFile['{}allmean{}'.format(subject,condition)] #NOTE: This is for all trials, not just valid ones
+        thisSubjectThisCondValid = soundToCoutFile['{}validmean{}'.format(subject,condition)]
         plt.hold('True')
 
         ax4.plot(np.zeros(len(thisSubjectThisCondValid)) + (indSubject + 0.5*width + indCond*width) + pointShift,
@@ -226,16 +227,16 @@ for indSubject, subject in enumerate(subjects):
         ax4.hold(1)
         subjectMeans[indSubject, indCond] = np.mean(thisSubjectThisCondValid)
 
-rects1 = ax4.bar(ind, 1000*subjectMeans[:,0], width, bottom=0.5, edgecolor='k', facecolor='w', lw=2, label='Saline')
-rects2 = ax4.bar(ind+width+0.015, 1000*subjectMeans[:,1], width, bottom=0.5, edgecolor=muscimolColor, lw=2, facecolor='w', label='Muscimol')
+rects1 = ax4.bar(ind, 1000*subjectMeans[:,0], width, bottom=0.5, edgecolor='k', facecolor='w', lw=2, label='Saline', align='edge')
+rects2 = ax4.bar(ind+width+0.015, 1000*subjectMeans[:,1], width, bottom=0.5, edgecolor=muscimolColor, lw=2, facecolor='w', label='Muscimol', align='edge')
 
 ymax = 250
-ymin = 10
+ymin = 100
 plt.ylim([ymin,ymax])
 ax4.set_xticks(ind + width)
 ax4.set_xticklabels(np.arange(6)+1, fontsize=fontSizeTicks)
-plt.ylabel('Time from sound onset\nto center port exit (ms)')
-plt.xlabel('Mouse')
+ax4.set_ylabel('Time from sound onset\nto center port exit (ms)')
+ax4.set_xlabel('Mouse')
 ax4.set_xlim([ind[0]-0.5*width, ind[-1]+2.5*width ])
 extraplots.boxoff(ax4)
 for sigSubjectInd in [1,2,3,4]:

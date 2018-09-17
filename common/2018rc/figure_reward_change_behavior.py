@@ -24,7 +24,8 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.01, 0.45]   # Horiz position for panel labels
+#labelPosX = [0.01, 0.45]   # Horiz position for panel labels
+labelPosX = [0.01, 0.5]   # Horiz position for panel labels
 labelPosY = [0.95, 0.45]    # Vert position for panel labels
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 
@@ -47,8 +48,12 @@ panelsToPlot=[0, 1]
 
 gs = gridspec.GridSpec(2, 6)
 gs.update(left=0.09, right=0.98, top=0.95, bottom=0.08, wspace=0.5, hspace=0.5)
+
+gs00 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[0,:], wspace=0.4)
+
 ax0 = plt.subplot(gs[0, 0:3])
-ax1 = plt.subplot(gs[0, 3:])
+#ax1 = plt.subplot(gs[0, 3:])
+ax1 = plt.subplot(gs00[0, 1])
 ax2 = plt.subplot(gs[1, 0:2])
 ax2.hold(True)
 ax3 = plt.subplot(gs[1, 2:4])
@@ -200,8 +205,8 @@ if 1 in panelsToPlot:
     #ax3.set_xticklabels(['Left more', 'Right more'], fontsize=fontSizeLabels)
     ax3.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
     #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
-    ax3.set_yticks([25, 50, 75, 100])
-    ax3.set_ylim([0, 118]) 
+    ax3.set_yticks([0, 25, 50, 75, 100])
+    ax3.set_ylim([-15, 118]) 
     ax3.set_xlim([-0.5, 1.5])
     #ax3.text(0.1, 118, 'Middle frequency')
     ax3.set_title('Middle frequency', fontsize=fontSizeLabels)

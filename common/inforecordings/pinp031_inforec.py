@@ -183,33 +183,33 @@ exp2 = celldatabase.Experiment(subject,
                                info='NBQX')
 
 experiments.append(exp2)
-exp2.add_site(1400.0, tetrodes=[1, 2, 3, 4, 5, 7])
-exp2.add_session('15-32-26', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('15-35-34', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('15-37-18', None, 'lasertrain', 'am_tuning_curve')
+# exp2.add_site(1400.0, tetrodes=[1, 2, 3, 4, 5, 7])
+# exp2.add_session('15-32-26', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('15-35-34', None, 'laserpulse', 'am_tuning_curve')
+# exp2.add_session('15-37-18', None, 'lasertrain', 'am_tuning_curve')
 #This is a good site, waiting 20 mins
 
-exp2.add_site(1400.1, tetrodes=[1, 2, 3, 4, 5, 7])
-exp2.add_session('15-59-24', None, 'noiseburst', 'am_tuning_curve') #100 trials
-exp2.add_session('16-01-41', None, 'laserpulse', 'am_tuning_curve') #100 trials
-exp2.add_session('16-03-48', None, 'lasertrain', 'am_tuning_curve') #100 trials
-#Injected 180nl of 10mM NBQX at 1609hrs
-exp2.add_session('16-08-09', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('16-12-19', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('16-13-45', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_site(1400.1, tetrodes=[1, 2, 3, 4, 5, 7])
+# exp2.add_session('15-59-24', None, 'noiseburst', 'am_tuning_curve') #100 trials
+# exp2.add_session('16-01-41', None, 'laserpulse', 'am_tuning_curve') #100 trials
+# exp2.add_session('16-03-48', None, 'lasertrain', 'am_tuning_curve') #100 trials
+# #Injected 180nl of 10mM NBQX at 1609hrs
+# exp2.add_session('16-08-09', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('16-12-19', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('16-13-45', None, 'noiseburst', 'am_tuning_curve')
 
-exp2.add_session('16-15-43', None, 'noiseburst', 'am_tuning_curve')#Real data time
-exp2.add_session('16-17-57', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('16-20-08', None, 'lasertrain', 'am_tuning_curve')
+# exp2.add_session('16-15-43', None, 'noiseburst', 'am_tuning_curve')#Real data time
+# exp2.add_session('16-17-57', None, 'laserpulse', 'am_tuning_curve')
+# exp2.add_session('16-20-08', None, 'lasertrain', 'am_tuning_curve')
 
-exp2.add_session('16-24-13', None, 'noiseburst', 'am_tuning_curve') #Noise responses coming back
-exp2.add_session('16-27-56', None, 'laserpulse', 'am_tuning_curve') #Looks totally different
-exp2.add_session('16-30-51', None, 'lasertrain', 'am_tuning_curve')
+# exp2.add_session('16-24-13', None, 'noiseburst', 'am_tuning_curve') #Noise responses coming back
+# exp2.add_session('16-27-56', None, 'laserpulse', 'am_tuning_curve') #Looks totally different
+# exp2.add_session('16-30-51', None, 'lasertrain', 'am_tuning_curve')
 
-exp2.add_session('16-34-47', None, 'noiseburst', 'am_tuning_curve') #Reliable 100msec latency responses
-exp2.add_session('16-44-58', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('16-47-53', None, 'laserpulse', 'am_tuning_curve') #Responses are back??
-exp2.add_session('16-50-42', None, 'lasertrain', 'am_tuning_curve')
+# exp2.add_session('16-34-47', None, 'noiseburst', 'am_tuning_curve') #Reliable 100msec latency responses
+# exp2.add_session('16-44-58', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('16-47-53', None, 'laserpulse', 'am_tuning_curve') #Responses are back??
+# exp2.add_session('16-50-42', None, 'lasertrain', 'am_tuning_curve')
 
 #Big injection PRE
 exp2.add_site(1400.2, tetrodes=[1, 2, 3, 4, 5, 7])
@@ -224,15 +224,17 @@ exp2.add_session('17-49-07', None, 'lasertrain_post', 'am_tuning_curve') #100 tr
 exp2.add_session('17-52-53', None, 'noiseburst_post', 'am_tuning_curve') #100 trials
 exp2.add_session('17-56-56', None, 'lasertrain', 'am_tuning_curve') #100 trials
 
-exp2.add_site(1400.3, tetrodes=[1, 2, 3, 4, 5, 7])
-exp2.add_session('18-05-36', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('18-19-30', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('18-38-25', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('18-56-13', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_site(1400.3, tetrodes=[1, 2, 3, 4, 5, 7])
+# exp2.add_session('18-05-36', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('18-19-30', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('18-38-25', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('18-56-13', None, 'noiseburst', 'am_tuning_curve')
 
-#Removed the pipette, put a new one with saline, and re-inserted it at 1906hrs
-exp2.add_session('19-14-41', None, 'noiseburst', 'am_tuning_curve')
+# #Removed the pipette, put a new one with saline, and re-inserted it at 1906hrs
+# exp2.add_session('19-14-41', None, 'noiseburst', 'am_tuning_curve')
 
+#Change to Saline info for this experiment
+exp2.info='Saline'
 exp2.add_site(1400.4, tetrodes=[1, 2, 3, 4, 5, 7])
 exp2.add_session('19-19-47', None, 'noiseburst_pre', 'am_tuning_curve')#100 trials
 exp2.add_session('19-22-39', None, 'laserpulse_pre', 'am_tuning_curve')
@@ -243,9 +245,9 @@ exp2.add_session('19-32-37', None, 'noiseburst_post', 'am_tuning_curve')#100 tri
 exp2.add_session('19-35-15', None, 'laserpulse_post', 'am_tuning_curve')#100 trials
 exp2.add_session('19-37-54', None, 'lasertrain_post', 'am_tuning_curve')#100 trials
 
-exp2.add_site(1400.5, tetrodes=[1, 2, 3, 4, 5, 7])
-exp2.add_session('19-47-36', None, 'noiseburst', 'am_tuning_curve')#100 trials
-
+# exp2.add_site(1400.5, tetrodes=[1, 2, 3, 4, 5, 7])
+# exp2.add_session('19-47-36', None, 'noiseburst', 'am_tuning_curve')#100 trials
+exp2.maxDepth = 1400
 
 #1506 Just put the pipette with 10mM NBQX
 exp3 = celldatabase.Experiment(subject,
@@ -253,50 +255,52 @@ exp3 = celldatabase.Experiment(subject,
                                brainarea='rightAC',
                                info='NBQX')
 experiments.append(exp3)
-exp3.add_site(1400, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp3.add_session('15-34-48', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_site(1400, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp3.add_session('15-34-48', None, 'noiseburst', 'am_tuning_curve')
 
-exp3.add_site(1551, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp3.add_session('15-43-38', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_site(1551, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp3.add_session('15-43-38', None, 'noiseburst', 'am_tuning_curve')
 
-exp3.add_site(1803, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp3.add_session('15-56-22', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('15-59-47', None, 'laserpulse', 'am_tuning_curve')
-exp3.add_session('16-01-18', None, 'lasertrain', 'am_tuning_curve')
-# Looks like a good site, I'm going to wait for 20 mins starting at 1604hrs
+# exp3.add_site(1803, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp3.add_session('15-56-22', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('15-59-47', None, 'laserpulse', 'am_tuning_curve')
+# exp3.add_session('16-01-18', None, 'lasertrain', 'am_tuning_curve')
+# # Looks like a good site, I'm going to wait for 20 mins starting at 1604hrs
 
-exp3.add_session('16-27-28', None, 'noiseburst', 'am_tuning_curve') # testing
-# Several electrodes started to be extremely noisy. I restarted the recording software,
-# which fixed the problem.
-exp3.add_session('16-40-06', None, 'noiseburst', 'am_tuning_curve') # 100 trials
-exp3.add_session('16-42-47', None, 'laserpulse', 'am_tuning_curve') # 100 trials
-# I lost almost everything I was recording. I'm not sure what happened
+# exp3.add_session('16-27-28', None, 'noiseburst', 'am_tuning_curve') # testing
+# # Several electrodes started to be extremely noisy. I restarted the recording software,
+# # which fixed the problem.
+# exp3.add_session('16-40-06', None, 'noiseburst', 'am_tuning_curve') # 100 trials
+# exp3.add_session('16-42-47', None, 'laserpulse', 'am_tuning_curve') # 100 trials
+# # I lost almost everything I was recording. I'm not sure what happened
 
-exp3.add_session('16-46-13', None, 'laserpulse', 'am_tuning_curve') # 100 trials
-#Now things are coming back
-exp3.add_session('16-49-14', None, 'noiseburst', 'am_tuning_curve') # 100 trials
-exp3.add_session('16-51-31', None, 'lasertrain', 'am_tuning_curve') # 100 trials
-exp3.add_session('16-57-24', None, 'noiseburst', 'am_tuning_curve') # 100 trials
-#Had to change reference, collecing again
+# exp3.add_session('16-46-13', None, 'laserpulse', 'am_tuning_curve') # 100 trials
+# #Now things are coming back
+# exp3.add_session('16-49-14', None, 'noiseburst', 'am_tuning_curve') # 100 trials
+# exp3.add_session('16-51-31', None, 'lasertrain', 'am_tuning_curve') # 100 trials
+# exp3.add_session('16-57-24', None, 'noiseburst', 'am_tuning_curve') # 100 trials
+# #Had to change reference, collecing again
 
-exp3.add_session('17-05-01', None, 'noiseburst', 'am_tuning_curve') # 100 trials
-exp3.add_session('17-07-37', None, 'laserpulse', 'am_tuning_curve') # 100 trials
+# exp3.add_session('17-05-01', None, 'noiseburst', 'am_tuning_curve') # 100 trials
+# exp3.add_session('17-07-37', None, 'laserpulse', 'am_tuning_curve') # 100 trials
 
 exp3.add_site(1901, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp3.add_session('17-27-08', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('17-29-36', None, 'laserpulse', 'am_tuning_curve')
-exp3.add_session('17-31-58', None, 'lasertrain', 'am_tuning_curve')
+exp3.add_session('17-27-08', None, 'noiseburst_pre', 'am_tuning_curve')
+exp3.add_session('17-29-36', None, 'laserpulse_pre', 'am_tuning_curve')
+exp3.add_session('17-31-58', None, 'lasertrain_pre', 'am_tuning_curve')
 #Finished injecting 180nL 10mM NBQX at 1741hrs. The injection took a very long time and was
 # slow and steady. At the end, I dropped the syringe and the tube probably pulled on the pipette.
-exp3.add_session('17-42-13', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('17-44-24', None, 'laserpulse', 'am_tuning_curve')
-exp3.add_session('17-46-50', None, 'lasertrain', 'am_tuning_curve')
+exp3.add_session('17-42-13', None, 'noiseburst_post', 'am_tuning_curve')
+exp3.add_session('17-44-24', None, 'laserpulse_post', 'am_tuning_curve')
+exp3.add_session('17-46-50', None, 'lasertrain_post', 'am_tuning_curve')
 exp3.add_session('17-50-35', None, 'laserpulse', 'am_tuning_curve')
 # The responses are gone. I am going to wait to see if I get the cells back at all.
-exp3.add_session('17-56-32', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('18-03-53', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('18-11-03', None, 'noiseburst', 'am_tuning_curve') #Responses are coming back, we can see if our cells are still here.
+# exp3.add_session('17-56-32', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('18-03-53', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('18-11-03', None, 'noiseburst', 'am_tuning_curve') #Responses are coming back, we can see if our cells are still here.
+exp3.add_session('18-11-03', None, 'noiseburst_washout', 'am_tuning_curve') #Responses are coming back, we can see if our cells are still here.
 
+exp3.maxDepth = 1901
 
 # New experiment, Mouse on the rig chilling out from 1555hrs.
 # Pipette with 10mM NBQX inserted along with probe at 1611hrs.
@@ -305,10 +309,10 @@ exp4 = celldatabase.Experiment(subject,
                                brainarea='rightAC',
                                info='NBQX')
 experiments.append(exp4)
-exp4.add_site(1436, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp4.add_session('16-25-59', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_site(1436, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp4.add_session('16-25-59', None, 'noiseburst', 'am_tuning_curve')
 
-exp4.add_site(1604, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+exp4.add_site(1604, tetrodes=[1, 2, 3, 4, 6, 7, 8])
 exp4.add_session('16-39-09', None, 'noiseburst', 'am_tuning_curve')
 exp4.add_session('16-46-46', None, 'laserpulse', 'am_tuning_curve')
 exp4.add_session('16-48-33', None, 'lasertrain', 'am_tuning_curve')
@@ -325,6 +329,7 @@ exp4.add_session('17-17-27', None, 'lasertrain_post', 'am_tuning_curve')
 
 exp4.add_session('17-43-22', None, 'noiseburst', 'am_tuning_curve')
 exp4.add_session('17-53-10', None, 'noiseburst', 'am_tuning_curve')
+exp4.add_session('17-53-10', None, 'noiseburst_washout', 'am_tuning_curve')
 exp4.add_session('17-55-50', None, 'laserpulse', 'am_tuning_curve')
 exp4.add_session('17-58-34', None, 'lasertrain', 'am_tuning_curve')
 
@@ -344,7 +349,9 @@ exp4.add_session('19-33-54', None, 'lasertrain_post', 'am_tuning_curve') #100 tr
 
 exp4.add_session('19-47-12', None, 'noiseburst', 'am_tuning_curve') #100 trials
 exp4.add_session('20-01-49', None, 'noiseburst', 'am_tuning_curve') #100 trials
-exp4.add_session('20-17-18', None, 'noiseburst', 'am_tuning_curve') #100 trials
+exp4.add_session('20-17-18', None, 'noiseburst_washout', 'am_tuning_curve') #100 trials
+
+exp4.maxDepth = 1879
 
 
 #Mouse on the rig with tetrodes at 1423um, pipette with 10mM NBQX just inserted at 1116hrs.
@@ -353,54 +360,54 @@ exp5 = celldatabase.Experiment(subject,
                                brainarea='rightAC',
                                info='NBQX')
 experiments.append(exp5)
-exp5.add_site(1615, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('11-29-28', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('11-31-05', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(1615, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('11-29-28', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_session('11-31-05', None, 'laserpulse', 'am_tuning_curve')
 
 
-exp5.add_site(1710, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('11-35-54', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('11-39-21', None, 'laserpulse', 'am_tuning_curve')
-exp5.add_session('11-41-20', None, 'lasertrain', 'am_tuning_curve')
+# exp5.add_site(1710, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('11-35-54', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_session('11-39-21', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_session('11-41-20', None, 'lasertrain', 'am_tuning_curve')
 
-exp5.add_site(1766, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('11-46-49', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(1766, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('11-46-49', None, 'laserpulse', 'am_tuning_curve')
 
-exp5.add_site(1825, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('11-50-16', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(1825, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('11-50-16', None, 'laserpulse', 'am_tuning_curve')
 
-exp5.add_site(1873, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('11-53-45', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(1873, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('11-53-45', None, 'laserpulse', 'am_tuning_curve')
 
-exp5.add_site(1912, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('12-11-54', None, 'noiseburst', 'am_tuning_curve') #56 trials
-exp5.add_session('12-13-42', None, 'laserpulse', 'am_tuning_curve') #59 trials
+# exp5.add_site(1912, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('12-11-54', None, 'noiseburst', 'am_tuning_curve') #56 trials
+# exp5.add_session('12-13-42', None, 'laserpulse', 'am_tuning_curve') #59 trials
 
 
-exp5.add_site(1950, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('12-21-53', None, 'laserpulse', 'am_tuning_curve')
-exp5.add_session('12-24-11', None, 'laserpulse', 'am_tuning_curve')
-exp5.add_session('12-26-12', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_site(1950, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('12-21-53', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_session('12-24-11', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_session('12-26-12', None, 'noiseburst', 'am_tuning_curve')
 
-exp5.add_site(1971, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('12-31-52', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_site(1971, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('12-31-52', None, 'noiseburst', 'am_tuning_curve')
 
-exp5.add_site(2000, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('12-35-45', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('12-37-59', None, 'laserpulse', 'am_tuning_curve')
-exp5.add_session('12-45-09', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('12-46-23', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(2000, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('12-35-45', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_session('12-37-59', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_session('12-45-09', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_session('12-46-23', None, 'laserpulse', 'am_tuning_curve')
 
-exp5.add_site(2050, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('12-55-48', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(2050, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('12-55-48', None, 'laserpulse', 'am_tuning_curve')
 
-exp5.add_site(2153, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('12-59-45', None, 'laserpulse', 'am_tuning_curve')
-exp5.add_session('13-03-24', None, 'laserpulse', 'am_tuning_curve')
-exp5.add_session('13-15-32', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(2153, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('12-59-45', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_session('13-03-24', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_session('13-15-32', None, 'laserpulse', 'am_tuning_curve')
 
-exp5.add_site(2205, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('13-21-11', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(2205, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('13-21-11', None, 'laserpulse', 'am_tuning_curve')
 
 exp5.add_site(2251, tetrodes=[1, 2, 4, 5, 6])
 exp5.add_session('13-25-12', None, 'laserpulse', 'am_tuning_curve')
@@ -417,7 +424,7 @@ exp5.add_session('13-53-19', None, 'laserpulse_post', 'am_tuning_curve')
 # Tetrode 6 has what looks like both direct and indirect response
 exp5.add_session('13-55-49', None, 'noiseburst', 'am_tuning_curve')
 exp5.add_session('14-08-23', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('14-30-00', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('14-30-00', None, 'noiseburst_washout', 'am_tuning_curve')
 exp5.add_session('14-31-20', None, 'laserpulse', 'am_tuning_curve') #100 trials
 exp5.add_session('14-33-32', None, 'lasertrain', 'am_tuning_curve') #100 trials
 exp5.add_session('14-49-32', None, 'noiseburst', 'am_tuning_curve')
@@ -426,9 +433,9 @@ exp5.add_session('15-28-56', None, 'laserpulse', 'am_tuning_curve') #100 trials
 exp5.add_session('15-32-22', None, 'lasertrain', 'am_tuning_curve') #100 trials
 
 
-exp5.add_site(2364, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp5.add_session('15-44-42', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('15-48-57', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(2364, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp5.add_session('15-44-42', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_session('15-48-57', None, 'laserpulse', 'am_tuning_curve')
 
 exp5.add_site(2423, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
 exp5.add_session('15-56-34', None, 'laserpulse', 'am_tuning_curve')
@@ -445,12 +452,13 @@ exp5.add_session('16-36-25', None, 'lasertrain_post', 'am_tuning_curve')
 exp5.add_session('16-32-48', None, 'noiseburst_post', 'am_tuning_curve')
 
 exp5.add_session('16-44-31', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('16-52-06', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('16-52-06', None, 'noiseburst_washout', 'am_tuning_curve')
 exp5.add_session('16-55-30', None, 'laserpulse', 'am_tuning_curve')
 exp5.add_session('16-58-02', None, 'lasertrain', 'am_tuning_curve')
 exp5.add_session('17-05-29', None, 'laserpulse', 'am_tuning_curve')
 exp5.add_session('17-33-17', None, 'laserpulse', 'am_tuning_curve')
 exp5.add_session('17-36-43', None, 'lasertrain', 'am_tuning_curve')
+exp5.maxDepth = 2423
 
 
 #Probes with DiI at 1370um, pipette with 10mM NBQX and no dye mixed in put in place at 1208hrs.
@@ -459,22 +467,22 @@ exp6 = celldatabase.Experiment(subject,
                                brainarea='rightAC',
                                info='NBQX and DiI')
 experiments.append(exp6)
-exp6.add_site(1370, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp6.add_session('13-40-25', None, 'noiseburst', 'am_tuning_curve')
-exp6.add_session('13-41-59', None, 'laserpulse', 'am_tuning_curve')
-exp6.add_session('13-44-52', None, 'lasertrain', 'am_tuning_curve')
+# exp6.add_site(1370, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp6.add_session('13-40-25', None, 'noiseburst', 'am_tuning_curve')
+# exp6.add_session('13-41-59', None, 'laserpulse', 'am_tuning_curve')
+# exp6.add_session('13-44-52', None, 'lasertrain', 'am_tuning_curve')
 
-#I added saline before this recording
-exp6.add_session('13-50-51', None, 'noiseburst_pre', 'am_tuning_curve') #No more responses :(
+# #I added saline before this recording
+# exp6.add_session('13-50-51', None, 'noiseburst_pre', 'am_tuning_curve') #No more responses :(
 
-exp6.add_site(1450, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp6.add_session('14-16-10', None, 'laserpulse', 'am_tuning_curve')
+# exp6.add_site(1450, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
+# exp6.add_session('14-16-10', None, 'laserpulse', 'am_tuning_curve')
 
 exp6.add_site(1551, tetrodes=[1, 2, 3, 4, 5, 6, 7, 8])
-exp6.add_session('14-23-05', None, 'noiseburst', 'am_tuning_curve')
-exp6.add_session('14-39-53', None, 'noiseburst', 'am_tuning_curve')
-exp6.add_session('14-42-29', None, 'noiseburst', 'am_tuning_curve')
-exp6.add_session('14-45-24', None, 'laserpulse', 'am_tuning_curve')
+# exp6.add_session('14-23-05', None, 'noiseburst', 'am_tuning_curve')
+# exp6.add_session('14-39-53', None, 'noiseburst', 'am_tuning_curve')
+# exp6.add_session('14-42-29', None, 'noiseburst', 'am_tuning_curve')
+# exp6.add_session('14-45-24', None, 'laserpulse', 'am_tuning_curve')
 
 exp6.add_session('14-47-16', None, 'noiseburst_pre', 'am_tuning_curve')
 exp6.add_session('14-49-29', None, 'laserpulse_pre', 'am_tuning_curve')
@@ -490,4 +498,6 @@ exp6.add_session('15-13-30', None, 'laserpulse_post', 'am_tuning_curve')
 exp6.add_session('15-15-49', None, 'lasertrain_post', 'am_tuning_curve')
 
 exp6.add_session('15-28-21', None, 'noiseburst', 'am_tuning_curve')
-exp6.add_session('15-49-04', None, 'noiseburst', 'am_tuning_curve')
+exp6.add_session('15-49-04', None, 'noiseburst_washout', 'am_tuning_curve')
+
+exp6.maxDepth = 1551

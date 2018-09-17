@@ -15,6 +15,7 @@ reload(figparams)
 FIGNAME = 'figure_am'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+# dbPath = '/tmp/celldatabase_new_20180830.h5'
 
 outputDir='/tmp'
 
@@ -33,7 +34,7 @@ goodNSpikes = goodLaser.query('nSpikes>2000')
 ac = goodNSpikes.groupby('brainArea').get_group('rightAC')
 thal = goodNSpikes.groupby('brainArea').get_group('rightThal')
 
-np.random.seed(0)
+np.random.seed(1)
 
 messages = []
 
@@ -55,6 +56,7 @@ SAVE_FIGURE = 1
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_am_tuning' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
+# figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [13,8] # In inches
 
 thalHistColor = '0.4'
@@ -224,152 +226,10 @@ axRaster.annotate('F', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction
              fontsize=fontSizePanel, fontweight='bold')
 
 
-############## Mutual info AM RATE #######################
-popStatCol = 'mutualInfoBCBits'
-# popStatCol = 'mutualInfoPerSpikeBits'
-acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
-thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
-
-axSummary = plt.subplot(gs[1, 4])
-
-#REMOVE NEGATIVE MI VALUES, REPLACE WITH 0
-acPopStat[acPopStat < 0] = 0
-thalPopStat[thalPopStat < 0] = 0
-pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=1, ms=dataMS)
-medline(np.median(thalPopStat), 0, 0.5)
-pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=1, ms=dataMS)
-medline(np.median(acPopStat), 1, 0.5)
-if popStatCol == 'mutualInfoPerSpikeBits':
-    plt.ylabel('MI(Firing rate; AM rate) (bits/spike)', fontsize=fontSizeLabels)
-elif popStatCol == 'mutualInfoBCBits':
-    plt.ylabel('MI(Firing rate; AM rate)\n(bits)', fontsize=fontSizeLabels, labelpad=-10)
-# tickLabels = ['ATh:Str', 'AC:Str']
-# tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
-tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
-axSummary.set_xticks(range(2))
-axSummary.set_xticklabels(tickLabels, rotation=45)
-extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
-axSummary.set_xlim([-0.5, 1.5])
-extraplots.boxoff(axSummary)
-
-axSummary.set_yticks([0, 0.25])
-axSummary.set_yticklabels(['0', '0.25'], rotation=90, va='center')
-extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
-
-# axSummary.set_ylim([-0.001, 0.25])
-
-zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
-
-messages.append("{} p={}".format(popStatCol, pVal))
-
-# plt.title('p = {}'.format(np.round(pVal, decimals=5)))
-
-axSummary.annotate('C', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
-            fontsize=fontSizePanel, fontweight='bold')
-
-yDataMax = max([max(acPopStat), max(thalPopStat)])
-yStars = yDataMax + yDataMax*starYfactor
-yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-
-starString = None if pVal<0.05 else 'n.s.'
-extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
-                              starSize=fontSizeStars, starString=starString,
-                              gapFactor=starGapFactor)
-plt.hold(1)
-
-################### Mutual info PHASE #####################
-# popStatCol = 'mutualInfoPerSpike'
-# acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
-# thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
-
-axSummary = plt.subplot(gs[1, 5])
-
-possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
-rateThreshold = 22
-ratesToUse = possibleRateKeys[possibleRateKeys>rateThreshold]
-
-
-# dataframe = dataframe.query("pulsePval<0.05 and trainRatio>0.8")
-# ac = dataframe.groupby('brainArea').get_group('rightAC')
-# thal = dataframe.groupby('brainArea').get_group('rightThal')
-
-keys = ['mutualInfoPhase_{}Hz'.format(rate) for rate in ratesToUse]
-
-acData = np.full((len(ac), len(ratesToUse)), np.nan)
-thalData = np.full((len(thal), len(ratesToUse)), np.nan)
-
-for externalInd, (indRow, row) in enumerate(ac.iterrows()):
-    for indKey, key in enumerate(keys):
-        acData[externalInd, indKey] = row[key]
-
-for externalInd, (indRow, row) in enumerate(thal.iterrows()):
-    for indKey, key in enumerate(keys):
-        thalData[externalInd, indKey] = row[key]
-
-acData = np.nanmean(acData, axis=1)
-thalData = np.nanmean(thalData, axis=1)
-
-acData[acData<0]=0
-thalData[thalData<0]=0
-
-thalPopStat = thalData[~np.isnan(thalData)]
-pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
-axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=1, ms=dataMS)
-medline(np.median(thalPopStat), 0, 0.5)
-
-acPopStat = acData[~np.isnan(acData)]
-pos = jitter(np.ones(len(acPopStat))*1, 0.20)
-axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=1, ms=dataMS)
-medline(np.median(acPopStat), 1, 0.5)
-
-# tickLabels = ['ATh:Str', 'AC:Str']
-# tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
-tickLabels = ['ATh:Str', 'AC:Str']
-axSummary.set_xticks(range(2))
-axSummary.set_xticklabels(tickLabels, rotation=45)
-extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
-axSummary.set_xlim([-0.5, 1.5])
-extraplots.boxoff(axSummary)
-
-axSummary.set_yticks([0, 0.010])
-axSummary.set_yticklabels(['0', '0.01'], rotation=90, va='center')
-
-
-# axSummary.set_ylim([-0.0001, 0.025])
-
-zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
-
-messages.append("mutualInfoPhase for rates>22Hz,  p={}".format(pVal))
-
-# plt.title('p = {}'.format(np.round(pVal, decimals=5)))
-
-# axSummary.annotate('E', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
-#             fontsize=fontSizePanel, fontweight='bold')
-
-yDataMax = max([max(acPopStat), max(thalPopStat)])
-# yDataMax = 0.023
-yStars = yDataMax + yDataMax*starYfactor
-yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-
-starString = None if pVal<0.05 else 'n.s.'
-extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
-                              starSize=fontSizeStars, starString=starString,
-                              gapFactor=starGapFactor)
-'''
-if pVal < 0.05:
-    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
-                                        fontSize=fontSizeStars, gapFactor=starGapFactor)
-else:
-    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='n.s.',
-                                        fontSize=fontSizeStars, gapFactor=starGapFactor)
-'''
-
-axSummary.set_ylabel('MI(Firing rate; phase)\n(bits)', fontsize=fontSizeLabels, labelpad=-10)
-extraplots.boxoff(axSummary)
 
 ################### Highest Sync #####################
+
+
 popStatCol = 'highestSyncCorrected'
 acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
 thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
@@ -582,6 +442,162 @@ plot_y_lines_with_ticks(axACPie, xBar, yCircleCenters[0], yCircleCenters[1],
 
 ##########################################################
 
+
+########## Discrimination of Rate #############
+dbPathRate = os.path.join(dataDir, 'celldatabase_with_am_discrimination_accuracy.h5')
+dataframeRate = pd.read_hdf(dbPathRate, key='dataframe')
+#Show population distributions
+colorATh = figparams.cp.TangoPalette['SkyBlue2']
+colorAC = figparams.cp.TangoPalette['ScarletRed1']
+# dataMS=5
+
+goodISIRate = dataframeRate.query('isiViolations<0.02 or modifiedISI<0.02')
+goodShapeRate = goodISIRate.query('spikeShapeQuality > 2')
+goodLaserRate = goodShapeRate.query("autoTagged==1 and subject != 'pinp018'")
+goodNSpikesRate = goodLaserRate.query('nSpikes>2000')
+
+acRate = goodNSpikesRate.groupby('brainArea').get_group('rightAC')
+thalRate = goodNSpikesRate.groupby('brainArea').get_group('rightThal')
+
+popStatCol = 'accuracy'
+acPopStat = acRate[popStatCol][pd.notnull(acRate[popStatCol])]
+thalPopStat = thalRate[popStatCol][pd.notnull(thalRate[popStatCol])]
+
+# plt.clf()
+# axSummary = plt.subplot(111)
+axSummary = plt.subplot(gs[1, 4])
+
+jitterFrac = 0.2
+pos = jitter(np.ones(len(thalPopStat))*0, jitterFrac)
+axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=1, ms=dataMS)
+medline(np.median(thalPopStat), 0, 0.5)
+pos = jitter(np.ones(len(acPopStat))*1, jitterFrac)
+axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=1, ms=dataMS)
+medline(np.median(acPopStat), 1, 0.5)
+tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
+axSummary.set_xticks(range(2))
+axSummary.set_xticklabels(tickLabels, rotation=45)
+extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
+axSummary.set_ylim([0.5, 1])
+yticks = [0.5, 0.6, 0.7, 0.8, 0.9, 1]
+axSummary.set_yticks(yticks)
+ytickLabels = ['50', '', '', '', '', '100']
+axSummary.set_yticklabels(ytickLabels)
+axSummary.set_ylabel('Discrimination accuracy\nof AM rate (%)', fontsize=fontSizeLabels, labelpad=-12)
+# extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
+
+zstat, pVal = stats.mannwhitneyu(thalPopStat, acPopStat)
+
+messages.append("{} p={}".format("Rate discrimination accuracy", pVal))
+
+# plt.title('p = {}'.format(np.round(pVal, decimals=5)))
+
+# axSummary.annotate('C', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
+#             fontsize=fontSizePanel, fontweight='bold')
+
+# starHeightFactor = 0.2
+# starGapFactor = 0.3
+# starYfactor = 0.1
+yDataMax = max([max(acPopStat), max(thalPopStat)]) - 0.025
+yStars = yDataMax + yDataMax*starYfactor
+yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+
+starString = None if pVal<0.05 else 'n.s.'
+fontSizeStars = 9
+extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                            starSize=fontSizeStars, starString=starString,
+                            gapFactor=starGapFactor)
+extraplots.boxoff(axSummary)
+plt.hold(1)
+
+
+########## Discrimination of Phase #############
+dbPathPhase = os.path.join(dataDir, 'celldatabase_with_phase_discrimination_accuracy.h5')
+dbPhase = pd.read_hdf(dbPathPhase, key='dataframe')
+
+goodISIPhase = dbPhase.query('isiViolations<0.02 or modifiedISI<0.02')
+goodShapePhase = goodISIPhase.query('spikeShapeQuality > 2')
+goodLaserPhase = goodShapePhase.query("autoTagged==1 and subject != 'pinp018'")
+goodNSpikesPhase = goodLaserPhase.query('nSpikes>2000')
+
+acPhase = goodNSpikesPhase.groupby('brainArea').get_group('rightAC')
+thalPhase = goodNSpikesPhase.groupby('brainArea').get_group('rightThal')
+
+possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
+ratesToUse = possibleRateKeys
+keys = ['phaseAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
+
+acData = np.full((len(acPhase), len(ratesToUse)), np.nan)
+thalData = np.full((len(thalPhase), len(ratesToUse)), np.nan)
+
+for externalInd, (indRow, row) in enumerate(acPhase.iterrows()):
+    for indKey, key in enumerate(keys):
+        acData[externalInd, indKey] = row[key]
+
+for externalInd, (indRow, row) in enumerate(thalPhase.iterrows()):
+    for indKey, key in enumerate(keys):
+        thalData[externalInd, indKey] = row[key]
+
+acMeanPerCell = np.nanmean(acData, axis=1)
+acMeanPerCell = acMeanPerCell[~np.isnan(acMeanPerCell)]
+thalMeanPerCell = np.nanmean(thalData, axis=1)
+thalMeanPerCell = thalMeanPerCell[~np.isnan(thalMeanPerCell)]
+
+# plt.clf()
+
+axSummary = plt.subplot(gs[1, 5])
+
+jitterFrac = 0.2
+pos = jitter(np.ones(len(thalMeanPerCell))*0, jitterFrac)
+axSummary.plot(pos, thalMeanPerCell, 'o', mec = colorATh, mfc = 'None', alpha=1, ms=dataMS)
+medline(np.median(thalMeanPerCell), 0, 0.5)
+pos = jitter(np.ones(len(acMeanPerCell))*1, jitterFrac)
+axSummary.plot(pos, acMeanPerCell, 'o', mec = colorAC, mfc = 'None', alpha=1, ms=dataMS)
+medline(np.median(acMeanPerCell), 1, 0.5)
+tickLabels = ['ATh:Str'.format(len(thalMeanPerCell)), 'AC:Str'.format(len(acMeanPerCell))]
+axSummary.set_xticks(range(2))
+axSummary.set_xticklabels(tickLabels, rotation=45)
+extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
+axSummary.set_ylim([0.5, 1])
+yticks = [0.5, 0.6, 0.7, 0.8, 0.9, 1]
+axSummary.set_yticks(yticks)
+ytickLabels = ['50', '', '', '', '', '100']
+axSummary.set_yticklabels(ytickLabels)
+# axSummary.set_yticklabels(map(str, [50, 60, 70, 80, 90, 100]))
+axSummary.set_ylabel('Discrimination accuracy\nof AM phase (%)', fontsize=fontSizeLabels, labelpad=-12)
+
+
+zstat, pVal = stats.mannwhitneyu(thalMeanPerCell, acMeanPerCell)
+
+messages.append("{} p={}".format("Phase discrimination accuracy", pVal))
+
+# plt.title('p = {}'.format(np.round(pVal, decimals=5)))
+
+# axSummary.annotate('C', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
+#             fontsize=fontSizePanel, fontweight='bold')
+
+# starHeightFactor = 0.2
+# starGapFactor = 0.3
+# starYfactor = 0.1
+yDataMax = max([max(acMeanPerCell), max(thalMeanPerCell)])
+yStars = yDataMax + yDataMax*starYfactor
+yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+
+starString = None if pVal<0.05 else 'n.s.'
+fontSizeStars = 9
+extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                            starSize=fontSizeStars, starString=starString,
+                            gapFactor=starGapFactor)
+
+
+extraplots.boxoff(axSummary)
+
+
+
+
+
+
+
 plt.show()
 print "\nSTATISTICS:\n"
 for message in messages:
@@ -653,4 +669,157 @@ for indRate, significant in enumerate(allPval):
 axSummary.set_ylabel('MI, Spike rate vs. stimulus phase (bits)')
 extraplots.boxoff(axSummary)
 axSummary.legend()
+
+
+
+
 '''
+
+# ############## Mutual info AM RATE #######################
+# popStatCol = 'mutualInfoBCBits'
+# # popStatCol = 'mutualInfoPerSpikeBits'
+# acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+# thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+
+# axSummary = plt.subplot(gs[1, 4])
+
+# #REMOVE NEGATIVE MI VALUES, REPLACE WITH 0
+# acPopStat[acPopStat < 0] = 0
+# thalPopStat[thalPopStat < 0] = 0
+# pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+# axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=1, ms=dataMS)
+# medline(np.median(thalPopStat), 0, 0.5)
+# pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+# axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=1, ms=dataMS)
+# medline(np.median(acPopStat), 1, 0.5)
+# if popStatCol == 'mutualInfoPerSpikeBits':
+#     plt.ylabel('MI(Firing rate; AM rate) (bits/spike)', fontsize=fontSizeLabels)
+# elif popStatCol == 'mutualInfoBCBits':
+#     plt.ylabel('MI(Firing rate; AM rate)\n(bits)', fontsize=fontSizeLabels, labelpad=-10)
+# # tickLabels = ['ATh:Str', 'AC:Str']
+# # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
+# tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
+# axSummary.set_xticks(range(2))
+# axSummary.set_xticklabels(tickLabels, rotation=45)
+# extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
+# axSummary.set_xlim([-0.5, 1.5])
+# extraplots.boxoff(axSummary)
+
+# axSummary.set_yticks([0, 0.25])
+# axSummary.set_yticklabels(['0', '0.25'], rotation=90, va='center')
+# extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
+
+# axSummary.set_ylim([-0.001, 0.25])
+
+# zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
+
+# messages.append("{} p={}".format(popStatCol, pVal))
+
+# # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
+
+# axSummary.annotate('C', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
+#             fontsize=fontSizePanel, fontweight='bold')
+
+# yDataMax = max([max(acPopStat), max(thalPopStat)])
+# yStars = yDataMax + yDataMax*starYfactor
+# yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+
+# starString = None if pVal<0.05 else 'n.s.'
+# extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+#                               starSize=fontSizeStars, starString=starString,
+#                               gapFactor=starGapFactor)
+# plt.hold(1)
+
+
+############################################################
+
+
+# ################### Mutual info PHASE #####################
+# # popStatCol = 'mutualInfoPerSpike'
+# # acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+# # thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+
+# axSummary = plt.subplot(gs[1, 5])
+
+# possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
+# rateThreshold = 22
+# ratesToUse = possibleRateKeys[possibleRateKeys>rateThreshold]
+
+
+# # dataframe = dataframe.query("pulsePval<0.05 and trainRatio>0.8")
+# # ac = dataframe.groupby('brainArea').get_group('rightAC')
+# # thal = dataframe.groupby('brainArea').get_group('rightThal')
+
+# keys = ['mutualInfoPhase_{}Hz'.format(rate) for rate in ratesToUse]
+
+# acData = np.full((len(ac), len(ratesToUse)), np.nan)
+# thalData = np.full((len(thal), len(ratesToUse)), np.nan)
+
+# for externalInd, (indRow, row) in enumerate(ac.iterrows()):
+#     for indKey, key in enumerate(keys):
+#         acData[externalInd, indKey] = row[key]
+
+# for externalInd, (indRow, row) in enumerate(thal.iterrows()):
+#     for indKey, key in enumerate(keys):
+#         thalData[externalInd, indKey] = row[key]
+
+# acData = np.nanmean(acData, axis=1)
+# thalData = np.nanmean(thalData, axis=1)
+
+# acData[acData<0]=0
+# thalData[thalData<0]=0
+
+# thalPopStat = thalData[~np.isnan(thalData)]
+# pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+# axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=1, ms=dataMS)
+# medline(np.median(thalPopStat), 0, 0.5)
+
+# acPopStat = acData[~np.isnan(acData)]
+# pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+# axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=1, ms=dataMS)
+# medline(np.median(acPopStat), 1, 0.5)
+
+# # tickLabels = ['ATh:Str', 'AC:Str']
+# # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
+# tickLabels = ['ATh:Str', 'AC:Str']
+# axSummary.set_xticks(range(2))
+# axSummary.set_xticklabels(tickLabels, rotation=45)
+# extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
+# axSummary.set_xlim([-0.5, 1.5])
+# extraplots.boxoff(axSummary)
+
+# axSummary.set_yticks([0, 0.010])
+# axSummary.set_yticklabels(['0', '0.01'], rotation=90, va='center')
+
+
+# # axSummary.set_ylim([-0.0001, 0.025])
+
+# zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
+
+# messages.append("mutualInfoPhase for rates>22Hz,  p={}".format(pVal))
+
+# # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
+
+# # axSummary.annotate('E', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
+# #             fontsize=fontSizePanel, fontweight='bold')
+
+# yDataMax = max([max(acPopStat), max(thalPopStat)])
+# # yDataMax = 0.023
+# yStars = yDataMax + yDataMax*starYfactor
+# yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+
+# starString = None if pVal<0.05 else 'n.s.'
+# extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+#                               starSize=fontSizeStars, starString=starString,
+#                               gapFactor=starGapFactor)
+# '''
+# if pVal < 0.05:
+#     extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+#                                         fontSize=fontSizeStars, gapFactor=starGapFactor)
+# else:
+#     extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker='n.s.',
+#                                         fontSize=fontSizeStars, gapFactor=starGapFactor)
+# '''
+
+# axSummary.set_ylabel('MI(Firing rate; phase)\n(bits)', fontsize=fontSizeLabels, labelpad=-10)
+# extraplots.boxoff(axSummary)

@@ -24,7 +24,7 @@ if not os.path.exists(dataDir):
     os.mkdir(dataDir)
 
 # -- Read in databases storing all measurements from psychometric mice -- #
-psychometricFilePath = os.path.join(settings.FIGURESDATA,figparams.STUDY_NAME)
+psychometricFilePath = os.path.join(settings.FIGURES_DATA_PATH,figparams.STUDY_NAME)
 psychometricFileName = 'all_cells_all_measures_extra_mod_waveform_psychometric.h5'
 psychometricFullPath = os.path.join(psychometricFilePath,psychometricFileName)
 allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')

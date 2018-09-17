@@ -100,12 +100,35 @@ anat037ccfSlice = {'p1c6':176,
             'p2c2':241,
             'p2c3':242}
 
+anat043ccfSlice = {'p1c2':169,
+                   'p1c3':173,
+                   'p1c4':176,
+                   'p1c5':180,
+                   'p1c6':184,
+                   'p1d1':186,
+                   'p1d2':188,
+                   'p1d3':190,
+                   'p1d4':191,
+                   'p1d5':196,
+                   'p1d6':199,
+                   'p2a1':202,
+                   'p2a2':205,
+                   'p2a3':209,
+                   'p2a4':212,
+                   'p2a5':215,
+                   'p2a6':219,
+                   'p2b1':222,
+                   'p2b2':226,
+                   'p2b3':230}
+
 # nSliceGroups=3
 # sliceGroups = []
 # for sgInd in range(nSliceGroups):
 #     sliceGroups.append(slices[sgInd::nSliceGroups])
 
 # for slices in sliceGroups:
+
+pixelSizes = {'anat036':4.0048, 'anat037':4.0048, 'anat043':1.29,}
 
 def calculate_area_totals(subject, registrationFolder, ccfSlice, nSliceGroups=1):
 
@@ -125,7 +148,7 @@ def calculate_area_totals(subject, registrationFolder, ccfSlice, nSliceGroups=1)
             filenameSVGPost = os.path.join(settings.HISTOLOGY_PATH, subject, registrationFolder, '{}.svg'.format(sliceName))
             (scale, translate, affine) = ha.get_svg_transform(filenameSVGPost, sliceSize=[1388, 1040])
             filenameCSV = os.path.join(settings.HISTOLOGY_PATH, subject, registrationFolder, '{}.csv'.format(sliceName))
-            coords = ha.get_coords_from_fiji_csv(filenameCSV, pixelSize=4.0048)
+            coords = ha.get_coords_from_fiji_csv(filenameCSV, pixelSize=pixelSizes[subject])
             newCoords = ha.apply_svg_transform(scale, translate, affine, coords)
 
             structIDs = []
@@ -164,21 +187,25 @@ def calculate_area_totals(subject, registrationFolder, ccfSlice, nSliceGroups=1)
 nSliceGroups = 3
 anat036sliceCountSum = calculate_area_totals('anat036', registrationFolder, anat036ccfSlice, nSliceGroups=nSliceGroups)
 anat037sliceCountSum = calculate_area_totals('anat037', registrationFolder, anat037ccfSlice, nSliceGroups=nSliceGroups)
+anat043sliceCountSum = calculate_area_totals('anat043', registrationFolder, anat043ccfSlice, nSliceGroups=nSliceGroups)
 
 nonLemNuclei = ['Suprageniculate nucleus', 'Medial geniculate complex, dorsal part', 'Medial geniculate complex, medial part']
 
 anat036NonLem = np.array([anat036sliceCountSum.get(area, np.zeros(nSliceGroups)) for area in nonLemNuclei])
 anat037NonLem = np.array([anat037sliceCountSum.get(area, np.zeros(nSliceGroups)) for area in nonLemNuclei])
+anat043NonLem = np.array([anat043sliceCountSum.get(area, np.zeros(nSliceGroups)) for area in nonLemNuclei])
 
 anat036ventral = np.array(anat036sliceCountSum.get('Medial geniculate complex, ventral part', np.zeros(nSliceGroups)))
 anat037ventral = np.array(anat037sliceCountSum.get('Medial geniculate complex, ventral part', np.zeros(nSliceGroups)))
+anat043ventral = np.array(anat043sliceCountSum.get('Medial geniculate complex, ventral part', np.zeros(nSliceGroups)))
 
 savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 np.save(os.path.join(savePath, 'anat036NonLem.npy'), anat036NonLem)
 np.save(os.path.join(savePath, 'anat036ventral.npy'), anat036ventral)
 np.save(os.path.join(savePath, 'anat037NonLem.npy'), anat037NonLem)
 np.save(os.path.join(savePath, 'anat037ventral.npy'), anat037ventral)
-
+np.save(os.path.join(savePath, 'anat043NonLem.npy'), anat043NonLem)
+np.save(os.path.join(savePath, 'anat043ventral.npy'), anat043ventral)
 
 # thalSavePath = os.path.join(dataDir, 'thalamusAreaCounts.npz')
 # print "Saving to: {}".format(thalSavePath)

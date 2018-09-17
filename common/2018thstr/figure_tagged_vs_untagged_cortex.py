@@ -34,12 +34,25 @@ colorFarUntagged = colorpalette.TangoPalette['Butter3']
 labelPosX = [0.04, 0.48]   # Horiz position for panel labels
 labelPosY = [0.48, 0.95]    # Vert position for panel labels
 
-# exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
+# exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuningexamples.npz')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
 dbase = pd.read_hdf(dbPath, key='dataframe')
+
+#Copy over rate decoder columns
+dbRateDecoderPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'figure_am', 'celldatabase_with_am_discrimination_accuracy.h5')
+dbaseRateDecoder = pd.read_hdf(dbRateDecoderPath, key='dataframe')
+dbase['accuracyRate'] = dbaseRateDecoder['accuracy']
+
+#Copy over phase decoder columns
+dbPhaseDecoderPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'figure_am', 'celldatabase_with_phase_discrimination_accuracy.h5')
+dbasePhaseDecoder = pd.read_hdf(dbPhaseDecoderPath, key='dataframe')
+possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
+for rate in possibleRateKeys:
+    key = 'phaseAccuracy_{}Hz'.format(rate)
+    dbase[key] = dbasePhaseDecoder[key]
 
 fig = plt.gcf()
 plt.clf()
@@ -60,6 +73,9 @@ yLabels = ['Highest AM sync. rate (Hz)', 'MI (AM Rate, bits)', 'MI (AM Phase, bi
 
 #Select only the cells from AC
 dataframe = dbase.query("brainArea == 'rightAC' and nSpikes>2000")
+
+### GET ONLY CELLS THAT COME FROM SITES WHERE AT LEAST ONE SOUND/LASER CELL WAS RECORDED
+# dataframe = dataframe[~pd.isnull(dataframe['cellX'])]
 
 goodISI = dataframe.query('isiViolations<0.02 or modifiedISI<0.02')
 # goodISI = dataframe.query('isiViolations<0.02')
@@ -84,7 +100,7 @@ taggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==0]
 closeUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==1]
 farUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==2]
 
-farUntaggedCellsFreq = goodFitToUse[(goodFitToUse['taggedCond']==1) | (goodFitToUse['taggedCond']==2)]
+# farUntaggedCellsFreq = goodFitToUse[(goodFitToUse['taggedCond']==1) | (goodFitToUse['taggedCond']==2)]
 
 # taggedCellsAM = dataframe[dataframe['taggedCond']==0]
 # closeUntaggedCellsAM = dataframe[dataframe['taggedCond']==1]
@@ -103,17 +119,26 @@ gs = gridspec.GridSpec(2, 21)
 gs.update(left=0.12, right=0.98, top=0.88, bottom=0.15, wspace=40, hspace=0.7)
 
 axBW10 = plt.subplot(gs[0, 0:7])
+axBW10.hold(1)
 axThresh = plt.subplot(gs[0, 7:14])
+axThresh.hold(1)
 axLatency = plt.subplot(gs[0, 14:21])
+axLatency.hold(1)
 
 gsNSYNC = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[1, 0:3])
 axTaggedNSYNC = plt.subplot(gsNSYNC[0, 0])
+axTaggedNSYNC.hold(1)
 axCloseUntaggedNSYNC = plt.subplot(gsNSYNC[1, 0])
+axCloseUntaggedNSYNC.hold(1)
 axFarUntaggedNSYNC = plt.subplot(gsNSYNC[2, 0])
+axFarUntaggedNSYNC.hold(1)
 
 axHighestSync = plt.subplot(gs[1, 3:9])
+axHighestSync.hold(1)
 axMIRate = plt.subplot(gs[1, 9:15])
+axMIRate.hold(1)
 axMIPhase = plt.subplot(gs[1, 15:21])
+axMIPhase.hold(1)
 
 ## -- BW10 -- ##
 feature="BW10"
@@ -168,6 +193,7 @@ yStarHeight = (yMax-yMin)*0.05
 starGapFactor = 0.1
 fontSizeStars = 9
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
+print "{} Tagged vs. close untagged, p={}".format(feature, pVal)
 if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
@@ -253,6 +279,7 @@ starGapFactor = 0.1
 fontSizeStars = 9
 
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
+print "{} Tagged vs. close untagged, p={}".format(feature, pVal)
 if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
@@ -346,6 +373,7 @@ starGapFactor = 0.1
 fontSizeStars = 9
 
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
+print "{} Tagged vs. close untagged, p={}".format(feature, pVal)
 if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
@@ -526,6 +554,7 @@ starGapFactor = 0.1
 fontSizeStars = 9
 
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
+print "{} Tagged vs. close untagged, p={}".format(feature, pVal)
 if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor,
@@ -561,7 +590,8 @@ extraplots.boxoff(ax)
 
 ## -- MI (rate) -- ##
 ax = axMIRate
-feature = "mutualInfoPerSpikeBits"
+# feature = "mutualInfoPerSpikeBits"
+feature = 'accuracyRate'
 
 dataTagged = taggedCellsAM[feature][pd.notnull(taggedCellsAM[feature])]
 dataTagged[dataTagged<0]=0
@@ -606,14 +636,15 @@ ax.set_xticklabels(['Tagged\nN={}'.format(len(dataTagged)),
                     'Far\nUntagged\nN={}'.format(len(dataFarUntagged))])
 
 #0-1
-yMin = 0
-yMax = 0.3
+yMin = 0.5
+yMax = 1
 yStars = [yMax*1.1, yMax*1.2]
 yStarHeight = (yMax-yMin)*0.05
 starGapFactor = [0.1, 0.2]
 fontSizeStars = 9
 
 zVal, pVal = stats.mannwhitneyu(dataTagged, dataCloseUntagged)
+print "tagged vs. close untagged, {} p={}".format(feature, pVal)
 if pVal < 0.05:
     extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor[1],
@@ -642,19 +673,22 @@ else:
     extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='n.s.',
                                       fontSize=fontSizeStars, gapFactor=starGapFactor[0],
                                       ax=ax)
-ax.set_ylabel("MI Rate (bits/spike)")
+# ax.set_ylabel("MI Rate (bits/spike)")
+ax.set_ylabel("Rate discrim accuracy")
 ax.set_ylim([yMin, yMax])
 extraplots.boxoff(ax)
 
 ## -- MI (Phase) -- ##
 ax = axMIPhase
 possibleFreqKeys = [4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128]
+ratesToUse = possibleFreqKeys
 
 # dataframe = dataframe.query("pulsePval<0.05 and trainRatio>0.8")
 # ac = dataframe.groupby('brainArea').get_group('rightAC')
 # thal = dataframe.groupby('brainArea').get_group('rightThal')
 
-keys = ['mutualInfoPhase_{}Hz'.format(rate) for rate in possibleFreqKeys]
+# keys = ['mutualInfoPhase_{}Hz'.format(rate) for rate in possibleFreqKeys]
+keys = ['phaseAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
 
 dataTagged = np.full((len(taggedCellsAM), len(possibleFreqKeys)), np.nan)
 dataCloseUntagged = np.full((len(closeUntaggedCellsAM), len(possibleFreqKeys)), np.nan)
@@ -672,40 +706,112 @@ for externalInd, (indRow, row) in enumerate(farUntaggedCellsAM.iterrows()):
     for indKey, key in enumerate(keys):
         dataFarUntagged[externalInd, indKey] = row[key]
 
-dataTagged[dataTagged<0]=0
-dataCloseUntagged[dataCloseUntagged<0]=0
-dataFarUntagged[dataFarUntagged<0]=0
+# dataTagged[dataTagged<0]=0
+# dataCloseUntagged[dataCloseUntagged<0]=0
+# dataFarUntagged[dataFarUntagged<0]=0
+# allPval = []
 
-allPval = []
-for indCol, freqKey in enumerate(possibleFreqKeys):
-    dataTaggedThisFreq = dataTagged[:,indCol][np.logical_not(np.isnan(dataTagged[:,indCol]))]
-    dataCloseUntaggedThisFreq = dataCloseUntagged[:,indCol][np.logical_not(np.isnan(dataCloseUntagged[:,indCol]))]
-    dataFarUntaggedThisFreq = dataFarUntagged[:,indCol][np.logical_not(np.isnan(dataFarUntagged[:,indCol]))]
+
+# for indCol, freqKey in enumerate(possibleFreqKeys):
+#     dataTaggedThisFreq = dataTagged[:,indCol][np.logical_not(np.isnan(dataTagged[:,indCol]))]
+#     dataCloseUntaggedThisFreq = dataCloseUntagged[:,indCol][np.logical_not(np.isnan(dataCloseUntagged[:,indCol]))]
+#     dataFarUntaggedThisFreq = dataFarUntagged[:,indCol][np.logical_not(np.isnan(dataFarUntagged[:,indCol]))]
     # zStat, pVal = stats.ranksums(dataTaggedThisFreq, dataUntaggedThisFreq)
     # allPval.append(int(pVal<0.05))
     # print "{}Hz, p={}".format(freqKey, pVal)
 
-taggedMean = np.nanmean(dataTagged, axis=0)
+taggedMean = np.nanmean(dataTagged, axis=1)
+taggedMean = taggedMean[~np.isnan(taggedMean)]
 # taggedMean = np.nanmedian(dataTagged, axis=0)
-taggedStd = np.nanstd(dataTagged, axis=0)
+# taggedStd = np.nanstd(dataTagged, axis=0)
 
-closeUntaggedMean = np.nanmean(dataCloseUntagged, axis=0)
-closeUntaggedStd = np.nanstd(dataCloseUntagged, axis = 0)
+closeUntaggedMean = np.nanmean(dataCloseUntagged, axis=1)
+closeUntaggedMean = closeUntaggedMean[~np.isnan(closeUntaggedMean)]
+# closeUntaggedStd = np.nanstd(dataCloseUntagged, axis = 0)
 
-farUntaggedMean = np.nanmean(dataFarUntagged, axis=0)
-farUntaggedStd = np.nanstd(dataFarUntagged, axis = 0)
+farUntaggedMean = np.nanmean(dataFarUntagged, axis=1)
+farUntaggedMean = farUntaggedMean[~np.isnan(farUntaggedMean)]
+
+# farUntaggedStd = np.nanstd(dataFarUntagged, axis = 0)
 
 numTagged = sum(np.logical_not(np.isnan(dataTagged[:,0])))
 numCloseUntagged = sum(np.logical_not(np.isnan(dataCloseUntagged[:,0])))
 numFarUntagged = sum(np.logical_not(np.isnan(dataFarUntagged[:,0])))
 
-ax.plot(taggedMean, '-', color=colorTagged, label='Tagged, n={}'.format(numTagged))
+boxData = [taggedMean, closeUntaggedMean, farUntaggedMean]
+bp = axMIPhase.boxplot(boxData, widths=0.5, showfliers=False, positions=[0,1,2])
 plt.hold(1)
-ax.plot(closeUntaggedMean, '--', color=colorCloseUntagged, label="Close Untagged, n={}".format(numCloseUntagged))
-ax.plot(farUntaggedMean, '-.', color=colorFarUntagged, label="Far Untagged, n={}".format(numFarUntagged))
-ax.set_xticks(range(len(possibleFreqKeys))[::2])
-ax.set_xticklabels(possibleFreqKeys[::2])
-ax.set_xlabel('AM rate (Hz)')
+
+colors = [colorTagged, colorCloseUntagged, colorFarUntagged]
+whiskerColors = [colorTagged, colorTagged, colorCloseUntagged,
+                 colorCloseUntagged, colorFarUntagged, colorFarUntagged]
+linewidth=2
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_color(color)
+    patch.set_lw(linewidth)
+for patch, color in zip(bp['whiskers'], whiskerColors):
+    patch.set_color(color)
+    patch.set_lw(linewidth)
+for patch, color in zip(bp['medians'], colors):
+    patch.set_color(color)
+    patch.set_lw(linewidth)
+plt.setp(bp['caps'], visible=False)
+
+ax.set_xticks([0,1,2])
+ax.set_xticklabels(['Tagged\nN={}'.format(numTagged),
+                    'Close\nUntagged\nN={}'.format(numCloseUntagged),
+                    'Far\nUntagged\nN={}'.format(numFarUntagged)])
+
+#0-1
+yMin = 0.5
+yMax = 1
+yStars = [yMax*1.1, yMax*1.2]
+yStarHeight = (yMax-yMin)*0.05
+starGapFactor = [0.1, 0.2]
+fontSizeStars = 9
+
+zVal, pVal = stats.mannwhitneyu(taggedMean, closeUntaggedMean)
+print "tagged vs. close untagged, accuracyPhase p={}".format(pVal)
+if pVal < 0.05:
+    extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='*',
+                                      fontSize=fontSizeStars, gapFactor=starGapFactor[1],
+                                      ax=ax)
+else:
+    extraplots.new_significance_stars([0, 0.9], yStars[0], yStarHeight, starMarker='n.s.',
+                                      fontSize=fontSizeStars, gapFactor=starGapFactor[1],
+                                      ax=ax)
+#1-2
+zVal, pVal = stats.mannwhitneyu(closeUntaggedMean, farUntaggedMean)
+if pVal < 0.05:
+    extraplots.new_significance_stars([1.1, 2], yStars[0], yStarHeight, starMarker='*',
+                                      fontSize=fontSizeStars, gapFactor=starGapFactor[1],
+                                      ax=ax)
+else:
+    extraplots.new_significance_stars([1.1, 2], yStars[0], yStarHeight, starMarker='n.s.',
+                                      fontSize=fontSizeStars, gapFactor=starGapFactor[1],
+                                      ax=ax)
+#0-2
+zVal, pVal = stats.mannwhitneyu(taggedMean, farUntaggedMean)
+if pVal < 0.05:
+    extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='*',
+                                      fontSize=fontSizeStars, gapFactor=starGapFactor[0],
+                                      ax=ax)
+else:
+    extraplots.new_significance_stars([0, 2], yStars[1], yStarHeight, starMarker='n.s.',
+                                      fontSize=fontSizeStars, gapFactor=starGapFactor[0],
+                                      ax=ax)
+# ax.set_ylabel("MI Rate (bits/spike)")
+ax.set_ylabel("phase discrim accuracy")
+ax.set_ylim([yMin, yMax])
+extraplots.boxoff(ax)
+
+# ax.plot(taggedMean, '-', color=colorTagged, label='Tagged, n={}'.format(numTagged))
+# plt.hold(1)
+# ax.plot(closeUntaggedMean, '--', color=colorCloseUntagged, label="Close Untagged, n={}".format(numCloseUntagged))
+# ax.plot(farUntaggedMean, '-.', color=colorFarUntagged, label="Far Untagged, n={}".format(numFarUntagged))
+# ax.set_xticks(range(len(possibleFreqKeys))[::2])
+# ax.set_xticklabels(possibleFreqKeys[::2])
+# ax.set_xlabel('AM rate (Hz)')
 
 # for indRate, significant in enumerate(allPval):
 #     if significant:

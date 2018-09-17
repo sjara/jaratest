@@ -18,7 +18,7 @@ for indSubject, subject in enumerate(subjects):
     muscimoldates = datesDict['muscimol']
     sessions = salinedates
     for indSession, session in enumerate(sessions):
-        #Load behavior data for the session
+        #Load behavior data for the sessioln
         bfile = loadbehavior.path_to_behavior_data(subject, '2afc', session)
         bdata = loadbehavior.BehaviorData(bfile)
 

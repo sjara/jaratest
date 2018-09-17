@@ -24,7 +24,7 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.015, 0.33, 0.66]   # Horiz position for panel labels
+labelPosX = [0.015, 0.33, 0.68]   # Horiz position for panel labels
 labelPosY = [0.95, 0.47]    # Vert position for panel labels
 labelDis = 0.2
 
@@ -105,8 +105,12 @@ ax0.set_ylabel('Reaction time (s)', fontsize=fontSizeLabels)
 ax0.set_xlim([0.8, 2.2])
 ax0.set_xticks([1,2])
 ax0.set_xticklabels([])
+ax0.set_yticks([0, 0.1, 0.2])
+ax0.set_ylim([-0.03,0.23])
 ax0.set_title('Leftward trials', fontsize=fontSizeLabels+1)
-ax0.set_yticks([0, 0.20])
+plt.sca(ax0)
+extraplots.significance_stars([1,2], 0.2, 0.01, starSize=12, starString='n.s.', gapFactor=0.2, color='0.5')
+extraplots.set_ticks_fontsize(ax0,fontSizeTicks)
 extraplots.boxoff(ax0)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('reaction time leftward p={}'.format(pVal))
@@ -125,13 +129,17 @@ for (animal,shape) in animalShapes.items():
         .format(animal, [meanReactionTimeRightwardLeftMore,meanReactionTimeRightwardRightMore]))
     allMiceMeanLeftMore.append(meanReactionTimeRightwardLeftMore)
     allMiceMeanRightMore.append(meanReactionTimeRightwardRightMore)
-    ax1.plot([1,2], [meanReactionTimeRightwardRightMore,meanReactionTimeRightwardLeftMore], 
+    ax1.plot([1,2], [meanReactionTimeRightwardLeftMore, meanReactionTimeRightwardRightMore], 
         marker='o', color='k')
 ax1.set_xlim([0.8, 2.2])
 ax1.set_xticks([1,2])
-ax1.set_yticks([0, 0.20])
 ax1.set_xticklabels([])
+ax1.set_ylim([-0.03,0.23])
+ax1.set_yticks([0, 0.1, 0.2])
 ax1.set_title('Rightward trials', fontsize=fontSizeLabels+1)
+plt.sca(ax1)
+extraplots.significance_stars([1,2], 0.2, 0.01, starSize=12, starString='n.s.', gapFactor=0.2, color='0.5')
+extraplots.set_ticks_fontsize(ax1,fontSizeTicks)
 extraplots.boxoff(ax1)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('reaction time rightward p={}'.format(pVal))
@@ -160,11 +168,15 @@ for (animal,shape) in animalShapes.items():
         marker='o', color='k')
 ax2.set_ylabel('Movement time (s)', fontsize=fontSizeLabels)
 ax2.set_xticks([1,2])
-ax2.set_yticks([0.3, 0.7])
-ax2.set_xticklabels(['More\nipsi', 'More\ncontra'], fontsize=fontSizeLabels)
+ax2.set_yticks([0.3, 0.5, 0.7])
+ax2.set_ylim([0.25,0.75])
+ax2.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
 ax2.tick_params(axis='x', which='major', pad=10)
 #ax2.set_xlabel('Leftward trials', fontsize=fontSizeLabels)
 ax2.set_xlim([0.8, 2.2])
+plt.sca(ax2)
+extraplots.significance_stars([1,2], 0.74, 0.025, starSize=12, starString='n.s.', gapFactor=0.2, color='0.5')
+extraplots.set_ticks_fontsize(ax2,fontSizeTicks)
 extraplots.boxoff(ax2)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('response time leftward p={}'.format(pVal))
@@ -191,14 +203,18 @@ for (animal,shape) in animalShapes.items():
     allMiceLeftMoreRemoved.append(proportionSideInBeforeModWindow)
     proportionSideInBeforeModWindow = sum(responseTimeRightwardRightMore< modulationWindow[-1]) / float(len(responseTimeRightwardRightMore))
     allMiceRightMoreRemoved.append(proportionSideInBeforeModWindow)
-    ax3.plot([1,2], [meanResponseTimeRightwardRightMore,meanResponseTimeRightwardLeftMore], 
+    ax3.plot([1,2], [meanResponseTimeRightwardLeftMore, meanResponseTimeRightwardRightMore], 
         marker='o', color='k')
 ax3.set_xticks([1,2])
-ax3.set_xticklabels(['More\nipsi', 'More\ncontra'], fontsize=fontSizeLabels)
+ax3.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
 ax3.tick_params(axis='x', which='major', pad=10)
 #ax3.set_xlabel('Rightward trials', fontsize=fontSizeLabels)
-ax3.set_yticks([0.30, 0.70])
+ax3.set_yticks([0.30, 0.5, 0.70])
+ax3.set_ylim([0.25,0.75])
 ax3.set_xlim([0.8, 2.2])
+plt.sca(ax3)
+extraplots.significance_stars([1,2], 0.74, 0.025, starSize=12, starString='n.s.', gapFactor=0.2, color='0.5')
+extraplots.set_ticks_fontsize(ax3,fontSizeTicks)
 extraplots.boxoff(ax3)
 zScore,pVal = stats.wilcoxon(allMiceMeanLeftMore, allMiceMeanRightMore)
 print('response time rightward p={}'.format(pVal))

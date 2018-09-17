@@ -163,7 +163,8 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
 
     # timeRange = [0.1, 0.5] #DONE: Use this to cut out onset responses
-    timeRange = [0, 0.5] 
+    timeRange = [0.05, 0.5]
+    #TODO Check the removal of onset responses in the final dataset.
     (spikeTimesFromEventOnset,
     trialIndexForEachSpike,
     indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
@@ -193,12 +194,12 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
             ## Split out spikes in each period
             for indPeriod, spikesThisPeriod in enumerate(spikes_each_period(spikeTimesThisTrial, period)):
 
-                ## Div up into ~6 bins
                 ### Subtract indPeriod * period to get spiketimes relative to the start of the period
                 spikesThisPeriod = spikesThisPeriod - period * indPeriod
                 spikesPerPeriod.append(len(spikesThisPeriod))
-                ### Bins to count the spikes are from 0 to period, 6 bins
-                nBins = 5
+                ### Bins to count the spikes are from 0 to period
+                # nBins = 5
+                nBins = 4
                 binEdges = np.linspace(0, period, nBins+1)
                 ### Hist spikes into each bin
                 hist, binEdges = np.histogram(spikesThisPeriod, bins=binEdges)
@@ -216,6 +217,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
         if len(binRates)==0:
             print "Why tf is this happening?? cell ind #{}".format(indRow)
+            # raise ValueError
             continue
 
 
@@ -241,8 +243,8 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'mutualInfoPerSpikePhase_{}Hz'.format(int(freq))] = miCorrectedBitsPerSpike
 
 # savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-# savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dataframe.to_hdf(dbPath, 'dataframe')
+savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dataframe.to_hdf(savePath, 'dataframe')
 print "SAVED DATAFRAME to {}".format(dbPath)
     #     miEachFreq.append(miCorrectedBits)
 

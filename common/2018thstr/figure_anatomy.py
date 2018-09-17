@@ -17,6 +17,8 @@ anat036nonLem = np.load(os.path.join(dataDir, 'anat036NonLem.npy'))
 anat036ventral = np.load(os.path.join(dataDir, 'anat036ventral.npy'))
 anat037nonLem = np.load(os.path.join(dataDir, 'anat037NonLem.npy'))
 anat037ventral = np.load(os.path.join(dataDir, 'anat037ventral.npy'))
+anat043nonLem = np.load(os.path.join(dataDir, 'anat043NonLem.npy'))
+anat043ventral = np.load(os.path.join(dataDir, 'anat043ventral.npy'))
 
 cortexCellDepths = np.load(os.path.join(dataDir, 'anat036_p1d2_cellDepths.npy'))
 
@@ -59,8 +61,10 @@ dotEdgeColor = figparams.dotEdgeColor
 barColor = '0.5'
 anat036NonLemColor = 'k'
 anat037NonLemColor = 'k'
+anat043NonLemColor = 'k'
 anat036VentralColor = 'k'
 anat037VentralColor = 'k'
+anat043VentralColor = 'k'
 
 labelPosX = [0.03, 0.53]   # Horiz position for panel labels
 labelPosY = [0.97, 0.62, 0.32]    # Vert position for panel labels
@@ -95,24 +99,29 @@ extraplots.boxoff(axThalHist)
 
 anat036NonLemTotals = np.sum(anat036nonLem, axis=0)/(np.sum(anat036nonLem, axis=0) + anat036ventral).astype(float)
 anat037NonLemTotals = np.sum(anat037nonLem, axis=0)/(np.sum(anat037nonLem, axis=0) + anat037ventral).astype(float)
+anat043NonLemTotals = np.sum(anat043nonLem, axis=0)/(np.sum(anat043nonLem, axis=0) + anat043ventral).astype(float)
 
 anat036VentralTotals = anat036ventral/(np.sum(anat036nonLem, axis=0) + anat036ventral).astype(float)
 anat037VentralTotals = anat037ventral/(np.sum(anat037nonLem, axis=0) + anat037ventral).astype(float)
+anat043VentralTotals = anat043ventral/(np.sum(anat043nonLem, axis=0) + anat043ventral).astype(float)
 
 animalSplit = 0.2
-jitterFrac = 0.08 * 1.5
+# jitterFrac = 0.08 * 1.5
+jitterFrac = 0
 # axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, jitterFrac), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None', ms=dataMS, clip_on=False)
 axThalHist.plot(jitter(np.zeros(len(anat036NonLemTotals))-animalSplit, 0), anat036NonLemTotals, 'o', mec=anat036NonLemColor, mfc='None', ms=dataMS, clip_on=False)
-axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals))+animalSplit, jitterFrac), anat037NonLemTotals, 'o', mec=anat037NonLemColor, mfc='None', ms=dataMS, clip_on=False)
+axThalHist.plot(jitter(np.zeros(len(anat037NonLemTotals)), jitterFrac), anat037NonLemTotals, 'o', mec=anat037NonLemColor, mfc='None', ms=dataMS, clip_on=False)
+axThalHist.plot(jitter(np.zeros(len(anat043NonLemTotals))+animalSplit, jitterFrac), anat043NonLemTotals, 'o', mec=anat043NonLemColor, mfc='None', ms=dataMS, clip_on=False)
 
 # axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, jitterFrac), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None', ms=dataMS, clip_on=False)
 axThalHist.plot(jitter(np.ones(len(anat036VentralTotals))-animalSplit, 0), anat036VentralTotals, 'o', mec=anat036VentralColor, mfc='None', ms=dataMS, clip_on=False)
-axThalHist.plot(jitter(np.ones(len(anat037VentralTotals))+animalSplit, jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None', ms=dataMS, clip_on=False)
+axThalHist.plot(jitter(np.ones(len(anat037VentralTotals)), jitterFrac), anat037VentralTotals, 'o', mec=anat037VentralColor, mfc='None', ms=dataMS, clip_on=False)
+axThalHist.plot(jitter(np.ones(len(anat043VentralTotals))+animalSplit, jitterFrac), anat043VentralTotals, 'o', mec=anat043VentralColor, mfc='None', ms=dataMS, clip_on=False)
 
-allNonLemTotals = np.concatenate([anat036NonLemTotals, anat037NonLemTotals])
-allVentralTotals = np.concatenate([anat036VentralTotals, anat037VentralTotals])
-nonLemMean = np.mean([np.mean(anat036NonLemTotals), np.mean(anat037NonLemTotals)])
-ventralMean = np.mean([np.mean(anat036VentralTotals), np.mean(anat037VentralTotals)])
+allNonLemTotals = np.concatenate([anat036NonLemTotals, anat037NonLemTotals, anat043NonLemTotals])
+allVentralTotals = np.concatenate([anat036VentralTotals, anat037VentralTotals, anat043VentralTotals])
+nonLemMean = np.mean([np.mean(anat036NonLemTotals), np.mean(anat037NonLemTotals), np.mean(anat043NonLemTotals)])
+ventralMean = np.mean([np.mean(anat036VentralTotals), np.mean(anat037VentralTotals), np.mean(anat043VentralTotals)])
 
 statistic, pVal = stats.ranksums(allNonLemTotals, allVentralTotals)
 print("Ranksums test, NonLem vs Ventral totals, p={}".format(pVal))

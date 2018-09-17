@@ -26,6 +26,8 @@ matplotlib.rcParams['svg.fonttype'] = 'none'
 
 colorsDict = {'colorLMore':figparams.colp['MoreRewardL'], 
               'colorRMore':figparams.colp['MoreRewardR']} 
+condDict = {'left more':'More left', 'right more':'More right'}
+choiceDict = {'left':'leftward', 'right':'rightward'}
 
 soundColor = figparams.colp['sound']
 timeRangeToPlot = [-0.2,0.5]
@@ -47,7 +49,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 
 figFilename = 'figure_reward_modulation_movement'
-figFormat = 'svg' # 'pdf' or 'svg'
+figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [7, 10]
 
 fontSizeLabels = figparams.fontSizeLabels
@@ -55,15 +57,15 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 #labelDis = 0.1
 
-labelPosX = [0.015, 0.5]   # Horiz position for panel labels
-labelPosY = [0.97, 0.6, 0.2]    # Vert position for panel labels
+labelPosX = [0.015, 0.54]   # Horiz position for panel labels
+labelPosY = [0.97, 0.58, 0.2]    # Vert position for panel labels
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(5, 2)
-gs.update(left=0.13, right=0.93, top=0.98, bottom=0.06, wspace=0.5, hspace=0.6)
+gs.update(left=0.11, right=0.97, top=0.98, bottom=0.07, wspace=0.5, hspace=0.7)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,0], hspace=0.15)
 gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs[0:2,1], hspace=0.15)
@@ -91,7 +93,8 @@ if PANELS[0]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    directionPloted = str(intData['directionPloted'])
+
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -105,10 +108,10 @@ if PANELS[0]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -116,27 +119,32 @@ if PANELS[0]:
 
     sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
     plt.hold('on')
-    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
     
-    plt.text(0, yLims[-1]+5, 'AC')
+    #plt.text(0, yLims[-1]+5, 'AC')
     
-    #ax1.set_yticklabels([])
+    ax1.set_yticklabels([])
     ax1.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #ax1.set_title(directionPloted)
+    plt.ylabel('Correct {}\ntrials grouped by \nreward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+
+    extraplots.boxoff(plt.gca(), keep='none')
 
     ax2 = plt.subplot(gs00[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
+    condLabels = intData['condLabels']
     
+    condLabelsStr = [condDict[label] for label in condLabels]
+
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -151,8 +159,9 @@ if PANELS[0]:
     plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
-    
-    plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
+
+    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks+2)
+    plt.legend(condLabelsStr[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
            frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
 # -- Panel B: reward modulated cell during center-out in AC -- #
@@ -167,7 +176,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    directionPloted = str(intData['directionPloted'])
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -181,10 +190,10 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -192,28 +201,36 @@ if PANELS[1]:
 
     sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
     plt.hold('on')
-    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
     plt.setp(bplot['medians'], color='orange')
     
-    plt.text(0, yLims[-1]+5, 'AStr')
+    #plt.text(0, yLims[-1]+5, 'AStr')
 
     ax3.set_yticklabels([])
     ax3.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #ax3.set_title(directionPloted)
+    #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{} trials grouped\nby reward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+    plt.ylabel('Correct {}\ntrials grouped by \nreward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+
+    extraplots.boxoff(plt.gca(), keep='none')
 
 
     ax4 = plt.subplot(gs01[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
-    
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
+
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -229,6 +246,7 @@ if PANELS[1]:
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
+    plt.text(-0.075, 0.7*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks+2)
     #plt.legend(condLabels[0:2], loc='best', fontsize=fontSizeTicks, handlelength=0.2,
     #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
@@ -262,7 +280,8 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIEncodeMvAC)/float(len(allModIEncodeMvAC))
-    plt.text(0.5,yPosText,'AC\nn={}'.format(len(allModIEncodeMvAC)),ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.5,yPosText,'AC\nN={}'.format(len(allModIEncodeMvAC)),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'{:.1f}%\np<0.05'.format(percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(movement period)', fontsize=fontSizeLabels)
@@ -280,7 +299,6 @@ if PANELS[2]:
     (Z, pVal) = stats.wilcoxon(sigModIEncodeMvAC)
     print 'For significantly modulated cells in AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIEncodeMvAC), pVal)
     
-
     ax7 = plt.subplot(gs[4,1])
     ax7.annotate('F', xy=(labelPosX[1],labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
     if removeSideIn:
@@ -310,7 +328,8 @@ if PANELS[2]:
     #plt.text(-0.5,yPosText,'Contra',ha='center',fontsize=fontSizeLabels)
     #plt.text(0.5,yPosText,'Ipsi',ha='center',fontsize=fontSizeLabels)
     percentSelective = 100*len(sigModIEncodeMvAStr)/float(len(allModIEncodeMvAStr))
-    plt.text(0.5,yPosText,'AStr\nn={}'.format(len(allModIEncodeMvAStr)),ha='center',fontsize=fontSizeLabels)
+    plt.text(-0.5,yPosText,'pStr\nN={}'.format(len(allModIEncodeMvAStr)),ha='center',fontsize=fontSizeLabels)
+    plt.text(0.5,yPosText,'{:.1f}%\np<0.05'.format(percentSelective),ha='center',fontsize=fontSizeLabels)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Reward modulation index\n(movement period)', fontsize=fontSizeLabels)
@@ -327,6 +346,7 @@ if PANELS[2]:
     print 'For AStr: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution for all good cells to zero yielded a p value of {:.3f}'.format(np.mean(allModIEncodeMvAStr), pVal)
     (Z, pVal) = stats.wilcoxon(sigModIEncodeMvAStr)
     print 'For significantly modulated cells in AC: Mean mod index is {:.3f}. Using the Wilcoxon signed-rank test, comparing the modulation index distribution to zero yielded a p value of {:.3f}'.format(np.mean(sigModIEncodeMvAStr), pVal)
+    
     
     (Z, pValBtAreas) = stats.ranksums(np.abs(allModIEncodeMvAC), np.abs(allModIEncodeMvAStr))
     print 'Using wilcoxon rank sum test to compare ABSOLUTE modulation indices between AC and AStr, p value is {:.3f}'.format(pValBtAreas)
@@ -355,7 +375,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    directionPloted = str(intData['directionPloted'])
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -369,10 +389,10 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -380,10 +400,10 @@ if PANELS[1]:
     
     sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
     plt.hold('on')
-    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -393,15 +413,23 @@ if PANELS[1]:
 
     ax8.set_yticklabels([])
     ax8.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #ax8.set_title(directionPloted)
+    #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{} trials grouped\nby reward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+    plt.ylabel('Correct {}\ntrials grouped by \nreward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+
+    extraplots.boxoff(plt.gca(), keep='none')
 
 
     ax9 = plt.subplot(gs03[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
-    
+    condLabels = intData['condLabels']
+
+    condLabelsStr = [condDict[label] for label in condLabels]
+
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -413,10 +441,11 @@ if PANELS[1]:
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
+    plt.text(-0.1, 0.7*yLims[-1], 'AC', fontweight='normal', ha='center', fontsize=fontSizeTicks+2)
     #plt.legend(condLabels[0:2], loc='upper right', fontsize=fontSizeTicks, handlelength=0.2,
            #frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 
@@ -431,7 +460,7 @@ if PANELS[1]:
     colorEachCond = intData['colorEachCond']
     spikeTimesFromEventOnset = intData['spikeTimesFromEventOnset']
     indexLimitsEachTrial = intData['indexLimitsEachTrial']
-    
+    directionPloted = str(intData['directionPloted'])
     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
                                                    indexLimitsEachTrial,
                                                    timeRange=timeRangeToPlot,
@@ -445,10 +474,10 @@ if PANELS[1]:
     trialsToUse = np.sum(trialsEachCond, axis=1).astype('bool')
     yLims = plt.gca().get_ylim()
     plt.hold('on')
-    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    bplot = plt.boxplot(soundTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -456,10 +485,10 @@ if PANELS[1]:
 
     sideInTimesFromEventOnset = intData['sideInTimesFromEventOnset']
     plt.hold('on')
-    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]+5], widths=[yLims[-1]*0.04])
+    bplot = plt.boxplot(sideInTimesFromEventOnset[trialsToUse], sym='', vert=False, positions=[yLims[-1]*1.05], widths=[yLims[-1]*0.04])
     extraplots.boxoff(plt.gca())
     plt.autoscale(enable=True, axis='y', tight=True)
-    plt.axis('off')
+    #plt.axis('off')
     for element in ['boxes', 'whiskers', 'fliers', 'caps']:
         plt.setp(bplot[element], color='grey', linewidth=1)
     plt.setp(bplot['whiskers'], linestyle='-')
@@ -469,15 +498,23 @@ if PANELS[1]:
 
     ax10.set_yticklabels([])
     ax10.set_xticklabels([])
-    plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #ax10.set_title(directionPloted)
+    #plt.ylabel('Trials grouped by\nreward expectation', fontsize=fontSizeLabels)
+    #plt.ylabel('{}ward trials grouped by\nreward expectation'.format(directionPloted), fontsize=fontSizeLabels)
+    #plt.ylabel('{} trials grouped\nby reward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+    plt.ylabel('Correct {}\ntrials grouped by \nreward expectation'.format(choiceDict[directionPloted]), fontsize=fontSizeLabels)
+
+    extraplots.boxoff(plt.gca(), keep='none')
 
 
     ax11 = plt.subplot(gs04[2, :])
-    condLabels = intData['condLabels']
     spikeCountMat = intData['spikeCountMat']
     timeVec = intData['timeVec']
     binWidth = intData['binWidth']
+    condLabels = intData['condLabels']
     
+    condLabelsStr = [condDict[label] for label in condLabels]
+
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth,smoothWinSizePsth,timeVec,trialsEachCond=trialsEachCond,colorEachCond=colorEachCond,linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
@@ -489,10 +526,11 @@ if PANELS[1]:
     plt.yticks(yLims)
     plt.xlim(timeRangeToPlot)
     plt.xticks(np.arange(-0.2,0.6,0.2))
-    plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
+    plt.xlabel('Time from movement onset (s)',fontsize=fontSizeLabels)
     plt.ylabel('Firing rate\n(spk/s)',fontsize=fontSizeLabels) #,labelpad=labelDis)
     extraplots.boxoff(plt.gca())
     
+    plt.text(-0.075, 0.7*yLims[-1], 'pStr', fontweight='normal', ha='center', fontsize=fontSizeTicks+2)
     #plt.legend(condLabels[0:2], loc='best', fontsize=fontSizeTicks, handlelength=0.2,
     #       frameon=False, handletextpad=0.3, labelspacing=0, borderaxespad=0)
 

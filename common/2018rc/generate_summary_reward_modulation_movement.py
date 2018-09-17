@@ -36,7 +36,8 @@ celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
 
 for brainArea in brainAreas:
-    goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
+    #goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
+    goodQualCells = celldb.query("keepAfterDupTest==1 and cellInTargetArea==1 and brainArea=='{}'".format(brainArea))
     if removeSideInTrials:
         movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
         encodeMv = (goodQualCells['movementSelective_moredif_Mv'] + goodQualCells['movementSelective_samedif_MvSd']).astype(bool)

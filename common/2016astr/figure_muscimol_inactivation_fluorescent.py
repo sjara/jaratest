@@ -18,20 +18,21 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_muscimol_inactivation' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7, 5]
+figSize = [7, 2.5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
 labelPosX = [-0.35]   # Horiz position for panel labels
-labelPosY = [1]    # Vert position for panel labels
+labelPosY = [0.95]    # Vert position for panel labels
 
 fontSizeLabels = 12
 fontSizeTicks = 12
 fontSizePanel = 16
 
-muscimolColor = figparams.colp['muscimol']
+# muscimolColor = figparams.colp['muscimol']
+muscimolColor = 'r'
 
 animalNumbers = {'adap021':'Mouse 1',
                  'adap023':'Mouse 2',
@@ -157,7 +158,7 @@ if 0 in panelsToPlot:
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     ax1.set_yticks([0, 50, 100])
 
-    leg = ax1.legend([plotHandles[1],plotHandles[0]], ['Saline','Muscimol'], loc='upper left', frameon=False,
+    leg = ax1.legend([plotHandles[1],plotHandles[0]], ['Saline','FCM'], loc='upper left', frameon=False,
                      labelspacing=0.1, handlelength=1.5, handletextpad=0.2, borderaxespad=0.1, fontsize=12)
 
 

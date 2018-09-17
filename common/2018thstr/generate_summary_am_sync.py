@@ -127,7 +127,8 @@ significantFreqsArray = np.array([])
 if CASE==1:
     # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
     # dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
-    dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+    # dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+    dbPath = '/tmp/celldatabase_new_20180830.h5'
     dataframe = pd.read_hdf(dbPath, key='dataframe')
 
 
@@ -244,5 +245,5 @@ if CASE==1:
         dataframe.to_hdf(dbPath, 'dataframe')
         print "SAVED DATAFRAME to {}".format(dbPath)
 
-        saveDataArrayPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'significantFreqsArray.npy')
-        np.save(saveDataArrayPath, significantFreqsArray)
+        # saveDataArrayPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'significantFreqsArray.npy')
+        # np.save(saveDataArrayPath, significantFreqsArray)

@@ -26,7 +26,7 @@ ISIcutoff = 0.02
 
 
 # -- Read in databases storing all measurements from switching mice -- #
-psychometricFilePath = os.path.join(settings.FIGURESDATA,figparams.STUDY_NAME)
+psychometricFilePath = os.path.join(settings.FIGURES_DATA_PATH,figparams.STUDY_NAME)
 psychometricFileName = 'all_cells_all_measures_waveform_psychometric.h5'
 psychometricFullPath = os.path.join(psychometricFilePath,psychometricFileName)
 allcells_psychometric = pd.read_hdf(psychometricFullPath,key='psychometric')

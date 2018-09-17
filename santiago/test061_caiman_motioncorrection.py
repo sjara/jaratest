@@ -35,8 +35,9 @@ import tifffile
 #datafile = '/data/exampleNeurolabware/tiffTiny/image240x160__Z62.ome.tif'
 datafile = '/data/exampleNeurolabware/stacks/stack100_240x160.tif'
 
-RUN_MOTION_CORRECTION = 0
-SAVE_TIFF = 1
+RUN_MOTION_CORRECTION = 1
+SHOW_MOVIE = 0
+SAVE_TIFF = 0
 
 cv2.setNumThreads(1)
 
@@ -93,7 +94,8 @@ if RUN_MOTION_CORRECTION:
     moviehandle = cm.load(datafile)
     # now load the file
     #%% compare with original movie
-    cm.concatenate([moviehandle, m_els], axis=2).play(fr=60, gain=3, magnification=3, offset=0)
+    if SHOW_MOVIE:
+        cm.concatenate([moviehandle, m_els], axis=2).play(fr=60, gain=3, magnification=3, offset=0)
 
 if SAVE_TIFF:
     memmapFilename ='/data/exampleNeurolabware/stacks/stack100_240x160_els__d1_160_d2_240_d3_1_order_F_frames_100_.mmap'

@@ -93,7 +93,8 @@ exampleSpikeData = {}
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = '/tmp/celldatabase_new_20180830.h5'
 db = pd.read_hdf(dbPath, key='dataframe')
 
 soundResponsive = db.query('isiViolations<0.02 and spikeShapeQuality>2 and noisePval<0.05')

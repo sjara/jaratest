@@ -56,6 +56,7 @@ if CASE == 'calculate':
 
     # -- Generate conditions for calculating modulation in by taking all possible combinations from all alignments and countTimeRanges -- #
     #conditions = list(itertools.product(allAlignments,allCountTimeRanges))
+    '''
     conditions = [('sound', [-0.1,0]), 
                   ('sound', [0,0.1]), 
                   ('center-out', [-0.1,0]), 
@@ -68,6 +69,14 @@ if CASE == 'calculate':
                   ('side-in',[-0.15,0]),
                   ('side-in',[-0.2,0]),
                   ('side-in',[0,0.1])
+    ]
+    '''
+    conditions = [('sound', [-0.2,0]), 
+                  ('center-out', [0,0.1]), 
+                  ('center-out', [0,0.2]),
+                  ('center-out', [0,0.3]),
+                  ('center-out', [0.1,0.2]),
+                  ('center-out', [0.2,0.3])
     ]
     modulationDfAllMice = pd.DataFrame()
 

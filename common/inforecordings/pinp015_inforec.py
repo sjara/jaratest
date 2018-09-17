@@ -6,7 +6,7 @@ experiments = []
 exp0 = celldatabase.Experiment(subject,
                                '2017-01-26',
                                brainarea='rightAC',
-                               info='medialDiI')
+                               info=['medialDiI'])
 experiments.append(exp0)
 
 exp0.add_site(894, tetrodes=range(1, 9))
@@ -49,7 +49,7 @@ exp0.maxDepth = 1146
 exp1 = celldatabase.Experiment(subject,
                                '2017-01-27',
                                brainarea='rightThal',
-                               info='medialDiI')
+                               info=['medialDiI'])
 experiments.append(exp1)
 
 #I have to remove the electrodes
@@ -62,7 +62,7 @@ exp1.maxDepth = 3821
 exp2 = celldatabase.Experiment(subject,
                                '2017-02-02',
                                brainarea='rightAC',
-                               info='DiD')
+                               info=['DiD'])
 experiments.append(exp2)
 
 #I have to remove the electrodes
@@ -123,7 +123,7 @@ exp2.maxDepth = 1503
 exp3 = celldatabase.Experiment(subject,
                                '2017-02-08',
                                brainarea='rightAC',
-                               info='lateralDiI')
+                               info=['lateralDiI'])
 experiments.append(exp3)
 
 # exp3.add_site(1815, tetrodes=range(1, 9))
@@ -134,7 +134,7 @@ exp3.maxDepth = 1815
 exp4 = celldatabase.Experiment(subject,
                                '2017-02-15',
                                brainarea='rightThal',
-                               info='medialDiD')
+                               info=['medialDiD'])
 experiments.append(exp4)
 
 # exp4.add_site(1506, tetrodes=range(1, 9))

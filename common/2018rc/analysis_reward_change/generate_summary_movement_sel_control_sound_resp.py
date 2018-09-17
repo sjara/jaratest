@@ -47,8 +47,8 @@ alphaLevel = 0.05
 movementSelWindow = [0.0, 0.3]
 ####################################################################################
 
-goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
-
+#goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
+goodQualCells = celldb.query('keepAfterDupTest==1 and cellInTargetArea==1') 
 #if removeSideInTrials:
 movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
 #else:

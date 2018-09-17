@@ -18,7 +18,8 @@ STUDY_NAME = '2018thstr'
 SAVE = True
 
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = '/tmp/celldatabase_new_20180830.h5'
 dataframe = pd.read_hdf(dbPath, key='dataframe')
 
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
@@ -78,7 +79,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(trainPulseOnsetTimes, 0.5)
     baseRange = [-0.050,-0.04]              # Baseline range (in seconds)
     pulseTimes = [0, 0.2, 0.4, 0.6, 0.8]
-    baseRange = [-0.05, -0.03]
+    # baseRange = [-0.05, -0.03]
     binTime = baseRange[1]-baseRange[0]         # Time-bin size
     alignmentRange = [baseRange[0], pulseTimes[-1]+binTime]
 

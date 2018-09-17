@@ -126,6 +126,8 @@ def evaluate_movement_zScore_celldb(cellDb, baselineAlignment='sound', baselineT
 
     movementZscore = np.zeros((len(cellDb),2)) #default value 0
     movementPval = np.ones((len(cellDb), 2)) #default value 1
+    baselineAveFr = np.zeros((len(cellDb),2))
+    movementAveFr = np.zeros((len(cellDb),2))
 
     for indCell, cell in cellDb.iterrows():
         cellObj = ephyscore.Cell(cell)
@@ -193,6 +195,11 @@ def evaluate_movement_zScore_celldb(cellDb, baselineAlignment='sound', baselineT
         spikeCountEachTrialMovement = spikeCountMatMovement.flatten()
         spikeCountLeftwardMovement = spikeCountEachTrialMovement[leftward]
         spikeCountRightwardMovement = spikeCountEachTrialMovement[rightward]
+        movementTime = np.abs(movementTimeRange[0] - movementTimeRange[1])
+        firingRateLeftwardEachTrialMovement = spikeCountLeftwardMovement/movementTime
+        firingRateRightwardEachTrialMovement = spikeCountRightwardMovement/movementTime
+        aveFrLeftwardMovement = np.mean(firingRateLeftwardEachTrialMovement)
+        aveFrRightwardMovement = np.mean(firingRateRightwardEachTrialMovement)
 
         evlockFileSound = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(subject, date, depth, tetrode, cluster, baselineAlignment)
         evlockFileSoundPath = os.path.join(ephysDir, STUDY_NAME, evlockFileFolder, evlockFileSound)
@@ -204,16 +211,26 @@ def evaluate_movement_zScore_celldb(cellDb, baselineAlignment='sound', baselineT
         spikeCountEachTrialBaseline = spikeCountMatBaseline.flatten()
         spikeCountLeftwardBaseline = spikeCountEachTrialBaseline[leftward]
         spikeCountRightwardBaseline = spikeCountEachTrialBaseline[rightward]
+        baselineTime = np.abs(baselineTimeRange[0] - baselineTimeRange[1])
+        firingRateLeftwardEachTrialBaseline = spikeCountLeftwardBaseline/baselineTime
+        firingRateRightwardEachTrialBaseline = spikeCountRightwardBaseline/baselineTime
+        aveFrLeftwardBaseline = np.mean(firingRateLeftwardEachTrialBaseline)
+        aveFrRightwardBaseline = np.mean(firingRateRightwardEachTrialBaseline)
 
-        zScore,pValue = stats.ranksums(spikeCountLeftwardBaseline, spikeCountLeftwardMovement)
+        zScore,pValue = stats.ranksums(firingRateLeftwardEachTrialBaseline, firingRateLeftwardEachTrialMovement)
         movementZscore[indCell,0] = zScore
         movementPval[indCell,0] = pValue
 
-        zScore,pValue = stats.ranksums(spikeCountRightwardBaseline, spikeCountRightwardMovement)
+        zScore,pValue = stats.ranksums(firingRateRightwardEachTrialBaseline, firingRateRightwardEachTrialMovement)
         movementZscore[indCell,1] = zScore
         movementPval[indCell,1] = pValue
 
-    return movementZscore, movementPval
+        baselineAveFr[indCell,0] = aveFrLeftwardBaseline
+        baselineAveFr[indCell,1] = aveFrRightwardBaseline 
+        movementAveFr[indCell,0] = aveFrLeftwardMovement
+        movementAveFr[indCell,1] = aveFrRightwardMovement
+        
+    return movementZscore, movementPval, baselineAveFr, movementAveFr
 
 
 

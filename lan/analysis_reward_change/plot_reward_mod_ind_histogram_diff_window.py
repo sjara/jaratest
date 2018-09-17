@@ -62,7 +62,8 @@ for indRegion, brainRegion in enumerate(brainRegions):
     goodLeftMovementSelCells = goodQualCells[moreSelMoveLeft]
     goodRightMovementSelCells = goodQualCells[moreSelMoveRight]
 
-    movementResponsive = (np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)]) >=3) | (np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]) >= 3)
+    movementResponsive = (goodQualCells['movementPvalLeft_{}_removedsidein'.format(movementSelWindow)] <= 0.025) | (goodQualCells['movementPvalRight_{}_removedsidein'.format(movementSelWindow)] <= 0.025)
+    #(np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)]) >=3) | (np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]) >= 3)
     moreRespMoveLeft = movementResponsive & (np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)]) > np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]))
     moreRespMoveRight = movementResponsive & (np.abs(goodQualCells['movementZscoreRight_{}_removedsidein'.format(movementSelWindow)]) > np.abs(goodQualCells['movementZscoreLeft_{}_removedsidein'.format(movementSelWindow)])) 
     goodLeftMovementRespCells = goodQualCells[moreRespMoveLeft]

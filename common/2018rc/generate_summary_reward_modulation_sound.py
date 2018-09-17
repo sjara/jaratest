@@ -35,7 +35,8 @@ celldbPath = os.path.join(dbFolder, 'rc_database.h5')
 celldb = celldatabase.load_hdf(celldbPath)
 
 for brainArea in brainAreas:
-    goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
+    #goodQualCells = celldb.query("keepAfterDupTest==1 and brainArea=='{}'".format(brainArea))
+    goodQualCells = celldb.query("keepAfterDupTest==1 and cellInTargetArea==1 and brainArea=='{}'".format(brainArea))
 
     #soundResp = goodQualCells.behavZscore.apply(lambda x: np.max(np.abs(x[~np.isnan(x)])) >=  maxZThreshold) #The biggest of the sound Z score is over threshold
     soundResp = goodQualCells.behavPval.apply(lambda x: np.min(x[~np.isnan(x)]) < alphaLevel / numFreqs) # Bonforroni correction for multiple comparison # The smallest of the p value is less than 0.025
@@ -43,6 +44,10 @@ for brainArea in brainAreas:
     moreRespHighFreq = soundResp & goodQualCells.behavZscore.apply(lambda x: abs(x[~np.isnan(x)][-1]) > abs(x[~np.isnan(x)][0]))
     goodLowFreqRespCells = goodQualCells[moreRespLowFreq]
     goodHighFreqRespCells = goodQualCells[moreRespHighFreq]
+
+    soundFreqSel = (goodQualCells['soundFreqSelectivityPval'] < 0.05) & soundResp
+    print('{}:{} out of {} sound responsive cells responded differently to low vs high frequency'
+        .format(brainArea, sum(soundFreqSel), sum(soundResp)))
 
     lowFreqModIndName = 'modIndLow_'+modWindow+'_'+'sound'
     lowFreqModSigName = 'modSigLow_'+modWindow+'_'+'sound'
@@ -68,4 +73,9 @@ for brainArea in brainAreas:
     # -- Save summary data -- #    
     outputFile = 'summary_reward_modulation_sound_{}.npz'.format(brainArea)
     outputFullPath = os.path.join(dataDir,outputFile)
-    np.savez(outputFullPath, brainArea=brainArea, soundResponsive=soundResp, goodLowFreqRespCells=goodLowFreqRespCells, goodHighFreqRespCells=goodHighFreqRespCells, sigModulatedLow=sigModulatedLow, sigModulatedHigh=sigModulatedHigh, sigModI=sigModI, nonsigModI=nonsigModI, allModI=allModI, script=scriptFullPath)
+    np.savez(outputFullPath, brainArea=brainArea, soundResponsive=soundResp, 
+        goodLowFreqRespCells=goodLowFreqRespCells, goodHighFreqRespCells=goodHighFreqRespCells, 
+        sigModulatedLow=sigModulatedLow, sigModulatedHigh=sigModulatedHigh, 
+        sigModI=sigModI, nonsigModI=nonsigModI, allModI=allModI, 
+        soundFreqSelective=soundFreqSel,
+        script=scriptFullPath)

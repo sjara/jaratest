@@ -21,7 +21,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'figure_fr_sorted_by_reward_centerout_{}ms_bin'.format(int(binWidth*1000)) # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-#figSize = [7, 5]
+#figSize = [7, 8]
 figSize = [8, 10]
 
 fontSizeLabels = figparams.fontSizeLabels
@@ -35,6 +35,8 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
+#gs = gridspec.GridSpec(1, 2)
+#gs.update(left=0.1, right=0.97, top=0.97, bottom=0.06, wspace=0.5, hspace=1.7)
 
 dataFilename = 'average_spike_count_by_rc_cond_preferred_direction_{}ms_bin.npz'.format(int(binWidth*1000))
 dataFilePath = os.path.join(dataDir, dataFilename)
@@ -94,6 +96,7 @@ for indA,brainArea in enumerate(brainAreaLabels):
 	sortedAveSpikeEachCellRightMoreReward = sortedAveSpikeEachCellRightMoreReward/maxEach[:,np.newaxis]
 	
 	ax1 = plt.subplot(2,3,indA*3+1)
+	#ax1 = plt.subplot(gs[0,0])
 	#ax.imshow(np.transpose(sortedAbsSpikeDifEachCellThisArea), origin='lower', cmap='viridis', interpolation='nearest')
 	ax1.imshow(np.transpose(sortedSpikeDifIndEachCellThisArea), origin='lower', cmap='coolwarm', vmin=-1, vmax=1, interpolation='nearest')
 	ax1.set_xticks(range(numOfBins+1)[::10])#np.arange(len(timeBinEdges))[::10])

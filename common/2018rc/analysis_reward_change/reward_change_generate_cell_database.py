@@ -46,7 +46,7 @@ sdToMeanRatio=0.5
 #############################################
 dbFolder = os.path.join(settings.DATABASE_PATH, 'new_celldb')
 
-CASE = 7
+CASE = 13
 
 if CASE == 1:
     # -- Cluster and generate database with all clusters -- #
@@ -195,3 +195,158 @@ if CASE == 7:
     masterDfFullPath = os.path.join(dbFolder, 'rc_database.h5')
     #masterDf.to_hdf(masterDfFullPath, key=dbKey)
     celldatabase.save_hdf(masterDf, masterDfFullPath)
+
+if CASE == 8:
+    # -- For the merged database: calculate reward modulation index during movement while removing trials with side-in -- #
+    modIndScriptPath = '/home/languo/src/jaratest/lan/analysis_reward_change/calculate_reward_modulation_during_movement_remove_sidein_trials.py'
+    # -- Call to calculate modulation indices for different windows different alignments -- #
+    commandListCalculate = ['python'] + [modIndScriptPath] + ['--CASE', 'calculate'] + ['--DBNAME', 'rc_database.h5']
+    subprocess.call(commandListCalculate)
+
+    # -- Call to merge newly generated mod indices columns into database -- #
+    commandListMerge = ['python'] + [modIndScriptPath] + ['--CASE', 'merge'] + ['--DBNAME', 'rc_database.h5']
+    subprocess.call(commandListMerge)
+
+if CASE == 9:
+    # -- For the merged database: evaluate movement selectivity while removing trials with side-in -- #
+    movementTimeRangeList = [[0.0, 0.3]] 
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    for movementTimeRange in movementTimeRangeList:
+        movementModI, movementModS = evaluateMovementSel.evaluate_movement_selectivity_celldb(db, movementTimeRange, removeSideIn=True)
+        db['movementModI_{}_removedsidein'.format(movementTimeRange)] = movementModI
+        db['movementModS_{}_removedsidein'.format(movementTimeRange)] = movementModS
+    #goodDb.to_hdf(goodDbFullPath, key=dbKey)
+    celldatabase.save_hdf(db, dbFullPath)
+
+if CASE == 10:
+    # -- For the merged database: evaluate movement compared to baseline zScore and pVal while removing trials with side-in -- #
+    baselineAlignment = 'sound'
+    baselineTimeRange = [-0.1, 0]
+    movementAlignment = 'center-out'
+    movementTimeRange = [0.0, 0.3]
+    removeSideIn = True
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    movementZscore, movementPval, baselineAveFr, movementAveFr = evaluateMovementSel.evaluate_movement_zScore_celldb(db, baselineAlignment=baselineAlignment, 
+        baselineTimeRange=baselineTimeRange, movementAlignment=movementAlignment, movementTimeRange=movementTimeRange, 
+        removeSideIn=removeSideIn)
+    movementZscoreLeft = movementZscore[:,0]
+    movementZscoreRight = movementZscore[:,1]
+    movementPvalLeft = movementPval[:,0]
+    movementPvalRight = movementPval[:,1]
+    aveFrLeftwardBaseline = baselineAveFr[:,0] 
+    aveFrRightwardBaseline = baselineAveFr[:,1] 
+    aveFrLeftwardMovement = movementAveFr[:,0]  
+    aveFrRightwardMovement = movementAveFr[:,1]
+
+    if removeSideIn:
+        db['movementZscoreLeft_{}_removedsidein'.format(movementTimeRange)] = movementZscoreLeft
+        db['movementPvalLeft_{}_removedsidein'.format(movementTimeRange)] = movementPvalLeft
+        db['movementZscoreRight_{}_removedsidein'.format(movementTimeRange)] = movementZscoreRight
+        db['movementPvalRight_{}_removedsidein'.format(movementTimeRange)] = movementPvalRight
+        db['movementAveFrLeft_{}_removedsidein'.format(movementTimeRange)] = aveFrLeftwardMovement
+        db['movementAveFrRight_{}_removedsidein'.format(movementTimeRange)] = aveFrRightwardMovement
+        db['movementBaselineAveFrLeft_removedsidein'] = aveFrLeftwardBaseline
+        db['movementBaselineAveFrRight_removedsidein'] = aveFrRightwardBaseline
+        
+    else:
+        db['movementZscoreLeft_{}'.format(movementTimeRange)] = movementZscoreLeft
+        db['movementPvalLeft_{}'.format(movementTimeRange)] = movementPvalLeft
+        db['movementZscoreRight_{}'.format(movementTimeRange)] = movementZscoreRight
+        db['movementPvalRight_{}'.format(movementTimeRange)] = movementPvalRight
+    
+    celldatabase.save_hdf(db, dbFullPath)
+
+if CASE == 11:
+    # -- For movement-selective cells, mark whether activity is more different based on sound or movement direction -- #
+    summaryDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'movement_selectivity')
+    summaryFileName = 'summary_movement_sel_cells_control_sound_resp.npz'
+    summaryFullPath = os.path.join(summaryDir, summaryFileName)
+    summary = np.load(summaryFullPath)
+
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    celldb = celldatabase.load_hdf(dbFullPath)
+
+    brainAreaEachCell = summary['brainAreaEachCell']
+    difCountHighSoundLvR = summary['difCountHighSoundLvR']
+    difCountLowSoundLvR = summary['difCountLowSoundLvR']
+    difCountLowvHighLeft = summary['difCountLowvHighLeft']
+    difCountLowvHighRight = summary['difCountLowvHighRight']
+    aveDifSameSoundLvR = np.mean(np.c_[difCountHighSoundLvR, difCountLowSoundLvR], axis=1)
+    aveDifLowvHighSameMovement = np.mean(np.c_[difCountLowvHighLeft, difCountLowvHighRight], axis=1)
+
+    careMoreAboutMv = (aveDifSameSoundLvR > aveDifLowvHighSameMovement)
+    careMoreAboutSound = (aveDifSameSoundLvR < aveDifLowvHighSameMovement)
+    careEquallyAboutMvAndSound = (aveDifSameSoundLvR == aveDifLowvHighSameMovement)
+    
+    movementSelWindow = [0.0, 0.3]
+    alphaLevel = 0.05
+    goodQualCells = celldb.query('keepAfterDupTest==1') # only calculate for non-duplicated cells
+    movementSelective = goodQualCells['movementModS_{}_removedsidein'.format(movementSelWindow)] < alphaLevel
+    movementSelInds = goodQualCells.index[movementSelective]
+
+    celldb['movementSelective_moredif_Mv'] = np.zeros(len(celldb), dtype=int)
+    celldb['movementSelective_moredif_Sd'] = np.zeros(len(celldb), dtype=int)
+    celldb['movementSelective_samedif_MvSd'] = np.zeros(len(celldb), dtype=int)
+
+    celldb.loc[movementSelInds, 'movementSelective_moredif_Mv'] = careMoreAboutMv.astype(int)
+    celldb.loc[movementSelInds, 'movementSelective_moredif_Sd'] = careMoreAboutSound.astype(int)
+    celldb.loc[movementSelInds, 'movementSelective_samedif_MvSd'] = careEquallyAboutMvAndSound.astype(int)
+
+    celldatabase.save_hdf(celldb, dbFullPath)
+
+if CASE == 12:
+    # -- For the merged database: evaluate sound frequency selectivity in 2afc task -- #
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    soundFreqSelPval = evaluateSoundResp.evaluate_2afc_sound_selectivity_celldb(db)
+    db['soundFreqSelectivityPval'] = soundFreqSelPval
+    
+    celldatabase.save_hdf(db, dbFullPath)
+
+if CASE == 13:
+    # -- For the merged database: add a column to reflect whether cell fall inside AC for AC mice -- #
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    cellInsideAC = np.ones(len(db), dtype=int) # default to 1, meaning inside AC
+
+    gosi010MaxDepth = 1660
+    gosi010PortionOfTrackInsideAC = 1 - float(1/2.5) # Between 1/3 and 1/2 of the track from the deepest point is outside AC
+    gosi004MaxDepth = 1700
+    gosi004PortionOfTrackOutsideAC = float(1/3) # 1/3 of the track from the surface of the brain is not in AC
+
+    gosi010Cells = db.query("subject=='gosi010'")
+    actualDepthEachCellGosi010 = gosi010Cells['depth_this_cell']
+    gosi010cellsOutsideAC = gosi010Cells[actualDepthEachCellGosi010 > gosi010MaxDepth * gosi010PortionOfTrackInsideAC]
+
+    gosi004Cells = db.query("subject=='gosi004'")
+    actualDepthEachCellGosi004 = gosi004Cells['depth_this_cell']
+    gosi004cellsOutsideAC = gosi004Cells[actualDepthEachCellGosi004 < gosi004MaxDepth * gosi004PortionOfTrackOutsideAC]
+
+    cellInsideAC[gosi010cellsOutsideAC.index] = 0
+    cellInsideAC[gosi004cellsOutsideAC.index] = 0
+    
+    db['cellInsideAC'] = cellInsideAC
+    celldatabase.save_hdf(db, dbFullPath)
+
+if CASE == 14:
+    # -- For the merged database: add a column to reflect whether cell fall inside AC or AStr -- #
+    # -- Cell inside Astr was checked in CASE==2 and cell was only saved in this database if inside AStr -- #
+    dbFullPath = os.path.join(dbFolder, 'rc_database.h5') 
+    db = celldatabase.load_hdf(dbFullPath)
+
+    cellInTargetArea = np.ones(len(db), dtype=bool) # default to 1, meaning inside target
+    cellInsideAC = db['cellInsideAC'].astype(bool)
+
+    cellInTargetArea = cellInTargetArea & cellInsideAC
+    cellInTargetArea = cellInTargetArea.astype(int) # cast it back to int for saving in hdf5
+    
+    db['cellInTargetArea'] = cellInTargetArea
+    celldatabase.save_hdf(db, dbFullPath)
+
+    
