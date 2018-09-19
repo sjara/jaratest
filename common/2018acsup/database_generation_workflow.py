@@ -18,16 +18,16 @@ reload(subjects_info)
 
  
 # creates and saves a database for photoidentified cells
-# chr2mice = subjects_info.PV_CHR2_MICE + subjects_info.SOM_CHR2_MICE
-# basicDB = database_generic.generic_database(chr2mice)
-# database_photoidentification.photoIDdatabase(basicDB, clusterRescue = True, baseStats = True, computeIndices = True)
+chr2mice = subjects_info.PV_CHR2_MICE + subjects_info.SOM_CHR2_MICE
+basicDB = database_generic.generic_database(chr2mice)
+database_photoidentification.photoIDdatabase(basicDB, clusterRescue = True, baseStats = True, computeIndices = True)
 
 # creates and saves a database for inactivation
-# archTmice = subjects_info.PV_ARCHT_MICE + subjects_info.SOM_ARCHT_MICE
-# basicDB = database_generic.generic_database(archTmice)
-# database_inactivation.inactivation_database(basicDB, baseStats = True, indices = True)
+archTmice = subjects_info.PV_ARCHT_MICE + subjects_info.SOM_ARCHT_MICE
+basicDB = database_generic.generic_database(archTmice)
+database_inactivation.inactivation_database(basicDB, baseStats = True, computeIndices = True)
 
-# test on some extra mice I recorded 
-mice = ['band075']
-basicDB = database_generic.generic_database(mice)
-database_inactivation.inactivation_database(basicDB, baseStats = True, computeIndices = True, filename='band075_cells.h5')
+# # test on some extra mice I recorded 
+# mice = ['band073']
+# basicDB = database_generic.generic_database(mice)
+# database_inactivation.inactivation_database(basicDB, baseStats = True, computeIndices = True, filename='band073_cells.h5')

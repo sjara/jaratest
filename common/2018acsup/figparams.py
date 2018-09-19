@@ -21,7 +21,9 @@ colp = {}
 #colp['excitatoryCell'] = cp.TangoPalette['Chameleon3']
 colp['excitatoryCell'] = 'k'
 colp['SOMcell'] = cp.TangoPalette['ScarletRed1']
+colp['SOMerror'] = cp.TangoPalette['ScarletRed2']
 colp['PVcell'] = cp.TangoPalette['SkyBlue2']
+colp['PVerror'] = cp.TangoPalette['SkyBlue1']
 
 colp['laser'] = cp.TangoPalette['Butter3']
 colp['laserError'] = cp.TangoPalette['Butter1']

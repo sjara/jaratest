@@ -204,7 +204,9 @@ for ind, cellsThisType in enumerate(cells):
         
         thisPSTH = np.mean(highBandSpikeCounts,axis=0)
         #thisPSTH = thisPSTH/max(thisPSTH)
-        thisPSTH = thisPSTH/thisPSTH[np.where(binEdges==0)[0][0]] #normalise so onset is 1
+        #thisPSTH = thisPSTH/thisPSTH[np.where(binEdges==0)[0][0]] #normalise so onset is 1
+        thisPSTH = (thisPSTH-np.mean(thisPSTH[1:np.where(binEdges==-0.05)[0][0]]))/(thisPSTH[np.where(binEdges==0)[0][0]]-np.mean(thisPSTH[1:np.where(binEdges==-0.05)[0][0]])) #normalise so onset is 1 and baseline is 0
+        print thisPSTH
         thisCellTypeAllPSTHs[indCell,:] = thisPSTH
     
     thisCellTypePSTH = np.median(thisCellTypeAllPSTHs, axis=0)
@@ -216,6 +218,8 @@ for ind, cellsThisType in enumerate(cells):
     thisCellTypePSTH = np.convolve(thisCellTypePSTH,winShape,mode='same')
     
     averagePSTHs.append(thisCellTypePSTH)
+    
+numBands[-1] = 6
         
     
         

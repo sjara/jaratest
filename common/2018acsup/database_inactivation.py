@@ -249,25 +249,30 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
             #replace pure tone with baseline
             sustainedResponseLaser[0] = baselineRates[1]
             
-            fitParams, R2 = fitfuncs.diff_of_gauss_fit(bandsForFit, sustainedResponseLaser, mFixed=mFixed)
-            print fitParams
+            fitParamsLaser, R2Laser = fitfuncs.diff_of_gauss_fit(bandsForFit, sustainedResponseLaser, mFixed=mFixed)
+            print fitParamsLaser
             
             #fit params
-            db.at[dbIndex, 'R0laser'] = fitParams[0]
-            db.at[dbIndex, 'RDlaser'] = fitParams[3]
-            db.at[dbIndex, 'RSlaser'] = fitParams[4]
+            db.at[dbIndex, 'R0laser'] = fitParamsLaser[0]
+            db.at[dbIndex, 'RDlaser'] = fitParamsLaser[3]
+            db.at[dbIndex, 'RSlaser'] = fitParamsLaser[4]
             db.at[dbIndex, 'mlaser'] = mFixed
-            db.at[dbIndex, 'sigmaDlaser'] = fitParams[1]
-            db.at[dbIndex, 'sigmaSlaser'] = fitParams[2]
-            db.at[dbIndex, 'bandwidthTuningR2laser'] = R2
+            db.at[dbIndex, 'sigmaDlaser'] = fitParamsLaser[1]
+            db.at[dbIndex, 'sigmaSlaser'] = fitParamsLaser[2]
+            db.at[dbIndex, 'bandwidthTuningR2laser'] = R2Laser
             
-            testBands = np.linspace(bandsForFit[0],bandsForFit[-1],50)
-            allFitParams = [mFixed]
-            allFitParams.extend(fitParams)
-            suppInd, prefBW = fitfuncs.extract_stats_from_fit(allFitParams, testBands)
+            testBands = np.linspace(bandsForFit[0],bandsForFit[-1],500)
+            allFitParamsLaser = [mFixed]
+            allFitParamsLaser.extend(fitParamsLaser)
+            suppIndLaser, prefBWLaser = fitfuncs.extract_stats_from_fit(allFitParamsLaser, testBands)
             
-            db.at[dbIndex, 'fitSustainedSuppressionIndexLaser'] = suppInd
-            db.at[dbIndex, 'fitSustainedPrefBandwidthLaser'] = prefBW
+            db.at[dbIndex, 'fitSustainedSuppressionIndexLaser'] = suppIndLaser
+            db.at[dbIndex, 'fitSustainedPrefBandwidthLaser'] = prefBWLaser
+            
+            laserDiff = np.mean(sustainedResponseLaser-sustainedResponseNoLaser)
+            db.at[dbIndex, 'laserChangeFR'] = laserDiff
+            
+            print laserDiff
             
     dbFilename = os.path.join(settings.DATABASE_PATH,filename)
     celldatabase.save_hdf(db, dbFilename)

@@ -353,7 +353,7 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             db.at[dbIndex, 'sigmaS'] = fitParams[2]
             db.at[dbIndex, 'bandwidthTuningR2'] = R2
             
-            testBands = np.linspace(bandsForFit[0],bandsForFit[-1],50)
+            testBands = np.linspace(bandsForFit[0],bandsForFit[-1],500)
             allFitParams = [mFixed]
             allFitParams.extend(fitParams)
             suppInd, prefBW = fitfuncs.extract_stats_from_fit(allFitParams, testBands)

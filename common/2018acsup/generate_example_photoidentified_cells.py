@@ -211,6 +211,9 @@ for indCell in cellsToGenerate:
     testBands = np.linspace(numBands[0],numBands[-1],50)
     testResps = fitfuncs.diff_gauss_form(testBands, dbRow['m'], dbRow['R0'], dbRow['sigmaD'], dbRow['sigmaS'], dbRow['RD'], dbRow['RS'])
     
+    # --- get SI for each cell ---
+    sustainedSI = dbRow['fitSustainedSuppressionIndex']
+    
     ### Save bandwidth data ###    
     outputFile = 'example_{}_bandwidth_tuning_{}_{}_{}um_T{}_c{}.npz'.format(cellTypes[indCell],dbRow['subject'], dbRow['date'],
                                                                          int(dbRow['depth']),dbRow['tetrode'],dbRow['cluster'])
@@ -224,6 +227,6 @@ for indCell in cellsToGenerate:
              indexLimitsEachTrial=bandIndexLimitsEachTrial,
              trialsEachCond=trialsHighAmp,
              onsetTimeRange=onsetTimeRange, sustainedTimeRange=sustainedTimeRange, rasterTimeRange=rasterTimeRange,
-             fitBands = testBands, fitResponse = testResps)
+             fitBands = testBands, fitResponse = testResps, SI = sustainedSI)
     print outputFile + " saved"
 

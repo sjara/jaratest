@@ -33,15 +33,39 @@ cellList = [{'subject' : 'band055',
              'date' : '2018-03-20',
              'depth' : 1200,
              'tetrode' : 6,
-             'cluster' : 4},
+             'cluster' : 4}, #No SOM
+            
+            {'subject' : 'band055',
+             'date' : '2018-03-16',
+             'depth' : 1000,
+             'tetrode' : 2,
+             'cluster' : 4}, #No SOM
+            
+            {'subject' : 'band055',
+             'date' : '2018-03-16',
+             'depth' : 1400,
+             'tetrode' : 4,
+             'cluster' : 6}, #No SOM
+            
+            {'subject' : 'band056',
+             'date' : '2018-03-23',
+             'depth' : 1300,
+             'tetrode' : 2,
+             'cluster' : 4}, #No PV
             
             {'subject' : 'band062',
              'date' : '2018-05-24',
              'depth' : 1300,
              'tetrode' : 2,
-             'cluster' : 2}]
+             'cluster' : 2}, #No PV
+            
+            {'subject' : 'band062',
+             'date' : '2018-05-25',
+             'depth' : 1250,
+             'tetrode' : 4,
+             'cluster' : 2}] #No PV
 
-cellTypes = ['SOM', 'PV']
+cellTypes = ['SOM', 'SOM', 'SOM', 'PV', 'PV', 'PV']
 
 # -- select which cells to generate --
 args = sys.argv[1:]
@@ -57,10 +81,8 @@ for indCell in cellsToGenerate:
     cell = ephyscore.Cell(dbRow)
     
     # --- loads spike and event data for bandwidth ephys sessions ---
-    bandEphysData, bandBData = cell.load('laserBandwidth') #make them ints in the first place
+    bandEphysData, bandBData = cell.load_by_index(int(dbRow['bestBandSession'])) #make them ints in the first place
     bandEventOnsetTimes = bandEphysData['events']['soundDetectorOn']
-    if len(bandEventOnsetTimes)==0: #some cells recorded before sound detector installed
-        bandEventOnsetTimes = bandEphysData['events']['stimOn'] + 0.0093 #correction for bandwidth trials, determined by comparing sound detector onset to stim event onset
     bandEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(bandEventOnsetTimes, minEventOnsetDiff=0.2)
     bandSpikeTimestamps = bandEphysData['spikeTimes']
     
@@ -96,17 +118,13 @@ for indCell in cellsToGenerate:
     
     onsetResponseArray = np.zeros((len(numBands),len(numSec)))
     onsetSEM = np.zeros_like(onsetResponseArray)
-    onsetpVals = np.zeros(len(numBands))
     
     sustainedResponseArray = np.zeros_like(onsetResponseArray)
     sustainedSEM = np.zeros_like(onsetResponseArray)
-    sustainedpVals = np.zeros(len(numBands))
     
     # Average firing rate for laser and non-laser trials and SEMev
     for band in range(len(numBands)):
         trialsThisBand = bandTrialsEachCond[:,band,:]
-        noLaserOnsetCounts = None
-        noLaserSustainedCounts = None
         for thisSecVal in range(len(numSec)):
             trialsThisLaser = trialsThisBand[:,thisSecVal]
             if onsetSpikeCountMat.shape[0] != len(trialsThisLaser): #if number of events greater than behaviour trials because last trial didn't get saved
@@ -121,13 +139,6 @@ for indCell in cellsToGenerate:
                 
                 onsetSEM[band,thisSecVal] = stats.sem(thisLaserOnsetCounts)/onsetDuration
                 sustainedSEM[band,thisSecVal] = stats.sem(thisLaserSustainedCounts)/sustainedDuration # Error is standard error of the mean
-                
-                if noLaserOnsetCounts is None:
-                    noLaserOnsetCounts = thisLaserOnsetCounts
-                    noLaserSustainedCounts = thisLaserSustainedCounts
-                
-        onsetpVals[band] = stats.ranksums(noLaserOnsetCounts, thisLaserOnsetCounts)[1]
-        sustainedpVals[band] = stats.ranksums(noLaserSustainedCounts, thisLaserSustainedCounts)[1]
     
     # Baseline firing rates
     noLaserBaseline = dbRow['baselineFRnoLaser']
@@ -168,6 +179,5 @@ for indCell in cellsToGenerate:
              indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,
              trialsEachCond=bandTrialsEachCond,
              onsetTimeRange=onsetTimeRange, sustainedTimeRange=sustainedTimeRange,
-             onsetpVals=onsetpVals, sustainedpVals=sustainedpVals,
-             fitBands = testBands, fitResponseNoLaser = testRespsNoLaser, firResponseLaser = testRespsLaser)
+             fitBands = testBands, fitResponseNoLaser = testRespsNoLaser, fitResponseLaser = testRespsLaser)
     print outputFile + " saved"
