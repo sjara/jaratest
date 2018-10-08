@@ -27,6 +27,7 @@ from jaratoolbox import settings
 
 import database_generation_funcs as funcs
 import database_bandwidth_tuning_fit_funcs as fitfuncs
+reload(funcs)
 reload(fitfuncs)
 
 R2CUTOFF = 0.1
@@ -308,34 +309,25 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             propOnset, propSustained = funcs.onset_sustained_spike_proportion(bandSpikeTimestamps, bandEventOnsetTimes)
             
             db.at[dbIndex, 'proportionSpikesOnset'] = propOnset
-            db.at[dbIndex, 'proportionSpikesSustained'] = propSustained
-            
-            onsetTuningDict = funcs.calculate_tuning_curve_inputs(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.0,0.05])
-            sustainedTuningDict = funcs.calculate_tuning_curve_inputs(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.2,1.0])        
+            db.at[dbIndex, 'proportionSpikesSustained'] = propSustained       
     
-            onsetStats = funcs.bandwidth_suppression_from_peak(onsetTuningDict)
-            db.at[dbIndex, 'onsetSuppressionIndex'] = onsetStats['suppressionIndex'][-1]
-            db.at[dbIndex, 'onsetSuppressionpVal'] = onsetStats['suppressionpVal'][-1]
-            db.at[dbIndex, 'onsetFacilitationIndex'] = onsetStats['facilitationIndex'][-1]
-            db.at[dbIndex, 'onsetFacilitationpVal'] = onsetStats['facilitationpVal'][-1]
-            db.at[dbIndex, 'onsetPrefBandwidth'] = bandEachTrial[onsetStats['peakInd'][-1]]
+            #by default: not subtracting baseline, but are replacing pure tone response with baseline for 0 bw condition
+            onsetSupInds, onsetSupIndpVals, onsetFacInds, onsetFacIndpVals, onsetPeakInds, onsetSpikeArray = funcs.bandwidth_suppression_from_peak(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.0,0.05], baseRange=[-0.05,0.0])
+            db.at[dbIndex, 'onsetSuppressionIndex'] = onsetSupInds[-1]
+            db.at[dbIndex, 'onsetSuppressionpVal'] = onsetSupIndpVals[-1]
+            db.at[dbIndex, 'onsetFacilitationIndex'] = onsetFacInds[-1]
+            db.at[dbIndex, 'onsetFacilitationpVal'] = onsetFacIndpVals[-1]
+            db.at[dbIndex, 'onsetPrefBandwidth'] = bandEachTrial[onsetPeakInds[-1]]
             
-            sustainedStats = funcs.bandwidth_suppression_from_peak(sustainedTuningDict)
-            db.at[dbIndex, 'sustainedSuppressionIndex'] = sustainedStats['suppressionIndex'][-1]
-            db.at[dbIndex, 'sustainedSuppressionpVal'] = sustainedStats['suppressionpVal'][-1]
-            db.at[dbIndex, 'sustainedFacilitationIndex'] = sustainedStats['facilitationIndex'][-1]
-            db.at[dbIndex, 'sustainedFacilitationpVal'] = sustainedStats['facilitationpVal'][-1]
-            db.at[dbIndex, 'sustainedPrefBandwidth'] = bandEachTrial[sustainedStats['peakInd'][-1]]
+            sustainedSupInds, sustainedSupIndpVals, sustainedFacInds, sustainedFacIndpVals, sustainedPeakInds, sustainedSpikeArray = funcs.bandwidth_suppression_from_peak(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.2,1.0], baseRange=[-1.0,-0.2])
+            db.at[dbIndex, 'sustainedSuppressionIndex'] = sustainedSupInds[-1]
+            db.at[dbIndex, 'sustainedSuppressionpVal'] = sustainedSupIndpVals[-1]
+            db.at[dbIndex, 'sustainedFacilitationIndex'] = sustainedFacInds[-1]
+            db.at[dbIndex, 'sustainedFacilitationpVal'] = sustainedFacIndpVals[-1]
+            db.at[dbIndex, 'sustainedPrefBandwidth'] = bandEachTrial[sustainedPeakInds[-1]]
             
             #only interested in high amp responses
-            sustainedResponse = sustainedTuningDict['responseArray'][:,-1]
-            sustainedError = sustainedTuningDict['errorArray'][:,-1]
-            baselineFiringRate = sustainedTuningDict['baselineSpikeRate']
-            baselineError = sustainedTuningDict['baselineSpikeError']
-            
-            #replace pure tone with baseline
-            sustainedResponse[0] = baselineFiringRate
-            sustainedError[0] = baselineError
+            sustainedResponse = sustainedSpikeArray[:,-1]
             bandsForFit = np.unique(bandEachTrial)
             bandsForFit[-1] = 6
             mFixed = 1

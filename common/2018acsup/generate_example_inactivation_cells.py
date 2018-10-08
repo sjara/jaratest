@@ -47,6 +47,12 @@ cellList = [{'subject' : 'band055',
              'tetrode' : 4,
              'cluster' : 6}, #No SOM
             
+            {'subject' : 'band073',
+             'date' : '2018-09-14',
+             'depth' : 1200,
+             'tetrode' : 1,
+             'cluster' : 6}, #No SOM
+            
             {'subject' : 'band056',
              'date' : '2018-03-23',
              'depth' : 1300,
@@ -65,7 +71,7 @@ cellList = [{'subject' : 'band055',
              'tetrode' : 4,
              'cluster' : 2}] #No PV
 
-cellTypes = ['SOM', 'SOM', 'SOM', 'PV', 'PV', 'PV']
+cellTypes = ['SOM', 'SOM', 'SOM', 'SOM', 'PV', 'PV', 'PV']
 
 # -- select which cells to generate --
 args = sys.argv[1:]
@@ -146,6 +152,10 @@ for indCell in cellsToGenerate:
     noLaserSEM = dbRow['baselineFRnoLaserSEM']
     laserSEM = dbRow['baselineFRLaserSEM']
     
+    # Suppression stats
+    suppIndNoLaser = dbRow['fitSustainedSuppressionIndexNoLaser']
+    suppIndLaser = dbRow['fitSustainedSuppressionIndexLaser']
+    
     # replace pure tone with baselines
     onsetResponseArray[0,0] = noLaserBaseline
     sustainedResponseArray[0,0] = noLaserBaseline
@@ -160,7 +170,7 @@ for indCell in cellsToGenerate:
     numBands[-1] = 6 #white noise is 6 octaves
     
     # --- produce difference of gaussian curve for sustained response of each cell ---
-    testBands = np.linspace(numBands[0],numBands[-1],50)
+    testBands = np.linspace(numBands[0],numBands[-1],500)
     testRespsNoLaser = fitfuncs.diff_gauss_form(testBands, dbRow['mnoLaser'], dbRow['R0noLaser'], dbRow['sigmaDnoLaser'], dbRow['sigmaSnoLaser'], dbRow['RDnoLaser'], dbRow['RSnoLaser'])
     testRespsLaser = fitfuncs.diff_gauss_form(testBands, dbRow['mlaser'], dbRow['R0laser'], dbRow['sigmaDlaser'], dbRow['sigmaSlaser'], dbRow['RDlaser'], dbRow['RSlaser'])
     
@@ -179,5 +189,6 @@ for indCell in cellsToGenerate:
              indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,
              trialsEachCond=bandTrialsEachCond,
              onsetTimeRange=onsetTimeRange, sustainedTimeRange=sustainedTimeRange,
-             fitBands = testBands, fitResponseNoLaser = testRespsNoLaser, fitResponseLaser = testRespsLaser)
+             fitBands = testBands, fitResponseNoLaser = testRespsNoLaser, fitResponseLaser = testRespsLaser,
+             suppIndNoLaser = suppIndNoLaser, suppIndLaser = suppIndLaser)
     print outputFile + " saved"

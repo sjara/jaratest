@@ -191,66 +191,43 @@ def best_index(cellObj, bestFreq, behavType = 'bandwidth'):
         octavesFromBest = None
     return bestBehavIndex, octavesFromBest
 
-def calculate_tuning_curve_inputs(spikeTimeStamps, eventOnsetTimes, firstSort, secondSort, timeRange, baseRange=[-1.1,-0.1]):
+def calculate_tuning_curve_inputs(spikeCountEachTrial, firstSort, secondSort):
     '''Calculates average firing rates for each condition required to plot a tuning curve for a given session.
     
     Inputs:
-        spikeTimeStamps: array of timestamps indicating when spikes occurred
-        eventOnsetTimes: array of timestamps indicating sound onsets
+        spikeCountEachTrial: array of length N trials indicating the number of spikes that occurred during each trial
         firstSort: array of length N trials indicating value of first parameter for each trial (ex. bandwidths)
         secondSort: array of length N trials indicating value of second parameter for each trial (ex. amplitudes)
-        timeRange: time range (relative to sound onset) to be used as response, list of [start time, end time]
-        baseRange: time range (relative to sound onset) to be used as baseline, list of [start time, end time]
         
     Outputs:
-        tuningDict: dictionary containing:
-            responseArray: array of size (N unique first parameter, N unique second parameter) indicating average firing rate for all trials with each combination of the two parameters
-            errorArray: like responseArray, indicating s.e.m. for each value in responseArray
-            baselineSpikeRate: baseline firing rate for this cell (float)
-            baselineSpikeError: s.e.m. for baseline firing rate (float)
-            spikeCountMat: array of length N trials indicating number of spikes during each trial within given response time range
-            trialsEachCond: array of size (N trials, N unique first parameter, N unique second parameter) array indicating which condition occured for each trial.
+        responseArray: array of size (N unique first parameter, N unique second parameter) indicating average spike counts for all trials with each combination of the two parameters
+        errorArray: like responseArray, indicating s.e.m. for each value in responseArray
     '''
-    fullTimeRange = [min(min(timeRange),min(baseRange)), max(max(timeRange),max(baseRange))]
-    
     numFirst = np.unique(firstSort)
     numSec = np.unique(secondSort)
-    duration = timeRange[1]-timeRange[0]
-    spikeArray = np.zeros((len(numFirst), len(numSec)))
-    errorArray = np.zeros_like(spikeArray)
+    
     trialsEachCond = behavioranalysis.find_trials_each_combination(firstSort, 
                                                                    numFirst, 
                                                                    secondSort, 
                                                                    numSec)
-    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
-                                                                                                        spikeTimeStamps, 
-                                                                                                        eventOnsetTimes,
-                                                                                                        fullTimeRange)
-    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
-    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseRange)
-    baselineSpikeRate = np.mean(baseSpikeCountMat)/(baseRange[1]-baseRange[0])
-    baselineError = stats.sem(baseSpikeCountMat)/(baseRange[1]-baseRange[0])
+
+    spikeArray = np.zeros((len(numFirst), len(numSec)))
+    errorArray = np.zeros_like(spikeArray)
     
     for sec in range(len(numSec)):
         trialsThisSec = trialsEachCond[:,:,sec]
         for first in range(len(numFirst)):
             trialsThisFirst = trialsThisSec[:,first]
-            if spikeCountMat.shape[0] != len(trialsThisFirst):
-                spikeCountMat = spikeCountMat[:-1,:]
+            if spikeCountEachTrial.shape[0] != len(trialsThisFirst):
+                spikeCountEachTrial = spikeCountEachTrial[:-1,:]
             if any(trialsThisFirst):
-                thisFirstCounts = spikeCountMat[trialsThisFirst].flatten()
-                spikeArray[first,sec] = np.mean(thisFirstCounts)/duration
-                errorArray[first,sec] = stats.sem(thisFirstCounts)/duration
+                thisFirstCounts = spikeCountEachTrial[trialsThisFirst].flatten()
+                spikeArray[first,sec] = np.mean(thisFirstCounts)
+                errorArray[first,sec] = stats.sem(thisFirstCounts)
             else:
                 spikeArray[first,sec] = np.nan
                 errorArray[first,sec] = np.nan
-    tuningDict = {'responseArray':spikeArray,
-                  'errorArray':errorArray,
-                  'baselineSpikeRate':baselineSpikeRate,
-                  'baselineSpikeError':baselineError,
-                  'spikeCountMat':spikeCountMat,
-                  'trialsEachCond':trialsEachCond}
-    return tuningDict
+    return spikeArray, errorArray
 
 def inactivated_cells_baselines(spikeTimeStamps, eventOnsetTimes, laserEachTrial, baselineRange=[-0.05, 0.0]):
     '''For cells recorded during inhibitory cell inactivation, calculates baseline firing rate with and without laser.
@@ -286,67 +263,93 @@ def inactivated_cells_baselines(spikeTimeStamps, eventOnsetTimes, laserEachTrial
         baselineSpikeRates[las] = baselineMean
         baselineSEMs[las] = baselineSEM
     
+    #[testStatistic, pVal] = stats.ranksums(laserSpikeCountMat, baseSpikeCountMat)
+    
     return baselineSpikeRates, baselineSEMs
 
-def bandwidth_suppression_from_peak(tuningDict, subtractBaseline=False):
+def bandwidth_suppression_from_peak(spikeTimeStamps, eventOnsetTimes, firstSort, secondSort, timeRange=[0.2,1.0], baseRange=[-1.0,-0.2], subtractBaseline=False, zeroBWBaseline=True):
     '''Calculates suppression stats from raw data (no model).
     
     Inputs:
-        tuningDict: dictionary containing:
-            responseArray: array of size (N unique first parameter, N unique second parameter) indicating average firing rate for all trials with each combination of the two parameters
-            errorArray: like responseArray, indicating s.e.m. for each value in responseArray
-            baselineSpikeRate: baseline firing rate for this cell (float)
-            baselineSpikeError: s.e.m. for baseline firing rate (float)
-            spikeCountMat: array of length N trials indicating number of spikes during each trial within given response time range
-            trialsEachCond: array of size (N trials, N unique first parameter, N unique second parameter) array indicating which condition occured for each trial.
+        spikeTimeStamps: array of timestamps indicating when spikes occurred
+        eventOnsetTimes: array of timestamps indicating sound onsets
+        firstSort: array of length N trials indicating value of first parameter for each trial (ex. bandwidths)
+        secondSort: array of length N trials indicating value of second parameter for each trial. Second parameter should be manipulation being done (ex. laser), as it is used to calculate separate indices and baselines.
+        timeRange: time period over which to calculate cell responses
         subtractBaseline: boolean, whether baseline firing rate should be subtracted from responses when calculating stats
         
     Output:
-        suppressionDict: dictionary containing:
-            suppressionIndex: suppression index for cell for each condition (e.g. for each amplitude, for each laser trial type)
-            suppressionpVal: p value for each value in suppressionIndex
-            facilitationIndex: facilitation index for cell for each condition
-            facilitationpVal: p value for each value in facilitationIndex
-            peakInd: index of responseArray containing largest firing rate (to calculate preferred bandwidth)
+        suppressionIndex: suppression index for cell for each condition (e.g. for each amplitude, for each laser trial type)
+        suppressionpVal: p value for each value in suppressionIndex
+        facilitationIndex: facilitation index for cell for each condition
+        facilitationpVal: p value for each value in facilitationIndex
+        peakInd: index of responseArray containing largest firing rate (to calculate preferred bandwidth)
+        spikeArray: array of size N condition 1 x N condition 2, average spike rates for each condition used to calculate suppression stats
     '''
-    spikeArray = tuningDict['responseArray']
-    baselineSpikeRate = tuningDict['baselineSpikeRate']
-    spikeCountMat = tuningDict['spikeCountMat']
+    fullTimeRange = [baseRange[0], timeRange[1]]
+    trialsEachCond = behavioranalysis.find_trials_each_combination(firstSort, 
+                                                                   np.unique(firstSort), 
+                                                                   secondSort, 
+                                                                   np.unique(secondSort))
+    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+                                                                                                        spikeTimeStamps, 
+                                                                                                        eventOnsetTimes,
+                                                                                                        fullTimeRange)
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange)
+    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, baseRange)
+    
+    trialsEachSecondSort = behavioranalysis.find_trials_each_type(secondSort, np.unique(secondSort))
+    
+    spikeArray, errorArray = calculate_tuning_curve_inputs(spikeCountMat, firstSort, secondSort)
+    spikeArray = spikeArray/(timeRange[1]-timeRange[0]) #convert spike counts to firing rate
     
     suppressionIndex = np.zeros(spikeArray.shape[1])
     facilitationIndex = np.zeros_like(suppressionIndex)
     peakInds = np.zeros_like(suppressionIndex)
     
     suppressionpVal = np.zeros_like(suppressionIndex)
-    facilitationpVal = np.zeros_like(suppressionIndex)
-            
-    if not subtractBaseline:
-        baselineSpikeRate = 0
+    facilitationpVal = np.zeros_like(suppressionIndex)      
     
-    for ind in range(len(suppressionIndex)):    
-        suppressionIndex[ind] = (max(spikeArray[:,ind])-spikeArray[:,ind][-1])/(max(spikeArray[:,ind])-baselineSpikeRate)
-        facilitationIndex[ind] = (max(spikeArray[:,ind])-spikeArray[:,ind][0])/(max(spikeArray[:,ind])-baselineSpikeRate)
-
-        trialsThisSeconsVal = tuningDict['trialsEachCond'][:,:,ind]
-        peakInd = np.argmax(spikeArray[:,ind])
+    for ind in range(len(suppressionIndex)):
+        trialsThisSecondVal = trialsEachSecondSort[:,ind]
         
+        thisCondResponse = spikeArray[:,ind]
+        thisCondBaseline = np.mean(baseSpikeCountMat[trialsThisSecondVal].flatten())/(baseRange[1]-baseRange[0])
+        
+        if zeroBWBaseline:
+            thisCondResponse[0] = thisCondBaseline
+            
+        if not subtractBaseline:
+            thisCondBaseline = 0
+            
+        spikeArray[:,ind]=thisCondResponse
+        
+        suppressionIndex[ind] = (max(thisCondResponse)-thisCondResponse[-1])/(max(thisCondResponse)-thisCondBaseline)
+        facilitationIndex[ind] = (max(thisCondResponse)-thisCondResponse[0])/(max(thisCondResponse)-thisCondBaseline)
+
+        peakInd = np.argmax(thisCondResponse)
         peakInds[ind] = peakInd
         
-        peakSpikeCounts = spikeCountMat[trialsThisSeconsVal[:,peakInd]].flatten()
-        whiteNoiseSpikeCounts = spikeCountMat[trialsThisSeconsVal[:,-1]].flatten()
-        pureToneSpikeCounts = spikeCountMat[trialsThisSeconsVal[:,0]].flatten()
+        fullTrialsThisSecondVal = trialsEachCond[:,:,ind]
+        
+        if zeroBWBaseline:
+            if peakInd==0:
+                peakSpikeCounts = baseSpikeCountMat[trialsThisSecondVal].flatten()
+            else:
+                peakSpikeCounts = spikeCountMat[fullTrialsThisSecondVal[:,peakInd]].flatten()
+            zeroBWSpikeCounts = baseSpikeCountMat[trialsThisSecondVal].flatten()
+        else:
+            peakSpikeCounts = spikeCountMat[fullTrialsThisSecondVal[:,peakInd]].flatten()
+            zeroBWSpikeCounts = spikeCountMat[fullTrialsThisSecondVal[:,0]].flatten()
+        
+        
+        whiteNoiseSpikeCounts = spikeCountMat[fullTrialsThisSecondVal[:,-1]].flatten()
         
         suppressionpVal[ind] = stats.ranksums(peakSpikeCounts, whiteNoiseSpikeCounts)[1]
-        facilitationpVal[ind] = stats.ranksums(peakSpikeCounts, pureToneSpikeCounts)[1]
+        facilitationpVal[ind] = stats.ranksums(peakSpikeCounts, zeroBWSpikeCounts)[1]
         
     
-    suppressionDict = {'suppressionIndex':suppressionIndex,
-                       'suppressionpVal':suppressionpVal,
-                       'facilitationIndex':facilitationIndex,
-                       'facilitationpVal':facilitationpVal,
-                       'peakInd':peakInds}
-    
-    return suppressionDict
+    return suppressionIndex, suppressionpVal, facilitationIndex, facilitationpVal, peakInds, spikeArray
 
 def onset_sustained_spike_proportion(spikeTimeStamps, eventOnsetTimes, onsetTimeRange=[0.0,0.05], sustainedTimeRange=[0.2,1.0]):
     '''Calculates proportion of spikes that occur at sound onset. Averaged across all bandwidths.

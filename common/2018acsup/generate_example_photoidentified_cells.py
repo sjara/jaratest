@@ -208,7 +208,7 @@ for indCell in cellsToGenerate:
     
     
     # --- produce difference of gaussian curve for sustained response of each cell ---
-    testBands = np.linspace(numBands[0],numBands[-1],50)
+    testBands = np.linspace(numBands[0],numBands[-1],500)
     testResps = fitfuncs.diff_gauss_form(testBands, dbRow['m'], dbRow['R0'], dbRow['sigmaD'], dbRow['sigmaS'], dbRow['RD'], dbRow['RS'])
     
     # --- get SI for each cell ---

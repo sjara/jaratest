@@ -73,6 +73,12 @@ fitSOMsustainedPrefBWNoLaser = SOMCells['fitSustainedPrefBandwidthNoLaser']
 
 fitPVsustainedPrefBWLaser = PVCells['fitSustainedPrefBandwidthLaser']
 fitSOMsustainedPrefBWLaser = SOMCells['fitSustainedPrefBandwidthLaser']
+
+fitPVpeakChangeFR = PVCells['fitPeakChangeFR']
+fitPVWNChangeFR = PVCells['fitWNChangeFR']
+
+fitSOMpeakChangeFR = SOMCells['fitPeakChangeFR']
+fitSOMWNChangeFR = SOMCells['fitWNChangeFR']
         
 # -- save photoidentified suppression scores --
 outputFile = 'all_inactivated_cells_stats.npz'
@@ -93,5 +99,9 @@ np.savez(outputFullPath,
          fitPVsustainedPrefBWNoLaser = fitPVsustainedPrefBWNoLaser,
          fitSOMsustainedPrefBWNoLaser = fitSOMsustainedPrefBWNoLaser,
          fitPVsustainedPrefBWLaser = fitPVsustainedPrefBWLaser,
-         fitSOMsustainedPrefBWLaser = fitSOMsustainedPrefBWLaser)
+         fitSOMsustainedPrefBWLaser = fitSOMsustainedPrefBWLaser,
+         fitPVpeakChangeFR = fitPVpeakChangeFR,
+         fitPVWNChangeFR = fitPVWNChangeFR,
+         fitSOMpeakChangeFR = fitSOMpeakChangeFR,
+         fitSOMWNChangeFR = fitSOMWNChangeFR)
 print outputFile + " saved"
