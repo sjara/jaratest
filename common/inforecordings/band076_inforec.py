@@ -4,17 +4,17 @@ reload(celldatabase)
 subject = 'band076'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2018-10-03', 'right_AC', info=['lateralDiD','TT8ant','soundleft'])
+exp0 = celldatabase.Experiment(subject, '2018-10-03', 'right_AC', info=['medialDiD','TT8ant','soundleft'])
 experiments.append(exp0)
 
 
     # noisebursts(50) -> tuningCurve(240) -> AM(150) -> signalBandwidths(360) -> SNRs (300) -> noiseAmps (150)
 
-exp0.add_site(1000, tetrodes=[1,2,3,4,6,7,8])
-exp0.add_session('14-33-28', None, 'noisebursts', 'am_tuning_curve')
-
-exp0.add_site(1100, tetrodes=[1,2,4,6])
-exp0.add_session('14-56-35', None, 'noisebursts', 'am_tuning_curve')
+# exp0.add_site(1000, tetrodes=[1,2,3,4,6,7,8])
+# exp0.add_session('14-33-28', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp0.add_site(1100, tetrodes=[1,2,4,6])
+# exp0.add_session('14-56-35', None, 'noisebursts', 'am_tuning_curve')
 
 exp0.add_site(1200, tetrodes=[2,4])
 exp0.add_session('15-10-24', None, 'noisebursts', 'am_tuning_curve')
