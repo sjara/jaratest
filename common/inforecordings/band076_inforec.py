@@ -127,3 +127,27 @@ exp3.add_session('16-11-27', 'j', 'noiseAmps', 'am_tuning_curve')
 # #No significant AM tuning
 
 exp3.maxDepth = 1200
+
+#noisebursts(50) -> tuningCurve(240) -> AM(150) -> signalBandwidths(420) -> SNRs (300) -> noiseAmps (150)
+# now 420 signalBandwidths because added pure tone trials
+
+exp4 = celldatabase.Experiment(subject, '2018-10-18', 'left_AC', info=['midDiO','TT8ant','soundright'])
+experiments.append(exp4)
+
+exp4.add_site(900, tetrodes=[1,2,4,5,6,7,8])
+exp4.add_session('14-44-57', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('14-47-50', 'a', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('14-52-37', 'b', 'AM', 'am_tuning_curve')
+exp4.add_session('15-05-19', 'c', 'signalBandwidths', 'bandwidth_am') #18 kHz @ 64
+exp4.add_session('15-28-16', 'd', 'SNRs', 'bandwidth_am')
+exp4.add_session('15-51-45', 'e', 'noiseAmps', 'am_tuning_curve')
+
+exp4.add_site(1000, tetrodes=[4,6,8])
+exp4.add_session('16-18-09', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('16-21-30', 'f', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('16-25-54', 'g', 'AM', 'am_tuning_curve')
+exp4.add_session('16-40-14', 'h', 'signalBandwidths', 'bandwidth_am') #18 kHz @ 64
+exp4.add_session('17-02-38', 'i', 'SNRs', 'bandwidth_am')
+exp4.add_session('17-18-44', 'j', 'noiseAmps', 'am_tuning_curve')
+
+exp4.maxDepth = 1000
