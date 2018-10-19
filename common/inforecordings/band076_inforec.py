@@ -69,24 +69,24 @@ experiments.append(exp2)
 #No freq tuning
 
 #Tetrode 3 has the reference
-exp2.add_site(1150, tetrodes=[1,2,4,5,6,7,8])
-exp2.add_session('14-37-38', None, 'noisebursts', 'am_tuning_curve')
-
-exp2.add_site(1250, tetrodes=[1,2,4,5,6,7,8])
-exp2.add_session('14-43-35', None, 'noisebursts', 'am_tuning_curve')
-exp2.add_session('14-45-05', 'c', 'tuningCurve', 'am_tuning_curve') #Weird tuning responses
-
-#Tetrode 1 has the reference
-exp2.add_site(1350, tetrodes=[2,3,4,5,6,7,8])
-exp2.add_session('15-20-34', None, 'noisebursts', 'am_tuning_curve')
-
-#tetrode 3 has the reference
-exp2.add_site(1450, tetrodes=[1,2,4,5,6,7,8])
-exp2.add_session('16-00-17', None, 'noisebursts', 'am_tuning_curve')
-
-exp2.add_site(1550, tetrodes=[1,2,4,5,6,7,8])
-exp2.add_session('16-27-27', None, 'noisebursts', 'am_tuning_curve')
-exp2.add_session('16-30-28', 'd', 'tuningCurve', 'am_tuning_curve')
+# exp2.add_site(1150, tetrodes=[1,2,4,5,6,7,8])
+# exp2.add_session('14-37-38', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp2.add_site(1250, tetrodes=[1,2,4,5,6,7,8])
+# exp2.add_session('14-43-35', None, 'noisebursts', 'am_tuning_curve')
+# exp2.add_session('14-45-05', 'c', 'tuningCurve', 'am_tuning_curve') #Weird tuning responses
+# 
+# #Tetrode 1 has the reference
+# exp2.add_site(1350, tetrodes=[2,3,4,5,6,7,8])
+# exp2.add_session('15-20-34', None, 'noisebursts', 'am_tuning_curve')
+# 
+# #tetrode 3 has the reference
+# exp2.add_site(1450, tetrodes=[1,2,4,5,6,7,8])
+# exp2.add_session('16-00-17', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp2.add_site(1550, tetrodes=[1,2,4,5,6,7,8])
+# exp2.add_session('16-27-27', None, 'noisebursts', 'am_tuning_curve')
+# exp2.add_session('16-30-28', 'd', 'tuningCurve', 'am_tuning_curve')
 
 exp2.add_site(1600, tetrodes=[1,2,4,5,6,7,8])
 exp2.add_session('16-43-49', None, 'noisebursts', 'am_tuning_curve')
