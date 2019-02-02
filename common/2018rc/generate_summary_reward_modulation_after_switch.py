@@ -3,17 +3,17 @@ Calculate reward modulation for first half of trials vs second half of trials
 
 Based on calculate_reward_modulation_celldb.py
 
-NOTE: it currently uses re-calculated evlockData (by Santiago, after submission)
+NOTES:
+- It currently uses re-calculated evlockData (by Santiago, after submission)
+- I am using only trials of preferred choice of the cell (not all choices)
+  so this gives an underestimate of how many total trials it takes to switch.
 
 It took about 12 seconds (for both areas).
 '''
 
 
-import time
-import argparse
-import numpy as np
-import itertools
 import sys, os
+import numpy as np
 import pandas as pd
 from jaratoolbox import settings
 from jaratoolbox import spikesanalysis
@@ -121,13 +121,15 @@ for brainArea in brainAreas:
             trialsThisChoice = rightward
         else:
             trialsThisChoice = leftward
-            
+        ###relevantTrials = rightward|leftward
+        relevantTrials = trialsThisChoice
+         
         # -- Find trials each block --
         bdata.find_trials_each_block()
         numBlocks = bdata.blocks['nBlocks']
         trialsEachBlock = bdata.blocks['trialsEachBlock']
-        #trialsToAnalyzeEachBlock = trialsEachBlock & correctTrialsThisFreq[:,np.newaxis]
-        trialsToAnalyzeEachBlock = trialsEachBlock & trialsThisChoice[:,np.newaxis]
+        #trialsToAnalyzeEachBlock = trialsEachBlock & trialsThisChoice[:,np.newaxis]
+        trialsToAnalyzeEachBlock = trialsEachBlock & relevantTrials[:,np.newaxis]
         blockSize = sum(trialsToAnalyzeEachBlock)
         if (blockSize[-1] < minBlockSize): # Check whether last block is too small to analyze
             trialsToAnalyzeEachBlock = trialsToAnalyzeEachBlock[:,:-1]
@@ -135,19 +137,21 @@ for brainArea in brainAreas:
 
         # -- Estimate number of spikes on each trial --
         spkMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,[0,0.3])
-        #relevantTrials = correctTrialsThisFreq
-        relevantTrials = trialsThisChoice
+        # -- Permute (to test whether effect is not random) --
+        ###spkMat = np.random.permutation(spkMat)
         # -- Estimate average spikes during each block transition --
         alignedBlocks = np.ma.masked_array(np.zeros((numBlocks-1, 2*nTrialsAroundTransition)), dtype=float, mask=True)
         firstTrialInd = nTrialsAroundTransition
-        normedSpikesEachTrial = spkMat[relevantTrials,0] - np.mean(spkMat[relevantTrials,0])
+        #normedSpikesEachTrial = spkMat[relevantTrials,0] - np.mean(spkMat[relevantTrials,0])
+        normedSpikesEachTrial = np.ma.array(spkMat[:,0] - np.mean(spkMat[:,0]),mask=True)
+        normedSpikesEachTrial.mask[trialsThisChoice] = False
+        normedSpikesEachTrial = normedSpikesEachTrial[relevantTrials]
         firstTrialEachBlock = np.cumsum(blockSize)[:-1]
         mfactor = [1,-1,1,-1,1,-1,1,-1]
         for indtr in range(numBlocks-1):
             nTrialsPre = min(nTrialsAroundTransition, blockSize[indtr])
             nTrialsPost = min(nTrialsAroundTransition, len(normedSpikesEachTrial)-firstTrialEachBlock[indtr])
             trialRange = range(firstTrialEachBlock[indtr]-nTrialsPre, firstTrialEachBlock[indtr]+nTrialsPost)
-            #nTrialsThisTransition = len(trialRange)
             samplesToFill = slice(firstTrialInd-nTrialsPre,firstTrialInd+nTrialsPost)
             alignedBlocks.mask[indtr, samplesToFill]=False
             alignedBlocks[indtr, samplesToFill] = mfactor[indtr]*normedSpikesEachTrial[trialRange]
@@ -192,8 +196,10 @@ for brainArea in brainAreas:
             plt.plot(smoothSpkTransition, lw=2)
             plt.axvline(firstTrialInd,color='0.5')
             plt.waitforbuttonpress()
-
-
+            
+        #sys.exit()
+        
+print('Saving results to {}'.format(figDataFullPath))
 np.savez(figDataFullPath, script=scriptFullPath,
          avgSpikesInTransitionAC=avgSpikesInTransitionEachCell['rightAC'],
          avgSpikesInTransitionAStr=avgSpikesInTransitionEachCell['rightAStr'],
