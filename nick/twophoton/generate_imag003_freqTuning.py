@@ -112,6 +112,11 @@ for indROI, preferredFreq in enumerate(preferredFreqEachROI):
     roiImg[roiImg==indROI+1] = preferredFreq
 
 plt.clf()
-plt.imshow(roiImg)
+ax = plt.subplot(111)
+cax = ax.imshow(roiImg)
+cbar = plt.colorbar(cax, ax=ax)
+freqLabels = ['{:.1f}'.format(freq/1000) for freq in possibleFreq]
+cbar.ax.set_yticklabels(freqLabels)
+cbar.ax.set_ylabel('Preferred frequency (kHz)')
 plt.show()
 
