@@ -24,6 +24,25 @@ def plot_calcium_tuning(tuningArr):
         ax.plot(range(nSamples), tuningArr[indAxis, :], 'k-')
         ax.axis('off')
         ax.set_ylim([minResponse, maxResponse])
+        ax.text(nSamples/2, minResponse-abs(minResponse*0.15), '{:.1f}'.format((possibleFreqs[indAxis])), ha='center', va='top')
+        # lineY = minResponse-abs(minResponse*0.05)
+
+        #Plot X axis lines
+        lineY = minResponse
+        plt.plot([0, nSamples], [lineY, lineY], '-', lw=3, color='0.5')
+
+        #Plot Y axis scale bar
+        if indAxis==0:
+            # plt.plot([-1, -1], [lineY, lineY + (maxResponse-minResponse)*0.5], '-', color=0.5)
+            plt.plot([-1, -1], [minResponse, maxResponse], '-', color='0.5')
+            plt.plot([-5, -1], [0, 0], '-', color='0.5')
+            plt.plot([-5, -1], [minResponse, minResponse], '-', color='0.5')
+            plt.plot([-5, -1], [maxResponse, maxResponse], '-', color='0.5')
+            plt.text(-8, 0, '0', ha='right', va='center')
+            plt.text(-8, maxResponse, '{:.2f}'.format(maxResponse), ha='right', va='center')
+            plt.text(-8, minResponse, '{:.2f}'.format(minResponse), ha='right', va='center')
+            plt.text(-20, np.mean([minResponse, maxResponse]), 'df/f', ha='right', va='center', rotation=90)
+
     plt.show()
 
 intermediateDataDir = '/home/nick/data/2pdata/tmp'
