@@ -78,8 +78,13 @@ intermediateDataDir = '/home/nick/data/2pdata/tmp'
 #Array to save preffered freqs
 preferredFreqEachROI = np.empty(nROIs)
 
+#Iterate over ROIs to save out average response per frequency
 for indROI in range(nROIs):
+
+    #Init an array to hold the average response per frequency
     averagePerFreqThisROI = np.empty([len(possibleFreq), nSamples])
+
+    #For each frequency, average over the trials where it was presented.
     for indFreq, thisFreq in enumerate(possibleFreq):
         trialsThisFreq = np.flatnonzero(currentFreq==thisFreq)
         responsesThisFreq = alignedTraces[indROI, trialsThisFreq, :]
@@ -87,10 +92,12 @@ for indROI in range(nROIs):
         averageThisFreq = np.mean(responsesThisFreq, axis=0)
         averagePerFreqThisROI[indFreq, :] = averageThisFreq
 
+        #Save out the frequency with the max response for plotting
         maxEachFreq = np.max(averagePerFreqThisROI, axis=1)
         bestFreq = np.argmax(maxEachFreq)
         preferredFreqEachROI[indROI] = bestFreq
 
+        #Save the average response per frequency for this ROI
         fName = os.path.join(intermediateDataDir, 'imag003_ROI_{}.npy'.format(indROI))
         np.save(fName, averagePerFreqThisROI)
 
