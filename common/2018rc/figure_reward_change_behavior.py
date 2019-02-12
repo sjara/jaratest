@@ -47,7 +47,9 @@ fig.set_facecolor('w')
 panelsToPlot=[0, 1]
 
 gs = gridspec.GridSpec(2, 6)
-gs.update(left=0.09, right=0.98, top=0.95, bottom=0.08, wspace=0.5, hspace=0.5)
+#gs.update(left=0.09, right=0.98, top=0.95, bottom=0.08, wspace=0.5, hspace=0.5)
+#gs.update(left=0.09, right=0.98, top=0.95, bottom=0.12, wspace=0.5, hspace=0.5)
+gs.update(left=0.09, right=0.98, top=0.95, bottom=0.09, wspace=0.5, hspace=0.5)
 
 gs00 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[0,:], wspace=0.4)
 
@@ -188,7 +190,9 @@ if 1 in panelsToPlot:
     ax2.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax2.set_yticks([0, 25]) 
     ax2.set_xlim([-0.5, 1.5])
-    ax2.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels) #conditions[firstCondToPlot:]
+    ax2.set_xticklabels(['More left', 'More right'], fontsize=fontSizeLabels)
+    #ax2.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels) #conditions[firstCondToPlot:]
+    ax2.set_xlabel('Reward amount', fontsize=fontSizeLabels)
     ax2.set_ylim([-5, 30])
     #ax2.text(0, 30,'Lowest frequency')
     ax2.set_title('Lowest frequency', fontsize=fontSizeLabels)
@@ -202,8 +206,9 @@ if 1 in panelsToPlot:
     for animalInd in range(len(subjects)):
         ax3.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax3.set_xticks([0,1])
-    #ax3.set_xticklabels(['Left more', 'Right more'], fontsize=fontSizeLabels)
-    ax3.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
+    ax3.set_xticklabels(['More left', 'More right'], fontsize=fontSizeLabels)
+    #ax3.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
+    ax3.set_xlabel('Reward amount', fontsize=fontSizeLabels)
     #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax3.set_yticks([0, 25, 50, 75, 100])
     ax3.set_ylim([-15, 118]) 
@@ -220,7 +225,9 @@ if 1 in panelsToPlot:
     for animalInd in range(len(subjects)):
         ax4.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
     ax4.set_xticks([0,1])
-    ax4.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
+    ax4.set_xticklabels(['More left', 'More right'], fontsize=fontSizeLabels)
+    #ax4.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
+    ax4.set_xlabel('Reward amount', fontsize=fontSizeLabels)
     #ax4.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
     ax4.set_yticks([75, 100])
     ax4.set_ylim([70, 106]) 

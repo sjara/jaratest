@@ -8,7 +8,8 @@ reload(behavioranalysis)
 animalName = 'amod003'
 date = '20160417a'
 
-fn = '/home/nick/data/behavior/nick/{0}/{1}_2afc_{2}.h5'.format(animalName, animalName, date)
+fn = '/home/nick/data/behavior/nick/{0}/{1}_2afc_{2}.h5'.format(animalName,
+                                                                animalName, date)
 #fn = '/var/tmp/data/santiago/nick/nick_2afc_20160330a.h5' #Not psycurve
 bdata = loadbehavior.BehaviorData(fn)
 
@@ -48,7 +49,7 @@ suptitle(date)
 
 tight_layout()
 
-savefig(filename)
+# savefig(filename)
 
 
 
