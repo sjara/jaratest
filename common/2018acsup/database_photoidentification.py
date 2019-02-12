@@ -1,15 +1,5 @@
 '''
-This script takes as argument a pandas DataFrame or a path to a saved database and adds new columns.
-
-Columns added are split into two groups: the basic stats computed for every cluster, and the more complex
-ones computed only for cells that pass certain criteria based on these basic stats.
-
-Either can be chosen to be run, the final database is saved regardless.
-
-A name for the saved database can be passed if you want a separate database for whatever reason.
-
-TO DO:
-- Split up into smaller functions for each computation to make flow more clear
+This script contains a function that computes new columns for a database of photoidentified cells.
 '''
 
 import os
@@ -35,9 +25,21 @@ OCTAVESCUTOFF = 0.3
 
 
 def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices = True, filename = 'photoidentification_cells.h5'):
-    if type(db) == str:
-        dbPath = os.path.join(settings.DATABASE_PATH,db)
-        db = celldatabase.load_hdf(dbPath)
+    '''
+    This function takes as argument a pandas DataFrame and adds new columns.
+    If you need to pass a path to a database instead, uncomment first three lines in photoIDdatabase to allow the function to take a path as an argument.
+    
+    Columns added are split into two groups: the basic stats computed for every cluster, and the more complex
+    ones computed only for cells that pass certain criteria based on these basic stats.
+    
+    Either can be chosen to be run, the final database is saved regardless.
+    
+    A name for the saved database can be passed if you want a database different from the default.
+    If you don't want to save the database, you can pass an empty filename.
+    '''
+#     if type(db) == str:
+#         dbPath = os.path.join(settings.DATABASE_PATH,db)
+#         db = celldatabase.load_hdf(dbPath)
     
     if clusterRescue:
         from sklearn import neighbors
@@ -140,10 +142,13 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
                     print "Could not save modified .clu files"
     
     if baseStats:
+        soundLoc = []
+        
         laserTestStatistic = np.empty(len(db))
         laserPVal = np.empty(len(db))
         laserTrainTestStatistic = np.empty(len(db))
         laserTrainPVal = np.empty(len(db))
+        laserChangeFR = np.empty(len(db))
         
         soundResponseTestStatistic = np.empty(len(db))
         soundResponsePVal = np.empty(len(db))
@@ -151,6 +156,7 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
         onsetSoundResponsePVal = np.empty(len(db))
         sustainedSoundResponseTestStatistic = np.empty(len(db))
         sustainedSoundResponsePVal = np.empty(len(db))
+        AMRate = np.empty(len(db))
         
         gaussFit = []
         tuningTimeRange = []
@@ -162,7 +168,16 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
         for indRow, (dbIndex, dbRow) in enumerate(db.iterrows()):
             cellObj = ephyscore.Cell(dbRow, useModifiedClusters=True)
             print "Now processing", dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster']
-    
+            
+            # --- Determine if sound presentation was ipsi or contra to recording location ---
+            soundSide = dbRow['info'][2]
+            recordingSide = dbRow['brainArea']
+            
+            if (soundSide=='sound_left' and recordingSide=='left_AC') or (soundSide=='sound_right' and recordingSide=='right_AC'):
+                soundLoc.append('ipsi')
+            else:
+                soundLoc.append('contra')
+            
             # --- Determine laser responsiveness of each cell (using laser pulse) ---
             try:
                 laserEphysData, noBehav = cellObj.load('laserPulse')
@@ -170,10 +185,12 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
                 print "No laser pulse session for this cell"
                 testStatistic = None
                 pVal = None
+                changeFR = None
             else:
-                testStatistic, pVal = funcs.laser_response(laserEphysData)
+                testStatistic, pVal, changeFR = funcs.laser_response(laserEphysData)
             laserTestStatistic[indRow] = testStatistic
             laserPVal[indRow] = pVal
+            laserChangeFR[indRow] = changeFR
             
             # --- Determine laser responsiveness of each cell (using laser train) ---
             try:
@@ -183,11 +200,11 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
                 testStatistic = np.nan
                 pVal = np.nan
             else:
-                testStatistic, pVal = funcs.laser_response(laserTrainEphysData)
+                testStatistic, pVal, changeFR = funcs.laser_response(laserTrainEphysData)
             laserTrainTestStatistic[indRow] = testStatistic
             laserTrainPVal[indRow] = pVal
             
-            # --- Determine sound responsiveness during bandwidth sessions ---
+            # --- Determine sound responsiveness during bandwidth sessions and other statistics about bandwidth session---
             try:
                 bandEphysData, bandBehavData = cellObj.load('bandwidth')
             except IndexError:
@@ -198,6 +215,7 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
                 onsetpVal = np.nan
                 sustainedTestStatistic = np.nan
                 sustainedpVal = np.nan
+                AM = np.nan
             else:
                 bandEventOnsetTimes = funcs.get_sound_onset_times(bandEphysData, 'bandwidth')
                 bandSpikeTimestamps = bandEphysData['spikeTimes']
@@ -205,6 +223,7 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
                 secondSort = bandBehavData['currentAmp']
                 numBands = np.unique(bandEachTrial)
                 numSec = np.unique(secondSort)
+                AM = np.unique(bandBehavData['modRate'])
                 
                 trialsEachComb = behavioranalysis.find_trials_each_combination(bandEachTrial, numBands, secondSort, numSec)
                 trialsEachBaseCond = trialsEachComb[:,:,-1] #using high amp trials for photoidentified, no laser for inactivation
@@ -221,6 +240,7 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             onsetSoundResponsePVal[indRow] = onsetpVal
             sustainedSoundResponseTestStatistic[indRow] = sustainedTestStatistic
             sustainedSoundResponsePVal[indRow] = sustainedpVal
+            AMRate[indRow] = AM
             
             # --- Determine frequency tuning of cells ---
             try:
@@ -268,11 +288,15 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             prefFreq[indRow] = bestFreq
             octavesFromPrefFreq[indRow] = octavesFromBest
             bestBandSession[indRow] = bandIndex
+            
+        db['soundLocation'] = soundLoc
+        db['AMRate'] = AMRate
                 
         db['laserPVal'] = laserPVal
         db['laserUStat'] = laserTestStatistic
         db['laserTrainPVal'] = laserTrainPVal
         db['laserTrainUStat'] = laserTrainTestStatistic
+        db['laserChangeFR'] = laserChangeFR
         
         db['soundResponseUStat'] = soundResponseTestStatistic
         db['soundResponsePVal'] = soundResponsePVal
@@ -334,8 +358,6 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             
             fitParams, R2 = fitfuncs.diff_of_gauss_fit(bandsForFit, sustainedResponse, mFixed=mFixed)
             
-            print fitParams
-            
             #fit params
             db.at[dbIndex, 'R0'] = fitParams[0]
             db.at[dbIndex, 'RD'] = fitParams[3]
@@ -353,8 +375,60 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             db.at[dbIndex, 'fitSustainedSuppressionIndex'] = suppInd
             db.at[dbIndex, 'fitSustainedPrefBandwidth'] = prefBW
             
+            #also calculating fits and suppression with pure tone being 0 bw condition
+            toneSustainedSupInds, toneSustainedSupIndpVals, toneSustainedFacInds, toneSustainedFacIndpVals, toneSustainedPeakInds, toneSustainedSpikeArray = funcs.bandwidth_suppression_from_peak(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.2,1.0], baseRange=[-1.0,-0.2], zeroBWBaseline=False)
+            db.at[dbIndex, 'sustainedSuppressionIndexPureTone'] = toneSustainedSupInds[-1]
+            db.at[dbIndex, 'sustainedSuppressionpValPureTone'] = toneSustainedSupIndpVals[-1]
+            db.at[dbIndex, 'sustainedFacilitationIndexPureTone'] = toneSustainedFacInds[-1]
+            db.at[dbIndex, 'sustainedFacilitationpValPureTone'] = toneSustainedFacIndpVals[-1]
+            db.at[dbIndex, 'sustainedPrefBandwidthPureTone'] = bandEachTrial[toneSustainedPeakInds[-1]]
             
-    dbFilename = os.path.join(settings.DATABASE_PATH,filename)
-    celldatabase.save_hdf(db, dbFilename)
+            #only interested in high amp responses
+            toneSustainedResponse = toneSustainedSpikeArray[:,-1]
+            
+            toneFitParams, toneR2 = fitfuncs.diff_of_gauss_fit(bandsForFit, toneSustainedResponse, mFixed=mFixed)
+            
+            #fit params
+            db.at[dbIndex, 'R0PureTone'] = toneFitParams[0]
+            db.at[dbIndex, 'RDPureTone'] = toneFitParams[3]
+            db.at[dbIndex, 'RSPureTone'] = toneFitParams[4]
+            db.at[dbIndex, 'mPureTone'] = mFixed
+            db.at[dbIndex, 'sigmaDPureTone'] = toneFitParams[1]
+            db.at[dbIndex, 'sigmaSPureTone'] = toneFitParams[2]
+            db.at[dbIndex, 'bandwidthTuningR2PureTone'] = toneR2
+            
+            allFitParamsTone = [mFixed]
+            allFitParamsTone.extend(toneFitParams)
+            suppIndTone, prefBWTone = fitfuncs.extract_stats_from_fit(allFitParamsTone, testBands)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndexPureTone'] = suppIndTone
+            db.at[dbIndex, 'fitSustainedPrefBandwidthPureTone'] = prefBWTone
+            
+            #also calculating fits and suppression with nothing being fit for bw 0
+            noZeroSustainedResponse = sustainedResponse[1:]
+            bandsForFitNoZero = bandsForFit[1:]
+            
+            noZeroFitParams, noZeroR2 = fitfuncs.diff_of_gauss_fit(bandsForFitNoZero, noZeroSustainedResponse, mFixed=mFixed)
+            
+            #fit params
+            db.at[dbIndex, 'R0noZero'] = noZeroFitParams[0]
+            db.at[dbIndex, 'RDnoZero'] = noZeroFitParams[3]
+            db.at[dbIndex, 'RSnoZero'] = noZeroFitParams[4]
+            db.at[dbIndex, 'mnoZero'] = mFixed
+            db.at[dbIndex, 'sigmaDnoZero'] = noZeroFitParams[1]
+            db.at[dbIndex, 'sigmaSnoZero'] = noZeroFitParams[2]
+            db.at[dbIndex, 'bandwidthTuningR2noZero'] = noZeroR2
+            
+            allFitParamsNoZero = [mFixed]
+            allFitParamsNoZero.extend(noZeroFitParams)
+            testBandsNoZero = np.linspace(bandsForFitNoZero[0],bandsForFitNoZero[-1],500)
+            suppIndNoZero, prefBWNoZero = fitfuncs.extract_stats_from_fit(allFitParamsNoZero, testBandsNoZero)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndexnoZero'] = suppIndNoZero
+            db.at[dbIndex, 'fitSustainedPrefBandwidthnoZero'] = prefBWNoZero
+            
+    if len(filename)!=0:        
+        dbFilename = os.path.join(settings.DATABASE_PATH,filename)
+        celldatabase.save_hdf(db, dbFilename)
 
 
