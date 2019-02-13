@@ -4,18 +4,18 @@ reload(celldatabase)
 subject = 'band034'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2017-08-30', 'right_AC', info=['medialDiI','TT1ant','sound_left'])
-experiments.append(exp0)
-
-exp0.laserCalibration = {
-    '0.5':1.5,
-    '1.0':2.1,
-    '1.5':2.85,
-    '2.0':3.6,
-    '2.5':4.35,
-    '3.0':5.4,
-    '3.5':6.4
-}
+# exp0 = celldatabase.Experiment(subject, '2017-08-30', 'right_AC', info=['medialDiI','TT1ant','sound_left'])
+# experiments.append(exp0)
+# 
+# exp0.laserCalibration = {
+#     '0.5':1.5,
+#     '1.0':2.1,
+#     '1.5':2.85,
+#     '2.0':3.6,
+#     '2.5':4.35,
+#     '3.0':5.4,
+#     '3.5':6.4
+# }
 
 # exp0.add_site(950, tetrodes=[2,4,8])
 # exp0.add_session('16-02-10', None, 'laserPulse', 'am_tuning_curve')
@@ -115,6 +115,8 @@ exp1.add_session('13-37-22', 'h', 'bandwidth', 'bandwidth_am')
 exp1.add_session('13-56-00', 'i', 'noiseAmps', 'am_tuning_curve')
 # withdrawing from this site as I don't seem to be getting very good sound responses
 
+exp1.maxDepth = 1250
+
 
 exp2 = celldatabase.Experiment(subject, '2017-09-01', 'left_AC', info=['middleDiD','TT1ant','sound_right'])
 experiments.append(exp2)
@@ -163,3 +165,5 @@ exp2.add_session('16-24-14', None, 'laserTrain', 'am_tuning_curve')
 exp2.add_session('16-27-14', 'q', 'bandwidth', 'bandwidth_am')
 exp2.add_session('16-46-09', 'r', 'harmonics', 'bandwidth_am')
 exp2.add_session('17-00-51', 's', 'noiseAmps', 'am_tuning_curve')
+
+exp2.maxDepth = 1175

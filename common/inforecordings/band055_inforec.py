@@ -85,6 +85,8 @@ exp0.add_session('19-00-05', 't', 'tuningCurve', 'am_tuning_curve')
 exp0.add_session('19-08-18', 'u', 'AM', 'am_tuning_curve')
 #looks like same cells as previous site
 
+exp0.maxDepth = 1425
+
 
 exp1 = celldatabase.Experiment(subject, '2018-03-15', 'right_AC', info=['middleDiD','TT1ant','soundleft'])
 experiments.append(exp1)
@@ -159,6 +161,8 @@ exp1.add_session('18-34-54', 'n', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('18-40-40', 'o', 'AM', 'am_tuning_curve')
 exp1.add_session('18-48-05', 'p', 'laserBandwidth', 'bandwidth_am')
 exp1.add_session('19-13-41', 'q', 'noiseAmps', 'am_tuning_curve')
+
+exp1.maxDepth = 1500
 
 
 exp2 = celldatabase.Experiment(subject, '2018-03-16', 'right_AC', info=['lateralDiI','TT1ant','soundleft'])
@@ -235,6 +239,8 @@ exp2.add_session('18-03-58', 'ae', 'laserBandwidth', 'bandwidth_am')
 exp2.add_session('18-28-24', 'af', 'laserBandwidth', 'bandwidth_am')
 exp2.add_session('18-52-21', 'ag', 'noiseAmps', 'am_tuning_curve')
 
+exp2.maxDepth = 1600
+
 
 exp3 = celldatabase.Experiment(subject, '2018-03-20', 'left_AC', info=['lateralDiO','TT1ant','soundright'])
 experiments.append(exp3)
@@ -294,6 +300,8 @@ exp3.add_session('15-50-07', 'w', 'laserBandwidth', 'bandwidth_am')
 exp3.add_session('16-17-52', 'x', 'laserBandwidth', 'bandwidth_am')
 exp3.add_session('16-41-55', 'y', 'noiseAmps', 'am_tuning_curve')
 
+exp3.maxDepth = 1300
+
 
 exp4 = celldatabase.Experiment(subject, '2018-03-21', 'left_AC', info=['middleDiD','TT1ant','soundright'])
 experiments.append(exp4)
@@ -308,18 +316,18 @@ exp4.laserCalibration = {
     '10.0':8.0
 }
 
-exp4.add_site(950, tetrodes=[1,2,8])
-exp4.add_session('10-17-19', None, 'noisebursts', 'am_tuning_curve')
-
-exp4.add_site(1000, tetrodes=[1,2,8])
-exp4.add_session('10-29-09', None, 'noisebursts', 'am_tuning_curve')
-
-exp4.add_site(1050, tetrodes=[1,2,7,8])
-exp4.add_session('10-35-39', None, 'noisebursts', 'am_tuning_curve')
-
-exp4.add_site(1100, tetrodes=[1,2,7,8])
-exp4.add_session('10-40-39', None, 'noisebursts', 'am_tuning_curve')
-exp4.add_session('10-41-39', None, 'lasernoisebursts', 'bandwidth_am')
+# exp4.add_site(950, tetrodes=[1,2,8])
+# exp4.add_session('10-17-19', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp4.add_site(1000, tetrodes=[1,2,8])
+# exp4.add_session('10-29-09', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp4.add_site(1050, tetrodes=[1,2,7,8])
+# exp4.add_session('10-35-39', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp4.add_site(1100, tetrodes=[1,2,7,8])
+# exp4.add_session('10-40-39', None, 'noisebursts', 'am_tuning_curve')
+# exp4.add_session('10-41-39', None, 'lasernoisebursts', 'bandwidth_am')
 
 exp4.add_site(1150, tetrodes=[1,2,7,8])
 exp4.add_session('10-49-28', None, 'noisebursts', 'am_tuning_curve')
@@ -361,6 +369,8 @@ exp4.add_session('15-03-31', 'r', 'AM', 'am_tuning_curve')
 exp4.add_session('15-10-27', 's', 'laserBandwidth', 'bandwidth_am')
 exp4.add_session('15-34-28', 't', 'noiseAmps', 'am_tuning_curve')
 
+exp4.maxDepth = 1550
+
 
 exp5 = celldatabase.Experiment(subject, '2018-03-22', 'left_AC', info=['medialDiO','TT1ant','soundright'])
 experiments.append(exp5)
@@ -376,18 +386,18 @@ exp5.laserCalibration = {
     '10.0':4.5
 }
 
-exp5.add_site(1300, tetrodes=[2,8])
-exp5.add_session('12-05-51', None, 'noisebursts', 'am_tuning_curve')
-
-exp5.add_site(1350, tetrodes=[2,4,8])
-exp5.add_session('12-12-38', None, 'noisebursts', 'am_tuning_curve')
+# exp5.add_site(1300, tetrodes=[2,8])
+# exp5.add_session('12-05-51', None, 'noisebursts', 'am_tuning_curve')
+# 
+# exp5.add_site(1350, tetrodes=[2,4,8])
+# exp5.add_session('12-12-38', None, 'noisebursts', 'am_tuning_curve')
 
 exp5.add_site(1400, tetrodes=[2,4,6,8])
 exp5.add_session('12-17-54', None, 'noisebursts', 'am_tuning_curve')
 exp5.add_session('12-18-59', None, 'lasernoisebursts', 'bandwidth_am')
 exp5.add_session('12-20-06', 'a', 'tuningCurve', 'am_tuning_curve')
 exp5.add_session('12-25-03', 'b', 'AM', 'am_tuning_curve')
-exp5.add_session('12-32-02', 'c', 'laserBandwidth', 'bandwidth_am')
+exp5.add_session('12-32-02', 'c', 'laserBandwidthControl', 'bandwidth_am')
 exp5.add_session('13-22-58', 'd', 'noiseAmps', 'am_tuning_curve')
 
 exp5.add_site(1500, tetrodes=[1,2,3,4,6,8])
@@ -395,7 +405,7 @@ exp5.add_session('13-41-27', None, 'noisebursts', 'am_tuning_curve')
 exp5.add_session('13-42-32', None, 'lasernoisebursts', 'bandwidth_am')
 exp5.add_session('13-43-51', 'e', 'tuningCurve', 'am_tuning_curve')
 exp5.add_session('13-48-45', 'f', 'AM', 'am_tuning_curve')
-exp5.add_session('13-56-33', 'g', 'laserBandwidth', 'bandwidth_am')
+exp5.add_session('13-56-33', 'g', 'laserBandwidthControl', 'bandwidth_am')
 exp5.add_session('14-22-31', 'h', 'noiseAmps', 'am_tuning_curve')
 
 exp5.add_site(1600, tetrodes=[1,2,3,4,6,8])
@@ -403,5 +413,7 @@ exp5.add_session('14-36-17', None, 'noisebursts', 'am_tuning_curve')
 exp5.add_session('14-37-37', None, 'lasernoisebursts', 'bandwidth_am')
 exp5.add_session('14-38-47', 'i', 'tuningCurve', 'am_tuning_curve')
 exp5.add_session('14-43-56', 'j', 'AM', 'am_tuning_curve')
-exp5.add_session('14-52-15', 'k', 'laserBandwidth', 'bandwidth_am')
+exp5.add_session('14-52-15', 'k', 'laserBandwidthControl', 'bandwidth_am')
 exp5.add_session('15-16-27', 'l', 'noiseAmps', 'am_tuning_curve')
+
+exp5.maxDepth = 1600

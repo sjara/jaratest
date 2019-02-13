@@ -266,5 +266,5 @@ exp4.add_session('16-35-04', 'n', 'noiseAmps', 'am_tuning_curve')
 # exp4.add_session('17-15-39', None, 'noisebursts', 'am_tuning_curve')#This is the actual nosieburst for this site
 # #Both on- and off-set response to sound
 # exp4.add_session('17-18-13', None, 'lasernoisebursts', 'bandwidth_am') #No notable laser responses on plausible cells. Is that possible?
-#
-# exp4.maxDepth = 1300
+
+exp4.maxDepth = 1300

@@ -6,7 +6,7 @@ reload(celldb)
 subject = 'band003'
 experiments = []
 
-exp0 = celldb.Experiment(subject, '2016-08-18', 'left_AC', info=['lateralDiO','TT1ant','sound_left']])
+exp0 = celldb.Experiment(subject, '2016-08-18', 'left_AC', info=['lateralDiO','TT1ant','sound_left'])
 experiments.append(exp0)
 
 exp0.add_site(830, tetrodes = [2])
@@ -51,6 +51,8 @@ exp0.add_session('15-55-47', 's', 'tuningCurve', 'am_tuning_curve')
 exp0.add_session('16-06-21', 't', 'AM', 'am_tuning_curve')
 exp0.add_session('16-16-47', 'u', 'bandwidth' , 'bandwidth_am')
 
+exp0.maxDepth = 1150
+
 
 exp1 = celldb.Experiment(subject, '2016-08-19', 'left_AC', info=['centerDiI','TT1ant','sound_left'])
 experiments.append(exp1)
@@ -84,6 +86,8 @@ exp1.add_session('11-26-56', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('11-29-14', 'j', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('11-39-54', 'k', 'AM', 'am_tuning_curve')
 exp1.add_session('11-48-58', 'l', 'bandwidth', 'bandwidth_am')
+
+exp1.maxDepth = 1110
 
 
 exp2 = celldb.Experiment(subject, '2016-08-21', 'left_AC', info=['medialDiD','TT1ant','sound_left'])
@@ -134,6 +138,8 @@ exp2.add_session('13-53-00', 'm', 'tuningCurve', 'am_tuning_curve')
 exp2.add_session('14-03-38', 'n', 'AM', 'am_tuning_curve')
 exp2.add_session('14-12-19', 'o', 'bandwidth', 'bandwidth_am')
 
+exp2.maxDepth = 1310
+
 
 exp3 = celldb.Experiment(subject, '2016-08-22', 'right_AC', info=['unknown','TT1ant','sound_left'])
 experiments.append(exp3)
@@ -173,6 +179,8 @@ exp3.add_session('13-04-13', None, 'noisebursts', 'am_tuning_curve')
 exp3.add_session('13-06-22', 'm', 'tuningCurve', 'am_tuning_curve')
 exp3.add_session('13-17-09', 'n', 'AM', 'am_tuning_curve')
 exp3.add_session('13-25-18', 'o', 'bandwidth', 'bandwidth_am')
+
+exp3.maxDepth = 1120
 
 
 exp4 = celldb.Experiment(subject, '2016-08-23', 'right_AC', info=['unknown','TT1ant','sound_left'])
@@ -214,6 +222,8 @@ exp4.add_session('13-38-29', 'n', 'bandwidth', 'bandwidth_am')
 # exp4.add_session('14-04-45', 'o', 'tuningCurve', 'am_tuning_curve')
 # exp4.add_session('14-15-23', 'p', 'AM', 'am_tuning_curve')
 # #exp4.add_session('14-23-41', None, 'bandwidth', 'bandwidth_am')
+
+exp4.maxDepth = 1120
 
 
 exp5 = celldb.Experiment(subject, '2016-08-24', 'right_AC', info=['unknown','TT1ant','sound_left'])

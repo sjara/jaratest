@@ -121,6 +121,8 @@ exp0.add_session('15-05-39', 'e', 'noiseAmps', 'am_tuning_curve')
 # # lost laser responsive cell AGAIN
 # # I give up
 
+exp0.maxDepth = 1360
+
 
 exp1 = celldatabase.Experiment(subject, '2017-10-25', 'right_AC', info=['middleDiD','TT1ant','sound_left'])
 experiments.append(exp1)
@@ -221,6 +223,8 @@ exp1.add_session('17-31-37', 'c', 'bandwidth', 'bandwidth_am')
 exp1.add_session('17-50-56', 'd', 'harmonics', 'bandwidth_am')
 exp1.add_session('18-09-24', 'e', 'noiseAmps', 'am_tuning_curve')
 
+exp1.maxDepth = 1330
+
 
 exp2 = celldatabase.Experiment(subject, '2017-10-26', 'right_AC', info=['lateralDiI','TT1ant','sound_left'])
 experiments.append(exp2)
@@ -306,6 +310,8 @@ exp2.add_session('14-33-38', 'j', 'noiseAmps', 'am_tuning_curve')
 # exp2.add_site(1220, tetrodes=[1,2,4,6,8])
 # exp2.add_session('15-53-35', None, 'laserPulse', 'am_tuning_curve')
 
+exp2.maxDepth = 1220
+
 
 exp3 = celldatabase.Experiment(subject, '2017-10-31', 'left_AC', info=['mediallDiI','TT1ant','sound_right'])
 experiments.append(exp3)
@@ -384,6 +390,8 @@ exp3.add_session('16-44-43', 'o', 'noiseAmps', 'am_tuning_curve')
 # exp3.add_session('17-08-44', 'p', 'tuningCurve', 'am_tuning_curve')
 # exp3.add_session('17-15-21', None, 'noisebursts', 'am_tuning_curve')
 # # amazing SOM cell completely unresponsive to sound...
+
+exp3.maxDepth = 1170
 
 
 exp4 = celldatabase.Experiment(subject, '2017-11-02', 'left_AC', info=['middleDiD','TT1ant','sound_right'])
@@ -491,6 +499,8 @@ exp4.add_session('16-20-57', 'o', 'bandwidth', 'bandwidth_am')
 exp4.add_session('16-40-18', 'p', 'harmonics', 'bandwidth_am')
 exp4.add_session('16-57-03', 'q', 'noiseAmps', 'am_tuning_curve')
 
+exp4.maxDepth = 1360
+
 
 exp5 = celldatabase.Experiment(subject, '2017-11-03', 'left_AC', info=['lateralDiI','TT1ant','sound_right'])
 experiments.append(exp5)
@@ -566,3 +576,5 @@ exp5.add_session('15-37-54', None, 'laserTrain', 'am_tuning_curve')
 exp5.add_session('15-40-23', 'h', 'bandwidth', 'bandwidth_am')
 exp5.add_session('15-59-25', 'i', 'harmonics', 'bandwidth_am')
 exp5.add_session('16-11-20', 'j', 'noiseAmps', 'am_tuning_curve')
+
+exp5.maxDepth = 1260
