@@ -24,7 +24,7 @@ R2CUTOFF = 0.1
 OCTAVESCUTOFF = 0.3
 
 
-def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices = True, dbFilename = 'photoidentification_cells.h5'):
+def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices = True, filename = 'photoidentification_cells.h5'):
     '''
     This function takes as argument a pandas DataFrame and adds new columns.
     If you need to pass a path to a database instead, uncomment first three lines in photoIDdatabase to allow the function to take a path as an argument.
@@ -429,6 +429,7 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             
     if len(filename)!=0:        
         celldatabase.save_hdf(db, filename)
+        print filename + " saved"
     
     return db
 

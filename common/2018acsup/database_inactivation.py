@@ -409,6 +409,7 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
     
     if len(filename)!=0:        
         celldatabase.save_hdf(db, filename)
+        print filename + " saved"
         
     return db
 
