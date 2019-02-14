@@ -24,13 +24,13 @@ R2CUTOFF = 0.1
 OCTAVESCUTOFF = 0.3
 
 
-def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices = True, filename = 'photoidentification_cells.h5'):
+def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices = True, dbFilename = 'photoidentification_cells.h5'):
     '''
     This function takes as argument a pandas DataFrame and adds new columns.
     If you need to pass a path to a database instead, uncomment first three lines in photoIDdatabase to allow the function to take a path as an argument.
     
     Columns added are split into two groups: the basic stats computed for every cluster, and the more complex
-    ones computed only for cells that pass certain criteria based on these basic stats.
+    ones computed only for cells that pass certain criteria based on these basic stats and additional criteria based on cell quality.
     
     Either can be chosen to be run, the final database is saved regardless.
     
@@ -183,9 +183,9 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
                 laserEphysData, noBehav = cellObj.load('laserPulse')
             except IndexError:
                 print "No laser pulse session for this cell"
-                testStatistic = None
-                pVal = None
-                changeFR = None
+                testStatistic = np.nan
+                pVal = np.nan
+                changeFR = np.nan
             else:
                 testStatistic, pVal, changeFR = funcs.laser_response(laserEphysData)
             laserTestStatistic[indRow] = testStatistic
@@ -428,7 +428,6 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             db.at[dbIndex, 'fitSustainedPrefBandwidthnoZero'] = prefBWNoZero
             
     if len(filename)!=0:        
-        dbFilename = os.path.join(settings.DATABASE_PATH,filename)
         celldatabase.save_hdf(db, dbFilename)
 
 

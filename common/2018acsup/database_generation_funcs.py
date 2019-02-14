@@ -18,7 +18,8 @@ from scipy import stats
 AVERAGE_JITTER = {'bandwidth':0.0093,
                   'harmonics':0.0094,
                   'tuningCurve':0.0095,
-                  'AM':0.0091}
+                  'AM':0.0091,
+                  'noiseAmps': 0.0091}
 
 def get_sound_onset_times(ephysData, sessionType):
     '''Corrects onset times using estimated average jitter for data collected before installation of sound detector.
@@ -46,6 +47,7 @@ def laser_response(ephysData, baseRange = [-0.05,-0.04], responseRange = [0.0, 0
     Outputs:
         testStatistic: U test statistic of ranksums test between baseline and response
         pVal: p-value of ranksums test between baseline and response
+        laserChangeFR: change in firing rate from baseline to response
     '''
     fullTimeRange = [baseRange[0], responseRange[1]]
     eventOnsetTimes = ephysData['events']['laserOn']
@@ -62,7 +64,8 @@ def laser_response(ephysData, baseRange = [-0.05,-0.04], responseRange = [0.0, 0
                                                                   indexLimitsEachTrial,
                                                                   responseRange)
     [testStatistic, pVal] = stats.ranksums(laserSpikeCountMat, baseSpikeCountMat)
-    return testStatistic, pVal
+    laserChangeFR = np.mean(laserSpikeCountMat-baseSpikeCountMat)
+    return testStatistic, pVal, laserChangeFR
 
 def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond, timeRange=[0.0,1.0], baseRange=[-1.1,-0.1]):
     '''Determines if there is any combination of parameters that yields a change in firing rate.
@@ -155,8 +158,6 @@ def gaussian_tuning_fit(stimArray, responseArray):
 def gaussian(x, mu, amp, sigma, offset):
     return offset+amp*np.exp(-((x-mu)/sigma)**2)
 
-# determine distance between cell's pref frequency and frequency presented during bandwidth session
-# also determines index of bandwidth session with center frequency closest to pref freq if multiple sessions were done
 def best_index(cellObj, bestFreq, behavType = 'bandwidth'):
     '''Determines distance (in octaves) between cell's preferred frequency and centre frequency used during bandiwdth session.
     Also determines index of bandwidth session with centre frequency closes to preferred frequency if multiple bandwidth session were done.

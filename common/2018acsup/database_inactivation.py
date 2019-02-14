@@ -31,7 +31,7 @@ reload(fitfuncs)
 import pdb
 
 R2CUTOFF = 0.1
-OCTAVESCUTOFF = 0.3
+OCTAVESCUTOFF = 0.5
 
 
 
@@ -59,19 +59,17 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
             cellObj = ephyscore.Cell(dbRow)
             print "Now processing", dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster']
             
-            # --- Determine sound responsiveness during bandwidth sessions ---
-            try:
-                bandEphysData, bandBehavData = cellObj.load('laserBandwidth')
-            except IndexError:
-                print "No bandwidth session for this cell"
-                testStatistic = np.nan
-                pVal = np.nan
-                onsetTestStatistic = np.nan
-                onsetpVal = np.nan
-                sustainedTestStatistic = np.nan
-                sustainedpVal = np.nan
-                #pdb.set_trace()
-            else:
+            # --- Determine sound responsiveness during bandwidth sessions and calculate baseline firing rates with and without laser---
+            #done in a kind of stupid way because regular and control sessions are handled the same way
+            if any(session in dbRow['sessionType'] for session in ['laserBandwidth', 'laserBandwidthControl']):
+                if 'laserBandwidth' in dbRow['sessionType']:
+                    bandEphysData, bandBehavData = cellObj.load('laserBandwidth')
+                    behavSession = 'laserBandwidth'
+                    db.at[dbIndex, 'controlSession'] = 0
+                elif 'laserBandwidthControl' in dbRow['sessionType']:
+                    bandEphysData, bandBehavData = cellObj.load('laserBandwidthControl')
+                    behavSession = 'laserBandwidthControl'
+                    db.at[dbIndex, 'controlSession'] = 1
                 bandEventOnsetTimes = funcs.get_sound_onset_times(bandEphysData, 'bandwidth')
                 bandSpikeTimestamps = bandEphysData['spikeTimes']
                 bandEachTrial = bandBehavData['currentBand']
@@ -87,6 +85,24 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
                 pVal *= len(numBands) #correction for multiple comparisons
                 onsetpVal *= len(numBands)
                 sustainedpVal *= len(numBands)
+                #pdb.set_trace()
+                
+                #find baselines with and without laser
+                baselineRange = [-0.05, 0.0]
+                baselineRates, baselineSEMs = funcs.inactivated_cells_baselines(bandSpikeTimestamps, bandEventOnsetTimes, secondSort, baselineRange)
+                db.at[dbIndex, 'baselineFRnoLaser'] = baselineRates[0]
+                db.at[dbIndex, 'baselineFRLaser'] = baselineRates[1]
+                db.at[dbIndex, 'baselineFRnoLaserSEM'] = baselineSEMs[0]
+                db.at[dbIndex, 'baselineFRLaserSEM'] = baselineSEMs[1]
+                db.at[dbIndex, 'baselineChangeFR'] = baselineRates[1] - baselineRates[0]
+            else:
+                print "No bandwidth session for this cell"
+                testStatistic = np.nan
+                pVal = np.nan
+                onsetTestStatistic = np.nan
+                onsetpVal = np.nan
+                sustainedTestStatistic = np.nan
+                sustainedpVal = np.nan
                 #pdb.set_trace()
             
             soundResponseTestStatistic[indRow] = testStatistic
@@ -131,7 +147,7 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
                 freqFit, thisRsquared = funcs.gaussian_tuning_fit(np.log2(freqsThisIntensity), tuningSpikeRates)
                 if freqFit is not None:
                     bestFreq = 2**freqFit[0]
-                    bandIndex, octavesFromBest = funcs.best_index(cellObj, bestFreq, 'laserBandwidth')
+                    bandIndex, octavesFromBest = funcs.best_index(cellObj, bestFreq, behavSession)
                 else:
                     freqFit = np.full(4, np.nan)
                     bestFreq = np.nan
@@ -170,7 +186,7 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
             cell = ephyscore.Cell(dbRow)
             
             bandEphysData, bandBehavData = cell.load_by_index(int(dbRow['bestBandSession']))
-            bandEventOnsetTimes = funcs.get_sound_onset_times(bandEphysData, 'laserBandwidth')
+            bandEventOnsetTimes = funcs.get_sound_onset_times(bandEphysData, 'bandwidth')
             bandSpikeTimestamps = bandEphysData['spikeTimes']
             
             bandEachTrial = bandBehavData['currentBand']
@@ -208,14 +224,6 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
             db.at[dbIndex, 'sustainedFacilitationIndexNoLaser'] = sustainedFacInds[0]
             db.at[dbIndex, 'sustainedFacilitationpValNoLaser'] = sustainedFacIndpVals[0]
             db.at[dbIndex, 'sustainedPrefBandwidthNoLaser'] = bandEachTrial[sustainedPeakInds[0]]
-            
-            #find baselines with and without laser
-            baselineRange = [-0.05, 0.0]
-            baselineRates, baselineSEMs = funcs.inactivated_cells_baselines(bandSpikeTimestamps, bandEventOnsetTimes, secondSort, baselineRange)
-            db.at[dbIndex, 'baselineFRnoLaser'] = baselineRates[0]
-            db.at[dbIndex, 'baselineFRLaser'] = baselineRates[1]
-            db.at[dbIndex, 'baselineFRnoLaserSEM'] = baselineSEMs[0]
-            db.at[dbIndex, 'baselineFRLaserSEM'] = baselineSEMs[1]
             
             #no laser fit
             sustainedResponseNoLaser = sustainedSpikeArray[:,0]
@@ -265,7 +273,7 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
             db.at[dbIndex, 'fitSustainedPrefBandwidthLaser'] = prefBWLaser
             
             meanLaserDiff = np.mean(sustainedResponseLaser-sustainedResponseNoLaser)
-            db.at[dbIndex, 'laserChangeFR'] = meanLaserDiff
+            db.at[dbIndex, 'laserChangeResponse'] = meanLaserDiff
             
             laserDiff = sustainedResponseLaser-sustainedResponseNoLaser
             peakInd = np.argmax(sustainedResponseNoLaser)
@@ -282,7 +290,124 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
             db.at[dbIndex, 'fitPeakChangeFR'] = laserDiffModel[peakIndModel]
             db.at[dbIndex, 'fitWNChangeFR'] = laserDiffModel[-1]
             
-    dbFilename = os.path.join(settings.DATABASE_PATH,filename)
-    celldatabase.save_hdf(db, dbFilename)
+            #also calculating fits and suppression with pure tone being 0 bw condition
+            toneSustainedSupInds, toneSustainedSupIndpVals, toneSustainedFacInds, toneSustainedFacIndpVals, toneSustainedPeakInds, toneSustainedSpikeArray = funcs.bandwidth_suppression_from_peak(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.2,1.0], baseRange=[-0.05,0.0], zeroBWBaseline=False)
+            db.at[dbIndex, 'sustainedSuppressionIndexNoLaserPureTone'] = toneSustainedSupInds[0]
+            db.at[dbIndex, 'sustainedSuppressionpValNoLaserPureTone'] = toneSustainedSupIndpVals[0]
+            db.at[dbIndex, 'sustainedFacilitationIndexNoLaserPureTone'] = toneSustainedFacInds[0]
+            db.at[dbIndex, 'sustainedFacilitationpValNoLaserPureTone'] = toneSustainedFacIndpVals[0]
+            db.at[dbIndex, 'sustainedPrefBandwidthNoLaserPureTone'] = bandEachTrial[toneSustainedPeakInds[0]]
+            
+            db.at[dbIndex, 'sustainedSuppressionIndexLaserPureTone'] = toneSustainedSupInds[-1]
+            db.at[dbIndex, 'sustainedSuppressionpValLaserPureTone'] = toneSustainedSupIndpVals[-1]
+            db.at[dbIndex, 'sustainedFacilitationIndexLaserPureTone'] = toneSustainedFacInds[-1]
+            db.at[dbIndex, 'sustainedFacilitationpValLaserPureTone'] = toneSustainedFacIndpVals[-1]
+            db.at[dbIndex, 'sustainedPrefBandwidthLaserPureTone'] = bandEachTrial[toneSustainedPeakInds[-1]]
+            
+            toneSustainedResponseNoLaser = toneSustainedSpikeArray[:,0]
+            
+            toneFitParamsNoLaser, toneR2 = fitfuncs.diff_of_gauss_fit(bandsForFit, toneSustainedResponseNoLaser, mFixed=mFixed)
+            
+            #fit params
+            db.at[dbIndex, 'R0PureToneNoLaser'] = toneFitParamsNoLaser[0]
+            db.at[dbIndex, 'RDPureToneNoLaser'] = toneFitParamsNoLaser[3]
+            db.at[dbIndex, 'RSPureToneNoLaser'] = toneFitParamsNoLaser[4]
+            db.at[dbIndex, 'mPureToneNoLaser'] = mFixed
+            db.at[dbIndex, 'sigmaDPureToneNoLaser'] = toneFitParamsNoLaser[1]
+            db.at[dbIndex, 'sigmaSPureToneNoLaser'] = toneFitParamsNoLaser[2]
+            db.at[dbIndex, 'bandwidthTuningR2PureToneNoLaser'] = toneR2
+            
+            allFitParamsToneNoLaser = [mFixed]
+            allFitParamsToneNoLaser.extend(toneFitParamsNoLaser)
+            suppIndTone, prefBWTone = fitfuncs.extract_stats_from_fit(allFitParamsToneNoLaser, testBands)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndexPureToneNoLaser'] = suppIndTone
+            db.at[dbIndex, 'fitSustainedPrefBandwidthPureToneNoLaser'] = prefBWTone
+            
+            
+            toneSustainedResponseLaser = toneSustainedSpikeArray[:,1]
+            
+            toneFitParamsLaser, toneR2Laser = fitfuncs.diff_of_gauss_fit(bandsForFit, toneSustainedResponseLaser, mFixed=mFixed)
+            
+            #fit params
+            db.at[dbIndex, 'R0PureToneLaser'] = toneFitParamsLaser[0]
+            db.at[dbIndex, 'RDPureToneLaser'] = toneFitParamsLaser[3]
+            db.at[dbIndex, 'RSPureToneLaser'] = toneFitParamsLaser[4]
+            db.at[dbIndex, 'mPureToneLaser'] = mFixed
+            db.at[dbIndex, 'sigmaDPureToneLaser'] = toneFitParamsLaser[1]
+            db.at[dbIndex, 'sigmaSPureToneLaser'] = toneFitParamsLaser[2]
+            db.at[dbIndex, 'bandwidthTuningR2PureToneLaser'] = toneR2Laser
+            
+            allFitParamsToneLaser = [mFixed]
+            allFitParamsToneLaser.extend(toneFitParamsLaser)
+            suppIndToneLaser, prefBWToneLaser = fitfuncs.extract_stats_from_fit(allFitParamsToneLaser, testBands)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndexPureToneLaser'] = suppIndToneLaser
+            db.at[dbIndex, 'fitSustainedPrefBandwidthPureToneLaser'] = prefBWToneLaser
+            
+            testRespsNoLaser = fitfuncs.diff_gauss_form(testBands, *allFitParamsToneNoLaser)
+            testRespsLaser = fitfuncs.diff_gauss_form(testBands, *allFitParamsToneLaser)
+    
+            laserDiffModel = testRespsLaser-testRespsNoLaser
+            peakIndModel = np.argmax(testRespsNoLaser)
+            
+            db.at[dbIndex, 'fitPeakChangeFRPureTone'] = laserDiffModel[peakIndModel]
+            db.at[dbIndex, 'fitWNChangeFRPureTone'] = laserDiffModel[-1]
+            
+            #also calculating fits and suppression with nothing being fit for bw 0
+            noZeroSustainedResponseNoLaser = sustainedSpikeArray[1:,0]
+            bandsForFitNoZero = bandsForFit[1:]
+            
+            noZeroFitParamsNoLaser, noZeroR2 = fitfuncs.diff_of_gauss_fit(bandsForFitNoZero, noZeroSustainedResponseNoLaser, mFixed=mFixed)
+            
+            #fit params
+            db.at[dbIndex, 'R0noZeroNoLaser'] = noZeroFitParamsNoLaser[0]
+            db.at[dbIndex, 'RDnoZeroNoLaser'] = noZeroFitParamsNoLaser[3]
+            db.at[dbIndex, 'RSnoZeroNoLaser'] = noZeroFitParamsNoLaser[4]
+            db.at[dbIndex, 'mnoZeroNoLaser'] = mFixed
+            db.at[dbIndex, 'sigmaDnoZeroNoLaser'] = noZeroFitParamsNoLaser[1]
+            db.at[dbIndex, 'sigmaSnoZeroNoLaser'] = noZeroFitParamsNoLaser[2]
+            db.at[dbIndex, 'bandwidthTuningR2noZeroNoLaser'] = noZeroR2
+            
+            allFitParamsNoZero = [mFixed]
+            allFitParamsNoZero.extend(noZeroFitParamsNoLaser)
+            testBandsNoZero = np.linspace(bandsForFitNoZero[0],bandsForFitNoZero[-1],500)
+            suppIndNoZero, prefBWNoZero = fitfuncs.extract_stats_from_fit(allFitParamsNoZero, testBandsNoZero)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndexNoZeroNoLaser'] = suppIndNoZero
+            db.at[dbIndex, 'fitSustainedPrefBandwidthNoZeroNoLaser'] = prefBWNoZero
+            
+            noZeroSustainedResponseLaser = sustainedSpikeArray[1:,1]
+            bandsForFitNoZero = bandsForFit[1:]
+            
+            noZeroFitParamsLaser, noZeroR2Laser = fitfuncs.diff_of_gauss_fit(bandsForFitNoZero, noZeroSustainedResponseLaser, mFixed=mFixed)
+            
+            #fit params
+            db.at[dbIndex, 'R0noZeroLaser'] = noZeroFitParamsLaser[0]
+            db.at[dbIndex, 'RDnoZeroLaser'] = noZeroFitParamsLaser[3]
+            db.at[dbIndex, 'RSnoZeroLaser'] = noZeroFitParamsLaser[4]
+            db.at[dbIndex, 'mnoZeroLaser'] = mFixed
+            db.at[dbIndex, 'sigmaDnoZeroLaser'] = noZeroFitParamsLaser[1]
+            db.at[dbIndex, 'sigmaSnoZeroLaser'] = noZeroFitParamsLaser[2]
+            db.at[dbIndex, 'bandwidthTuningR2noZeroLaser'] = noZeroR2Laser
+            
+            allFitParamsNoZeroLaser = [mFixed]
+            allFitParamsNoZeroLaser.extend(noZeroFitParamsLaser)
+            suppIndNoZeroLaser, prefBWNoZeroLaser = fitfuncs.extract_stats_from_fit(allFitParamsNoZeroLaser, testBandsNoZero)
+            
+            db.at[dbIndex, 'fitSustainedSuppressionIndexNoZeroLaser'] = suppIndNoZeroLaser
+            db.at[dbIndex, 'fitSustainedPrefBandwidthNoZeroLaser'] = prefBWNoZeroLaser
+            
+            testRespsNoLaser = fitfuncs.diff_gauss_form(testBandsNoZero, *allFitParamsNoZero)
+            testRespsLaser = fitfuncs.diff_gauss_form(testBandsNoZero, *allFitParamsNoZeroLaser)
+    
+            laserDiffModel = testRespsLaser-testRespsNoLaser
+            peakIndModel = np.argmax(testRespsNoLaser)
+            
+            db.at[dbIndex, 'fitPeakChangeFRNoZero'] = laserDiffModel[peakIndModel]
+            db.at[dbIndex, 'fitWNChangeFRNoZero'] = laserDiffModel[-1]
+    
+    if len(filename)!=0:        
+        celldatabase.save_hdf(db, dbFilename)
 
 
