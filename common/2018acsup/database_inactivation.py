@@ -408,6 +408,8 @@ def inactivation_database(db, baseStats = False, computeIndices = True, filename
             db.at[dbIndex, 'fitWNChangeFRNoZero'] = laserDiffModel[-1]
     
     if len(filename)!=0:        
-        celldatabase.save_hdf(db, dbFilename)
+        celldatabase.save_hdf(db, filename)
+        
+    return db
 
 

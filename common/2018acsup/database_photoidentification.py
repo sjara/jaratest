@@ -428,6 +428,8 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             db.at[dbIndex, 'fitSustainedPrefBandwidthnoZero'] = prefBWNoZero
             
     if len(filename)!=0:        
-        celldatabase.save_hdf(db, dbFilename)
+        celldatabase.save_hdf(db, filename)
+    
+    return db
 
 
