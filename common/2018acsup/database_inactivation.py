@@ -35,7 +35,7 @@ OCTAVESCUTOFF = 0.5
 
 
 
-def inactivation_database(db, baseStats = False, computeIndices = True, filename = 'inactivation_cells.h5'):
+def inactivation_database(db, baseStats = False, computeIndices = True, filename = ''):
     if type(db) == str:
         dbPath = os.path.join(settings.DATABASE_PATH,db)
         db = celldatabase.load_hdf(dbPath)

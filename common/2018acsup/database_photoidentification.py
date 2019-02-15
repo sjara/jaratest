@@ -24,7 +24,7 @@ R2CUTOFF = 0.1
 OCTAVESCUTOFF = 0.3
 
 
-def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices = True, filename = 'photoidentification_cells.h5'):
+def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices = True, filename = ''):
     '''
     This function takes as argument a pandas DataFrame and adds new columns.
     If you need to pass a path to a database instead, uncomment first three lines in photoIDdatabase to allow the function to take a path as an argument.
@@ -319,6 +319,13 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
         bestCells = bestCells.loc[bestCells['tuningFitR2']>R2CUTOFF]
         bestCells = bestCells.loc[bestCells['octavesFromPrefFreq']<OCTAVESCUTOFF]
         
+        #prepare arrays of NaNs for when we save arrays of data
+        bandwidthSpikeArrays = np.empty((len(db),7))
+        bandwidthSpikeArrays[:] = np.nan
+        
+        noiseAmpsSpikeArrays = np.empty((len(db),5))
+        noiseAmpsSpikeArrays[:] = np.nan
+        
         for dbIndex, dbRow in bestCells.iterrows():
             
             cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
@@ -427,6 +434,31 @@ def photoIDdatabase(db, clusterRescue=False, baseStats = False, computeIndices =
             db.at[dbIndex, 'fitSustainedSuppressionIndexnoZero'] = suppIndNoZero
             db.at[dbIndex, 'fitSustainedPrefBandwidthnoZero'] = prefBWNoZero
             
+            #save the spike array and baseline rate for each cell in case needed for future calculations
+            bandwidthSpikeArrays[dbIndex,:] = toneSustainedResponse
+            db.at[dbIndex, 'bandwidthBaselineRate'] = sustainedResponse[0]
+            
+            #calculate spike array for white noise at different amplitudes
+            try:
+                noiseEphysData, noiseBehavData = cell.load('noiseAmps')
+            except IndexError:
+                print "No noise amps session for this cell"
+            else:
+                noiseEventOnsetTimes = funcs.get_sound_onset_times(bandEphysData, 'noiseAmps')
+                noiseSpikeTimestamps = bandEphysData['spikeTimes']
+                
+                ampEachTrial = noiseBehavData['currentIntensity']
+                secondSort = noiseBehavData['numInt'] #FIXME: random parameter that's the same for every trial because the function I'm using to create the spike array requires two things to sort by
+                
+                noiseSustainedSupInds, noiseSustainedSupIndpVals, noiseSustainedFacInds, noiseSustainedFacIndpVals, noiseSustainedPeakInds, noiseSustainedSpikeArray = funcs.bandwidth_suppression_from_peak(noiseSpikeTimestamps, noiseEventOnsetTimes, ampEachTrial, secondSort, 
+                                                                                                                                                                                                             timeRange=[0.2,0.5], baseRange=[-0.5,-0.2], zeroBWBaseline=False)
+                
+                noiseAmpsSpikeArrays[dbIndex,:] = noiseSustainedSpikeArray.flatten()
+                db.at[dbIndex, 'noiseSustainedSI'] = noiseSustainedSupInds[0]
+        
+        db['bandwidthSustainedSpikeArray'] = list(bandwidthSpikeArrays)
+        db['noiseAmpSustainedSpikeArray'] = list(noiseAmpsSpikeArrays)
+           
     if len(filename)!=0:        
         celldatabase.save_hdf(db, filename)
         print filename + " saved"

@@ -143,7 +143,7 @@ def gaussian_tuning_fit(stimArray, responseArray):
         p0 = [stimArray[maxInd], responseArray[maxInd], 1.,0.]
         curveFit = curve_fit(gaussian, stimArray, responseArray, p0=p0, maxfev=10000)[0]
     except RuntimeError:
-        print "Could not fit {} curve to tuning data.".format(type)
+        print "Could not fit gaussian curve to tuning data."
         return None, None
     
     #calculate R^2 value for fit
