@@ -28,6 +28,7 @@ from matplotlib import pyplot as plt
 from jaratoolbox import extraplots
 
 PLOT_EACH_CELL = 0
+SHUFFLE_DATA = 0
 
 #evlockDataPath = os.path.join(settings.EPHYS_PATH, figparams.STUDY_NAME, 'evlock_spktimes')
 evlockDataPath = '/var/tmp/processed_data'
@@ -35,6 +36,8 @@ evlockDataPath = '/var/tmp/processed_data'
 STUDY_NAME = figparams.STUDY_NAME
 FIGNAME = 'reward_modulation_after_switch'
 figDataFile = 'summary_rewardmod_after_switch.npz'
+if SHUFFLE_DATA:
+    figDataFile = 'summary_rewardmod_after_switch_shuffled.npz'    
 figDataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 if not os.path.exists(figDataDir):
     os.mkdir(figDataDir)
@@ -49,16 +52,29 @@ brainAreas = ['rightAC','rightAStr']
 
 minBlockSize = 30  # Minimum number of trials in a block to be analyzed
 alphaLevel = 0.05
-nTrialsAroundTransition = 70
+nTrialsAroundTransition = 140
 
 goodCells = celldb.query("missingTrialsBehav==0 and keepAfterDupTest==1 and cellInTargetArea==1")
 
+modDirLow = goodCells['modDirLow_0-0.3s_center-out_removedsidein'].astype(bool)
+modDirHigh = goodCells['modDirHigh_0-0.3s_center-out_removedsidein'].astype(bool)
+modSigLow = goodCells['modSigLow_0-0.3s_center-out_removedsidein']
+modSigHigh = goodCells['modSigHigh_0-0.3s_center-out_removedsidein']
+
+
+
 choiceSelectiveCells = goodCells['movementModS_[0.0, 0.3]_removedsidein']<alphaLevel # 312 total
-encodeMovement = (goodCells['movementSelective_moredif_Mv'] | goodCells['movementSelective_samedif_MvSd']).astype(bool)
-modulatedCells = (goodCells['modSigLow_0-0.3s_center-out_removedsidein']<(alphaLevel/2)) | \
-                 (goodCells['modSigHigh_0-0.3s_center-out_removedsidein']<(alphaLevel/2)) # 107 total
+encodeMovement = (goodCells['movementSelective_moredif_Mv'] | goodCells['movementSelective_samedif_MvSd']).astype(bool) # 251
+#modulatedCells = (goodCells['modSigLow_0-0.3s_center-out_removedsidein']<(alphaLevel/2)) | \
+#                 (goodCells['modSigHigh_0-0.3s_center-out_removedsidein']<(alphaLevel/2)) # 107 total
+#modulatedCells = ( (modSigLow<(alphaLevel)) & modDirLow ) | ( (modSigHigh<(alphaLevel)) & modDirHigh )
+
+rightwardPrefer = goodCells['movementModI_[0.0, 0.3]_removedsidein']>0
+modulatedCells = ( ~rightwardPrefer & (modSigLow<(alphaLevel)) & modDirLow ) | \
+                 ( rightwardPrefer & (modSigHigh<(alphaLevel)) & modDirHigh )
+
 #cellsToAnalyze = goodCells.loc[modulatedCells]
-cellsToAnalyze = goodCells.loc[modulatedCells & encodeMovement] # 57 total
+cellsToAnalyze = goodCells.loc[modulatedCells & encodeMovement] # 47 total (when separating by choice preference)
 
 # -- Find choice side with strongest response for each cell (0:Left, 1:Right)--
 preferredChoiceRight = cellsToAnalyze['movementAveFrRight_[0.0, 0.3]_removedsidein'] > \
@@ -121,8 +137,8 @@ for brainArea in brainAreas:
             trialsThisChoice = rightward
         else:
             trialsThisChoice = leftward
-        ###relevantTrials = rightward|leftward
-        relevantTrials = trialsThisChoice
+        relevantTrials = rightward|leftward  # Use all trials with choices
+        ###relevantTrials = trialsThisChoice  # Use only trials with preferred choice
          
         # -- Find trials each block --
         bdata.find_trials_each_block()
@@ -137,8 +153,12 @@ for brainArea in brainAreas:
 
         # -- Estimate number of spikes on each trial --
         spkMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,[0,0.3])
+
         # -- Permute (to test whether effect is not random) --
-        ###spkMat = np.random.permutation(spkMat)
+        if SHUFFLE_DATA:
+            np.random.seed(1)
+            spkMat = np.random.permutation(spkMat)
+        
         # -- Estimate average spikes during each block transition --
         alignedBlocks = np.ma.masked_array(np.zeros((numBlocks-1, 2*nTrialsAroundTransition)), dtype=float, mask=True)
         firstTrialInd = nTrialsAroundTransition
@@ -158,8 +178,10 @@ for brainArea in brainAreas:
         avgSpikesInTransition = np.mean(alignedBlocks,axis=0)
 
         # -- Flip if necesssary, so all cells have transitions in the same direction --
-        avgFiringBefore = np.mean(avgSpikesInTransition[:nTrialsAroundTransition])
-        avgFiringAfter = np.mean(avgSpikesInTransition[nTrialsAroundTransition:])
+        avgFiringBefore = np.mean(avgSpikesInTransition[:nTrialsAroundTransition]) # At the transition
+        avgFiringAfter = np.mean(avgSpikesInTransition[nTrialsAroundTransition:])  # At the transition
+        #avgFiringBefore = np.mean(avgSpikesInTransition[:nTrialsAroundTransition-20]) # Far from the transition
+        #avgFiringAfter = np.mean(avgSpikesInTransition[20+nTrialsAroundTransition:])  # Far from the transition
         if avgFiringBefore<avgFiringAfter:
             avgSpikesInTransition = -avgSpikesInTransition
 
