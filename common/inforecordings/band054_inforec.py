@@ -4,7 +4,7 @@ reload(celldatabase)
 subject = 'band054'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2018-02-20', 'left_AC', info=['medialDiI','TT1ant','soundright'])
+exp0 = celldatabase.Experiment(subject, '2018-02-20', 'left_AC', info=['medialDiI','TT1ant','sound_right'])
 experiments.append(exp0)
 
 exp0.laserCalibration = {
@@ -82,7 +82,7 @@ exp0.add_session('17-30-39', 'e', 'noiseAmps', 'am_tuning_curve')
 exp0.maxDepth = 1375
 
 
-exp1 = celldatabase.Experiment(subject, '2018-02-21', 'left_AC', info=['middleDiD','TT1ant','soundright'])
+exp1 = celldatabase.Experiment(subject, '2018-02-21', 'left_AC', info=['middleDiD','TT1ant','sound_right'])
 experiments.append(exp1)
 
 exp1.laserCalibration = {
@@ -147,7 +147,7 @@ exp1.add_session('17-20-01', 'e', 'noiseAmps', 'am_tuning_curve')
 exp1.maxDepth = 1625
 
 
-exp2 = celldatabase.Experiment(subject, '2018-02-23', 'left_AC', info=['lateralDiI','TT1ant','soundright'])
+exp2 = celldatabase.Experiment(subject, '2018-02-23', 'left_AC', info=['lateralDiI','TT1ant','sound_right'])
 experiments.append(exp2)
 
 exp2.laserCalibration = {
@@ -223,18 +223,18 @@ exp2.add_session('18-08-57', 'e', 'noiseAmps', 'am_tuning_curve')
 exp2.maxDepth = 1700
 
 
-exp3 = celldatabase.Experiment(subject, '2018-02-24', 'left_AC', info=['medialDiD','TT1ant','soundright'])
-experiments.append(exp3)
-
-exp3.laserCalibration = {
-    '0.5':1.6,
-    '1.0':2.4,
-    '1.5':3.2,
-    '2.0':4.0,
-    '2.5':5.05,
-    '3.0':6.3,
-    '3.5':7.8
-}
+# exp3 = celldatabase.Experiment(subject, '2018-02-24', 'left_AC', info=['medialDiD','TT1ant','sound_right'])
+# experiments.append(exp3)
+# 
+# exp3.laserCalibration = {
+#     '0.5':1.6,
+#     '1.0':2.4,
+#     '1.5':3.2,
+#     '2.0':4.0,
+#     '2.5':5.05,
+#     '3.0':6.3,
+#     '3.5':7.8
+# }
 
 # exp3.add_site(800, tetrodes=[8])
 # exp3.add_session('11-41-07', None, 'noisebursts', 'am_tuning_curve')
@@ -296,10 +296,18 @@ exp3.laserCalibration = {
 # exp3.add_session('16-07-41', None, 'laserPulse', 'am_tuning_curve')
 
 
-exp4 = celldatabase.Experiment(subject, '2018-02-27', 'right_AC', info=['medialDiI','TT1ant','soundleft'])
-experiments.append(exp4)
-
-exp4.laserCalibration = {} #switched probe after initial insertion, using previous laser calibration for this probe
+# exp4 = celldatabase.Experiment(subject, '2018-02-27', 'right_AC', info=['medialDiI','TT1ant','sound_left'])
+# experiments.append(exp4)
+# 
+# exp4.laserCalibration = {
+#     '0.5':1.6,
+#     '1.0':2.4,
+#     '1.5':3.2,
+#     '2.0':4.0,
+#     '2.5':5.05,
+#     '3.0':6.3,
+#     '3.5':7.8
+# } #switched probe after initial insertion, using previous laser calibration for this probe
 
 # exp4.add_site(750, tetrodes=[2,3,4,6,8])
 # exp4.add_session('09-55-46', None, 'noisebursts', 'am_tuning_curve')
@@ -419,18 +427,18 @@ exp4.laserCalibration = {} #switched probe after initial insertion, using previo
 # exp4.add_session('16-51-26', None, 'noisebursts', 'am_tuning_curve')
 
 
-exp5 = celldatabase.Experiment(subject, '2018-03-01', 'right_AC', info=['medialDiD','TT1ant','soundleft'])
-experiments.append(exp5)
-
-exp5.laserCalibration = {
-    '0.5':1.55,
-    '1.0':2.2,
-    '1.5':2.9,
-    '2.0':3.7,
-    '2.5':4.65,
-    '3.0':6.0,
-    '3.5':7.45
-}
+# exp5 = celldatabase.Experiment(subject, '2018-03-01', 'right_AC', info=['medialDiD','TT1ant','sound_left'])
+# experiments.append(exp5)
+# 
+# exp5.laserCalibration = {
+#     '0.5':1.55,
+#     '1.0':2.2,
+#     '1.5':2.9,
+#     '2.0':3.7,
+#     '2.5':4.65,
+#     '3.0':6.0,
+#     '3.5':7.45
+# }
 
 # exp5.add_site(800, tetrodes=[8])
 # exp5.add_session('12-15-17', None, 'noisebursts', 'am_tuning_curve')
@@ -495,7 +503,7 @@ exp5.laserCalibration = {
 # exp5.add_session('16-12-37', None, 'laserPulse', 'am_tuning_curve')
 
 
-exp6 = celldatabase.Experiment(subject, '2018-03-02', 'right_AC', info=['middleDiI','TT1ant','soundleft'])
+exp6 = celldatabase.Experiment(subject, '2018-03-02', 'right_AC', info=['middleDiI','TT1ant','sound_left'])
 experiments.append(exp6)
 
 exp6.laserCalibration = {
@@ -572,18 +580,18 @@ exp6.add_session('16-54-11', None, 'laserTrain', 'am_tuning_curve')
 exp6.maxDepth = 1425
 
 
-exp7 = celldatabase.Experiment(subject, '2018-03-06', 'right_AC', info=['lateralDiD','TT1ant','soundleft'])
-experiments.append(exp7)
-
-exp7.laserCalibration = {
-    '0.5':1.5,
-    '1.0':2.2,
-    '1.5':2.95,
-    '2.0':3.65,
-    '2.5':4.5,
-    '3.0':5.7,
-    '3.5':6.8
-}
+# exp7 = celldatabase.Experiment(subject, '2018-03-06', 'right_AC', info=['lateralDiD','TT1ant','sound_left'])
+# experiments.append(exp7)
+# 
+# exp7.laserCalibration = {
+#     '0.5':1.5,
+#     '1.0':2.2,
+#     '1.5':2.95,
+#     '2.0':3.65,
+#     '2.5':4.5,
+#     '3.0':5.7,
+#     '3.5':6.8
+# }
 
 # exp7.add_site(1000, tetrodes=[2,4,6,8])
 # exp7.add_session('13-00-36', None, 'noisebursts', 'am_tuning_curve')

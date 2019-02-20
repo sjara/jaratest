@@ -19,14 +19,12 @@ from jaratoolbox import settings
 import database_bandwidth_tuning_fit_funcs as fitfuncs
 import figparams
 
-#dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells.h5')
-dbPath = os.path.join(settings.DATABASE_PATH,'inactivation_cells.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells.h5')
 dbase = celldatabase.load_hdf(dbPath)
 
 figName = 'figure_inhibitory_cell_inactivation'
 
-#dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
-dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, figName)
 
 # -- Example SOM cell showing difference in suppression -- #
 cellList = [{'subject' : 'band055',
@@ -156,6 +154,12 @@ for indCell in cellsToGenerate:
     suppIndNoLaser = dbRow['fitSustainedSuppressionIndexNoLaser']
     suppIndLaser = dbRow['fitSustainedSuppressionIndexLaser']
     
+    suppIndPureToneNoLaser = dbRow['fitSustainedSuppressionIndexPureToneNoLaser']
+    suppIndPureToneLaser = dbRow['fitSustainedSuppressionIndexPureToneLaser']
+    
+    suppIndNoZeroNoLaser = dbRow['fitSustainedSuppressionIndexNoZeroNoLaser']
+    suppIndNoZeroLaser = dbRow['fitSustainedSuppressionIndexNoZeroLaser']
+    
     # replace pure tone with baselines
     onsetResponseArray[0,0] = noLaserBaseline
     sustainedResponseArray[0,0] = noLaserBaseline
@@ -174,7 +178,12 @@ for indCell in cellsToGenerate:
     testRespsNoLaser = fitfuncs.diff_gauss_form(testBands, dbRow['mnoLaser'], dbRow['R0noLaser'], dbRow['sigmaDnoLaser'], dbRow['sigmaSnoLaser'], dbRow['RDnoLaser'], dbRow['RSnoLaser'])
     testRespsLaser = fitfuncs.diff_gauss_form(testBands, dbRow['mlaser'], dbRow['R0laser'], dbRow['sigmaDlaser'], dbRow['sigmaSlaser'], dbRow['RDlaser'], dbRow['RSlaser'])
     
+    testRespsPureToneNoLaser = fitfuncs.diff_gauss_form(testBands, dbRow['mPureToneNoLaser'], dbRow['R0PureToneNoLaser'], dbRow['sigmaDPureToneNoLaser'], dbRow['sigmaSPureToneNoLaser'], dbRow['RDPureToneNoLaser'], dbRow['RSPureToneNoLaser'])
+    testRespsPureToneLaser = fitfuncs.diff_gauss_form(testBands, dbRow['mPureToneLaser'], dbRow['R0PureToneLaser'], dbRow['sigmaDPureToneLaser'], dbRow['sigmaSPureToneLaser'], dbRow['RDPureToneLaser'], dbRow['RSPureToneLaser'])
     
+    testBandsNoZero = np.linspace(numBands[1],numBands[-1],500)
+    testRespsNoZeroNoLaser = fitfuncs.diff_gauss_form(testBandsNoZero, dbRow['mnoZeroNoLaser'], dbRow['R0noZeroNoLaser'], dbRow['sigmaDnoZeroNoLaser'], dbRow['sigmaSnoZeroNoLaser'], dbRow['RDnoZeroNoLaser'], dbRow['RSnoZeroNoLaser'])
+    testRespsNoZeroLaser = fitfuncs.diff_gauss_form(testBandsNoZero, dbRow['mnoZeroLaser'], dbRow['R0noZeroLaser'], dbRow['sigmaDnoZeroLaser'], dbRow['sigmaSnoZeroLaser'], dbRow['RDnoZeroLaser'], dbRow['RSnoZeroLaser'])
     
     outputFile = 'example_{}_inactivation_{}_{}_{}um_T{}_c{}.npz'.format(cellTypes[indCell], dbRow['subject'], dbRow['date'],
                                                                              int(dbRow['depth']),dbRow['tetrode'],dbRow['cluster'])
@@ -190,5 +199,8 @@ for indCell in cellsToGenerate:
              trialsEachCond=bandTrialsEachCond,
              onsetTimeRange=onsetTimeRange, sustainedTimeRange=sustainedTimeRange,
              fitBands = testBands, fitResponseNoLaser = testRespsNoLaser, fitResponseLaser = testRespsLaser,
-             suppIndNoLaser = suppIndNoLaser, suppIndLaser = suppIndLaser)
+             fitResponsePureToneNoLaser = testRespsPureToneNoLaser, fitResponsePureToneLaser = testRespsPureToneLaser,
+             fitBandsNoZero = testBandsNoZero, fitResponseNoZeroNoLaser = testRespsNoZeroNoLaser, fitResponseNoZeroLaser = testRespsNoZeroLaser,
+             suppIndNoLaser = suppIndNoLaser, suppIndLaser = suppIndLaser, suppIndPureToneNoLaser = suppIndPureToneNoLaser, suppIndPureToneLaser = suppIndPureToneLaser,
+             suppIndNoZeroNoLaser = suppIndNoZeroNoLaser, suppIndNoZeroLaser = suppIndNoZeroLaser)
     print outputFile + " saved"

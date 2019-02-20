@@ -4,18 +4,18 @@ reload(celldatabase)
 subject = 'band027'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2017-05-03', 'right_AC', info=['medialDiI','TT1ant','sound_left'])
-experiments.append(exp0)
-
-exp0.laserCalibration = {
-    '0.5':0.9,
-    '1.0':1.45,
-    '1.5':2.15,
-    '2.0':2.9,
-    '2.5':4.05,
-    '3.0':5.2,
-    '3.5':6.4
-}
+# exp0 = celldatabase.Experiment(subject, '2017-05-03', 'right_AC', info=['medialDiI','TT1ant','sound_left'])
+# experiments.append(exp0)
+# 
+# exp0.laserCalibration = {
+#     '0.5':0.9,
+#     '1.0':1.45,
+#     '1.5':2.15,
+#     '2.0':2.9,
+#     '2.5':4.05,
+#     '3.0':5.2,
+#     '3.5':6.4
+# }
 
 #nothing but spooky signals all the way down... Nick's probe sucks.
 
@@ -60,6 +60,8 @@ exp1.add_session('11-14-42', 'd', 'noiseAmps', 'am_tuning_curve')
 # 
 # exp1.add_site(1769, tetrodes = [2,4,6,8])
 # exp1.add_session('11-47-37', None, 'laserPulse', 'am_tuning_curve')
+
+exp1.maxDepth = 1769
 
 
 exp2 = celldatabase.Experiment(subject, '2017-05-06', 'right_AC', info=['medialDiI','TT1ant','sound_left'])
@@ -128,6 +130,9 @@ exp2.add_session('14-36-13', 'h', 'noiseAmps', 'am_tuning_curve')
 # 
 # exp2.add_site(1765, tetrodes = [1,2,3,4,6,7,8])
 # exp2.add_session('14-51-38', None, 'laserPulse', 'am_tuning_curve')
+
+exp2.maxDepth = 1765
+
 
 exp3 = celldatabase.Experiment(subject, '2017-05-07', 'right_AC', info=['posteriormedialDiD','TT1ant','sound_left'])
 experiments.append(exp3)
@@ -211,16 +216,18 @@ exp3.add_session('15-22-47', None, 'laserTrain', 'am_tuning_curve')
 exp3.add_session('15-24-47', 'o', 'bandwidth', 'bandwidth_am')
 exp3.add_session('15-44-36', 'p', 'noiseAmps', 'am_tuning_curve')
 
+exp3.maxDepth = 1665
 
-exp4 = celldatabase.Experiment(subject, '2017-05-08', 'right_AC', info=['posteriorlateralDiI','TT1ant','sound_left'])
-experiments.append(exp4)
 
-exp4.laserCalibration = {
-    '0.5':0.8,
-    '1.0':1.35,
-    '1.5':1.95,
-    '2.0':2.55,
-    '2.5':3.2,
-    '3.0':3.95,
-    '3.5':4.8
-}
+# exp4 = celldatabase.Experiment(subject, '2017-05-08', 'right_AC', info=['posteriorlateralDiI','TT1ant','sound_left'])
+# experiments.append(exp4)
+# 
+# exp4.laserCalibration = {
+#     '0.5':0.8,
+#     '1.0':1.35,
+#     '1.5':1.95,
+#     '2.0':2.55,
+#     '2.5':3.2,
+#     '3.0':3.95,
+#     '3.5':4.8
+# }

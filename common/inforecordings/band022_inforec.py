@@ -37,6 +37,9 @@ exp1.add_session('13-21-00', 'h', 'noiseAmps', 'am_tuning_curve')
 # exp1.add_session('13-46-10', 'j', 'AM', 'am_tuning_curve')
 #nothing has good tuning, ending recording here
 
+exp1.maxDepth = 3395
+
+
 exp2 = celldatabase.Experiment(subject, '2017-03-18', brainarea='right_thalamus', info=['posteriorDiD','sitesAnt','sound_left'])
 experiments.append(exp2)
 
@@ -61,3 +64,5 @@ exp2.add_session('15-49-04', 'j', 'AM', 'am_tuning_curve')
 exp2.add_session('15-55-17', 'k', 'bandwidth', 'bandwidth_am') #14 kHz for TT3,4
 exp2.add_session('16-17-20', 'l', 'bandwidth', 'bandwidth_am') #5.5kHz for TT4
 exp2.add_session('16-35-43', 'm', 'noiseAmps', 'am_tuning_curve')
+
+exp2.maxDepth = 3290

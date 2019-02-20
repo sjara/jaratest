@@ -25,18 +25,17 @@ reload(figparams)
 
 
 FIGNAME = 'figure_characterisation_of_responses_by_cell_type'
-#dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
-dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', FIGNAME)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
-PANELS = [1,1,1,1,1,1,1] # Plot panel i if PANELS[i]==1
+PANELS = [1,1,1,1,1,1,1,1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
-#outputDir = '/tmp/'
-outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
+outputDir = '/tmp/'
+#outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
 figFilename = 'characterisation_of_suppression' # Do not include extension
-#figFormat = 'pdf' # 'pdf' or 'svg'
-figFormat = 'svg'
-figSize = [12,8] # In inches
+figFormat = 'pdf' # 'pdf' or 'svg'
+#figFormat = 'svg'
+figSize = [20,8] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -69,14 +68,36 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(6,5,width_ratios=[1,1.2,1.2,1.3,1.3])
-gs.update(top=0.95, bottom=0.08, left=0.1, right=0.95, wspace=0.7, hspace=0.6)
+gs.update(top=0.95, bottom=0.08, left=0.05, right=0.95, wspace=0.7, hspace=0.6)
 
 # gs0 = gridspec.GridSpec(2,3,width_ratios=[1, 1.3, 1.3])
 # gs0.update(top=0.95, bottom=0.05, left=0.1, right=0.95, wspace=0.4, hspace=0.3)
 
-# --- Raster plots of example PV and SOM cell ---
+# --- space for cartoons ---
 if PANELS[0]:
+    axCartoon = gs[:2,0]
+    inner = gridspec.GridSpecFromSubplotSpec(3, 1,
+                    subplot_spec=axCartoon, wspace=0.1, hspace=0.1)
+    for ind in range(3):
+        thisAx = plt.subplot(inner[ind])
+        plt.xlim(-1.2,1.2)
+        thisAx.set_yticks([])
+        thisAx.set_xticks([-1,-0.5,0,0.5,1.0])
+        
+        
+        extraplots.boxoff(thisAx)
+        
+        if ind != 2:
+            thisAx.set_xticklabels('')
     
+    #also do the panel labels for the rest of the cartoons in here I guess
+    cartoonPanels = ['a', 'd', 'g']
+    for indPanel, panel in enumerate(cartoonPanels):
+        thisAx.annotate(panel, xy=(labelPosX[0],labelPosY[indPanel]), xycoords='figure fraction',
+                         fontsize=fontSizePanel, fontweight='bold')
+
+# --- Raster plots of example PV and SOM cell ---        
+if PANELS[1]: 
     # Excitatory cell
     ExcFile = 'example_Exc_bandwidth_tuning_'+ExcFileName
     ExcDataFullPath = os.path.join(dataDir,ExcFile)
@@ -122,17 +143,11 @@ if PANELS[0]:
     
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
-    
-    #also do the panel labels for the cartoons in here I guess
-    cartoonPanels = ['a', 'd', 'g']
-    for indPanel, panel in enumerate(cartoonPanels):
-        axRaster.annotate(panel, xy=(labelPosX[0],labelPosY[indPanel]), xycoords='figure fraction',
-                         fontsize=fontSizePanel, fontweight='bold')
 
 
 
 # -- Plots of sustained bandwidth tuning --
-if PANELS[1]:
+if PANELS[2]:
     SIlabelPosX = [0.5, 0.5, 0.5]
     SIlabelPosY = [0.87, 0.45, 0.14]
     calcInd = 0 #which cell to annotate SI calculation on
@@ -143,8 +158,8 @@ if PANELS[1]:
     
     ExcSustainedResponseArray = ExcData['sustainedResponseArray']
     ExcSustainedError = ExcData['sustainedSEM']
-    ExcFitCurve = ExcData['fitResponse']
-    ExcSI = ExcData['SI'].tolist()
+    ExcFitCurve = ExcData['fitResponseNoZero']
+    ExcSI = ExcData['SINoZero'].tolist()
     
     PVFile = 'example_PV_bandwidth_tuning_'+PVFileName
     PVDataFullPath = os.path.join(dataDir,PVFile)
@@ -152,8 +167,8 @@ if PANELS[1]:
     
     PVsustainedResponseArray = PVData['sustainedResponseArray']
     PVsustainedError = PVData['sustainedSEM']
-    PVFitCurve = PVData['fitResponse']
-    PVSI = PVData['SI'].tolist()
+    PVFitCurve = PVData['fitResponseNoZero']
+    PVSI = PVData['SINoZero'].tolist()
     
     SOMFile = 'example_SOM_bandwidth_tuning_'+SOMFileName
     SOMDataFullPath = os.path.join(dataDir,SOMFile)
@@ -161,11 +176,11 @@ if PANELS[1]:
     
     SOMsustainedResponseArray = SOMData['sustainedResponseArray']
     SOMsustainedError = SOMData['sustainedSEM']
-    SOMFitCurve = SOMData['fitResponse']
-    SOMSI = SOMData['SI'].tolist()
+    SOMFitCurve = SOMData['fitResponseNoZero']
+    SOMSI = SOMData['SINoZero'].tolist()
 
-    bands = PVData['possibleBands']
-    fitBands = PVData['fitBands']
+    bands = PVData['possibleBands'][1:]
+    fitBands = PVData['fitBandsNoZero']
     
     sustainedResponses = [ExcSustainedResponseArray, PVsustainedResponseArray, SOMsustainedResponseArray]
     sustainedErrors = [ExcSustainedError, PVsustainedError, SOMsustainedError]
@@ -183,11 +198,11 @@ if PANELS[1]:
         plt.hold(1)
         axCurve = plt.subplot(gs[2*indCell:2*indCell+2,2])
         #axCurve.set_xscale('log', basex=2, nonposx='clip')
-        axCurve.set_xscale('symlog', basex=2, linthreshx=0.25, linscalex=0.5)
-        plt.plot(bands, responseByCell, 'o', ms=5,
+        axCurve.set_xscale('log', basex=2)
+        plt.plot(bands, responseByCell[1:], 'o', ms=5,
                  color=cellTypeColours[indCell], mec=cellTypeColours[indCell], clip_on=False)
-        plt.errorbar(bands, responseByCell, yerr = [sustainedErrors[indCell], sustainedErrors[indCell]], 
-                     fmt='none', ecolor=cellTypeColours[indCell])
+        plt.errorbar(bands, responseByCell[1:], yerr = [sustainedErrors[indCell][1:], sustainedErrors[indCell][1:]], 
+                     fmt='none', ecolor=cellTypeColours[indCell], lw=1.5, capsize=5)
 #         plt.fill_between(range(len(bands)), responseByCell - sustainedErrors[indCell], 
 #                          responseByCell + sustainedErrors[indCell], alpha=0.2, color=cellTypeColours[indCell], edgecolor='none')
         plt.plot([bands[0],bands[-1]], np.tile(responseByCell[0], 2), '--', color='0.4', lw=2)
@@ -222,26 +237,24 @@ if PANELS[1]:
         if indCell!=2:
             axCurve.set_xticklabels('')
         else:
-            bands = bands.tolist()
-            bands[-1] = 'WN'
-            bands[1::2] = ['']*len(bands[1::2]) #remove every other label so x axis less crowded
-            axCurve.set_xticklabels(bands)
+            bandLabels = bands.tolist()
+            bandLabels[-1] = 'WN'
+            bandLabels[1::2] = ['']*len(bands[1::2]) #remove every other label so x axis less crowded
+            axCurve.set_xticklabels(bandLabels)
             plt.xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
         plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
-        plt.xlim(-0.01,7) #expand x axis so you don't have dots on y axis
-                
+        plt.xlim(0.2,7) #expand x axis so you don't have dots on y axis
 
-# gs1 = gridspec.GridSpec(1,2)
-# gs1.update(top=0.95, bottom=0.05, left=0.1, right=0.95, wspace=0.4, hspace=0.3)
+
 
 # -- Summary plots comparing suppression indices of PV, SOM, and excitatory cells for sustained responses --    
-if PANELS[2]:
+if PANELS[3]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
-    PVsustainedSuppression = summaryData['fitPVsustainedSuppressionInd']
-    SOMsustainedSuppression = summaryData['fitSOMsustainedSuppressionInd']
-    ACsustainedSuppression = summaryData['fitExcSustainedSuppressionInd']
+    PVsustainedSuppression = summaryData['fitPVsustainedSuppressionNoZero']
+    SOMsustainedSuppression = summaryData['fitSOMsustainedSuppressionNoZero']
+    ACsustainedSuppression = summaryData['fitExcsustainedSuppressionNoZero']
     
     sustainedSuppressionVals = [ACsustainedSuppression, PVsustainedSuppression, SOMsustainedSuppression]
     
@@ -269,18 +282,7 @@ if PANELS[2]:
         plt.plot(xval, sustainedSuppressionVals[category], 'o', mec=edgeColour, mfc='none', clip_on=False)
         median = np.median(sustainedSuppressionVals[category])
         #sem = stats.sem(vals[category])
-        plt.plot([category+0.7,category+1.3], [median,median], '-', color='k', mec=cellTypeColours[category], lw=3)
-    
-#     bplot = plt.boxplot(sustainedSuppressionVals, widths=0.6, showfliers=False)
-#     
-#     for box in range(len(bplot['boxes'])):
-#         plt.setp(bplot['boxes'][box], color=cellTypeColours[box])
-#         plt.setp(bplot['whiskers'][2*box:2*(box+1)], linestyle='-', color=cellTypeColours[box])
-#         plt.setp(bplot['caps'][2*box:2*(box+1)], color=cellTypeColours[box])
-#         plt.setp(bplot['medians'][box], color='k', linewidth=2)
-#         #plt.setp(bplot['fliers'][box, marker='o', color=cellTypeColours[box]])
-# 
-#     plt.setp(bplot['medians'], color='k')   
+        plt.plot([category+0.7,category+1.3], [median,median], '-', color='k', mec=cellTypeColours[category], lw=3)  
     
     axScatter.annotate(panelLabel, xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
@@ -295,18 +297,20 @@ if PANELS[2]:
     extraplots.significance_stars([1,2], yLims[1]*1.03, yLims[1]*0.02, gapFactor=0.25)
     plt.hold(0)
     
+    
+    
 # -- Summary plots comparing preferred bandwidth of PV, SOM, and excitatory cells for sustained responses --    
-if PANELS[3]:
+if PANELS[4]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
-    PVsustainedPrefBW = summaryData['fitPVsustainedPrefBW']
-    SOMsustainedPrefBW = summaryData['fitSOMsustainedPrefBW']
-    ACsustainedPrefBW = summaryData['fitExcSustainedPrefBW']
+    PVsustainedPrefBW = summaryData['fitPVsustainedPrefBWNoZero']
+    SOMsustainedPrefBW = summaryData['fitSOMsustainedPrefBWNoZero']
+    ACsustainedPrefBW = summaryData['fitExcsustainedPrefBWNoZero']
     
     prefBandwidths = [ACsustainedPrefBW, PVsustainedPrefBW, SOMsustainedPrefBW]
     
-    possibleBands = summaryData['possibleBands']
+    possibleBands = summaryData['possibleBands'][1:]
     
     excitatoryColor = figparams.colp['excitatoryCell']
     PVColor = figparams.colp['PVcell']
@@ -320,7 +324,7 @@ if PANELS[3]:
     
     axScatter = plt.subplot(gs[3:,3])
     plt.hold(1)
-    axScatter.set_yscale('symlog', basey=2, linthreshy=0.25, linscaley=0.5)
+    axScatter.set_yscale('log', basey=2)
     plt.hold(True)
     for category in range(len(prefBandwidths)):
         edgeColour = matplotlib.colors.colorConverter.to_rgba(cellTypeColours[category], alpha=0.5)
@@ -347,7 +351,7 @@ if PANELS[3]:
     axScatter.annotate(panelLabel, xy=(labelPosX[3],labelPosY[3]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
     plt.xlim(0,len(prefBandwidths)+1)
-    plt.ylim(-0.05,7)
+    plt.ylim(0.2,7)
     plt.ylabel('Preferred bandwidth (oct)',fontsize=fontSizeLabels)
     axScatter.set_xticks(range(1,len(prefBandwidths)+1))
     axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
@@ -361,8 +365,10 @@ if PANELS[3]:
     extraplots.significance_stars([1,3], yLims[1]*1.05, yLims[1]*0.1, gapFactor=0.25)
     plt.hold(0)
 
+
+
 # Summary plots showing firing rates of Ex, PV, SOM cells that have positive change in firing rate during sustained response    
-if PANELS[4]:
+if PANELS[5]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
@@ -392,7 +398,9 @@ if PANELS[4]:
                      fontsize=fontSizePanel, fontweight='bold')
     extraplots.boxoff(axPSTH)
     
-if PANELS[5]:
+    
+    
+if PANELS[6]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
@@ -435,15 +443,6 @@ if PANELS[5]:
 
     plt.setp(bplot['medians'], color='k')
     
-#     parts = plt.violinplot(onsetProps, widths=0.8, points=500, showextrema=False)
-#     for category in range(len(onsetProps)):
-#         median = np.median(onsetProps[category])
-#         plt.plot([category+0.7, category+1.3], [median,median], '-', color='k', lw=2)
-#     for ind,pc in enumerate(parts['bodies']):
-#         pc.set_facecolor(cellTypeColours[ind])
-#         pc.set_edgecolor(cellTypeColours[ind])
-#         pc.set_alpha(0.6)
-    
     plt.xlim(0,len(onsetProps)+1)
     plt.ylim(0,32)
     axScatter.set_xticks(range(1,len(onsetProps)+1))
@@ -456,8 +455,10 @@ if PANELS[5]:
     plt.hold(0)
     axScatter.annotate(panelLabel, xy=(labelPosX[4],labelPosY[1]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
-    
-if PANELS[6]:
+
+
+
+if PANELS[7]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
@@ -498,15 +499,6 @@ if PANELS[6]:
         plt.setp(bplot['medians'][box], color='k', linewidth=2)
 
     plt.setp(bplot['medians'], color='k')
-    
-#     parts = plt.violinplot(responseRates, widths=0.8, points=500, showextrema=False)
-#     for category in range(len(responseRates)):
-#         median = np.median(responseRates[category])
-#         plt.plot([category+0.7, category+1.3], [median,median], '-', color='k', lw=2)
-#     for ind,pc in enumerate(parts['bodies']):
-#         pc.set_facecolor(cellTypeColours[ind])
-#         pc.set_edgecolor(cellTypeColours[ind])
-#         pc.set_alpha(0.6)
     
     plt.xlim(0,len(responseRates)+1)
     plt.ylim(top=17)

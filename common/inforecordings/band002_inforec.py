@@ -37,6 +37,8 @@ exp0.add_session('12-18-16', 'o', 'tuningCurve', 'am_tuning_curve')
 exp0.add_session('12-29-07', 'p', 'AM', 'am_tuning_curve') #22kHz, 16Hz mod to try to target TT2,6
 exp0.add_session('12-36-23', 'q', 'bandwidth', 'bandwidth_am')
 
+exp0.maxDepth = 1250
+
 
 exp1 = celldb.Experiment(subject, '2016-08-12', 'left_AC', info=['medialDiI','TT1ant','sound_left'])
 experiments.append(exp1)
@@ -65,7 +67,7 @@ exp1.add_session('12-58-22', 'm', 'tuningCurve', 'am_tuning_curve') #10kHz seems
 exp1.add_session('13-09-44', 'n', 'AM', 'am_tuning_curve') #None have particularly sustained responses, going with 64Hz for most spikes
 exp1.add_session('13-17-21', 'o', 'bandwidth', 'bandwidth_am')
 
-
+exp1.maxDepth = 1556
 
 
 

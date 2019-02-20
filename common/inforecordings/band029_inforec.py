@@ -55,19 +55,21 @@ exp0.add_session('12-45-46', None, 'laserTrain', 'am_tuning_curve')
 exp0.add_session('12-47-43', 'c', 'bandwidth', 'bandwidth_am')
 exp0.add_session('13-06-05', 'd', 'noiseAmps', 'am_tuning_curve')
 
+exp0.maxDepth = 1320
 
-exp1 = celldatabase.Experiment(subject, '2017-05-24', 'right_AC', info=['middleDiI','TT1ant','sound_left'])
-experiments.append(exp1)
 
-exp1.laserCalibration = {
-    '0.5':0.85,
-    '1.0':1.3,
-    '1.5':1.85,
-    '2.0':2.3,
-    '2.5':3.3,
-    '3.0':4.2,
-    '3.5':4.9
-}
+# exp1 = celldatabase.Experiment(subject, '2017-05-24', 'right_AC', info=['middleDiI','TT1ant','sound_left'])
+# experiments.append(exp1)
+# 
+# exp1.laserCalibration = {
+#     '0.5':0.85,
+#     '1.0':1.3,
+#     '1.5':1.85,
+#     '2.0':2.3,
+#     '2.5':3.3,
+#     '3.0':4.2,
+#     '3.5':4.9
+# }
 
 # exp1.add_site(1500, tetrodes = [2,4,6,7,8])
 # exp1.add_session('12-18-43', None, 'laserPulse', 'am_tuning_curve')
@@ -220,6 +222,8 @@ exp2.add_session('15-36-08', None, 'laserTrain', 'am_tuning_curve')
 exp2.add_session('15-38-25', 'k', 'bandwidth', 'bandwidth_am')
 exp2.add_session('15-59-40', 'l', 'noiseAmps', 'am_tuning_curve')
 
+exp2.maxDepth = 1420
+
 
 exp3 = celldatabase.Experiment(subject, '2017-05-26', 'right_AC', info=['lateralDiI','TT1ant','sound_left'])
 experiments.append(exp3)
@@ -306,16 +310,18 @@ exp3.add_session('15-00-21', None, 'laserTrain', 'am_tuning_curve')
 exp3.add_session('15-02-56', 'k', 'bandwidth', 'bandwidth_am')
 exp3.add_session('15-21-25', 'l', 'noiseAmps', 'am_tuning_curve')
 
+exp3.maxDepth = 1225
 
-exp4 = celldatabase.Experiment(subject, '2017-05-28', 'right_AC', info=['posteriourmiddleDiD','TT1ant','sound_left'])
-experiments.append(exp4)
 
-exp4.laserCalibration = {
-    '0.5':0.95,
-    '1.0':1.55,
-    '1.5':2.25,
-    '2.0':3.0,
-    '2.5':4.0,
-    '3.0':4.85,
-    '3.5':6.0
-}
+# exp4 = celldatabase.Experiment(subject, '2017-05-28', 'right_AC', info=['posteriourmiddleDiD','TT1ant','sound_left'])
+# experiments.append(exp4)
+# 
+# exp4.laserCalibration = {
+#     '0.5':0.95,
+#     '1.0':1.55,
+#     '1.5':2.25,
+#     '2.0':3.0,
+#     '2.5':4.0,
+#     '3.0':4.85,
+#     '3.5':6.0
+# }
