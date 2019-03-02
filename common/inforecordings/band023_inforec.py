@@ -39,6 +39,8 @@ exp0.add_session('14-01-34', 'r', 'bandwidth', 'bandwidth_am') #4.5kHz, 32Hz for
 exp0.add_session('14-26-10', 's', 'noiseAmps', 'am_tuning_curve')
 exp0.add_session('14-31-29', 't', 'bandwidth', 'bandwidth_am') #27kHz, 64Hz for TT1
 
+exp0.maxDepth = 3605
+
 
 exp1 = celldatabase.Experiment(subject, '2017-03-22', brainarea='right_thalamus', info=['middleDiD','sitesAnt','sound_left'])
 experiments.append(exp1)
@@ -72,6 +74,8 @@ exp1.add_session('12-59-40', 'o', 'bandwidth', 'bandwidth_am') #6.5kHz, 16Hz for
 exp1.add_session('13-20-06', 'p', 'bandwidth', 'bandwidth_am') #12kHz, 64Hz for TT6
 exp1.add_session('13-40-07', 'q', 'noiseAmps', 'am_tuning_curve')
 
+exp1.maxDepth = 3540
+
 
 exp2 = celldatabase.Experiment(subject, '2017-03-23', brainarea='right_thalamus', info=['posteriorDiI','sitesAnt','sound_left'])
 experiments.append(exp2)
@@ -90,6 +94,8 @@ exp2.add_session('11-25-34', 'f', 'tuningCurve', 'am_tuning_curve') #big spikes 
 exp2.add_session('11-36-10', 'g', 'AM', 'am_tuning_curve')
 exp2.add_session('11-44-33', 'h', 'bandwidth', 'bandwidth_am') #26kHz, 8Hz for ok TT3 spike
 exp2.add_session('12-02-59', 'i', 'noiseAmps', 'am_tuning_curve')
+
+exp2.maxDepth = 3532
 
 
 exp3 = celldatabase.Experiment(subject, '2017-03-24', brainarea='left_thalamus', info=['anteriorDiI','TT1ant','sound_left'])
@@ -117,12 +123,14 @@ exp3.add_session('12-37-33', 'k', 'AM', 'am_tuning_curve')
 exp3.add_session('12-42-45', 'l', 'bandwidth', 'bandwidth_am') #15kHz, 64Hz for two good TT3 clusters
 exp3.add_session('13-01-14', 'm', 'noiseAmps', 'am_tuning_curve')
 
+exp3.maxDepth = 3350
+
 
 exp4 = celldatabase.Experiment(subject, '2017-03-26', brainarea='left_thalamus', info=['middleDiD','TT1ant','sound_left'])
 experiments.append(exp4)
 
-exp4.add_site(3135, tetrodes = [1,3,4,7,8])
-exp4.add_session('14-30-25', None, 'noisebursts', 'am_tuning_curve') #no sound responses
+# exp4.add_site(3135, tetrodes = [1,3,4,7,8])
+# exp4.add_session('14-30-25', None, 'noisebursts', 'am_tuning_curve') #no sound responses
 
 exp4.add_site(3200, tetrodes = [1,3,4,6,7,8])
 exp4.add_session('14-35-21', None, 'noisebursts', 'am_tuning_curve') #some sound responses on TT7,8
@@ -144,6 +152,8 @@ exp4.add_session('16-24-03', 'i', 'AM', 'am_tuning_curve')
 exp4.add_session('16-31-32', 'j', 'bandwidth', 'bandwidth_am') #12kHz, 64Hz for TT1 cell
 exp4.add_session('16-52-55', 'k', 'bandwidth', 'bandwidth_am') #8kHz, 64Hz for TT3
 exp4.add_session('17-11-30', 'l', 'noiseAmps', 'am_tuning_curve')
+
+exp4.maxDepth = 3550
 
 
 exp5 = celldatabase.Experiment(subject, '2017-03-27', brainarea='left_thalamus', info=['posteriorDiI','TT1ant','sound_left'])
@@ -177,3 +187,5 @@ exp5.add_session('13-21-09', 'n', 'tuningCurve', 'am_tuning_curve')
 exp5.add_session('13-31-47', 'o', 'AM', 'am_tuning_curve')
 exp5.add_session('13-37-38', 'p', 'bandwidth', 'bandwidth_am') #7kHz, 64Hz for TT2
 exp5.add_session('14-06-17', 'q', 'noiseAmps', 'am_tuning_curve')
+
+exp5.maxDepth = 3760

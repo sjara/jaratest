@@ -21,7 +21,7 @@ def rsync_all_behaviour(subjects):
         
 def find_trials_each_combination_three_params(parameter1,parameterPossibleValues1,parameter2,parameterPossibleValues2,parameter3,parameterPossibleValues3):
     '''
-    Returns a boolean 3D array of size [nTrials,nValues1,nValues2]. True for each combination.
+    Returns a boolean 4D array of size [nTrials,nValues1,nValues2,nValues3]. True for each combination.
     '''
     if len(parameter1)!=len(parameter2):
         raise ValueError('parameters must be vectors of same size.')
@@ -37,7 +37,7 @@ def find_trials_each_combination_three_params(parameter1,parameterPossibleValues
     return trialsEachComb
 
 
-def band_psychometric(animal, sessions, trialTypes=['currentSNR'], paradigm='2afc'):
+def band_psychometric(animal, sessions, trialTypes=['currentSNR']):
     ''' 
     Produces the number of valid trials and number of trials where animal went to the right for each condition.
     Can sort by up to three parameters.
@@ -45,8 +45,7 @@ def band_psychometric(animal, sessions, trialTypes=['currentSNR'], paradigm='2af
     Input:
         animal = name of animal whose behaviour is to be used (string)
         sessions = file names of sessions to be used (list of strings)
-        trialTypes = names of parameters in behavData to be used for sorting trials (list of strings)
-        paradigm = name of paradigm (string) (ONLY 2afc USED FOR NOW)
+        trialTypes = names of parameters in behavData to be used for sorting trials (list of strings, up to 3 parameters)
         
     Output:
         validPerCond = 1D to 3D array (depending on number of parameters given) giving number of valid trials for each condition
@@ -54,44 +53,69 @@ def band_psychometric(animal, sessions, trialTypes=['currentSNR'], paradigm='2af
         possibleParams = possible values each parameter takes
     '''
     behavData = behavioranalysis.load_many_sessions(animal, sessions)
-    validPerCond = None
-    rightPerCond = None
     
     firstSort = behavData[trialTypes[0]]
     possibleFirstSort = np.unique(firstSort)
-    trialsEachFirstCond = behavioranalysis.find_trials_each_type(firstSort, possibleFirstSort)
     
-    possibleSecondSort = []
-    possibleThirdSort = []
+    possibleSecondSort = None
+    possibleThirdSort = None
     
     if len(trialTypes) > 1:
         secondSort = behavData[trialTypes[1]]
         possibleSecondSort = np.unique(secondSort)
-        trialsEachSecondCond = behavioranalysis.find_trials_each_type(secondSort, possibleSecondSort)
 
     if len(trialTypes) > 2:
         thirdSort = behavData[trialTypes[2]]
         possibleThirdSort = np.unique(thirdSort)
-        trialsEachThirdCond = behavioranalysis.find_trials_each_type(thirdSort, possibleThirdSort)
         
-    dim = [x for x in [len(possibleFirstSort),len(possibleSecondSort),len(possibleThirdSort)] if x>0]
-    validPerCond = np.zeros(dim)
-    rightPerCond = np.zeros(dim)
     valid = behavData['valid'].astype(bool)
     rightChoice = behavData['choice']==behavData.labels['choice']['right']
     
-    trialsEachComb = find_trials_each_combination_three_params(firstSort, possibleFirstSort, secondSort, possibleSecondSort, thirdSort, possibleThirdSort)
-    for first in range(len(possibleFirstSort)):
-        for second in range(len(possibleSecondSort)):
-            for third in range(len(possibleThirdSort)):
-                trialsThisSNR = trialsEachComb[:,first,second,third]
-                validThisCond = np.sum(trialsThisSNR.astype(int)[valid])
-                rightThisCond = np.sum(trialsThisSNR.astype(int)[rightChoice])
-                validPerCond[first,second,third] += validThisCond
-                rightPerCond[first,second,third] += rightThisCond
+    if len(trialTypes) == 3:
+        trialsEachComb = find_trials_each_combination_three_params(firstSort, possibleFirstSort, secondSort, possibleSecondSort, thirdSort, possibleThirdSort)
+    elif len(trialTypes) == 2:
+        trialsEachComb = behavioranalysis.find_trials_each_combination(firstSort, possibleFirstSort, secondSort, possibleSecondSort)
+    elif len(trialTypes) == 1:
+        trialsEachComb = behavioranalysis.find_trials_each_type(firstSort, possibleFirstSort)
+    
+    validPerCond, rightPerCond = compute_psychometric_inputs(valid, rightChoice, trialsEachComb)
+    
     possibleParams = [possibleFirstSort, possibleSecondSort, possibleThirdSort]
-    #possibleParams = filter(None, possibleParams)
+    possibleParams = [param for param in possibleParams if param is not None]
     return validPerCond, rightPerCond, possibleParams
+
+def compute_psychometric_inputs(validTrials, rightChoiceTrials, trialsEachCond):
+    '''
+    Produces the number of valid trials and trials the animal went to the right for every combination of parameters.
+    Shape of output array depends on shape of trialsEachCond parameter
+    
+    Input: 
+        validTrials = 1D array of length nTrials, True for valid trials, False for invalid trials
+        rightChoiceTrials = 1D array of length nTrials, True for right choice, False otherwise
+        trialsEachCond = boolean array of dimension 1+nParameters, size [nTrials, nValues1, ...], True for every combination
+    
+    Output:
+        validPerCond = nParameter-dimensional array, size [nValues1, ...], contains number of valid trials for every combination
+        rightPerCond = array like validPerCond, contains number of right choices for every combination
+    '''
+    dim = trialsEachCond.shape[1:]
+    validPerCond = np.zeros(dim)
+    rightPerCond = np.zeros(dim)
+    
+    if len(dim)>1:
+        for cond in range(trialsEachCond.shape[-1]):
+            validThisCond, rightThisCond = compute_psychometric_inputs(validTrials, rightChoiceTrials, trialsEachCond[...,cond])
+            validPerCond[...,cond] = validThisCond
+            rightPerCond[...,cond] = rightThisCond
+    else:
+        for cond in range(trialsEachCond.shape[-1]):
+            trialsThisSNR = trialsEachCond[:,cond]
+            validThisCond = np.sum(trialsThisSNR.astype(int)[validTrials])
+            rightThisCond = np.sum(trialsThisSNR.astype(int)[rightChoiceTrials])
+            validPerCond[cond] += validThisCond
+            rightPerCond[cond] += rightThisCond
+    
+    return validPerCond, rightPerCond
 
 def plot_band_psychometric(validPerSNR, rightPerSNR, possibleSNRs, colour = 'k', linestyle='-', xlabel=True, ylabel=True):
     from statsmodels.stats.proportion import proportion_confint
@@ -104,10 +128,12 @@ def plot_band_psychometric(validPerSNR, rightPerSNR, possibleSNRs, colour = 'k',
         upper.append(100.0*CIthisSNR[1]-performance[-1])
         lower.append(performance[-1]-100.0*CIthisSNR[0])
     plt.plot(np.arange(len(possibleSNRs)), performance, linestyle, marker='o', color=colour, mec=colour, lw=3, ms=10)
-    plt.errorbar(np.arange(len(possibleSNRs)), performance, yerr = [lower, upper],color=colour)
+    plt.errorbar(np.arange(len(possibleSNRs)), performance, yerr = [lower, upper], color=colour, lw=2, ls=linestyle)
     if ylabel:
         plt.ylabel("% rightward", fontsize=16)
     if xlabel:
         plt.xlabel('SNR (dB)', fontsize=16)
     plt.xticks(np.arange(len(possibleSNRs)), possibleSNRs)
     plt.ylim((0,100))
+    ax = plt.gca()
+    extraplots.boxoff(ax)

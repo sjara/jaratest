@@ -51,6 +51,8 @@ exp0.add_session('12-51-58', 'h', 'noiseAmps', 'am_tuning_curve')
 exp0.add_session('12-56-59', None, 'laserPulse', 'am_tuning_curve')
 exp0.add_session('12-59-17', None, 'laserTrain', 'am_tuning_curve')
 
+exp0.maxDepth = 1470
+
 
 exp1 = celldatabase.Experiment(subject, '2017-04-27', 'right_AC', info=['middleDiD','TT1ant','sound_left'])
 experiments.append(exp1)
@@ -99,6 +101,8 @@ exp1.add_session('12-53-35', None, 'laserPulse', 'am_tuning_curve')
 exp1.add_session('12-55-40', None, 'laserTrain', 'am_tuning_curve')
 exp1.add_session('12-58-39', 'k', 'bandwidth', 'bandwidth_am') #yet another 7kHz, 64Hz
 exp1.add_session('13-20-30', 'l', 'noiseAmps', 'am_tuning_curve')
+
+exp1.maxDepth = 1410
 
 
 exp2 = celldatabase.Experiment(subject, '2017-04-28', 'right_AC', info=['lateralDiI','TT1ant','sound_left'])
@@ -164,6 +168,8 @@ exp2.add_session('13-10-09', 'p', 'bandwidth', 'bandwidth_am') #9kHz, 64Hz
 exp2.add_session('13-28-36', 'q', 'bandwidth', 'bandwidth_am') #22kHz, 64Hz for nice TT4 spike
 exp2.add_session('13-47-19', 'r', 'noiseAmps', 'am_tuning_curve')
 
+exp2.maxDepth = 1304
+
 
 exp3 = celldatabase.Experiment(subject, '2017-04-29', 'right_AC', info=['posteriormiddleDiI','TT1ant','sound_left'])
 experiments.append(exp3)
@@ -208,6 +214,8 @@ exp3.add_session('14-27-03', None, 'laserTrain', 'am_tuning_curve')
 exp3.add_session('14-29-16', 'k', 'bandwidth', 'bandwidth_am')
 exp3.add_session('14-48-01', 'l', 'noiseAmps', 'am_tuning_curve')
 
+exp3.maxDepth = 1387
+
 
 exp4 = celldatabase.Experiment(subject, '2017-04-30', 'right_AC', info=['posteriorlateralDiD','TT1ant','sound_left'])
 experiments.append(exp4)
@@ -250,3 +258,5 @@ exp4.add_session('12-50-46', None, 'laserTrain', 'am_tuning_curve')
 exp4.add_session('12-53-22', 'g', 'bandwidth', 'bandwidth_am') #32kHz, 64Hz for laser responsive TT8 cell
 exp4.add_session('13-14-49', 'h', 'bandwidth', 'bandwidth_am') #9kHz, 64Hz for TT4 cells
 exp4.add_session('13-33-20', 'i', 'noiseAmps', 'am_tuning_curve')
+
+exp4.maxDepth = 1500

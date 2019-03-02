@@ -30,3 +30,16 @@
 	* Generate column with names like 'modInd_FREQ_ALIGNMENT_WINDOW', 'modSig_FREQ_ALIGNMENT_WINDOW', and 'modDir_FREQ_ALIGNMENT_WINDOW', for modulation index, p value, and modulation direction respectively in the database.
 	* Note: This takes a few hours for all good cells from 11 mice.
 9. Merge databases from all mice to form a master database for reward change study. Run script:reward_change_generate_cell_database.py, with CASE=7.
+
+
+# By Santiago (post-submission)
+
+generate_summary_reward_modulation_after_switch.py
+generate_average_PSTH_random_data.py
+generate_summary_shuffled_reward_modulation.py
+testgen_save_aligned_spikes.py
+
+figure_reward_modulation_after_switch.py
+figure_correlation_all_indexes.py
+figure_response_latency.py
+figure_reward_modulation_shuffled_data.py

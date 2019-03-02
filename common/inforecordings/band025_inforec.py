@@ -41,6 +41,9 @@ exp0.add_session('15-20-47', 'j', 'AM', 'am_tuning_curve')
 exp0.add_session('15-26-22', 'k', 'laserBandwidth', 'bandwidth_am')
 exp0.add_session('15-47-37', 'l', 'noiseAmps', 'am_tuning_curve')
 
+exp0.maxDepth = 1100
+
+
 exp1 = celldatabase.Experiment(subject, '2017-04-20', 'left_AC', info=['middleDiD','TT1ant','sound_left'])
 experiments.append(exp1)
 
@@ -84,6 +87,8 @@ exp1.add_session('15-04-52', 'i', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('15-10-18', 'j', 'AM', 'am_tuning_curve')
 exp1.add_session('15-16-29', 'k', 'laserBandwidth', 'bandwidth_am') #4kHz, 16Hz for TT4 maybe laser responsive cell
 exp1.add_session('15-45-43', 'l', 'noiseAmps', 'am_tuning_curve')
+
+exp1.maxDepth = 1400
 
 
 exp2 = celldatabase.Experiment(subject, '2017-04-22', 'left_AC', info=['lateralDiI','TT1ant','sound_left'])

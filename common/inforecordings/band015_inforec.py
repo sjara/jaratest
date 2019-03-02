@@ -4,18 +4,18 @@ reload(celldatabase)
 subject = 'band015'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2016-11-08','right_AC',info=['lateralDiI','TT1ant','sound_left'])
-experiments.append(exp0)
-
-exp0.laserCalibration = {
-    '0.5':0.95,
-    '1.0':1.8,
-    '1.5':2.5,
-    '2.0':3.75,
-    '2.5':4.7,
-    '3.0':5.8,
-    '3.5':6.7
-}
+# exp0 = celldatabase.Experiment(subject, '2016-11-08','right_AC',info=['lateralDiI','TT1ant','sound_left'])
+# experiments.append(exp0)
+# 
+# exp0.laserCalibration = {
+#     '0.5':0.95,
+#     '1.0':1.8,
+#     '1.5':2.5,
+#     '2.0':3.75,
+#     '2.5':4.7,
+#     '3.0':5.8,
+#     '3.5':6.7
+# }
 
 # exp0.add_site(950, tetrodes = [2])
 # exp0.add_session('15-27-14', None, 'noisebursts', 'am_tuning_curve')
@@ -89,6 +89,8 @@ exp1.add_session('17-21-38', None, 'laserPulse', 'am_tuning_curve')
 exp1.add_session('17-24-15', None, 'laserTrain', 'am_tuning_curve')
 exp1.add_session('17-27-13', 'l', 'bandwidth', 'bandwidth_am')
 
+exp1.maxDepth = 1510
+
 
 exp2 = celldatabase.Experiment(subject, '2016-11-11', 'left_AC', info=['medialDiI','TT1ant','sound_left'])
 experiments.append(exp2)
@@ -151,6 +153,7 @@ exp2.add_session('15-58-16', None, 'laserPulse', 'am_tuning_curve')
 exp2.add_session('16-00-45', None, 'laserTrain', 'am_tuning_curve')
 exp2.add_session('16-03-53', 'k', 'bandwidth', 'bandwidth_am')
 
+exp2.maxDepth = 1100
 
 exp3 = celldatabase.Experiment(subject, '2016-11-12', 'left_AC', info=['middleDiD','TT1ant','sound_left'])
 experiments.append(exp3)
@@ -215,6 +218,9 @@ exp3.add_session('14-45-19', 'n', 'AM', 'am_tuning_curve')
 exp3.add_session('14-56-16', 'o', 'bandwidth', 'bandwidth_am')
 exp3.add_session('15-05-53', None, 'laserPulse', 'am_tuning_curve')
 exp3.add_session('15-07-50', None, 'laserTrain', 'am_tuning_curve')
+
+exp3.maxDepth = 1275
+
 
 exp4 = celldatabase.Experiment(subject, '2016-11-13', 'left_AC', info=['lateralDiI','TT1ant','sound_left'])
 experiments.append(exp4)
@@ -296,3 +302,5 @@ exp4.add_session('15-44-03', 'k', 'AM', 'am_tuning_curve')
 exp4.add_session('15-49-06', None, 'laserPulse', 'am_tuning_curve')
 exp4.add_session('15-51-12', None, 'laserTrain', 'am_tuning_curve')
 exp4.add_session('15-53-37', 'l', 'bandwidth', 'bandwidth_am')
+
+exp4.maxDepth = 1260

@@ -60,6 +60,8 @@ exp0.add_session('16-30-42', None, 'laserPulse', 'am_tuning_curve')
 exp0.add_session('16-34-10', None, 'laserTrain', 'am_tuning_curve')
 exp0.add_session('16-36-21', 'i', 'bandwidth', 'bandwidth_am')
 
+exp0.maxDepth = 1325
+
 
 exp1 = celldatabase.Experiment(subject, '2016-12-12', 'right_AC', info=['middleDiI','TT1ant','sound_left'])
 experiments.append(exp1)
@@ -92,19 +94,21 @@ exp1.add_session('13-02-26', None, 'laserPulse', 'am_tuning_curve')
 exp1.add_session('13-04-39', None, 'laserTrain', 'am_tuning_curve')
 exp1.add_session('13-07-02', 'c', 'bandwidth', 'bandwidth_am')
 
+exp1.maxDepth = 910
 
-exp2 = celldatabase.Experiment(subject, '2016-12-22','AC', info=['medialDiI','TT1ant','sound_left'])
-experiments.append(exp2)
 
-exp2.laserCalibration = {
-    '0.5':0.7,
-    '1.0':1.05,
-    '1.5':1.45,
-    '2.0':1.85,
-    '2.5':2.3,
-    '3.0':2.75,
-    '3.5':3.25
-}
+# exp2 = celldatabase.Experiment(subject, '2016-12-22','AC', info=['medialDiI','TT1ant','sound_left'])
+# experiments.append(exp2)
+# 
+# exp2.laserCalibration = {
+#     '0.5':0.7,
+#     '1.0':1.05,
+#     '1.5':1.45,
+#     '2.0':1.85,
+#     '2.5':2.3,
+#     '3.0':2.75,
+#     '3.5':3.25
+# }
 
 #exp2.add_site(500, tetrodes = [2,4])
 #exp2.add_session('14-05-04', None, 'noisebursts', 'am_tuning_curve')

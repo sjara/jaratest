@@ -23,14 +23,12 @@ from jaratoolbox import settings
 import figparams
 import subjects_info
 
-#dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
-dbFilename = os.path.join(settings.DATABASE_PATH,'photoidentification_cells.h5')
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
 db = celldatabase.load_hdf(dbFilename)
 
 figName = 'figure_characterisation_of_responses_by_cell_type'
 
-#dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
-dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, figName)
 
 R2CUTOFF = 0.1 #minimum R^2 value for a cell to be considered frequency tuned
 OCTAVESCUTOFF = 0.3 #maximum octave difference between estimated best frequency and centre frequency presented
@@ -46,10 +44,6 @@ bestCells = bestCells.query('spikeShapeQuality>2.5 and tuningFitR2>@R2CUTOFF and
 
 # -- find cells responsive to laser pulse or train --
 laserResponsiveCells = bestCells.query("laserPVal<0.001 and laserUStat>0")
-#laserResponsiveCells = bestCells.query("laserTrainPVal<0.001 and laserTrainUStat>0")
-#laserResponsiveCells = laserResponsiveCells1.combine_first(laserResponsiveCells2)
-# combine_first changes ints to floats for some reason!!!
-#laserResponsiveCells['tetrode'] = laserResponsiveCells['tetrode'].astype(int)
 PVCells = laserResponsiveCells.loc[laserResponsiveCells['subject'].isin(PV_CHR2_MICE)]
 SOMCells = laserResponsiveCells.loc[laserResponsiveCells['subject'].isin(SOM_CHR2_MICE)]
 
@@ -71,6 +65,10 @@ fitPVsustainedSuppression = sustPVCells['fitSustainedSuppressionIndex']
 fitSOMsustainedSuppression = sustSOMCells['fitSustainedSuppressionIndex']
 fitExsustainedSuppression = sustExCells['fitSustainedSuppressionIndex']
 
+fitPVsustainedSuppressionNoZero = sustPVCells['fitSustainedSuppressionIndexnoZero']
+fitSOMsustainedSuppressionNoZero = sustSOMCells['fitSustainedSuppressionIndexnoZero']
+fitExsustainedSuppressionNoZero = sustExCells['fitSustainedSuppressionIndexnoZero']
+
 # -- get preferred bandwidths for all cells responsive during sustained portion of response --
 PVsustainedPrefBW = sustPVCells['sustainedPrefBandwidth']
 SOMsustainedPrefBW = sustSOMCells['sustainedPrefBandwidth']
@@ -79,6 +77,10 @@ ExsustainedPrefBW = sustExCells['sustainedPrefBandwidth']
 fitPVsustainedPrefBW = sustPVCells['fitSustainedPrefBandwidth']
 fitSOMsustainedPrefBW = sustSOMCells['fitSustainedPrefBandwidth']
 fitExsustainedPrefBW = sustExCells['fitSustainedPrefBandwidth']
+
+fitPVsustainedPrefBWNoZero = sustPVCells['fitSustainedPrefBandwidthnoZero']
+fitSOMsustainedPrefBWNoZero = sustSOMCells['fitSustainedPrefBandwidthnoZero']
+fitExsustainedPrefBWNoZero = sustExCells['fitSustainedPrefBandwidthnoZero']
 
 # -- get proportions of response that happens at onset --
 PVonsetProp = sustPVCells['proportionSpikesOnset']
@@ -251,10 +253,16 @@ np.savez(outputFullPath,
          fitPVsustainedSuppressionInd = fitPVsustainedSuppression,
          fitSOMsustainedSuppressionInd = fitSOMsustainedSuppression,
          fitExcSustainedSuppressionInd = fitExsustainedSuppression,
+         fitPVsustainedSuppressionNoZero = fitPVsustainedSuppressionNoZero,
+         fitSOMsustainedSuppressionNoZero = fitSOMsustainedSuppressionNoZero,
+         fitExcsustainedSuppressionNoZero = fitExsustainedSuppressionNoZero,
          rawPVsustainedPrefBW = PVsustainedPrefBW,
          rawSOMsustainedPrefBW = SOMsustainedPrefBW,
          rawExcSustainedPrefBW = ExsustainedPrefBW,
          fitPVsustainedPrefBW = fitPVsustainedPrefBW,
          fitSOMsustainedPrefBW = fitSOMsustainedPrefBW,
-         fitExcSustainedPrefBW = fitExsustainedPrefBW)
+         fitExcSustainedPrefBW = fitExsustainedPrefBW,
+         fitPVsustainedPrefBWNoZero = fitPVsustainedPrefBWNoZero,
+         fitSOMsustainedPrefBWNoZero = fitSOMsustainedPrefBWNoZero,
+         fitExcsustainedPrefBWNoZero = fitExsustainedPrefBWNoZero)
 print outputFile + " saved"

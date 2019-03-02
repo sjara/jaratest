@@ -24,13 +24,12 @@ from jaratoolbox import settings
 import database_bandwidth_tuning_fit_funcs as fitfuncs
 import figparams
 
-dbPath = os.path.join(settings.DATABASE_PATH, 'photoidentification_cells.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
 dbase = celldatabase.load_hdf(dbPath)
 
 figName = 'figure_characterisation_of_responses_by_cell_type'
 
-#dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', allACFigName)
-dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, figName)
 
 # -- Example cells -- #
 cellList = [{'subject' : 'band016',
@@ -197,6 +196,13 @@ for indCell in cellsToGenerate:
     baselineMean = baselineSpikeCountMat.mean()/baselineDuration
     baselineSEM = stats.sem(baselineSpikeCountMat)/baselineDuration
     
+    # Save 0 bw = pure tone condition separately
+    onsetResponseArrayPureTone = onsetResponseArray.copy()
+    sustainedResponseArrayPureTone = sustainedResponseArray.copy()
+    
+    onsetSEMPureTone = onsetSEM.copy()
+    sustainedSEMPureTone = sustainedSEM.copy()
+    
     # Replace 0 bandwidth condition with baseline
     onsetResponseArray[0] = baselineMean
     sustainedResponseArray[0] = baselineMean
@@ -210,9 +216,15 @@ for indCell in cellsToGenerate:
     # --- produce difference of gaussian curve for sustained response of each cell ---
     testBands = np.linspace(numBands[0],numBands[-1],500)
     testResps = fitfuncs.diff_gauss_form(testBands, dbRow['m'], dbRow['R0'], dbRow['sigmaD'], dbRow['sigmaS'], dbRow['RD'], dbRow['RS'])
+    testRespsPureTone = fitfuncs.diff_gauss_form(testBands, dbRow['mPureTone'], dbRow['R0PureTone'], dbRow['sigmaDPureTone'], dbRow['sigmaSPureTone'], dbRow['RDPureTone'], dbRow['RSPureTone'])
     
+    testBandsNoZero = np.linspace(numBands[1],numBands[-1],500)
+    testRespsNoZero = fitfuncs.diff_gauss_form(testBandsNoZero, dbRow['mnoZero'], dbRow['R0noZero'], dbRow['sigmaDnoZero'], dbRow['sigmaSnoZero'], dbRow['RDnoZero'], dbRow['RSnoZero'])
+
     # --- get SI for each cell ---
     sustainedSI = dbRow['fitSustainedSuppressionIndex']
+    sustainedSIPureTone = dbRow['fitSustainedSuppressionIndexPureTone']
+    sustainedSINoZero = dbRow['fitSustainedSuppressionIndexnoZero']
     
     ### Save bandwidth data ###    
     outputFile = 'example_{}_bandwidth_tuning_{}_{}_{}um_T{}_c{}.npz'.format(cellTypes[indCell],dbRow['subject'], dbRow['date'],
@@ -222,11 +234,14 @@ for indCell in cellsToGenerate:
     np.savez(outputFullPath,
              onsetResponseArray=onsetResponseArray, onsetSEM=onsetSEM,
              sustainedResponseArray=sustainedResponseArray, sustainedSEM=sustainedSEM,
+             onsetResponseArrayPureTone = onsetResponseArrayPureTone, onsetSEMPureTone = onsetSEMPureTone,
+             sustainedResponseArrayPureTone = sustainedResponseArrayPureTone, sustainedSEMPureTone = sustainedSEMPureTone,
              possibleBands=numBands,
              spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset,
              indexLimitsEachTrial=bandIndexLimitsEachTrial,
              trialsEachCond=trialsHighAmp,
              onsetTimeRange=onsetTimeRange, sustainedTimeRange=sustainedTimeRange, rasterTimeRange=rasterTimeRange,
-             fitBands = testBands, fitResponse = testResps, SI = sustainedSI)
+             fitBands = testBands, fitResponse = testResps, fitResponsePureTone = testRespsPureTone, fitBandsNoZero = testBandsNoZero, fitResponseNoZero = testRespsNoZero,
+             SI = sustainedSI, SIPureTone = sustainedSIPureTone, SINoZero = sustainedSINoZero)
     print outputFile + " saved"
 

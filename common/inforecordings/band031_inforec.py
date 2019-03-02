@@ -75,6 +75,8 @@ exp0.add_session('15-58-32', None, 'laserTrain', 'am_tuning_curve')
 exp0.add_session('16-01-18', 'l', 'bandwidth', 'bandwidth_am')
 exp0.add_session('16-19-47', 'm', 'noiseAmps', 'am_tuning_curve')
 
+exp0.maxDepth = 1280
+
 
 exp1 = celldatabase.Experiment(subject, '2017-06-30', 'right_AC', info=['lateralDiD','TT1ant','sound_left'])
 experiments.append(exp1)
@@ -107,3 +109,5 @@ exp1.add_session('13-14-31', None, 'laserPulse', 'am_tuning_curve')
 exp1.add_session('13-16-44', None, 'laserTrain', 'am_tuning_curve')
 exp1.add_session('13-19-37', 'c', 'bandwidth', 'bandwidth_am')
 exp1.add_session('13-39-01', 'd', 'noiseAmps', 'am_tuning_curve')
+
+exp1.maxDepth = 1120
