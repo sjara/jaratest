@@ -268,3 +268,37 @@ exp4.add_session('16-35-04', 'n', 'noiseAmps', 'am_tuning_curve')
 # exp4.add_session('17-18-13', None, 'lasernoisebursts', 'bandwidth_am') #No notable laser responses on plausible cells. Is that possible?
 #
 # exp4.maxDepth = 1300
+
+exp5 = celldatabase.Experiment(subject, '2018-08-24', 'left_AC', info=['lateralDiD','TT8ant','soundright'])
+experiments.append(exp5)
+
+#Laser is coming directly from tether, not attached to probe
+exp5.laserCalibration = {
+    '1.0':2.95,
+    '2.0':3.30,
+    '3.0':3.40,
+    '4.0':3.60,
+    '5.0':3.85,
+    '7.5':4.4,
+    '10.0':4.95
+    }
+
+#Tetrode 3 has the reference
+exp5.add_site(1100, tetrodes=[2,8])
+exp5.add_session('13-56-12', None, 'noisebursts', 'am_tuning_curve')
+exp5.add_session('14-00-20', None, 'lasernoisebursts', 'bandwidth_am')
+exp5.add_session('14-04-18', 'a', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('14-10-18', 'b', 'AM', 'am_tuning_curve')
+exp5.add_session('14-16-06', None, 'longLaser', 'am_tuning_curve')
+
+exp5.add_site(1200, tetrodes=[2,4,8])
+exp5.add_session('14-57-47', None, 'noisebursts', 'am_tuning_curve')
+exp5.add_session('15-00-05', None, 'lasernoisebursts', 'bandwidth_am')
+exp5.add_session('15-01-48', 'c', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('15-07-59', 'd', 'AM', 'am_tuning_curve')#index error. Possibly from ending ephys before behavior
+exp5.add_session('15-12-42', None, 'longLaser', 'am_tuning_curve')
+exp5.add_session('15-22-52', 'e', 'AM', 'am_tuning_curve')#rerecording AM to cluster with
+exp5.add_session('15-44-25', 'f', 'laserBandwidthControl', 'bandwidth_am')
+exp5.add_session('16-08-16', 'g', 'noiseAmps', 'am_tuning_curve')
+
+exp5.maxDepth = 1200
