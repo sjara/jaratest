@@ -23,57 +23,128 @@ dataZ = np.load(dataFn)
 subjects = dataZ['subjects']
 stepArrays = dataZ['stepArrays']
 trialNumArrays = dataZ['trialNumArrays']
+performanceArrays = dataZ['performanceArrays']
+
 
 def find_change_points(stepArray):
     '''
-    Find the session where the animal was advanced to the next step.
-    For advancement to the final step, consecutive days at criterion
-    are required.
+    Find the index of the session where training steps were first acheived.
 
     Args:
-        stepArray (np.array): Array of length nSessions, containing training step.
-        finalStepDays (int): Number of required consecutive days at final step.
-        FIXME: This only works for finalStepDays = 3 for now
+        stepArray (arr): Array of length nSessions with the step of each session
 
     Returns:
-        changePoints (np.array): Array of length nSession - True if the session
-                                 was a change point, and False otherwise.
+        stepList (list): List of each step acheived across the training of the animal
+        indList (list): List of the index in stepArray where the step was first acheived
     '''
 
-    uniqueSteps = np.unique(stepArray)
-    changePointEachStep = np.empty(len(uniqueSteps))
+    #Lists to hold the step that was acheived,
+    #and the index of the session when it was acheived
 
-    for indStep, thisStep in enumerate(uniqueSteps):
-        if indStep != len(uniqueSteps)-1: #Not the last step
-            if indStep == 0: #If first step, change needs to be 0
-                changePointEachStep[indStep] = 0
-            else:
-                indsThisStep = np.flatnonzero(stepArray==thisStep)
-                #Only show jumps of 1 - all other things must be mistake sessions
-                done = False
-                indI = 0
-                while not done:
-                    if stepArray[indsThisStep[indI]] - stepArray[indsThisStep[indI]-1] == 1:
-                        done = True
-                        indToUse = indsThisStep[indI]
-                    else:
-                        indI += 1
-                changePointEachStep[indStep] = indToUse
+    stepList = []
+    indList = []
 
+    for indStep, stepNum in enumerate(stepArray):
+        if indStep==0:
+            #Animal changed to step 0 at index 0
+            stepList.append(0)
+            indList.append(0)
         else:
-            indsThisStep = np.flatnonzero(stepArray==thisStep)
-            done = False
-            indI = 0
-            while not done:
-                if np.all(np.diff(indsThisStep[indI:indI+3]) == np.array([1, 1])):
-                    done=True
+            stepDiff = stepArray[indStep] - stepArray[indStep-1]
+            if stepDiff == 0:
+                #Same step as before, do nothing
+                pass
+            elif stepDiff >= 1:
+                #These can be the change points if they are real
+                #Have to check if it was a single session problem
+                if stepArray[indStep] == stepArray[indStep+1]:
+                    #Still the same step tomorrow, treat as a change point
+                    stepList.append(stepNum)
+                    indList.append(indStep)
                 else:
-                    indI+=1
+                    #We are going to ignore this because it was likely a bad session.
+                    pass
+            elif stepDiff < 0:
+                #We are going down in the steps, ignore it.
+                pass
 
-    changePointEachStep[indStep] = indsThisStep[indI]
-    changePoints = np.zeros(len(stepArray))
-    changePoints[changePointEachStep.astype(int)] = 1
-    return changePoints.astype(bool)
+    return stepList, indList
+
+def find_ready_for_experiment(stepArray, percentCorrectArray, stepList, indList,
+                              thresh=0.75):
+    '''
+    Determine when an animal reached the final stage of being ready to start an experiment.
+
+    Args:
+        stepArray (arr): Array of length nSessions with the step of each session
+        percentCorrectArray (arr): Array of length nSessions with percent correct
+        stepList (list): List of each step acheived across the training of the animal
+        indList (list): List of the index in stepArray where the step was first acheived
+
+    Returns:
+        stepList (list): List of steps acheived with the final step added (if acheived)
+        indList (list): List of the index in stepArray where the step was acheived
+    '''
+
+    #The change point to the final step (step 8, not yet considering 'ready for experiment')
+    finalStep = np.max(stepList)
+    indsFinalStep = np.flatnonzero(stepArray==finalStep)
+
+    done = False
+    failed = False
+    indI = 2
+    while not done:
+        try:
+            perfThisRange = percentCorrectArray[indsFinalStep[indI]-2:indsFinalStep[indI]+1]
+        except IndexError:
+            #This animal was never ready to complete the experiment
+            failed = True
+            break
+        if np.all(perfThisRange >= thresh):
+            done=True
+        else:
+            indI+=1
+
+    if not failed:
+        indFinished = indsFinalStep[indI]
+        stepList.append(9)
+        indList.append(indFinished)
+
+    return stepList, indList
+
+def make_step_trace(stepArray, stepList, indList):
+    '''
+    Construct a trace to plot, showing progression through steps.
+
+    Args:
+        stepArray (arr): Array of length nSessions with the step of each session
+        stepList (list): List of each step acheived across the training of the animal
+        indList (list): List of the index in stepArray where the step was first acheived
+
+    Returns:
+        stepTrace (arr): Array of length nSessions with the current highest acheived step.
+    '''
+    stepTrace = np.empty(len(stepArray))
+    for indStep, step in enumerate(stepList):
+        start = indList[indStep]
+        if indStep < len(stepList)-1:
+            #If we aren't on the last step, we find the end point
+            stop = indList[indStep+1]
+            stepTrace[start:stop] = step
+        else:
+            #Otherwise, we just go to the end
+            stepTrace[start:] = step
+    return stepTrace
+
+
+def get_colors(nColors):
+    '''
+    Returns n colors from the matplotlib rainbow colormap.
+    '''
+    from matplotlib.pyplot import cm
+    colors = cm.rainbow(np.linspace(0, 1, nColors))
+    return colors
+
 
 def test_find_change_points():
     input = np.array([0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 2, 3, 3, 3])
@@ -84,26 +155,58 @@ ytickLabels = ['SD AM', 'D AM', 'NC AM', 'IC AM', 'P AM', 'IC F', 'P F', 'IC M',
 ytickInds = range(len(ytickLabels))
 
 plt.clf()
+
+colors = get_colors(len(subjects))
+maxJitter = 0.3
+increment = (maxJitter*2)/len(subjects)
+lineJitter = np.arange(start=-maxJitter, stop=maxJitter+increment, step=increment)
+lw = 2
+
+axSessions = plt.subplot(211)
+axTrials = plt.subplot(212)
+
+
 for indArray in range(len(subjects)):
+    mouseColor = colors[indArray]
     stepArray = stepArrays[indArray]
+    percentCorrectArray = performanceArrays[indArray]
     stepArrayNN = stepArray[stepArray>=0] #Remove -1s
+    percentCorrectArrayNN = percentCorrectArray[stepArray>=0]
     trialNumArray = trialNumArrays[indArray]
     trialNumArrayNN = trialNumArray[stepArray>=0]
     assert len(stepArrayNN)==len(trialNumArrayNN)
 
-    # changePointsToShow = np.concatenate([np.array([True]), np.diff(stepArray)==1])
-    try:
-        changePointsToShow = find_change_points(stepArrayNN)
-    except IndexError: #FIXME: Some animals have messed up progressions.
-        print "Failure for animal {}".format(subjects[indArray])
-    plt.plot(trialNumArrayNN[changePointsToShow],
-                stepArrayNN[changePointsToShow], '-o')
+    #The main pipeline for producing the trace to plot
+    stepList, indList = find_change_points(stepArrayNN)
+    stepListFinal, indListFinal = find_ready_for_experiment(stepArrayNN,
+                                                            percentCorrectArrayNN,
+                                                            stepList,
+                                                            indList)
+    traceToPlot = make_step_trace(stepArrayNN, stepListFinal, indListFinal)
 
-ax = plt.gca()
-ax.set_yticks(ytickInds)
-ax.set_yticklabels(ytickLabels)
-ax.set_xlabel('Number of trials')
+    traceToPlot = traceToPlot+lineJitter[indArray]
+
+    if max(stepListFinal)==9: #The animal actually reached the ready stage
+        readyInd = indListFinal[-1]
+        trialNumArrayTruncated = trialNumArrayNN[:readyInd+1]
+        traceToPlotTruncated = traceToPlot[:readyInd+1]
+        axTrials.plot(trialNumArrayTruncated, traceToPlotTruncated,
+                      '-', color=mouseColor)
+        axSessions.plot(range(len(traceToPlotTruncated)),
+                              traceToPlotTruncated, '-', color=mouseColor)
+        axTrials.plot(trialNumArrayTruncated[readyInd],
+                      traceToPlotTruncated[readyInd],'o', color=mouseColor)
+        axSessions.plot(readyInd, traceToPlotTruncated[readyInd],
+                        'o', color=mouseColor)
+
+    else:
+        axTrials.plot(trialNumArrayNN, traceToPlot,'-', color=mouseColor)
+        axSessions.plot(range(len(traceToPlot)), traceToPlot, '-', color=mouseColor)
+for ax in [axSessions, axTrials]:
+    ax.set_yticks(ytickInds)
+    ax.set_yticklabels(ytickLabels)
+    extraplots.boxoff(ax)
+axTrials.set_xlabel('Number of trials')
+axSessions.set_xlabel('Number of sessions')
 plt.show()
-
-#FIXME: Why do some animals not get all the way to the top?
-#FIXME: Why do the plots go 7 9 8 at the end? 
+plt.savefig('/home/nick/data/dissertation_amod/figure_training_time.svg')
