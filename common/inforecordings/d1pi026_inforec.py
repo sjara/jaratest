@@ -157,19 +157,6 @@ exp3.maxDepth = 3300
 #     '4.0':6.65
 # }
 
-#Used left speaker; 2.5 mW for laser; probe DAF9; Rig 1
-
-exp4.laserCalibration = {
-    '0.5':1.0,
-    '1.0':1.6,
-    '1.5':2.3,
-    '2.0':3.0,
-    '2.5':3.8,
-    '3.0':4.8,
-    '3.5':5.85,
-    '4.0':6.65
-}
-
 #Aborted due to hemorrhaging after cleaning the craniotomy. Gel foam was needed to reduce the bleeding and was left under the silguard
 
 exp5 = celldatabase.Experiment(subject, '2018-07-24', 'left_AudStr', info=['FacingPosterior', 'Anterior'])
@@ -189,7 +176,7 @@ exp5.laserCalibration = {
 }
 
 #Tetrode 6 has reference; threshold set to 55mV
-exp5.add_site(2900, tetrodes=[1,2,3,4,5,7,8])
+exp5.add_site(2900, tetrodes=[1,2,3,4,5])
 exp5.add_session('16-44-08', None, 'noiseburst', 'am_tuning_curve')
 exp5.add_session('16-45-41', None, 'laserpulse', 'am_tuning_curve')#Possible photoelectric effect
 #exp5.add_session('16-52-20', 'a', 'tuningTest', 'am_tuning_curve') Behavior not saved
