@@ -105,22 +105,58 @@ exp1.add_session('18-41-18', 'l', 'am', 'am_tuning_curve')
 exp1.maxDepth = 3400
 
 
-exp2 = celldatabase.Experiment(subject, '2019-02-28', 'right_AudStr', info=['FacingPosterior', 'MiddleDiD'])
-experiments.append(exp1)
+# exp2 = celldatabase.Experiment(subject, '2019-02-28', 'right_AudStr', info=['FacingPosterior', 'MiddleDiD'])
+# experiments.append(exp1)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest 1760 tc, 220 AM
 #Used left speaker;laser (445 nm) set to 2 mW; Probe CEC2; Rig 2
 
-exp1.laserCalibration = {
-    '0.5':1.6,
-    '1.0':2.34,
-    '1.5':3.08,
-    '2.0':3.85,
-    '2.5':4.50,
-    '3.0':5.85,
-    '3.5':6.8,
-    '4.0':8.3,
+# exp2.laserCalibration = {
+#     '0.5':1.6,
+#     '1.0':2.34,
+#     '1.5':3.08,
+#     '2.0':3.85,
+#     '2.5':4.50,
+#     '3.0':5.85,
+#     '3.5':6.8,
+#     '4.0':8.3,
+# }
+
+exp3 = celldatabase.Experiment(subject, '2019-03-05', 'left_AudStr', info=['FacingPosterior', 'MiddleDiD'])
+experiments.append(exp3)
+
+exp3.laserCalibration = {
+    '0.5':1.5,
+    '1.0':2.0,
+    '1.5':2.5,
+    '2.0':3.1,
+    '2.5':3.55,
+    '3.0':4.6,
+    '3.5':5.53,
+    '4.0':6.7
 }
 
-exp1.add_site(2900, tetrodes=[1,3,6,7,8])
-exp1.add_session('13-34-49', None, 'noiseburst', 'am_tuning_curve')
+
+exp3.add_site(2900, tetrodes=[2,3,4,6,7,8])
+exp3.add_session('17-13-11', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('17-15-40', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('17-19-59', 'a', 'shortTuningCurve', 'am_tuning_curve')
+
+exp3.add_site(3000, tetrodes=[1,2,3,4,6,7,8])
+exp3.add_session('17-40-25', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('17-44-28', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('17-47-14', 'b', 'shortTuningCurve', 'am_tuning_curve') #slight white noise tuning on tetrode 8, cluster 2
+
+exp3.add_site(3100, tetrodes=[1,2,3,4,6,7,8])
+exp3.add_session('18-07-54', None, 'noiseburst', 'am_tuning_curve') #by end of noiseburst, cells were gone
+
+exp3.add_site(3200, tetrodes=[2,3,4,5,6,7,8])
+#No cells
+
+exp3.add_site(3300, tetrodes=[2,3,4,5,6,7,8])
+#no cells
+
+exp3.add_site(3400, tetrodes=[2,3,4,5,6])
+exp3.add_session('18-41-17', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('18-43-20', None, 'laserpulse', 'am_tuning_curve')
+exp3.add_session('18-46-46', 'c', 'shortTuningCurve', 'am_tuning_curve')
