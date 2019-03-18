@@ -195,12 +195,14 @@ for indArray in range(len(subjects)):
         axSessions.plot(range(len(traceToPlotTruncated)),
                               traceToPlotTruncated, '-', color=mouseColor)
         axTrials.plot(trialNumArrayTruncated[readyInd],
-                      traceToPlotTruncated[readyInd],'o', color=mouseColor)
+                      traceToPlotTruncated[readyInd],'o', color=mouseColor,
+                      label=subjects[indArray])
         axSessions.plot(readyInd, traceToPlotTruncated[readyInd],
                         'o', color=mouseColor)
 
     else:
-        axTrials.plot(trialNumArrayNN, traceToPlot,'-', color=mouseColor)
+        axTrials.plot(trialNumArrayNN, traceToPlot,'-', color=mouseColor,
+                      label=subjects[indArray])
         axSessions.plot(range(len(traceToPlot)), traceToPlot, '-', color=mouseColor)
 for ax in [axSessions, axTrials]:
     ax.set_yticks(ytickInds)
@@ -208,5 +210,6 @@ for ax in [axSessions, axTrials]:
     extraplots.boxoff(ax)
 axTrials.set_xlabel('Number of trials')
 axSessions.set_xlabel('Number of sessions')
+plt.legend(ncol=2, frameon=False)
 plt.show()
-plt.savefig('/home/nick/data/dissertation_amod/figure_training_time.svg')
+plt.savefig('/home/nick/data/dissertation_amod/figure_training_time.png')
