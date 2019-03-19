@@ -26,7 +26,7 @@ dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', FIGNAME)
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
-figFilename = 'inactivation_control' # Do not include extension
+figFilename = 'SuppFig8_inactivation_control' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [9,4] # In inches
@@ -147,6 +147,11 @@ if PANELS[1]:
         
         axScatter.annotate(panelLabels[indType], xy=(labelPosX[indType+1],labelPosY[0]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
+        
+        pControl = stats.wilcoxon(controlData[0],controlData[1])[1]
+        pLaser = stats.wilcoxon(laserData[0],laserData[1])[1]
+    
+        print "Change in FR for {0} p values:\ncontrol: {1}\nlaser: {2}".format(cellLabels[indType],pControl,pLaser)
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

@@ -52,6 +52,8 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(1,2)
 gs.update(top=0.92, bottom=0.17, left=0.1, right=0.98, wspace=0.3, hspace=0.3)
 
+plt.hold(True)
+
 # --- SI vs diff/sum response at pure tone ---
 if PANELS[0]:
     panelLabel = 'a'
