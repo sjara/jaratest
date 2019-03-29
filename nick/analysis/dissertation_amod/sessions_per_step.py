@@ -70,33 +70,36 @@ def behavior_step(sessionData, readyThresh=0.75):
             if psycurveMode == 'off':
                 step=7
             elif psycurveMode == 'uniform':
-                #Now we need to calculate performance to see if the animal is
-                #starting, or is ready to begin expeiments.
-                correctTrials = sessionData['outcome'] == sessionData.labels['outcome']['correct']
-                validCorrect = correctTrials[sessionData['valid']]
-                percentCorrect = sum(validCorrect)/float(len(validCorrect))
-
-                if percentCorrect > readyThresh:
-                    step = 9
-                else:
-                    step = 8
+                # NOTE: percentCorrect now calculated for all sessions and returned
+                # if percentCorrect > readyThresh:
+                #     step = 9
+                # else:
+                step = 8
             else:
                 raise AttributeError('Psycurve mode not listed: {}'.format(psycurveMode))
         else:
             raise AttributeError('Sound mode not listed: {}'.format(soundTypeMode))
     else:
         raise AttributeError('Outcome mode not listed: {}'.format(outcomeMode))
-    return step
+
+    #Now we need to calculate performance to see if the animal is
+    #starting, or is ready to begin expeiments.
+    correctTrials = sessionData['outcome'] == sessionData.labels['outcome']['correct']
+    validCorrect = correctTrials[sessionData['valid']]
+    percentCorrect = sum(validCorrect)/float(len(validCorrect))
+    return step, percentCorrect
 
 subjects = ['amod007', 'amod008', 'amod009', 'amod010', 'amod011', 'amod012', 'amod013', 'amod014']
 # subjects = ['amod007']
 stepArrays = []
 trialNumArrays = []
+performanceArrays = []
 for subject in subjects:
     dataDir = os.path.join(settings.BEHAVIOR_PATH, subject)
     sessions = sorted(os.listdir(dataDir))
     trainingSteps = np.empty(len(sessions))
     trialStartEachSession = np.empty(len(sessions))
+    percentCorrect = np.empty(len(sessions))
     trials = 0
     highestStep = 0
     for indSession, sessionFn in enumerate(sessions):
@@ -107,10 +110,10 @@ for subject in subjects:
             print "Key Error with session: {}".format(sessionFullPath)
 
         try:
-            step = behavior_step(bdata)
+            step, percentCorrectThisSession = behavior_step(bdata)
         except KeyError: #Using the animal for other paradigms throws key errors
-            if highestStep==9: #If we are at the end of the animal's career
-                step = -1 #Animal was being used for different things
+            if highestStep==8: #If we are at the end of the animal's career
+                step, percentCorrectThisSession = -1, 0 #Animal was being used for different things
             else:
                 raise KeyError('Problem before end of animal career')
 
@@ -120,12 +123,17 @@ for subject in subjects:
 
         trialStartEachSession[indSession] = trials
         trainingSteps[indSession] = step
+        percentCorrect[indSession] = percentCorrectThisSession
         trials += len(bdata['valid']) #Using total length, not just valid trials
     stepArrays.append(trainingSteps)
     trialNumArrays.append(trialStartEachSession)
+    performanceArrays.append(percentCorrect)
 
 saveFn = '/home/nick/data/dissertation_amod/sessions_per_step.npz'
-np.savez(saveFn, subjects=subjects, stepArrays=stepArrays, trialNumArrays=trialNumArrays)
+np.savez(saveFn, subjects=subjects,
+         stepArrays=stepArrays,
+         trialNumArrays=trialNumArrays,
+         performanceArrays=performanceArrays)
 
 # plt.clf()
 # for indArray, stepArray in enumerate(stepArrays):
