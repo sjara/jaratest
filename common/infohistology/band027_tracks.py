@@ -4,7 +4,7 @@ TODO:
 - 'shank' is very specific to silicon probes, replace with more generic info key?
 '''
 
-subject = 'band015'
+subject = 'band027'
 
 tracks = [
     {'subject':subject, 'brainArea':'RightAC', 'histImage':'p2-A2-02',
