@@ -287,3 +287,57 @@ exp4.add_session('21-45-42', 'ah', 'noiseAmps', 'am_tuning_curve')
 exp4.add_session('21-50-10', 'ai', 'noiseAmps', 'am_tuning_curve')
 
 exp4.maxDepth = 1500
+
+
+exp5 = celldatabase.Experiment(subject, '2018-09-17', 'right_AC', info=['lateralDiD','TT1ant','soundleft'])
+experiments.append(exp5)
+
+#Control day, tether not plugged in
+exp5.laserCalibration = {
+    '1.0':3.0,
+    '2.0':3.25,
+    '3.0':3.45,
+    '4.0':3.65,
+    '5.0':3.85,
+    '7.5':4.45,
+    '10.0':5.0
+    }
+
+#shank 1 not penetrating well
+
+exp5.add_site(950, tetrodes=[3,4,6,7,8])
+exp5.add_session('12-02-48', None, 'noiseburst', 'am_tuning_curve')
+
+exp5.add_site(1150, tetrodes=[4,6,7,8])
+exp5.add_session('12-12-55', None, 'noiseburst', 'am_tuning_curve')
+
+exp5.add_site(1250, tetrodes=[3,4,6,7,8])
+exp5.add_session('12-25-10', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('12-27-24', None, 'lasernoisebursts', 'bandwidth_am')
+exp5.add_session('12-29-22', 'a', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('12-36-15', 'b', 'AM', 'am_tuning_curve')
+exp5.add_session('12-40-42', None, 'longLaser', 'am_tuning_curve')
+exp5.add_session('12-44-20', 'c', 'laserBandwidthControl', 'bandwidth_am')
+exp5.add_session('13-09-42', 'd', 'noiseAmps', 'am_tuning_curve')
+
+exp5.add_site(1350, tetrodes=[3,4,6,7,8])
+exp5.add_session('13-26-09', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('13-30-35', None, 'lasernoisebursts', 'bandwidth_am')
+exp5.add_session('13-34-29', 'e', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('13-39-15', 'f', 'AM', 'am_tuning_curve')
+exp5.add_session('13-43-52', None, 'longLaser', 'am_tuning_curve')
+exp5.add_session('13-49-34', 'g', 'laserBandwidthControl', 'bandwidth_am')
+exp5.add_session('14-48-11', 'h', 'noiseAmps', 'am_tuning_curve')
+
+exp5.add_site(1450, tetrodes=[3,4,6])
+exp5.add_session('15-04-37', None, 'noiseburst', 'am_tuning_curve')
+exp5.add_session('15-54-10', None, 'lasernoisebursts', 'bandwidth_am')
+exp5.add_session('15-56-16', 'i', 'tuningCurve', 'am_tuning_curve')
+exp5.add_session('16-16-25', 'j', 'AM', 'am_tuning_curve')
+exp5.add_session('16-35-38', None, 'longLaser', 'am_tuning_curve')
+#32 KhZ @ 64, 9 @ 64
+exp5.add_session('16-47-03', 'k', 'laserBandwidthControl', 'bandwidth_am')
+exp5.add_session('17-14-06', 'l', 'noiseAmps', 'am_tuning_curve')
+exp5.add_session('17-19-45', 'm', 'laserBandwidthControl', 'bandwidth_am')
+
+exp5.maxDepth = 1450

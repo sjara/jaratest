@@ -91,3 +91,37 @@ exp2.add_session('15-42-28', None, 'noisebursts', 'am_tuning_curve')
 # #Bad tuning on clusters
 
 exp2.maxDepth = 1000
+
+
+exp3 = celldatabase.Experiment(subject, '2018-11-20', 'left_AC', info=['lateralDiD','TT8ant','soundright'])
+experiments.append(exp3)
+
+#noisebursts(50) -> tuningCurve(240) -> AM(150) -> signalBandwidths(420) -> SNRs (300) -> noiseAmps (150)
+exp3.add_site(900, tetrodes=[6,7,8])
+exp3.add_session('14-12-54', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('14-14-44', 'a', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('14-17-43', 'b', 'AM', 'am_tuning_curve')
+#No sustained response
+
+exp3.add_site(1000, tetrodes=[1,2,4,6,7,8])
+exp3.add_session('14-29-30', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('14-30-57', 'c', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('14-34-17', 'd', 'AM', 'am_tuning_curve')
+
+exp3.add_site(1100, tetrodes=[1,2,3,4,6,7,8])
+exp3.add_session('15-00-40', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('15-02-06', 'e', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('15-07-09', 'f', 'AM', 'am_tuning_curve')
+exp3.add_session('15-39-07', 'g', 'signalBandwidths', 'bandwidth_am') #5.5 kHz @ 64
+exp3.add_session('16-05-48', 'h', 'SNRs', 'bandwidth_am')
+exp3.add_session('16-22-43', 'i', 'noiseAmps', 'am_tuning_curve')
+
+exp3.add_site(1200, tetrodes=[1,2,3,4,6,7,8])
+exp3.add_session('16-37-25', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('16-40-37', 'j', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('16-45-20', 'k', 'AM', 'am_tuning_curve')
+exp3.add_session('16-53-06', 'l', 'signalBandwidths', 'bandwidth_am') #5 kHz @ 64
+exp3.add_session('17-15-52', 'm', 'SNRs', 'bandwidth_am')
+exp3.add_session('17-33-40', 'n', 'noiseAmps', 'am_tuning_curve')
+
+exp3.maxDepth = 1200
