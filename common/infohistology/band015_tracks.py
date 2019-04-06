@@ -7,10 +7,14 @@ TODO:
 subject = 'band015'
 
 tracks = [
+
+    {'subject':subject, 'brainArea':'LeftAC', 'histImage':'p1-B3-03',
+     'recordingTrack':'medialDiI', 'shank':4, 'atlasZ':193},
+
     {'subject':subject, 'brainArea':'LeftAC', 'histImage':'p1-B4-03',
      'recordingTrack':'lateralDiI', 'shank':4, 'atlasZ':195},
 
-    {'subject':subject, 'brainArea':'LeftAC', 'histImage':'p1-D3-03',
+    {'subject':subject, 'brainArea':'LeftAC', 'histImage':'p1-B4-03',
      'recordingTrack':'medialDiD', 'shank':4, 'atlasZ':195},
 
     {'subject':subject, 'brainArea':'LeftAC', 'histImage':'p1-B6-03',
