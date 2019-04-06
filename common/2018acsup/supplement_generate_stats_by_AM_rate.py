@@ -20,42 +20,23 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import figparams
-import subjects_info
+import studyparams
 
-#dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
-dbFilename = os.path.join(settings.DATABASE_PATH,'photoidentification_cells.h5')
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
 db = celldatabase.load_hdf(dbFilename)
 
 figName = 'supplement_figure_characterisation_of_responses_by_AM_rate'
 
-#dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
-dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
 
-R2CUTOFF = 0.1 #minimum R^2 value for a cell to be considered frequency tuned
-OCTAVESCUTOFF = 0.3 #maximum octave difference between estimated best frequency and centre frequency presented
-
-SOUND_RESPONSE_PVAL = 0.05
-
-PV_CHR2_MICE = subjects_info.PV_CHR2_MICE
-SOM_CHR2_MICE = subjects_info.SOM_CHR2_MICE
 
 # -- find PV, SOM, and non-SOM cells that are tuned to frequency and with a good centre frequency selected
-bestCells = db.query("isiViolations<0.02 or modifiedISI<0.02")
-bestCells = bestCells.query('spikeShapeQuality>2.5 and tuningFitR2>@R2CUTOFF and octavesFromPrefFreq<@OCTAVESCUTOFF')
+bestCells = db.query(studyparams.SINGLE_UNITS)
+bestCells = bestCells.query(studyparams.GOOD_CELLS)
 
-# -- find cells responsive to laser pulse or train --
-laserResponsiveCells = bestCells.query("laserPVal<0.001 and laserUStat>0")
-PVCells = laserResponsiveCells.loc[laserResponsiveCells['subject'].isin(PV_CHR2_MICE)]
-SOMCells = laserResponsiveCells.loc[laserResponsiveCells['subject'].isin(SOM_CHR2_MICE)]
-
-# -- find cells unresponsive to laser (putative pyramidal) --
-ExCells = bestCells.query("laserPVal>0.05 and laserTrainPVal>0.05")
-ExCells = ExCells.loc[ExCells['subject'].isin(SOM_CHR2_MICE)]
-
-# -- PV, SOM, Ex cells sound responsive during sustained portion of bw trials --
-sustPVCells = PVCells.loc[PVCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
-sustSOMCells = SOMCells.loc[SOMCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
-sustExCells = ExCells.loc[ExCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
+sustPVCells = bestCells.query(studyparams.PV_CELLS)
+sustSOMCells = bestCells.query(studyparams.SOM_CELLS)
+sustExCells = bestCells.query(studyparams.EXC_CELLS)
 
 # -- get suppression indices for all cells responsive during sustained portion of response --
 PVsustainedSuppression = sustPVCells['sustainedSuppressionIndex']

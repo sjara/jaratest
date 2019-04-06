@@ -63,7 +63,7 @@ exp1.laserCalibration = {
     '4.0':7.5
 }
 
-exp1.add_site(2900, tetrodes=[1,3,6,7,8])
+exp1.add_site(2900, tetrodes=[1,3,6,7,8]) #Recorded by Anna when grad students were visiting. Different number of trials were used compared to normal
 exp1.add_session('13-34-49', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('13-37-06', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('13-40-48', None, 'lasertrain', 'am_tuning_curve')
@@ -154,7 +154,7 @@ exp3.add_site(3200, tetrodes=[2,3,4,5,6,7,8])
 #No cells
 
 exp3.add_site(3300, tetrodes=[2,3,4,5,6,7,8])
-#no cells
+#No cells
 
 exp3.add_site(3400, tetrodes=[2,3,4,5,6])
 exp3.add_session('18-41-17', None, 'noiseburst', 'am_tuning_curve')
