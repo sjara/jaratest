@@ -35,7 +35,7 @@ tracks = [
      'recordingTrack':'lateralDiD', 'shank':2, 'atlasZ':230},
 
     {'subject':subject, 'brainArea':'RightAC', 'histImage':'p2-B2-02',
-     'recordingTrack':'medialDiD', 'shank':2, 'atlasZ':232},
+     'recordingTrack':'medialDiD', 'shank':1, 'atlasZ':232},
 
     {'subject':subject, 'brainArea':'RightAC', 'histImage':'p2-B3-02',
      'recordingTrack':'medialDiI', 'shank':1, 'atlasZ':236},
