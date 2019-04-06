@@ -20,7 +20,7 @@ tracks = [
      'recordingTrack': 'medialDiI', 'shank': 4, 'atlasZ': 220},
 
     {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p2-A5-02',
-     'recordingTrack': 'medialDiD', 'shank': 1, 'atlasZ': 224},
+     'recordingTrack': 'middleDiD', 'shank': 1, 'atlasZ': 224},
 
     {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p2-B1-02',
      'recordingTrack': 'middleDiI', 'shank': 4, 'atlasZ': 226},
