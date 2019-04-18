@@ -160,3 +160,5 @@ exp3.add_site(3400, tetrodes=[2,3,4,5,6])
 exp3.add_session('18-41-17', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('18-43-20', None, 'laserpulse', 'am_tuning_curve')
 exp3.add_session('18-46-46', 'c', 'shortTuningCurve', 'am_tuning_curve')
+
+exp3.maxDepth = 3400
