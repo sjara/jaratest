@@ -19,6 +19,6 @@ tracks = [
     {'subject':subject, 'brainArea':'LeftAC', 'histImage':'P2-A6-03',
      'recordingTrack':'lateralDiD', 'shank':2, 'atlasZ':212},
 
-    {'subject':subject, 'brainArea':'LeftAC', 'histImage':'P2-A4-03',
+    {'subject':subject, 'brainArea':'LeftAC', 'histImage':'P2-B4-03',
      'recordingTrack':'lateralDiD', 'shank':1, 'atlasZ':218},
 ]
