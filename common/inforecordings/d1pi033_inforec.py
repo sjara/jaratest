@@ -112,3 +112,5 @@ exp2.add_session('14-33-41', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('14-35-23', 'd', 'tuningTest', 'am_tuning_curve')
 exp2.add_session('14-42-04', 'e', 'tuningCurve(tc)', 'am_tuning_curve')
 exp2.add_session('15-17-52', 'f', 'AM', 'am_tuning_curve')
+
+exp2.maxDepth = 3100
