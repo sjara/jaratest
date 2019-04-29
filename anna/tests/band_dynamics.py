@@ -139,11 +139,11 @@ def time_differences_by_trial(animal, sessions, sortBy, paradigm = '2afc', trigg
 
 if __name__ == '__main__':
     
-    CASE=1
+    CASE=2
 
-    animalNames = ['band0'+str(number) for number in [65,66,67,68,69,70,71]]
+    animalNames = ['band0'+str(number) for number in [78,79,80,82,83,84,85,86]]
     #animalNames = ['adap064', 'adap070']
-    #session = '20180929a'
+    session = '20190409a'
     
     rsync_all_behaviour(animalNames)
     
@@ -151,7 +151,7 @@ if __name__ == '__main__':
         plt.figure()
         
         for ind,animal in enumerate(animalNames):
-            plt.subplot(2,4,ind+1)
+            plt.subplot(2,5,ind+1)
             behavFile = os.path.join(settings.BEHAVIOR_PATH,animal,animal+'_2afc_'+session+'.h5')
             behavData = loadbehavior.BehaviorData(behavFile,readmode='full')
             plot_dynamics(behavData)
@@ -161,7 +161,7 @@ if __name__ == '__main__':
         
         plt.figure()
         for ind,animal in enumerate(animalNames):
-            plt.subplot(2,4,ind+1)
+            plt.subplot(2,5,ind+1)
             behavFile = os.path.join(settings.BEHAVIOR_PATH,animal,animal+'_2afc_'+session+'.h5')
             behavData = loadbehavior.BehaviorData(behavFile,readmode='full')
             plot_multibandwidth_psychometric(behavData)
@@ -170,9 +170,9 @@ if __name__ == '__main__':
         plt.show()
         
     elif CASE==1:
-        animals = ['band0'+str(number) for number in [66,67,68,69,71]]
+        animals = ['band0'+str(number) for number in [66,69]]
         #sessions = ['20180929a','20180930a', '20181001a','20181002a','20181003a','20181004a']
-        sessions = ['20190108a']
+        sessions = ['20190124a']
         #rsync_all_behaviour(animalNames)
         
         plt.figure()
@@ -211,17 +211,53 @@ if __name__ == '__main__':
 #         animal = 'band046'
 #         laserSessions = ['20180530a', '20180601a', '20180603a','20180605a']
 #         controlSessions = ['20180529a', '20180531a', '20180602a','20180604a']
-
-        animal = 'band065'
-        laserSessions = ['20181020a','20181021a','20181023a','20181024a','20181026a','20181027a','20181029a','20181030a']
+	'''
+        animal = 'band070'
+        laserSessions = ['20181020a','20181021a','20181023a','20181024a','20181026a',
+	'20181027a','20181029a','20181030a']
         controlSessions = ['20181019a','20181022a','20181025a','20181028a','20181105a']
-        #rsync_behavior(animal)
+        rsync_behavior(animal)
+	'''
+	'''
+	animal = 'band065'
+        laserSessions = ['20181018a','20181020a','20181021a','20181023a','20181024a',
+	'20181026a','20181027a','20181029a']
+        controlSessions = ['20181019a','20181022a','20181025a','20181028a','20181105a']
+        rsync_behavior(animal)
+	'''
+	'''
+	animal = 'band066'
+        laserSessions = ['20190123a', '20190124a', '20190126a','20190127a', '20190129a', '20190130a','20190201a','20190202a']
+	controlSessions = ['20190125a', '20190128a','20190131a','20190203a']
+	'''
+	'''
+        animal = 'band069'
+        laserSessions = ['20190123a', '20190124a', '20190126a','20190127a', '20190129a', '20190130a','20190201a','20190202a']
+	controlSessions = ['20190125a', '20190128a','20190131a','20190203a']
+	'''
+	
+	animal = 'band069'
+	laserSessions = ['20190218a','20190219a','20190221a','20190222a','20190224a', '20190225a','20190227a', '20190228a']
+	controlSessions = ['20190220a','20190223a','20190226a', '20190301a']
+	
+	"""
+	animal = 'band081'
+	laserSessions = ['20190307a', '20190308a','20190310a','20190311a','20190313a','20190314a','20190316a','20190317a']
+	controlSessions = ['20190309a','20190312a','20190315a','20190318a']
+	"""
+	"""
+	animal = 'band069'
+	laserSessions = ['20190307a', '20190308a','20190310a','20190311a','20190313a','20190314a','20190316a','20190317a']
+	controlSessions = ['20190309a','20190312a','20190315a','20190318a']
+	"""
 
-        
+        rsync_all_behaviour([animal])
+
         sessionTypes = [laserSessions, controlSessions]
         sessionTitles = ['Laser', 'Control']
         
         plt.figure()
+        plt.hold(True)
         for ind, sessions in enumerate(sessionTypes):
             plt.subplot(1,2,ind+1)
             validPerCond, rightPerCond, possibleConds = band_behaviour_analysis.band_psychometric(animal, sessions, trialTypes=['laserSide','currentBand','currentSNR'])
