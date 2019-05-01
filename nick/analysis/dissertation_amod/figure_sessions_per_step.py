@@ -165,6 +165,8 @@ lw = 2
 axSessions = plt.subplot(211)
 axTrials = plt.subplot(212)
 
+allSessionsToReady = np.empty(len(subjects))
+allTrialsToReady = np.empty(len(subjects))
 
 for indArray in range(len(subjects)):
     mouseColor = colors[indArray]
@@ -196,9 +198,12 @@ for indArray in range(len(subjects)):
                               traceToPlotTruncated, '-', color=mouseColor)
         axTrials.plot(trialNumArrayTruncated[readyInd],
                       traceToPlotTruncated[readyInd],'o', color=mouseColor,
-                      label=subjects[indArray])
+                      label="Animal {}".format(indArray))
+                      # label=subjects[indArray])
+        allTrialsToReady[indArray] = trialNumArrayTruncated[readyInd]
         axSessions.plot(readyInd, traceToPlotTruncated[readyInd],
                         'o', color=mouseColor)
+        allSessionsToReady[indArray] = readyInd
 
     else:
         axTrials.plot(trialNumArrayNN, traceToPlot,'-', color=mouseColor,
@@ -208,8 +213,38 @@ for ax in [axSessions, axTrials]:
     ax.set_yticks(ytickInds)
     ax.set_yticklabels(ytickLabels)
     extraplots.boxoff(ax)
+    ax.set_ylabel('Training stage')
+
 axTrials.set_xlabel('Number of trials')
 axSessions.set_xlabel('Number of sessions')
-plt.legend(ncol=2, frameon=False)
+
+labelPosX = [0.025]   # Horiz position for panel labels
+labelPosY = [0.9, 0.45]    # Vert position for panel labels
+fontSizePanel = 14
+
+ax.annotate('A', xy=(labelPosX[0],labelPosY[0]), fontsize=fontSizePanel, xycoords = 'figure fraction', fontweight='bold')
+ax.annotate('B', xy=(labelPosX[0],labelPosY[1]), fontsize=fontSizePanel, xycoords = 'figure fraction', fontweight='bold')
+
+fig = plt.gcf()
+fig.set_size_inches(6, 5)
+plt.subplots_adjust(left=0.15, right=0.78, hspace=0.3)
+plt.legend(ncol=1, frameon=False, bbox_to_anchor=(1, 1.3), loc=3)
 plt.show()
-plt.savefig('/home/nick/data/dissertation_amod/figure_training_time.png')
+# plt.savefig('/home/nick/data/dissertation_amod/figure_training_time.png')
+plt.savefig('/home/nick/Dropbox/oregon/terms/y5winter/dissertation/figures/chapter4/figure_training.pdf')
+
+
+sessionStats = ("Sessions to Ready:\nMin: {}\nMean: {}" +
+              "\nStd: {}\nMax: {}\n").format(np.min(allSessionsToReady),
+                                               np.mean(allSessionsToReady),
+                                               np.std(allSessionsToReady),
+                                               np.max(allSessionsToReady),)
+print sessionStats
+
+trialStats = ("Trials to Ready:\nMin: {}\nMean: {}" +
+              "\nStd: {}\nMax: {}\n").format(np.min(allTrialsToReady),
+                                               np.mean(allTrialsToReady),
+                                               np.std(allTrialsToReady),
+                                               np.max(allTrialsToReady),)
+print trialStats
+

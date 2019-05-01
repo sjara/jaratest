@@ -58,63 +58,31 @@ def calculate_psychometric_and_estimate(bdata, fullDataPath):
 saveDir = '/home/nick/data/dissertation_amod/'
 
 
-## AM only
-##
-# sessions = {'amod001':['20160316a', '20160317a', '20160318a', '20160319a',
-#                        '20160320a', '20160321a', '20160322a', '20160323a'],
-#             'amod005':['20160316a', '20160317a', '20160318a', '20160319a',
-#                        '20160320a', '20160321a', '20160322a', '20160323a']}
-# muscimol = {'amod001':[0, 1, 0, 1, 0, 1, 0, 1],
-#             'amod005':[0, 1, 0, 1, 0, 1, 0, 1]}
+# AM only
 
-# List of saline and muscimol sessions actually more useful for this analysis
-# Make them with funky application of list comprehension inside dict comprehension
-# salineSessions = {animal: [session for session, mus in zip(sessions[animal], muscimol[animal]) if mus==0] for animal in sessions.keys()}
-# muscimolSessions = {animal: [session for session, mus in zip(sessions[animal], muscimol[animal]) if mus==1] for animal in sessions.keys()}
-
-# Frequency only
-# Muscimol injected at 1mg/ml. We used lower concentrations after this.
-sessions = {'amod006':['20161003a', '20161004a'],
-            'amod007':['20161003a', '20161004a'],
-            'amod008':['20161003a', '20161004a'],
-            'amod009':['20161003a', '20161004a']}
-
-muscimol = {'amod006':[0, 1],
-            'amod007':[0, 1],
-            'amod008':[0, 1],
-            'amod009':[0, 1]}
+sessions = {'amod001':['20160316a', '20160317a', '20160318a', '20160319a',
+                       '20160320a', '20160321a', '20160322a', '20160323a'],
+            'amod005':['20160316a', '20160317a', '20160318a', '20160319a',
+                       '20160320a', '20160321a', '20160322a', '20160323a']}
+muscimol = {'amod001':[0, 1, 0, 1, 0, 1, 0, 1],
+            'amod005':[0, 1, 0, 1, 0, 1, 0, 1]}
 
 salineSessions = {animal: [session for session, mus in zip(sessions[animal], muscimol[animal]) if mus==0] for animal in sessions.keys()}
 muscimolSessions = {animal: [session for session, mus in zip(sessions[animal], muscimol[animal]) if mus==1] for animal in sessions.keys()}
 
-for subject in ['amod006', 'amod007', 'amod008', 'amod009']:
+for subject in ['amod001', 'amod005']:
     salineThisSubject = salineSessions[subject]
     muscimolThisSubject = muscimolSessions[subject]
 
     bdata = behavioranalysis.load_many_sessions(subject, salineThisSubject)
-    dataFn ='psychometric_{}_saline.npz'.format(subject)
+    dataFn ='am_psychometric_{}_saline.npz'.format(subject)
     print 'Saving: {}'.format(dataFn)
     dataPath = os.path.join(saveDir, dataFn)
     calculate_psychometric_and_estimate(bdata, dataPath)
 
     # Muscimol Data
     bdata = behavioranalysis.load_many_sessions(subject, muscimolThisSubject)
-    dataFn ='psychometric_{}_muscimol.npz'.format(subject)
+    dataFn ='am_psychometric_{}_muscimol.npz'.format(subject)
     print 'Saving: {}'.format(dataFn)
     dataPath = os.path.join(saveDir, dataFn)
     calculate_psychometric_and_estimate(bdata, dataPath)
-
-# salDataObjs, salSoundTypes = soundtypes.load_behavior_sessions_sound_type(subject, salineThisSubject)
-# for soundType, stInd in salSoundTypes.iteritems():
-#     dataFn ='psychometric_{}_{}_saline.npz'.format(subject, soundType)
-#     print 'Saving: {}'.format(dataFn)
-#     dataPath = os.path.join(saveDir, dataFn)
-#     calculate_psychometric_and_estimate(salDataObjs[stInd], dataPath)
-
-# # Muscimol Data
-# musDataObjs, musSoundTypes = soundtypes.load_behavior_sessions_sound_type(subject, muscimolThisSubject)
-# for soundType, stInd in musSoundTypes.iteritems():
-#     dataFn ='psychometric_{}_{}_muscimol.npz'.format(subject, soundType)
-#     print 'Saving: {}'.format(dataFn)
-#     dataPath = os.path.join(saveDir, dataFn)
-#     calculate_psychometric_and_estimate(musDataObjs[stInd], dataPath)
