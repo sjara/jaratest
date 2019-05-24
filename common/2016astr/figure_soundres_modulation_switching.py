@@ -90,7 +90,7 @@ session = '20160113a'
 winsize = 40
 behavFileName = loadbehavior.path_to_behavior_data(animal,paradigm,session)
 behavData = loadbehavior.FlexCategBehaviorData(behavFileName)
-hPlots = behavioranalysis.plot_dynamics(behavData, winsize=winsize, fontsize=fontSizeLabels, soundfreq=None)
+hPlots = behavioranalysis.plot_dynamics_2afc_by_freq(behavData, winsize=winsize, fontsize=fontSizeLabels, soundfreq=None)
 extraplots.boxoff(plt.gca())
 plt.setp(hPlots[1], color=colorLeft) #Block1, midFreq
 plt.setp(hPlots[2], color='grey') #Block1, highFreq
@@ -289,7 +289,7 @@ if PANELS[2]:
     sigMI = summary['modulationIndex'][sigModulated]
     nonsigMI = summary['modulationIndex'][~sigModulated]
     binsEdges = np.linspace(-1,1,20)
-    plt.hist([sigMI,nonsigMI], bins=binsEdges, color=[colorMod,colorNotMod], edgecolor='None', stacked=True)
+    plt.hist([sigMI,nonsigMI], bins=binsEdges, color=[colorMod,colorNotMod], edgecolor='None', stacked=True, rwidth=0.8)
     '''
     sig_patch = mpatches.Patch(color=colorMod, label='Modulated')
     nonsig_patch = mpatches.Patch(color=colorNotMod, label='Not modulated')

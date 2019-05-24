@@ -1,3 +1,5 @@
+#coding=utf-8
+
 from jaratoolbox import celldatabase
 
 subject = 'pinp020'

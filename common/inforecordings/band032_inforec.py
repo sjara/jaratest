@@ -96,6 +96,8 @@ exp0.add_session('16-59-36', None, 'laserTrain', 'am_tuning_curve')
 exp0.add_session('17-03-10', 'o', 'bandwidth', 'bandwidth_am')
 exp0.add_session('17-25-51', 'p', 'noiseAmps', 'am_tuning_curve')
 
+exp0.maxDepth = 1380
+
 
 exp1 = celldatabase.Experiment(subject, '2017-07-17', 'left_AC', info=['medialDiI','TT1ant','sound_right'])
 experiments.append(exp1)
@@ -171,19 +173,21 @@ exp1.add_session('16-03-56', 'd', 'noiseAmps', 'am_tuning_curve')
 # exp1.add_site(1550, tetrodes = [5,6,7,8])
 # exp1.add_session('16-51-13', None, 'laserPulse', 'am_tuning_curve')
 
+exp1.maxDepth = 1550
 
-exp2 = celldatabase.Experiment(subject, '2017-07-21', 'right_AC', info=['middleDiD','TT1ant','sound_left'])
-experiments.append(exp2)
 
-exp2.laserCalibration = {
-    '0.5':1.75,
-    '1.0':2.8,
-    '1.5':4.0,
-    '2.0':5.5,
-    '2.5':7.8
-}
-
-#shanks bending, could not find any signals whatsoever, perhaps not in brain but other tissue?
+# exp2 = celldatabase.Experiment(subject, '2017-07-21', 'right_AC', info=['middleDiD','TT1ant','sound_left'])
+# experiments.append(exp2)
+# 
+# exp2.laserCalibration = {
+#     '0.5':1.75,
+#     '1.0':2.8,
+#     '1.5':4.0,
+#     '2.0':5.5,
+#     '2.5':7.8
+# }
+# 
+# #shanks bending, could not find any signals whatsoever, perhaps not in brain but other tissue?
 
 
 exp3 = celldatabase.Experiment(subject, '2017-07-21', 'left_AC', info=['middleDiD','TT1ant','sound_right'])
@@ -242,19 +246,22 @@ exp3.add_session('16-50-13', 'g', 'bandwidth', 'bandwidth_am') #12kHz, 64Hz for 
 exp3.add_session('17-11-10', 'h', 'bandwidth', 'bandwidth_am') #6kHz, 64Hz for TT2
 exp3.add_session('17-29-48', 'i', 'noiseAmps', 'am_tuning_curve')
 
-#could not find spot to penetrate in right AC
-exp4 = celldatabase.Experiment(subject, '2017-07-23', 'left_AC', info=['lateralDiI','TT1ant','sound_right'])
-experiments.append(exp4)
+exp3.maxDepth = 1300
 
-exp4.laserCalibration = {
-    '0.5':1.6,
-    '1.0':2.5,
-    '1.5':3.5,
-    '2.0':4.25,
-    '2.5':5.5,
-    '3.0':6.55,
-    '3.5':9.8
-}
+
+#could not find spot to penetrate in right AC
+# exp4 = celldatabase.Experiment(subject, '2017-07-23', 'left_AC', info=['lateralDiI','TT1ant','sound_right'])
+# experiments.append(exp4)
+# 
+# exp4.laserCalibration = {
+#     '0.5':1.6,
+#     '1.0':2.5,
+#     '1.5':3.5,
+#     '2.0':4.25,
+#     '2.5':5.5,
+#     '3.0':6.55,
+#     '3.5':9.8
+# }
 
 # exp4.add_site(1350, tetrodes = [2])
 # exp4.add_session('16-06-53', None, 'laserPulse', 'am_tuning_curve')

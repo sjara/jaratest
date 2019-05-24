@@ -41,11 +41,11 @@ if not os.path.exists(dataDir):
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
 EPHYS_PATH = settings.EPHYS_PATH_REMOTE
 
-if not os.path.ismount(BEHAVIOR_PATH):
-    os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
+# if not os.path.ismount(BEHAVIOR_PATH):
+#     os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
 
-if not os.path.ismount(EPHYS_PATH):
-    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
+# if not os.path.ismount(EPHYS_PATH):
+#     os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
 
 
 # -- Select an example cell from allcells file -- #

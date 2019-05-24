@@ -17,8 +17,8 @@ if not os.path.exists(outputDir):
 scriptFullPath = os.path.realpath(__file__)
 
 numSessionsToInclude = 6
-blockLabels = ['more_left','more_right'] #['same_reward','more_left','more_right']
-animalsUsed = ['adap012', 'adap071']
+blockLabels = ['same_reward','more_left','more_right'] #['more_left','more_right']
+animalsUsed = ['adap012', 'adap071', 'gosi008']
 #resultsDict = {}
 for indA,animalName in enumerate(animalsUsed):
     psycurveDict = {}
@@ -74,11 +74,12 @@ for indA,animalName in enumerate(animalsUsed):
             psycurveDict['fityval'][blockType,:] = fityval
 
         else:
-            fractionHitsEachBlockEachFreq[blockType,:] = np.NaN
-            ciHitsEachBlockEachFreq[blockType,:] = np.NaN
-            nTrialsEachBlockEachFreq[blockType,:] = np.NaN
-            nHitsEachBlockEachFreq[blockType,:] = np.Nan
+            psycurveDict['fractionHitsEachBlockEachFreq'][blockType,:] = np.nan
+            psycurveDict['ciHitsEachBlockEachFreq'][blockType,:] = np.nan
+            psycurveDict['nTrialsEachBlockEachFreq'][blockType,:] = np.nan
+            psycurveDict['nHitsEachBlockEachFreq'][blockType,:] = np.nan
 
     outputFilename = 'example_rc_ave_pycurve_{}.npz'.format(animalName)
     outputFullPath = os.path.join(outputDir, outputFilename)
-    np.savez(outputFullPath, animalsUsed=animalsUsed, numSessionsToInclude=numSessionsToInclude, blockLabels=blockLabels, script=scriptFullPath, **psycurveDict)
+    np.savez(outputFullPath, animalsUsed=animalsUsed, numSessionsToInclude=numSessionsToInclude, 
+        blockLabels=blockLabels, script=scriptFullPath, **psycurveDict)

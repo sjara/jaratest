@@ -16,8 +16,8 @@ maxZthreshold = 3
 # -- Access mounted ephys data for psycurve mice -- #
 EPHYS_MOUNTED = settings.EPHYS_PATH_REMOTE
 
-if not os.path.ismount(EPHYS_MOUNTED):
-    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_MOUNTED))
+# if not os.path.ismount(EPHYS_MOUNTED):
+#     os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_MOUNTED))
 
 ################ -- Function to read file containing maximal Z score for each frequency presented in the psychometric curve task, store data in a dataframe  -- #####################
 ### This function is modified from a function with the same name in test068_read_psychometric_measurement_txtfiles.py to include maxZ score for all frequencies. ###

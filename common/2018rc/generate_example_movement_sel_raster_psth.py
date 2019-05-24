@@ -1,9 +1,7 @@
 '''
-Generate and store intermediate data for plot showing movement-aligned firing activity of astr neurons recorded in psychometric/switching task. Data for raster and psth are saved separately. 
-For raster data, output contains spikeTimestamps, eventOnsetTimes, freqEachTrial.
-For psth data, output contains spikeCountMat, timeVec, freqEachTrial.
-Trials from all frequencies that have either a valid left or right choice are plotted
-Lan Guo20161223
+Generate and store intermediate data for plot showing movement-aligned firing activity of astr neurons recorded in reward change task.  
+Spike counts are done separately for low vs high freq trials and left vs right movement trials (4 conditions total).
+Lan Guo 2018-08-03
 '''
 import os
 import sys
@@ -12,6 +10,7 @@ import pandas as pd
 from jaratoolbox import loadbehavior
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesanalysis
+from jaratoolbox import celldatabase
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import figparams
@@ -35,74 +34,117 @@ colorsDict = {'left': figparams.colp['MoveLeft'],
 BEHAVIOR_PATH = settings.BEHAVIOR_PATH_REMOTE
 EPHYS_PATH = settings.EPHYS_PATH_REMOTE
 
-if not os.path.ismount(BEHAVIOR_PATH):
-    os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
+# if not os.path.ismount(BEHAVIOR_PATH):
+#     os.system('sshfs -o idmap=user jarauser@jarahub:/data/behavior/ {}'.format(BEHAVIOR_PATH))
 
-if not os.path.ismount(EPHYS_PATH):
-    os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
+# if not os.path.ismount(EPHYS_PATH):
+#     os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
 
 
 # -- These example cells we picked manually  --#
 cellParamsList = []
 
-exampleCell = {'subject':'adap005',
-              'date':'2015-12-24',
-              'tetrode':6,
-               'cluster':8,
-               'brainRegion':'astr'} 
-cellParamsList.append(exampleCell)
+# exampleCell = {'subject':'adap012',
+#               'date':'2016-03-29',
+#               'tetrode':4,
+#                'cluster':11,
+#                'brainRegion':'astr'}  # sustained
+# cellParamsList.append(exampleCell) 
 
-exampleCell = {'subject':'adap012',
-              'date':'2016-03-09',
-              'tetrode':3,
-               'cluster':2,
-               'brainRegion':'astr'} 
-cellParamsList.append(exampleCell)
-#
-exampleCell = {'subject':'adap012',
-              'date':'2016-03-24',
-              'tetrode':4,
-               'cluster':8,
-               'brainRegion':'astr'} 
-cellParamsList.append(exampleCell)
+exampleCell = {'subject':'adap017',
+              'date':'2016-04-21',
+              'tetrode':1,
+               'cluster':7,
+               'brainRegion':'astr'}  # sustained
+cellParamsList.append(exampleCell) 
+
+# exampleCell = {'subject':'gosi004',
+#               'date':'2017-03-07',
+#               'tetrode':7,
+#                'cluster':10,
+#                'brainRegion':'ac'}  # sustained
+# cellParamsList.append(exampleCell) 
 
 exampleCell = {'subject':'gosi004',
-              'date':'2017-02-13',
-              'tetrode':7,
+              'date':'2017-02-25',
+              'tetrode':1,
                'cluster':8,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
+               'brainRegion':'ac'}  # sustained
+cellParamsList.append(exampleCell) 
 
-exampleCell = {'subject':'gosi004',
-              'date':'2017-03-11',
-              'tetrode':4,
-               'cluster':5,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
-
-#
-exampleCell = {'subject':'gosi008',
-              'date':'2017-03-07',
-              'tetrode':1,
-               'cluster':4,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
-
-#
-exampleCell = {'subject':'gosi008',
-              'date':'2017-03-10',
-              'tetrode':1,
-               'cluster':10,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
+# exampleCell = {'subject':'gosi008',
+#               'date':'2017-03-10',
+#               'tetrode':1,
+#                'cluster':10,
+#                'brainRegion':'ac'}  # sustained
+# cellParamsList.append(exampleCell) 
 
 
-exampleCell = {'subject':'gosi010',
-              'date':'2017-05-02',
-              'tetrode':4,
-               'cluster':12,
-               'brainRegion':'ac'} 
-cellParamsList.append(exampleCell)
+# exampleCell = {'subject':'adap013',
+#               'date':'2016-03-30',
+#               'tetrode':8,
+#                'cluster':5,
+#                'brainRegion':'astr'}  # leftward very strong
+# cellParamsList.append(exampleCell) 
+
+# exampleCell = {'subject':'adap005',
+#               'date':'2015-12-24',
+#               'tetrode':6,
+#                'cluster':8,
+#                'brainRegion':'astr'} 
+# cellParamsList.append(exampleCell)
+
+# exampleCell = {'subject':'adap012',
+#               'date':'2016-03-09',
+#               'tetrode':3,
+#                'cluster':2,
+#                'brainRegion':'astr'} 
+# cellParamsList.append(exampleCell)
+# #
+# exampleCell = {'subject':'adap012',
+#               'date':'2016-03-24',
+#               'tetrode':4,
+#                'cluster':8,
+#                'brainRegion':'astr'} 
+# cellParamsList.append(exampleCell)
+
+# exampleCell = {'subject':'gosi004',
+#               'date':'2017-02-13',
+#               'tetrode':7,
+#                'cluster':8,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
+
+# exampleCell = {'subject':'gosi004',
+#               'date':'2017-03-11',
+#               'tetrode':4,
+#                'cluster':5,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
+
+# #
+# exampleCell = {'subject':'gosi008',
+#               'date':'2017-03-07',
+#               'tetrode':1,
+#                'cluster':4,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
+
+# #
+# exampleCell = {'subject':'gosi008',
+#               'date':'2017-03-10',
+#               'tetrode':1,
+#                'cluster':10,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
+
+
+# exampleCell = {'subject':'gosi010',
+#               'date':'2017-05-02',
+#               'tetrode':4,
+#                'cluster':12,
+#                'brainRegion':'ac'} 
+# cellParamsList.append(exampleCell)
 
 # -- Here we can choose to generate data for a specific cell instead of every cell -- #
 if len(sys.argv) == 1:
@@ -111,10 +153,9 @@ if len(sys.argv) == 1:
 elif len( sys.argv) == 2:
     cellIndToGenerate = int(sys.argv[1]) 
 ####################################################################################
-dbKey = 'reward_change'
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
-celldb = pd.read_hdf(celldbPath, key=dbKey)
+celldb = celldatabase.load_hdf(celldbPath)
 sessionType = 'behavior'
 behavClass = loadbehavior.FlexCategBehaviorData
 evlockFolder = 'evlock_spktimes'
@@ -150,15 +191,27 @@ for cellParams in cellParamsList:
     # Remove missing trials
     bdata.remove_trials(missingTrials)
 
+    diffTimesSound = bdata['timeTarget'] - bdata['timeCenterOut'] 
+    diffTimesSideIn = bdata['timeSideIn'] - bdata['timeCenterOut']
+
     # -- Select trials to plot from behavior file -- #
     rightward = bdata['choice']==bdata.labels['choice']['right']
     leftward = bdata['choice']==bdata.labels['choice']['left']
+    freqEachTrial = bdata['targetFrequency']
+    lowFreq = freqEachTrial == bdata['lowFreq'][0]
+    highFreq = freqEachTrial == bdata['highFreq'][0]
 
-    trialsToUseRight = rightward
-    trialsToUseLeft = leftward
-    condLabels = ['go left', 'go right']
-    trialsEachCond = np.c_[trialsToUseLeft,trialsToUseRight] 
-    colorEachCond = [colorsDict['left'],colorsDict['right']]
+    trialsToUseLeftCorrct = leftward & lowFreq
+    trialsToUseLeftError = leftward & highFreq
+    trialsToUseRightCorrect = rightward & highFreq
+    trialsToUseRightError = rightward & lowFreq
+
+    condLabels = ['go left correct', 'go right correct', 'go left error', 'go right error']
+    #condLabels = ['go left', 'go right']
+    trialsEachCond = np.c_[trialsToUseLeftCorrct, trialsToUseRightCorrect, trialsToUseLeftError, trialsToUseRightError] 
+    #trialsEachCond = np.c_[leftward, rightward]
+    colorEachCond = [colorsDict['left'],colorsDict['right'],colorsDict['left'],colorsDict['right']]
+    #colorEachCond = [colorsDict['left'],colorsDict['right']]
     
     alignment = 'center-out'
     evlockDataFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(animal, date, depth, tetrode, cluster, alignment)
@@ -173,7 +226,13 @@ for cellParams in cellParamsList:
     #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
     outputFile = 'example_rc_movement_sel_{}_{}_T{}_c{}.npz'.format(animal, date, tetrode, cluster)
     outputFullPath = os.path.join(outputDir,outputFile)
-    np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 
+    np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
+      soundTimesFromEventOnset=diffTimesSound, sideInTimesFromEventOnset=diffTimesSideIn,
+      indexLimitsEachTrial=indexLimitsEachTrial, 
+      lowFreq=bdata['lowFreq'][0], highFreq=bdata['highFreq'][0],
+      spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, 
+      condLabels=condLabels, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
+      script=scriptFullPath, colorLeftTrials=colorsDict['left'], colorRightTrials=colorsDict['right'], **cellParams) 
 
 
     

@@ -65,7 +65,6 @@ def find_cf_inds(fra, resp, threshold=0.85):
         resultWithMaxFiring = resultsAtMinInten[resultSpikeCounts.index(max(resultSpikeCounts))]
         return resultWithMaxFiring
 
-
 #Example cells we want to show tuning curves for
 #AC
 examples = {}
@@ -91,7 +90,11 @@ exampleSpikeData = {}
 # Fit gaussian to spike data 10db above intensity threshold
 # Determine upper and lower bounds of tc
 
-dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+# dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = '/tmp/celldatabase_new_20180830.h5'
 db = pd.read_hdf(dbPath, key='dataframe')
 
 soundResponsive = db.query('isiViolations<0.02 and spikeShapeQuality>2 and noisePval<0.05')
@@ -120,11 +123,12 @@ runtimeErrorInds = [] # Cells where the gaussian fit causes a runtime error
 noFreqAboveThreshInds = [] #Cells where no combination causes a response above the response threshold
 threshButNo10Above = [] #Cells where we were not able to capture 10dB above threshold because the threshold was too high
 no10dbAboveInds = []
+sparklyCells = []
 
 #We want to iterate through each row in the dataframe. indRow is the dataframe index column, not a climbing iteration index
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     failed=False
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
     try:
         ephysData, bdata = cell.load('tc')
     except (IndexError, ValueError): #The cell does not have a tc or the tc session has no spikes
@@ -218,20 +222,22 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         exampleSpikeData.update({exampleKeys[exampleInd]:allIntenResp})
 
 
-    # TODO: Remove sparkly cells
-    if allIntenResp.max()<1:
-        thresholds[indIter] = None
-        cfs[indIter] = None
-        lowerFreqs[indIter] = None
-        upperFreqs[indIter] = None
-        continue
+    # Remove sparkly cells
+    # if allIntenResp.max()<0.2:
+    #     thresholds[indIter] = None
+    #     cfs[indIter] = None
+    #     lowerFreqs[indIter] = None
+    #     upperFreqs[indIter] = None
+    #     sparklyCells.append(indRow)
+    #     continue
     respMeanLowestInten = allIntenResp[0:2, :].mean()
     # respMax = allIntenResp.max()
     respMax = np.percentile(allIntenResp, 90)
     respRatio = respMax/respMeanLowestInten
 
     #TODO: Choose which FRA to use
-    thresholdResponse = allIntenBase.mean() + 0.2*(allIntenResp.max()-allIntenBase.mean())
+    thresholdFRA = 0.2
+    thresholdResponse = allIntenBase.mean() + thresholdFRA*(allIntenResp.max()-allIntenBase.mean())
     # threshMedian = allIntenBase.mean() + 0.2*(allIntenRespMedian.max()-allIntenBase.mean())
     fra = allIntenResp > thresholdResponse
     # fraMedian = allIntenRespMedian > threshMedian
@@ -252,6 +258,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         cfs[indIter] = None
         lowerFreqs[indIter] = None
         upperFreqs[indIter] = None
+        noFreqAboveThreshInds.append(indRow)
         continue
 
     threshold = possibleIntensity[indThreshInt]

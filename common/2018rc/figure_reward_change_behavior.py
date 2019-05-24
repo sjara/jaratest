@@ -7,6 +7,7 @@ reload(settings)
 from jaratoolbox import extraplots
 from jaratoolbox import extrastats
 import figparams
+from scipy import stats
 reload(figparams)
 
 
@@ -17,18 +18,19 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'plots_reward_change_behavior' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-#figSize = [7, 5]
-figSize = [10, 2.5]
+figSize = [7, 5]
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [-0.25]   # Horiz position for panel labels
-labelPosY = [1]    # Vert position for panel labels
+#labelPosX = [0.01, 0.45]   # Horiz position for panel labels
+labelPosX = [0.01, 0.5]   # Horiz position for panel labels
+labelPosY = [0.95, 0.45]    # Vert position for panel labels
 
 colorsDict = {'more_left':figparams.colp['MoreRewardL'], 
-              'more_right':figparams.colp['MoreRewardR']} 
+              'more_right':figparams.colp['MoreRewardR'],
+              'same_reward': figparams.colp['SameReward']} 
 
 '''
 animalNumbers = {'adap021':'Mouse 1',
@@ -44,23 +46,34 @@ fig.set_facecolor('w')
 
 panelsToPlot=[0, 1]
 
-gs = gridspec.GridSpec(1, 3)
-gs.update(left=0.09, right=0.98, top=0.92, bottom=0.18, wspace=0.3, hspace=0.1)
-ax0 = plt.subplot(gs[0, 0])
-ax1 = plt.subplot(gs[0, 1])
-ax2 = plt.subplot(gs[0, 2])
+gs = gridspec.GridSpec(2, 6)
+#gs.update(left=0.09, right=0.98, top=0.95, bottom=0.08, wspace=0.5, hspace=0.5)
+#gs.update(left=0.09, right=0.98, top=0.95, bottom=0.12, wspace=0.5, hspace=0.5)
+gs.update(left=0.09, right=0.98, top=0.95, bottom=0.09, wspace=0.5, hspace=0.5)
+
+gs00 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[0,:], wspace=0.4)
+
+ax0 = plt.subplot(gs[0, 0:3])
+#ax1 = plt.subplot(gs[0, 3:])
+ax1 = plt.subplot(gs00[0, 1])
+ax2 = plt.subplot(gs[1, 0:2])
+ax2.hold(True)
+ax3 = plt.subplot(gs[1, 2:4])
+ax3.hold(True)
+ax4 = plt.subplot(gs[1, 4:6])
+ax4.hold(True)
 
 # -- Panel A: task schematic -- #
 ax0.set_axis_off()
-ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
+ax0.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
                 fontsize=fontSizePanel, fontweight='bold')
 
 # -- Panel B: Example rc psychometric -- # 
 if 0 in panelsToPlot:
-    ax1.annotate('B', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
+    ax1.annotate('B', xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
                  fontsize=fontSizePanel, fontweight='bold')
 
-    exampleFilename = 'example_rc_ave_pycurve_adap071.npz' #'example_rc_ave_pycurve_adap012.npz'
+    exampleFilename = 'example_rc_ave_pycurve_gosi008.npz' #'example_rc_ave_pycurve_adap012.npz' #'example_rc_ave_pycurve_adap071.npz'
     exampleFullPath = os.path.join(dataDir,exampleFilename)
     exampleData = np.load(exampleFullPath)
 
@@ -100,15 +113,16 @@ if 0 in panelsToPlot:
     
     ax1.set_ylim([0, 100])
     ax1.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    extraplots.set_ticks_fontsize(ax1,fontSizeTicks)
     ax1.set_yticks([0, 50, 100])
 
-    leg = ax1.legend([plotHandles[1],plotHandles[0]], ['More_left','More_right'], loc='upper left', frameon=False,
+    leg = ax1.legend(plotHandles, ['Same reward','More left','More right'], loc='upper left', frameon=False,
                      labelspacing=0.1, handlelength=1.5, handletextpad=0.2, borderaxespad=0.1, fontsize=12)
     
 
 # #Panel: Summary bar plots for each animal
 if 1 in panelsToPlot:
+    '''
     summaryFilename = 'rc_rightward_choice_each_condition_summary.npz'
     summaryFullPath = os.path.join(dataDir,summaryFilename)
     summaryFile = np.load(summaryFullPath)
@@ -155,18 +169,96 @@ if 1 in panelsToPlot:
     #ax2.axes.get_xaxis().set_visible(False)
     ax2.spines['bottom'].set_visible(False)
     [t.set_visible(False) for t in ax2.get_xticklines()]
-ax2.annotate('C', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction', fontsize=fontSizePanel, fontweight='bold')
+    '''
+    summaryFilename = 'rc_fitted_rightward_choice_each_condition_by_freq_summary.npz'
+    #'rc_rightward_choice_each_condition_by_freq_summary.npz'
+    summaryFullPath = os.path.join(dataDir,summaryFilename)
+    summaryFile = np.load(summaryFullPath)
+
+    dataMat = summaryFile['resultAllAnimals']
+    subjects = summaryFile['animalsUsed']
+    conditions = summaryFile['blockLabels']
+    firstCondToPlot = 1
+    numFreqs = dataMat.shape[1]
+
+    freqToPlot = 0 #lowest freq
+    rChoiceEachConcThisFreqEachAnimal = dataMat[firstCondToPlot:, freqToPlot, :]
+    for animalInd in range(len(subjects)):
+        ax2.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
+    ax2.set_xticks([0,1])
+    ax2.set_xticklabels([])
+    ax2.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+    ax2.set_yticks([0, 25]) 
+    ax2.set_xlim([-0.5, 1.5])
+    ax2.set_xticklabels(['More left', 'More right'], fontsize=fontSizeLabels)
+    #ax2.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels) #conditions[firstCondToPlot:]
+    ax2.set_xlabel('Reward amount', fontsize=fontSizeLabels)
+    ax2.set_ylim([-5, 30])
+    #ax2.text(0, 30,'Lowest frequency')
+    ax2.set_title('Lowest frequency', fontsize=fontSizeLabels)
+    plt.sca(ax2)
+    extraplots.significance_stars([0,1], 26, 1, starSize=8, gapFactor=0.2, color='0.5')
+    extraplots.set_ticks_fontsize(ax2,fontSizeTicks)
+    extraplots.boxoff(ax2) 
+
+    freqToPlot = numFreqs / 2 # middle freq
+    rChoiceEachConcThisFreqEachAnimal = dataMat[firstCondToPlot:, freqToPlot, :]
+    for animalInd in range(len(subjects)):
+        ax3.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
+    ax3.set_xticks([0,1])
+    ax3.set_xticklabels(['More left', 'More right'], fontsize=fontSizeLabels)
+    #ax3.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
+    ax3.set_xlabel('Reward amount', fontsize=fontSizeLabels)
+    #ax3.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+    ax3.set_yticks([0, 25, 50, 75, 100])
+    ax3.set_ylim([-15, 118]) 
+    ax3.set_xlim([-0.5, 1.5])
+    #ax3.text(0.1, 118, 'Middle frequency')
+    ax3.set_title('Middle frequency', fontsize=fontSizeLabels)
+    plt.sca(ax3)
+    extraplots.significance_stars([0,1], 108, 4, starSize=8, gapFactor=0.2, color='0.5')
+    extraplots.set_ticks_fontsize(ax3,fontSizeTicks)
+    extraplots.boxoff(ax3) 
+
+    freqToPlot = -1 # highest freq
+    rChoiceEachConcThisFreqEachAnimal = dataMat[firstCondToPlot:, freqToPlot, :]
+    for animalInd in range(len(subjects)):
+        ax4.plot(rChoiceEachConcThisFreqEachAnimal[:, animalInd], marker='o', color='k')
+    ax4.set_xticks([0,1])
+    ax4.set_xticklabels(['More left', 'More right'], fontsize=fontSizeLabels)
+    #ax4.set_xticklabels(['More\nleft', 'More\nright'], fontsize=fontSizeLabels)
+    ax4.set_xlabel('Reward amount', fontsize=fontSizeLabels)
+    #ax4.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
+    ax4.set_yticks([75, 100])
+    ax4.set_ylim([70, 106]) 
+    ax4.set_xlim([-0.5, 1.5])
+    #ax4.text(0.1, 106, 'Highest frequency')
+    ax4.set_title('Highest frequency', fontsize=fontSizeLabels)
+    plt.sca(ax4)
+    extraplots.significance_stars([0,1], 103, 1, starSize=8, gapFactor=0.2, color='0.5')
+    extraplots.set_ticks_fontsize(ax4,fontSizeTicks)
+    extraplots.boxoff(ax4) 
+
+ax2.annotate('C', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
     
-plt.show()
-
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 
-import numpy as np
-from scipy import stats
 
-##SATS
+##STATS
+for freqToPlot in [0, numFreqs / 2, -1]:
+    rChoiceEachConcThisFreqEachAnimal = dataMat[firstCondToPlot:, freqToPlot, :]
+    zScore, pVal = stats.ranksums(rChoiceEachConcThisFreqEachAnimal[0,:], rChoiceEachConcThisFreqEachAnimal[1,:])
+    print('Using Wilcoxon ranksum test on percent right choice for more_left vs. more_right\n For freq {} the p value is {}'
+        .format(freqToPlot, pVal))
+rChoiceSameRwExtremeFreqEachAnimal = np.concatenate((100-dataMat[0,0,:],dataMat[0,-1,:]))
+rChoiceSameRwExtremeFreqEachAnimal = rChoiceSameRwExtremeFreqEachAnimal[~np.isnan(rChoiceSameRwExtremeFreqEachAnimal)]
+print('The accuracy of discrimination at the two extreme frequencies is {} +/- {}%'
+    .format(np.mean(rChoiceSameRwExtremeFreqEachAnimal), np.std(rChoiceSameRwExtremeFreqEachAnimal)))
+
+plt.show()
+'''
 for indSubject in range(len(subjects)):
     subDataMoreLeft = dataMat[0, :, indSubject]
     subDataMoreRight = dataMat[1, :, indSubject]
@@ -177,3 +269,4 @@ for indSubject in range(len(subjects)):
     Z, pVal = stats.ranksums(subDataMoreLeft, subDataMoreRight)
 
     print "\n\nWilcoxon rank-sum test of fraction right choice for mouse {}, p={:.3f}".format(indSubject, pVal)
+'''

@@ -7,11 +7,11 @@ generate_summary_photostim_outside_task.py
 
 import os
 import numpy as np
-import cv2
+# import cv2
 import matplotlib.pyplot as plt
 from jaratoolbox import settings
-from jaratoolbox import videoanalysis
-reload(videoanalysis)
+# from jaratoolbox import videoanalysis
+# reload(videoanalysis)
 import figparams
 
 FIGNAME = 'photostim_outside_task'

@@ -11,7 +11,7 @@ subject = 'anat036'
 barColor = '0.5'
 
 AREA='ATh'
-CASE=6
+CASE=2
 
 if AREA=='AC':
     jpgFolder = '5xAC_JPEG'

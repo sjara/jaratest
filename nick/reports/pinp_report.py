@@ -7,66 +7,119 @@ from jaratoolbox import spikesanalysis
 from jaratoolbox import spikesorting
 from jaratoolbox import loadopenephys
 from jaratoolbox import loadbehavior
+from jaratoolbox import behavioranalysis
 from jaratoolbox import extraplots
 from jaratoolbox import ephyscore
+import pandas as pd
 
-def load_all_spikedata(dbRow):
+def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, freqEachTrial):
     '''
-    Load the spike data for all recorded sessions into a set of arrays.
-    Args:
-        dbRow (pandas.Series): One row from a pandas cell database created using generate_cell_database or by
-                              manually constructing a pandas.Series object that contains the required fields.
-    Returns:
-        timestamps (np.array): The timestamps for all spikes across all sessions
-        samples (np.array): The samples for all spikes across all sessions
-        recordingNumber (np.array): The index of the session where the spike was recorded
+    Generator func to return the spiketimes/trial indices for trials of each frequency
     '''
-    samples=np.array([])
-    timestamps=np.array([])
-    recordingNumber=np.array([])
-    for ind, sessionType in enumerate(dbRow['sessiontype']):
-        ephysData, bdata = cell.load(sessionType)
-        numSpikes = len(ephysData['spikeTimes'])
-        sessionVector = np.zeros(numSpikes)+ind
-        if len(samples)==0:
-            samples = ephysData['samples']
-            timestamps = ephysData['spikeTimes']
-            recordingNumber = sessionVector
-        else:
-            samples = np.concatenate([samples, ephysData['samples']])
-            # Check to see if next session ts[0] is lower than self.timestamps[-1]
-            # If so, add self.timestamps[-1] to all new timestamps before concat
-            if dataSpkObj.timestamps[0]<timestamps[-1]:
-                dataSpkObj.timestamps = ephysData['spikeTimes'] + timestamps[-1]
-            timestamps = np.concatenate([timestamps, ephysData['spikeTimestamps']])
-            recordingNumber = np.concatenate([recordingNumber, sessionVector])
-    return timestamps, samples, recordingNumber
+    possibleFreq = np.unique(freqEachTrial)
+    for freq in possibleFreq:
+        trialsThisFreq = np.flatnonzero(freqEachTrial==freq)
+        spikeTimesThisFreq = spikeTimesFromEventOnset[np.in1d(trialIndexForEachSpike, trialsThisFreq)]
+        trialIndicesThisFreq = trialIndexForEachSpike[np.in1d(trialIndexForEachSpike, trialsThisFreq)]
+        yield (freq, spikeTimesThisFreq, trialIndicesThisFreq)
 
-def plot_pinp_report(dbRow, saveDir):
+def plot_example_with_rate(subplotSpec, spikeTimes, indexLimitsEachTrial, freqEachTrial, color='k', colorEachCond=None, maxSyncRate=None):
+    fig = plt.gcf()
 
+    gs = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=subplotSpec, wspace=-0.45, hspace=0.0 )
+
+    specRaster = gs[0:2]
+    axRaster = plt.Subplot(fig, specRaster)
+    fig.add_subplot(axRaster)
+
+    # spikeTimes = exampleSpikeTimes[exampleName]
+    # indexLimitsEachTrial = exampleIndexLimitsEachTrial[exampleName]
+    timeRange = [-0.2, 0.7]
+    # freqEachTrial = exampleFreqEachTrial[exampleName]
+    possibleFreq = np.unique(freqEachTrial)
+    freqLabels = ['{0:.1f}'.format(freq) for freq in possibleFreq]
+    trialsEachCondition = behavioranalysis.find_trials_each_type(freqEachTrial,possibleFreq)
+    pRaster, hCond, zline = extraplots.raster_plot(spikeTimes, indexLimitsEachTrial,
+                                                   timeRange, trialsEachCondition, labels=freqLabels,
+                                                   colorEachCond=colorEachCond)
+    axYTicks = plt.gca().get_yticklabels()
+    if (maxSyncRate is not None) and (maxSyncRate != 0.0) and not np.isnan(maxSyncRate):
+        indMaxSync = np.where(possibleFreq==maxSyncRate)
+        axYTicks[int(indMaxSync[0])].set_color('red')
+    plt.setp(pRaster, ms=2)
+    ax = plt.gca()
+    ax.set_xticks([0, 0.5])
+    ax.set_xlabel('Time from\nsound onset (s)')
+    ax.set_ylabel('AM Rate (Hz)')
+
+    # ax.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
+    #             fontsize=fontSizePanel, fontweight='bold')
+
+
+    countRange = [0.1, 0.5]
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimes,indexLimitsEachTrial,countRange)
+    numSpikesInTimeRangeEachTrial = np.squeeze(spikeCountMat)
+
+    numSpikesInTimeRangeEachTrial = np.squeeze(np.diff(indexLimitsEachTrial,
+                                                       axis=0))
+
+    if len(numSpikesInTimeRangeEachTrial) == len(freqEachTrial)+1:
+        numSpikesInTimeRangeEachTrial = numSpikesInTimeRangeEachTrial[:-1]
+    conditionMatShape = np.shape(trialsEachCondition)
+    numRepeats = np.product(conditionMatShape[1:])
+    nSpikesMat = np.reshape(numSpikesInTimeRangeEachTrial.repeat(numRepeats),
+                            conditionMatShape)
+    spikesFilteredByTrialType = nSpikesMat * trialsEachCondition
+    avgSpikesArray = np.sum(spikesFilteredByTrialType, 0) / np.sum(
+        trialsEachCondition, 0).astype('float')/np.diff(np.array(countRange))
+    stdSpikesArray = np.std(spikesFilteredByTrialType, 0)/np.diff(np.array(countRange))
+
+    specRate = gs[3]
+    axRate = plt.Subplot(fig, specRate)
+    fig.add_subplot(axRate)
+
+    nRates = len(possibleFreq)
+    plt.hold(True)
+    plt.plot(avgSpikesArray, range(nRates), 'ro-', mec='none', ms=7, lw=3, color=color)
+    plt.plot(avgSpikesArray-stdSpikesArray, range(len(possibleFreq)), 'k:')
+    plt.plot(avgSpikesArray+stdSpikesArray, range(len(possibleFreq)), 'k:')
+    axRate.set_ylim([-0.5, nRates-0.5])
+    axRate.set_yticks(range(nRates))
+    axRate.set_yticklabels([])
+
+    #ax = plt.gca()
+    axRate.set_xlabel('Firing rate\n(spk/s)')
+    extraplots.boxoff(axRate)
+    # extraplots.boxoff(ax, keep='right')
+    return (axRaster, axRate)
+
+def plot_pinp_report(dbRow, saveDir=None, useModifiedClusters=True):
     #Init cell object
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=useModifiedClusters)
 
     plt.clf()
-    gs = gridspec.GridSpec(9, 6)
+    gs = gridspec.GridSpec(11, 6)
     gs.update(left=0.15, right=0.95, bottom=0.15, wspace=1, hspace=1)
 
-    if 'laserpulse' in dbRow['sessionType']: #DONE
-        #Laser pulse raster
+    if 'noiseburst' in dbRow['sessionType']: #DONE
         ax0 = plt.subplot(gs[0:2, 0:3])
-        ephysData, bdata = cell.load('laserpulse')
+        ephysData, bdata = cell.load('noiseburst')
         eventOnsetTimes = ephysData['events']['stimOn']
-        timeRange = [-0.5, 1]
+        timeRange = [-0.3, 0.5]
         (spikeTimesFromEventOnset,
          trialIndexForEachSpike,
          indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(ephysData['spikeTimes'],
                                                                        eventOnsetTimes,
                                                                        timeRange)
-        extraplots.raster_plot(spikeTimesFromEventOnset,
-                               indexLimitsEachTrial,
-                               timeRange)
+        pRaster, hCond, zLine = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                       indexLimitsEachTrial,
+                                                       timeRange)
+        plt.setp(pRaster, ms=1)
+        ax0.set_xlim(timeRange)
+        ax0.set_xticks([])
+
         #Laser pulse psth
-        ax1 = plt.subplot(gs[2:4, 0:3])
+        ax1 = plt.subplot(gs[4:6, 0:3])
         win = np.array([0, 0.25, 0.75, 1, 0.75, 0.25, 0]) # scipy.signal.hanning(7)
         win = win/np.sum(win)
         binEdges = np.arange(timeRange[0],timeRange[-1],0.001)
@@ -75,27 +128,67 @@ def plot_pinp_report(dbRow, saveDir):
                                                                  indexLimitsEachTrial,binEdges)
         avResp = np.mean(spikeCountMat,axis=0)
         smoothPSTH = np.convolve(avResp,win, mode='same')
-        plt.plot(timeVec, smoothPSTH,'b-', mec='none' ,lw=3)
+        plt.plot(timeVec, smoothPSTH,'k-', mec='none' ,lw=2)
+        ax1.set_xlim(timeRange)
+        ax1.set_xlabel('Time from noise onset (s)')
+
+    if 'laserpulse' in dbRow['sessionType']: #DONE
+        #Laser pulse raster
+        ax0 = plt.subplot(gs[2:4, 0:3])
+        ephysData, bdata = cell.load('laserpulse')
+        eventOnsetTimes = ephysData['events']['stimOn']
+        timeRange = [-0.3, 0.5]
+        (spikeTimesFromEventOnset,
+         trialIndexForEachSpike,
+         indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(ephysData['spikeTimes'],
+                                                                       eventOnsetTimes,
+                                                                       timeRange)
+        pRaster, hCond, zLine = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                       indexLimitsEachTrial,
+                                                       timeRange)
+        plt.setp(pRaster, ms=1)
+        ax0.set_xlim(timeRange)
+        ax0.set_xticks([])
+
+        #Laser pulse psth
+        ax1 = plt.subplot(gs[4:6, 0:3])
+        win = np.array([0, 0.25, 0.75, 1, 0.75, 0.25, 0]) # scipy.signal.hanning(7)
+        win = win/np.sum(win)
+        binEdges = np.arange(timeRange[0],timeRange[-1],0.001)
+        timeVec = binEdges[1:]  # FIXME: is this the best way to define the time axis?
+        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                                 indexLimitsEachTrial,binEdges)
+        avResp = np.mean(spikeCountMat,axis=0)
+        smoothPSTH = np.convolve(avResp,win, mode='same')
+        plt.plot(timeVec, smoothPSTH,'k-', mec='none' ,lw=2)
+        ax1.set_xlim(timeRange)
+        ax1.set_xlabel('Time from laser pulse onset (s)')
 
     if 'lasertrain' in dbRow['sessionType']: #DONE
         #Laser train raster
-        ax2 = plt.subplot(gs[0:2, 3:6])
+        ax2 = plt.subplot(gs[2:4, 3:6])
         ephysData, bdata = cell.load('lasertrain')
         eventOnsetTimes = ephysData['events']['stimOn']
         eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, 0.5)
 
         timeRange = [-0.5, 1]
+        pulseTimes = [0, 0.2, 0.4, 0.6, 0.8]
+
         (spikeTimesFromEventOnset,
          trialIndexForEachSpike,
          indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(ephysData['spikeTimes'],
                                                                        eventOnsetTimes,
                                                                        timeRange)
-        extraplots.raster_plot(spikeTimesFromEventOnset,
-                               indexLimitsEachTrial,
-                               timeRange)
+
+        pRaster, hCond, zLine = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                       indexLimitsEachTrial,
+                                                       timeRange)
+        plt.setp(pRaster, ms=1)
+        ax2.set_xlim(timeRange)
+        ax2.set_xticks(pulseTimes)
 
         #Laser train psth
-        ax3 = plt.subplot(gs[2:4, 3:6])
+        ax3 = plt.subplot(gs[4:6, 3:6])
         win = np.array([0, 0.25, 0.75, 1, 0.75, 0.25, 0]) # scipy.signal.hanning(7)
         win = win/np.sum(win)
         binEdges = np.arange(timeRange[0],timeRange[-1],0.001)
@@ -104,11 +197,14 @@ def plot_pinp_report(dbRow, saveDir):
                                                                  indexLimitsEachTrial,binEdges)
         avResp = np.mean(spikeCountMat,axis=0)
         smoothPSTH = np.convolve(avResp,win, mode='same')
-        plt.plot(timeVec, smoothPSTH,'b-', mec='none' ,lw=3)
+        plt.plot(timeVec, smoothPSTH,'k-', mec='none' ,lw=2)
+        ax3.set_xlim(timeRange)
+        ax3.set_xticks(pulseTimes)
+        ax3.set_xlabel('Time from first pulse onset (s)')
 
     #Sorted tuning raster
     if 'tc' in dbRow['sessionType']: #DONE
-        ax4 = plt.subplot(gs[4:6, 0:3])
+        ax4 = plt.subplot(gs[6:8, 0:3])
         ephysData, bdata = cell.load('tc')
         eventOnsetTimes = ephysData['events']['stimOn']
         timeRange = [-0.5, 1]
@@ -117,13 +213,21 @@ def plot_pinp_report(dbRow, saveDir):
          indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(ephysData['spikeTimes'],
                                                                        eventOnsetTimes,
                                                                        timeRange)
-        extraplots.raster_plot(spikeTimesFromEventOnset,
-                               indexLimitsEachTrial,
-                               timeRange,
-                               trialsEachCond=bdata['currentFreq'])
+        freqEachTrial = bdata['currentFreq']
+        possibleFreq = np.unique(freqEachTrial)
+        freqLabels = ['{0:.1f}'.format(freq/1000.0) for freq in possibleFreq]
+        trialsEachCondition = behavioranalysis.find_trials_each_type(freqEachTrial, possibleFreq)
+
+        pRaster, hCond, zLine = extraplots.raster_plot(spikeTimesFromEventOnset,
+                                                       indexLimitsEachTrial,
+                                                       timeRange,
+                                                       trialsEachCond=trialsEachCondition,
+                                                       labels=freqLabels)
+        plt.setp(pRaster, ms=1)
+        ax4.set_ylabel('Frequency (kHz)')
 
         #TC heatmap
-        ax5 = plt.subplot(gs[6:8, 0:3])
+        ax5 = plt.subplot(gs[8:10, 0:3])
 
         baseRange = [-0.1, 0]
         responseRange = [0, 0.1]
@@ -137,6 +241,9 @@ def plot_pinp_report(dbRow, saveDir):
         #Init arrays to hold the baseline and response spike counts per condition
         allIntenBase = np.array([])
         allIntenResp = np.empty((len(possibleIntensity), len(possibleFreq)))
+
+        spikeTimes = ephysData['spikeTimes']
+
 
         for indinten, inten in enumerate(possibleIntensity):
             spks = np.array([])
@@ -173,22 +280,43 @@ def plot_pinp_report(dbRow, saveDir):
 
         nIntenLabels = 3
         intensities = np.linspace(possibleIntensity.min(), possibleIntensity.max(), nIntenLabels)
-        intenTickLocations = np.linspace(0, len(possibleIntensity), nIntenLabels)
+        intenTickLocations = np.linspace(0, len(possibleIntensity)-1, nIntenLabels)
 
         plt.imshow(np.flipud(allIntenResp), interpolation='nearest', cmap='Blues')
-        ax.set_yticks(intenTickLocations)
-        ax.set_yticklabels(intensities[::-1])
-        ax.set_xticks(freqTickLocations)
+        ax5.set_yticks(intenTickLocations)
+        ax5.set_yticklabels(intensities[::-1])
+        ax5.set_xticks(freqTickLocations)
         freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
         # ax.set_xticklabels(freqLabels, rotation='vertical')
-        ax.set_xticklabels(freqLabels)
-        ax.set_xlabel('Frequency (kHz)')
+        ax5.set_xticklabels(freqLabels)
+        ax5.set_xlabel('Frequency (kHz)')
         plt.ylabel('Intensity (db SPL)')
 
+        if not pd.isnull(dbRow['threshold']):
+            plt.hold(1)
+            indThresh = (len(possibleIntensity)-1) - np.where(dbRow['threshold']==possibleIntensity)[0]
+            indCF = np.where(dbRow['cf']==possibleFreq)[0]
+            # import ipdb; ipdb.set_trace()
+            ax5.plot(indCF, indThresh, 'r*')
+            plt.suptitle('Threshold: {}'.format(dbRow['threshold']))
+
+        if not pd.isnull(dbRow['upperFreq']):
+            plt.hold(1)
+            threshPlus10 = indThresh - (10/np.diff(possibleIntensity)[0])
+            upperFraction = (np.log2(dbRow['upperFreq']) - np.log2(possibleFreq[0])) / (np.log2(possibleFreq[-1]) - np.log2(possibleFreq[0]))
+            indUpper = upperFraction * (len(possibleFreq)-1)
+
+            lowerFraction = (np.log2(dbRow['lowerFreq']) - np.log2(possibleFreq[0])) / (np.log2(possibleFreq[-1]) - np.log2(possibleFreq[0]))
+            indLower = lowerFraction * (len(possibleFreq)-1)
+
+            # import ipdb; ipdb.set_trace()
+            ax5.plot(indUpper, threshPlus10, 'b*')
+            ax5.plot(indLower, threshPlus10, 'b*')
 
     if 'am' in dbRow['sessionType']: #DONE
         #Sorted am raster
-        ax6 = plt.subplot(gs[4:6, 3:6])
+        # ax6 = plt.subplot(gs[4:6, 3:6])
+        ax6spec = gs[6:8, 3:6]
         ephysData, bdata = cell.load('am')
         eventOnsetTimes = ephysData['events']['stimOn']
 
@@ -200,45 +328,61 @@ def plot_pinp_report(dbRow, saveDir):
          indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(ephysData['spikeTimes'],
                                                                        eventOnsetTimes,
                                                                        timeRange)
-        extraplots.raster_plot(spikeTimesFromEventOnset,
-                               indexLimitsEachTrial,
-                               timeRange,
-                               trialsEachCond=bdata['currentFreq'],
-                               colorsEachCond=colors)
+        # extraplots.raster_plot(spikeTimesFromEventOnset,
+        #                        indexLimitsEachTrial,
+        #                        timeRange,
+        #                        trialsEachCond=bdata['currentFreq'],
+        #                        colorsEachCond=colors)
+        plot_example_with_rate(ax6spec, spikeTimesFromEventOnset,
+                               indexLimitsEachTrial, bdata['currentFreq'],
+                               colorEachCond=colors, maxSyncRate=cell.dbRow['highestSyncCorrected'])
 
-        #AM psth
-        ax7 = plt.subplot(gs[6:8, 3:6])
+
+        #AM cycle average hist
+        psthLineWidth = 2
+        ax7 = plt.subplot(gs[8:10, 3:6])
 
         colorEachCond = colors
-        binsize = 50
-        sortArray = bdata['currentFreq']
-        binsize = binsize/1000.0
-        # If a sort array is supplied, find the trials that correspond to each value of the array
-        trialsEachCond = behavioranalysis.find_trials_each_type(sortArray, np.unique(sortArray))
-
-        spikeTimesFromEventOnset,
-        trialIndexForEachSpike,
-        indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(ephysData['spikeTimes'],
-                                                                     eventOnsetTimes,
-                                                                     [timeRange[0]-binsize,
-                                                                      timeRange[1]])
-
-        binEdges = np.around(np.arange(timeRange[0]-binsize, timeRange[1]+2*binsize, binsize), decimals=2)
-        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, binEdges)
-        pPSTH = extraplots.plot_psth(spikeCountMat/binsize, 1, binEdges[:-1], trialsEachCond, colorEachCond=colors)
-        plt.setp(pPSTH, lw=lw)
         plt.hold(True)
-        zline = plt.axvline(0,color='0.75',zorder=-10)
-        plt.xlim(timeRange)
+        sortArray = bdata['currentFreq']
+        for indFreq, (freq, spikeTimesThisFreq, trialIndicesThisFreq) in enumerate(spiketimes_each_frequency(spikeTimesFromEventOnset,
+                                                                                                             trialIndexForEachSpike, sortArray)):
+            radsPerSec=freq*2*np.pi
+            spikeRads = (spikeTimesThisFreq*radsPerSec)%(2*np.pi)
+            ax7.hist(spikeRads, bins=20, color=colors[indFreq], histtype='step')
 
+        #AM psth
+        # psthLineWidth = 2
+        # ax7 = plt.subplot(gs[6:8, 3:6])
 
+        # colorEachCond = colors
+        # binsize = 50
+        # sortArray = bdata['currentFreq']
+        # binsize = binsize/1000.0
+        # # If a sort array is supplied, find the trials that correspond to each value of the array
+        # trialsEachCond = behavioranalysis.find_trials_each_type(sortArray, np.unique(sortArray))
+
+        # (spikeTimesFromEventOnset,
+        # trialIndexForEachSpike,
+        # indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(ephysData['spikeTimes'],
+        #                                                              eventOnsetTimes,
+        #                                                              [timeRange[0]-binsize,
+        #                                                               timeRange[1]])
+
+        # binEdges = np.around(np.arange(timeRange[0]-binsize, timeRange[1]+2*binsize, binsize), decimals=2)
+        # spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, binEdges)
+        # pPSTH = extraplots.plot_psth(spikeCountMat/binsize, 1, binEdges[:-1], trialsEachCond, colorEachCond=colors)
+        # plt.setp(pPSTH, lw=psthLineWidth)
+        # plt.hold(True)
+        # zline = plt.axvline(0,color='0.75',zorder=-10)
+        # plt.xlim(timeRange)
 
     (timestamps,
      samples,
-     recordingNumber) = load_all_spikedata(cell)
+     recordingNumber) = cell.load_all_spikedata()
 
     #ISI loghist
-    ax8 = plt.subplot(gs[8, 0:2])
+    ax8 = plt.subplot(gs[10, 0:2])
     if timestamps is not None:
         try:
             spikesorting.plot_isi_loghist(timestamps)
@@ -247,12 +391,12 @@ def plot_pinp_report(dbRow, saveDir):
             print "problem with isi vals"
 
     #Waveforms
-    ax9 = plt.subplot(gs[8, 2:4])
+    ax9 = plt.subplot(gs[10, 2:4])
     if len(samples)>0:
         spikesorting.plot_waveforms(samples)
 
     #Events in time
-    ax10 = plt.subplot(gs[8, 4:6])
+    ax10 = plt.subplot(gs[10, 4:6])
     if timestamps is not None:
         try:
             spikesorting.plot_events_in_time(timestamps)
@@ -270,16 +414,12 @@ def plot_pinp_report(dbRow, saveDir):
 
     plt.suptitle(figName[:-4])
 
-    figPath = os.path.join(saveDir, figName)
-    plt.savefig(figPath)
+    if saveDir is not None:
+        figPath = os.path.join(saveDir, figName)
+        plt.savefig(figPath)
 
 def get_colors(ncolors):
     ''' returns n distinct colours for plotting purpouses when you don't want to manually specify colours'''
     from matplotlib.pyplot import cm
     colors = cm.viridis(np.linspace(0,1,ncolors))
     return colors
-
-
-
-
-

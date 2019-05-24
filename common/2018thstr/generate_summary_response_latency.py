@@ -18,16 +18,21 @@ from jaratoolbox import ephyscore
 from jaratoolbox import settings
 import figparams
 import pandas as pd
+from scipy import signal
+reload(spikesanalysis)
 
-dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+# dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = '/tmp/celldatabase_new_20180830.h5'
 db = pd.read_hdf(dbPath, key='dataframe')
 dataframe = db
-thresholdFRA = 0.4
+thresholdFRA = 0.2
 latencyDataList = []
 
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
-    cell = ephyscore.Cell(dbRow)
+    cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
 
     try:
         ephysData, bdata = cell.load('tc')
@@ -36,7 +41,8 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'latency'] = np.nan
         continue
 
-    eventOnsetTimes = ephysData['events']['soundDetectorOn']
+    # eventOnsetTimes = ephysData['events']['soundDetectorOn']
+    eventOnsetTimes = ephysData['events']['stimOn']
 
     eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
     spikeTimes = ephysData['spikeTimes']
@@ -50,6 +56,10 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         eventOnsetTimes = eventOnsetTimes[:-1]
     elif len(eventOnsetTimes) < len(freqEachTrial):
         print "Wrong number of events, probably caused by the original sound detector problems"
+        dataframe.loc[indRow, 'latency'] = np.nan
+        continue
+    else:
+        print "Something else is wrong with the number of events"
         dataframe.loc[indRow, 'latency'] = np.nan
         continue
 
@@ -100,7 +110,8 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     try:
         (respLatency,interim) = spikesanalysis.response_latency(spikeTimesFromEventOnset,
                                                                 indexLimitsSelectedTrials,
-                                                                timeRangeForLatency, threshold=0.5)
+                                                                timeRangeForLatency, threshold=0.5,
+                                                                win=signal.hanning(11))
     except IndexError:
         print "Index error for cell {}".format(indRow) #If there are no spikes in the timeRangeForLatency 
         dataframe.loc[indRow, 'latency'] = np.nan
@@ -110,7 +121,8 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     print 'Response latency: {:0.1f} ms'.format(1e3*respLatency)
 
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 print 'Saving database to {}'.format(dbPath)
 dataframe.to_hdf(dbPath, 'dataframe')
 

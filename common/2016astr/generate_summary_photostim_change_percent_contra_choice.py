@@ -19,7 +19,7 @@ if not os.path.exists(outputDir):
 scriptFullPath = os.path.realpath(__file__)
 
 # -- Load the photostim experiments database -- #
-tuingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+tuingFilePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME)
 tuningFileName = 'photostim_response_freq_summary.csv'
 tuningFullPath = os.path.join(tuingFilePath,tuningFileName)
 tuningDf = pd.read_csv(tuningFullPath)

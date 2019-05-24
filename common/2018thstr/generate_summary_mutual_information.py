@@ -31,7 +31,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 
 def calc_MI(x, y, bins):
     c_xy = np.histogram2d(x, y, bins)[0]
-    1/0
+    # 1/0
     mi = metrics.mutual_info_score(None, None, contingency=c_xy)
     return mi
 
@@ -128,14 +128,17 @@ if CASE==0:
 ######### Full dataset #########
 if CASE==1:
 
-    dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+    # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
+    # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+    # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+    dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
     dataframe = pd.read_hdf(dbPath, key='dataframe')
     for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         if not 'am' in dbRow['sessionType']:
             dataframe.loc[indRow, 'mutualInfo'] = np.nan
             print 'BREAKING, AM'
             continue
-        cell = ephyscore.Cell(dbRow)
+        cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
         # spikeData, eventData = celldatabase.get_session_ephys(cell, 'am')
         try:
             ephysData, bdata = cell.load('am')
@@ -215,39 +218,40 @@ if CASE==1:
         dataframe.loc[indRow, 'mutualInfoBCBits'] = mutualInfoBCBits
         dataframe.loc[indRow, 'mutualInfoPerSpikeBits'] = mutualInfoPerSpikeBits
 
-savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
-dataframe.to_hdf(savePath, 'dataframe')
-print "SAVED DATAFRAME to {}".format(savePath)
+# savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
+# savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
+dataframe.to_hdf(dbPath, 'dataframe')
+print "SAVED DATAFRAME to {}".format(dbPath)
 
 
-#Stats
-goodLaser = dataframe.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
-ac = goodLaser.groupby('brainArea').get_group('rightAC')
-thal = goodLaser.groupby('brainArea').get_group('rightThal')
+# #Stats
+# goodLaser = dataframe.query('isiViolations<0.02 and spikeShapeQuality>2 and pulsePval<0.05 and trainRatio>0.8')
+# ac = goodLaser.groupby('brainArea').get_group('rightAC')
+# thal = goodLaser.groupby('brainArea').get_group('rightThal')
 
-acMI = ac['mutualInfoBC'][pd.notnull(ac['mutualInfoBC'])]
-thalMI = thal['mutualInfoBC'][pd.notnull(thal['mutualInfoBC'])]
+# acMI = ac['mutualInfoBC'][pd.notnull(ac['mutualInfoBC'])]
+# thalMI = thal['mutualInfoBC'][pd.notnull(thal['mutualInfoBC'])]
 
-acMIps = ac['mutualInfoPerSpike'][pd.notnull(ac['mutualInfoPerSpike'])]
-thalMIps = thal['mutualInfoPerSpike'][pd.notnull(thal['mutualInfoPerSpike'])]
+# acMIps = ac['mutualInfoPerSpike'][pd.notnull(ac['mutualInfoPerSpike'])]
+# thalMIps = thal['mutualInfoPerSpike'][pd.notnull(thal['mutualInfoPerSpike'])]
 
-plt.clf()
-plt.subplot(121)
-plt.boxplot([acMI, thalMI])
-ax = plt.gca()
-ax.set_xticklabels(['AC->Str', 'ATh->Str'])
-ax.set_ylabel('MI (nats/trial)')
-st, pval = stats.ranksums(acMI, thalMI)
-plt.title('p = {}'.format(pval))
+# plt.clf()
+# plt.subplot(121)
+# plt.boxplot([acMI, thalMI])
+# ax = plt.gca()
+# ax.set_xticklabels(['AC->Str', 'ATh->Str'])
+# ax.set_ylabel('MI (nats/trial)')
+# st, pval = stats.ranksums(acMI, thalMI)
+# plt.title('p = {}'.format(pval))
 
-plt.subplot(122)
-plt.boxplot([acMIps, thalMIps])
-ax = plt.gca()
-ax.set_xticklabels(['AC->Str', 'ATh->Str'])
-ax.set_ylabel('MI (nats/spike)')
-st, pval = stats.ranksums(acMIps, thalMIps)
-plt.title('p = {}'.format(pval))
-plt.show()
+# plt.subplot(122)
+# plt.boxplot([acMIps, thalMIps])
+# ax = plt.gca()
+# ax.set_xticklabels(['AC->Str', 'ATh->Str'])
+# ax.set_ylabel('MI (nats/spike)')
+# st, pval = stats.ranksums(acMIps, thalMIps)
+# plt.title('p = {}'.format(pval))
+# plt.show()
 
 
 

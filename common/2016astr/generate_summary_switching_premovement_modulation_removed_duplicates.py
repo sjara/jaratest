@@ -23,7 +23,7 @@ if not os.path.exists(dataDir):
     os.mkdir(dataDir)
 
 # -- Read in databases storing all measurements from switching mice -- #
-switchingFilePath = os.path.join(settings.FIGURESDATA,figparams.STUDY_NAME)
+switchingFilePath = os.path.join(settings.FIGURES_DATA_PATH,figparams.STUDY_NAME)
 switchingFileName = 'all_cells_all_measures_extra_mod_waveform_switching.h5'
 switchingFullPath = os.path.join(switchingFilePath,switchingFileName)
 allcells_switching = pd.read_hdf(switchingFullPath,key='switching')

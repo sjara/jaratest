@@ -234,12 +234,12 @@ if PANELS[2]:
     #bestFreqEachCell = bestFreqEachCell[bestFreqEachCell!=0]
     maxZscoreEachCell = summary['maxZscoreEachCell'] #[cellSelectorBoolArray]
     #maxZscoreEachCell = maxZscoreEachCell[maxZscoreEachCell!=0]
-    responseIndEachCell = summary['responseIndEachCell'] #[cellSelectorBoolArray]
+    # responseIndEachCell = summary['responseIndEachCell'] #[cellSelectorBoolArray]
 
-    nansInData = np.isnan(responseIndEachCell)
-    if np.any(nansInData):
-        print '*** WARNING! *** I found NaN in some elements of responseIndEachCell. I will replace with zero.'
-        responseIndEachCell[nansInData] = 0
+    # nansInData = np.isnan(responseIndEachCell)
+    # if np.any(nansInData):
+    #     print '*** WARNING! *** I found NaN in some elements of responseIndEachCell. I will replace with zero.'
+    #     responseIndEachCell[nansInData] = 0
     
     ###############################################################################
     #sigSoundResponse = (summary['pValSoundResponseEachCell'][cellSelectorBoolArray] <= alphaLevel)
@@ -279,7 +279,7 @@ if PANELS[2]:
     plt.hold(True)
     binsEdges = np.linspace(-1,1,20)
     #plt.hist([responseIndEachCell[sigResp],responseIndEachCell[~sigResp]], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True)
-    plt.hist([overallRespInds[sigRespOverall],overallRespInds[~sigRespOverall]], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True)
+    plt.hist([overallRespInds[sigRespOverall],overallRespInds[~sigRespOverall]], bins=binsEdges, color=['k','darkgrey'],edgecolor='None',stacked=True, rwidth=0.8)
     nCellsString = '{} cells'.format(sum(cellSelectorBoolArray))
     nMiceString = '{} mice'.format(5)
     #plt.text(0.4, 65, nCellsString, ha='left',fontsize=fontSizeLabels)
@@ -340,7 +340,7 @@ if PANELS[3]:
     freqSelective = (pVals <= 0.05)
     binsEdges = np.linspace(-1,1,20)
     plt.axvline(x=0, linestyle='--',linewidth=1.5, color='0.5')
-    plt.hist([selectivityInds[freqSelective],selectivityInds[~freqSelective]], color=['k','darkgrey'], edgecolor='None', stacked=True, bins=binsEdges)
+    plt.hist([selectivityInds[freqSelective],selectivityInds[~freqSelective]], color=['k','darkgrey'], edgecolor='None', stacked=True, bins=binsEdges, rwidth=0.8)
     plt.xlabel('High vs low frequency selectivity',fontsize=fontSizeLabels)
     plt.ylabel('Number of cells',fontsize=fontSizeLabels)
     #nRespCellsString = '{} responsive cells'.format(numResponsiveCells)

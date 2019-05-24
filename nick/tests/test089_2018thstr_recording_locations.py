@@ -16,14 +16,16 @@ goodLaserACSR = goodLaser.query("brainArea=='rightAC' and noisePval<0.05")
 
 # groups = goodLaserThalSR.groupby(['subject', 'date', 'tetrode', 'depth'])
 # groups = goodLaserThalSR.groupby(['subject', 'date', 'tetrode'])
-groups = goodLaserACSR.groupby(['subject', 'date', 'tetrode'])
+# groups = goodLaserACSR.groupby(['subject', 'date', 'tetrode'])
+groups = goodLaserACSR.groupby(['subject', 'date', 'tetrode', 'depth'])
 
-# for name, group in groups:
-#     print len(group)
-#     print "Group: {} {} TT{}".format(name[0], name[1], name[2])
-#     print "Max depth: {}".format(np.unique(group['maxDepth']))
-#     print np.unique(group['info'])
-#     print "\n"
+for name, group in groups:
+    print len(group)
+    print "Group: {} {} TT{}".format(name[0], name[1], name[2])
+    print "Max depth: {}".format(np.unique(group['maxDepth']))
+    print np.unique(group['info'])
+    print "RecordingDepth = {}".format(group['depth'].values)
+    print "\n"
 
 def convertAllenZ(allenZ):
     '''

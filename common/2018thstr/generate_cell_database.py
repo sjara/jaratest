@@ -46,7 +46,7 @@ for animal in animals:
     responseRange = [0, 0.1]
     for indRow, dbRow in db.iterrows():
 
-        cell = ephyscore.Cell(dbRow)
+        cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
 
         if 'noiseburst' in cell.dbRow['sessionType']:
             sessionType = 'noiseburst'
@@ -159,12 +159,13 @@ for animal in animals:
     dbList.append(db)
 
 masterdb = pandas.concat(dbList, ignore_index=True)
-goodCells = masterdb.query('isiViolations<0.02 and spikeShapeQuality>2')
+# goodCells = masterdb.query('isiViolations<0.02 and spikeShapeQuality>2')
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = '/tmp/celldatabase_new_20180830.h5'
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
 
 if SAVE:
     print 'Saving database to {}'.format(dbPath)
-    goodCells.to_hdf(dbPath, 'dataframe')
+    masterdb.to_hdf(dbPath, 'dataframe')
 

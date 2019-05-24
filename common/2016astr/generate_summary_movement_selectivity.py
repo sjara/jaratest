@@ -21,17 +21,18 @@ outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNA
 scriptFullPath = os.path.realpath(__file__)
 qualityList = [1,6]
 ISIcutoff = 0.02
-taskToPlot = 'switching' #'switching' or 'psychometric'
+# taskToPlot = 'switching' #'switching' or 'psychometric'
+taskToPlot = 'psychometric' #'switching' or 'psychometric'
 
 if taskToPlot == 'psychometric':
     # -- Read in databases storing all measurements from psycurve and switching mice -- #
-    databaseFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+    databaseFilePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME)
     databaseFileName = 'all_cells_all_measures_waveform_psychometric.h5'
     databaseFullPath = os.path.join(databaseFilePath,databaseFileName)
     allcells = pd.read_hdf(databaseFullPath,key='psychometric')
 elif taskToPlot == 'switching':
     # -- Read in databases storing all measurements from psycurve and switching mice -- #
-    databaseFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+    databaseFilePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME)
     databaseFileName = 'all_cells_all_measures_extra_mod_waveform_switching.h5'
     databaseFullPath = os.path.join(databaseFilePath,databaseFileName)
     allcells = pd.read_hdf(databaseFullPath,key='switching')

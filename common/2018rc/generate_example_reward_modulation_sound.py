@@ -15,6 +15,7 @@ from jaratoolbox import loadopenephys
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
+from jaratoolbox import celldatabase
 import figparams
 reload(figparams)
 
@@ -37,14 +38,29 @@ colorsDict = {'colorLMore':figparams.colp['MoreRewardL'],
 # -- These example cells I picked manually  --#
 cellParamsList = []
 
-exampleCell = {'subject':'adap012',
-               'date':'2016-03-24',
-               'tetrode':1,
+exampleCell = {'subject':'gosi004',
+               'date':'2017-03-15',
+               'tetrode':6,
                'cluster':4,
+               'brainRegion':'ac'} # low freq, not modulated
+cellParamsList.append(exampleCell)
+
+exampleCell = {'subject':'adap017',
+               'date':'2016-04-06',
+               'tetrode':4,
+               'cluster':3,
+               'brainRegion':'astr'} # high freq, not modulated
+cellParamsList.append(exampleCell)
+
+# sustained sound response
+exampleCell = {'subject':'adap015',
+               'date':'2016-03-18',
+               'tetrode':3,
+               'cluster':9,
                'brainRegion':'astr'} # low freq, sound modulated
 cellParamsList.append(exampleCell)
 
-# strong sound response but not obvious modulated
+# strong onset sound response 
 exampleCell = {'subject':'adap012',
                'date':'2016-04-05',
                'tetrode':4,
@@ -54,10 +70,10 @@ cellParamsList.append(exampleCell)
 
 # best example for astr
 exampleCell = {'subject':'adap017',
-               'date':'2016-04-24',
-               'tetrode':6,
-               'cluster':11,
-               'brainRegion':'astr'} # low freq, sound modulated
+               'date':'2016-04-21',
+               'tetrode':5,
+               'cluster':9,
+               'brainRegion':'astr'} # high freq, sound modulated
 cellParamsList.append(exampleCell)
 
 exampleCell = {'subject':'adap067',
@@ -170,7 +186,7 @@ def get_trials_each_cond_reward_change(bdata, freqToPlot, colorCondDict, byBlock
         elif freqToPlot == 'high':
             colorEachCond = [colorCondDict['colorLMore'], colorCondDict['colorRMore']] #[colorCondDict['leftMoreHighFreq'],colorCondDict['rightMoreHighFreq']]
             labelEachCond = ['left more', 'right more'] #['high freq left more', 'high freq right more']
-    return trialsEachCond, colorEachCond, labelEachCond
+    return freq, trialsEachCond, colorEachCond, labelEachCond
 
 ###################################################################################
 # -- Access mounted behavior and ephys drives for psycurve and switching mice -- #
@@ -183,10 +199,9 @@ if not os.path.ismount(BEHAVIOR_PATH):
 if not os.path.ismount(EPHYS_PATH):
     os.system('sshfs -o idmap=user jarauser@jarastore:/data2016/ephys/ {}'.format(EPHYS_PATH))
 
-dbKey = 'reward_change'
 dbFolder = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME)
 celldbPath = os.path.join(dbFolder, 'rc_database.h5')
-celldb = pd.read_hdf(celldbPath, key=dbKey)
+celldb = celldatabase.load_hdf(celldbPath)
 sessionType = 'behavior'
 behavClass = loadbehavior.FlexCategBehaviorData
 evlockFolder = 'evlock_spktimes'
@@ -220,10 +235,10 @@ for cellParams in cellParamsList:
     missingTrials = behavioranalysis.find_missing_trials(soundOnsetTimeEphys,soundOnsetTimeBehav)
     # Remove missing trials
     bdata.remove_trials(missingTrials)
-
+    diffTimes = bdata['timeCenterOut'] - bdata['timeTarget']
     # -- Select trials to plot from behavior file -- #
     for freq in freqsToPlot:
-        trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
+        actualFreq, trialsEachCond, colorEachCond, labelEachCond = get_trials_each_cond_reward_change(bdata, freqToPlot=freq, byBlock=True, minBlockSize=30, colorCondDict=colorsDict)
         # -- Load intermediate data -- #
         for alignment in alignmentsToPlot:
             evlockDataFilename = '{0}_{1}_{2}_T{3}_c{4}_{5}.npz'.format(animal, date, depth, tetrode, cluster, alignment)
@@ -238,4 +253,9 @@ for cellParams in cellParamsList:
             #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
             outputFile = 'example_rc_{}aligned_{}freq_{}_{}_T{}_c{}.npz'.format(alignment, freq, animal, date, tetrode, cluster)
             outputFullPath = os.path.join(dataDir,outputFile)
-            np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, script=scriptFullPath, frequencyPloted=freq, alignedTo=alignment, **cellParams)
+            np.savez(outputFullPath, spikeTimesFromEventOnset=spikeTimesFromEventOnset, 
+                movementTimesFromEventOnset=diffTimes,
+                indexLimitsEachTrial=indexLimitsEachTrial, spikeCountMat=spikeCountMat, 
+                timeVec=timeVec, binWidth=binWidth, condLabels=labelEachCond, 
+                trialsEachCond=trialsEachCond, colorEachCond=colorEachCond, 
+                script=scriptFullPath, frequencyPloted=actualFreq, alignedTo=alignment, **cellParams)

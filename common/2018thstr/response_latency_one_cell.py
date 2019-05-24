@@ -148,5 +148,3 @@ for indRow, dbRow in dataframe.iterrows():
     plt.show()
     plt.waitforbuttonpress()
 
-
-
