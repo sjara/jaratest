@@ -56,6 +56,7 @@ exp0.maxDepth = 3100
 
 exp1 = celldatabase.Experiment(subject, '2019-04-18', 'right_AudStr', info=['FacingPosterior', 'middleDiI'])
 experiments.append(exp1)
+#Shank 4 is now missing
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
 #Used left speaker;laser (445 nm) set to 2.5 mW; Probe CEC2; Rig 2
@@ -114,3 +115,25 @@ exp2.add_session('14-42-04', 'e', 'tuningCurve(tc)', 'am_tuning_curve')
 exp2.add_session('15-17-52', 'f', 'AM', 'am_tuning_curve')
 
 exp2.maxDepth = 3100
+
+
+# exp3 = celldatabase.Experiment(subject, '2019-05-01', 'left_AudStr', info=['shank1Ant', 'middleDiI'])
+# experiments.append(exp3)
+#
+# #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
+# #Used right speaker;laser (445 nm) set to 2.5 mW; Probe CEC2; Rig 2
+# # No reference wire in as there is no room in the well
+#
+# #looks like dye is on the optical fiber
+# exp3.laserCalibration = {
+#     '0.5':1.60,
+#     '1.0':2.35,
+#     '1.5':3.20,
+#     '2.0':4.15,
+#     '2.5':5.10,
+#     '3.0':6.90,
+#     '3.5':9.95,
+#
+# }
+#
+# #No way of fitting probe in
