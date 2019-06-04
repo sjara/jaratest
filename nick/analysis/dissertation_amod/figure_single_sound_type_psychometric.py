@@ -8,12 +8,12 @@ from jaratoolbox import extrastats
 
 dataDir = '/home/nick/data/dissertation_amod/'
 
-# subjectsToPlot = [('amod006', 'tones'), 
+# subjectsToPlot = [('amod006', 'tones'),
 #                   ('amod007', 'tones'),
 #                   ('amod008', 'tones'),
 #                 ('amod009', 'tones')]
-subjectsToPlot = [('amod001', 'am'), 
-                ('amod005', 'am')]
+subjectsToPlot = [('amod001', 'am'),
+                  ('amod005', 'am')]
 
 # subject = 'amod001'
 # stype = 'am'
@@ -25,11 +25,11 @@ plt.clf()
 for subject, stype in subjectsToPlot:
 
     musFilename = '{}_psychometric_{}_muscimol.npz'.format(stype, subject)
-    musFullPath = os.path.join(dataDir,musFilename)
+    musFullPath = os.path.join(dataDir, musFilename)
     musData = np.load(musFullPath)
 
     salFilename = '{}_psychometric_{}_saline.npz'.format(stype, subject)
-    salFullPath = os.path.join(dataDir,salFilename)
+    salFullPath = os.path.join(dataDir, salFilename)
     salData = np.load(salFullPath)
 
     dataToPlot = [musData, salData]
@@ -54,27 +54,31 @@ for subject, stype in subjectsToPlot:
 
         xRange = logPossibleValues[-1]-logPossibleValues[1]
 
-        fitxvals = np.linspace(logPossibleValues[0]-0.1*xRange,logPossibleValues[-1]+0.1*xRange,40)
+        fitxvals = np.linspace(logPossibleValues[0]-0.1*xRange,
+                               logPossibleValues[-1]+0.1*xRange, 40)
         fityvals = extrastats.psychfun(fitxvals, *estimate)
 
-        upperWhisker = ciHitsEachValue[1,:]-fractionHitsEachValue
-        lowerWhisker = fractionHitsEachValue-ciHitsEachValue[0,:]
+        upperWhisker = ciHitsEachValue[1, :]-fractionHitsEachValue
+        lowerWhisker = fractionHitsEachValue-ciHitsEachValue[0, :]
 
         # ax1.hold(True)
         (pline, pcaps, pbars) = ax1.errorbar(logPossibleValues,
-                                                100*fractionHitsEachValue,
-                                                yerr = [100*lowerWhisker, 100*upperWhisker],
-                                                ecolor=color, fmt=None, clip_on=False)
+                                             100*fractionHitsEachValue,
+                                             yerr=[100*lowerWhisker,
+                                                   100*upperWhisker],
+                                             ecolor=color, fmt=None, clip_on=False)
 
         pdots = ax1.plot(logPossibleValues, 100*fractionHitsEachValue, 'o', ms=6, mec='None', mfc=color,
-                            clip_on=False)
+                         clip_on=False)
 
-        #ax1.set_xticks(logPossibleValues)
+        # ax1.set_xticks(logPossibleValues)
         #freqLabels = ['{:.03}'.format(x) for x in possibleValues/1000.0]
-        #ax1.set_xticklabels(freqLabels)
+        # ax1.set_xticklabels(freqLabels)
         #ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
 
-        pfit, = ax1.plot(fitxvals, 100*fityvals, color=color, lw=2, clip_on=False)
+        pfit, = ax1.plot(fitxvals, 100*fityvals,
+                         color=color, lw=2, clip_on=False)
+
         plotHandles.append(pfit)
 
     # ax1.annotate('B', xy=(labelPosX[0],labelPosY[0]), xycoords='axes fraction',
@@ -83,10 +87,11 @@ for subject, stype in subjectsToPlot:
     extraplots.boxoff(ax1)
 
     xticks = ax1.get_xticks()
-    newXtickLabels = np.logspace(logPossibleValues[0], logPossibleValues[-1], 3, base=2)
+    newXtickLabels = np.logspace(
+        logPossibleValues[0], logPossibleValues[-1], 3, base=2)
     # 1/0
     ax1.set_xticks(np.log2(np.array(newXtickLabels)))
-    if not stype=='amp_mod':
+    if not stype == 'amp_mod':
         ax1.set_xticklabels(['{:.3}'.format(x/1000.0) for x in newXtickLabels])
         ax1.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
         ax1.set_title(stype.capitalize())
@@ -99,13 +104,13 @@ for subject, stype in subjectsToPlot:
 
     ax1.set_ylim([0, 100])
     ax1.set_ylabel('Rightward trials (%)', fontsize=fontSizeLabels)
-    extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
+    extraplots.set_ticks_fontsize(plt.gca(), fontSizeTicks)
     ax1.set_yticks([0, 50, 100])
 
-    leg = ax1.legend([plotHandles[1],plotHandles[0]],
-                     ['Saline','Muscimol'], loc='upper left', frameon=False,
+    leg = ax1.legend([plotHandles[1], plotHandles[0]],
+                     ['Saline', 'Muscimol'], loc='upper left', frameon=False,
                      labelspacing=0.1, handlelength=1.5, handletextpad=0.2,
-                     borderaxespad=0.1, fontsize=12) 
+                     borderaxespad=0.1, fontsize=12)
 plt.show()
 
 if SAVE:
@@ -113,4 +118,5 @@ if SAVE:
     fig.set_size_inches(4, 4)
     plt.tight_layout()
     saveDir = '/home/nick/data/dissertation_amod/'
-    plt.savefig(os.path.join(saveDir, 'figure_{}_single_sound_type.png'.format(subject)))
+    plt.savefig(os.path.join(
+        saveDir, 'figure_{}_single_sound_type.png'.format(subject)))
