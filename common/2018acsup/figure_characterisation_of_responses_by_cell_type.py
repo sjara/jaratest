@@ -10,10 +10,12 @@ Using difference of gaussians fit to determine suppression indices and preferred
 '''
 import os
 import numpy as np
+from scipy import stats
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.colors
+import matplotlib.patches as patches
 
 from jaratoolbox import settings
 from jaratoolbox import extraplots
@@ -32,17 +34,18 @@ PANELS = [1,1,1,1,1,1,1,1] # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
-figFilename = 'characterisation_of_suppression' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
-#figFormat = 'svg'
-figSize = [20,8] # In inches
+figFilename = 'Fig1_characterisation_of_suppression' # Do not include extension
+#figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg'
+figSize = [12,7] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
+fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.01, 0.21, 0.4, 0.59, 0.77]   # Horiz position for panel labels
-labelPosY = [0.96, 0.65, 0.34, 0.5]    # Vert position for panel labels
+labelPosX = [0.01, 0.16, 0.37, 0.57, 0.76]   # Horiz position for panel labels
+labelPosY = [0.96, 0.65, 0.34, 0.47]    # Vert position for panel labels
 
 #PVFileName = 'band026_2017-04-26_1470um_T4_c5.npz'
 #PVFileName = 'band026_2017-04-27_1350um_T4_c2.npz'
@@ -62,6 +65,15 @@ ExcFileName = 'band016_2016-12-11_950um_T6_c6.npz'
 
 summaryFileName = 'all_photoidentified_cells_stats.npz'
 
+ExColor = figparams.colp['excitatoryCell']
+PVColor = figparams.colp['PVcell']
+SOMColor = figparams.colp['SOMcell']
+
+ExLight = matplotlib.colors.colorConverter.to_rgba(ExColor, alpha=0.5)
+PVlight = matplotlib.colors.colorConverter.to_rgba(PVColor, alpha=0.5)
+SOMlight = matplotlib.colors.colorConverter.to_rgba(SOMColor, alpha=0.5)
+
+soundColor = figparams.colp['sound']
 
 fig = plt.gcf()
 fig.clf()
@@ -70,30 +82,15 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(6,5,width_ratios=[1,1.2,1.2,1.3,1.3])
 gs.update(top=0.95, bottom=0.08, left=0.05, right=0.95, wspace=0.7, hspace=0.6)
 
-# gs0 = gridspec.GridSpec(2,3,width_ratios=[1, 1.3, 1.3])
-# gs0.update(top=0.95, bottom=0.05, left=0.1, right=0.95, wspace=0.4, hspace=0.3)
-
 # --- space for cartoons ---
 if PANELS[0]:
-    axCartoon = gs[:2,0]
-    inner = gridspec.GridSpecFromSubplotSpec(3, 1,
-                    subplot_spec=axCartoon, wspace=0.1, hspace=0.1)
-    for ind in range(3):
-        thisAx = plt.subplot(inner[ind])
-        plt.xlim(-1.2,1.2)
-        thisAx.set_yticks([])
-        thisAx.set_xticks([-1,-0.5,0,0.5,1.0])
-        
-        
-        extraplots.boxoff(thisAx)
-        
-        if ind != 2:
-            thisAx.set_xticklabels('')
+    axCartoon = plt.subplot(gs[:2,0])
+    plt.axis('off')
     
     #also do the panel labels for the rest of the cartoons in here I guess
     cartoonPanels = ['a', 'd', 'g']
     for indPanel, panel in enumerate(cartoonPanels):
-        thisAx.annotate(panel, xy=(labelPosX[0],labelPosY[indPanel]), xycoords='figure fraction',
+        axCartoon.annotate(panel, xy=(labelPosX[0],labelPosY[indPanel]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
 
 # --- Raster plots of example PV and SOM cell ---        
@@ -115,7 +112,8 @@ if PANELS[1]:
     
     cellData = [ExcData, PVData, SOMData]
     panelLabels = ['b', 'e', 'h']
-    panelTitles = ['Excitatory', 'PV', 'SOM']
+    
+    colours = [[ExColor, ExLight],[PVColor, PVlight],[SOMColor, SOMlight]]
     
     for indCell, cell in enumerate(cellData):
         axRaster = plt.subplot(gs[2*indCell:2*indCell+2,1])
@@ -130,8 +128,9 @@ if PANELS[1]:
         possibleBands = possibleBands[1:]
         bandLabels = possibleBands.tolist()
         bandLabels[-1] = 'WN'
+        colorEachCond = colours[indCell]*(len(possibleBands)/2+1)
         pRaster, hcond, zline = extraplots.raster_plot(bandSpikeTimesFromEventOnset,bandIndexLimitsEachTrial,rasterTimeRange,
-                                                       trialsEachCond=trialsEachCond,labels=bandLabels)
+                                                       trialsEachCond=trialsEachCond,labels=bandLabels,colorEachCond=colorEachCond)
         axRaster.annotate(panelLabels[indCell], xy=(labelPosX[1],labelPosY[indCell]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
         plt.setp(pRaster, ms=3, color='k')
@@ -139,7 +138,11 @@ if PANELS[1]:
         if indCell != 2:
             axRaster.set_xticklabels('')
         plt.ylabel('Bandwidth (oct)',fontsize=fontSizeLabels)
-        plt.title(panelTitles[indCell],fontsize=fontSizeLabels)
+        
+        yLims = np.array(plt.ylim())
+        rect = patches.Rectangle((0.0,yLims[1]*1.02),1.0,yLims[1]*0.04,linewidth=1,edgecolor=soundColor,facecolor=soundColor,clip_on=False)
+        axRaster.add_patch(rect)
+        
     
     extraplots.set_ticks_fontsize(plt.gca(),fontSizeTicks)
     plt.xlabel('Time from sound onset (s)',fontsize=fontSizeLabels)
@@ -148,9 +151,9 @@ if PANELS[1]:
 
 # -- Plots of sustained bandwidth tuning --
 if PANELS[2]:
-    SIlabelPosX = [0.5, 0.5, 0.5]
-    SIlabelPosY = [0.87, 0.45, 0.14]
-    calcInd = 0 #which cell to annotate SI calculation on
+    SIlabelPosX = [0.47, 0.47, 0.44]
+    SIlabelPosY = [0.87, 0.45, 0.31]
+    calcInd = 2 #which cell to annotate SI calculation on
     
     ExcFile = 'example_Exc_bandwidth_tuning_'+ExcFileName
     ExcDataFullPath = os.path.join(dataDir,ExcFile)
@@ -187,12 +190,9 @@ if PANELS[2]:
     fitResponses = [ExcFitCurve, PVFitCurve, SOMFitCurve]
     SIs = [ExcSI, PVSI, SOMSI]
     
-    ExColor = figparams.colp['excitatoryCell']
-    PVColor = figparams.colp['PVcell']
-    SOMColor = figparams.colp['SOMcell']
-    
     cellTypeColours = [ExColor, PVColor, SOMColor]
     panelLabels = ['c', 'f', 'i']
+    panelTitles = ['Excitatory', 'PV+', 'SOM+']
     
     for indCell, responseByCell in enumerate(sustainedResponses):
         plt.hold(1)
@@ -223,14 +223,14 @@ if PANELS[2]:
             respWN = fitResponses[indCell][-1]
             axCurve.annotate("", xy=(bandMax, respMax), xycoords='data',
                              xytext=(bandMax, 0), textcoords='data',
-                             arrowprops=dict(arrowstyle="<->",connectionstyle="arc3",color=cellTypeColours[indCell], alpha=0.5))
-            axCurve.annotate(r'$a$', xy=(bandMax/2, respMax/3), xycoords='data',
-                     fontsize=fontSizeLabels, color=cellTypeColours[indCell])
+                             arrowprops=dict(arrowstyle="<->",connectionstyle="arc3",color='k'))
+            axCurve.annotate(r'$a$', xy=(bandMax/1.35, respMax/3), xycoords='data',
+                     fontsize=fontSizeLabels, color='k')
             axCurve.annotate("", xy=(bandWN, respWN), xycoords='data',
                              xytext=(bandWN, 0), textcoords='data',
-                             arrowprops=dict(arrowstyle="<->",connectionstyle="arc3",color=cellTypeColours[indCell], alpha=0.5))
+                             arrowprops=dict(arrowstyle="<->",connectionstyle="arc3",color='k'))
             axCurve.annotate(r'$b$', xy=(bandWN/1.35, respWN/3), xycoords='data',
-                     fontsize=fontSizeLabels, color=cellTypeColours[indCell])
+                     fontsize=fontSizeLabels, color='k')
         else:
             axCurve.annotate('SI = %.2f' % (SIs[indCell],), xy=(SIlabelPosX[indCell],SIlabelPosY[indCell]), xycoords='figure fraction',
                      fontsize=fontSizeLabels, color=cellTypeColours[indCell])
@@ -244,8 +244,11 @@ if PANELS[2]:
             plt.xlabel('Bandwidth (oct)',fontsize=fontSizeLabels)
         plt.ylabel('Firing rate (spk/s)',fontsize=fontSizeLabels)
         plt.xlim(0.2,7) #expand x axis so you don't have dots on y axis
+        plt.title(panelTitles[indCell],fontsize=fontSizeLabels, y=1.02)
 
-
+# new gridspec for summary plots to increase spacing between them
+axSummaries = gs[:,3]
+gs2 = gridspec.GridSpecFromSubplotSpec(2,1, subplot_spec=axSummaries, hspace=0.3)
 
 # -- Summary plots comparing suppression indices of PV, SOM, and excitatory cells for sustained responses --    
 if PANELS[3]:
@@ -264,11 +267,11 @@ if PANELS[3]:
     
     cellTypeColours = [excitatoryColor, PVColor, SOMColor]
     
-    categoryLabels = ['Exc.', 'PV', 'SOM']
+    categoryLabels = ['Exc.', 'PV+', 'SOM+']
     
     panelLabel = 'j'
     
-    axScatter = plt.subplot(gs[:3,3])
+    axScatter = plt.subplot(gs2[0,0])
     plt.hold(1)
     
     for category in range(len(sustainedSuppressionVals)):
@@ -290,12 +293,17 @@ if PANELS[3]:
     plt.ylim(-0.05,1.05)
     plt.ylabel('Suppression Index',fontsize=fontSizeLabels)
     axScatter.set_xticks(range(1,len(sustainedSuppressionVals)+1))
-    axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
+    axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels, rotation=-45)
     extraplots.boxoff(axScatter)
     yLims = np.array(plt.ylim())
     extraplots.significance_stars([1,3], yLims[1]*1.07, yLims[1]*0.02, gapFactor=0.25)
     extraplots.significance_stars([1,2], yLims[1]*1.03, yLims[1]*0.02, gapFactor=0.25)
     plt.hold(0)
+    
+    ExcPV = stats.ranksums(ACsustainedSuppression, PVsustainedSuppression)[1]
+    ExcSOM = stats.ranksums(ACsustainedSuppression, SOMsustainedSuppression)[1]
+    PVSOM = stats.ranksums(PVsustainedSuppression, SOMsustainedSuppression)[1]
+    print "Difference in suppression p vals: \nExc-PV: {0}\nExc-SOM: {1}\nPV-SOM: {2}".format(ExcPV,ExcSOM,PVSOM)
     
     
     
@@ -318,11 +326,11 @@ if PANELS[4]:
     
     cellTypeColours = [excitatoryColor, PVColor, SOMColor]
     
-    categoryLabels = ['Exc.', 'PV', 'SOM']
+    categoryLabels = ['Exc.', 'PV+', 'SOM+']
     
     panelLabel = 'k'
     
-    axScatter = plt.subplot(gs[3:,3])
+    axScatter = plt.subplot(gs2[1,0])
     plt.hold(1)
     axScatter.set_yscale('log', basey=2)
     plt.hold(True)
@@ -354,7 +362,7 @@ if PANELS[4]:
     plt.ylim(0.2,7)
     plt.ylabel('Preferred bandwidth (oct)',fontsize=fontSizeLabels)
     axScatter.set_xticks(range(1,len(prefBandwidths)+1))
-    axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
+    axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels, rotation=-45)
     axScatter.set_yticks(possibleBands)
     bandLabels = possibleBands.tolist()
     bandLabels[-1] = 'WN'
@@ -364,10 +372,18 @@ if PANELS[4]:
     yLims = np.array(plt.ylim())
     extraplots.significance_stars([1,3], yLims[1]*1.05, yLims[1]*0.1, gapFactor=0.25)
     plt.hold(0)
+    
+    ExcPV = stats.ranksums(ACsustainedPrefBW, PVsustainedPrefBW)[1]
+    ExcSOM = stats.ranksums(ACsustainedPrefBW, SOMsustainedPrefBW)[1]
+    PVSOM = stats.ranksums(PVsustainedPrefBW, SOMsustainedPrefBW)[1]
+    print "Difference in pref bandwidth p vals: \nExc-PV: {0}\nExc-SOM: {1}\nPV-SOM: {2}".format(ExcPV,ExcSOM,PVSOM)
 
 
+# new gridspec for firing rate plots to increase spacing between them
+axSummaries = gs[:,4]
+gs3 = gridspec.GridSpecFromSubplotSpec(3,1, subplot_spec=axSummaries, hspace=0.3)
 
-# Summary plots showing firing rates of Ex, PV, SOM cells that have positive change in firing rate during sustained response    
+# Summary plots showing firing rates of PV, SOM during sound presentation
 if PANELS[5]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
@@ -377,7 +393,7 @@ if PANELS[5]:
     
     binStartTimes = summaryData['PSTHbinStartTimes']
     
-    categoryLabels = ['PV', 'SOM']
+    categoryLabels = ['PV+', 'SOM+']
     PVColor = figparams.colp['PVcell']
     SOMColor = figparams.colp['SOMcell']
     
@@ -385,79 +401,67 @@ if PANELS[5]:
     
     panelLabel = 'l'
     
-    axPSTH = plt.subplot(gs[:2,4])
+    axPSTH = plt.subplot(gs3[0,0])
     plt.hold(1)
     l1, = plt.plot(binStartTimes[1:-1],PVaveragePSTH[1:-1],color=PVColor, lw=2)
     l2, = plt.plot(binStartTimes[1:-1],SOMaveragePSTH[1:-1],color=SOMColor, lw=2)
-    plt.legend([l1,l2],categoryLabels, loc='best', frameon=False, fontsize=fontSizeLabels)
+    plt.legend([l1,l2],categoryLabels, loc='best', frameon=False, fontsize=fontSizeLegend)
     zline = plt.axvline(0,color='0.75',zorder=-10)
     plt.ylim(-0.1,1.1)
-    plt.xlabel('Time from sound onset (s)', fontsize=fontSizeLabels)
+    plt.xlabel('Time from sound onset (s)', fontsize=fontSizeLabels, labelpad=-0.5)
     plt.ylabel('Normalized firing rate', fontsize=fontSizeLabels)
     axPSTH.annotate(panelLabel, xy=(labelPosX[4],labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
     extraplots.boxoff(axPSTH)
     
     
-    
+# Summary plot showing onset responses of PV and SOM cells to high bandwidth stimuli
 if PANELS[6]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
-    PVonsetProp = summaryData['PVonsetProp']*100.0
-    SOMonsetProp = summaryData['SOMonsetProp']*100.0
+    PVhighBandRate = summaryData['PVonsetResponses']-summaryData['PVbaselines']
+    SOMhighBandRate = summaryData['SOMonsetResponses']-summaryData['SOMbaselines']
     
-    onsetProps = [PVonsetProp, SOMonsetProp]
+    responseRates = [PVhighBandRate, SOMhighBandRate]
     
-    categoryLabels = ['PV', 'SOM']
-    PVColor = figparams.colp['PVcell']
-    SOMColor = figparams.colp['SOMcell']
+    categoryLabels = ['PV+', 'SOM+']
     
     cellTypeColours = [PVColor, SOMColor]
     
     panelLabel = 'm'
     
-    axScatter = plt.subplot(gs[2:4,4])
+    axScatter = plt.subplot(gs3[1,0])
     plt.hold(1)
-    
-#     for category in range(len(onsetProps)):
-#         edgeColour = matplotlib.colors.colorConverter.to_rgba(cellTypeColours[category], alpha=0.5)
-#         xval = (category+1)*np.ones(len(onsetProps[category]))
-#           
-#         jitterAmt = np.random.random(len(xval))
-#         xval = xval + (0.4 * jitterAmt) - 0.2
-#           
-#         plt.plot(xval, onsetProps[category], 'o', mec=edgeColour, mfc='none', ms=8, mew = 2, clip_on=False)
-#         median = np.median(onsetProps[category])
-#         #sem = stats.sem(vals[category])
-#         plt.plot([category+0.7,category+1.3], [median,median], '-', color='k', mec=cellTypeColours[category], lw=3)
-          
-    bplot = plt.boxplot(onsetProps, widths=0.6, showfliers=False)
+        
+    bplot = plt.boxplot(responseRates, widths=0.6, showfliers=False)
     
     for box in range(len(bplot['boxes'])):
-        plt.setp(bplot['boxes'][box], color=cellTypeColours[box])
+        plt.setp(bplot['boxes'][box], color=cellTypeColours[box], linewidth=2)
         plt.setp(bplot['whiskers'][2*box:2*(box+1)], linestyle='-', color=cellTypeColours[box])
         plt.setp(bplot['caps'][2*box:2*(box+1)], color=cellTypeColours[box])
-        plt.setp(bplot['medians'][box], color='k', linewidth=2)
-        #plt.setp(bplot['fliers'][box, marker='o', color=cellTypeColours[box]])
+        plt.setp(bplot['medians'][box], color='k', linewidth=3)
 
     plt.setp(bplot['medians'], color='k')
     
-    plt.xlim(0,len(onsetProps)+1)
-    plt.ylim(0,32)
-    axScatter.set_xticks(range(1,len(onsetProps)+1))
+    plt.xlim(0.2,len(responseRates)+0.8)
+    plt.ylim(-5,55)
+    axScatter.set_xticks(range(1,len(responseRates)+1))
     axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
-    plt.ylabel('Spikes in first 50 ms (%)', fontsize=fontSizeLabels)
+    plt.ylabel('High bandwidth \n' r'onset response ($\Delta$spk/s)', fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
     yLims = np.array(plt.ylim())
-    extraplots.significance_stars([1,2], yLims[1]*0.95, yLims[1]*0.04, gapFactor=0.25)
+    extraplots.significance_stars([1,2], yLims[1]*0.98, yLims[1]*0.04, gapFactor=0.25)
     plt.hold(0)
     axScatter.annotate(panelLabel, xy=(labelPosX[4],labelPosY[1]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
+    
+    PVSOM = stats.ranksums(PVhighBandRate, SOMhighBandRate)[1]
+    print "Difference in PV-SOM high bandwidth onset sound response p val: {}".format(PVSOM)
 
 
-
+# Summary plot showing difference in PV and SOM sustained sound response at high bandwidths
 if PANELS[7]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
@@ -467,7 +471,7 @@ if PANELS[7]:
     
     responseRates = [PVhighBandRate, SOMhighBandRate]
     
-    categoryLabels = ['PV', 'SOM']
+    categoryLabels = ['PV+', 'SOM+']
     PVColor = figparams.colp['PVcell']
     SOMColor = figparams.colp['SOMcell']
     
@@ -475,7 +479,7 @@ if PANELS[7]:
     
     panelLabel = 'n'
     
-    axScatter = plt.subplot(gs[4:,4])
+    axScatter = plt.subplot(gs3[2,0])
     plt.hold(1)
     
 #     for category in range(len(responseRates)):
@@ -493,19 +497,19 @@ if PANELS[7]:
     bplot = plt.boxplot(responseRates, widths=0.6, showfliers=False)
     
     for box in range(len(bplot['boxes'])):
-        plt.setp(bplot['boxes'][box], color=cellTypeColours[box])
+        plt.setp(bplot['boxes'][box], color=cellTypeColours[box], linewidth=2)
         plt.setp(bplot['whiskers'][2*box:2*(box+1)], linestyle='-', color=cellTypeColours[box])
         plt.setp(bplot['caps'][2*box:2*(box+1)], color=cellTypeColours[box])
-        plt.setp(bplot['medians'][box], color='k', linewidth=2)
+        plt.setp(bplot['medians'][box], color='k', linewidth=3)
 
     plt.setp(bplot['medians'], color='k')
     
-    plt.xlim(0,len(responseRates)+1)
+    plt.xlim(0.2,len(responseRates)+0.8)
     plt.ylim(top=17)
     axScatter.set_xticks(range(1,len(responseRates)+1))
     axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
-    plt.ylabel('High bandwidth response (spk/s)', fontsize=fontSizeLabels)
+    plt.ylabel('High bandwidth \n' r'sustained response ($\Delta$spk/s)', fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
     yLims = np.array(plt.ylim())
     extraplots.significance_stars([1,2], yLims[1]*0.95, yLims[1]*0.04, gapFactor=0.25)
@@ -513,6 +517,10 @@ if PANELS[7]:
     axScatter.annotate(panelLabel, xy=(labelPosX[4],labelPosY[2]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
     
+    PVSOM = stats.ranksums(PVhighBandRate, SOMhighBandRate)[1]
+    print "Difference in PV-SOM high bandwidth sound response p val: {}".format(PVSOM)
+    
+#plt.show()
     
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

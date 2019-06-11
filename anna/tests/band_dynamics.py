@@ -139,11 +139,12 @@ def time_differences_by_trial(animal, sessions, sortBy, paradigm = '2afc', trigg
 
 if __name__ == '__main__':
     
-    CASE=2
+    CASE=3
 
-    animalNames = ['band0'+str(number) for number in range(78,88)]
+    animalNames = ['band0'+str(number) for number in [78,79,80,82,83,84,85,86]]
     #animalNames = ['adap064', 'adap070']
-    session = '20190226a'
+    session = '20190409a'
+
     
     #rsync_all_behaviour(animalNames)
     
@@ -230,7 +231,6 @@ if __name__ == '__main__':
 #         animal = 'band066'
 #         laserSessions = ['20190218a','20190219a','20190221a','20190222a','20190224a','20190225a','20190227a','20190228a']
 #         controlSessions = ['20190220a','20190223a','20190226a','20190301a']
-#         rsync_behavior(animal)
         
 #         animal = 'band069'
 #         laserSessions = ['20190123a','20190124a','20190126a','20190127a','20190129a','20190130a','20190201a','20190202a']
@@ -242,46 +242,63 @@ if __name__ == '__main__':
 #         controlSessions = ['20190220a','20190223a','20190226a','20190301a']
 #         rsync_behavior(animal)
         
-#         animal = 'band081'
-#         laserSessions = ['20190305a','20190306a']
-#         controlSessions = []
+        animal = 'band081'
+        laserSessions = ['20190307a','20190308a','20190310a','20190311a','20190313a','20190314a','20190316a','20190317a']
+        controlSessions = ['20190309a','20190312a','20190315a','20190318a']
+        rsync_behavior(animal)
+
+#         animal = 'band087'
+#         laserSessions = ['20190307a','20190308a','20190310a','20190311a','20190313a','20190314a','20190316a','20190317a']
+#         controlSessions = ['20190309a','20190312a','20190315a','20190318a']
 #         rsync_behavior(animal)
 
-        animal = 'band065'
-        laserSessions = ['20181116a','20181118a','20181120a','20181122a']
-        
-        sessionTypes = [laserSessions]#, controlSessions]
+#         animal = 'band081'
+#         laserSessions = ['20190310a'] #day anna trained
+#         controlSessions = ['20190309a','20190312a','20190315a','20190318a']
+#         rsync_behavior(animal)
+
+#         animal = 'band065'
+#         laserSessions = ['20181116a','20181118a','20181120a','20181122a']
+#         
+#         sessionTypes = [laserSessions]#, controlSessions]
+
+        sessionTypes = [laserSessions, controlSessions]
+
         sessionTitles = ['Laser', 'Control']
         
         plt.figure()
+        plt.hold(True)
         for ind, sessions in enumerate(sessionTypes):
-            plt.subplot(1,1,ind+1)
+            plt.subplot(1,2,ind+1)
             validPerCond, rightPerCond, possibleConds = band_behaviour_analysis.band_psychometric(animal, sessions, trialTypes=['laserSide','currentBand','currentSNR'])
             bandColours = ['k','#ef2929']
             laserLines = ['-','--']
             patches = []
+            ylabel = True if ind==0 else False
             for laser in range(len(possibleConds[0])):
                 for band in range(len(possibleConds[1])):
-                    band_behaviour_analysis.plot_band_psychometric(validPerCond[laser,band,:], rightPerCond[laser,band,:], possibleConds[2], colour = bandColours[band], linestyle = laserLines[laser])
+                    band_behaviour_analysis.plot_band_psychometric(validPerCond[laser,band,:], rightPerCond[laser,band,:], possibleConds[2], colour = bandColours[band], linestyle = laserLines[laser], ylabel=ylabel)
                     if laser==0:
                         patches.append(mpatches.Patch(color=bandColours[band], label=possibleConds[1][band]))
             plt.legend(handles=patches, borderaxespad=0.3,prop={'size':12}, loc='best')
-            plt.title(sessionTitles[ind])
+            plt.title(sessionTitles[ind], fontsize=16)
             plt.xlim(-0.5, len(possibleConds[1])+1.5)
-        plt.suptitle(animal)
+        plt.suptitle(animal, fontsize=16)
 
         plt.show()
         
     elif CASE==3:
         plt.figure()
-        animals = ['band0'+str(number) for number in [65,66,67,68,69,70,71]]
-        sessions = ['20180929a','20180930a', '20181001a','20181002a','20181003a']
+#         animals = ['band0'+str(number) for number in [65,66,67,68,69,70,71]]
+#         sessions = ['20180929a','20180930a', '20181001a','20181002a','20181003a']
+        animals = ['band081', 'band087']
+        sessions = ['20190307a','20190308a','20190310a','20190311a','20190313a','20190314a','20190316a','20190317a']
         for ind, animal in enumerate(animals):
-            plt.subplot(2,4,ind+1)
-            timeDiff, possibleBands = time_differences_by_trial(animal, sessions, 'currentBand', triggers = ['playNoiseStimulus','Cout'])
+            plt.subplot(1,2,ind+1)
+            timeDiff, possibleBands = time_differences_by_trial(animal, sessions, 'laserSide', triggers = ['playNoiseStimulus','Cout'])
             bins = np.linspace(0, 0.5, 50)
             plt.hold(True)
-            plt.hist([timeDiff[0],timeDiff[1]], bins, alpha=0.7, label=np.unique(possibleBands), histtype='step', lw=3, color=['k','r'])
+            plt.hist([timeDiff[0],timeDiff[1]], bins, alpha=0.7, label=np.unique(possibleBands), histtype='step', lw=3, color=['k','r'], normed=True)
             plt.legend(loc='upper right')
             plt.xlabel('withdrawal time from sound start (s)')
             plt.title(animal)
@@ -292,7 +309,7 @@ if __name__ == '__main__':
         
         plt.figure()
         for ind, animal in enumerate(animals):
-            plt.subplot(2,4,ind+1)
+            plt.subplot(1,2,ind+1)
             timeDiff, possibleOutcomes = time_differences_by_trial(animal, sessions, 'outcome', triggers = ['playNoiseStimulus','Cout'])
             bins = np.linspace(0, 0.5, 50)
             plt.hold(True)

@@ -19,79 +19,66 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import figparams
-import subjects_info
+import studyparams
 
-#dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
-dbFilename = '/home/jarauser/data/database/photoidentification_cells.h5'
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
+#dbFilename = '/home/jarauser/data/database/photoidentification_cells.h5'
 db = celldatabase.load_hdf(dbFilename)
 
 figName = 'supplement_figure_intensity_tuning'
 
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, figName)
 
-R2CUTOFF = 0.1 #minimum R^2 value for a cell to be considered frequency tuned
-OCTAVESCUTOFF = 0.3 #maximum octave difference between estimated best frequency and centre frequency presented
 
-SOUND_RESPONSE_PVAL = 0.05
+# # -- find all cells with a noise "suppression" calculated --
+# bestCells = db[db['noiseSustainedSI'].notnull()]
+# bestCells = bestCells[bestCells['sustainedSoundResponsePVal']<studyparams.SOUND_RESPONSE_PVAL]
 
-PV_CHR2_MICE = subjects_info.PV_CHR2_MICE
-SOM_CHR2_MICE = subjects_info.SOM_CHR2_MICE
+# -- find all good cells --
+bestCells = db.query(studyparams.SINGLE_UNITS)
+bestCells = bestCells.query(studyparams.GOOD_CELLS)
 
-# -- find all cells with a noise "suppression" calculated --
-bestCells = db[db['noiseSustainedSI'].notnull()]
-bestCells = bestCells[bestCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
-
-# -- find cells responsive to laser pulse or train --
-laserResponsiveCells = bestCells.query("laserPVal<0.001 and laserUStat>0")
-PVCells = laserResponsiveCells.loc[laserResponsiveCells['subject'].isin(PV_CHR2_MICE)]
-SOMCells = laserResponsiveCells.loc[laserResponsiveCells['subject'].isin(SOM_CHR2_MICE)]
-
-# -- find cells unresponsive to laser (putative pyramidal) --
-#ExCells = bestCells.query("laserPVal>0.05 and laserTrainPVal>0.05")
-ExCells = bestCells.query("laserUStat<0")
-ExCells = ExCells.loc[ExCells['subject'].isin(SOM_CHR2_MICE)]
-
-# -- PV, SOM, Ex cells sound responsive during sustained portion of bw trials --
-sustPVCells = PVCells.loc[PVCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
-sustSOMCells = SOMCells.loc[SOMCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
-sustExCells = ExCells.loc[ExCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
+# -- find different cell types --
+PVCells = bestCells.query(studyparams.PV_CELLS)
+SOMCells = bestCells.query(studyparams.SOM_CELLS)
+ExCells = bestCells.query(studyparams.EXC_CELLS)
 
 # -- get suppression indices for all cells responsive during sustained portion of response --
-PVsustainedSuppression = sustPVCells['sustainedSuppressionIndex']
-SOMsustainedSuppression = sustSOMCells['sustainedSuppressionIndex']
-ExsustainedSuppression = sustExCells['sustainedSuppressionIndex']
+PVsustainedSuppression = PVCells['sustainedSuppressionIndex']
+SOMsustainedSuppression = SOMCells['sustainedSuppressionIndex']
+ExsustainedSuppression = ExCells['sustainedSuppressionIndex']
 
-PVsustainedSuppressionPVal = sustPVCells['sustainedSuppressionpVal']
-SOMsustainedSuppressionPVal = sustSOMCells['sustainedSuppressionpVal']
-ExsustainedSuppressionPVal = sustExCells['sustainedSuppressionpVal']
+PVsustainedSuppressionPVal = PVCells['sustainedSuppressionpVal']
+SOMsustainedSuppressionPVal = SOMCells['sustainedSuppressionpVal']
+ExsustainedSuppressionPVal = ExCells['sustainedSuppressionpVal']
 
-fitPVsustainedSuppression = sustPVCells['fitSustainedSuppressionIndex']
-fitSOMsustainedSuppression = sustSOMCells['fitSustainedSuppressionIndex']
-fitExsustainedSuppression = sustExCells['fitSustainedSuppressionIndex']
+fitPVsustainedSuppression = PVCells['fitSustainedSuppressionIndex']
+fitSOMsustainedSuppression = SOMCells['fitSustainedSuppressionIndex']
+fitExsustainedSuppression = ExCells['fitSustainedSuppressionIndex']
 
-fitPVsustainedSuppressionNoZero = sustPVCells['fitSustainedSuppressionIndexnoZero']
-fitSOMsustainedSuppressionNoZero = sustSOMCells['fitSustainedSuppressionIndexnoZero']
-fitExsustainedSuppressionNoZero = sustExCells['fitSustainedSuppressionIndexnoZero']
+fitPVsustainedSuppressionNoZero = PVCells['fitSustainedSuppressionIndexnoZero']
+fitSOMsustainedSuppressionNoZero = SOMCells['fitSustainedSuppressionIndexnoZero']
+fitExsustainedSuppressionNoZero = ExCells['fitSustainedSuppressionIndexnoZero']
 
-PVsustainedNoiseSuppression = sustPVCells['noiseSustainedSI']
-SOMsustainedNoiseSuppression = sustSOMCells['noiseSustainedSI']
-ExsustainedNoiseSuppression = sustExCells['noiseSustainedSI']
+PVsustainedNoiseSuppression = PVCells['noiseSustainedSI']
+SOMsustainedNoiseSuppression = SOMCells['noiseSustainedSI']
+ExsustainedNoiseSuppression = ExCells['noiseSustainedSI']
 
 # -- get difference/sum for different bandwidths --
-PVhighSpikeArray = sustPVCells['bandwidthSustainedSpikeArrayHighAmp']
-PVlowSpikeArray = sustPVCells['bandwidthSustainedSpikeArrayLowAmp']
+PVhighSpikeArray = PVCells['bandwidthSustainedSpikeArrayHighAmp']
+PVlowSpikeArray = PVCells['bandwidthSustainedSpikeArrayLowAmp']
 PVdiffSum = (PVhighSpikeArray-PVlowSpikeArray)/(PVhighSpikeArray+PVlowSpikeArray)
-PVprefBW = sustPVCells['fitSustainedPrefBandwidthnoZero']
+PVprefBW = PVCells['fitSustainedPrefBandwidthnoZero']
 
-SOMhighSpikeArray = sustSOMCells['bandwidthSustainedSpikeArrayHighAmp']
-SOMlowSpikeArray = sustSOMCells['bandwidthSustainedSpikeArrayLowAmp']
+SOMhighSpikeArray = SOMCells['bandwidthSustainedSpikeArrayHighAmp']
+SOMlowSpikeArray = SOMCells['bandwidthSustainedSpikeArrayLowAmp']
 SOMdiffSum = (SOMhighSpikeArray-SOMlowSpikeArray)/(SOMhighSpikeArray+SOMlowSpikeArray)
-SOMprefBW = sustSOMCells['fitSustainedPrefBandwidthnoZero']
+SOMprefBW = SOMCells['fitSustainedPrefBandwidthnoZero']
 
-ExhighSpikeArray = sustExCells['bandwidthSustainedSpikeArrayHighAmp']
-ExlowSpikeArray = sustExCells['bandwidthSustainedSpikeArrayLowAmp']
+ExhighSpikeArray = ExCells['bandwidthSustainedSpikeArrayHighAmp']
+ExlowSpikeArray = ExCells['bandwidthSustainedSpikeArrayLowAmp']
 ExdiffSum = (ExhighSpikeArray-ExlowSpikeArray)/(ExhighSpikeArray+ExlowSpikeArray)
-ExprefBW = sustExCells['fitSustainedPrefBandwidthnoZero']
+ExprefBW = ExCells['fitSustainedPrefBandwidthnoZero']
 
 
 outputFile = 'all_cells_intensity_tuning.npz'

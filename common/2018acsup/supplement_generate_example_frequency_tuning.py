@@ -29,8 +29,8 @@ dbase = celldatabase.load_hdf(dbPath)
 
 figName = 'supplement_figure_gaussian_frequency_tuning_fit'
 
-#dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', allACFigName)
-dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
+#dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
 
 # -- Example cells -- #
 cellList = [{'subject' : 'band016',
@@ -77,7 +77,7 @@ for indCell in cellsToGenerate:
     cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
     
     # --- loads spike and event data for frequency tuning ephys sessions ---
-    tuningEphysData, tuningBData = cell.load('tuningCurve') #make them ints in the first place
+    tuningEphysData, tuningBData = cell.load('tuningCurve')
     tuningEventOnsetTimes = tuningEphysData['events']['soundDetectorOn']
     if len(tuningEventOnsetTimes)==0: #some cells recorded before sound detector installed
         tuningEventOnsetTimes = tuningEphysData['events']['stimOn'] + 0.0095 #correction for bandwidth trials, determined by comparing sound detector onset to stim event onset
@@ -87,7 +87,11 @@ for indCell in cellsToGenerate:
     freqEachTrial = tuningBData['currentFreq']
     numFreqs = np.unique(freqEachTrial)
     intEachTrial = tuningBData['currentIntensity']
-    timeRange = [-0.3,0.5]
+    
+    rasterTimeRange = [-0.3,0.5]
+    tuningTimeRange = dbRow['tuningTimeRange']
+    baselineTimeRange = [-0.5,-0.1]
+    fullRange = [min(rasterTimeRange+tuningTimeRange+baselineTimeRange), max(rasterTimeRange+tuningTimeRange+baselineTimeRange)]
     
     trialsEachCond = behavioranalysis.find_trials_each_combination(freqEachTrial,
                                                                     numFreqs,
@@ -99,12 +103,12 @@ for indCell in cellsToGenerate:
     tuningSpikeTimesFromEventOnset, trialIndexForEachSpike, tuningIndexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
                                                                                                         tuningSpikeTimestamps, 
                                                                                                         tuningEventOnsetTimes,
-                                                                                                        timeRange)
-    tuningWindow = dbRow['tuningTimeRange']
-    tuningSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(tuningSpikeTimesFromEventOnset, tuningIndexLimitsEachTrial, tuningWindow)
+                                                                                                        fullRange)
+
+    tuningSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(tuningSpikeTimesFromEventOnset, tuningIndexLimitsEachTrial, tuningTimeRange)
     responseArray, errorArray = funcs.calculate_tuning_curve_inputs(tuningSpikeCountMat, freqEachTrial, intEachTrial)
-    responseArray = responseArray[:,-1]/(tuningWindow[1]-tuningWindow[0]) #just the high intensity freq trials
-    errorArray = errorArray[:,-1]/(tuningWindow[1]-tuningWindow[0])
+    responseArray = responseArray[:,-1]/(tuningTimeRange[1]-tuningTimeRange[0]) #just the high intensity freq trials
+    errorArray = errorArray[:,-1]/(tuningTimeRange[1]-tuningTimeRange[0])
     
     # --- computes inputs to plot gaussian fit ---
     gaussFit = dbRow['gaussFit']
@@ -113,7 +117,6 @@ for indCell in cellsToGenerate:
     R2 = dbRow['tuningFitR2']
     
     # --- computes baseline spike rate ---
-    baselineTimeRange = [-0.5,-0.1]
     baselineSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(tuningSpikeTimesFromEventOnset, tuningIndexLimitsEachTrial, baselineTimeRange)
     baselineSpikeRate = np.mean(baselineSpikeCountMat.flatten())/(baselineTimeRange[1]-baselineTimeRange[0])
     
@@ -132,7 +135,7 @@ for indCell in cellsToGenerate:
              spikeTimesFromEventOnset=tuningSpikeTimesFromEventOnset,
              indexLimitsEachTrial=tuningIndexLimitsEachTrial,
              trialsEachCond=trialsHighInt,
-             tuningWindow=tuningWindow, rasterTimeRange=timeRange,
+             tuningWindow=tuningTimeRange, rasterTimeRange=rasterTimeRange,
              baselineSpikeRate=baselineSpikeRate,
              fitXVals = x_fine, fitResponse = gaussCurve, R2 = R2, prefFreq = prefFreq)
     print outputFile + " saved"

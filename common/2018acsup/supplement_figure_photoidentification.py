@@ -25,8 +25,7 @@ PANELS = [1,1,1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-#outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
-figFilename = 'SuppFig3_photoidentification_method' # Do not include extension
+figFilename = 'SuppFig2_photoidentification_method' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [8,6] # In inches
@@ -35,7 +34,7 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.09, 0.39, 0.68]   # Horiz position for panel labels
+labelPosX = [0.1, 0.4, 0.69]   # Horiz position for panel labels
 labelPosY = [0.96, 0.66, 0.37]    # Vert position for panel labels
 
 ExcFileName = 'band016_2016-12-11_950um_T6_c6.npz'
@@ -71,7 +70,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(3,3)
-gs.update(top=0.95, bottom=0.14, left=0.16, right=0.95, wspace=0.5, hspace=0.3)
+gs.update(top=0.95, bottom=0.14, left=0.18, right=0.95, wspace=0.5, hspace=0.3)
 
 #REALLY DUMB WORKAROUND FOR THE FACT THAT EDGECOLORS ONLY TAKES RGBA INPUTS
 def list_colours_to_rgba(colours):
@@ -100,11 +99,11 @@ if PANELS[0]:
     
     cellData = [PVData, SOMData, ExcData]
     panelLabels = ['a', 'c', 'e']
-    panelTitles = ['PV', 'SOM', 'Exc.']
+    panelTitles = ['PV+', 'SOM+', 'Exc.']
     
     colours = [PVColor, SOMColor, ExcColor]
     
-    cellLabelPosX = 0.01
+    cellLabelPosX = [0.02, 0.01, 0.02]
     cellLabelPosY = [0.83, 0.54, 0.24]
     
     for indCell, cell in enumerate(cellData):
@@ -117,7 +116,7 @@ if PANELS[0]:
         axRaster.annotate(panelLabels[indCell], xy=(labelPosX[0],labelPosY[indCell]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
         
-        axRaster.annotate(panelTitles[indCell], xy=(cellLabelPosX,cellLabelPosY[indCell]), xycoords='figure fraction',
+        axRaster.annotate(panelTitles[indCell], xy=(cellLabelPosX[indCell],cellLabelPosY[indCell]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
         plt.setp(pRaster, ms=3, color='k')
         
@@ -253,7 +252,7 @@ if PANELS[2]:
     axScatter.set_xticks(range(1,len(changesFR)+1))
     axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels, rotation=-45)#, ha='left')
     plt.ylim(-20,125)
-    plt.ylabel('Response to laser (spk/s)')
+    plt.ylabel('Response to first 10ms of laser (spk/s)')
     extraplots.boxoff(axScatter)
         
     
