@@ -15,3 +15,4 @@ tracks = [
 
     {'subject': subject, 'brainArea': 'LeftAC', 'histImage': 'p2-D1-03',
      'recordingTrack': 'middleDiO', 'shank': 1, 'atlasZ': 241},
+]
