@@ -9,7 +9,7 @@ from jaratoolbox import extrastats
 dataDir = '/home/nick/data/dissertation_amod/'
 
 # amod002 and 003 ran with chords and AM sounds
-subject = 'amod002'
+# subject = 'amod002'
 subject = 'amod003'
 soundTypes = ['chords', 'amp_mod']
 

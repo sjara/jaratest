@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 #subject = sys.argv[1]
 session = sys.argv[1]
 
-animalList = ['gosi001','gosi002','gosi003','gosi004','gosi005',
-              'gosi006','gosi007','gosi008','gosi009','gosi010',
-              'gosi011','gosi012','gosi013','gosi014','gosi015']
+animalList = ['gosi001','gosi002','gosi003','gosi004','''gosi005''',
+              'gosi006','''gosi007''','gosi008','gosi009','gosi010',
+              '''gosi011''','gosi012','gosi013','gosi014','''gosi015''']
 
 nValidAll = []
 fractionValidAll = []
@@ -29,7 +29,8 @@ for inds,subject in enumerate(animalList):
     delayToTargetHalfRange = bdata['delayToTargetHalfRange'][-1]
     targetDuration = bdata['targetDuration'][-1]
     delayToGoSignal = bdata['delayToGoSignal'][-1]
-    
+    antibiasMode = bdata['antibiasMode'][-1]
+
     targetFrequency = bdata['targetFrequency']
     choice = bdata['choice']
     valid = bdata['valid'] & (choice!=bdata.labels['choice']['none'])
@@ -42,8 +43,8 @@ for inds,subject in enumerate(animalList):
     fractionCorrect = np.mean(validCorrect)
     
     print '--- {0} ---'.format(subject)
-    print 'Target delay = {0}+/-{1}   Target duration = {2}   Go-delay = {3}'.format(delayToTargetMean,delayToTargetHalfRange,
-                                                                                     targetDuration,delayToGoSignal)
+    print 'Target delay = {0}+/-{1}   Target duration = {2}   Go-delay = {3}    Antibias Mode = {4}'.format(delayToTargetMean,delayToTargetHalfRange,
+                                                                                     targetDuration,delayToGoSignal,antibiasMode)
     print 'N valid trials  = {0}'.format(nValid)
     print 'Percent valid = {0:0.0%}'.format(fractionValid)
     print 'Percent correct = {0:0.0%}'.format(fractionCorrect)

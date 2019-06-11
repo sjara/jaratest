@@ -23,8 +23,18 @@ Behavior steps:
 ytickLabels = ['SD AM', 'D AM', 'NC AM', 'IC AM', 'P AM', 'IC F', 'P F', 'IC M', 'P M', 'R']
 ytickInds = range(len(ytickLabels))
 
-#Amod animals 001 through 014
-subjects = ['amod{:03d}'.format(i) for i in range(1, 15)]
+
+class BehavStepError(Exception):
+    '''
+    Raised if there is an error we can't account for in the behavior step program.
+    '''
+    pass
+
+class NoSoundTypeMode(Exception):
+    '''
+    Raised if there is no soundTypeMode
+    '''
+    pass
 
 def behavior_step(sessionData, readyThresh=0.75):
     '''
@@ -33,13 +43,14 @@ def behavior_step(sessionData, readyThresh=0.75):
     outcomeMode = sessionData.labels['outcomeMode'][sessionData['outcomeMode'][0]]
     try:
         soundTypeMode = sessionData.labels['soundTypeMode'][sessionData['soundTypeMode'][0]]
-    except KeyError:
+    except KeyError as e:
         #Some initial sessions were run with a diff. paradigm (should only be SD)
-        if outcomeMode == 'sides_direct':
+        if outcomeMode in ['sides_direct', 'direct']:
             step = 0
-            return step
+            return step, np.nan
         else:
-            raise KeyError('No soundTypeMode outside of sides direct')
+            print e
+            raise NoSoundTypeMode('No soundTypeMode outside of sides/direct')
 
     psycurveMode = sessionData.labels['psycurveMode'][sessionData['psycurveMode'][0]]
     if outcomeMode == 'sides_direct':
@@ -58,14 +69,14 @@ def behavior_step(sessionData, readyThresh=0.75):
             elif psycurveMode == 'uniform':
                 step=4
             else:
-                raise AttributeError('Psycurve mode not listed: {}'.format(psycurveMode))
+                raise BehavStepError('Psycurve mode not listed: {}'.format(psycurveMode))
         elif soundTypeMode in ['tones', 'chords']:
             if psycurveMode == 'off':
                 step=5
             elif psycurveMode == 'uniform':
                 step=6
             else:
-                raise AttributeError('Psycurve mode not listed: {}'.format(psycurveMode))
+                raise BehavStepError('Psycurve mode not listed: {}'.format(psycurveMode))
         elif soundTypeMode in ['mixed_tones', 'mixed_chords']:
             if psycurveMode == 'off':
                 step=7
@@ -76,11 +87,11 @@ def behavior_step(sessionData, readyThresh=0.75):
                 # else:
                 step = 8
             else:
-                raise AttributeError('Psycurve mode not listed: {}'.format(psycurveMode))
+                raise BehavStepError('Psycurve mode not listed: {}'.format(psycurveMode))
         else:
-            raise AttributeError('Sound mode not listed: {}'.format(soundTypeMode))
+            raise BehavStepError('Sound mode not listed: {}'.format(soundTypeMode))
     else:
-        raise AttributeError('Outcome mode not listed: {}'.format(outcomeMode))
+        raise BehavStepError('Outcome mode not listed: {}'.format(outcomeMode))
 
     #Now we need to calculate performance to see if the animal is
     #starting, or is ready to begin expeiments.
@@ -89,8 +100,12 @@ def behavior_step(sessionData, readyThresh=0.75):
     percentCorrect = sum(validCorrect)/float(len(validCorrect))
     return step, percentCorrect
 
-subjects = ['amod007', 'amod008', 'amod009', 'amod010', 'amod011', 'amod012', 'amod013', 'amod014']
+# subjects = ['amod007', 'amod008', 'amod009', 'amod010', 'amod011', 'amod012', 'amod013', 'amod014']
 # subjects = ['amod007']
+
+#Amod animals 002 through 014
+subjects = ['amod{:03d}'.format(i) for i in range(7, 15)]
+
 stepArrays = []
 trialNumArrays = []
 performanceArrays = []
@@ -111,10 +126,11 @@ for subject in subjects:
 
         try:
             step, percentCorrectThisSession = behavior_step(bdata)
-        except KeyError: #Using the animal for other paradigms throws key errors
+        except NoSoundTypeMode as e: #Using the animal for other paradigms throws key errors
             if highestStep==8: #If we are at the end of the animal's career
                 step, percentCorrectThisSession = -1, 0 #Animal was being used for different things
             else:
+                print e
                 raise KeyError('Problem before end of animal career')
 
         #Keep track of the highest step the animal has acheived.
