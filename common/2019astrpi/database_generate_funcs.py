@@ -66,13 +66,13 @@ def calculate_fit(uniqFreq,allIntenBase,freqs,spks):
 #Get R**2 value for evaluating fit later
 #[3]Get residuals, and sum of squared residuals (SSQ)
         gaussianResp = gaussian(np.log2(freqs),*popt)
+        # print "this is gaussianResp"
         residuals = spks - gaussianResp
         ssquared = np.sum(residuals**2)
         ssTotal = np.sum((spks-np.mean(spks))**2)
-        # ssTotal = np.sum((spks-gaussianResp)**2)
-        # Rsquared = 1 - (ssquared/ssTotal)
-        corrcoeff,_ = stats.pearsonr(spks, gaussianResp)
-        Rsquared = corrcoeff**2
+        Rsquared = 1 - (ssquared/ssTotal)
+        # corrcoeff,_ = stats.pearsonr(spks, gaussianResp)
+        # Rsquared = corrcoeff**2
 
     except RuntimeError:
         print "Could not fit gaussian curve to tuning data."
@@ -110,8 +110,6 @@ def calculate_intensity_threshold_and_CF_indices(fra,respSpikeMean):
     return intensityInd, freqInd
 
 def calculate_BW10_params(ind10Above, popts,Rsquareds,responseThreshold,intensityThreshold):
-    # ind10Above = intensityInd + int(10/np.diff(uniqueIntensity)[0]) #How many inds to go above the threshold intensity ind
-
 # [8.1] get the inverse gaussian to find the frequencies[upper and lower], to do that, get Rsquared value and popt
     try:
         poptBW10 = popts[ind10Above]

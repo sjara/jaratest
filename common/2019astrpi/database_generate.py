@@ -17,16 +17,17 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 import database_generate_funcs as funcs
 reload(funcs)
+reload(studyparams)
 # from jaratoolbox import histologyanalysis as ha
 # import database_bandwidth_tuning_fit_funcs as fitfuncs
-SAVE = 0
+SAVE = 1
 
 def calculate_base_stats(db, filename = ''):
     '''
     Calculate parameters to be used to filter cells in calculate_indices
     '''
     #DEFINE PARAMETERS
-    sessionMulti = ['tuningCurve'] #sessions with multivariate stimulus 'shortTuningCurve','am'
+    sessionMulti = ['tuningCurve','tuningCurve(tc)'] #sessions with multivariate stimulus 'shortTuningCurve','am'
     sessionSingle = ['noiseburst','laserpulse']#sessions with single variable stimulus
     #FILTERING DATAFRAME
     firstCells = db.query(studyparams.FIRST_FLTRD_CELLS) #isiViolations<0.02 and spikeShapeQuality>2
@@ -67,9 +68,7 @@ def calculate_base_stats(db, filename = ''):
                 uniqFreq = np.unique(currentFreq)
                 uniqueIntensity = np.unique(currentIntensity)
 
-                zStats = np.empty((len(uniqueIntensity),len(uniqFreq)))
-                pVals = np.empty((len(uniqueIntensity),len(uniqFreq)))
-                allIntenBase = np.array([]) #what's this for? >> for calculating response threshold
+                allIntenBase = np.array([])
                 respSpikeMean = np.empty((len(uniqueIntensity),len(uniqFreq)))#same as allIntenResp
                 allIntenRespMedian = np.empty((len(uniqueIntensity),len(uniqFreq)))#what's this for?
                 Rsquareds = np.empty((len(uniqueIntensity),len(uniqFreq)))
@@ -82,7 +81,6 @@ def calculate_base_stats(db, filename = ''):
                     ind10AboveButNone = []
                     for indFreq, freq in enumerate(uniqFreq):
                         selectinds = np.flatnonzero((currentFreq==freq)&(currentIntensity==intensity)).tolist()
-                        # print "selectinds are {}".format(selectinds)
 
                         nspkBase, nspkResp = funcs.calculate_firing_rate(ephysData, baseRange, session, selectinds = selectinds)
 
@@ -109,13 +107,6 @@ def calculate_base_stats(db, filename = ''):
                         cf = None
                         intensityThreshold = None
                         fit_midpoint = None
-                        #TODO: Do something better than just skip?
-                        # thresholds[indIter] = None
-                        # cfs[indIter] = None
-                        # lowerFreqs[indIter] = None
-                        # upperFreqs[indIter] = None
-                        # noFreqAboveThreshInds.append(indRow)
-                        pass
                     else:
                         intensityThreshold = uniqueIntensity[intensityInd]
                         cf = uniqFreq[freqInd]
@@ -123,15 +114,15 @@ def calculate_base_stats(db, filename = ''):
                     #so find index that's above 10dB
                         ind10Above = intensityInd + int(10/np.diff(uniqueIntensity)[0]) #How many inds to go above the threshold intensity ind
                         lowerFreq, upperFreq, RsquaredBW10 = funcs.calculate_BW10_params(ind10Above, popts,Rsquareds,responseThreshold,intensityThreshold)
-                        try:
-                                fit_midpoint = np.sqrt(lowerFreq*upperFreq)
-                        except TypeError:
-                                fit_midpoint = None
-                        # fit_midpoint = np.sqrt(lowerFreq*upperFreq)
-                        try:
+                        # print('lf:{},uf:{},R2:{}'.format(lowerFreq,upperFreq,RsquaredBW10))
+
+                        if (lowerFreq is not None) and (upperFreq is not None):
+                            fit_midpoint = np.sqrt(lowerFreq*upperFreq)
                             bw10 = (upperFreq - lowerFreq)/cf
-                        except TypeError:
-                            continue
+
+                        else:
+                                fit_midpoint = None
+                                bw10 = None
                     #ADD PARAMS TO DATAFRAME [9] store data in DB: intensity threshold, rsquaredFit, bw10, cf, fra
                         firstCells.at[indRow, 'thresholdFRA']= intensityThreshold #indRow
                         firstCells.at[indRow,'cf'] = cf
@@ -140,28 +131,9 @@ def calculate_base_stats(db, filename = ''):
                         firstCells.at[indRow,'rsquaredFit'] = RsquaredBW10
                         firstCells.at[indRow,'bw10'] = bw10
                         firstCells.at[indRow,'fit_midpoint'] = fit_midpoint
-                #     intensityThreshold = uniqueIntensity[intensityInd]
-                #     cf = uniqFreq[freqInd]
-                # # [8] getting BW10 value, Bandwidth at 10dB above the neuron's sound intensity Threshold
-                # #so find index that's above 10dB
-                #     ind10Above = intensityInd + int(10/np.diff(uniqueIntensity)[0]) #How many inds to go above the threshold intensity ind
-                #     lowerFreq, upperFreq, RsquaredBW10 = funcs.calculate_BW10_params(ind10Above, popts,Rsquareds,responseThreshold)
-                #     try:
-                #         bw10 = (upperFreq - lowerFreq)/cf
-                #     except TypeError:
-                #         continue
-                # #ADD PARAMS TO DATAFRAME [9] store data in DB: intensity threshold, rsquaredFit, bw10, cf, fra
-                #     firstCells.at[indRow, 'thresholdFRA']= intensityThreshold #indRow
-                #     firstCells.at[indRow,'cf'] = cf
-                #     firstCells.at[indRow,'lowerFreq'] = lowerFreq
-                #     firstCells.at[indRow,'upperFreq'] = upperFreq
-                #     firstCells.at[indRow,'rsquaredFit'] = RsquaredBW10
-                #     firstCells.at[indRow,'bw10'] = bw10
-                #     firstCells.at[indRow,'fit_midpoint'] = np.sqrt(lowerFreq*upperFreq)
-                    # except TypeError:
-                    #     pass
+
             else:
-                print("Lasertrain, shortTuningCurve and AM are ignored")
+                print("session {} is ignored".format(session))#Lasertrain, shortTuningCurve and AM are ignored
     return firstCells
 
 def calculate_indices(db, filename = ''):
@@ -202,6 +174,6 @@ if __name__ == "__main__":
     bestCells = calculate_indices(firstDB, filename = d1DBFilename)
 
     if SAVE:
-        dbpath = os.path.join(studyparams.PATH_TO_STUDY,'{}.h5'.format(d1mice))
+        dbpath = os.path.join(studyparams.PATH_TO_TEST,'{}.h5'.format(d1mice))
         bestCells.to_hdf(dbpath,key='df',mode='w')
         print "SAVED DATAFRAME to {}".format(dbpath)

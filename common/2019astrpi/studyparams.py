@@ -3,6 +3,7 @@ studyparams contains the default names and queries used in experiment and analys
 '''
 STUDY_NAME = '2019astrpi'
 PATH_TO_STUDY = '/home/jarauser/src/jaratest/common/2019astrpi'
+PATH_TO_TEST = '/home/jarauser/src/jaratest/allison/d1pi032'
 # List of animals used in this study
 ASTR_D1_CHR2_MICE = ['d1pi026','d1pi032','d1pi033']
 #ASTR_D2_CHR2_MICE

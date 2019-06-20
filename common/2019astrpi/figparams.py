@@ -26,31 +26,31 @@ starHeightFactor = 0.2
 starGapFactor = 0.3
 starYfactor = 0.1
 
-# dotEdgeColor = '0.5'
+dotEdgeColor = '0.5'
 rasterMS = 1
 
 colp = {}
-
+#
 colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
-colp['frontStrColor'] = cp.TangoPalette['Chameleon3']
-colp['backStrColor'] = cp.TangoPalette['Plum2']
-
-# colp['sound'] = cp.TangoPalette['Butter2']
-colp['sound'] = cp.TangoPalette['Orange1']
-
-colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
-colp['MidFreqL'] = cp.TangoPalette['Chameleon3']
-
-#colp['muscimol'] = cp.TangoPalette['Orange2']
-colp['muscimol'] = cp.TangoPalette['Chocolate2']
+# colp['frontStrColor'] = cp.TangoPalette['Chameleon3']
+# colp['backStrColor'] = cp.TangoPalette['Plum2']
+#
+# # colp['sound'] = cp.TangoPalette['Butter2']
+# colp['sound'] = cp.TangoPalette['Orange1']
+#
+# colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
+# colp['MidFreqL'] = cp.TangoPalette['Chameleon3']
+#
+# #colp['muscimol'] = cp.TangoPalette['Orange2']
+# colp['muscimol'] = cp.TangoPalette['Chocolate2']
 
 #colp['stimLeft'] = cp.TangoPalette['ScarletRed1']
 #colp['stimRight'] = cp.TangoPalette['Chameleon3']
-colp['stimLeft'] = cp.TangoPalette['Orange2']
-colp['stimRight'] = '#829910'
-
-colp['thalColor'] = cp.TangoPalette['SkyBlue2']
-colp['acColor'] = cp.TangoPalette['ScarletRed2']
+# colp['stimLeft'] = cp.TangoPalette['Orange2']
+# colp['stimRight'] = '#829910'
+#
+# colp['thalColor'] = cp.TangoPalette['SkyBlue2']
+# colp['acColor'] = cp.TangoPalette['ScarletRed2']
 
 
 #7570B3 - blupurp
