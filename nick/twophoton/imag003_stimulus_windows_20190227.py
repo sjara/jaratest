@@ -58,9 +58,20 @@ for indStim in range(3):
     averageEachStim[indStim,:,:] = np.mean(allFramesThisStim, axis=0)
 
 # For plotting individual frames, etc.
-# indFrame=1
-# plt.clf()
-# plt.imshow(averageEachStim[indFrame, :,:])
+
+maxVal = np.max(averageEachStim.ravel())
+minVal = np.min(averageEachStim.ravel())
+
+indFrame=0
+plt.clf()
+ax = plt.gca()
+cax = plt.imshow(averageEachStim[indFrame, :,:], cmap='viridis')
+cax.set_clim(minVal, maxVal)
+cbar = plt.colorbar(cax, ax=ax)
+ax.axis('off')
+ax.set_title('Stim {}'.format(indFrame))
+plt.savefig('/home/nick/data/1pdata/tmpData/windows_average_image_stim{}.png'.format(indFrame))
+
 # diffImage = averageEachStim[0,:,:] - averageEachStim[2,:,:]
 # plt.imshow(averageEachStim[indFrame,:,:] - np.mean(averageEachStim, axis=0))
 
@@ -71,19 +82,19 @@ for indStim in range(3):
 # plt.imshow(np.argmax(averageEachMeanSubtracted, axis=0))
 
 ### Plot differences between the 3 average images
-plt.clf()
-fig = plt.gcf()
-gs = gridspec.GridSpec(3, 3)
-gs.update(wspace=0.1, hspace=0.1)
-for indFirst in range(3):
-    for indSecond in range(3):
+# plt.clf()
+# fig = plt.gcf()
+# gs = gridspec.GridSpec(3, 3)
+# gs.update(wspace=0.1, hspace=0.1)
+# for indFirst in range(3):
+#     for indSecond in range(3):
 
-        specDiff = gs[indFirst, indSecond]
-        axDiff = plt.Subplot(fig, specDiff)
-        fig.add_subplot(axDiff)
-        diffImage = averageEachStim[indFirst,:,:] - averageEachStim[indSecond,:,:]
-        axDiff.imshow(diffImage)
-        axDiff.set_title('{} - {}'.format(indFirst, indSecond))
-        axDiff.axis('off')
-plt.show()
+#         specDiff = gs[indFirst, indSecond]
+#         axDiff = plt.Subplot(fig, specDiff)
+#         fig.add_subplot(axDiff)
+#         diffImage = averageEachStim[indFirst,:,:] - averageEachStim[indSecond,:,:]
+#         axDiff.imshow(diffImage)
+#         axDiff.set_title('{} - {}'.format(indFirst, indSecond))
+#         axDiff.axis('off')
+# plt.show()
 
