@@ -35,7 +35,7 @@ PANELS = [1,1] # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
-figFilename = 'SuppFig5_characterisation_of_suppression_by_AM_rate' # Do not include extension
+figFilename = 'SuppFig4_characterisation_of_suppression_by_AM_rate' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [8,4] # In inches
@@ -46,8 +46,8 @@ fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.01, 0.21]   # Horiz position for panel labels
-labelPosY = [0.96, 0.65]    # Vert position for panel labels
+labelPosX = [0.01, 0.46]   # Horiz position for panel labels
+labelPosY = [0.95]    # Vert position for panel labels
 
 ExColor = figparams.colp['excitatoryCell']
 PVColor = figparams.colp['PVcell']
@@ -66,6 +66,8 @@ if PANELS[0]:
     data = np.load(dataFullPath)
     
     axBar = plt.subplot(gs[0,0])
+    
+    panelLabel = 'a'
 
     ExAMrate = data['ExAMrate']
     PVAMrate = data['PVAMrate']
@@ -94,11 +96,11 @@ if PANELS[0]:
     PVBars = plt.bar(xvals - 0.5*bar_width, PVPercents, bar_width,
                      color=PVColor,
                      edgecolor=PVColor,
-                     label='PV')
+                     label='PV+')
     SOMBars = plt.bar(xvals + 0.5*bar_width + bar_spacing, SOMPercents, bar_width,
                      color=SOMColor,
                      edgecolor=SOMColor,
-                     label='SOM')
+                     label='SOM+')
      
     plt.legend(frameon=False, fontsize=fontSizeLabels, loc='best')
     plt.ylim(0,100)
@@ -107,6 +109,9 @@ if PANELS[0]:
     axBar.set_xticks(xvals)
     axBar.set_xticklabels(rates)
     extraplots.boxoff(axBar)
+    
+    axBar.annotate(panelLabel, xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
 
 # --- plots of suppression index vs AM rate ---    
 if PANELS[1]:
@@ -114,6 +119,8 @@ if PANELS[1]:
     data = np.load(dataFullPath)
     
     axScatter = plt.subplot(gs[0,1])
+    
+    panelLabel = 'b'
 
     ExAMrate = data['ExAMrate']
     PVAMrate = data['PVAMrate']
@@ -127,15 +134,15 @@ if PANELS[1]:
     cellSIs = [ExSI, PVSI, SOMSI]
     cellTypeColours = [ExColor, PVColor, SOMColor]
     
-    bar_width = 0.2
-    bar_spacing = 0.1
+    bar_width = 0.15
+    bar_spacing = 0.13
     bar_loc = [-1,0,1]
     
     xticks = []
     xticklabels = []
     
     for cellType in range(len(cellRates)):
-        edgeColour = matplotlib.colors.colorConverter.to_rgba(cellTypeColours[cellType], alpha=0.6)
+        edgeColour = matplotlib.colors.colorConverter.to_rgba(cellTypeColours[cellType], alpha=0.5)
         thisCellTypeSIs = cellSIs[cellType]
         thisCellTypeAMrates = cellRates[cellType]
         
@@ -143,16 +150,16 @@ if PANELS[1]:
         SIs32 = thisCellTypeSIs[np.where(thisCellTypeAMrates==32)[0]]
         SIs64 = thisCellTypeSIs[np.where(thisCellTypeAMrates==64)[0]]
         
-        print "SI p-vals"
-        print "16 vs 32Hz: {}".format(stats.ranksums(SIs16, SIs32)[1])
-        print "32 vs 64Hz: {}".format(stats.ranksums(SIs32, SIs64)[1])
-        print "16 vs 64Hz: {}".format(stats.ranksums(SIs16, SIs64)[1])
-        
         allSIs = []
         for indSI, SIs in enumerate([SIs16, SIs32, SIs64]):
             if len(SIs)>0:
                 allSIs.append(SIs)
-                xticklabels.append(16*(2**indSI))
+                if indSI==0:
+                    xticklabels.append(r'$\leq$16')
+                else:
+                    xticklabels.append(16*(2**indSI))
+                
+        print "SI p-val:{}".format(stats.kruskal(*allSIs))
             
         for indSI, SIs in enumerate(allSIs):    
             xval = (cellType+1)+(bar_loc[indSI]*(bar_width+bar_spacing))
@@ -163,13 +170,13 @@ if PANELS[1]:
             xvals = xvals + (bar_width * jitterAmt) - bar_width/2
               
             plt.hold(True)
-            plt.plot(xvals, SIs, 'o', mec=edgeColour, mfc='none', clip_on=False)
+            plt.plot(xvals, SIs, 'o', mec=edgeColour, mfc='none', clip_on=False, markeredgewidth=1.3)
             median = np.median(SIs)
             plt.plot([xval-bar_width/2,xval+bar_width/2], [median,median], '-', color='k', mec=edgeColour, lw=3)
             
     ExPatch = mpatches.Patch(color=ExColor, label='Exc.')
-    PVPatch = mpatches.Patch(color=PVColor, label='PV')
-    SOMPatch = mpatches.Patch(color=SOMColor, label='SOM')
+    PVPatch = mpatches.Patch(color=PVColor, label='PV+')
+    SOMPatch = mpatches.Patch(color=SOMColor, label='SOM+')
     plt.legend(handles=[ExPatch,PVPatch,SOMPatch],frameon=False, fontsize=fontSizeLabels, loc='best')
     
     plt.ylim(-0.1,1.1)
@@ -179,6 +186,9 @@ if PANELS[1]:
     axScatter.set_xticks(xticks)
     axScatter.set_xticklabels(xticklabels)
     extraplots.boxoff(axScatter)
+    
+    axScatter.annotate(panelLabel, xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
     
     
 if SAVE_FIGURE:

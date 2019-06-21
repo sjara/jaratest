@@ -28,13 +28,13 @@ outputDir = '/tmp/'
 figFilename = 'SuppFig6_excitatory_high_band_responses' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 #figFormat = 'svg'
-figSize = [8,3] # In inches
+figSize = [10,3] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 
-labelPosX = [0.01, 0.33, 0.64]   # Horiz position for panel labels
+labelPosX = [0.01, 0.31, 0.65]   # Horiz position for panel labels
 labelPosY = [0.94]    # Vert position for panel labels
 
 summaryFileName = 'all_photoidentified_cells_stats.npz' #using same data file as fig 1
@@ -58,7 +58,7 @@ if PANELS[0]:
     
     binStartTimes = summaryData['PSTHbinStartTimes']
     
-    categoryLabels = ['Exc.', 'PV', 'SOM']
+    categoryLabels = ['Exc.', 'PV+', 'SOM+']
     ExcColor = figparams.colp['excitatoryCell']
     PVColor = figparams.colp['PVcell']
     SOMColor = figparams.colp['SOMcell']
@@ -85,13 +85,13 @@ if PANELS[1]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
-    ExcOnsetProp = summaryData['ExcOnsetProp']*100.0
-    PVonsetProp = summaryData['PVonsetProp']*100.0
-    SOMonsetProp = summaryData['SOMonsetProp']*100.0
+    ExcHighBandRate = summaryData['ExcOnsetResponses']-summaryData['ExcBaselines']
+    PVhighBandRate = summaryData['PVonsetResponses']-summaryData['PVbaselines']
+    SOMhighBandRate = summaryData['SOMonsetResponses']-summaryData['SOMbaselines']
     
-    onsetProps = [ExcOnsetProp, PVonsetProp, SOMonsetProp]
+    responseRates = [ExcHighBandRate, PVhighBandRate, SOMhighBandRate]
     
-    categoryLabels = ['Exc.', 'PV', 'SOM']
+    categoryLabels = ['Exc.', 'PV+', 'SOM+']
     ExcColor = figparams.colp['excitatoryCell']
     PVColor = figparams.colp['PVcell']
     SOMColor = figparams.colp['SOMcell']
@@ -103,50 +103,50 @@ if PANELS[1]:
     axScatter = plt.subplot(gs[0,1])
     plt.hold(1)
     
-#     for category in range(len(onsetProps)):
+#     for category in range(len(responseRates)):
 #         edgeColour = matplotlib.colors.colorConverter.to_rgba(cellTypeColours[category], alpha=0.5)
-#         xval = (category+1)*np.ones(len(onsetProps[category]))
-#           
+#         xval = (category+1)*np.ones(len(responseRates[category]))
+#          
 #         jitterAmt = np.random.random(len(xval))
 #         xval = xval + (0.4 * jitterAmt) - 0.2
-#           
-#         plt.plot(xval, onsetProps[category], 'o', mec=edgeColour, mfc='none', ms=8, mew = 2, clip_on=False)
-#         median = np.median(onsetProps[category])
+#          
+#         plt.plot(xval, responseRates[category], 'o', mec=edgeColour, mfc='none', ms=8, mew = 2, clip_on=False)
+#         median = np.median(responseRates[category])
 #         #sem = stats.sem(vals[category])
 #         plt.plot([category+0.7,category+1.3], [median,median], '-', color='k', mec=cellTypeColours[category], lw=3)
-          
-    bplot = plt.boxplot(onsetProps, widths=0.6, showfliers=False)
+        
+    bplot = plt.boxplot(responseRates, widths=0.6, showfliers=False)
     
     for box in range(len(bplot['boxes'])):
-        plt.setp(bplot['boxes'][box], color=cellTypeColours[box])
+        plt.setp(bplot['boxes'][box], color=cellTypeColours[box], linewidth=2)
         plt.setp(bplot['whiskers'][2*box:2*(box+1)], linestyle='-', color=cellTypeColours[box])
         plt.setp(bplot['caps'][2*box:2*(box+1)], color=cellTypeColours[box])
-        plt.setp(bplot['medians'][box], color='k', linewidth=2)
-        #plt.setp(bplot['fliers'][box, marker='o', color=cellTypeColours[box]])
+        plt.setp(bplot['medians'][box], color='k', linewidth=3)
 
     plt.setp(bplot['medians'], color='k')
     
-    plt.xlim(0,len(onsetProps)+1)
-    #plt.ylim(0,32)
-    axScatter.set_xticks(range(1,len(onsetProps)+1))
+    plt.xlim(0,len(responseRates)+1)
+    plt.ylim(top=50)
+    axScatter.set_xticks(range(1,len(responseRates)+1))
     axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
-    plt.ylabel('Spikes in first 50 ms (%)', fontsize=fontSizeLabels)
+    plt.ylabel('High bandwidth \n' r'onset response ($\Delta$spk/s)', fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
     yLims = np.array(plt.ylim())
-    extraplots.significance_stars([1,3], yLims[1]*0.98, yLims[1]*0.04, gapFactor=0.25)
+    extraplots.significance_stars([1,2], yLims[1]*0.98, yLims[1]*0.04, gapFactor=0.25)
+    #extraplots.significance_stars([2,3], yLims[1]*0.98, yLims[1]*0.04, gapFactor=0.25)
     plt.hold(0)
     axScatter.annotate(panelLabel, xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
     
-    PVSOM = stats.ranksums(PVonsetProp, SOMonsetProp)[1]
-    print "Difference in PV-SOM onsetivity p val: {}".format(PVSOM)
+    PVSOM = stats.ranksums(PVhighBandRate, SOMhighBandRate)[1]
+    print "Difference in PV-SOM high bandwidth onset sound response p val: {}".format(PVSOM)
     
-    ExcPV = stats.ranksums(ExcOnsetProp, PVonsetProp)[1]
-    print "Difference in Exc-PV onsetivity p val: {}".format(ExcPV)
+    ExcPV = stats.ranksums(ExcHighBandRate, PVhighBandRate)[1]
+    print "Difference in Exc-PV high bandwidth onset sound response p val: {}".format(ExcPV)
     
-    ExcSOM = stats.ranksums(ExcOnsetProp, SOMonsetProp)[1]
-    print "Difference in Exc-SOM onsetivity p val: {}".format(ExcSOM)
+    ExcSOM = stats.ranksums(ExcHighBandRate, SOMhighBandRate)[1]
+    print "Difference in Exc-SOM high bandwidth onset sound response p val: {}".format(ExcSOM)
 
 
 # Summary plot showing difference in Exc., PV, and SOM sustained sound response at high bandwidths
@@ -160,7 +160,7 @@ if PANELS[2]:
     
     responseRates = [ExcHighBandRate, PVhighBandRate, SOMhighBandRate]
     
-    categoryLabels = ['Exc.', 'PV', 'SOM']
+    categoryLabels = ['Exc.', 'PV+', 'SOM+']
     ExcColor = figparams.colp['excitatoryCell']
     PVColor = figparams.colp['PVcell']
     SOMColor = figparams.colp['SOMcell']
@@ -187,10 +187,10 @@ if PANELS[2]:
     bplot = plt.boxplot(responseRates, widths=0.6, showfliers=False)
     
     for box in range(len(bplot['boxes'])):
-        plt.setp(bplot['boxes'][box], color=cellTypeColours[box])
+        plt.setp(bplot['boxes'][box], color=cellTypeColours[box], linewidth=2)
         plt.setp(bplot['whiskers'][2*box:2*(box+1)], linestyle='-', color=cellTypeColours[box])
         plt.setp(bplot['caps'][2*box:2*(box+1)], color=cellTypeColours[box])
-        plt.setp(bplot['medians'][box], color='k', linewidth=2)
+        plt.setp(bplot['medians'][box], color='k', linewidth=3)
 
     plt.setp(bplot['medians'], color='k')
     
@@ -199,7 +199,7 @@ if PANELS[2]:
     axScatter.set_xticks(range(1,len(responseRates)+1))
     axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
-    plt.ylabel('High bandwidth response (spk/s)', fontsize=fontSizeLabels)
+    plt.ylabel('High bandwidth \n' r'sustained response ($\Delta$spk/s)', fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
     yLims = np.array(plt.ylim())
     extraplots.significance_stars([1,2], yLims[1]*0.85, yLims[1]*0.04, gapFactor=0.25)
@@ -209,13 +209,13 @@ if PANELS[2]:
                      fontsize=fontSizePanel, fontweight='bold')
     
     PVSOM = stats.ranksums(PVhighBandRate, SOMhighBandRate)[1]
-    print "Difference in PV-SOM high bandwidth sound response p val: {}".format(PVSOM)
+    print "Difference in PV-SOM high bandwidth sustained sound response p val: {}".format(PVSOM)
     
     ExcPV = stats.ranksums(ExcHighBandRate, PVhighBandRate)[1]
-    print "Difference in Exc-PV high bandwidth sound response p val: {}".format(ExcPV)
+    print "Difference in Exc-PV high bandwidth sustained sound response p val: {}".format(ExcPV)
     
     ExcSOM = stats.ranksums(ExcHighBandRate, SOMhighBandRate)[1]
-    print "Difference in Exc-SOM high bandwidth sound response p val: {}".format(ExcSOM)
+    print "Difference in Exc-SOM high bandwidth sustained sound response p val: {}".format(ExcSOM)
     
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

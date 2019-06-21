@@ -160,16 +160,6 @@ for indCell in cellsToGenerate:
     suppIndNoZeroNoLaser = dbRow['fitSustainedSuppressionIndexNoZeroNoLaser']
     suppIndNoZeroLaser = dbRow['fitSustainedSuppressionIndexNoZeroLaser']
     
-    # replace pure tone with baselines
-    onsetResponseArray[0,0] = noLaserBaseline
-    sustainedResponseArray[0,0] = noLaserBaseline
-    onsetResponseArray[0,1] = laserBaseline
-    sustainedResponseArray[0,1] = laserBaseline
-    
-    onsetSEM[0,0] = noLaserSEM
-    sustainedSEM[0,0] = noLaserSEM
-    onsetSEM[0,1] = laserSEM
-    sustainedSEM[0,1] = laserSEM
     
     numBands[-1] = 6 #white noise is 6 octaves
     
@@ -193,6 +183,8 @@ for indCell in cellsToGenerate:
     np.savez(outputFullPath,
              onsetResponseArray=onsetResponseArray, onsetSEM=onsetSEM,
              sustainedResponseArray=sustainedResponseArray, sustainedSEM=sustainedSEM,
+             noLaserBaseline = noLaserBaseline, laserBaseline = laserBaseline,
+             noLaserSEM = noLaserSEM, laserSEM = laserSEM,
              possibleBands=numBands, possibleLasers=numSec,
              spikeTimesFromEventOnset=bandSpikeTimesFromEventOnset,
              indexLimitsEachTrial=bandIndexLimitsEachTrial, timeRange=bandTimeRange,

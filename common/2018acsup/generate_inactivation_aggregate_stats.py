@@ -21,7 +21,7 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import figparams
-import subjects_info
+import studyparams
 
 dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells.h5')
 db = celldatabase.load_hdf(dbFilename)
@@ -30,21 +30,13 @@ figName = 'figure_inhibitory_cell_inactivation'
 
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, figName)
 
-R2CUTOFF = 0.1 #minimum R^2 value for a cell to be considered frequency tuned
-OCTAVESCUTOFF = 0.3 #maximum octave difference between estimated best frequency and centre frequency presented
-
-SOUND_RESPONSE_PVAL = 0.05
-
-PV_ARCHT_MICE = subjects_info.PV_ARCHT_MICE
-SOM_ARCHT_MICE = subjects_info.SOM_ARCHT_MICE
 
 # -- find PV, SOM, and non-SOM cells that are tuned to frequency and with a good centre frequency selected
-bestCells = db.query("isiViolations<0.02")# or modifiedISI<0.02")
-bestCells = bestCells.query('spikeShapeQuality>2.5 and baselineChangeFR>0 and controlSession==0') #good cells with increased FR to laser to try to avoid PV and SOM cells
-bestCells = bestCells.query('tuningFitR2>@R2CUTOFF and octavesFromPrefFreq<@OCTAVESCUTOFF and sustainedSoundResponsePVal<@SOUND_RESPONSE_PVAL')
+bestCells = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
+bestCells = bestCells.query(studyparams.GOOD_CELLS)
 
-PVCells = bestCells.loc[bestCells['subject'].isin(PV_ARCHT_MICE)]
-SOMCells = bestCells.loc[bestCells['subject'].isin(SOM_ARCHT_MICE)]
+PVCells = bestCells.query(studyparams.PV_INACTIVATED_CELLS)
+SOMCells = bestCells.query(studyparams.SOM_INACTIVATED_CELLS)
 
 # -- get suppression indices for all cells responsive during sustained portion of response with and without laser --
 rawPVsustainedSuppressionNoLaser = PVCells['sustainedSuppressionIndexNoLaser']

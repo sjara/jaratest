@@ -16,17 +16,22 @@ fontSizeLabels = 12
 fontSizeTicks = 12
 fontSizePanel = 16
 fontSizeTitles = 12
+fontSizeLegend = 10
 
 colp = {}
 #colp['excitatoryCell'] = cp.TangoPalette['Chameleon3']
 colp['excitatoryCell'] = 'k'
-colp['SOMcell'] = cp.TangoPalette['ScarletRed1']
-colp['SOMerror'] = cp.TangoPalette['ScarletRed2']
-colp['PVcell'] = cp.TangoPalette['SkyBlue2']
-colp['PVerror'] = cp.TangoPalette['SkyBlue1']
+colp['excludedExcitatory'] = cp.TangoPalette['Plum1']
 
-colp['laser'] = cp.TangoPalette['Butter3']
-colp['laserError'] = cp.TangoPalette['Butter1']
+colp['SOMcell'] = cp.TangoPalette['ScarletRed1']
+colp['PVcell'] = cp.TangoPalette['SkyBlue2']
+
+colp['blueLaser'] = '#00FFFF'
+colp['greenLaser'] = '#34FF7A'
+colp['sound'] = '#d3d3c2'
+#colp['sound'] = '#fcee25'
+#colp['sound'] = cp.TangoPalette['Butter2']
+
 
 
 #7570B3 - blupurp

@@ -64,7 +64,7 @@ def laser_response(ephysData, baseRange = [-0.05,-0.04], responseRange = [0.0, 0
                                                                   indexLimitsEachTrial,
                                                                   responseRange)
     [testStatistic, pVal] = stats.ranksums(laserSpikeCountMat, baseSpikeCountMat)
-    laserChangeFR = np.mean(laserSpikeCountMat-baseSpikeCountMat)
+    laserChangeFR = np.mean(laserSpikeCountMat)/(responseRange[1]-responseRange[0])-np.mean(baseSpikeCountMat)/(baseRange[1]-baseRange[0])
     return testStatistic, pVal, laserChangeFR
 
 def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond, timeRange=[0.0,1.0], baseRange=[-1.1,-0.1]):
@@ -255,6 +255,7 @@ def inactivated_cells_baselines(spikeTimeStamps, eventOnsetTimes, laserEachTrial
     trialsEachLaser = behavioranalysis.find_trials_each_type(laserEachTrial, numLaser)
     baselineSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset,
                                                                          bandIndexLimitsEachTrial, baselineRange)
+    
     for las in range(len(numLaser)):
         trialsThisLaser = trialsEachLaser[:,las]
         baselineCounts = baselineSpikeCountMat[trialsThisLaser].flatten()
@@ -263,8 +264,6 @@ def inactivated_cells_baselines(spikeTimeStamps, eventOnsetTimes, laserEachTrial
         
         baselineSpikeRates[las] = baselineMean
         baselineSEMs[las] = baselineSEM
-    
-    #[testStatistic, pVal] = stats.ranksums(laserSpikeCountMat, baseSpikeCountMat)
     
     return baselineSpikeRates, baselineSEMs
 

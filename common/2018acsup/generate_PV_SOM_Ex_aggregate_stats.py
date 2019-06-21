@@ -6,13 +6,12 @@ Inputs generated:
 * preferred bandwidth for all cells
 * median firing rates for all cells
 * PSTHs for high bandwidth responses
-* "onsetivity"
+* onset and sustained responses to high bandwidth stimuli
 '''
 
 import os
 import pandas as pd
 import numpy as np
-import scipy.stats
 
 from jaratoolbox import celldatabase
 from jaratoolbox import spikesanalysis
@@ -21,7 +20,7 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import figparams
-import subjects_info
+import studyparams
 
 dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
 db = celldatabase.load_hdf(dbFilename)
@@ -30,31 +29,13 @@ figName = 'figure_characterisation_of_responses_by_cell_type'
 
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, figName)
 
-R2CUTOFF = 0.1 #minimum R^2 value for a cell to be considered frequency tuned
-OCTAVESCUTOFF = 0.3 #maximum octave difference between estimated best frequency and centre frequency presented
+# -- find PV, SOM, and non-SOM cells that are tuned to frequency and with a good centre frequency selected and have sustained sound response
+bestCells = db.query(studyparams.SINGLE_UNITS)
+bestCells = bestCells.query(studyparams.GOOD_CELLS)
 
-SOUND_RESPONSE_PVAL = 0.05
-
-PV_CHR2_MICE = subjects_info.PV_CHR2_MICE
-SOM_CHR2_MICE = subjects_info.SOM_CHR2_MICE
-
-# -- find PV, SOM, and non-SOM cells that are tuned to frequency and with a good centre frequency selected
-bestCells = db.query("isiViolations<0.02 or modifiedISI<0.02")
-bestCells = bestCells.query('spikeShapeQuality>2.5 and tuningFitR2>@R2CUTOFF and octavesFromPrefFreq<@OCTAVESCUTOFF')
-
-# -- find cells responsive to laser pulse or train --
-laserResponsiveCells = bestCells.query("laserPVal<0.001 and laserUStat>0")
-PVCells = laserResponsiveCells.loc[laserResponsiveCells['subject'].isin(PV_CHR2_MICE)]
-SOMCells = laserResponsiveCells.loc[laserResponsiveCells['subject'].isin(SOM_CHR2_MICE)]
-
-# -- find cells unresponsive to laser (putative pyramidal) --
-ExCells = bestCells.query("laserPVal>0.05 and laserTrainPVal>0.05")
-ExCells = ExCells.loc[ExCells['subject'].isin(SOM_CHR2_MICE)]
-
-# -- PV, SOM, Ex cells sound responsive during sustained portion of bw trials --
-sustPVCells = PVCells.loc[PVCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
-sustSOMCells = SOMCells.loc[SOMCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
-sustExCells = ExCells.loc[ExCells['sustainedSoundResponsePVal']<SOUND_RESPONSE_PVAL]
+sustPVCells = bestCells.query(studyparams.PV_CELLS)
+sustSOMCells = bestCells.query(studyparams.SOM_CELLS)
+sustExCells = bestCells.query(studyparams.EXC_CELLS)
 
 # -- get suppression indices for all cells responsive during sustained portion of response --
 PVsustainedSuppression = sustPVCells['sustainedSuppressionIndex']
@@ -65,9 +46,9 @@ fitPVsustainedSuppression = sustPVCells['fitSustainedSuppressionIndex']
 fitSOMsustainedSuppression = sustSOMCells['fitSustainedSuppressionIndex']
 fitExsustainedSuppression = sustExCells['fitSustainedSuppressionIndex']
 
-fitPVsustainedSuppressionNoZero = sustPVCells['fitSustainedSuppressionIndexnoZero']
-fitSOMsustainedSuppressionNoZero = sustSOMCells['fitSustainedSuppressionIndexnoZero']
-fitExsustainedSuppressionNoZero = sustExCells['fitSustainedSuppressionIndexnoZero']
+fitPVsustainedSuppressionNoZero = sustPVCells['fitSustainedSuppressionIndexNoZeroHighAmp']
+fitSOMsustainedSuppressionNoZero = sustSOMCells['fitSustainedSuppressionIndexNoZeroHighAmp']
+fitExsustainedSuppressionNoZero = sustExCells['fitSustainedSuppressionIndexNoZeroHighAmp']
 
 # -- get preferred bandwidths for all cells responsive during sustained portion of response --
 PVsustainedPrefBW = sustPVCells['sustainedPrefBandwidth']
@@ -78,19 +59,20 @@ fitPVsustainedPrefBW = sustPVCells['fitSustainedPrefBandwidth']
 fitSOMsustainedPrefBW = sustSOMCells['fitSustainedPrefBandwidth']
 fitExsustainedPrefBW = sustExCells['fitSustainedPrefBandwidth']
 
-fitPVsustainedPrefBWNoZero = sustPVCells['fitSustainedPrefBandwidthnoZero']
-fitSOMsustainedPrefBWNoZero = sustSOMCells['fitSustainedPrefBandwidthnoZero']
-fitExsustainedPrefBWNoZero = sustExCells['fitSustainedPrefBandwidthnoZero']
+fitPVsustainedPrefBWNoZero = sustPVCells['fitSustainedPrefBandwidthNoZeroHighAmp']
+fitSOMsustainedPrefBWNoZero = sustSOMCells['fitSustainedPrefBandwidthNoZeroHighAmp']
+fitExsustainedPrefBWNoZero = sustExCells['fitSustainedPrefBandwidthNoZeroHighAmp']
 
-# -- get proportions of response that happens at onset --
+# -- get proportions of response that happens at onset and sustained --
 PVonsetProp = sustPVCells['proportionSpikesOnset']
 SOMonsetProp = sustSOMCells['proportionSpikesOnset']
 ExonsetProp = sustExCells['proportionSpikesOnset']
-PVSOMonsetProppVal = scipy.stats.ranksums(PVonsetProp,SOMonsetProp)[1]
-PVExonsetProppVal = scipy.stats.ranksums(PVonsetProp,ExonsetProp)[1]
-ExSOMonsetProppVal = scipy.stats.ranksums(ExonsetProp,SOMonsetProp)[1]
 
-#onsetTimeRange = [0.0, 0.05]
+PVsustProp = sustPVCells['proportionSpikesSustained']
+SOMsustProp = sustSOMCells['proportionSpikesSustained']
+ExsustProp = sustExCells['proportionSpikesSustained']
+
+onsetTimeRange = [0.0, 0.05]
 sustainedTimeRange = [0.2, 1.0]
 
 
@@ -98,17 +80,23 @@ PVBaseSpikeRates = np.zeros(len(sustPVCells))
 SOMBaseSpikeRates = np.zeros(len(sustSOMCells))
 ExBaseSpikeRates = np.zeros(len(sustExCells))
 
-PVHighBandSpikeRates = np.zeros(len(sustPVCells))
-SOMHighBandSpikeRates = np.zeros(len(sustSOMCells))
-ExHighBandSpikeRates = np.zeros(len(sustExCells))
+PVHighBandOnsetSpikeRates = np.zeros(len(sustPVCells))
+SOMHighBandOnsetSpikeRates = np.zeros(len(sustSOMCells))
+ExHighBandOnsetSpikeRates = np.zeros(len(sustExCells))
+
+PVHighBandSustainedSpikeRates = np.zeros(len(sustPVCells))
+SOMHighBandSustainedSpikeRates = np.zeros(len(sustSOMCells))
+ExHighBandSustainedSpikeRates = np.zeros(len(sustExCells))
 
 cells = [sustPVCells, sustSOMCells, sustExCells]
-highBandSpikeRates = [PVHighBandSpikeRates, SOMHighBandSpikeRates, ExHighBandSpikeRates]
+highBandOnsetSpikeRates = [PVHighBandOnsetSpikeRates, SOMHighBandOnsetSpikeRates, ExHighBandOnsetSpikeRates]
+highBandSustainedSpikeRates = [PVHighBandSustainedSpikeRates, SOMHighBandSustainedSpikeRates, ExHighBandSustainedSpikeRates]
 baselineSpikeRates = [PVBaseSpikeRates, SOMBaseSpikeRates, ExBaseSpikeRates]
 
 highBands = [5,6] #change in FR and average PSTHs for 4 octaves and white noise (high bandwidths)
 
-# -- compute change in firing rate for high bandwidths for all PV and SOM cells
+# -- compute change in firing rate for high bandwidths for all PV and SOM, and Exc. cells
+import pdb
 for ind, cellsThisType in enumerate(cells):
     for indCell in range(len(cellsThisType)):
         cell = cellsThisType.iloc[indCell]
@@ -122,14 +110,17 @@ for ind, cellsThisType in enumerate(cells):
         
         baselineRange = [-1.0, -0.2]
         fullTimeRange = [baselineRange[0], sustainedTimeRange[1]]
-        responseTimeDuration = sustainedTimeRange[1]-sustainedTimeRange[0]
+        
+        onsetResponseDuration = onsetTimeRange[1]-onsetTimeRange[0]
+        sustainedResponseTimeDuration = sustainedTimeRange[1]-sustainedTimeRange[0]
         
         bandSpikeTimesFromEventOnset, trialIndexForEachSpike, bandIndexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
                                                                                                         bandSpikeTimestamps, 
                                                                                                         bandEventOnsetTimes,
                                                                                                         fullTimeRange)
         
-        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, sustainedTimeRange)
+        onsetSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, onsetTimeRange)
+        sustainedSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, sustainedTimeRange)
     
         bandEachTrial = bandBData['currentBand']
         ampEachTrial = bandBData['currentAmp']
@@ -151,10 +142,15 @@ for ind, cellsThisType in enumerate(cells):
                 trialsHighBands = trialsHighBands | trialsHighAmp[:,band]
         
         # Average firing rate for high amplitude trials
-        highBandSpikeCounts = spikeCountMat[trialsHighBands]
-        highBandMean = np.mean(highBandSpikeCounts)/(sustainedTimeRange[1]-sustainedTimeRange[0])
+        highBandOnsetSpikeCounts = onsetSpikeCountMat[trialsHighBands]
+        highBandOnsetMean = np.mean(highBandOnsetSpikeCounts)/(onsetTimeRange[1]-onsetTimeRange[0])
         
-        highBandSpikeRates[ind][indCell] = highBandMean
+        highBandOnsetSpikeRates[ind][indCell] = highBandOnsetMean
+        
+        highBandSustainedSpikeCounts = sustainedSpikeCountMat[trialsHighBands]
+        highBandSustainedMean = np.mean(highBandSustainedSpikeCounts)/(sustainedTimeRange[1]-sustainedTimeRange[0])
+        
+        highBandSustainedSpikeRates[ind][indCell] = highBandSustainedMean
                 
         # Baseline firing rate and SEM
         baselineDuration = baselineRange[1]-baselineRange[0]
@@ -208,9 +204,9 @@ for ind, cellsThisType in enumerate(cells):
         #thisPSTH = thisPSTH/max(thisPSTH)
         #thisPSTH = thisPSTH/thisPSTH[np.where(binEdges==0)[0][0]] #normalise so onset is 1
         thisPSTH = (thisPSTH-np.mean(thisPSTH[1:np.where(binEdges==-0.05)[0][0]]))/(thisPSTH[np.where(binEdges==0)[0][0]]-np.mean(thisPSTH[1:np.where(binEdges==-0.05)[0][0]])) #normalise so onset is 1 and baseline is 0
-        print thisPSTH
         thisCellTypeAllPSTHs[indCell,:] = thisPSTH
     
+    thisCellTypeAllPSTHs = thisCellTypeAllPSTHs[~np.isnan(thisCellTypeAllPSTHs).any(axis=1)] #do not include any cells that for whatever reason had a sound onset firing rate of 0, resulting in NaN during normalisation
     thisCellTypePSTH = np.median(thisCellTypeAllPSTHs, axis=0)
     
     #smooth PSTH
@@ -222,7 +218,6 @@ for ind, cellsThisType in enumerate(cells):
     averagePSTHs.append(thisCellTypePSTH)
     
 numBands[-1] = 6
-        
     
         
         
@@ -230,9 +225,12 @@ numBands[-1] = 6
 outputFile = 'all_photoidentified_cells_stats.npz'
 outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFullPath,
-         PVsustainedResponses = highBandSpikeRates[0],
-         SOMsustainedResponses = highBandSpikeRates[1],
-         ExcSustainedResponses = highBandSpikeRates[2],
+         PVsustainedResponses = highBandSustainedSpikeRates[0],
+         SOMsustainedResponses = highBandSustainedSpikeRates[1],
+         ExcSustainedResponses = highBandSustainedSpikeRates[2],
+         PVonsetResponses = highBandOnsetSpikeRates[0],
+         SOMonsetResponses = highBandOnsetSpikeRates[1],
+         ExcOnsetResponses = highBandOnsetSpikeRates[2],
          possibleBands = numBands,
          PVbaselines = baselineSpikeRates[0],
          SOMbaselines = baselineSpikeRates[1],
@@ -240,9 +238,9 @@ np.savez(outputFullPath,
          PVonsetProp = PVonsetProp,
          SOMonsetProp = SOMonsetProp,
          ExcOnsetProp = ExonsetProp,
-         PVSOMonsetProppVal = PVSOMonsetProppVal,
-         PVExconsetProppVal = PVExonsetProppVal,
-         ExcSOMonsetProppVal = ExSOMonsetProppVal,
+         PVsustProp = PVsustProp,
+         SOMsustProp = SOMsustProp,
+         ExcSustProp = ExsustProp,
          PVaveragePSTH = averagePSTHs[0],
          SOMaveragePSTH = averagePSTHs[1],
          ExcAveragePSTH = averagePSTHs[2],

@@ -20,7 +20,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'figure
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
-figFilename = 'SuppFig7_inactivation_change_FR_by_bandwidth_zoomed_out' # Do not include extension
+figFilename = 'SuppFig9_inactivation_change_FR_by_bandwidth_zoomed_out' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [4,4] # In inches
@@ -79,7 +79,7 @@ l2, = plt.plot(SOMpeakChangeFR,SOMWNChangeFR, 'o', color=SOMcolour, mec='none', 
 l1, = plt.plot(PVpeakChangeFR,PVWNChangeFR, 'o', color=PVcolour, mec='none', ms=4)
 
 # make box around what's shown in fig 2
-plt.plot([-5,-5,8,8,-5],[-5,8,8,-5,-5],'k-')
+plt.plot([-5,-5,8,8,-5],[-5,8,8,-5,-5],'-', color='0.75')
 
 plt.xlim(-15,25)
 plt.ylim(-15,25)
@@ -87,7 +87,7 @@ plt.ylim(-15,25)
 plt.ylabel('Change in response to WN (spk/s)',fontsize=fontSizeLabels)
 plt.xlabel('Change in response to \n preferred bandwidth (spk/s)',fontsize=fontSizeLabels)
 
-plt.legend([l1,l2], ['No PV', 'No SOM'], loc='upper left', fontsize=fontSizeLabels, numpoints=1, handlelength=0.3)
+plt.legend([l1,l2], ['no PV+', 'no SOM+'], loc='upper left', fontsize=fontSizeLabels, numpoints=1, handlelength=0.3, markerscale=1.5)
 # axScatter.annotate(panelLabel, xy=(labelPosX[4],labelPosY[1]), xycoords='figure fraction',
 #                      fontsize=fontSizePanel, fontweight='bold')
 extraplots.boxoff(axScatter)

@@ -26,8 +26,7 @@ PANELS = [1,1] # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-#outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
-figFilename = 'SuppFig4_intensity_tuning' # Do not include extension
+figFilename = 'SuppFig5_intensity_tuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [6,3] # In inches
@@ -88,7 +87,7 @@ if PANELS[0]:
     print "Linear regression over all cells: \ncorrelation coefficient (r): {0}\np Value: {1}".format(rVal,pVal)
         
     plt.xlabel('Intensity index (pure tone)')
-    plt.ylabel('SI')
+    plt.ylabel('Suppression Index')
     
     plt.xlim(-1.1,1.1)
     plt.ylim(-0.1,1.1)
@@ -133,7 +132,7 @@ if PANELS[1]:
     print "Linear regression over all cells: \ncorrelation coefficient (r): {0}\np Value: {1}".format(rVal,pVal)
         
     plt.xlabel('Intensity index (white noise)')
-    plt.ylabel('SI')
+    plt.ylabel('Suppression Index')
     
     plt.xlim(-1.1,1.1)
     plt.ylim(-0.1,1.1)

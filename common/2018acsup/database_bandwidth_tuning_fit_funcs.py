@@ -38,7 +38,7 @@ def diff_of_gauss_fit(stimuli, responses, RFscale = None, mFixed=None):
     maxM = 10
     maxsigD = 3*np.max(stimuli) #3* np.max(stimuli) #max(xs)/2
     maxsigS = 3*np.max(stimuli) #4* np.max(stimuli)
-    maxRD = 2* MaxResp #10* MaxResp
+    maxRD = 2* MaxResp+1 #10* MaxResp
     maxR0 = 3*responses[0]+1
     Upper = np.asarray([maxM , maxR0, maxsigD ,maxsigS , maxRD, maxRD])
     Lower= np.asarray([1 , 0, RFscale/100., RFscale/100., 0 ,  0])
