@@ -1,33 +1,36 @@
 README file contains instructions for processing data and generating figures
 #Here is the readme place we will place codes for the paper
 
+# Producing a database
 
-We will create total 7 categories of files
+## databasename.h5
+### database_generation.py
+This script will generate the database that's concatenated with all subjects defined as d1pimouse in studyparams.py. At First, it will generate the concatenated database, then calculate_base_stats will be called to run statistics testing to filter cells that we considered to have a good signal(ISI<0.02 and SpikeQuality >2), and to create the parameters that will be used in data analysis in further study, such as p-Values, R squared and frequency parameters(BW10 and intensity threshold). Next calculate_indices will be called to filter the cells with the statistically valid fitting models by using R squared value that's calculated from calculate_base_stats. Lastly, if the researcher desires, it will save the database to the local machine
 
-1. README.md
-2. database_generate //combine
-3. database_generate_funcs
-4. study params
-5. figure params
-6. [generate] data for figures
-7. [figure] generation
-8. generate reports/stat results
+This script uses following module:
+### database_generation_funcs.py
+Contains functions called during database generation.
+
+# Defining parameters for names and paths for study and figures
+### studyparams.py
+### figureparams.py
+
+# Figure 1 (Frequency)
+## Figure script: `figure_frequency_characterization.py`
+**Requires**:
+`data_freq_tuning_examples.npz`
+Produced by:
+`generate_example_freq_tuning.py`
+
+`{celldatabase_name}.h5` >> DB name to be determined
+
+## Panels A, B
+These panels are produced by the figure script `figure_frequency_characterization.py`.
+To get tuning curve data, it requires `data_freq_tuning_examples.npz` which is produced by `generate_example_freq_tuning.py`
+
+## Panels C, D
+These panels are produced by the script `figure_frequency_characterization.py`
 
 
-General:
-
-    where statistics are calculated
-        if in figures, indicate which script produces stats in question
-    decisions made in data analysis (e.g. excluded trials)
-        put in generate scripts that carry out these decisions
-
-Generates:
-
-    include code used for clustering/spike sorting
-    indicate scripts used to generate databases
-
-Figures:
-
-    indicate script that produces figure, how to run
-    for each panel, indicate location of data being shown
-    for each panel, indicate generate script that produces data shown, how to run
+# Exploring Data to produce stats and reports
+### extras/extra_funcs.py
