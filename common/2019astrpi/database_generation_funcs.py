@@ -33,7 +33,7 @@ def retrofit_gaussian_log2(y,a,x0,sigma,y0):
     if sqrtInner<0: #No solutions
         return None
     else:
-        lower = 2**(x0 - np.sqrt(sqrtInner)) #log2(freq)=output >> 2**(output)=freq
+        lower = 2**(x0 - np.sqrt(sqrtInner))
         upper = 2**(x0 + np.sqrt(sqrtInner))
         return [lower, upper]
 
@@ -44,17 +44,21 @@ def calculate_firing_rate(ephysData, baseRange,session, selectinds=[]):
     and entire range(alignmentRange). response Range mirrors baseRange but on the\
     post-stimulus time. It has the equal time distance from the stimulus\
     and the same amount of time range as baseRange
-            ephysData: electro physiology data, either before or after the stimulus
-            baseRange(list): range of the time frame before the application of stimulus
-            session(str): name of session
-            selectinds(list): indices of event onset time points for specific frequency\
-            and intensity, used for frequency tuning analysis, empty by default
+            ephysData (dict): generated using ephyscore.Cell.load. it contains three\
+            keys (['samples'(float64,np.array), 'spikeTimes'(float64,np.array), 'events'(dict)])
+            electro physiology data, see ephyscore for more detailed information
+            baseRange (list): range of the time frame before the application of stimulus
+            session (str): name of session
+            selectinds (list): indices of event onset time points for specific frequency\
+            and specific intensity, used for frequency tuning analysis, empty by default
     Returns:
-            nspkBase(np.array): number of spikes occured in base range
-            nspkResp(np.array): number of spikes occured in response range
+            nspkBase (np.array): [ntrials, 1], each row represents the number of \
+            spikes occured in the trial within base range(pre-stimulus)
+            nspkResp (np.array): [ntrials, 1], each row represents the nubmer of \
+            spikes occured in the trial within response range(post-stimulus)
     '''
     eventOnsetTimes = ephysData['events']['stimOn']
-    if selectinds !=[]:#.size != 0:
+    if selectinds !=[]:
         #=====================index mismatch correction========================
         while selectinds[-1] >= eventOnsetTimes.shape[0]:
              selectinds = np.delete(selectinds,-1,0)
@@ -65,7 +69,7 @@ def calculate_firing_rate(ephysData, baseRange,session, selectinds=[]):
 
     spikeTimes = ephysData['spikeTimes']
     binTime = baseRange[1]-baseRange[0]
-    responseRangeStart = baseRange[1]*(-1)
+    responseRangeStart = baseRange[1]*(-1) #if session != laserpulse else 0
     responseRange = [responseRangeStart, responseRangeStart+binTime]
     alignmentRange = [baseRange[0], responseRange[1]]
 
@@ -104,13 +108,11 @@ def calculate_fit(uniqFreq,allIntenBase,freqs,spks):
                     allIntenBase: cumulated number of spikes on pre-stimulus range with all\
                     frequencies and intensities
                 Used for curve_fit:
-                freqs: frequencies, concatenated in order of experiment, used in\
-                logarithmic form
-                spks: cumulated number of spikes on post-stimulus range with all frequencies\
-                and one specific intensity
+                freqs (np.array): [total ntrials of all frequencies in response range] each number represents frequency
+                spks (np.array): [total ntrials of all frequencies in response range] an array of spikes in each trial
     Returns:
                 Rsquared: R-squared value of the curve
-                popt: optimal parameters for the curve
+                popt: optimal parameters for the gaussian curve
     '''
     p0, bounds = calculate_fit_params(uniqFreq, allIntenBase)
 
@@ -135,8 +137,8 @@ def calculate_response_threshold(fraThreshold,allIntenBase,respSpikeMean):
     '''
     Response threshold is defined to be the baseline firiting rate plus 20%(fraThreshold)\
     of the difference between baseline and the cell's maximum firitng rate under any \
-    condition (suttern and schreiner, https://doi.org/10.1152/jn.1991.65.5.1207)
-
+    condition (Sutter and Schreiner, https://doi.org/10.1152/jn.1991.65.5.1207)
+    returns responseThreshold(float)
     '''
     return allIntenBase.mean() + fraThreshold*(respSpikeMean.max()-allIntenBase.mean())
 
@@ -147,7 +149,7 @@ def calculate_intensity_threshold_and_CF_indices(fra,respSpikeMean, threshold=0.
     the FRA where 85%(theshold) of the intensities above were also within the FRA
     Parameters:
             fra (np.array): boolean array of shape (nInten, nFreq). Higher index = higher intensity
-            resp (np.array): response spike number array of shape (nInten, nFreq). Higher index = higher intensity
+            respSpikeMean (np.array): response spike number array of shape (nInten, nFreq). Higher index = higher intensity
             threshold (float): At least this proportion of the intensities above must have a response for the freq to be cf
     Returns:
             intensityInd: intensity threshold index
@@ -181,7 +183,20 @@ def calculate_intensity_threshold_and_CF_indices(fra,respSpikeMean, threshold=0.
 def calculate_BW10_params(ind10Above, popts,Rsquareds,responseThreshold,intensityThreshold):
     '''
     Calculates lower/upper frequencies and Rsquared value for 10dB above the sound intensity threshold(SIT)
-    with given index at 10dB above SIT
+    with given index at 10dB above SIT(ind10Above)
+    Parameters:
+                ind10Above (int): represents the index of intensity threshold plus 10dB
+                popts: optimal parameters for gaussian curve
+                Rsquareds (np.array): [nIntensity, nFrequency] within the Rsquareds array,\
+                each array represents the intensities in sequencial order. Each intensity array \
+                contains R-squared value for each frequency
+                responseThreshold (float): response firing threshold
+                intensityThreshold (float): minimum intensity where 85% of the rest of intensity above is within FRA
+    Returns:
+            lowerFreq (float): lower bound frequency of BW10
+            upperFreq (float): upper bound frequency of BW10
+            Rsquared10AboveSIT (float) : mean rsquared value of intensity threshold plus 10dB
+
     '''
     try:
         popt10AboveSIT = popts[ind10Above]
@@ -190,15 +205,15 @@ def calculate_BW10_params(ind10Above, popts,Rsquareds,responseThreshold,intensit
         print "Failure indexerror didn't get 10 above"
         print intensityThreshold
         failed=True
-        #This is for the case that we are not able to catch 10dB above threshold.\
-        # Even then we can still get cf and thresh, but not uF/lF
+        #This is for the instance when we are not able to catch 10dB above threshold.\
+        # Even then we can still get cf and threshold, but not uF/lF
         upperFreq = None
         lowerFreq = None
         Rsquared10AboveSIT = np.nan
-#[8.2] retrofit gaussian to get the lower frequency and upper frequency at theshold
+
     else:
         freqLimits = retrofit_gaussian_log2(responseThreshold, *popt10AboveSIT)
-#[8.3] get bw10
+
         if freqLimits is not None:
             lowerFreq, upperFreq = freqLimits
         else:

@@ -14,7 +14,7 @@ from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
-import database_generate_funcs as funcs
+import database_generation_funcs as funcs
 reload(funcs)
 reload(studyparams)
 
@@ -24,12 +24,12 @@ def calculate_base_stats(db, filename = ''):
     '''
     Calculate parameters to be used to filter cells in calculate_indices
     '''
-    #DEFINE PARAMETERS
+
     sessionMulti = ['tuningCurve','tuningCurve(tc)'] #sessions with multivariate stimulus 'shortTuningCurve','am'
     sessionSingle = ['noiseburst','laserpulse']#sessions with single variable stimulus
     #FILTERING DATAFRAME
     firstCells = db.query(studyparams.FIRST_FLTRD_CELLS) #isiViolations<0.02 and spikeShapeQuality>2
-    # STATS BASED ON SESSION STARTS HERE
+
     for indIter, (indRow, dbRow) in enumerate(firstCells.iterrows()):
 
         dbRow = firstCells.loc[indRow]
@@ -44,7 +44,7 @@ def calculate_base_stats(db, filename = ''):
 
             #SOUND RESPONSES AND LASER RESPONSES
             if session in sessionSingle: # single stimulus
-                baseRange = [-0.1,0]# if session == 'noiseburst' else [-0.05,-0.04] for lasertrain
+                baseRange = [-0.1,0]# if session != 'laserpulse' else [-0.05,-0.04]
                 nspkBase, nspkResp = funcs.calculate_firing_rate(ephysData, baseRange,session)
                 respSpikeMean = nspkResp.ravel().mean()
                 try:
@@ -55,9 +55,9 @@ def calculate_base_stats(db, filename = ''):
                 firstCells.loc[indRow,'{}_pVal'.format(session)] = pVals # changed from at to loc via recommendation from pandas
                 firstCells.loc[indRow,'{}_FR'.format(session)] = respSpikeMean#mean firing rate
 
-            #PURE TONE RESPONSES and AM
+            #Frequency tuning responses and AM
             elif session in sessionMulti: # multivariate stimulus
-                baseRange = [-0.1,0] if session != 'am' else [-0.5, -0.1] #shortTuningCurve
+                baseRange = [-0.1,0] if session != 'am' else [-0.5, -0.1]
 
                 currentFreq = bdata['currentFreq']
                 currentIntensity = bdata['currentIntensity']
@@ -67,9 +67,9 @@ def calculate_base_stats(db, filename = ''):
 
                 allIntenBase = np.array([])
                 respSpikeMean = np.empty((len(uniqueIntensity),len(uniqFreq)))#same as allIntenResp
-                allIntenRespMedian = np.empty((len(uniqueIntensity),len(uniqFreq)))#what's this for?
+                allIntenRespMedian = np.empty((len(uniqueIntensity),len(uniqFreq)))
                 Rsquareds = np.empty((len(uniqueIntensity),len(uniqFreq)))
-                # for all intensity and then all frequency,
+
                 for indInten, intensity in enumerate(uniqueIntensity):
                     spks = np.array([])
                     freqs = np.array([])
@@ -83,7 +83,7 @@ def calculate_base_stats(db, filename = ''):
 
                         spks = np.concatenate([spks,nspkResp.ravel()])
                         freqs = np.concatenate([freqs,np.ones(len(nspkResp.ravel()))*freq])
-                        respSpikeMean[indInten,indFreq] = np.mean(nspkResp)#respSpikeMean[indPulse] = nspkResp.ravel().mean()
+                        respSpikeMean[indInten,indFreq] = np.mean(nspkResp)
                         allIntenBase = np.concatenate([allIntenBase,nspkBase.ravel()])
 
                         Rsquared, popt = funcs.calculate_fit(uniqFreq,allIntenBase,freqs,spks)
@@ -91,7 +91,7 @@ def calculate_base_stats(db, filename = ''):
                         Rsquareds[indInten,indFreq] = Rsquared
                         popts.append(popt)
                      #---------------------------End of freq loop------------------------------------------
-                     # If any of you are wondering the reason why we are calculating bw10 here, it is to save the calculation time
+                     # The reason why we are calculating bw10 here, it is to save the calculation time
                     responseThreshold = funcs.calculate_response_threshold(0.2, allIntenBase,respSpikeMean)
                 # [6] Find Frequency Response Area (FRA) unit: fra boolean set, yes or no, but it's originally a pair
                     fra = respSpikeMean > responseThreshold
@@ -108,7 +108,6 @@ def calculate_base_stats(db, filename = ''):
                         intensityThreshold = uniqueIntensity[intensityInd]
                         cf = uniqFreq[freqInd]
                     # [8] getting BW10 value, Bandwidth at 10dB above the neuron's sound intensity Threshold(SIT)
-                    #so find index that's 10dB above SIT
                         ind10Above = intensityInd + int(10/np.diff(uniqueIntensity)[0]) #How many inds to go above the threshold intensity ind
                         lowerFreq, upperFreq, Rsquared10AboveSIT = funcs.calculate_BW10_params(ind10Above, popts,Rsquareds,responseThreshold,intensityThreshold)
                         # print('lf:{},uf:{},R2:{}'.format(lowerFreq,upperFreq,Rsquared10AboveSIT))
@@ -138,12 +137,10 @@ def calculate_indices(db, filename = ''):
     Filter cells that has a good fitting then separate D1 cells(laser responsive)\
     and non-D1 cells(non laser-responsive)
     '''
-
-    bestCells = db.query('rsquaredFit>0.03')
-    # d1Cells = bestCells.query('laserpulse_pVal<0.05 and noiseburst_pVal<0.05') #bothsoundlaser
-    # nd1Cells = bestCells.query('laserpulse_pVal>0.05 and noiseburst_pVal<0.05') #onlysoundnolaser
-
-    return bestCells
+    pass
+    # bestCells = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
+    #
+    # return bestCells
 
 def calculate_cell_locations(db, filename = ''): # to be filled after complete collecting histology data
     pass
@@ -158,18 +155,15 @@ if __name__ == "__main__":
         clusteringObj.process_all_experiments()
         pass
 
-    ## Generate_cell_database_from_subjects grabs all subjects in that group of mouse\
-    ## and create concatenated database, fulldb. it also filters cells with (isi = 0.05, quality = 2)
-
+    ## Generate_cell_database_filters cells with the followings: isi < 0.05, spike quality > 2
     basicDB = celldatabase.generate_cell_database_from_subjects(d1mice)
-
 
     d1DBFilename = os.path.join(settings.FIGURES_DATA_PATH, '{}_d1mice.h5'.format(studyparams.STUDY_NAME))
     # Create and save a database, computing first the base stats and then the indices
     firstDB = calculate_base_stats(basicDB, filename = d1DBFilename)
-    bestCells = calculate_indices(firstDB, filename = d1DBFilename)
+    # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
 
     if SAVE:
-        dbpath = os.path.join(studyparams.PATH_TO_TEST,'{}.h5'.format('_'.join(d1mice)))# Decide WHERE TO STORE
-        bestCells.to_hdf(dbpath,key='df',mode='w')
+        dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'{}.h5'.format('_'.join(d1mice)))
+        firstDB.to_hdf(dbpath,key='df',mode='w')
         print "SAVED DATAFRAME to {}".format(dbpath)
