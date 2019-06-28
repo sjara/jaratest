@@ -33,4 +33,5 @@ These panels are produced by the script `figure_frequency_characterization.py`
 
 
 # Exploring Data to produce stats and reports
-### extras/extra_funcs.py
+### extras/generate_allCell_reports.py
+This script generates reports for all cells belong to the given subject. The reports contain plots for noiseburst(raster,PSTH,ISI,waveform, spark rate over time), laserpulse(raster,PSTH,ISI,waveform, spark rate over time), tuningCurve(raster (for one intensity), waveform). This is used to give the researcher the high level overview of the cell responses and the characteristic of the neuronal signal on stimulus

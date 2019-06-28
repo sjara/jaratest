@@ -7,14 +7,15 @@ from jaratoolbox import colorpalette as cp
 from jaratoolbox import settings
 import matplotlib
 from matplotlib import pyplot as plt
+import studyparams
 
 # plt.rcParams['svg.image_noscale'] = False
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 
 #STUDY_NAME = '2019astrpi'# depracated! now we have studyparams.py
-# FIGURE_OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'output')
-FIGURE_OUTPUT_DIR = '/tmp/'
+FIGURE_OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'output') #moving to studyparams
+
 
 fontSizeLabels = 7
 fontSizeTicks = 6
