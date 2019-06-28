@@ -31,7 +31,7 @@ titleExampleBW=True
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '_'.join(d1mice) + '.h5'
-pathtoDB = os.path.join(studyparams.PATH_TO_TEST,nameDB)
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = pd.read_hdf(pathtoDB)
 
 
