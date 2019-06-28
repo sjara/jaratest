@@ -88,12 +88,12 @@ def calculate_fit_params(uniqFreq,allIntenBase):
     '''
     Defines fit input parameters
     Parameters:
-                uniqFreq: list of unique frequencices
-                allIntenBase: cumulated number of spikes on pre-stimulus range with all\
+                uniqFreq (list): list of unique frequencices
+                allIntenBase (np.array): cumulated number of spikes on pre-stimulus range with all\
                 frequencies and all intensities
     Returns:
-            p0: intial guess
-            bounds: lower and upper boundaries
+            p0 (list): intial guess
+            bounds (tuple): lower and upper boundaries
     '''
     p0 = [1, np.log2(uniqFreq[7]),1, allIntenBase.mean()]
     bounds = ([0,np.log(uniqFreq[0]),0,0],[inf,np.log2(uniqFreq[-1]),inf,inf])

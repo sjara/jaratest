@@ -1,4 +1,3 @@
-README file contains instructions for processing data and generating figures
 #Here is the readme place we will place codes for the paper
 
 # Producing a database
