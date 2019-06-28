@@ -5,7 +5,6 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from extra_funcs import createfolder
 from jaratoolbox import settings
 from jaratoolbox import extraplots
 from jaratoolbox import ephyscore
