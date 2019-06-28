@@ -1,4 +1,4 @@
-'''
+''''
 [For all cells in DB] create cell reports include the following plots for three sessions:
 noiseburst: raster, PSTH, ISI, waverform, sparks over time
 laserpulse: raster, PSTH, ISI, waveform, sparks over time
@@ -8,12 +8,13 @@ You have to specify the name of the subject you want to generate the reports for
 and give answer to question which duplicated session do you want to use to plot in\
 case you have more than one same sessions such as laserpulse
 '''
-
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import random
+import datetime
+from sklearn import neighbors
 from jaratoolbox import settings
 from jaratoolbox import spikesanalysis
 from jaratoolbox import extraplots
@@ -21,7 +22,10 @@ from jaratoolbox import spikesorting
 from jaratoolbox import ephyscore
 from jaratoolbox import celldatabase
 from jaratoolbox import behavioranalysis
-# from jaratest.common.2019astrpi import studyparams
+import studyparams
+import figparams
+reload(studyparams)
+reload(figparams)
 
 #-----------parameters----------------
 timeRange = [-0.5, 0.5]
@@ -31,6 +35,7 @@ smoothWinSizePsth = 3 # smoothWinSizePsth2 = 3
 lwPsth = 2
 downsampleFactorPsth = 1
 msRaster = 2
+tuningcurve = studyparams.tuningcurve #['tuningCurve','tuningCurve(tc)']
 #---------subplot adjust------------
 bottom = 0.05
 top = 0.93
@@ -38,25 +43,30 @@ hspace = 0.4
 wspace = 0.65
 left=0.1
 right=0.88
-countreport = 0 # count the number of reports generated
+countreport = 0
 #---------------------------------------------------------------------------
 fig = plt.gcf()
 fig.clf()
-#subject = raw_input('what is the name of subject? ')
-#pathtoDB = os.path.join(pathtosubject,subject)
-# pathtosubject = '/home/jarauser/src/jaratest/allison/d1pi032'
-# pathtoDB = os.path.join(pathtosubject,'celldb.h5')
-# celldb = pd.read_hdf(pathtoDB)
-subject = ['d1pi033']#studyparams.SINGLE_MOUSE
-studyname = '2019astrpi'
-celldb = celldatabase.generate_cell_database_from_subjects(subject)
-outputDir = '/mnt/jarahubdata/reports/2019astrpi'#os.path.join(settings.FIGURES_DATA_PATH, studyname, 'output')#figparams.FIGURE_OUTPUT_DIR
 
-answer = raw_input('if there\'s any duplicated sessions, do you want to use the first one[0] \
-or the last one[1]? If you don\'t care, put any number ')
 
+d1mice = studyparams.ASTR_D1_CHR2_MICE
+nameDB = '_'.join(d1mice) + '.h5'
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+db = pd.read_hdf(pathtoDB)
+# outputDir = figparams.FIGURE_OUTPUT_DIR
+outputDir = '/var/tmp/2019astrpi_reports'
+# outputDir = '/mnt/jarahubdata/reports/2019astrpi'
+# spikesorting.rescue_clusters(db,isiThreshold=0.02)
+dbpre = db.query("isiViolations<0.02")
+celldb = dbpre.loc[dbpre['spikeShapeQuality']>2]
+# #------------------------------filtering stats----------------------------------
+# filteredIndex = celldb.index
+# origIndex = db.index
+# diffIndex = set(origIndex)-set(filteredIndex)
+# print('Original:{0}, filtered:{1}, filteredOut:{2}'.format(len(origIndex),len(filteredIndex),len(diffIndex)))
+#-------------------------------------------------------------------------------
 for indRow, dbRow in celldb.iterrows():
-    oneCell = ephyscore.Cell(dbRow)
+    oneCell = ephyscore.Cell(dbRow,useModifiedClusters=False)
 
     rast1 = []
     rast2 = []
@@ -67,14 +77,14 @@ for indRow, dbRow in celldb.iterrows():
 
     sessionCell= [con  for (i, con) in enumerate(dbRow['sessionType'])] #if con == 'sessiontype']
     sessionUC = pd.Series(sessionCell).unique() #sessionUC = list(set(sessionCell)) even numpy changes the sequence
-    sessionsOrig = [ss for ss in sessionUC if (ss == 'noiseburst') or (ss == 'laserpulse') or (ss == 'tuningCurve')]#
+    sessionsOrig = [ss for ss in sessionUC if (ss == 'noiseburst') or (ss == 'laserpulse') or (ss in tuningcurve)]#
     sessions = np.copy(sessionsOrig)
 
     for sessiontype in sessionsOrig:
 
         sessionInds= [ind  for (ind, con) in enumerate(dbRow['sessionType']) if con == sessiontype]
         randomchoice = random.choice(sessionInds)
-        sessionIndToUse = sessionInds[0] if answer=='0' else (sessionInds[-1] if answer == '1'  else sessionInds[randomchoice])
+        sessionIndToUse = sessionInds[-1] #if answer=='0' else (sessionInds[-1] if answer == '1'  else sessionInds[randomchoice])
         ephysData, bdata = oneCell.load_by_index(sessionIndToUse)# behavClass=behavClass you may need to include that while doing tuning curve
 
         spikeTimes = ephysData['spikeTimes']
@@ -84,7 +94,7 @@ for indRow, dbRow in celldb.iterrows():
         spikesanalysis.eventlocked_spiketimes(spikeTimes, eventOnsetTimes, timeRange)
         #--------------------------Tuning curve------------------------------------------
         ## ----------tuning curve variables
-        if sessiontype == 'tuningCurve':
+        if sessiontype in tuningcurve:
             currentFreq = bdata['currentFreq']
             trialsEachType = behavioranalysis.find_trials_each_type(currentFreq,np.unique(currentFreq))
             uniqFreq = np.unique(currentFreq)
@@ -101,17 +111,16 @@ for indRow, dbRow in celldb.iterrows():
         spikeT.append(spikeTimes)
         waveF.append(ephysData['samples'])
 
-    #plt.plot(spikeTimesFromEventOnset,trialIndexForEachSpike,'.')
     #-----------------------Plot variables-----------------------------
     tetnum = dbRow['tetrode']
     chanum = dbRow['cluster']
     j = 0
     scaleGrid = (4,9)
-    #np.arange(0,2000,120) # for TC. #//np.linspace(0,2000,16) there are 16 frequencies
+    # bestCells = celldb.query("isiViolations<0.02 or modifiedISI<0.02")
     #-------------------------end of set variable-----------------------------------
     #-----------------------Raster,PSTH,ISI,WaveForm,EventTime------------------------
     for i, con in enumerate(sessions) :
-        if con != 'tuningCurve':
+        if con not in tuningcurve:
 
             ax1 = plt.subplot2grid(scaleGrid, (0, j), colspan=3)
             ax.append(ax1)
@@ -171,17 +180,16 @@ for indRow, dbRow in celldb.iterrows():
             ax112.set_yticks(new_tick_locations)
             ax112.set_yticklabels(freqTicks)
             ax112.set_ylabel('Frequency(Hz)')
-
             #--------------------------Waveform------------------------------------
             ax12 = plt.subplot2grid(scaleGrid, (3,6),colspan=3)
             plt.subplots_adjust(bottom=bottom, top=top,hspace = hspace, right = right)
             if waveF[i].any():
                 spikesorting.plot_waveforms(waveF[i])
     ################################################################################333
-    title = '[{5}]{0}, {1}, {2}um, T{3}c{4}, session ={6}'.format(dbRow['subject'],dbRow['date'], dbRow['depth'], tetnum,chanum,dbRow.name,sessionCell)
-    plt.suptitle(title,fontsize = 15,fontname="Times New Roman Bold")
-    fig.set_size_inches([20, 10])
-    pathtoPng = os.path.join(outputDir,'cellreport/')
-    fig.savefig(pathtoPng +'[c#%s] %s_%s_tetrode%s_cluster%s.png' %(dbRow.name,dbRow['subject'],dbRow['depth'],tetnum,chanum))
+        title = '[{5}]{0}, {1}, {2}um, T{3}c{4}, session ={6}'.format(dbRow['subject'],dbRow['date'], dbRow['depth'], tetnum,chanum,dbRow.name,sessionCell)
+        plt.suptitle(title,fontsize = 15,fontname="Times New Roman Bold")
+        fig.set_size_inches([20, 10])
+        pathtoPng = os.path.join(outputDir,'cellreport/')
+        fig.savefig(pathtoPng +'[c#%s]%s_%s_tetrode%s_cluster%s.png' %(dbRow.name,dbRow['subject'],dbRow['depth'],tetnum,chanum))
     plt.clf()
     countreport += 1
