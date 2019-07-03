@@ -27,6 +27,20 @@ Contains functions called during database generation.
 Contains functions called during database generation. Yashar's functions for modeling sound responses. Quarantined because Yashar made them and they're special.
 
 # Database contents
+## Generic database
+This is the database initially produced by celldatabase.generate_cell_database_from_subjects. It contains the following columns:
+
+* *behavSuffix*: the suffixes for the behaviour files associated with the sessions this cell is from
+* *brainArea*: which part of the brain this cell is from
+
+## Base stats
+These are the columns added to the generic database after calculation of base stats:
+
+* *AMRate*: the amplitude modulation rate used during the bandwidth session for this cell
+* *bestBandSession*: the index of the bandwidth session  whose centre frequency was closest to this cell's preferred frequency (useful when multiple bandwidth sessions were recorded at one site)
+* *gaussFit*: the parameters of the Gaussian curve that best fits this cell's frequency tuning curve. The parameters are (in order as saved in the database): mean, amplitude, standard deviation, offset
+* *laserChangeFR*: the difference in firing rate (in spikes/second) between the spontaneous firing rate and the laser firing rate. Positive values mean the laser evoked a positive change in firing rate.
+* *laserPVal*: the p value of
 
 # Figure 1 (Characterisation of responses)
 ## Panel a
