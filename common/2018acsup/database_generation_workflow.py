@@ -17,7 +17,6 @@ reload(database_photoidentification)
 import database_inactivation
 reload(database_inactivation)
 import studyparams
-import figparams
 
 # -- select which database to generate --
 args = sys.argv[1:]
@@ -30,17 +29,23 @@ else:
 
 if dbsToGenerate[0]: 
     # cluster your data
-    chr2mice = studyparams.PV_CHR2_MICE + studyparams.SOM_CHR2_MICE
-    cluster_ephys_data.cluster_spike_data(chr2mice)
+    #chr2mice = studyparams.PV_CHR2_MICE + studyparams.SOM_CHR2_MICE
+    #cluster_ephys_data.cluster_spike_data(chr2mice)
     
     # creates a basic database and performs cluster rescue
-    basicDB = celldatabase.generate_cell_database_from_subjects(chr2mice)
+    #basicDB = celldatabase.generate_cell_database_from_subjects(chr2mice)
+    basicDB = celldatabase.generate_cell_database_from_subjects(['band045'])
     basicDB = cluster_ephys_data.cluster_rescue(basicDB, isiThreshold=studyparams.ISI_THRESHOLD)
     
     # creates and saves a database for photoidentified cells, computing first the base stats and then the indices
-    photoDBFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME,'photoidentification_cells.h5')
+    #photoDBFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'photoidentification_cells.h5')
+    photoDBFilename = '/tmp/photoidentification_cells.h5'
     photoIDDB = database_photoidentification.photoID_base_stats(basicDB, filename = photoDBFilename)
-    photoIDDB = database_photoidentification.photoID_indices(basicDB, filename = photoDBFilename)
+    photoIDDB = database_photoidentification.photoID_indices(photoIDDB, filename = photoDBFilename)
+    
+    # finds the depths and locations of all cells with indices computed
+    # RUN THIS PART IN A VIRTUAL ENVIRONMENT
+    photoIDDB = database_photoidentification.photoDB_cell_locations(photoIDDB, filename = photoDBFilename)
  
 if dbsToGenerate[1]:
     # cluster your data

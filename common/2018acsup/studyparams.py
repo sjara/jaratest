@@ -1,5 +1,7 @@
 ''' This file contains all the parameters used to identify good cells and sort cells by type.'''
 
+STUDY_NAME = '2018acsup'
+
 # --- list of animals included in each experimental group ---
 PV_CHR2_MICE = ['band004', 'band026', 'band032', 'band033']
 SOM_CHR2_MICE = ['band005', 'band015', 'band016', 'band027', 'band028', 'band029', 'band030', 'band031', 'band034','band037','band038','band044','band045','band054','band059','band060']

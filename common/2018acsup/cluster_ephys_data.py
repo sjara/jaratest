@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 
 from jaratoolbox import spikesorting
+reload(spikesorting)
 
 def cluster_spike_data(subjects):
     for subject in subjects:
