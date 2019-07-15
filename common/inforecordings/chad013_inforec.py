@@ -5,6 +5,7 @@ experiments=[]
 
 exp0 = celldatabase.Experiment(subject, '2019-07-01', 'right AC', info=['midMedialDiD' 'facingAnterior' 'soundLeft'])
 experiments.append(exp0)
+# Using probe M680
 
 # exp0.add_site(1100, tetrodes=[1,2,3,4,5,6,8])
 # exp0.add_session('11-27-44', None, 'noiseburst', 'am_tuning_curve')
@@ -17,7 +18,7 @@ experiments.append(exp0)
 # 3 intensities
 
 exp0.add_site(1125, tetrodes=[1,2,3,4,5,6,8])
-# exp0.add_session('13-46-10', None, 'noiseburst', 'am_tuning_curve')
+exp0.add_session('13-46-10', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'c'
 # Reference set to 12 (Tetrode 7, channel 1)
 # Raster plot does not indicate presence of sound responsive cell.
@@ -45,6 +46,7 @@ exp0.maxDepth = 1125
 
 exp1 = celldatabase.Experiment(subject, '2019-07-02', 'right AC', info=['midMedialDiD' 'facingAnterior' 'soundLeft'])
 experiments.append(exp1)
+# Using probe M680
 
 exp1.add_site(1100, tetrodes=[2,3,4,5,6,7,8])
 exp1.add_session('16-06-43', None, 'noiseburst', 'am_tuning_curve')
@@ -107,10 +109,103 @@ exp1.add_session('20-13-25', 'm', 'standard', 'oddball_sequence')
 exp1.maxDepth = 1300
 
 
+exp2 = celldatabase.Experiment(subject, '2019-07-05', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
+experiments.append(exp2)
+# Using probe M680
+
+exp2.add_site(1100, tetrodes=[3,4,5,6,7,8])
+exp2.add_session('15-02-21', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 18 (Tetrode 1, channel 1)
+# Indication of sound responsive cells on tetrodes 4,6,7,8.
+
+exp2.add_session('15-08-13', 'b', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+# 3 intensities
+# Indication of frequency preference on tetrode 4.
+
+exp2.add_session('16-40-26', 'c', 'oddball', 'oddball_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp2.add_session('16-44-43', 'd', 'standard', 'oddball_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp2.add_site(1175, tetrodes=[3,4,5,6,7,8])
+exp2.add_session('17-03-12', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'e'
+# Indication of sound responsive cells on tetrodes 4,6.
+
+exp2.add_session('17-11-29', 'f', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+# 3 intensities
+# Indication of sound responsive cells on tetrodes 4,6.
+
+exp2.add_session('17-57-58', 'g', 'oddball', 'oddball_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp2.add_session('18-03-45', 'h', 'standard', 'oddball_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp2.maxDepth = 1400
 
 
+exp3 = celldatabase.Experiment(subject, '2019-07-11', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
+experiments.append(exp3)
+#Using probe: C39C
 
+exp3.add_site(977, tetrodes=[2,8])
+exp3.add_session('15-50-47', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 18 (Tetrode 1, channel 1)
+# Indication of sound responsive cell on tetrodes 2.
 
+exp3.add_session('16-06-10', 'b', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+# 3 intensities
 
+exp2.maxDepth = 977
+
+exp4 = celldatabase.Experiment(subject, '2019-07-14', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
+experiments.append(exp4)
+#Using probe: C39C
+
+# exp4.add_site(1252, tetrodes=[2,8])
+# exp4.add_session('15-27-44', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 18 (Tetrode 1, channel 1)
+# No indication of good sound responsive cells
+
+exp4.add_site(1328, tetrodes=[2,4,6,7])
+exp4.add_session('15-33-41', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'b'
+# Reference set to 18 (Tetrode 1, channel 1)
+# Excellent looking sound response on tetrode 2.
+
+exp4.add_session('15-47-05', 'c', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+# 3 intensities
+
+exp4.add_session('16-15-40', 'd', 'oddball', 'oddball_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+# Possible indication of increased response to oddball on tetrode 8, but there's also noise.
+
+exp4.add_session('16-26-45', 'e', 'oddball', 'oddball_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp4.add_site(1484, tetrodes=[2,3,4,6,7,8])
+exp4.add_session('16-56-35', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'f'
+# Reference set to 18 (Tetrode 1, channel 1)
+# Indication of sound responses on tetrodes 5,7,8.
+
+exp4.add_session('17-02-36', 'g', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+# 3 intensities
+
+exp4.add_session('17-27-33', 'h', 'oddball', 'oddball_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+# No indication of increased response to oddball. ):
+
+exp2.maxDepth = 1484
 
 
