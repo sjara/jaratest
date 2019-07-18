@@ -3,6 +3,7 @@ Generate[1] and save[2] database with calculated stats and parameters that will 
 analysis
 '''
 import os
+import sys
 import pandas as pd
 import numpy as np
 import time
@@ -18,7 +19,12 @@ import database_generation_funcs as funcs
 reload(funcs)
 reload(studyparams)
 
-SAVE = 0
+if sys.version_info[0] < 3:
+    input_func = raw_input
+elif sys.version_info[0] >= 3:
+    input_func = input
+
+SAVE = 1
 
 def calculate_base_stats(db, filename = ''):
     '''
@@ -90,8 +96,8 @@ def calculate_base_stats(db, filename = ''):
 
                         Rsquareds[indInten,indFreq] = Rsquared
                         popts.append(popt)
-                     #---------------------------End of freq loop------------------------------------------
-                     # The reason why we are calculating bw10 here, it is to save the calculation time
+                    #---------------------------End of freq loop------------------------------------------
+                    # The reason why we are calculating bw10 here, it is to save the calculation time
                     responseThreshold = funcs.calculate_response_threshold(0.2, allIntenBase,respSpikeMean)
                 # [6] Find Frequency Response Area (FRA) unit: fra boolean set, yes or no, but it's originally a pair
                     fra = respSpikeMean > responseThreshold
@@ -165,5 +171,12 @@ if __name__ == "__main__":
 
     if SAVE:
         dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'{}.h5'.format('_'.join(d1mice)))
-        firstDB.to_hdf(dbpath,key='df',mode='w')
-        print "SAVED DATAFRAME to {}".format(dbpath)
+        if os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)):
+            celldatabase.save_hdf(firstDB, dbpath)
+            print "SAVED DATAFRAME to {}".format(dbpath)
+        elif os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)) == False:
+            answer = input_func("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
+            if answer in ['y', 'Y', 'Yes', 'YES']:
+                os.mkdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME))
+                celldatabase.save_hdf(firstDB, dbpath)
+                print "SAVED DATAFRAME to {}".format(dbpath)

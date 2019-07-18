@@ -2,23 +2,21 @@
 Generate npz file for tuningCurve heatmaps
 '''
 import os
+import sys
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
-from jaratoolbox import extraplots
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesanalysis
-from jaratoolbox import extraplots
-from jaratoolbox import spikesorting
-from jaratoolbox import ephyscore
 from jaratoolbox import celldatabase
-from jaratoolbox import behavioranalysis
 from scipy import stats
 import pandas as pd
 import studyparams
-reload(extraplots)
 reload(studyparams)
+
+if sys.version_info[0] < 3:
+    input_func = raw_input
+elif sys.version_info[0] >= 3:
+    input_func = input
 
 #===================================parameters=================================
 baseRange = [-0.1, 0]
@@ -32,12 +30,12 @@ titleExampleBW=True
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '_'.join(d1mice) + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-db = pd.read_hdf(pathtoDB)
+db = celldatabase.load_hdf(pathtoDB)
 
 
 examples = {}
-examples.update({'D1':'d1pi032_2019-02-22_2900.0_TT3c6'})
-examples.update({'nD1':'d1pi032_2019-02-19_3200.0_TT8c4'})
+examples.update({'D1':'d1pi032_2019-02-22_3400.0_TT5c4'})
+examples.update({'nD1':'d1pi033_2019-04-17_2900.0_TT8c2'})
 
 exampleCell = [val for key, val in examples.items()]
 exampleKeys = [key for key, val in examples.items()]
@@ -54,7 +52,11 @@ for ind, cellInfo in enumerate(exampleCell):
 
     oneCell = ephyscore.Cell(dbRow)
 
-    ephysData, bdata = oneCell.load('tuningCurve')
+    try:
+        ephysData, bdata = oneCell.load('tuningCurve')
+    except:
+        ephysData, bdata = oneCell.load('tuningCurve(tc)')
+
     spikeTimes = ephysData['spikeTimes']
     eventOnsetTimes = ephysData['events']['stimOn']
 #--------------------------Tuning curve------------------------------------------
@@ -72,7 +74,6 @@ for ind, cellInfo in enumerate(exampleCell):
     intensities = intensities.astype(np.int)
     intenTickLocations = np.linspace(0, nIntenLabels-1, nIntenLabels)
     allIntenResp = np.empty((len(possibleIntensity), len(uniqFreq)))
-
     for indinten, inten in enumerate(possibleIntensity):
 
         for indfreq, freq in enumerate(uniqFreq):
@@ -94,4 +95,14 @@ for ind, cellInfo in enumerate(exampleCell):
     exampleSpikeData.update({exampleKeys[ind]:allIntenResp})
 
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
-np.savez(exampleDataPath, **exampleSpikeData)
+if os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)):
+    np.savez(exampleDataPath, **exampleSpikeData)
+    print "{} data saved to {}".format(FIGNAME, exampleDataPath)
+elif os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)) == False:
+    answer = input_func(
+        "Save folder is not present. Would you like to make the desired directory now? (y/n) ")
+    if answer in ['y', 'Y', 'Yes', 'YES']:
+        os.mkdir(
+            os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME))
+        np.savez(exampleDataPath, **exampleSpikeData)
+        print "{} data saved to {}".format(FIGNAME, exampleDataPath)
