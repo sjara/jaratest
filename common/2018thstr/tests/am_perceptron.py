@@ -25,7 +25,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, FIGNAME)
 colorATh = figparams.cp.TangoPalette['SkyBlue2']
 colorAC = figparams.cp.TangoPalette['ScarletRed1']
 
-CASE=5
+CASE=2.1
 
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
@@ -370,6 +370,136 @@ elif CASE==2:
 
         maxAccuracy, threshold = linear_discriminator(spikesPref, spikesNonPref)
         dataframe.loc[indRow, 'accuracy'] = maxAccuracy
+        dataframe.to_hdf('/tmp/2018thstr_with_accuracy.h5', key='dataframe')
+
+elif CASE==2.1:
+    'Compute AM discrimination accuracy, using only the sustained component'
+    SHUFFLE=False #Set to true to shuffle AM rates, giving an estimate of the chance level.
+
+    # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+    # dataframe = pd.read_hdf(dbPath, key='dataframe')
+    dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+    dataframe = celldatabase.load_hdf(dbPath)
+    # svmScore = np.empty(len(dataframe))
+    for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
+        if not 'am' in dbRow['sessionType']:
+            dataframe.loc[indRow, 'svmScore'] = np.nan
+            print 'BREAKING, AM'
+            continue
+        cell = ephyscore.Cell(dbRow, useModifiedClusters=True)
+        # spikeData, eventData = celldatabase.get_session_ephys(cell, 'am')
+        try:
+            ephysData, bdata = cell.load('am')
+        except (IndexError, ValueError): #The cell does not have a tc or the tc session has no spikes
+            failed=True
+            print "No am session for cell {}".format(indRow)
+            dataframe.loc[indRow, 'svmScore'] = np.nan
+            continue
+
+        spikeTimes = ephysData['spikeTimes']
+
+        if len(spikeTimes)<100:
+            dataframe.loc[indRow, 'svmScore'] = np.nan
+            print "BREAKING, Spikenum"
+            continue
+
+        numFreq = len(np.unique(bdata['currentFreq']))
+
+        eventOnsetTimes = ephysData['events']['soundDetectorOn']
+        eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.7)
+
+        ### --- Test to see if there is a response to the AM session --- ###
+        baseRange = [-0.5, -0.1]
+        responseRange = [0.1, 0.5]
+        alignmentRange = [baseRange[0], responseRange[1]]
+        (spikeTimesFromEventOnset,
+            trialIndexForEachSpike,
+            indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
+                                                                        eventOnsetTimes,
+                                                                        alignmentRange)
+        nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                            indexLimitsEachTrial,
+                                                            baseRange)
+        nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                            indexLimitsEachTrial,
+                                                            responseRange)
+
+
+
+
+
+
+
+        [zScore, pVal] = stats.ranksums(nspkResp,nspkBase)
+        if pVal > 0.05: #No response
+            dataframe.loc[indRow, 'svmScore'] = np.nan
+            print "Breaking, no significant response"
+            continue
+
+
+        ### --- Calculate best and worst rate
+        timeRange = [0.1, 0.5]
+        (spikeTimesFromEventOnset,
+        trialIndexForEachSpike,
+        indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
+                                                                    eventOnsetTimes,
+                                                                    timeRange)
+
+        freqEachTrial = bdata['currentFreq']
+
+        if SHUFFLE:
+            freqEachTrial = np.random.permutation(freqEachTrial)
+
+        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange)
+        spikeCountEachTrial = spikeCountMat.flatten()
+        if len(freqEachTrial) == len(spikeCountEachTrial)-1:
+            spikeCountEachTrial = spikeCountEachTrial[:-1]
+
+        possibleRates = np.unique(freqEachTrial)
+        avgSpikesEachRate = np.empty(len(possibleRates))
+        for indRate, thisRate in enumerate(possibleRates):
+            spikesThisRate = spikeCountEachTrial[freqEachTrial==thisRate]
+            avgSpikesEachRate[indRate] = np.mean(spikesThisRate.ravel())
+
+        #Find spikes each trial for pref and nonpref frequencies
+        indPref = np.argmax(avgSpikesEachRate)
+        indNonPref = np.argmin(avgSpikesEachRate)
+        spikesPref = spikeCountEachTrial[freqEachTrial==possibleRates[indPref]]
+        spikesNonPref = spikeCountEachTrial[freqEachTrial==possibleRates[indNonPref]]
+
+        # spikes = np.concatenate([spikesPref, spikesNonPref])
+        # prefRate = np.concatenate([np.ones(len(spikesPref)), np.zeros(len(spikesNonPref))])
+
+
+
+        # #Reshape to column vector
+        # X = spikes.reshape(len(spikes), 1)
+        # y = prefRate
+
+        # #Shuffle and make test and train datasets
+        # n_sample = len(X)
+        # np.random.seed(0)
+        # order = np.random.permutation(n_sample)
+        # X_shuffle = X[order]
+        # y_shuffle = y[order].astype(np.float)
+
+        # trainFold = 0.6
+
+        # X_train = X_shuffle[:int(trainFold * n_sample)]
+        # y_train = y_shuffle[:int(trainFold * n_sample)]
+        # X_test = X_shuffle[int(trainFold * n_sample):]
+        # y_test = y_shuffle[int(trainFold * n_sample):]
+
+        # classifier = svm.SVC(kernel='linear')
+        # # classifier.fit(spikes, prefRate)
+
+        # # score = classifier.score(spikes, prefRate)
+
+        # classifier.fit(X_train, y_train)
+        # score = classifier.score(X_test, y_test)
+
+        maxAccuracy, threshold = linear_discriminator(spikesPref, spikesNonPref)
+        dataframe.loc[indRow, 'accuracySustained'] = maxAccuracy
         dataframe.to_hdf('/tmp/2018thstr_with_accuracy.h5', key='dataframe')
 
 if CASE==3:
