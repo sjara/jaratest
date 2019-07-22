@@ -3,39 +3,36 @@ This script takes as argument a pandas DataFrame or a path to a saved database a
 
 Columns added are split into two groups: the basic stats computed for every cluster, and the more complex
 ones computed only for cells that pass certain criteria based on these basic stats.
-
-Either can be chosen to be run, the final database is saved regardless.
-
-A name for the saved database can be passed if you want a separate database for whatever reason.
-
-TO DO:
-- Split up into smaller functions for each computation to make flow more clear
 '''
 
+import os
 import pandas as pd
 import numpy as np
-import os
+import time
+import nrrd
+import imp
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
+from jaratoolbox import histologyanalysis as ha
+
 from jaratoolbox import settings
 
 import database_generation_funcs as funcs
 import database_bandwidth_tuning_fit_funcs as fitfuncs
-reload(funcs)
-reload(fitfuncs)
-
-import pdb
-
-R2CUTOFF = 0.1
-OCTAVESCUTOFF = 0.5
-
 
 
 def inactivation_base_stats(db, filename = ''):
+    '''
+    This function takes as argument a pandas DataFrame and adds new columns.
+    The filename should be the full path to where the database will be saved. If a filename is not specified, the database will not be saved.
+    
+    This function computed basic statistics for all clusters (e.g. laser responsiveness, sound responsiveness, preferred frequency).
+    '''
+    
     laserTestStatistic = np.empty(len(db))
     laserPVal = np.empty(len(db))
     
@@ -196,6 +193,14 @@ def inactivation_base_stats(db, filename = ''):
         
 
 def inactivation_indices(db, filename = ''):
+    '''
+    This function takes as argument a pandas DataFrame and adds new columns.
+    The filename should be the full path to where the database will be saved. If a filename is not specified, the database will not be saved.
+    
+    This function computes indices like Suppression Index with and without laser for all cells passing (generous) thresholds for good cells.
+    The thresholds used here are more generous than the ones in studyparams, in case we want to relax our criteria in the future.
+    '''
+    
     bestCells = db.query("isiViolations<0.02")# or modifiedISI<0.02")
     bestCells = bestCells.loc[bestCells['spikeShapeQuality']>2]
     bestCells = bestCells.query('soundResponsePVal<0.05 or onsetSoundResponsePVal<0.05 or sustainedSoundResponsePVal<0.05')
@@ -434,4 +439,105 @@ def inactivation_indices(db, filename = ''):
         
     return db
 
+def inactivation_locations(db, filename = ''):
+    '''
+    This function takes as argument a pandas DataFrame and adds new columns.
+    The filename should be the full path to where the database will be saved. If a filename is not specified, the database will not be saved.
+    
+    This function computes the depths and cortical locations of all cells with suppression indices computed.
+    This function should be run in a virtual environment because the allensdk has weird dependencies that we don't want tainting our computers.
+    '''
+    from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
+    
+    # lapPath = os.path.join(settings.ATLAS_PATH, 'AllenCCF_25/coronal_laplacian_25.nrrd')
+    lapPath = '/mnt/jarahubdata/tmp/coronal_laplacian_25.nrrd'
+    lapData = nrrd.read(lapPath)
+    lap = lapData[0]
+    
+    mcc = MouseConnectivityCache(resolution=25)
+    rsp = mcc.get_reference_space()
+    rspAnnotationVolumeRotated = np.rot90(rsp.annotation, 1, axes=(2, 0))
+    
+    tetrodetoshank = {1:1, 2:1, 3:2, 4:2, 5:3, 6:3, 7:4, 8:4} #hardcoded dictionary of tetrode to shank mapping for probe geometry used in this study
+    
+    bestCells = db[db['sustainedSuppressionIndexNoLaser'].notnull()] #calculate depths for all the cells that we calculated SIs for
+    
+    db['recordingSiteName'] = '' #prefill will empty strings so whole column is strings (no NaNs)
+    
+    for dbIndex, dbRow in bestCells.iterrows():
+        subject = dbRow['subject']
+        
+        try:
+            fileNameInfohist = os.path.join(settings.INFOHIST_PATH,'{}_tracks.py'.format(subject))
+            tracks = imp.load_source('tracks_module',fileNameInfohist).tracks
+        except IOError:
+            print("No such tracks file: {}".format(fileNameInfohist))
+        else:
+            brainArea = dbRow['brainArea']
+            if brainArea == 'left_AC':
+                brainArea = 'LeftAC'
+            elif brainArea == 'right_AC':
+                brainArea = 'RightAC'
+            tetrode = dbRow['tetrode']
+            shank = tetrodetoshank[tetrode]
+            recordingTrack = dbRow['info'][0]
+            
+            track = next((track for track in tracks if (track['brainArea'] == brainArea) and (track['shank']==shank) and (track['recordingTrack']==recordingTrack)),None)
+            
+            if track is not None:
+                histImage = track['histImage']
+                
+                filenameSVG = ha.get_filename_registered_svg(subject, brainArea, histImage, recordingTrack, shank)
+                
+                if tetrode%2==0:
+                    depth = dbRow['depth']
+                else:
+                    depth = dbRow['depth'] - 150.0 #odd tetrodes are higher
+                
+                brainSurfCoords, tipCoords, siteCoords = ha.get_coords_from_svg(filenameSVG, [depth], dbRow['maxDepth'])
+                
+                siteCoords = siteCoords[0]
+                
+                atlasZ = track['atlasZ']
+                cortexDepthData = np.rot90(lap[:,:,atlasZ], -1)
+                 
+                # We consider the points with depth > 0.95 to be the bottom surface of cortex
+                bottomData = np.where(cortexDepthData>0.95)
+                 
+                # Top of cortex is less than 0.02 but greater than 0
+                topData = np.where((cortexDepthData<0.02) & (cortexDepthData>0))
+
+                # Distance between the cell and each point on the surface of the brain
+                dXTop = topData[1] - siteCoords[0]
+                dYTop = topData[0] - siteCoords[1]
+                distanceTop = np.sqrt(dXTop**2 + dYTop**2)
+                
+                # The index and distance to the closest point on the top surface
+                indMinTop = np.argmin(distanceTop)
+                minDistanceTop = distanceTop.min()
+            
+                # Same for the distance from the cell to the bottom surface of cortex
+                dXBottom = bottomData[1] - siteCoords[0]
+                dYBottom = bottomData[0] - siteCoords[1]
+                distanceBottom = np.sqrt(dXBottom**2 + dYBottom**2)
+                minDistanceBottom = distanceBottom.min()
+            
+                # The metric we want is the relative distance from the top surface
+                cellRatio = minDistanceTop / (minDistanceBottom + minDistanceTop)
+                db.at[dbIndex, 'cortexRatioDepth'] = cellRatio
+                
+                # use allen annotated atlas to figure out where recording site is
+                thisCoordID = rspAnnotationVolumeRotated[int(siteCoords[0]), int(siteCoords[1]), atlasZ]
+                structDict = rsp.structure_tree.get_structures_by_id([thisCoordID])
+                print "This is {}".format(str(structDict[0]['name']))
+                db.at[dbIndex, 'recordingSiteName'] = structDict[0]['name']
+                
+            else:
+                print subject, brainArea, shank, recordingTrack
+                
+    if len(filename)!=0:        
+        celldatabase.save_hdf(db, filename)
+        print filename + " saved"
+    
+    return db
 

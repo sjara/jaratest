@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import time
 import nrrd
+import imp
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
@@ -428,6 +429,8 @@ def photoDB_cell_locations(db, filename = ''):
     
     bestCells = db[db['sustainedSuppressionIndex'].notnull()] #calculate depths for all the cells that we calculated SIs for
     
+    db['recordingSiteName'] = '' #prefill will empty strings so whole column is strings (no NaNs)
+    
     for dbIndex, dbRow in bestCells.iterrows():
         subject = dbRow['subject']
         
@@ -493,6 +496,7 @@ def photoDB_cell_locations(db, filename = ''):
                 # use allen annotated atlas to figure out where recording site is
                 thisCoordID = rspAnnotationVolumeRotated[int(siteCoords[0]), int(siteCoords[1]), atlasZ]
                 structDict = rsp.structure_tree.get_structures_by_id([thisCoordID])
+                print "This is {}".format(str(structDict[0]['name']))
                 db.at[dbIndex, 'recordingSiteName'] = structDict[0]['name']
                 
             else:
