@@ -1,0 +1,93 @@
+Laser calibration
+
+2.8 on dial = 3.5mW
+2.6 on dial = 3.0mW
+2.4 on dial = 2.5mW
+2.2 on dial = 2.0mW
+2.0 on dial = 1.5mW
+1.85 on dial = 1.0mW
+
+Tetrode impedences
+
+TT3 - 73.5, 198, 72.5, 126
+TT4 - 174, 162, 225, 287
+TT5 - 171, 10.3Mohms, 90.6, 91.2
+TT6 - 281, 252, 156, 136
+
+1033hrs - mouse on rig, electrodes in right well, as close as possible the the previous good recording site at the meial side of the well. There has been some bone regrowth, so it is not possible to get back to this exact site. I am recording slightly more lateral. The longest electrodes are on the medial side. 
+
+I am disabling the second channel on TT5 since it is a bad channel (based on impedence and constant strange waveforms). If left alone it seems like it will constantly add meaningless spikes. 
+
+By 2200 it sounds like we are in the hippocampus
+
+
+By 3000 it has quieted back down. I think we are a bit shallow. 
+
+By 3350 I see spikes on TT3 - Fast spikes, not sound responsive.
+#################site1#####################
+
+At 3509 I have a sound responsive site. Spikes are on TT3. Noise burst file = 2015-07-06_11-15-56
+THere are some noise responses on both TT3 and TT6
+
+Testing laser pulse responses (2.5mW) file = 2015-07-06_11-18-36
+
+TT3 is somewhat responsive. TT6 has laser responsive units though. 
+
+Both sites are responsive to laser trains. File = 2015-07-06_11-21-26
+
+Collecting tuning curve. I cannot hear the sounds any more, which is a really nice thing. I cannot hear the sounds coming from the box or from the recording system. File = 2015-07-06_11-25-58. Behavior file identifier = 'a'
+
+Best frequency looks like 5.4kHz. Presenting 4.4-5.4 for 100 trials at 70dB file = 2015-07-06_11-39-46
+I can faintly hear some one of the two frequencies coming out of the box, but not through the recording system. 
+
+Collecting responses to laser pulses at 3mW - file = 2015-07-06_11-42-37
+
+Laser responses at 1mW file = 2015-07-06_11-45-22
+
+
+######################################################
+
+At 3550um. Presenting whit noise bursts, file = 2015-07-06_11-51-47
+Sound responsive but amid lots of other noisy spikes. Testing responses to laser pulses at 2.5mW
+file = 2015-07-06_11-54-51
+
+Mildly laser responsive (TT3 and 6). Testing responses to laser trains. File = 2015-07-06_11-58-17
+
+Very good responses, much less noisy. Recording tuning curve. File = 2015-07-06_12-01-53
+behav file identifier = 'b'
+
+BF now appears to be 9.9, although 5.4 is still showing up well. I will present 9000 to 10000 at 70dB for 100 trials. 
+file = 2015-07-06_12-14-53. I can hear the sounds if I put my ear up to the side of the box. No noise artifact in the recording though. 
+
+Recording laser pulses at 3mW. file = 2015-07-06_12-17-13
+Recording laser pulses at 1mW. file = 2015-07-06_12-19-34
+
+##########################################################
+
+
+at 3606um, recording noise burst session. file = 2015-07-06_12-28-47
+Sound responsive but amid lots of noisy spikes. testing laser pulses, 2.5mW, file = 2015-07-06_12-31-21
+Laser responsive. Recording responses to trains, file = 2015-07-06_12-34-00
+Good responses. collecting tuning curve. file = 2015-07-07_12-37-29
+behav file identifier = 'c'
+
+Presenting BF 8000-9000 70db 100 trials file = 2015-07-06_12-50-34
+
+
+Recording laser pulses at 3mW. File = 2015-07-06_12-53-57
+Recording laser pulses at 1mW. File = 2015-07-06_12-56-04
+
+#############################################################
+
+
+at3654um, recording responses to noise bursts. file = 2015-07-06_13-06-27
+Good sound responses, recording responses to laser pulse at 2.5mW. file = 2015-07-06_13-09-00
+Laser responses especially on TT3, recording responses to laser trains. file = 2015-07-06_13-11-25
+Good responses, collecting tuning curve. file = 2015-07-06_13-15-01
+behav file identifier = 'd'
+Collecting responses to 8000-9000 at 70dB for 100 trials. file = 2015-07-06_13-28-12
+Collecting laser pulses at 3mW file = 2015-07-06_13-30-00
+Collecting laser pulses at 1mW. file = 2015-07-06_13-31-58
+
+###############################################################
+Done for today

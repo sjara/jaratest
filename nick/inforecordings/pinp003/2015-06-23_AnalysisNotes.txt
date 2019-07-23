@@ -1,0 +1,15 @@
+The goal of this analysis is to generate the following plots: 
+
+1. Firing rate PSTH in response to the laser pulses
+
+2. Firing rate PSTH in response to the sounds
+
+3. Raster showing the ability to follow a train of pulses
+
+4. A frequency-intensity psychometric curve
+
+5. Point clouds showing the laser off and laser on points
+
+I also want to look a the spikes in response to different laser intensities and see whether the effect scales or not. 
+
+The first thing that I need to do is figure out how to spike sort my data. 

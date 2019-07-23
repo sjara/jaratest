@@ -21,7 +21,7 @@ FIGNAME = 'soundres_modulation_switching'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 
 # -- Read in databases storing all measurements from switching mice -- #
-switchingFilePath = os.path.join(settings.FIGURESDATA,figparams.STUDY_NAME)
+switchingFilePath = os.path.join(settings.FIGURES_DATA_PATH,figparams.STUDY_NAME)
 switchingFileName = 'all_cells_all_measures_extra_mod_waveform_switching.h5'
 switchingFullPath = os.path.join(switchingFilePath,switchingFileName)
 allcells_switching = pd.read_hdf(switchingFullPath,key='switching')
@@ -32,7 +32,7 @@ goodcells = (allcells_switching.cellQuality.isin(qualityList)) & (allcells_switc
 cellsInStr = allcells_switching.cellInStr==1
 keepAfterDupTest = allcells_switching.keep_after_dup_test
 allcells = allcells_switching[goodcells & cellsInStr & keepAfterDupTest] #just look at the good cells THAT ARE IN STR 
-sigMod = np.array((allcells.modSig<=0.05), dtype=bool)
+sigMod = np.array((allcells.modSig<=0.05) & (allcells.modDir>=1), dtype=bool) 
 dataToPlot = {'modulated':sigMod,'modulationIndex':allcells.modIndex,'animalName':allcells.animalName}
 
 ### Save data ###

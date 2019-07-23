@@ -4,7 +4,7 @@ reload(celldatabase)
 subject = 'band016'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2016-12-11')
+exp0 = celldatabase.Experiment(subject, '2016-12-11', 'AC')
 experiments.append(exp0)
 
 exp0.laserCalibration = {
@@ -61,7 +61,7 @@ exp0.add_session('16-34-10', None, 'laserTrain', 'am_tuning_curve')
 exp0.add_session('16-36-21', 'i', 'bandwidth', 'bandwidth_am')
 
 
-exp1 = celldatabase.Experiment(subject, '2016-12-12')
+exp1 = celldatabase.Experiment(subject, '2016-12-12', 'AC')
 experiments.append(exp1)
 
 exp1.laserCalibration = {
@@ -93,7 +93,7 @@ exp1.add_session('13-04-39', None, 'laserTrain', 'am_tuning_curve')
 exp1.add_session('13-07-02', 'c', 'bandwidth', 'bandwidth_am')
 
 
-exp2 = celldatabase.Experiment(subject, '2016-12-22')
+exp2 = celldatabase.Experiment(subject, '2016-12-22','AC')
 experiments.append(exp2)
 
 exp2.laserCalibration = {

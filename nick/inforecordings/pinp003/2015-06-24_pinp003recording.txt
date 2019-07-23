@@ -1,0 +1,176 @@
+The first thing I am doing today is updating the sound calibration file. 
+
+31279 is still low even at an amplitude of 0.99. I will still use the new calibration, since 40 is ok. We will do tuning curves from 2-40 khz, 16 freqs at 4 ints. 
+
+Laser Calibration 
+
+2.0 on dial, 3.5 on display, 1.09mW output
+
+2.2 on dial, 4.9 on display, 1.49mW output
+
+2.45 on dial, 6.6 on display, 2.01mW output
+
+2.7 on dial, 8.8 on display, 2.52mW output
+
+3.0 on dial, 11.2 on display, 3.00mW output
+
+3.2 on dial, 12.6 on display, 3.53 mW output
+
+Two new improvements today - a thorlabs setup to hold the ground wire, and a thorlabs setup to hold a watering line. We want to be able to give the mouse some water without scaring him too much. 
+
+
+1449hrs - The mouse is on the rig with the electrodes at 972um from the surface in the most medial location possible in the Right craniotomy. Today I will go directly to 3000 and begin looking for sound responses from there. 
+
+There are background responses to light being shown to the mouse 
+
+1456hrs - descending to 3000um from the surface
+
+at 1797 there is a lot of activity - Hippocampus?
+
+By 2130 things quiet back down
+
+1501hrs - at 3000um, things are still pretty quiet
+
+1519 - at 3403, no sound responses yet. I have been recording short sessions while presenting 100msec noise bursts at 0.3amp
+
+################## Site 1  ################
+1523hrs - at 3543hrs - sound responses to noise at 0.3amp, testing with more trials and 0.4amp. FIle = 2015-06-24_15-22-29
+
+
+1526hrs - good sound responses, testing with laser pulses at 2.5mW (100msec pulses) FIle = 2015-06-24_15-25-08
+
+The units are all on TT6
+
+Vey laser responsive.Testing with laser train file = 2015-06-24_15-27-37
+
+
+Cool responses, collecting tuning curv. file = 2015-06-24_15-31-48
+behavior = pinp003_laser_tuning_curve_20150624a.h5
+
+
+Can hear tones through the speaker. I also did not add any new saline to the wells before the recording began at this site. Best frequency appears to be 9.9kHz, presenting 9000-10000, 2 freqs, 70dp, 100msec, 100 trials. 
+file = 2015-06-24_15-45-22
+behavior = pinp003_laser_tuning_curve_20150624b.h5
+
+I forgot to collect responses to laser pulses at different intensities
+###################################################
+
+################Site 2#############################
+1556hrs - 3623um - recording sound responses. File = 2015-06-24_15-54-56
+got 100 trials, noise amp = 0.3
+
+Recording laser pulse responses, file = 2015-06-24_15-57-33
+2.5mW
+
+Recording responses to laser train. File = 2015-06-24_16-00-02
+
+Similar responses to last time. Recording tuning curve. File = 2015-06-24_16-04-48
+behavior file = pinp003_laser_tuning_curve_20150624c.h5
+
+
+The best frequency is now between 6.6 and 8.1kHz. I am presenting 7000 and 8000 at 70db for 100 trials. 
+File = 2015-06-24_16-17-30
+behav file = pinp003_laser_tuning_curve_20150624d.h5
+
+I need to do laser pulse responses at different intensities now. 
+
+Laser pulses at 3mW. File = 2015-06-24_16-20-11
+Getting 100 reps
+
+Laser pulses at 1mW. File = 2015-06-24_16-22-37
+getting 100 reps
+
+The responses to 1mW look mostly the same. I still think I will use 2.5mW for my initial hunting, but I will collect different intensities to control for artifacts. 
+
+####################Site 3######################
+
+1641hrs - at 3700um, collecting sound responses. File = 2015-06-24_26-40-44
+Good cells on TT6
+
+testing resopnses to laser pulses at 2.5mW. File = 2015-02-24_16-44-01
+
+Recording responses to train of pulses at 2.5mW. File = 2014-06-24_16-46-20
+Excellent sound and laser responses so far, and large spikes. All spikes are on TT6
+
+The responses look like they stay on for each laser duration. 
+
+Recording tuning curve. File = 2015-06-24_16-50-03
+Behav file name = pinp003_laser_tuning_curve_20150624e.h5
+
+BF is somewhere between 7000 and 8000, presenting this for 1000 trials. File = 2015-06-24_17-03-10
+behav file = pinp003_laser_tuning_curve_20150624f.h5
+Forgot to save the behavior data!
+
+Testing responses to laser pulses at 3mW. File = 2015-06-24_17-06-10
+
+Testing responses to laser pulses at 1mW. File = 2015-06-24_17-09-06
+Responses are a lot weaker to the 1mW pulses
+
+######################################################
+Site 4
+
+
+1717hrs - at 3757um, good spikes on TT6, recording responses to noise bursts. File = 2015-06-24_17-15-58
+Excellent sound responses, recording responses to the laser pulses at 2.5mW. File = 2015-06-24_17-18-57
+The cells seem like they are bursting in response to the laser. 
+
+the site is moderatly responsive to the laser. Recording response to trains at 2.5mW. File = 2015-06-24_17-21-29
+
+
+Good responses to the trains. Recording tuning curve. File = 2015-06-24_17-25-16
+behavior file = pinp003_laser_tuning_curve_20150624g.h5
+
+BF looks to be between 6.6kHz and 8.1kHz, evaluating with 2freqs between 6 and 8, 70dB for 100 trials. File = 2015-06-24_17-37-45
+
+Behavior = af
+
+There are spikes on TT3 now as well
+
+Laser pulses at 3mW. FIle = 2015-06-24_17-41-31
+
+Laser Pulases at 1mW. File = 2015-06-24_17-44-25
+
+
+###########################################################
+Site 5
+
+
+1750hrs - at 3805um, strong spikes on TT6. Recording responses to noise bursts. File = 2015-06-24_17-59-53
+Very strong sound responses, recording responses to laser pulses at 2.5mW. File = 2015-06-24_18-03-50
+Strong laser responeses, recording responses to laser train. File = 2015-06-24_18-06-31
+
+Good responses to trains. Recording tuning curve. File = 2015-06-24_18-10-38
+behaviour file = pinp003_laser_tuning_curve_20150624h.h5 
+
+BF looks to be right around 8.1kHz. Evaluating with two frequencies between 7 and 8 kHz, 70db for 100 trials. File = 2015-06-24_18-24-47
+
+What looks to be an artifact is present on TT3
+
+Presenting laser pulses at 3mW. File = 2015-06-24_18-29-24
+Presenting laser pulses at 1mW. File = 2015-06-24_18-33-08
+
+
+
+###########################################################
+Site 6
+
+1838hrs - at 3855um, strong spikes on TT6. Recording responses to noise bursts. File = 2015-06-24_18-44-21
+Very strong sound responses, recording responses to laser pulses at 2.5mW. File = 2015-06-24_18-47-59
+Strong laser responses, recording responses to laser train. File = 2015-06-24_18-51-29
+
+Fair responses to trains. Recording tuning curve. File = 2015-06-24_18-55-40
+
+BF is still around 8kHz, testing with 6-8khz, 2 freqs, 70db for 100 trials. File = 2015-06-24_19-10-27
+
+
+Testing with 3mW laser pulses. File = 2015-06-24_19-13-33
+
+There is a much larger dip in the LFP at laser onset 
+
+
+Testing with 1mW laser pulses. File = 2015-06-24_19-16-41
+
+There is a smaller dip in the LFP
+
+1920hrs - removing the electrodes and letting the mouse go home. 
+

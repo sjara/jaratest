@@ -420,7 +420,7 @@ def plot_ave_wave_form_w_peak_times(oneCell):
     waveforms = spkData.samples
     samplingRate = spkData.samplingRate
     sampVals = np.arange(0,waveforms.shape[2]/samplingRate,1/samplingRate)
-    (peakTimes, peakAmplitudes, avWaveform) = spikesorting.estimate_spike_peaks(waveforms,samplingRate)
+    (peakTimes, peakAmplitudes, avWaveform, waveformSD) = spikesorting.estimate_spike_peaks(waveforms,samplingRate)
     plt.plot(sampVals,avWaveform, 'g-')
     plt.axvline(peakTimes[1],ls='--',color='r')
     plt.axvline(peakTimes[0],ls='--',color='0.75')

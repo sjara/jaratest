@@ -97,7 +97,7 @@ if __name__ == '__main__':
     CASE = 2
 
     if CASE == 1:
-        subjects = ['adap015']
+        subjects = ['adap071','adap067']
     
         if len(sys.argv)>1:
             sessions = sys.argv[1:]
@@ -113,8 +113,9 @@ if __name__ == '__main__':
                               'adap011':['20160122a','20160123a','20160124a','20160125a','20160126a'],
                               'adap013':['20160216a','20160217a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'], #some of them are of same_right_left block transition
                               'adap015':['20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a','20160315a'], #some of them are of same_right_left block transition
-                              'adap017':['20160219a','20160222a','20160223a','20160224a','20160226a','20160301a','20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'] #some of them are of same_right_left block transition
-                              }
+                              'adap017':['20160219a','20160222a','20160223a','20160224a','20160226a','20160301a','20160302a','20160309a','20160310a','20160311a','20160312a','20160313a','20160314a'], #some of them are of same_right_left block transition
+                              'adap071':['20171002a','20171003a','20171004a','20171005a','20171006a','20171007a']
+                             }
         numOfAnimals = len(sujectSessionsDict.keys())
         avePsycurveMoreLeft = np.empty((numOfAnimals,8)) #We used 8 frequencies in the psy curve
         avePsycurveMoreRight = np.empty((numOfAnimals,8))

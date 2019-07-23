@@ -12,10 +12,14 @@ from jaratoolbox import settings
 from jaratoolbox import behavioranalysis
 import figparams
 
+FIGNAME = 'photostim_2afc'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+if not os.path.exists(outputDir):
+    os.mkdir(outputDir)
 scriptFullPath = os.path.realpath(__file__)
 
 # -- Load the photostim experiments database -- #
-tuingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+tuingFilePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME)
 tuningFileName = 'photostim_response_freq_summary.csv'
 tuningFullPath = os.path.join(tuingFilePath,tuningFileName)
 tuningDf = pd.read_csv(tuningFullPath)
@@ -25,7 +29,9 @@ resultsDict = {}
 # -- Generate data for each mouse -- #
 for mouse in np.unique(tuningDf.animalName):
     resultsDict[mouse+'leftHemiStim']=[]
+    resultsDict[mouse+'leftHemiStimSessions']=[]
     resultsDict[mouse+'rightHemiStim']=[]
+    resultsDict[mouse+'rightHemiStimSessions']=[]
     dfThisMouse = tuningDf.loc[tuningDf.animalName==mouse]
  
     # -- Calculate % contra choice change for each session and store data for left and right hemisphere photostim sessions separately -- #
@@ -52,7 +58,8 @@ for mouse in np.unique(tuningDf.animalName):
             percentContraChoiceStim = sum(choiceRightStim&validTrialsStim)/float(sum(validTrialsStim))
             percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
             resultsDict[mouse+'leftHemiStim'].append(percentChangeContraChoice)
- 
+            resultsDict[mouse+'leftHemiStimSessions'].append(row['session'])
+
         elif stimHemi == 2: #This is a session where the right hemisphere is stimulated
             validTrialsControl = valid[trialsEachType[:,stimLabels.index('no_laser')]]
             validTrialsStim = valid[trialsEachType[:,stimLabels.index('laser_right')]]
@@ -64,8 +71,9 @@ for mouse in np.unique(tuningDf.animalName):
             percentContraChoiceStim = sum(choiceLeftStim&validTrialsStim)/float(sum(validTrialsStim))
             percentChangeContraChoice = percentContraChoiceStim-percentContraChoiceControl
             resultsDict[mouse+'rightHemiStim'].append(percentChangeContraChoice)
+            resultsDict[mouse+'rightHemiStimSessions'].append(row['session'])
 
-outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+#outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_photostim_percent_contra_choice_change.npz'
 outputFullPath = os.path.join(outputDir,outputFile)
 np.savez(outputFullPath, script=scriptFullPath, **resultsDict)

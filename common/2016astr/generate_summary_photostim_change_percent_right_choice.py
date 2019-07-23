@@ -19,7 +19,7 @@ if not os.path.exists(outputDir):
 scriptFullPath = os.path.realpath(__file__)
 
 # -- Load the photostim experiments database -- #
-tuingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+tuingFilePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME)
 tuningFileName = 'photostim_response_freq_summary.csv'
 tuningFullPath = os.path.join(tuingFilePath,tuningFileName)
 tuningDf = pd.read_csv(tuningFullPath)
@@ -29,7 +29,9 @@ resultsDict = {}
 # -- Generate data for each mouse -- #
 for mouse in np.unique(tuningDf.animalName):
     resultsDict[mouse+'leftHemiStim']=[]
+    resultsDict[mouse+'leftHemiStimSessions']=[]
     resultsDict[mouse+'rightHemiStim']=[]
+    resultsDict[mouse+'rightHemiStimSessions']=[]
     dfThisMouse = tuningDf.loc[tuningDf.animalName==mouse]
  
     # -- Calculate % contra choice change for each session and store data for left and right hemisphere photostim sessions separately -- #
@@ -56,7 +58,8 @@ for mouse in np.unique(tuningDf.animalName):
             percentRightChoiceStim = sum(choiceRightStim&validTrialsStim)/float(sum(validTrialsStim))
             percentChangeRightChoice = percentRightChoiceStim-percentRightChoiceControl
             resultsDict[mouse+'leftHemiStim'].append(percentChangeRightChoice)
- 
+            resultsDict[mouse+'leftHemiStimSessions'].append(row['session'])
+
         elif stimHemi == 2: #This is a session where the right hemisphere is stimulated
             validTrialsControl = valid[trialsEachType[:,stimLabels.index('no_laser')]]
             validTrialsStim = valid[trialsEachType[:,stimLabels.index('laser_right')]]
@@ -68,6 +71,7 @@ for mouse in np.unique(tuningDf.animalName):
             percentRightChoiceStim = sum(choiceRightStim&validTrialsStim)/float(sum(validTrialsStim))
             percentChangeRightChoice = percentRightChoiceStim-percentRightChoiceControl
             resultsDict[mouse+'rightHemiStim'].append(percentChangeRightChoice)
+            resultsDict[mouse+'rightHemiStimSessions'].append(row['session'])
 
 #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
 outputFile = 'summary_photostim_percent_right_choice_change.npz'

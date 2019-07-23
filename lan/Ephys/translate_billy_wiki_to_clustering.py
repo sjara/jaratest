@@ -1,9 +1,10 @@
 '''
+Updated 20170425 to new clustering and celldatabase format.
 Translate information from Billy about ephys sessions to files needed by Lan.
 
-Lan;s format looks something like this:
+Lan's format looks something like this:
 
-exp = cellDB.Experiment(animalName='adap013', date ='2016-02-22', experimenter='billy', defaultParadigm='tuning_curve') 
+exp = cellDB.Experiment(subject, date ='2016-02-22', brainarea='rightAStr', infor='') 
 site1 = exp.add_site(depth=, tetrodes=[1,2,3,4,5,6,7,8])
 site1.add_session('', None, sessionTypes['nb']) 
 site1.add_session('', 'a', sessionTypes['tc']) 
@@ -22,33 +23,21 @@ import re
 
 # --- Define string format ---
 header = '''
-from jaratest.nick.database import cellDB
-reload(cellDB)
-from jaratest.lan.Ephys import sitefuncs_vlan as sitefuncs
-reload(sitefuncs)
-
-sessionTypes = {'nb':'noiseBurst',
-                'lp':'laserPulse',
-                'lt':'laserTrain',
-                'tc':'tuningCurve',
-                'bf':'bestFreq',
-                '3p':'3mWpulse',
-                '1p':'1mWpulse',
-                '2afc':'2afc'}
-
-badSessionList = []
+from jaratoolbox import celldatabase as cellDB
+subject = '{subject}'
+experiments = []
 '''
 
-formatExperiment = '''exp = cellDB.Experiment(animalName='{subject}', date ='{date}', experimenter='{experimenter}', defaultParadigm='{defparadigm}')'''
+formatExperiment = '''exp = cellDB.Experiment(subject, date ='{date}', brainarea='rightAStr', infor='')'''
 formatSite = '''site1 = exp.add_site(depth={depth}, tetrodes=[1,2,3,4,5,6,7,8])'''
-formatSessionTraining = '''site1.add_session('{ephysTime}', 'a', sessionTypes['2afc'], paradigm='2afc')'''
-formatSessionTuning = '''site1.add_session('{ephysTime}', 'a', sessionTypes['tc'])'''
+formatSessionTraining = '''site1.add_session('{ephysTime}', 'a', 'behavior', '2afc')'''
+formatSessionTuning = '''site1.add_session('{ephysTime}', 'a', 'tc', 'laser_tuning_curve')'''
 
 
 # --- Read Billy's wiki info ---
 experimenter = ''
 defaultParadigm = 'tuning_curve'
-subject = 'adap024'
+subject = 'adap017'
 filename = '{0}_wiki.txt'.format(subject)  ##This file should be in the same directory
 content = [line.rstrip('\n') for line in open(filename)]
 
@@ -57,7 +46,7 @@ content = [line.rstrip('\n') for line in open(filename)]
 trainingDateLine = re.compile(r'(\d.\d+) turns, (\d\d\d\d-\d\d-\d\d)')#'\* (\d.\d+) turns, (\d\d\d\d-\d\d-\d\d)')
 tuningLine = re.compile(r'\* (\d.\d+) turns, presented frequencies')
 ephysLine = re.compile(r'\*\* ephys recording name: (\d\d\d\d-\d\d-\d\d_\d\d-\d\d-\d\d)')
-rewardchangeLine = re.compile(r'\*\* Switching task')
+rewardchangeLine = re.compile(r'\*\* Reward change')
 dbase = {}
 
 
@@ -97,25 +86,21 @@ for indline,oneline in enumerate(content):
            
 
 # --- Write Lan's format ---
-print header
+print header.format(subject=subject)
 for oneDate,oneSession in sorted(dbase.items()):
     #if not oneSession.has_key('ephysSessionTraining') or not oneSession.has_key('ephysSessionTuning'):
     #if not oneSession.has_key('ephysSessionTraining'):
     if not oneSession.has_key('ephysSessionTraining') or not oneSession['type']=='rewardchange':
         continue
     ephysTimeTraining = oneSession['ephysSessionTraining'][-8:]
-    print formatExperiment.format(subject=subject,date=oneDate,
-                                  experimenter=experimenter,defparadigm=defaultParadigm)
+    print formatExperiment.format(date=oneDate)
+    print 'experiments.append(exp)'
     print formatSite.format(depth=oneSession['turns'])
     if oneSession.has_key('ephysSessionTuning'):
         ephysTimeTuning = oneSession['ephysSessionTuning'][-8:]
         print formatSessionTuning.format(ephysTime=ephysTimeTuning)
     print formatSessionTraining.format(ephysTime=ephysTimeTraining)
-    print '''try:'''
-    print '''     sitefuncs.nick_lan_daily_report_v2(site1, 'site1', mainRasterInds=None, mainTCind=0)'''
-    print '''except:'''
-    print '''     badSessionList.append(exp.date)'''
-    #print oneSession['type']
+    
     print ''
 
 

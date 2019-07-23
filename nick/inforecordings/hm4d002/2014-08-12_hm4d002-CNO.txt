@@ -1,0 +1,34 @@
+I am recording from hm4d002 with the goal of finding sound-evoked responses and doing a CNO administration experiment while recording from the sound-responsive cells. 
+12:15:04 - I am penetrating in the same location as the last two experiments. It has been very quiet all the way to 1100um. 
+12:17:08 - At 1500um, still no spikes on any TT
+12:29:56 - Small mag sikes at 2000, moved to 2500um. 
+12:45:59 - Held at 2500 for 10 mins. THere are some spikes on TT3 that are firin quickly, but ther eis also a lot of noise. 
+12:49:28 - Larger spikes on TT3 at 2660um. I am playing 10ms bursts of white noise at an amplitude of 0.5 while descending. 
+12:52:55 - I have been seeing spikes between 2600 and 2800um, but they do not appear to be linked to the sound. 
+12:54:56 - Really really good cvell on TT3 at 2950um that does not seem like it is responding to the sound. It is firing constantly, and does not increase firing after presentation of the sound. 
+12:56:42 - I have killed/moved away form the huge cell. 3116um. It is quiet on TT3 and I am picking up some signals on TT2. I am hping to have moved past the hippocampus and be approaching the MGB. 
+13:01:44 - Recording 2014-08-12_13-03-02 to test for sound responses. 
+13:04:32 - I think I am approaching a sound-responsive area
+13:06:10 - I am recording 2014-08-12_13-07-30
+13:15:00 - Recording 2014-08-12_13-16-54. THere are good cells on TT3, I am tempted to do the CNO experiment here. 
+13:19:52 - I have convinced myself that I am nead a sound-responsive cell on TT3. I am going to present a number of different chords while I wait for the tetrodes to stabilize. 
+13:21:14 - Recording 2104-08-12_13-22-23 and hm4d002_tuning_curve_20140812a.h5
+13:50:51 - I think we are in good shape to try a CNO experiment. The tuning curve shows that the cells respond most to higher freqs. Depth is 3432um. 
+
+13:55:13 - Experiment has started. For each trial I am going to record 5 mins of ephys data. I am currently recording 2014-08-12_13-56-32. I will name the behavior data with the generic date-name plus '_exp01' at the end instead of 'a-z'
+13:57:26 - Failure, need more saline in the wells. I will start over.  
+13:59:06 - Recording 2014-08-12_14-00-18 and exp01.h5
+14:09:28 - Recording 2014-08-12_14-10-42 and exp02.h5
+14:11:57 - THe mouse is running and grooming himself during the experiment - This increases the amount of noise. 
+14:19:17 - recording 2014-08-12_14-20-32 and exp03.h5
+14:27:01 - LIghtly anaesthetized mouse with 3%iso and injected 250uL CNO (250ug, 10mg/kg). 
+14:27:48 - Mouse is awake and moving. 
+14:29:05 - Recording 2014-08-12_14-30-26 and exp04.h5. THis is the first CNO trial. I still see the same spike waveforms that I was seeing before I injected. 
+14:39:08 - Recording 2014-08-12_14-40-26 and exp05.h5
+14:49:10 - Recording 2014-08-12_14-50-27 and exp06.h5
+14:59:19 - Recording 2014-08-12_15-00-28 and exp07.h5
+15:09:15 - Recording 2014-08-12_15-10-25 and exp08.h5
+15:19:07 - Recording 2014-08-12_15-20-21 and exp09.h5. THe cell is obviously still there. There is no reference. 
+15:24:30 - Removing the electrodes. 
+
+

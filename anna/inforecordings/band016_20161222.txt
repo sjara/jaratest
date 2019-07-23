@@ -12,3 +12,26 @@ No sound response. (TT6 appears to respond to mouse's movement?)
 
 At 640um, TT2 and 4 so active that I think I might be in hippocampus.
 Surprisingly looks like a TT4 sound response.
+No laser response.
+
+At 700um, spikes everywhere!
+Looks like a sound response on TT2.
+No laser response.
+
+At 760um, good spikes on TT4,6,8.
+Maybe a sound response on TT8, and an off response on TT2 and 6?
+No laser response.
+Think blood might be blocking optical fiber? Turning laser power up to 2.5
+
+At 820um, lots of spikes.
+TT1 and 6 sound responsive.
+Looks like weak laser off responses.
+
+At 860um, spikes on literally every tetrode.
+Strong sound responses on TT1,6,8, weird offset response on TT4.
+Looks like just laser off responses, but TT4 has such an interesting response I want to record it.
+
+At 930um, good spikes on TT5,8.
+TT5 has a decent sound response.
+No laser response.
+Think laser just isn't reaching tissue... pulling out as this seems pointless.

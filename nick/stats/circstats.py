@@ -116,10 +116,8 @@ def test_stability_stddevtokappa(target_kappa=2.):
 def angle_population_vector(angles):
     '''
         Compute the complex population mean vector from a set of angles
-
         Mean over Axis 0
     '''
-
     return np.mean(np.exp(1j*angles), axis=0)
 
 
@@ -145,20 +143,15 @@ def angle_population_mean(angles=None, angle_population_vec=None):
 def angle_population_R(angles=None, angle_population_vec=None, weights=None):
     '''
         Compute R, the length of the angle population complex vector.
-
         Used to compute Standard deviation and diverse tests.
-
         If weights is provided, computes a weighted population mean vector instead.
     '''
-
     if angle_population_vec is None:
         if weights is None:
             angle_population_vec = angle_population_vector(angles)
         else:
             angle_population_vec = angle_population_vector_weighted(angles, weights)
-
     return np.abs(angle_population_vec)
-
 
 def angle_circular_std_dev(angles=None, angle_population_vec=None):
     '''
@@ -245,30 +238,20 @@ def enforce_distance_set(new_item, other_items, min_distance=0.001):
 def rayleigh_test(angles):
     '''
         Performs Rayleigh Test for non-uniformity of circular data.
-
         Compares against Null hypothesis of uniform distribution around circle
-
         Assume one mode and data sampled from Von Mises.
-
         Use other tests for different assumptions.
-
         Uses implementation close to CircStats Matlab toolbox, maths from [Biostatistical Analysis, Zar].
     '''
-
     if angles.ndim > 1:
         angles = angles.flatten()
-
     N = angles.size
-
     # Compute Rayleigh's R
     R = N*angle_population_R(angles)
-
     # Compute Rayleight's z
     z = R**2. / N
-
     # Compute pvalue (Zar, Eq 27.4)
     pvalue = np.exp(np.sqrt(1. + 4*N + 4*(N**2. - R**2)) - 1. - 2.*N)
-
     return dict(pvalue=pvalue, z=z)
 
 

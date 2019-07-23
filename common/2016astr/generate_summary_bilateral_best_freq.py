@@ -29,7 +29,7 @@ freqBoundaryEachAnimal = {'d1pi014':boundary014,
                           'd1pi016':boundary016}
 
 # -- Load database containing quantifications of tuning -- #
-tuingFilePath = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)
+tuingFilePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME)
 tuningFileName = 'photostim_response_freq_summary.csv'
 tuningFullPath = os.path.join(tuingFilePath,tuningFileName)
 tuning_df = pd.read_csv(tuningFullPath)
@@ -39,9 +39,10 @@ resultsDict = dict(freqs014=freqs014, freqs015=freqs015, freqs016=freqs015, boun
 ### Recalculate 'most_responsive_freq' as log2 distance to psycurve boundary ###
 for animal in freqBoundaryEachAnimal.keys():
     tuning_df.loc[tuning_df['animalName']==animal,'most_responsive_freq'] = np.log2(tuning_df.loc[tuning_df['animalName']==animal,'most_responsive_freq'])-np.log2(freqBoundaryEachAnimal[animal]) 
-    resultsDict['{}_left'.format(animal)] = tuning_df.loc[(tuning_df['animalName']==animal) & (tuning_df['stim_hemi']==1),'most_responsive_freq'].dropna().values
-    resultsDict['{}_right'.format(animal)] = tuning_df.loc[(tuning_df['animalName']==animal) & (tuning_df['stim_hemi']==2),'most_responsive_freq'].dropna().values
-
+    resultsDict['{}_left'.format(animal)] = tuning_df.loc[(tuning_df['animalName']==animal) & (tuning_df['stim_hemi']==1),'most_responsive_freq'].values
+    resultsDict['{}_left_sessions'.format(animal)] = tuning_df.loc[(tuning_df['animalName']==animal) & (tuning_df['stim_hemi']==1),'session'].values
+    resultsDict['{}_right'.format(animal)] = tuning_df.loc[(tuning_df['animalName']==animal) & (tuning_df['stim_hemi']==2),'most_responsive_freq'].values
+    resultsDict['{}_right_sessions'.format(animal)] = tuning_df.loc[(tuning_df['animalName']==animal) & (tuning_df['stim_hemi']==2),'session'].values
 
 ### Save data ###
 #outputDir = os.path.join(settings.FIGURESDATA, figparams.STUDY_NAME)

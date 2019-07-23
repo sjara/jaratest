@@ -95,7 +95,7 @@ for indline,oneline in enumerate(content):
            
 
 # --- Write allcell file's format ---
-outputFilePath = '/home/languo/src/jaratest/lan/Allcells/allcells_{0}_quality.py'.format(subject)
+outputFilePath = '/home/languo/src/jaratest/lan/Allcells/allcells_{0}.py'.format(subject)
 outputFile = open(outputFilePath, 'w')
  
 outputFile.write(formatAllcells)
