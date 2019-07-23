@@ -150,10 +150,10 @@ exp3.add_session('17-47-14', 'b', 'shortTuningCurve', 'am_tuning_curve') #slight
 exp3.add_site(3100, tetrodes=[1,2,3,4,6,7,8])
 exp3.add_session('18-07-54', None, 'noiseburst', 'am_tuning_curve') #by end of noiseburst, cells were gone
 
-exp3.add_site(3200, tetrodes=[2,3,4,5,6,7,8])
+#exp3.add_site(3200, tetrodes=[2,3,4,5,6,7,8])
 #No cells
 
-exp3.add_site(3300, tetrodes=[2,3,4,5,6,7,8])
+#exp3.add_site(3300, tetrodes=[2,3,4,5,6,7,8])
 #No cells
 
 exp3.add_site(3400, tetrodes=[2,3,4,5,6])

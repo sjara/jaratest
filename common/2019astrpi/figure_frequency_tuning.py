@@ -23,16 +23,18 @@ if sys.version_info[0] < 3:
 elif sys.version_info[0] >= 3:
     input_func = input
 
+
 def jitter(arr, frac):
     jitter = (np.random.random(len(arr))-0.5)*2*frac
     jitteredArr = arr + jitter
     return jitteredArr
 
+
 def medline(ax, yval, midline, width, color='k', linewidth=3):
     start = midline-(width/2)
     end = midline+(width/2)
     ax.plot([start, end], [yval, yval], color=color, lw=linewidth)
-#==========================parameters==========================================
+# ==========================parameters==========================================
 FIGNAME = 'figure_frequency_tuning'
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
@@ -43,15 +45,15 @@ db = celldatabase.load_hdf(pathtoDB)
 db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 
-#=======================================================================
+# =======================================================================
 
 exData = np.load(exampleDataPath)
 np.random.seed(8)
 
-D1 = db.query('laserpulse_pVal<0.05 and noiseburst_pVal<0.05') #bothsoundlaser
-nD1 = db.query('laserpulse_pVal>0.05 and noiseburst_pVal<0.05') #onlysoundnolaser
+D1 = db.query('laserpulse_pVal<0.05 and noiseburst_pVal<0.05')  # bothsoundlaser
+nD1 = db.query('laserpulse_pVal>0.05 and noiseburst_pVal<0.05')  # onlysoundnolaser
 
-PANELS = [1, 1, 1, 1, 1, 0, 1] # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = figparams.FIGURE_OUTPUT_DIR
@@ -65,7 +67,7 @@ fontSizeTicks = fontSizeLabels
 fontSizePanel = figparams.fontSizePanel*2
 fontSizeTitles = figparams.fontSizeTitles*2
 
-#Params for extraplots significance stars
+# Params for extraplots significance stars
 fontSizeNS = figparams.fontSizeNS
 fontSizeStars = figparams.fontSizeStars
 starHeightFactor = figparams.starHeightFactor
@@ -80,8 +82,8 @@ colornD1 = figparams.cp.TangoPalette['SkyBlue2']
 colorD1 = figparams.cp.TangoPalette['ScarletRed1']
 markerAlpha = 1
 
-#labelPosX = [0.05, 0.24, 0.45, 0.64, 0.835]   Old sizes from Allison. Updated to match Nick's
-#labelPosY = [0.92, 0.42]
+# labelPosX = [0.05, 0.24, 0.45, 0.64, 0.835]   Old sizes from Allison. Updated to match Nick's
+# labelPosY = [0.92, 0.42]
 labelPosX = [0.02, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
 labelPosY = [0.92, 0.42]    # Vert position for panel labels
 
@@ -92,9 +94,9 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-#Define the layout
-#gs = gridspec.GridSpec(2, 5)
-#gs.update(left=0.02, right=0.98, top=0.95, bottom=0.125, wspace=0.7, hspace=0.5)
+# Define the layout
+# gs = gridspec.GridSpec(2, 5)
+# gs.update(left=0.02, right=0.98, top=0.95, bottom=0.125, wspace=0.7, hspace=0.5)
 gs = gridspec.GridSpec(2, 7)
 gs.update(left=0.04, right=0.98, top=0.95, bottom=0.175, wspace=1.1, hspace=0.5)
 
@@ -146,7 +148,7 @@ plt.text(-0.3, 1.01, 'G', ha='center', va='center',
          transform=axMonotonicity.transAxes)
 
 messages = []
-#============================================================================
+# ============================================================================
 lowFreq = 2
 highFreq = 40
 nFreqLabels = 3
@@ -158,7 +160,7 @@ freqs = np.round(freqs, decimals=1)
 nIntenLabels = 3
 intensities = np.linspace(15, 70, nIntenLabels)
 intenTickLocations = np.linspace(0, 11, nIntenLabels)
-#===========================Create and save figures=============================
+# ===========================Create and save figures=============================
                         ##### TC Heatmap example 1 #####
 if PANELS[0]:#
     exampleKey = 'D1'
@@ -170,7 +172,6 @@ if PANELS[0]:#
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
-
 
     dOne.set_yticks(intenTickLocations)
     dOne.set_yticklabels(intensities[::-1])
@@ -198,7 +199,6 @@ if PANELS[1]:
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
-
 
     ndOne.set_yticks(intenTickLocations)
     ndOne.set_yticklabels(intensities[::-1])
@@ -270,11 +270,11 @@ if PANELS[3]:
     spacing = 0.05
 
     markers = extraplots.spread_plot(0, nD1PopStat, spacing)
-    plt.setp(markers, mec = colornD1, mfc = 'None')
+    plt.setp(markers, mec=colornD1, mfc='None')
     medline(axThresh, np.median(nD1PopStat), 0, 0.5)
 
     markers = extraplots.spread_plot(1, D1PopStat, spacing)
-    plt.setp(markers, mec = colorD1, mfc = 'None')
+    plt.setp(markers, mec=colorD1, mfc='None')
 
     medline(axThresh, np.median(D1PopStat), 1, 0.5)
     axThresh.set_ylabel('Threshold (dB SPL)', fontsize=fontSizeLabels)
@@ -287,7 +287,7 @@ if PANELS[3]:
 
     axThresh.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat)#Nick used stats.ranksum
+    zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat)  # Nick used stats.ranksum
 
     messages.append("{} p={}".format(popStatCol, pVal))
 
@@ -303,7 +303,7 @@ if PANELS[3]:
     yDataMax = max([max(nD1PopStat), max(D1PopStat)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    starString = None if pVal<0.05 else 'n.s.'
+    starString = None if pVal < 0.05 else 'n.s.'
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
@@ -317,10 +317,10 @@ if PANELS[4]:
     nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
 
     pos = jitter(np.ones(len(nD1PopStat))*0, 0.20)
-    axLatency.plot(pos, nD1PopStat*1000, 'o', mec = colornD1, mfc = 'None', alpha=markerAlpha)
+    axLatency.plot(pos, nD1PopStat*1000, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
     medline(axLatency, np.median(nD1PopStat)*1000, 0, 0.5)
     pos = jitter(np.ones(len(D1PopStat))*1, 0.20)
-    axLatency.plot(pos, D1PopStat*1000, 'o', mec = colorD1, mfc = 'None', alpha=markerAlpha)
+    axLatency.plot(pos, D1PopStat*1000, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
     medline(axLatency, np.median(D1PopStat)*1000, 1, 0.5)
     axLatency.set_ylabel('Latency (ms)', fontsize=fontSizeTicks)
     # tickLabels = ['ATh:Str', 'AC:Str']
