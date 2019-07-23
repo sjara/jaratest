@@ -24,7 +24,6 @@ from taskontrol.plugins import performancedynamicsplot
 
 from taskontrol.plugins import soundclient
 from taskontrol.plugins import speakercalibration
-from taskontrol.plugins import speakernoisecalibration as noisecalibration
 import time
 
 LONGTIME = 100
@@ -56,6 +55,9 @@ class Paradigm(templates.Paradigm2AFC):
                                                         ['sides_direct','direct','on_next_correct',
                                                          'only_if_correct','simulated'],
                                                          value=3,group='Choice parameters')
+        self.params['soundMode'] = paramgui.MenuParam('Sound presentation mode',
+                                                        ['full_duration', 'off_on_withdrawal'],
+                                                         value=0,group='Choice parameters')
         self.params['antibiasMode'] = paramgui.MenuParam('Anti-bias mode',
                                                         ['off','repeat_mistake'],
                                                         value=0,group='Choice parameters')
@@ -126,14 +128,8 @@ class Paradigm(templates.Paradigm2AFC):
                                                         units='dB', enabled=False, group='Current Trial')
         self.params['currentSNR'] = paramgui.NumericParam('Trial SNR',value=0.0,decimals=1,
                                                         units='dB', enabled=False, group='Current Trial')
-        self.params['laserTrialType'] = paramgui.MenuParam('Laser trial type', 
-                                                      ['no_laser','laser_onset1','laser_onset2',
-                                                       'laser_onset3'], 
-                                                      value=0, enabled=False, group='Current Trial')
         self.params['laserSide'] = paramgui.MenuParam('Laser side', ['none', 'left', 'right', 'bilateral'],
                                                       value=0, enabled=False, group='Current Trial')
-        self.params['laserOnset'] = paramgui.NumericParam('Trial laser onset',value=0.0,decimals=1,
-                                                        units='s', enabled=False, group='Current Trial')
         trialParams = self.params.layout_group('Current Trial')
 
         self.params['nValid'] = paramgui.NumericParam('N valid',value=0,
@@ -145,18 +141,14 @@ class Paradigm(templates.Paradigm2AFC):
         reportParams = self.params.layout_group('Report')
 
         # Photostim params
-        self.params['laserDuration'] = paramgui.NumericParam('Laser duration',value=0.5,
+        self.params['laserMode'] = paramgui.MenuParam('Laser Mode',
+                                                        ['none','random'],
+                                                        value=0,group='Laser Stimulation')
+        self.params['laserOnset'] = paramgui.NumericParam('Laser onset (from sound)',value=0.0,
                                                              units='s',group='Laser Stimulation')
-        self.params['laserOnsetFromSoundOnset1'] = paramgui.NumericParam('Laser onset 1 (from sound)',value=-0.1,
+        self.params['laserOffset'] = paramgui.NumericParam('Laser offset (from sound)',value=0.1,
                                                              units='s',group='Laser Stimulation')
-        self.params['laserOnsetFromSoundOnset2'] = paramgui.NumericParam('Laser onset 2 (from sound)',value=0,
-                                                             units='s',group='Laser Stimulation')
-        self.params['laserOnsetFromSoundOnset3'] = paramgui.NumericParam('Laser onset 3 (from sound)',value=0.1,
-                                                             units='s',group='Laser Stimulation')
-        self.params['nOnsetsToUse'] = paramgui.MenuParam('Number of onsets to use', 
-                                                         ['0','1','2','3'],
-                                                         value=1, group='Laser Stimulation')
-        # -- Percent trials each laser type. Remaining trials will be no laser.
+        # -- Percent trials with laser. Remaining trials will be no laser.
         self.params['fractionTrialsLaser'] = paramgui.NumericParam('Fraction trials with laser',value=0.25,
                                                             units='',group='Laser Stimulation')
 
@@ -265,18 +257,18 @@ class Paradigm(templates.Paradigm2AFC):
         #self.prepare_next_trial(0)
 
     def prepare_target_sound(self, band, noiseInt, toneInt):
-        spkCal = speakercalibration.Calibration(rigsettings.SPEAKER_CALIBRATION)
+        spkCal = speakercalibration.Calibration(rigsettings.SPEAKER_CALIBRATION_CHORD)
         # FIXME: currently I am averaging calibration from both speakers (not good)
         stimDur = self.params['targetDuration'].get_value()
         modRate = self.params['modRate'].get_value()
-        noiseCal = noisecalibration.Calibration(rigsettings.NOISE_CALIBRATION)
+        noiseCal = speakercalibration.NoiseCalibration(rigsettings.SPEAKER_CALIBRATION_NOISE)
         toneFreq = self.params['toneFreq'].get_value()
-        noiseAmp = noiseCal.find_amplitude(1, noiseInt).mean()
+        noiseAmp = noiseCal.find_amplitude(noiseInt, type='narrowband')
         if np.isinf(band):
             s1 = {'type':'AM', 'modFrequency': modRate, 'duration':stimDur, 'amplitude': noiseAmp}
         else:
             s1 = {'type':'band_AM', 'modRate': modRate, 'frequency': toneFreq, 'octaves': band, 'duration': stimDur, 'amplitude': noiseAmp}
-        toneAmp = spkCal.find_amplitude(toneFreq, noiseInt+toneInt).mean()
+        toneAmp = spkCal.find_amplitude(toneFreq, noiseInt+toneInt)
         s2 = {'type':'tone', 'frequency': toneFreq, 'duration':stimDur, 'amplitude': toneAmp}
         self.soundClient.set_sound(1,s1)
         self.soundClient.set_sound(2,s2)
@@ -285,7 +277,6 @@ class Paradigm(templates.Paradigm2AFC):
     def prepare_next_trial(self, nextTrial):
         import time
         TicTime = time.time()
-        laserDuration = self.params['laserDuration'].get_value()
 
         # -- Calculate results from last trial (update outcome, choice, etc) --
         if nextTrial>0:
@@ -364,8 +355,6 @@ class Paradigm(templates.Paradigm2AFC):
 
     def set_state_matrix(self,nextCorrectChoice):
         self.sm.reset_transitions()
-        laserDuration = self.params['laserDuration'].get_value()
-        self.sm.set_extratimer('laserTimer', duration=laserDuration)
         noiseID = 1  # The appropriate sound has already been prepared and sent to server with ID=1
         toneID = 2
         targetDuration = self.params['targetDuration'].get_value()
@@ -404,53 +393,47 @@ class Paradigm(templates.Paradigm2AFC):
         punishTimeError = self.params['punishTimeError'].get_value()
         
         # -- Define the type of trial to present --
-        nOnsetsToUse = int(self.params['nOnsetsToUse'].get_string())
-        if nOnsetsToUse != 0:
-            fractionTrialsLaser = self.params['fractionTrialsLaser'].get_value()
-            fractionTrialsEachLaserOnset = np.tile(1.0*fractionTrialsLaser/nOnsetsToUse,nOnsetsToUse)
-            fractionNoLaser = 1-fractionTrialsLaser
-            fractionTrials = np.append(fractionNoLaser,fractionTrialsEachLaserOnset)
-            trialTypeInd = np.random.choice(nOnsetsToUse+1, size=1, p=fractionTrials)[0]
-            self.params['laserTrialType'].set_value(trialTypeInd)
-        else:
-            trialTypeInd = 0
-        if trialTypeInd>0:
-            stimMode = self.params['stimMode'].get_string()
-            if stimMode == 'unilateral_left':
-                laserOutput = ['stim1']
-                self.params['laserSide'].set_string('left')
-            elif stimMode == 'unilateral_right':
-                laserOutput = ['stim2']
-                self.params['laserSide'].set_string('right')
-            elif stimMode == 'bilateral':
-                laserOutput = ['stim1', 'stim2']
-                self.params['laserSide'].set_string('bilateral')
-            elif stimMode == 'mixed_unilateral':
-                possOutputs = [['stim1'], ['stim2']]
-                possSide = ['left', 'right']
-                sideThisTrial = np.random.choice(2)
-                laserOutput = possOutputs[sideThisTrial]
-                self.params['laserSide'].set_string(possSide[sideThisTrial])
-            elif stimMode == 'mixed_all':
-                possOutputs = [['stim1'], ['stim2'], ['stim1', 'stim2']]
-                possSide = ['left', 'right', 'bilateral']
-                sideThisTrial = np.random.choice(3)
-                laserOutput = possOutputs[sideThisTrial]
-                self.params['laserSide'].set_string(possSide[sideThisTrial])
-        else:
+        laserMode = self.params['laserMode'].get_string()
+        
+        if laserMode=='none':
             laserOutput = []
             self.params['laserSide'].set_string('none')
-            
-        possibleLaserOnsets = [np.nan,
-                               self.params['laserOnsetFromSoundOnset1'].get_value(),
-                               self.params['laserOnsetFromSoundOnset2'].get_value(),
-                               self.params['laserOnsetFromSoundOnset3'].get_value()]
-        laserOnset = possibleLaserOnsets[trialTypeInd]  # Laser onset w.r.t sound onset
-        self.params['laserOnset'].set_value(laserOnset)
+        else:   
+            fractionTrialsLaser = self.params['fractionTrialsLaser'].get_value()
+            #print fractionTrialsEachLaserOnset
+            fractionNoLaser = 1-fractionTrialsLaser
+            fractionTrials = np.array([fractionNoLaser,fractionTrialsLaser])
+            trialTypeInd = np.random.choice(2, size=1, p=fractionTrials)[0] 
+            stimMode = self.params['stimMode'].get_string()
+            if trialTypeInd>0:
+                if stimMode == 'unilateral_left':
+                    laserOutput = ['stim1']
+                    self.params['laserSide'].set_string('left')
+                elif stimMode == 'unilateral_right':
+                    laserOutput = ['stim2']
+                    self.params['laserSide'].set_string('right')
+                elif stimMode == 'bilateral':
+                    laserOutput = ['stim1', 'stim2']
+                    self.params['laserSide'].set_string('bilateral')
+                elif stimMode == 'mixed_unilateral':
+                    possOutputs = [['stim1'], ['stim2']]
+                    possSide = ['left', 'right']
+                    sideThisTrial = np.random.choice(2)
+                    laserOutput = possOutputs[sideThisTrial]
+                    self.params['laserSide'].set_string(possSide[sideThisTrial])
+                elif stimMode == 'mixed_all':
+                    possOutputs = [['stim1'], ['stim2'], ['stim1', 'stim2']]
+                    possSide = ['left', 'right', 'bilateral']
+                    sideThisTrial = np.random.choice(3)
+                    laserOutput = possOutputs[sideThisTrial]
+                    self.params['laserSide'].set_string(possSide[sideThisTrial])
+            else:
+                laserOutput = []
+                self.params['laserSide'].set_string('none')
 
         # -- Set state matrix --
+        soundMode = self.params['soundMode'].get_string()
         outcomeMode = self.params['outcomeMode'].get_string()
-        laserMode = self.params['laserTrialType'].get_string()
         if outcomeMode=='simulated':
             stimOutput.append(ledOutput)
             self.sm.add_state(name='startTrial', statetimer=0,
@@ -501,11 +484,10 @@ class Paradigm(templates.Paradigm2AFC):
                               outputsOn=stimOutput,serialOut=noiseID,
                               outputsOff=trialStartOutput)
             self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
-                              transitions={'Tup':'reward'}, serialOut=toneID)
+                                  transitions={'Tup':'reward'}, serialOut=toneID)
             self.sm.add_state(name='reward', statetimer=rewardDuration,
                               transitions={'Tup':'stopReward'},
-                              outputsOn=[rewardOutput],
-                              outputsOff=stimOutput)
+                              outputsOn=[rewardOutput])
             self.sm.add_state(name='stopReward', statetimer=0,
                               transitions={'Tup':'ready_next_trial'},
                               outputsOff=[rewardOutput])
@@ -522,15 +504,21 @@ class Paradigm(templates.Paradigm2AFC):
                               outputsOn=stimOutput,serialOut=noiseID,
                               outputsOff=trialStartOutput)
             self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
-                              transitions={'Cout':'waitForSidePoke', 'Tup':'waitForSidePoke'},serialOut=toneID)
+                              transitions={'Cout':'stopStimulus', 'Tup':'stopStimulus'},serialOut=toneID)
+            if soundMode == 'full_duration':
+                self.sm.add_state(name='stopStimulus', statetimer=0,
+                                  transitions={'Tup':'waitForSidePoke'}, 
+                                  outputsOff=stimOutput)
+            elif soundMode == 'off_on_withdrawal':
+                self.sm.add_state(name='stopStimulus', statetimer=0,
+                                  transitions={'Tup':'waitForSidePoke'}, 
+                                  outputsOff=stimOutput, serialOut=soundclient.STOP_ALL_SOUNDS)
             self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
                               transitions={'Lin':'choiceLeft','Rin':'choiceRight',
-                                           'Tup':'noChoice'},
-                              outputsOff=stimOutput)
+                                           'Tup':'noChoice'})
             self.sm.add_state(name='keepWaitForSide', statetimer=rewardAvailability,
                               transitions={'Lin':'choiceLeft','Rin':'choiceRight',
-                                           'Tup':'noChoice'},
-                              outputsOff=stimOutput)
+                                           'Tup':'noChoice'})
             if correctSidePort=='Lin':
                 self.sm.add_state(name='choiceLeft', statetimer=0,
                                   transitions={'Tup':'reward'})
@@ -558,71 +546,70 @@ class Paradigm(templates.Paradigm2AFC):
                               outputsOn=trialStartOutput)
             self.sm.add_state(name='waitForCenterPoke', statetimer=LONGTIME,
                               transitions={'Cin':'delayPeriod'}, outputsOff=laserOutput)
-            if laserMode == 'no_laser':
+            if laserMode == 'none':
                 self.sm.add_state(name='delayPeriod', statetimer=delayToTarget,
                                   transitions={'Tup':'playNoiseStimulus','Cout':'waitForCenterPoke'})
-                # Note that 'delayPeriod' may happen several times in a trial, so
-                # trialStartOutput off here would only meaningful for the first time in the trial.
                 self.sm.add_state(name='playNoiseStimulus', statetimer=0,
                                   transitions={'Tup':'playToneStimulus'},
                                   outputsOn=stimOutput, serialOut=noiseID,
                                   outputsOff=trialStartOutput)
                 self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
-                                  transitions={'Cout':'waitForSidePoke', 'Tup':'waitForSidePoke'}, serialOut=toneID)
-                # NOTE: The idea of outputsOff here (in other paradigms) was to indicate the end
-                #       of the stimulus. But in this paradigm the stimulus will continue to play.
+                                  transitions={'Cout':'stopStimulus', 'Tup':'stopStimulus'}, serialOut=toneID)
+                if soundMode == 'full_duration':
+                    self.sm.add_state(name='stopStimulus', statetimer=0,
+                                  transitions={'Tup':'waitForSidePoke'}, 
+                                  outputsOff=stimOutput)
+                elif soundMode == 'off_on_withdrawal':
+                    self.sm.add_state(name='stopStimulus', statetimer=0,
+                                  transitions={'Tup':'waitForSidePoke'}, 
+                                  outputsOff=stimOutput, serialOut=soundclient.STOP_ALL_SOUNDS)
                 self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
                                   transitions={'Lin':'choiceLeft','Rin':'choiceRight',
-                                               'Tup':'noChoice'},
-                                  outputsOff=stimOutput)
+                                               'Tup':'noChoice'})
             else:
+                laserOnset = self.params['laserOnset'].get_value()
+                laserOffset = self.params['laserOffset'].get_value()
                 if laserOnset > 0:
                     self.sm.add_state(name='delayPeriod', statetimer=delayToTarget,
                                       transitions={'Tup':'playNoiseStimulus','Cout':'waitForCenterPoke'})
-                    # Using an extratimer for laser duration to allow state transitions while laser is on
-                    self.sm.add_state(name='laserOn', statetimer=0, transitions={'Tup':'playToneStimulus'},
-                                      outputsOn=laserOutput, trigger=['laserTimer'])
                     self.sm.add_state(name='playNoiseStimulus', statetimer=0,
-                                      transitions={'Tup':'playToneStimulusBeforeLaser'},
+                                      transitions={'Tup':'playToneStimulus'},
                                       outputsOn=stimOutput, serialOut=noiseID,
                                       outputsOff=trialStartOutput)
+                    #invalid trial if mouse withdraws before laser comes on
                     self.sm.add_state(name='playToneStimulusBeforeLaser', statetimer=laserOnset,
-                                      transitions={'Tup':'laserOn'}, 
-                                      serialOut=toneID)
+                                      transitions={'Cout':'waitForCenterPoke', 'Tup':'laserOn'})
+                    self.sm.add_state(name='laserOn', statetimer=0, transitions={'Tup':'playToneStimulus'},
+                                      outputsOn=laserOutput)
                     self.sm.add_state(name='playToneStimulus', statetimer=targetDuration-laserOnset,
-                                      transitions={'Lin':'choiceLeft','Rin':'choiceRight','Cout':'waitForSidePoke', 'Tup':'waitForSidePoke', 'laserTimer':'laserOff'})
-                    self.sm.add_state(name='laserOff', statetimer=0, transitions={'Tup':'waitForSidePoke'},
-                                      outputsOff=laserOutput)
-                    self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
-                                      transitions={'Lin':'choiceLeft','Rin':'choiceRight', 'laserTimer':'laserOff',
-                                                   'Tup':'noChoice'})
+                                      transitions={'Cout':'stopStimulus', 'Tup':'stopStimulus'})
                 elif laserOnset <= 0:
                     self.sm.add_state(name='delayPeriod', statetimer=delayToTarget+laserOnset,
                                       transitions={'Tup':'laserOn','Cout':'waitForCenterPoke'})
-                    if laserOnset+laserDuration <= 0:
-                        # Can use just state transitions if entire laser duration is before sound, 
-                        # but triggering extratimer anyway to make sure default extratimer doesn't mess stuff up
-                        self.sm.add_state(name='laserOn', statetimer=laserDuration, 
-                                      transitions={'Tup':'delayPeriodAfterLaser','Cout':'waitForCenterPoke'},
-                                      outputsOn=laserOutput, trigger=['laserTimer'])
-                        self.sm.add_state(name='delayPeriodAfterLaser', statetimer=-laserOnset-laserDuration,
-                                      transitions={'Tup':'playNoiseStimulus','Cout':'waitForCenterPoke'},
-                                      outputsOff=laserOutput)
-                    else: 
-                        self.sm.add_state(name='laserOn', statetimer=0, transitions={'Tup':'delayPeriodAfterLaser'},
-                                      outputsOn=laserOutput, trigger=['laserTimer'])
-                        self.sm.add_state(name='delayPeriodAfterLaser', statetimer=-laserOnset,
+                    self.sm.add_state(name='laserOn', statetimer=0, transitions={'Tup':'delayPeriodWithLaser'},
+                                      outputsOn=laserOutput)
+                    self.sm.add_state(name='delayPeriodWithLaser', statetimer=-laserOnset,
                                       transitions={'Tup':'playNoiseStimulus','Cout':'waitForCenterPoke'})
                     self.sm.add_state(name='playNoiseStimulus', statetimer=0,
                                       transitions={'Tup':'playToneStimulus'},
                                       outputsOn=stimOutput, serialOut=noiseID,
                                       outputsOff=trialStartOutput)
                     self.sm.add_state(name='playToneStimulus', statetimer=targetDuration,
-                                      transitions={'Cout':'waitForSidePoke', 'Tup':'waitForSidePoke', 'laserTimer':'laserOff'}, 
+                                      transitions={'Cout':'stopStimulus', 'Tup':'stopStimulus'}, 
                                       serialOut=toneID)
-                    self.sm.add_state(name='laserOff', statetimer=0, transitions={'Tup':'waitForSidePoke'},
+                if soundMode == 'full_duration':
+                    self.sm.add_state(name='stopStimulus', statetimer=0,
+                                  transitions={'Tup':'waitForSidePokeWithLaser'}, 
+                                  outputsOff=stimOutput)
+                elif soundMode == 'off_on_withdrawal':
+                    self.sm.add_state(name='stopStimulus', statetimer=0,
+                                  transitions={'Tup':'waitForSidePokeWithLaser'}, 
+                                  outputsOff=stimOutput, serialOut=soundclient.STOP_ALL_SOUNDS)
+                self.sm.add_state(name='waitForSidePokeWithLaser', statetimer=laserOffset,
+                                      transitions={'Lin':'choiceLeft','Rin':'choiceRight', 'Tup':'laserOff'})
+                self.sm.add_state(name='laserOff', statetimer=0, transitions={'Tup':'waitForSidePoke'},
                                       outputsOff=laserOutput)
-                    self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability,
+                self.sm.add_state(name='waitForSidePoke', statetimer=rewardAvailability-laserOffset,
                                       transitions={'Lin':'choiceLeft','Rin':'choiceRight', 'laserTimer':'laserOff',
                                                    'Tup':'noChoice'})
             if correctSidePort=='Lin':
@@ -674,6 +661,7 @@ class Paradigm(templates.Paradigm2AFC):
         # ===== Calculate times of events =====
         # -- Check if it's an aborted trial --
         lastEvent = eventsThisTrial[-1,:]
+        print lastEvent
         if lastEvent[1]==-1 and lastEvent[2]==0:
             self.results['timeTarget'][trialIndex] = np.nan
             self.results['timeCenterIn'][trialIndex] = np.nan
