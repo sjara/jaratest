@@ -662,7 +662,6 @@ class Paradigm(templates.Paradigm2AFC):
         # -- Check if it's an aborted trial --
         lastEvent = eventsThisTrial[-1,:]
         secondToLastEvent = eventsThisTrial[-2,:] #sometimes extratimer is the last event so we need to check this too
-        #print lastEvent
         if (lastEvent[1]==-1 and lastEvent[2]==0) or (lastEvent[1]==7 and secondToLastEvent[1]==-1 and secondToLastEvent[2]==0):
             self.results['timeTarget'][trialIndex] = np.nan
             self.results['timeCenterIn'][trialIndex] = np.nan
@@ -718,8 +717,7 @@ class Paradigm(templates.Paradigm2AFC):
 
         # ===== Calculate choice and outcome =====
         # -- Check if it's an aborted trial --
-        lastEvent = eventsThisTrial[-1,:]
-        if lastEvent[1]==-1 and lastEvent[2]==0:
+        if (lastEvent[1]==-1 and lastEvent[2]==0) or (lastEvent[1]==7 and secondToLastEvent[1]==-1 and secondToLastEvent[2]==0):
             self.results['outcome'][trialIndex] = self.results.labels['outcome']['aborted']
             self.results['choice'][trialIndex] = self.results.labels['choice']['none']
         # -- Otherwise evaluate 'choice' and 'outcome' --
