@@ -33,11 +33,11 @@ exp0.add_session('15-16-41', None, 'noisebursts', 'am_tuning_curve')
 exp0.add_site(3000, tetrodes=[1,2,3,4,6])
 exp0.add_session('15-34-23', None, 'noisebursts', 'am_tuning_curve')
 
-exp0.add_site(3100, tetrodes=[1,2,3,4,6])
+exp0.add_site(3100, tetrodes=[1])
 exp0.add_session('16-02-51', None, 'noisebursts', 'am_tuning_curve')
 exp0.add_session('16-07-29', None, 'laserpulse', 'am_tuning_curve')
 
-exp0.add_site(3200, tetrodes=[1,2,3,4,6])
+exp0.add_site(3200, tetrodes=[1,2,3])
 exp0.add_session('16-21-12', None, 'noisebursts', 'am_tuning_curve')
 exp0.add_session('16-23-13', None, 'laserpulse', 'am_tuning_curve')
 
@@ -89,7 +89,7 @@ exp1.add_session('15-57-39', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('15-59-00', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('16-01-57', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('16-03-39', 'g', 'tuningTest', 'am_tuning_curve')
-exp1.add_session('16-11-06', 'h', 'am', 'am_tuning_curve')
+# exp1.add_session('16-11-06', 'h', 'am', 'am_tuning_curve') Cant find file. Must have not saved
 
 exp1.maxDepth = 3000
 

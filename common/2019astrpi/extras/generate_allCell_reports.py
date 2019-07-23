@@ -48,29 +48,26 @@ countreport = 0 # count the number of reports generated
 #---------------------------------------------------------------------------
 fig = plt.gcf()
 fig.clf()
-<<<<<<< HEAD
+
 #subject = raw_input('what is the name of subject? ')
 #pathtoDB = os.path.join(pathtosubject,subject)
 # pathtosubject = '/home/jarauser/src/jaratest/allison/d1pi032'
 # pathtoDB = os.path.join(pathtosubject,'celldb.h5')
 # celldb = pd.read_hdf(pathtoDB)
-subject = ['d1pi032']#studyparams.SINGLE_MOUSE
+subject = ['d1pi036']#studyparams.SINGLE_MOUSE
 studyname = '2019astrpi'
 celldb = celldatabase.generate_cell_database_from_subjects(subject)
 outputDir = '/mnt/jarahubdata/reports/2019astrpi'#os.path.join(settings.FIGURES_DATA_PATH, studyname, 'output')#figparams.FIGURE_OUTPUT_DIR
 
 answer = raw_input('if there\'s any duplicated sessions, do you want to use the first one[0] \
 or the last one[1]? If you don\'t care, put any number ')
-=======
->>>>>>> 158cb6caf6de20657935af2fa1c15fda443eecb1
-
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '_'.join(d1mice) + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = pd.read_hdf(pathtoDB)
 # outputDir = figparams.FIGURE_OUTPUT_DIR
-outputDir = '/var/tmp/2019astrpi_reports'
+outputDir = '/var/tmp/2019astrpi_reports'  # FIXME: hard coded output
 # outputDir = '/mnt/jarahubdata/reports/2019astrpi'
 # spikesorting.rescue_clusters(db,isiThreshold=0.02)
 dbpre = db.query("isiViolations<0.02")

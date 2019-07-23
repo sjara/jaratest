@@ -37,7 +37,7 @@ exp0.add_session('15-02-13', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('15-06-34', None, 'lasertrain', 'am_tuning_curve')
 exp0.add_session('15-11-01', None, 'laserpulse', 'am_tuning_curve')
 exp0.add_session('15-12-34', 'd', 'tuningTest', 'am_tuning_curve')
-exp0.add_session('15-20-20', 'e', 'tuningCurve(tc)', 'am_tuning_curve')
+exp0.add_session('15-20-26', 'e', 'tuningCurve(tc)', 'am_tuning_curve')
 exp0.add_session('15-50-20', 'f', 'AM', 'am_tuning_curve')
 #Sound and laser response on 2 and 8
 
@@ -54,23 +54,23 @@ exp0.add_session('17-31-50', 'i', 'AM', 'am_tuning_curve')
 exp0.maxDepth = 3100
 
 
-exp1 = celldatabase.Experiment(subject, '2019-04-18', 'right_AudStr', info=['FacingPosterior', 'middleDiI'])
-experiments.append(exp1)
-#Shank 4 is now missing
-
-#50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
-#Used left speaker;laser (445 nm) set to 2.5 mW; Probe CEC2; Rig 2
-
-exp1.laserCalibration = {
-    '0.5':1.40,
-    '1.0':1.87,
-    '1.5':2.45,
-    '2.0':3.00,
-    '2.5':3.60,
-    '3.0':4.45,
-    '3.5':5.40,
-    '4.0':6.55
-}
+# exp1 = celldatabase.Experiment(subject, '2019-04-18', 'right_AudStr', info=['FacingPosterior', 'middleDiI'])
+# experiments.append(exp1)
+# #Shank 4 is now missing
+#
+# #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
+# #Used left speaker;laser (445 nm) set to 2.5 mW; Probe CEC2; Rig 2
+#
+# exp1.laserCalibration = {
+#     '0.5':1.40,
+#     '1.0':1.87,
+#     '1.5':2.45,
+#     '2.0':3.00,
+#     '2.5':3.60,
+#     '3.0':4.45,
+#     '3.5':5.40,
+#     '4.0':6.55
+# }
 
 #Noticed saline was emptying very quickly. Possible hole has formed in glue of right well
 
@@ -95,7 +95,7 @@ exp2.laserCalibration = {
 
 
 #Tetrode 5 has reference; threshold set to 55mV
-exp2.add_site(2800, tetrodes=[1,3,4,6])
+#exp2.add_site(2800, tetrodes=[1,3,4,6])
 #exp2.add_session('12-31-54', None, 'noiseburst', 'am_tuning_curve')
 
 #Tetrode 3 has reference
