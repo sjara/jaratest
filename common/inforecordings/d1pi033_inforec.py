@@ -28,7 +28,7 @@ exp0.add_session('13-45-51', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('13-48-40', None, 'lasertrain', 'am_tuning_curve')
 exp0.add_session('13-50-39', None, 'laserpulse', 'am_tuning_curve')
 exp0.add_session('13-52-22', 'a', 'tuningTest', 'am_tuning_curve')
-exp0.add_session('14-00-16', 'b', 'tuningCurve(tc)', 'am_tuning_curve')
+exp0.add_session('14-00-16', 'b', 'tuningCurve', 'am_tuning_curve')
 exp0.add_session('14-35-58', 'c', 'AM', 'am_tuning_curve')
 #Sound response and tuning, but no real laser response
 
@@ -37,7 +37,7 @@ exp0.add_session('15-02-13', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('15-06-34', None, 'lasertrain', 'am_tuning_curve')
 exp0.add_session('15-11-01', None, 'laserpulse', 'am_tuning_curve')
 exp0.add_session('15-12-34', 'd', 'tuningTest', 'am_tuning_curve')
-exp0.add_session('15-20-26', 'e', 'tuningCurve(tc)', 'am_tuning_curve')
+exp0.add_session('15-20-26', 'e', 'tuningCurve', 'am_tuning_curve')
 exp0.add_session('15-50-20', 'f', 'AM', 'am_tuning_curve')
 #Sound and laser response on 2 and 8
 
@@ -46,7 +46,7 @@ exp0.add_session('16-43-34', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('16-46-00', None, 'lasertrain', 'am_tuning_curve')
 exp0.add_session('16-51-36', None, 'laserpulse', 'am_tuning_curve')
 exp0.add_session('16-55-47', 'g', 'tuningTest', 'am_tuning_curve')
-exp0.add_session('17-02-24', 'h', 'tuningCurve(tc)', 'am_tuning_curve')
+exp0.add_session('17-02-24', 'h', 'tuningCurve', 'am_tuning_curve')
 exp0.add_session('17-31-50', 'i', 'AM', 'am_tuning_curve')
 #Sound and laser responsive, though laser may have been phtoelectric effect
 
@@ -104,14 +104,14 @@ exp2.add_session('12-45-28', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('12-48-03', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('12-49-46', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('12-51-03', 'a', 'tuningTest', 'am_tuning_curve')
-exp2.add_session('13-40-24', 'c', 'tuningCurve(tc)', 'am_tuning_curve')
+exp2.add_session('13-40-24', 'c', 'tuningCurve', 'am_tuning_curve')
 
 exp2.add_site(3100, tetrodes=[5,6])
 exp2.add_session('14-27-10', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('14-30-32', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('14-33-41', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('14-35-23', 'd', 'tuningTest', 'am_tuning_curve')
-exp2.add_session('14-42-04', 'e', 'tuningCurve(tc)', 'am_tuning_curve')
+exp2.add_session('14-42-04', 'e', 'tuningCurve', 'am_tuning_curve')
 exp2.add_session('15-17-52', 'f', 'AM', 'am_tuning_curve')
 
 exp2.maxDepth = 3100
