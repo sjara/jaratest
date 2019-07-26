@@ -14,14 +14,13 @@ from jaratoolbox import spikesorting
 
 import database_photoidentification
 import database_inactivation
-reload(database_inactivation)
 import studyparams
 
 # -- functions assisting in clustering and cluster rescue --
 def cluster_spike_data(subjects):
     for subject in subjects:
-        inforec = '/home/jarauser/src/jaratest/common/inforecordings/{0}_inforec.py'.format(subject)
-        ci = spikesorting.ClusterInforec(inforec)
+        inforecPath = os.path.join(settings.INFOREC_PATH,'{0}_inforec.py'.format(subject))
+        ci = spikesorting.ClusterInforec(inforecPath)
         ci.process_all_experiments()
         
 def cluster_rescue(db, isiThreshold):
@@ -47,8 +46,8 @@ if dbsToGenerate[0]:
     basicDB = cluster_rescue(basicDB, isiThreshold=studyparams.ISI_THRESHOLD)
     
     # -- creates and saves a database for photoidentified cells, computing first the base stats and then the indices --
-    #photoDBFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'photoidentification_cells.h5')
-    photoDBFilename = '/tmp/photoidentification_cells.h5'
+    photoDBFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'photoidentification_cells.h5')
+    #photoDBFilename = '/tmp/photoidentification_cells.h5'
     photoIDDB = database_photoidentification.photoID_base_stats(basicDB, filename = photoDBFilename)
     photoIDDB = database_photoidentification.photoID_indices(photoIDDB, filename = photoDBFilename)
     
@@ -62,8 +61,8 @@ if dbsToGenerate[1]:
     #cluster_spike_data(archTmice)
     
     # -- creates and saves a database for inactivation --
-    #inactivationDBFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'inactivation_cells.h5')
-    inactivationDBFilename = '/tmp/inactivation_cells.h5'
+    inactivationDBFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'inactivation_cells.h5')
+    #inactivationDBFilename = '/tmp/inactivation_cells.h5'
     basicDB = celldatabase.generate_cell_database_from_subjects(archTmice)
     inactivationDB = database_inactivation.inactivation_base_stats(basicDB, filename = inactivationDBFilename)
     inactivationDB = database_inactivation.inactivation_indices(inactivationDB, filename = inactivationDBFilename)
