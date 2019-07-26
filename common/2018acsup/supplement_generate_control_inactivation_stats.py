@@ -8,14 +8,9 @@ Inputs generated:
 '''
 
 import os
-import pandas as pd
 import numpy as np
-import scipy.stats
 
 from jaratoolbox import celldatabase
-from jaratoolbox import spikesanalysis
-from jaratoolbox import ephyscore
-from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import figparams
@@ -29,8 +24,8 @@ figName = 'supplement_figure_inhibitory_cell_inactivation_control'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
 #dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
 
-PV_ARCHT_MICE = subjects_info.PV_ARCHT_MICE
-SOM_ARCHT_MICE = subjects_info.SOM_ARCHT_MICE
+PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
+SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 
 # -- find PV and SOM-inactivated cells that are sound responsive
 bestCells = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
