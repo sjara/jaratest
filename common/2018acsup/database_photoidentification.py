@@ -6,7 +6,6 @@ import os
 import pandas as pd
 import numpy as np
 import time
-import nrrd
 import imp
 
 from jaratoolbox import celldatabase
@@ -414,6 +413,7 @@ def photoDB_cell_locations(db, filename = ''):
     This function computes the depths and cortical locations of all cells with suppression indices computed.
     This function should be run in a virtual environment because the allensdk has weird dependencies that we don't want tainting our computers.
     '''
+    import nrrd
     from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
     
     # lapPath = os.path.join(settings.ATLAS_PATH, 'AllenCCF_25/coronal_laplacian_25.nrrd')
