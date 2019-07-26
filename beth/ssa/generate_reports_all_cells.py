@@ -18,23 +18,28 @@ import studyparams
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
 dbFilename = os.path.join(dbPath,'celldb_{}.h5'.format(studyparams.STUDY_NAME))
 
+figFormat = 'png'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'reports')
+
 # -- Load the database of cells --
 celldb = celldatabase.load_hdf(dbFilename)
 number_of_clusters = len(celldb) - 1
 
 # -- Loop through cells and generate reports --
-#for indRow,dbRow in celldb.iterrows():
-for indRow,dbRow in celldb[:50].iterrows():
-    ax = plt.subplot2grid((3,3), (0,0))
-    plt.suptitle('{}_{}_{}um_T{}_c{}'.format(dbRow['subject'], dbRow['date'],
-            dbRow['depth'], dbRow['tetrode'], dbRow['cluster']))
+for indRow,dbRow in celldb.iterrows():
+#for indRow,dbRow in celldb[150:151].iterrows():
+    ax = plt.subplot2grid((3,3), (0,0)) # Subplots
+    plt.suptitle('{}_{}_{:.0f}um_T{}_c{}'.format(dbRow['subject'], dbRow['date'],
+            dbRow['depth'], dbRow['tetrode'], dbRow['cluster'])) # Subplot title
 
     '''
     White noise raster plot --------------------------------------------------------
     '''
     oneCell = ephyscore.Cell(dbRow)
     try:
-        ephysData, bdata = oneCell.load('noiseburst')
+        ephysData, bdata = oneCell.load('noiseburst') # Loads the spikes, events, and behavior
+                # data for a single session. Loads the LAST recorded session of the type that
+                # was recorded from the cell.
     except ValueError as verror:
         print(verror)
         continue
@@ -87,145 +92,184 @@ for indRow,dbRow in celldb[:50].iterrows():
     '''
     if oneCell.get_session_inds('standard') != []:
         try:
-            ephysData, bdata = oneCell.load('standard')
+            ephysDataStd, bdataStd = oneCell.load('standard')
         except ValueError as verror:
             print(verror)
             continue
         #ephysData, bdata = oneCell.load('standard')
-        spikeTimes = ephysData['spikeTimes']
-        eventOnsetTimes = ephysData['events']['stimOn']
-        if len(eventOnsetTimes)==len(bdata['currentFreq'])+1:
+        spikeTimesStd = ephysDataStd['spikeTimes']
+        eventOnsetTimesStd = ephysDataStd['events']['stimOn']
+        if len(eventOnsetTimesStd)==len(bdataStd['currentFreq'])+1:
             print('Removing last trial from standard ephys data.')
-            eventOnsetTimes = eventOnsetTimes[:-1]
-        (spikeTimesFromEventOnsetStandard,trialIndexForEachSpikeStandard,indexLimitsEachTrialStandard) = \
-                spikesanalysis.eventlocked_spiketimes(spikeTimes, eventOnsetTimes, timeRange)
+            eventOnsetTimesStd = eventOnsetTimesStd[:-1]
+        (spikeTimesFromEventOnsetStd,trialIndexForEachSpikeStd,indexLimitsEachTrialStd) = \
+                spikesanalysis.eventlocked_spiketimes(spikeTimesStd, eventOnsetTimesStd, timeRange)
 
-        frequenciesEachTrialStandard = bdata['currentFreq']
-        numberOfTrialsStandard = len(frequenciesEachTrialStandard)
-        arrayOfFrequenciesStandard = np.unique(bdata['currentFreq'])
-        labelsForYaxis = ['%.0f' % f for f in arrayOfFrequenciesStandard]
+        frequenciesEachTrialStd = bdataStd['currentFreq']
+        numberOfTrialsStd = len(frequenciesEachTrialStd)
+        arrayOfFrequenciesStd = np.unique(bdataStd['currentFreq'])
+        labelsForYaxis = ['%.0f' % f for f in arrayOfFrequenciesStd]
 
-        trialsEachCondStandard = \
-                behavioranalysis.find_trials_each_type(frequenciesEachTrialStandard,arrayOfFrequenciesStandard)
+        trialsEachCondStd = \
+                behavioranalysis.find_trials_each_type(frequenciesEachTrialStd,arrayOfFrequenciesStd)
 
         ax3 = plt.subplot2grid((3, 3), (1, 1))
-        extraplots.raster_plot(spikeTimesFromEventOnsetStandard,indexLimitsEachTrialStandard,
-                timeRange, trialsEachCondStandard, labels=labelsForYaxis)
+        extraplots.raster_plot(spikeTimesFromEventOnsetStd,indexLimitsEachTrialStd,
+                timeRange, trialsEachCondStd, labels=labelsForYaxis)
         plt.xlabel('Time from event onset [s]')
         plt.ylabel('Frequency [Hz]')
-        plt.title('Standard Sequence (# of Trials = {})'.format(numberOfTrialsStandard))
+        plt.title('Standard Sequence (# of Trials = {})'.format(numberOfTrialsStd))
+
     else:
         ax3 = plt.subplot2grid((3, 3), (1, 1))
         plt.xlabel('Time from event onset [s]')
         plt.ylabel('Frequency [Hz]')
-        plt.title('Standard Sequence (# of Trials = {})'.format(numberOfTrialsStandard))
+        plt.title('Standard Sequence')
 
     '''
-    Oddball raster plot ------------------------------------------------------------
+    Oddball --------------------------------------------------------------------
     '''
     if oneCell.get_session_inds('oddball') != []:
         try:
-            ephysDataOddball, bdataOddball = oneCell.load('oddball')
+            ephysDataOdd, bdataOdd = oneCell.load('oddball')
         except ValueError as verror:
             print(verror)
             continue
+        '''
+        Oddball raster plot ------------------------------------------------------------
+        '''
         #ephysDataOddball, bdataOddball = oneCell.load('oddball')
-        spikeTimes = ephysDataOddball['spikeTimes']
-        eventOnsetTimes = ephysDataOddball['events']['stimOn']
-        if len(eventOnsetTimes)==len(bdataOddball['currentFreq'])+1:
+        spikeTimesOdd = ephysDataOdd['spikeTimes']
+        eventOnsetTimesOdd = ephysDataOdd['events']['stimOn']
+        if len(eventOnsetTimesOdd)==len(bdataOdd['currentFreq'])+1:
             print('Removing last trial from oddball ephys data.')
-            eventOnsetTimes = eventOnsetTimes[:-1]
-        (spikeTimesFromEventOnsetOddball,trialIndexForEachSpikeOddball,indexLimitsEachTrialOddball) = \
-                spikesanalysis.eventlocked_spiketimes(spikeTimes, eventOnsetTimes, timeRange)
+            eventOnsetTimesOdd = eventOnsetTimesOdd[:-1]
+        (spikeTimesFromEventOnsetOdd,trialIndexForEachSpikeOdd,indexLimitsEachTrialOdd) = \
+                spikesanalysis.eventlocked_spiketimes(spikeTimesOdd, eventOnsetTimesOdd, timeRange)
 
-        frequenciesEachTrialOddball = bdataOddball['currentFreq']
-        numberOfTrialsOddball = len(frequenciesEachTrialOddball)
-        arrayOfFrequenciesOddball = np.unique(bdataOddball['currentFreq'])
-        labelsForYaxis = ['%.0f' % f for f in arrayOfFrequenciesOddball]
+        frequenciesEachTrialOdd = bdataOdd['currentFreq']
+        numberOfTrialsOdd = len(frequenciesEachTrialOdd)
+        arrayOfFrequenciesOdd = np.unique(bdataOdd['currentFreq'])
+        labelsForYaxis = ['%.0f' % f for f in arrayOfFrequenciesOdd]
 
-        trialsEachCondOddball = behavioranalysis.find_trials_each_type(frequenciesEachTrialOddball,
-                arrayOfFrequenciesOddball)
+        trialsEachCondOdd = behavioranalysis.find_trials_each_type(frequenciesEachTrialOdd,
+                arrayOfFrequenciesOdd)
 
         ax4 = plt.subplot2grid((3, 3), (2, 1))
-        extraplots.raster_plot(spikeTimesFromEventOnsetOddball,indexLimitsEachTrialOddball,timeRange,
-                trialsEachCondOddball, labels=labelsForYaxis)
+        extraplots.raster_plot(spikeTimesFromEventOnsetOdd,indexLimitsEachTrialOdd,timeRange,
+                trialsEachCondOdd, labels=labelsForYaxis)
         plt.xlabel('Time from event onset [s]')
         plt.ylabel('Frequency [Hz]')
-        plt.title('Oddball Sequence (# of Trials = {})'.format(numberOfTrialsOddball))
+        plt.title('Oddball Sequence (# of Trials = {})'.format(numberOfTrialsOdd))
+
+        '''
+        Waveform plot ------------------------------------------------------------------
+        '''
+        ax5 = plt.subplot2grid((3, 3), (0, 2))
+        try:
+            spikesorting.plot_waveforms(ephysDataOdd['samples'])
+        except ValueError as verror:
+            print(verror)
+            continue
     else:
         ax4 = plt.subplot2grid((3, 3), (2, 1))
         plt.xlabel('Time from event onset [s]')
         plt.ylabel('Frequency [Hz]')
-        plt.title('Oddball Sequence (# of Trials = {})'.format(numberOfTrialsOddball))
+        plt.title('Oddball Sequence')
 
-    '''
-    Waveform plot ------------------------------------------------------------------
-    '''
-    ax5 = plt.subplot2grid((3, 3), (0, 2))
-    spikesorting.plot_waveforms(ephysDataOddball['samples'])
+        ax5 = plt.subplot2grid((3, 3), (0, 2))
 
     '''
     Plotting the overlapped PSTH ---------------------------------------------------
     '''
-    # Parameters
-    binWidth = 0.010
-    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
-    smoothWinSizePsth = 5
-    lwPsth = 2
-    downsampleFactorPsth = 1
+    if oneCell.get_session_inds('oddball') != [] and oneCell.get_session_inds('standard') != []:
+        # Parameters
+        binWidth = 0.010
+        timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+        smoothWinSizePsth = 5
+        lwPsth = 2
+        downsampleFactorPsth = 1
 
-    # For standard sequence
-    iletLowFreqStandard = indexLimitsEachTrialStandard[:,trialsEachCondStandard[:,0]]
-    spikeCountMatLowStandard = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetStandard,
-            iletLowFreqStandard,timeVec)
+        # For standard sequence
+        iletLowFreqStd = indexLimitsEachTrialStd[:,trialsEachCondStd[:,0]]
+        spikeCountMatLowStd = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetStd,
+                iletLowFreqStd,timeVec)
 
-    iletHighFreqStandard = indexLimitsEachTrialStandard[:,trialsEachCondStandard[:,1]]
-    spikeCountMatHighStandard = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetStandard,
-            iletHighFreqStandard,timeVec)
+        iletHighFreqStd = indexLimitsEachTrialStd[:,trialsEachCondStd[:,1]]
+        spikeCountMatHighStd = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetStd,
+                iletHighFreqStd,timeVec)
 
-    # For oddball sequence
-    iletLowFreqOddball = indexLimitsEachTrialOddball[:,trialsEachCondOddball[:,0]]
-    spikeCountMatLowOddball = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetOddball,
-            iletLowFreqOddball,timeVec)
+        # For oddball sequence
+        iletLowFreqOdd = indexLimitsEachTrialOdd[:,trialsEachCondOdd[:,0]]
+        spikeCountMatLowOdd = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetOdd,
+                iletLowFreqOdd,timeVec)
 
-    iletHighFreqOddball = indexLimitsEachTrialOddball[:,trialsEachCondOddball[:,1]]
-    spikeCountMatHighOddball = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetOddball,
-            iletHighFreqOddball,timeVec)
+        iletHighFreqOdd = indexLimitsEachTrialOdd[:,trialsEachCondOdd[:,1]]
+        spikeCountMatHighOdd = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetOdd,
+                iletHighFreqOdd,timeVec)
 
-    ax6 = plt.subplot2grid((3, 3), (1, 2))
-    extraplots.plot_psth(spikeCountMatLowOddball/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
-            colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-    extraplots.plot_psth(spikeCountMatLowStandard/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
-            colorEachCond='c',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-    plt.xlabel('Time from event onset [s]')
-    plt.ylabel('Number of spikes')
-    plt.title('Low Frequency Event')
+        ax6 = plt.subplot2grid((3, 3), (1, 2))
+        extraplots.plot_psth(spikeCountMatLowOdd/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
+                colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+        extraplots.plot_psth(spikeCountMatLowStd/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
+                colorEachCond='c',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+        plt.xlabel('Time from event onset [s]')
+        plt.ylabel('Number of spikes')
+        plt.title('Low Frequency Event')
 
-    # Legend for PSTH
-    oddball_patch = mpatches.Patch(color='b',label='Oddball')
-    standard_patch = mpatches.Patch(color='c',label='Standard')
-    plt.legend(handles=[oddball_patch, standard_patch])
+        # Legend for PSTH
+        oddball_patch = mpatches.Patch(color='b',label='Oddball')
+        standard_patch = mpatches.Patch(color='c',label='Standard')
+        plt.legend(handles=[oddball_patch, standard_patch])
 
-    ax7 = plt.subplot2grid((3, 3), (2, 2))
-    extraplots.plot_psth(spikeCountMatHighOddball/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
-            colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-    extraplots.plot_psth(spikeCountMatHighStandard/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
-            colorEachCond='c',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-    plt.xlabel('Time from event onset [s]')
-    plt.ylabel('Number of spikes')
-    plt.title('High Frequency Event')
-    plt.legend(handles=[oddball_patch, standard_patch])
+        ax7 = plt.subplot2grid((3, 3), (2, 2))
+        extraplots.plot_psth(spikeCountMatHighOdd/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
+                colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+        extraplots.plot_psth(spikeCountMatHighStd/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
+                colorEachCond='c',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+        plt.xlabel('Time from event onset [s]')
+        plt.ylabel('Number of spikes')
+        plt.title('High Frequency Event')
+        plt.legend(handles=[oddball_patch, standard_patch])
+    elif oneCell.get_session_inds('standard') == [] and oneCell.get_session_inds('oddball') != []:
+        binWidth = 0.010
+        timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+        smoothWinSizePsth = 2
+        lwPsth = 2
+        downsampleFactorPsth = 1
+
+        spikeCountMatOdd = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnsetOdd,
+                indexLimitsEachTrialOdd,timeVec)
+
+        ax6 = plt.subplot2grid((3, 3), (1, 2))
+        plt.xlabel('Time from event onset [s]')
+        plt.ylabel('Number of spikes')
+
+        ax7 = plt.subplot2grid((3, 3), (2, 2))
+        extraplots.plot_psth(spikeCountMatOdd/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
+                linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
+        plt.xlabel('Time from event onset [s]')
+        plt.ylabel('Number of spikes')
+        plt.title('Oddball Event')
+    else:
+        ax6 = plt.subplot2grid((3, 3), (1, 2))
+        plt.xlabel('Time from event onset [s]')
+        plt.ylabel('Number of spikes')
+        plt.title('Low Frequency Event')
+
+        ax7 = plt.subplot2grid((3, 3), (2, 2))
+        plt.xlabel('Time from event onset [s]')
+        plt.ylabel('Number of spikes')
+        plt.title('High Frequency Event')
 
     '''
     Saving the figure --------------------------------------------------------------
     '''
-    figFormat = 'png'
-    outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'reports')
     figFilename ='{}_{}_{}um_T{}_c{}.{}'.format(dbRow['subject'],dbRow['date'],dbRow['depth'],
             dbRow['tetrode'],dbRow['cluster'],figFormat)
     figFullpath = os.path.join(outputDir,figFilename)
     plt.savefig(figFullpath,format=figFormat)
-    plt.gcf().set_size_inches([9,5])
+    plt.gcf().set_size_inches([18,10])
 
     plt.tight_layout()
     plt.show()
