@@ -6,15 +6,12 @@ ones computed only for cells that pass certain criteria based on these basic sta
 '''
 
 import os
-import pandas as pd
 import numpy as np
-import time
 import nrrd
 import imp
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
-from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import histologyanalysis as ha
@@ -68,7 +65,7 @@ def inactivation_base_stats(db, filename = ''):
         laserPVal[indRow] = pVal
         
         # --- Determine sound responsiveness during bandwidth sessions and calculate baseline firing rates with and without laser---
-        #done in a kind of stupid way because regular and control sessions are handled the same way
+        # done in a kind of stupid way because regular and control sessions are handled the same way
         if any(session in dbRow['sessionType'] for session in ['laserBandwidth', 'laserBandwidthControl']):
             if 'laserBandwidth' in dbRow['sessionType']:
                 bandEphysData, bandBehavData = cellObj.load('laserBandwidth')
@@ -86,16 +83,16 @@ def inactivation_base_stats(db, filename = ''):
             numSec = np.unique(secondSort)
             
             trialsEachComb = behavioranalysis.find_trials_each_combination(bandEachTrial, numBands, secondSort, numSec)
-            trialsEachBaseCond = trialsEachComb[:,:,0] #using no laser trials to determine sound responsiveness
+            trialsEachBaseCond = trialsEachComb[:,:,0] # using no laser trials to determine sound responsiveness
             testStatistic, pVal = funcs.sound_response_any_stimulus(bandEventOnsetTimes, bandSpikeTimestamps, trialsEachBaseCond, [0.0, 1.0], [-1.2,-0.2])
             onsetTestStatistic, onsetpVal = funcs.sound_response_any_stimulus(bandEventOnsetTimes, bandSpikeTimestamps, trialsEachBaseCond, [0.0,0.05], [-0.25,0.2])
             sustainedTestStatistic, sustainedpVal = funcs.sound_response_any_stimulus(bandEventOnsetTimes, bandSpikeTimestamps, trialsEachBaseCond, [0.2,1.0], [-1.0,0.2])
-            pVal *= len(numBands) #correction for multiple comparisons
+            pVal *= len(numBands) # correction for multiple comparisons
             onsetpVal *= len(numBands)
             sustainedpVal *= len(numBands)
             #pdb.set_trace()
             
-            #find baselines with and without laser
+            # find baselines with and without laser
             baselineRange = [-0.05, 0.0]
             baselineRates, baselineSEMs = funcs.inactivated_cells_baselines(bandSpikeTimestamps, bandEventOnsetTimes, secondSort, baselineRange)
             db.at[dbIndex, 'baselineFRnoLaser'] = baselineRates[0]
@@ -223,7 +220,7 @@ def inactivation_indices(db, filename = ''):
         db.at[dbIndex, 'proportionSpikesOnset'] = propOnset
         db.at[dbIndex, 'proportionSpikesSustained'] = propSustained
         
-        #by default: not subtracting baseline, but are replacing pure tone response with baseline for 0 bw condition
+        # by default: not subtracting baseline, but are replacing pure tone response with baseline for 0 bw condition
         onsetSupInds, onsetSupIndpVals, onsetFacInds, onsetFacIndpVals, onsetPeakInds, onsetSpikeArray = funcs.bandwidth_suppression_from_peak(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.0,0.05], baseRange=[-0.05,0.0])
         db.at[dbIndex, 'onsetSuppressionIndexLaser'] = onsetSupInds[-1]
         db.at[dbIndex, 'onsetSuppressionpValLaser'] = onsetSupIndpVals[-1]
@@ -237,7 +234,7 @@ def inactivation_indices(db, filename = ''):
         db.at[dbIndex, 'onsetFacilitationpValNoLaser'] = onsetFacIndpVals[0]
         db.at[dbIndex, 'onsetPrefBandwidthNoLaser'] = bandEachTrial[onsetPeakInds[0]]
          
-        #base range is right before sound onset so we get estimate for laser baseline
+        # base range is right before sound onset so we get estimate for laser baseline
         sustainedSupInds, sustainedSupIndpVals, sustainedFacInds, sustainedFacIndpVals, sustainedPeakInds, sustainedSpikeArray = funcs.bandwidth_suppression_from_peak(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.2,1.0], baseRange=[-0.05,0.0])
         db.at[dbIndex, 'sustainedSuppressionIndexLaser'] = sustainedSupInds[-1]
         db.at[dbIndex, 'sustainedSuppressionpValLaser'] = sustainedSupIndpVals[-1]
@@ -251,7 +248,7 @@ def inactivation_indices(db, filename = ''):
         db.at[dbIndex, 'sustainedFacilitationpValNoLaser'] = sustainedFacIndpVals[0]
         db.at[dbIndex, 'sustainedPrefBandwidthNoLaser'] = bandEachTrial[sustainedPeakInds[0]]
         
-        #no laser fit
+        # no laser fit
         sustainedResponseNoLaser = sustainedSpikeArray[:,0]
 
         bandsForFit = np.unique(bandEachTrial)
@@ -260,7 +257,7 @@ def inactivation_indices(db, filename = ''):
         
         fitParams, R2 = fitfuncs.diff_of_gauss_fit(bandsForFit, sustainedResponseNoLaser, mFixed=mFixed)
         
-        #fit params
+        # fit params
         db.at[dbIndex, 'R0noLaser'] = fitParams[0]
         db.at[dbIndex, 'RDnoLaser'] = fitParams[3]
         db.at[dbIndex, 'RSnoLaser'] = fitParams[4]
@@ -277,12 +274,12 @@ def inactivation_indices(db, filename = ''):
         db.at[dbIndex, 'fitSustainedSuppressionIndexNoLaser'] = suppInd
         db.at[dbIndex, 'fitSustainedPrefBandwidthNoLaser'] = prefBW
         
-        #laser fit
+        # laser fit
         sustainedResponseLaser = sustainedSpikeArray[:,1]
         
         fitParamsLaser, R2Laser = fitfuncs.diff_of_gauss_fit(bandsForFit, sustainedResponseLaser, mFixed=mFixed)
         
-        #fit params
+        # fit params
         db.at[dbIndex, 'R0laser'] = fitParamsLaser[0]
         db.at[dbIndex, 'RDlaser'] = fitParamsLaser[3]
         db.at[dbIndex, 'RSlaser'] = fitParamsLaser[4]
@@ -316,7 +313,7 @@ def inactivation_indices(db, filename = ''):
         db.at[dbIndex, 'fitPeakChangeFR'] = laserDiffModel[peakIndModel]
         db.at[dbIndex, 'fitWNChangeFR'] = laserDiffModel[-1]
         
-        #also calculating fits and suppression with pure tone being 0 bw condition
+        # also calculating fits and suppression with pure tone being 0 bw condition
         toneSustainedSupInds, toneSustainedSupIndpVals, toneSustainedFacInds, toneSustainedFacIndpVals, toneSustainedPeakInds, toneSustainedSpikeArray = funcs.bandwidth_suppression_from_peak(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange=[0.2,1.0], baseRange=[-0.05,0.0], zeroBWBaseline=False)
         db.at[dbIndex, 'sustainedSuppressionIndexNoLaserPureTone'] = toneSustainedSupInds[0]
         db.at[dbIndex, 'sustainedSuppressionpValNoLaserPureTone'] = toneSustainedSupIndpVals[0]
@@ -334,7 +331,7 @@ def inactivation_indices(db, filename = ''):
         
         toneFitParamsNoLaser, toneR2 = fitfuncs.diff_of_gauss_fit(bandsForFit, toneSustainedResponseNoLaser, mFixed=mFixed)
         
-        #fit params
+        # fit params
         db.at[dbIndex, 'R0PureToneNoLaser'] = toneFitParamsNoLaser[0]
         db.at[dbIndex, 'RDPureToneNoLaser'] = toneFitParamsNoLaser[3]
         db.at[dbIndex, 'RSPureToneNoLaser'] = toneFitParamsNoLaser[4]
@@ -355,7 +352,7 @@ def inactivation_indices(db, filename = ''):
         
         toneFitParamsLaser, toneR2Laser = fitfuncs.diff_of_gauss_fit(bandsForFit, toneSustainedResponseLaser, mFixed=mFixed)
         
-        #fit params
+        # fit params
         db.at[dbIndex, 'R0PureToneLaser'] = toneFitParamsLaser[0]
         db.at[dbIndex, 'RDPureToneLaser'] = toneFitParamsLaser[3]
         db.at[dbIndex, 'RSPureToneLaser'] = toneFitParamsLaser[4]
@@ -380,13 +377,13 @@ def inactivation_indices(db, filename = ''):
         db.at[dbIndex, 'fitPeakChangeFRPureTone'] = laserDiffModel[peakIndModel]
         db.at[dbIndex, 'fitWNChangeFRPureTone'] = laserDiffModel[-1]
         
-        #also calculating fits and suppression with nothing being fit for bw 0
+        # also calculating fits and suppression with nothing being fit for bw 0
         noZeroSustainedResponseNoLaser = sustainedSpikeArray[1:,0]
         bandsForFitNoZero = bandsForFit[1:]
         
         noZeroFitParamsNoLaser, noZeroR2 = fitfuncs.diff_of_gauss_fit(bandsForFitNoZero, noZeroSustainedResponseNoLaser, mFixed=mFixed)
         
-        #fit params
+        # fit params
         db.at[dbIndex, 'R0noZeroNoLaser'] = noZeroFitParamsNoLaser[0]
         db.at[dbIndex, 'RDnoZeroNoLaser'] = noZeroFitParamsNoLaser[3]
         db.at[dbIndex, 'RSnoZeroNoLaser'] = noZeroFitParamsNoLaser[4]
@@ -408,7 +405,7 @@ def inactivation_indices(db, filename = ''):
         
         noZeroFitParamsLaser, noZeroR2Laser = fitfuncs.diff_of_gauss_fit(bandsForFitNoZero, noZeroSustainedResponseLaser, mFixed=mFixed)
         
-        #fit params
+        # fit params
         db.at[dbIndex, 'R0noZeroLaser'] = noZeroFitParamsLaser[0]
         db.at[dbIndex, 'RDnoZeroLaser'] = noZeroFitParamsLaser[3]
         db.at[dbIndex, 'RSnoZeroLaser'] = noZeroFitParamsLaser[4]

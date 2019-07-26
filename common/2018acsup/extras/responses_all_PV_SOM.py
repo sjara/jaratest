@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt
+import copy
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
@@ -11,9 +12,9 @@ db = celldatabase.load_hdf('/mnt/jarahubdata/figuresdata/2018acsup/photoidentifi
 bestCells = db.query('isiViolations<0.02 or modifiedISI<0.02')
 bestCells = bestCells.query('spikeShapeQuality>2.5 and sustainedSoundResponsePVal<0.05')
 
-LASER_RESPONSE_PVAL = 0.001 #want to be EXTRA sure not to include false positives
+LASER_RESPONSE_PVAL = 0.001 # want to be EXTRA sure not to include false positives
 
-EXC_LASER_RESPONSE_PVAL = 0.5 #for selecting putative excitatory cells NOT responsive to laser
+EXC_LASER_RESPONSE_PVAL = 0.5 # for selecting putative excitatory cells NOT responsive to laser
 EXC_SPIKE_WIDTH = 0.0004
 
 PV_CHR2_MICE = ['band004', 'band026', 'band032', 'band033']
@@ -24,35 +25,29 @@ SOM_CELLS = bestCells.query('laserPVal<{} and laserUStat>0 and subject=={}'.form
 EXC_CELLS = bestCells.query('(laserPVal>{} or laserUStat<0) and spikeWidth>{} and subject=={}'.format(EXC_LASER_RESPONSE_PVAL,EXC_SPIKE_WIDTH,SOM_CHR2_MICE))
 
 freqTunedPV = PV_CELLS.query('tuningFitR2>0.1 and octavesFromPrefFreq<0.3')
-notFreqTunedPV = PV_CELLS.query('tuningFitR2<0.1 or octavesFromPrefFreq>0.3')
+freqTunedOffCentrePV = PV_CELLS.query('tuningFitR2>0.1 and octavesFromPrefFreq>0.3')
+notFreqTunedPV = PV_CELLS.query('tuningFitR2<0.1')
 
 freqTunedSOM = SOM_CELLS.query('tuningFitR2>0.1 and octavesFromPrefFreq<0.3')
-notFreqTunedSOM = SOM_CELLS.query('tuningFitR2<0.1 or octavesFromPrefFreq>0.3')
+freqTunedOffCentreSOM = SOM_CELLS.query('tuningFitR2>0.1 and octavesFromPrefFreq>0.3')
+notFreqTunedSOM = SOM_CELLS.query('tuningFitR2<0.1')
 
 freqTunedExc = EXC_CELLS.query('tuningFitR2>0.1 and octavesFromPrefFreq<0.3')
-notFreqTunedExc = EXC_CELLS.query('tuningFitR2<0.1 or octavesFromPrefFreq>0.3')
+freqTunedOffCentreExc = EXC_CELLS.query('tuningFitR2>0.1 and octavesFromPrefFreq>0.3')
+notFreqTunedExc = EXC_CELLS.query('tuningFitR2<0.1')
 
-PVTunedBaseSpikeRates = np.zeros(len(freqTunedPV))
-SOMTunedBaseSpikeRates = np.zeros(len(freqTunedSOM))
-ExTunedBaseSpikeRates = np.zeros(len(freqTunedExc))
+cells = [freqTunedPV, freqTunedOffCentrePV, notFreqTunedPV, 
+         freqTunedSOM, freqTunedOffCentreSOM, notFreqTunedSOM, 
+         freqTunedExc, freqTunedOffCentreExc, notFreqTunedExc]
 
-PVNotTunedBaseSpikeRates = np.zeros(len(notFreqTunedPV))
-SOMNotTunedBaseSpikeRates = np.zeros(len(notFreqTunedSOM))
-ExNotTunedBaseSpikeRates = np.zeros(len(notFreqTunedExc))
+baselineSpikeRates = [np.zeros(len(freqTunedPV)), np.zeros(len(freqTunedOffCentrePV)), np.zeros(len(notFreqTunedPV)),
+                      np.zeros(len(freqTunedSOM)), np.zeros(len(freqTunedOffCentreSOM)), np.zeros(len(notFreqTunedSOM)),
+                      np.zeros(len(freqTunedExc)), np.zeros(len(freqTunedOffCentreExc)), np.zeros(len(notFreqTunedExc))]
 
-PVFreqTunedSpikeRates = np.zeros(len(freqTunedPV))
-SOMFreqTunedSpikeRates = np.zeros(len(freqTunedSOM))
-ExFreqTunedSpikeRates = np.zeros(len(freqTunedExc))
+highBandSustainedSpikeRates = copy.deepcopy(baselineSpikeRates)
+highBandOnsetSpikeRates = copy.deepcopy(baselineSpikeRates)
 
-PVNotFreqTunedSpikeRates = np.zeros(len(notFreqTunedPV))
-SOMNotFreqTunedSpikeRates = np.zeros(len(notFreqTunedSOM))
-ExNotFreqTunedSpikeRates = np.zeros(len(notFreqTunedExc))
-
-cells = [freqTunedPV, notFreqTunedPV, freqTunedSOM, notFreqTunedSOM, freqTunedExc, notFreqTunedExc]
-highBandSpikeRates = [PVFreqTunedSpikeRates, PVNotFreqTunedSpikeRates, SOMFreqTunedSpikeRates, SOMNotFreqTunedSpikeRates, ExFreqTunedSpikeRates, ExNotFreqTunedSpikeRates]
-baselineSpikeRates = [PVTunedBaseSpikeRates, PVNotTunedBaseSpikeRates, SOMTunedBaseSpikeRates, SOMNotTunedBaseSpikeRates, ExTunedBaseSpikeRates, ExNotTunedBaseSpikeRates]
-
-highBands = [5,6] #change in FR and average PSTHs for 4 octaves and white noise (high bandwidths)
+highBands = [5,6] # change in FR and average PSTHs for 4 octaves and white noise (high bandwidths)
 
 onsetTimeRange = [0.0, 0.05]
 sustainedTimeRange = [0.2, 1.0]
@@ -64,7 +59,7 @@ for ind, cellsThisType in enumerate(cells):
         cellObj = ephyscore.Cell(cell, useModifiedClusters=True)
         bandEphysData, bandBData = cellObj.load_by_index(int(cell['bestBandSession']))
         bandEventOnsetTimes = bandEphysData['events']['soundDetectorOn']
-        if len(bandEventOnsetTimes)==0: #some cells recorded before sound detector installed
+        if len(bandEventOnsetTimes)==0: # some cells recorded before sound detector installed
             bandEventOnsetTimes = bandEphysData['events']['stimOn'] + 0.0093 #correction for bandwidth trials, determined by comparing sound detector onset to stim event onset
         bandEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(bandEventOnsetTimes, minEventOnsetDiff=0.2)
         bandSpikeTimestamps = bandEphysData['spikeTimes']
@@ -72,7 +67,7 @@ for ind, cellsThisType in enumerate(cells):
         baselineRange = [-1.0, -0.2]
         fullTimeRange = [baselineRange[0], sustainedTimeRange[1]]
         
-        #onsetResponseDuration = onsetTimeRange[1]-onsetTimeRange[0]
+        onsetResponseDuration = onsetTimeRange[1]-onsetTimeRange[0]
         sustainedResponseTimeDuration = sustainedTimeRange[1]-sustainedTimeRange[0]
         
         bandSpikeTimesFromEventOnset, trialIndexForEachSpike, bandIndexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
@@ -80,7 +75,7 @@ for ind, cellsThisType in enumerate(cells):
                                                                                                         bandEventOnsetTimes,
                                                                                                         fullTimeRange)
         
-        #onsetSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, onsetTimeRange)
+        onsetSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, onsetTimeRange)
         sustainedSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(bandSpikeTimesFromEventOnset, bandIndexLimitsEachTrial, sustainedTimeRange)
     
         bandEachTrial = bandBData['currentBand']
@@ -93,7 +88,7 @@ for ind, cellsThisType in enumerate(cells):
                                                                            ampEachTrial, 
                                                                            numAmps)
         
-        trialsHighAmp = bandTrialsEachCond[:,:,-1] #only using high amplitude trials (-1 in list of amps)     
+        trialsHighAmp = bandTrialsEachCond[:,:,-1] # only using high amplitude trials (-1 in list of amps)     
         # find high bandwidth trials
         trialsHighBands = None
         for band in highBands:
@@ -103,15 +98,15 @@ for ind, cellsThisType in enumerate(cells):
                 trialsHighBands = trialsHighBands | trialsHighAmp[:,band]
         
         # Average firing rate for high amplitude trials
-#         highBandOnsetSpikeCounts = onsetSpikeCountMat[trialsHighBands]
-#         highBandOnsetMean = np.mean(highBandOnsetSpikeCounts)/(onsetTimeRange[1]-onsetTimeRange[0])
-#         
-#         highBandOnsetSpikeRates[ind][indCell] = highBandOnsetMean
+        highBandOnsetSpikeCounts = onsetSpikeCountMat[trialsHighBands]
+        highBandOnsetMean = np.mean(highBandOnsetSpikeCounts)/(onsetTimeRange[1]-onsetTimeRange[0])
+         
+        highBandOnsetSpikeRates[ind][indCell] = highBandOnsetMean
         
         highBandSustainedSpikeCounts = sustainedSpikeCountMat[trialsHighBands]
         highBandSustainedMean = np.mean(highBandSustainedSpikeCounts)/(sustainedTimeRange[1]-sustainedTimeRange[0])
         
-        highBandSpikeRates[ind][indCell] = highBandSustainedMean
+        highBandSustainedSpikeRates[ind][indCell] = highBandSustainedMean
                 
         # Baseline firing rate and SEM
         baselineDuration = baselineRange[1]-baselineRange[0]
@@ -132,13 +127,13 @@ for ind, cellsThisType in enumerate(cells):
         cellObj = ephyscore.Cell(cell, useModifiedClusters=True)
         bandEphysData, bandBData = cellObj.load_by_index(int(cell['bestBandSession']))
         bandEventOnsetTimes = bandEphysData['events']['soundDetectorOn']
-        if len(bandEventOnsetTimes)==0: #some cells recorded before sound detector installed
-            bandEventOnsetTimes = bandEphysData['events']['stimOn'] + 0.0093 #correction for bandwidth trials, determined by comparing sound detector onset to stim event onset
+        if len(bandEventOnsetTimes)==0: # some cells recorded before sound detector installed
+            bandEventOnsetTimes = bandEphysData['events']['stimOn'] + 0.0093 # correction for bandwidth trials, determined by comparing sound detector onset to stim event onset
         bandEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(bandEventOnsetTimes, minEventOnsetDiff=0.2)
         bandSpikeTimestamps = bandEphysData['spikeTimes']
         
         bandTimeRange = [-0.5, 1.5]
-        binsize = 50 #in milliseconds
+        binsize = 50 # in milliseconds
         
         bandSpikeTimesFromEventOnset, trialIndexForEachSpike, bandIndexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
                                                                                                         bandSpikeTimestamps, 
@@ -170,7 +165,7 @@ for ind, cellsThisType in enumerate(cells):
     thisCellTypeAllPSTHs = thisCellTypeAllPSTHs[~np.isnan(thisCellTypeAllPSTHs).any(axis=1)] #do not include any cells that for whatever reason had a sound onset firing rate of 0, resulting in NaN during normalisation
     thisCellTypePSTH = np.median(thisCellTypeAllPSTHs, axis=0)
     
-    #smooth PSTH
+    # smooth PSTH
     smoothWinSize = 1
     winShape = np.concatenate((np.zeros(smoothWinSize),np.ones(smoothWinSize))) # Square (causal)
     winShape = winShape/np.sum(winShape)
@@ -181,26 +176,45 @@ for ind, cellsThisType in enumerate(cells):
 outputFile = '/home/jarauser/data/figuresdata/2018acsup/all_photoidentified_cells_untuned_stats.npz'
 #outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFile,
-         PVTunedSustainedResponses = highBandSpikeRates[0],
-         PVUntunedSustainedResponses = highBandSpikeRates[1],
-         SOMTunedSustainedResponses = highBandSpikeRates[2],
-         SOMUntunedSustainedResponses = highBandSpikeRates[3],
-         ExcTunedSustainedResponses = highBandSpikeRates[4],
-         ExcUntunedSustainedResponses = highBandSpikeRates[5],
+         PVTunedSustainedResponses = highBandSustainedSpikeRates[0],
+         PVTunedOffCentreSustainedResponses = highBandSustainedSpikeRates[1],
+         PVUntunedSustainedResponses = highBandSustainedSpikeRates[2],
+         SOMTunedSustainedResponses = highBandSustainedSpikeRates[3],
+         SOMTunedOffCentreSustainedResponses = highBandSustainedSpikeRates[4],
+         SOMUntunedSustainedResponses = highBandSustainedSpikeRates[5],
+         ExcTunedSustainedResponses = highBandSustainedSpikeRates[6],
+         ExcTunedOffCentreSustainedResponses = highBandSustainedSpikeRates[7],
+         ExcUntunedSustainedResponses = highBandSustainedSpikeRates[8],
+         
+         PVTunedOnsetResponses = highBandOnsetSpikeRates[0],
+         PVTunedOffCentreOnsetResponses = highBandOnsetSpikeRates[1],
+         PVUntunedOnsetResponses = highBandOnsetSpikeRates[2],
+         SOMTunedOnsetResponses = highBandOnsetSpikeRates[3],
+         SOMTunedOffCentreOnsetResponses = highBandOnsetSpikeRates[4],
+         SOMUntunedOnsetResponses = highBandOnsetSpikeRates[5],
+         ExcTunedOnsetResponses = highBandOnsetSpikeRates[6],
+         ExcTunedOffCentreOnsetResponses = highBandOnsetSpikeRates[7],
+         ExcUntunedOnsetResponses = highBandOnsetSpikeRates[8],
          
          PVtunedBaselines = baselineSpikeRates[0],
-         PVuntunedBaselines = baselineSpikeRates[1],
-         SOMtunedBaselines = baselineSpikeRates[2],
-         SOMuntunedBaselines = baselineSpikeRates[3],
-         ExcTunedBaselines = baselineSpikeRates[4],
-         ExcUntunedBaselines = baselineSpikeRates[5],
+         PVtunedOffCentreBaselines = baselineSpikeRates[1],
+         PVuntunedBaselines = baselineSpikeRates[2],
+         SOMtunedBaselines = baselineSpikeRates[3],
+         SOMtunedOffCentreBaselines = baselineSpikeRates[4],
+         SOMuntunedBaselines = baselineSpikeRates[5],
+         ExcTunedBaselines = baselineSpikeRates[6],
+         ExcTunedOffCentreBaselines = baselineSpikeRates[7],
+         ExcUntunedBaselines = baselineSpikeRates[8],
          
          PVtunedAveragePSTH = averagePSTHs[0],
-         PVuntunedAveragePSTH = averagePSTHs[1],
-         SOMtunedAveragePSTH = averagePSTHs[2],
-         SOMuntunedAveragePSTH = averagePSTHs[3],
-         ExcTunedAveragePSTH = averagePSTHs[4],
-         ExcUntunedAveragePSTH = averagePSTHs[5],
+         PVtunedOffCentreAveragePSTH = averagePSTHs[1],
+         PVuntunedAveragePSTH = averagePSTHs[2],
+         SOMtunedAveragePSTH = averagePSTHs[3],
+         SOMtunedOffCentreAveragePSTH = averagePSTHs[4],
+         SOMuntunedAveragePSTH = averagePSTHs[5],
+         ExcTunedAveragePSTH = averagePSTHs[6],
+         ExcTunedOffCentreAveragePSTH = averagePSTHs[7],
+         ExcUntunedAveragePSTH = averagePSTHs[8],
          
          PSTHbinStartTimes = binEdges[:-1])
 print outputFile + " saved"
