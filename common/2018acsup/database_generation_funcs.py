@@ -2,17 +2,12 @@
 
 Functions include calculation of laser response, sound response, frequency tuning, suppression index, etc'''
 
-
-import os
 import numpy as np
+from scipy import stats
 
-from jaratoolbox import celldatabase
-from jaratoolbox import ephyscore
-from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 
-from scipy import stats
 
 # for correcting sound onset times for cells recorded before installation of Cliff box
 AVERAGE_JITTER = {'bandwidth':0.0093,
@@ -95,6 +90,7 @@ def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond
         trialsThisCond = trialsEachCond[:,cond]
         if stimSpikeCountMat.shape[0] == len(trialsThisCond)+1:
             stimSpikeCountMat = stimSpikeCountMat[:-1,:]
+            baseSpikeCountMat = baseSpikeCountMat[:-1,:]
         if any(trialsThisCond):
             thisFirstStimCounts = stimSpikeCountMat[trialsThisCond].flatten()
             thisStimBaseSpikeCouns = baseSpikeCountMat[trialsThisCond].flatten()
@@ -117,6 +113,9 @@ def best_window_freq_tuning(spikeTimesFromEventOnset,indexLimitsEachTrial, trial
         
         for ind2 in range(trialsEachFreq.shape[1]):
             trialsThisFreq = trialsEachFreq[:,ind2]
+            if spikeCountMat.shape[0] == len(trialsThisFreq)+1:
+                spikeCountMat = spikeCountMat[:-1,:]
+                baseSpikeCountMat = baseSpikeCountMat[:-1,:]
             spikeCountsThisFreq = spikeCountMat[trialsThisFreq]
             baseCountsThisFreq = baseSpikeCountMat[trialsThisFreq]
             zScore, pVal = stats.ranksums(spikeCountsThisFreq, baseCountsThisFreq)
@@ -258,6 +257,8 @@ def inactivated_cells_baselines(spikeTimeStamps, eventOnsetTimes, laserEachTrial
     
     for las in range(len(numLaser)):
         trialsThisLaser = trialsEachLaser[:,las]
+        if baselineSpikeCountMat.shape[0] != len(trialsThisLaser):
+            baselineSpikeCountMat = baselineSpikeCountMat[:-1,:]
         baselineCounts = baselineSpikeCountMat[trialsThisLaser].flatten()
         baselineMean = np.mean(baselineCounts)/baselineDuration
         baselineSEM = stats.sem(baselineCounts)/baselineDuration
@@ -312,6 +313,10 @@ def bandwidth_suppression_from_peak(spikeTimeStamps, eventOnsetTimes, firstSort,
     
     for ind in range(len(suppressionIndex)):
         trialsThisSecondVal = trialsEachSecondSort[:,ind]
+        
+        if spikeCountMat.shape[0] != len(trialsThisSecondVal):
+            spikeCountMat = spikeCountMat[:-1,:]
+            baseSpikeCountMat = baseSpikeCountMat[:-1,:]
         
         thisCondResponse = spikeArray[:,ind]
         thisCondBaseline = np.mean(baseSpikeCountMat[trialsThisSecondVal].flatten())/(baseRange[1]-baseRange[0])

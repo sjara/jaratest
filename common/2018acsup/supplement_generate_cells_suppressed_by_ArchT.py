@@ -98,7 +98,7 @@ for indCell, oneCell in enumerate(cellList):
 
 singleUnits = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
 goodCells = singleUnits.query('spikeShapeQuality>{} and controlSession==0'.format(studyparams.SPIKE_QUALITY_THRESHOLD))
-bestCells = goodCells.query('onsetSoundResponsePVal<{} or sustainedSoundResponsePVal<{} or soundResponsePVal<{}'.format(studyparams.SOUND_RESPONSE_PVAL))
+bestCells = goodCells.query('onsetSoundResponsePVal<{0} or sustainedSoundResponsePVal<{0} or soundResponsePVal<{0}'.format(studyparams.SOUND_RESPONSE_PVAL))
 bestCells = bestCells.query('bestBandSession>0')
 
 noPVCells = bestCells.loc[bestCells['subject'].isin(studyparams.PV_ARCHT_MICE)]

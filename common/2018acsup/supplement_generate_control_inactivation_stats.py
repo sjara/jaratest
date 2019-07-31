@@ -28,9 +28,9 @@ PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
 SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 
 # -- find PV and SOM-inactivated cells that are sound responsive
-bestCells = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
-bestCells = bestCells.query('spikeShapeQuality>{}'.format(studyparams.SPIKE_QUALITY_THRESHOLD))
-bestCells = bestCells.query('onsetSoundResponsePVal<@SOUND_RESPONSE_PVAL or sustainedSoundResponsePVal<@SOUND_RESPONSE_PVAL or soundResponsePVal<@SOUND_RESPONSE_PVAL')
+singleUnits = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
+goodCells = singleUnits.query('spikeShapeQuality>{}'.format(studyparams.SPIKE_QUALITY_THRESHOLD))
+bestCells = goodCells.query('onsetSoundResponsePVal<{0} or sustainedSoundResponsePVal<{0} or soundResponsePVal<{0}'.format(studyparams.SOUND_RESPONSE_PVAL))
 bestCells = bestCells.query('bestBandSession>0')
 
 PVCells = bestCells.loc[bestCells['subject'].isin(PV_ARCHT_MICE)]

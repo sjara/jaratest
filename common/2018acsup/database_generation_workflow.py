@@ -14,6 +14,7 @@ from jaratoolbox import spikesorting
 
 import database_photoidentification
 import database_inactivation
+import database_cell_locations
 import studyparams
 
 # -- functions assisting in clustering and cluster rescue --
@@ -64,8 +65,12 @@ if dbsToGenerate[1]:
     inactivationDBFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'inactivation_cells.h5')
     #inactivationDBFilename = '/tmp/inactivation_cells.h5'
     basicDB = celldatabase.generate_cell_database_from_subjects(archTmice)
-    inactivationDB = database_inactivation.inactivation_base_stats(basicDB, filename = inactivationDBFilename)
-    inactivationDB = database_inactivation.inactivation_indices(inactivationDB, filename = inactivationDBFilename)
+    inactivationDB = database_inactivation.inactivation_base_stats(basicDB)
+    inactivationDB = database_inactivation.inactivation_indices(inactivationDB)
     
     # -- locations of cells, RUN IN VIRTUAL ENVIRONMENT --
-    inactivationDB = database_inactivation.inactivation_locations(inactivationDB, filename = inactivationDBFilename)
+    inactivationDB = database_cell_locations.cell_locations(inactivationDB)
+    
+    # -- save the final database --
+    celldatabase.save_hdf(inactivationDB, inactivationDBFilename)
+    print inactivationDBFilename + " saved"
