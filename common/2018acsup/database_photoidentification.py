@@ -3,15 +3,12 @@ This script contains a function that computes new columns for a database of phot
 '''
 
 import os
-import pandas as pd
 import numpy as np
-import time
 import nrrd
 import imp
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
-from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import histologyanalysis as ha
