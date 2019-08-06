@@ -20,7 +20,7 @@ from scipy import stats
 
 import studyparams
 
-dbFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'photoidentification_cells_0.h5')
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'photoidentification_cells.h5')
 db = celldatabase.load_hdf(dbFilename)
 
 figName = 'supplement_figure_gaussian_frequency_tuning_fit'
@@ -69,6 +69,8 @@ for indCell, (dbIndex, dbRow) in enumerate(ExcCells.iterrows()):
     tuningSpikeArray = np.zeros(len(numFreqs))
     for freq in range(len(numFreqs)):
         trialsThisFreq = trialsHighInt[:,freq]
+        if tuningSpikeCountMat.shape[0] == len(trialsThisFreq)+1:
+            tuningSpikeCountMat = tuningSpikeCountMat[:-1,:]
         spikeCountsThisFreq = tuningSpikeCountMat[trialsThisFreq].flatten()
         tuningSpikeArray[freq] = np.mean(spikeCountsThisFreq)/(tuningWindow[1]-tuningWindow[0])
          
@@ -83,7 +85,9 @@ for indCell, (dbIndex, dbRow) in enumerate(ExcCells.iterrows()):
     for freq in range(trialsHighInt.shape[1]):
         trialsThisCond = trialsHighInt[:,freq]
         if tuningSpikeCountMat.shape[0] == len(trialsThisCond)+1:
-            stimSpikeCountMat = tuningSpikeCountMat[:-1,:]
+            tuningSpikeCountMat = tuningSpikeCountMat[:-1,:]
+        if baselineSpikeCountMat.shape[0] == len(trialsThisCond)+1:
+            baselineSpikeCountMat = baselineSpikeCountMat[:-1,:]
         if any(trialsThisCond):
             thisFirstStimCounts = tuningSpikeCountMat[trialsThisCond].flatten()
             thisStimBaseSpikeCounts = baselineSpikeCountMat[trialsThisCond].flatten()

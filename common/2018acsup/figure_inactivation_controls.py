@@ -271,7 +271,7 @@ if PANELS[2]:
 #         plt.ylim(-2,55)
 
         axScatter.set_xscale('log', basex=10)
-        axScatter.set_yscale('log', basex=10)
+        axScatter.set_yscale('log', basey=10)
         
         plt.plot([-5,100], [-5,100], 'k--')
         plt.xlim(0.05,100)

@@ -35,8 +35,8 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
 figFilename = 'Fig2_characterisation_of_suppression' # Do not include extension
-#figFormat = 'pdf' # 'pdf' or 'svg'
-figFormat = 'svg'
+figFormat = 'pdf' # 'pdf' or 'svg'
+#figFormat = 'svg'
 figSize = [10,7] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels

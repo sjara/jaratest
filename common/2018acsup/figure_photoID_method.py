@@ -31,8 +31,8 @@ PANELS = [1,1,1,1] # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'Fig1_photoidentification_method' # Do not include extension
-#figFormat = 'pdf' # 'pdf' or 'svg'
-figFormat = 'svg'
+figFormat = 'pdf' # 'pdf' or 'svg'
+#figFormat = 'svg'
 figSize = [10,6] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
