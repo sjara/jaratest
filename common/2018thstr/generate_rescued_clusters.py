@@ -15,9 +15,11 @@ reload(ephyscore)
 SAVE=True
 
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dbPath = '/tmp/celldatabase_new_20180830.h5'
+# dbPath = '/tmp/celldatabase_new_20180830.h5'
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-db = pd.read_hdf(dbPath, key='dataframe')
+# db = pd.read_hdf(dbPath, key='dataframe')
+db = celldatabase.load_hdf(dbPath)
 cellsToRescue = db.query('autoTagged==1 and isiViolations>0.02 and isiViolations<0.04')
 
 for indRow, dbRow in cellsToRescue.iterrows():
@@ -111,5 +113,6 @@ for indRow, dbRow in cellsToRescue.iterrows():
 
 if SAVE:
     # savePath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-    db.to_hdf(dbPath, 'dataframe')
+    # db.to_hdf(dbPath, 'dataframe')
+    celldatabase.save_hdf(db, dbPath)
     print "SAVED DATAFRAME to {}".format(dbPath)

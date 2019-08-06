@@ -8,6 +8,7 @@ from jaratoolbox import extraplots
 from jaratoolbox import colorpalette
 from jaratoolbox import spikesanalysis
 from jaratoolbox import ephyscore
+from jaratoolbox import celldatabase
 from scipy import stats
 import copy
 import pandas as pd
@@ -15,12 +16,14 @@ import figparams
 reload(figparams)
 
 STUDY_NAME = '2018thstr'
-SAVE = True
+SAVE = False
 
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-dbPath = '/tmp/celldatabase_new_20180830.h5'
-dataframe = pd.read_hdf(dbPath, key='dataframe')
+# dbPath = '/tmp/celldatabase_new_20180830.h5'
+dbPath = '/mnt/jarahubdata/figuresdata/2018thstr/celldatabase_calculated_columns.h5'
+# dataframe = pd.read_hdf(dbPath, key='dataframe')
+dataframe = celldatabase.load_hdf(dbPath)
 
 for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 
@@ -89,7 +92,6 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
                                                                    eventOnsetTimes,
                                                                    alignmentRange)
 
-
     nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
                                                         indexLimitsEachTrial,baseRange)
 
@@ -99,7 +101,7 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
     for indPulse, pulse in enumerate(pulseTimes):
         responseRange = [pulse, pulse+binTime]
         nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-                                                           indexLimitsEachTrial,responseRange)
+                                                            indexLimitsEachTrial,responseRange)
         respSpikeMean[indPulse] = nspkResp.ravel().mean()
         try:
             zStats[indPulse], pVals[indPulse] = stats.mannwhitneyu(nspkResp, nspkBase)

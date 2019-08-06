@@ -10,8 +10,11 @@ import figparams
 from jaratoolbox import histologyanalysis as ha
 from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
 
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-db = pd.read_hdf(dbPath, key='dataframe')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+db = celldatabase.load_hdf(dbPath)
+
+# db = pd.read_hdf(dbPath, key='dataframe')
 
 mcc = MouseConnectivityCache(resolution=25)
 rsp = mcc.get_reference_space()
@@ -24,7 +27,10 @@ areas = []
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 goodLaser = goodShape.query("autoTagged==1 and subject not in ['pinp018', 'pinp021']")
-goodNSpikes = goodLaser.query('nSpikes>2000')
+# goodNSpikes = goodLaser.query('nSpikes>2000')
+
+goodPulseLatency = goodLaser.query('summaryPulseLatency<0.01')
+goodNSpikes = goodPulseLatency.query('nSpikes>2000')
 
 goodSoundResponsiveBool = (~pd.isnull(goodNSpikes['BW10'])) | (~pd.isnull(goodNSpikes['highestSyncCorrected'])) | (goodNSpikes['noiseZscore']<0.05)
 # goodSoundResponsiveBool = (~pd.isnull(goodNSpikes['BW10'])) | (~pd.isnull(goodNSpikes['highestSyncCorrected']))
@@ -52,6 +58,7 @@ for indRow, dbRow in dataframe.iterrows():
     areas.append(structName)
 
 from collections import Counter
+
 
 
 

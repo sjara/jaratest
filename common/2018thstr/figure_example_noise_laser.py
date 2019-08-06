@@ -12,15 +12,28 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-db = pd.read_hdf(dbPath, key='dataframe')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+# db = pd.read_hdf(dbPath, key='dataframe')
+db = celldatabase.load_hdf(dbPath)
 
 FIGNAME = 'figure_noise_laser'
 # outputDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
 outputDir = '/tmp'
 figFilename = 'plots_noise_laser' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [13, 6] # In inches
+
+
+
+# figSize = [13, 6] # In inches
+
+fullPanelWidthInches = 6.9
+figSizeFactor = 2
+figWidth = fullPanelWidthInches * (figSizeFactor)
+figHeight = figWidth / 2.16
+figSize = [figWidth, figHeight] # In inches
+
+
 SAVE_FIGURE=1
 
 plt.clf()
@@ -31,9 +44,9 @@ plt.hold(1)
 labelPosX = [0.02, 0.34, 0.66]   # Horiz position for panel labels
 labelPosY = [0.43, 0.94]    # Vert position for panel labels
 
-fontSizeLabels = figparams.fontSizeLabels * 2
-fontSizeTicks = figparams.fontSizeTicks * 2
-fontSizePanel = figparams.fontSizePanel * 2
+fontSizeLabels = figparams.fontSizeLabels * figSizeFactor
+fontSizeTicks = figparams.fontSizeTicks * figSizeFactor
+fontSizePanel = figparams.fontSizePanel * figSizeFactor
 
 axThalCartoon = plt.subplot(gs[0,0])
 axThalCartoon.axis('off')
