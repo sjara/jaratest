@@ -189,7 +189,7 @@ exp4.add_session('16-15-40', 'd', 'oddball', 'oddball_sequence')
 # Reference set to 18 (Tetrode 1, channel 1)
 # Possible indication of increased response to oddball on tetrode 8, but there's also noise.
 
-exp4.add_session('16-26-45', 'e', 'oddball', 'oddball_sequence')
+exp4.add_session('16-26-45', 'e', 'standard', 'oddball_sequence')
 # Reference set to 18 (Tetrode 1, channel 1)
 
 exp4.add_site(1484, tetrodes=[2,3,4,6,7,8])
@@ -307,7 +307,8 @@ exp7.add_session('17-01-45', 'g', 'many-standards', 'oddball_sequence')
 exp7.add_session('17-09-04', 'h', 'oddball', 'oddball_sequence')
 # Reference set to 18 (Tetrode 1, channel 1)
 
-exp5.maxDepth = 1006
+exp7.maxDepth = 1006
+
 
 
 

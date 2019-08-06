@@ -11,17 +11,23 @@ reload(figparams)
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
+np.random.seed(5)
 
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_NBQX.h5')
 database = celldatabase.load_hdf(dbPath)
 
+plt.clf()
+
 colorControl = cp.TangoPalette['Aluminium5']
+# colorControl = 'k'
 colorLaser = cp.TangoPalette['SkyBlue1']
 colorNBQX = cp.TangoPalette['Plum1']
+# colorNBQX = cp.TangoPalette['Plum1']
+# colorNBQX = '0.5'
 # colorNBQX = 'm'
 
 waveformLineWidth = 2
-psthLineWidth = 2
+psthLineWidth = 1.5
 psthXrange = [-0.1, 1]
 psthStart = 20 #Index to start (we compute more psth values than we want to show)
 
@@ -61,15 +67,18 @@ examples = [
 
 plt.clf()
 nCriteria = 3
-gsAllCriteria = gridspec.GridSpec(nCriteria, 1, hspace=0.5, wspace=0.6, top=0.95)
+gsAllCriteria = gridspec.GridSpec(nCriteria, 4, hspace=0.5, wspace=0.6, top=0.95)
+# gsAllCriteria = gridspec.GridSpec(nCriteria, 4, hspace=0.5, wspace=0.6, top=0.88, bottom=0.15)
+
 gsAllCriteria.update(left=0.25, right=0.98)
 nExamples = 3
 wSpaceExamples = 0.5
 
+
 gsCriterion = []
 examplesAllCriteria = []
 for indCriterion in [0, 1]:
-    gsThisCriterion = gridspec.GridSpecFromSubplotSpec(1, nExamples, subplot_spec=gsAllCriteria[indCriterion],
+    gsThisCriterion = gridspec.GridSpecFromSubplotSpec(1, nExamples, subplot_spec=gsAllCriteria[indCriterion, 0:3],
                                                        wspace=wSpaceExamples)
     gsCriterion.append(gsThisCriterion)
     examplesThisCriterion = []
@@ -81,7 +90,7 @@ for indCriterion in [0, 1]:
 
 #Waveform/rasterplots
 indCriterion=2
-gsThisCriterion = gridspec.GridSpecFromSubplotSpec(1, nExamples, subplot_spec=gsAllCriteria[indCriterion],
+gsThisCriterion = gridspec.GridSpecFromSubplotSpec(1, nExamples, subplot_spec=gsAllCriteria[indCriterion, 0:3],
                                                    wspace=wSpaceExamples)
 gsCriterion.append(gsThisCriterion)
 examplesThisCriterion = []
@@ -112,12 +121,11 @@ def plot_stim_bars(ax, barY, xStarts, barLength, lw=2, color=colorLaser):
         ax.plot([xStart, xStart+barLength], [barY, barY], '-', lw=lw, color=color)
 
 
-labelPosX = [0.01, 0.23, 0.5, 0.775]   # Horiz position for panel labels
-labelPosY = [0.94]    # Vert position for panel labels
+labelPosX = [0.01, 0.23, 0.43, 0.63, 0.82]   # Horiz position for panel labels
+labelPosY = [0.93, 0.43]    # Vert position for panel labels
 
 
 
-plt.clf()
 
 # Criterion 1: Responds to laser pulse
 
@@ -402,7 +410,7 @@ for indExample in range(nExamples):
     scaleBarStartX = 20
     scaleBarLength = 30
     scaleBarY = np.min(avgWave)
-    axWave.text(scaleBarStartX+scaleBarLength+3, scaleBarY+scaleBarY*0.1, "1 ms", fontsize=fontSizeTicks, ha='right', va='top')
+    axWave.text(scaleBarStartX+scaleBarLength+3, scaleBarY+scaleBarY*0.2, "1 ms", fontsize=fontSizeTicks, ha='right', va='top')
 
     axWave.plot([scaleBarStartX, scaleBarStartX+scaleBarLength], [scaleBarY, scaleBarY], '-', lw=2, color='k', clip_on=False)
 
@@ -416,6 +424,122 @@ axRaster.annotate('C', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction
 axRaster.annotate('D', xy=(labelPosX[3],labelPosY[0]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 
+axRaster.annotate('E', xy=(labelPosX[4],labelPosY[0]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+axRaster.annotate('F', xy=(labelPosX[4],labelPosY[1]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
+
+
+## -- Load data for summary plots -- ##
+databaseFn = '/tmp/database_with_pulse_responses.h5'
+databaseNBQXFn = '/tmp/nbqx_database_with_pulse_responses.h5'
+
+database = celldatabase.load_hdf(databaseFn)
+databaseNBQX = celldatabase.load_hdf(databaseNBQXFn)
+
+# latcells = database.query('summaryPulseLatency>0')
+# nonlasercells = latcells.query("isiViolations<0.02 and spikeShapeQuality>2 and autoTagged==0 and summaryPulsePval<0.05 and nSpikes>2000 and subject!='pinp018'")
+# lasercells = latcells.query('isiViolations<0.02 and spikeShapeQuality>2 and autoTagged==1 and summaryPulsePval<0.05')
+# latcellsNBQX = databaseNBQX.query('summaryPulseLatency>0')
+# nbqxTagged = latcellsNBQX.query('isiViolations<0.02 and spikeShapeQuality>2 and summaryPulsePval<0.05 and summarySurvivedNBQX==1')
+# nbqxNontagged = latcellsNBQX.query('isiViolations<0.02 and spikeShapeQuality>2 and summaryPulsePval<0.05 and summarySurvivedNBQX==0 and autoTagged==0')
+
+
+latcells = database.query('summaryPulseLatency>0')
+untaggedcells = latcells.query("isiViolations<0.02 and spikeShapeQuality>2 and autoTagged==0 and summaryPulsePval<0.05 and nSpikes>2000 and subject!='pinp018'")
+longlasercells = latcells.query('isiViolations<0.02 and spikeShapeQuality>2 and autoTagged==1 and summaryPulsePval<0.05 and summaryPulseLatency>=0.01')
+nonlasercells = pd.concat([untaggedcells, longlasercells])
+# lasercells = database.query('isiViolations<0.02 and spikeShapeQuality>2 and autoTagged==1 and pulsePval<0.05 and summaryTrainResponses>=3')
+# lasercells = latcells.query('isiViolations<0.02 and spikeShapeQuality>2 and autoTagged==1 and summaryPulsePval<0.05')
+lasercells = latcells.query('isiViolations<0.02 and spikeShapeQuality>2 and autoTagged==1 and summaryPulsePval<0.05 and summaryPulseLatency<0.01')
+latcellsNBQX = databaseNBQX.query('summaryPulseLatency>0')
+nbqxTagged = latcellsNBQX.query('isiViolations<0.02 and spikeShapeQuality>2 and summaryPulsePval<0.05 and summarySurvivedNBQX==1')
+nbqxNontagged = latcellsNBQX.query('isiViolations<0.02 and spikeShapeQuality>2 and summaryPulsePval<0.05 and summarySurvivedNBQX==0 and autoTagged==0')
+
+
+
+
+## -- Summary plots -- ##
+ms = 3
+marker = 'o'
+markerAlpha = 0.5
+jitterFrac = 0.15
+def jitter(arr, frac):
+    jitter = (np.random.random(len(arr))-0.5)*2*frac
+    jitteredArr = arr + jitter
+    return jitteredArr
+
+gsSummary = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gsAllCriteria[:,-1], hspace=0.8)
+axSummary0 = plt.subplot(gsSummary[0])
+axSummary1 = plt.subplot(gsSummary[1])
+
+heightFactor = 0.92
+bottomFactor = 1.3
+
+# left, bottom, width, height
+# position0 = axSummary0.get_position().get_points().ravel()
+bbox0 = gsSummary[0].get_position(plt.gcf())
+bbox0.set_points(bbox0.get_points()*np.array([[1, 1], [1, heightFactor]]))
+axSummary0.set_position(bbox0)
+
+# update the height of the top plot
+# newPosition0 = position0 * np.array([1, 1, 1, heightFactor])
+# axSummary0.set_position(newPosition0)
+
+bbox1 = gsSummary[1].get_position(plt.gcf())
+bbox1.set_points(bbox1.get_points()*np.array([[1, bottomFactor], [1, heightFactor]]))
+axSummary1.set_position(bbox1)
+
+
+latencyToPlot = 'summaryPulseLatency'
+numResponsesToPlot = 'summaryTrainResponses'
+
+# taggedColor = 'c'
+# taggedColor = cp.TangoPalette['Chameleon3']
+# taggedColor = cp.TangoPalette['ScarletRed2']
+taggedColor = cp.TangoPalette['SkyBlue2']
+# taggedColor = 'm'
+
+# untaggedColor = 'k'
+# untaggedColor = cp.TangoPalette['Aluminium4']
+untaggedColor = '0.75'
+# untaggedColor = 'm'
+
+# passNBQX = 'g'
+# passNBQX = cp.TangoPalette['Orange2']
+passNBQX = taggedColor
+
+# failNBQX = 'r'
+# failNBQX = cp.TangoPalette['Plum1']
+failNBQX = untaggedColor
+mew=2
+
+
+axSummary0.plot(nonlasercells[latencyToPlot].values*1000,
+                jitter(nonlasercells[numResponsesToPlot].values, jitterFrac),
+                marker, mec=untaggedColor, mfc='None', ms=ms, alpha=markerAlpha)
+axSummary0.plot(lasercells[latencyToPlot].values*1000,
+                jitter(lasercells[numResponsesToPlot].values, jitterFrac),
+                marker, mec=taggedColor, mfc='None', ms=ms, alpha=markerAlpha, mew=mew)
+axSummary1.plot(nbqxTagged[latencyToPlot].values*1000,
+                jitter(nbqxTagged[numResponsesToPlot].values, jitterFrac),
+                marker, mec=passNBQX, mfc='None', ms=ms, alpha=markerAlpha, mew=mew)
+axSummary1.plot(nbqxNontagged[latencyToPlot].values*1000,
+                jitter(nbqxNontagged[numResponsesToPlot].values, jitterFrac),
+                marker, mec=failNBQX, mfc='None', ms=ms, alpha=markerAlpha)
+
+for ax in [axSummary0, axSummary1]:
+    ax.axvline(x=10, color='0.7', ls='--')
+    ax.set_xlim([0, 50])
+    ax.set_xticks([0, 10, 20, 30, 40, 50])
+    ax.set_xticklabels(['0', '', '', '', '', '50'])
+    ax.set_yticks(range(6))
+    ax.set_ylabel('Train responses', fontsize=fontSizeTicks)
+    extraplots.boxoff(ax)
+    extraplots.set_ticks_fontsize(ax, fontSizeTicks)
+    ax.set_xlabel('Latency of response\nto laser (ms)', labelpad=-4, fontsize=fontSizeTicks)
+axSummary0.set_title('Sound response\ncharacterization', fontsize=fontSizeTicks)
+axSummary1.set_title('NBQX control', fontsize=fontSizeTicks)
 
 plt.show()
 if SAVE_FIGURE:

@@ -7,6 +7,7 @@ from jaratoolbox import settings
 from jaratoolbox import extraplots
 reload(extraplots)
 from jaratoolbox import colorpalette
+from jaratoolbox import celldatabase
 from scipy import stats
 import copy
 import pandas as pd
@@ -38,21 +39,23 @@ labelPosY = [0.48, 0.95]    # Vert position for panel labels
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase.h5')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-dbase = pd.read_hdf(dbPath, key='dataframe')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+dbase = celldatabase.load_hdf(dbPath)
+# dbase = pd.read_hdf(dbPath, key='dataframe')
 
-#Copy over rate decoder columns
-dbRateDecoderPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'figure_am', 'celldatabase_with_am_discrimination_accuracy.h5')
-dbaseRateDecoder = pd.read_hdf(dbRateDecoderPath, key='dataframe')
-dbase['accuracyRate'] = dbaseRateDecoder['accuracy']
+# #Copy over rate decoder columns
+# dbRateDecoderPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'figure_am', 'celldatabase_with_am_discrimination_accuracy.h5')
+# dbaseRateDecoder = pd.read_hdf(dbRateDecoderPath, key='dataframe')
+# dbase['accuracyRate'] = dbaseRateDecoder['accuracy']
 
-#Copy over phase decoder columns
-dbPhaseDecoderPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'figure_am', 'celldatabase_with_phase_discrimination_accuracy.h5')
-dbasePhaseDecoder = pd.read_hdf(dbPhaseDecoderPath, key='dataframe')
-possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
-for rate in possibleRateKeys:
-    key = 'phaseAccuracy_{}Hz'.format(rate)
-    dbase[key] = dbasePhaseDecoder[key]
+# #Copy over phase decoder columns
+# dbPhaseDecoderPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'figure_am', 'celldatabase_with_phase_discrimination_accuracy.h5')
+# dbasePhaseDecoder = pd.read_hdf(dbPhaseDecoderPath, key='dataframe')
+# possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
+# for rate in possibleRateKeys:
+#     key = 'phaseAccuracy_{}Hz'.format(rate)
+#     dbase[key] = dbasePhaseDecoder[key]
 
 fig = plt.gcf()
 plt.clf()
@@ -72,7 +75,8 @@ features = ['highestSyncCorrected', 'mutualInfoPerSpikeBits']
 yLabels = ['Highest AM sync. rate (Hz)', 'MI (AM Rate, bits)', 'MI (AM Phase, bits)']
 
 #Select only the cells from AC
-dataframe = dbase.query("brainArea == 'rightAC' and nSpikes>2000")
+# dataframe = dbase.query("brainArea == 'rightAC' and nSpikes>2000")
+dataframe = dbase.query("brainArea == 'rightThal' and nSpikes>2000")
 
 ### GET ONLY CELLS THAT COME FROM SITES WHERE AT LEAST ONE SOUND/LASER CELL WAS RECORDED
 # dataframe = dataframe[~pd.isnull(dataframe['cellX'])]
@@ -96,7 +100,9 @@ goodFitToUse = goodFit.query('fitMidPoint<32000')
 # farUntaggedCellsAM = dataframe[dataframe['farUntagged']==1]
 # farUntaggedCellsAM = farUntaggedCellsAM.query('noiseZscore>0')
 
-taggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==0]
+taggedBool = ((goodFitToUse['taggedCond']==0) & (goodFitToUse['summaryPulseLatency']<0.01))
+
+taggedCellsFreq = goodFitToUse[taggedBool]
 closeUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==1]
 farUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==2]
 
@@ -107,7 +113,8 @@ farUntaggedCellsFreq = goodFitToUse[goodFitToUse['taggedCond']==2]
 # # farUntaggedCellsAM = dataframe[dataframe['taggedCond']==2]
 # farUntaggedCellsAM = dataframe[(dataframe['taggedCond']==1) | (dataframe['taggedCond']==2)]
 
-taggedCellsAM = goodShape[goodShape['taggedCond']==0]
+taggedBool = ((goodShape['taggedCond']==0) & (goodShape['summaryPulseLatency']<0.01))
+taggedCellsAM = goodShape[taggedBool]
 closeUntaggedCellsAM = goodShape[goodShape['taggedCond']==1]
 farUntaggedCellsAM = goodShape[goodShape['taggedCond']==2]
 # farUntaggedCellsAM = goodShape[(goodShape['taggedCond']==1) | (goodShape['taggedCond']==2)]
@@ -591,7 +598,7 @@ extraplots.boxoff(ax)
 ## -- MI (rate) -- ##
 ax = axMIRate
 # feature = "mutualInfoPerSpikeBits"
-feature = 'accuracyRate'
+feature = 'rateDiscrimAccuracy'
 
 dataTagged = taggedCellsAM[feature][pd.notnull(taggedCellsAM[feature])]
 dataTagged[dataTagged<0]=0
@@ -688,7 +695,7 @@ ratesToUse = possibleFreqKeys
 # thal = dataframe.groupby('brainArea').get_group('rightThal')
 
 # keys = ['mutualInfoPhase_{}Hz'.format(rate) for rate in possibleFreqKeys]
-keys = ['phaseAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
+keys = ['phaseDiscrimAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
 
 dataTagged = np.full((len(taggedCellsAM), len(possibleFreqKeys)), np.nan)
 dataCloseUntagged = np.full((len(closeUntaggedCellsAM), len(possibleFreqKeys)), np.nan)
