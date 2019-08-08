@@ -22,7 +22,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         print("No TC for cell {}".format(indRow))
 
     else:
-        eventOnsetTimes = ephysData['events']['stimOn']
+        eventOnsetTimes = ephysData['events']['soundDetectorOn']
+        # eventOnsetTimes = ephysData['events']['stimOn']
         spikeTimes = ephysData['spikeTimes']
         freqEachTrial = bdata['currentFreq']
         if len(eventOnsetTimes) != len(freqEachTrial):
