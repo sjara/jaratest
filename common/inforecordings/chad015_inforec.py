@@ -1,8 +1,7 @@
 from jaratoolbox import celldatabase
 
-subject = 'chad015' 
+subject = 'chad015'
 experiments=[]
-
 
 exp1 = celldatabase.Experiment(subject, '2019-07-17', 'right AC', info=['midLateralDiD', 'facingAnterior', 'soundLeft'])
 experiments.append(exp1)
@@ -209,18 +208,4 @@ exp3.add_session('', 'p', 'tc', 'am_tuning_curve')
 # Reference set to 14 (Tetrode 5, channel 1)
 # 3 intensities
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+exp3.maxDepth = 1025
