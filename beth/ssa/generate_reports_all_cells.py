@@ -30,7 +30,7 @@ number_of_clusters = len(celldb) - 1
 
 # -- Loop through cells and generate reports --
 for indRow,dbRow in celldb.iterrows():
-#for indRow,dbRow in celldb[268:269].iterrows():
+#for indRow,dbRow in celldb[260:275].iterrows():
     ax = plt.subplot2grid((3,4), (0,0)) # Subplots
     #plt.suptitle('{}_{}_{:.0f}um_T{}_c{}'.format(dbRow['subject'], dbRow['date'],
             #dbRow['depth'], dbRow['tetrode'], dbRow['cluster']), ha='right') # Report title
@@ -145,11 +145,24 @@ for indRow,dbRow in celldb.iterrows():
         plt.ylabel('Frequency [Hz]')
         plt.title('Standard Sequence ({} Trials)'.format(numberOfTrialsStd))
 
+        '''
+        Standard waveform ---------------------------------------------------------------
+        '''
+        ax7 = plt.subplot2grid((3, 4), (0, 2))
+        try:
+            spikesorting.plot_waveforms(ephysDataStd['samples'])
+            ax7.set_title('Standard')
+        except ValueError as verror:
+            print(verror)
+            continue
+
     else:
         ax5 = plt.subplot2grid((3, 4), (2, 2))
         plt.xlabel('Time from event onset [s]')
         plt.ylabel('Frequency [Hz]')
         plt.title('Standard Sequence')
+
+        ax7 = plt.subplot2grid((3, 4), (0, 2))
 
     '''
     Oddball --------------------------------------------------------------------
@@ -172,7 +185,6 @@ for indRow,dbRow in celldb.iterrows():
         '''
         Oddball raster plot ------------------------------------------------------------
         '''
-        #ephysDataOddball, bdataOddball = oneCell.load('oddball')
         spikeTimesOdd = ephysDataOdd['spikeTimes']
         eventOnsetTimesOdd = ephysDataOdd['events']['stimOn']
         if len(eventOnsetTimesOdd)==len(bdataOdd['currentFreq'])+1:
@@ -195,24 +207,11 @@ for indRow,dbRow in celldb.iterrows():
         plt.xlabel('Time from event onset [s]')
         plt.ylabel('Frequency [Hz]')
         plt.title('Oddball Sequence ({} Trials)'.format(numberOfTrialsOdd))
-
-        '''
-        Oddball waveform ---------------------------------------------------------------
-        '''
-        ax7 = plt.subplot2grid((3, 4), (0, 2))
-        try:
-            spikesorting.plot_waveforms(ephysDataOdd['samples'])
-            ax7.set_title('Oddball')
-        except ValueError as verror:
-            print(verror)
-            continue
     else:
         ax6 = plt.subplot2grid((3, 4), (1, 2))
         plt.xlabel('Time from event onset [s]')
         plt.ylabel('Frequency [Hz]')
         plt.title('Oddball Sequence')
-
-        ax7 = plt.subplot2grid((3, 4), (0, 2))
 
     '''
     Plotting the overlapped PSTH ---------------------------------------------------
