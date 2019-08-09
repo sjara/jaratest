@@ -204,8 +204,56 @@ exp3.add_session('15-15-20', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'o'
 # Reference set to 14 (Tetrode 5, channel 1)
 
-exp3.add_session('', 'p', 'tc', 'am_tuning_curve')
+exp3.add_session('15-22-20', 'p', 'tc', 'am_tuning_curve')
 # Reference set to 14 (Tetrode 5, channel 1)
 # 3 intensities
 
-exp3.maxDepth = 1025
+
+exp3.add_session('15-55-52', 'q', 'ascending', 'threetones_sequence')
+# Reference set to 14 (Tetrode 5, channel 1)
+# Frequencies chosen based on tetrode 8.
+
+exp3.add_session('16-04-21', 'r', 'descending', 'threetones_sequence')
+# Reference set to 14 (Tetrode 5, channel 1)
+# Frequencies chosen based on tetrode 8.
+
+exp3.add_session('16-12-28', 's', 'ascending', 'threetones_sequence')
+# Reference set to 14 (Tetrode 5, channel 1)
+# Frequencies chosen based on tetrode 1.
+
+exp3.add_session('16-19-19', 't', 'descending', 'threetones_sequence')
+# Reference set to 14 (Tetrode 5, channel 1)
+# Frequencies chosen based on tetrode 1.
+
+
+exp3.add_site(1100, tetrodes=[1,2,3,4,5,6,7,8])
+exp3.add_session('16-37-12', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'u'
+# Reference set to 12 (Tetrode 7, channel 1)
+
+exp3.add_session('16-42-30', 'v', 'tc', 'am_tuning_curve')
+# Reference set to 12 (Tetrode 7, channel 1)
+# 3 intensities
+
+
+exp3.add_site(1101, tetrodes=[1,2,3,4,5,6,7,8])
+exp3.add_session('16-53-49', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'w'
+# No reference
+
+exp3.add_session('17-25-51', 'x', 'tc', 'am_tuning_curve')
+# No reference
+# 3 intensities
+
+exp3.add_session('17-50-13', 'y', 'ascending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrode 7.
+
+exp3.add_session('17-56-37', 'z', 'descending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrode 7.
+
+
+exp3.maxDepth = 1101
+
+
