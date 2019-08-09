@@ -50,11 +50,11 @@ exp1.add_session('17-25-08', 'i', 'standard', 'oddball_sequence')
 exp1.maxDepth = 1022
 
 
-exp2 = celldatabase.Experiment(subject, '2019-08-06', 'left AC', info=['farLateralDiD', 'facingAnterior', 'soundLeft'])
+exp2 = celldatabase.Experiment(subject, '2019-08-06', 'left AC', info=['farLateralDiD', 'facingAnterior', 'soundRight'])
 experiments.append(exp2)
 #Using probe: C39C
 
-exp2.add_site(814, tetrodes=[1,2,3,4,5,6,7,8])
+exp2.add_site(814, tetrodes=[1,2,3,4,5,6,8])
 exp2.add_session('14-17-16', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'a'
 # Reference set to 12 (Tetrode 7, channel 1)
@@ -138,7 +138,7 @@ exp2.maxDepth = 1030
 
 
 
-exp3 = celldatabase.Experiment(subject, '2019-08-08', 'left AC', info=['midLateralDiD', 'facingAnterior', 'soundLeft'])
+exp3 = celldatabase.Experiment(subject, '2019-08-08', 'left AC', info=['midLateralDiD', 'facingAnterior', 'soundRight'])
 experiments.append(exp3)
 #Using probe: C39C
 
@@ -255,5 +255,44 @@ exp3.add_session('17-56-37', 'z', 'descending', 'threetones_sequence')
 
 
 exp3.maxDepth = 1101
+
+
+
+exp4 = celldatabase.Experiment(subject, '2019-08-09', 'left AC', info=['midMedialDiD', 'facingAnterior', 'soundRight'])
+experiments.append(exp4)
+#Using probe: C39C
+
+exp4.add_session('16-43-11', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 12 (Tetrode 7, channel 1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
