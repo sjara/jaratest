@@ -1,6 +1,6 @@
 from jaratoolbox import celldatabase
 
-subject = 'chad013' 
+subject = 'chad013'
 experiments=[]
 
 exp0 = celldatabase.Experiment(subject, '2019-07-01', 'right AC', info=['midMedialDiD' 'facingAnterior' 'soundLeft'])
@@ -163,7 +163,7 @@ exp3.add_session('16-06-10', 'b', 'tc', 'am_tuning_curve')
 # Reference set to 18 (Tetrode 1, channel 1)
 # 3 intensities
 
-exp2.maxDepth = 977
+exp3.maxDepth = 977
 
 exp4 = celldatabase.Experiment(subject, '2019-07-14', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
 experiments.append(exp4)
@@ -206,7 +206,7 @@ exp4.add_session('17-27-33', 'h', 'oddball', 'oddball_sequence')
 # Reference set to 18 (Tetrode 1, channel 1)
 # No indication of increased response to oddball. ):
 
-exp2.maxDepth = 1484
+exp4.maxDepth = 1484
 
 
 exp5 = celldatabase.Experiment(subject, '2019-07-15', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
@@ -267,7 +267,7 @@ exp6.add_session('17-05-13', 'j', 'tc', 'am_tuning_curve')
 exp6.add_session('17-13-36', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'k'
 
-exp5.maxDepth = 1000
+exp6.maxDepth = 1000
 
 
 exp7 = celldatabase.Experiment(subject, '2019-07-16', 'right AC', info=['farLateralDiD', 'facingAnterior', 'soundLeft'])
@@ -308,8 +308,3 @@ exp7.add_session('17-09-04', 'h', 'oddball', 'oddball_sequence')
 # Reference set to 18 (Tetrode 1, channel 1)
 
 exp7.maxDepth = 1006
-
-
-
-
-
