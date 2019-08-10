@@ -157,7 +157,7 @@ exp3.add_session('12-37-28', 'd', 'descending', 'threetones_sequence')
 # Reference set to 14 (Tetrode 5, channel 1)
 
 
-exp3.add_site(875, tetrodes=[1,2,3,4,5,6,7,8])
+exp3.add_site(875, tetrodes=[1,2,3,4,6,8])
 exp3.add_session('13-09-46', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'e'
 # Reference set to 14 (Tetrode 5, channel 1)
@@ -262,34 +262,88 @@ exp4 = celldatabase.Experiment(subject, '2019-08-09', 'left AC', info=['midMedia
 experiments.append(exp4)
 #Using probe: C39C
 
+exp4.add_site(802, tetrodes=[1,2,3,4,5,6,8])
+
 exp4.add_session('16-43-11', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'a'
 # Reference set to 12 (Tetrode 7, channel 1)
 
+exp4.add_session('16-54-32', 'b', 'tc', 'am_tuning_curve')
+# Reference set to 12 (Tetrode 7, channel 1)
+# 3 intensities
+
+exp4.add_session('17-18-26', 'd', 'ascending', 'threetones_sequence')
+# Reference set to 12 (Tetrode 7, channel 1)
+# Frequencies chosen based on tetrode 2.
+# The behavioral data suffix does indeed correspond to the ascending sequence. I accidently saved it as 'd' instead of 'c'.
+
+exp4.add_session('17-25-34', 'c', 'descending', 'threetones_sequence')
+# Reference set to 12 (Tetrode 7, channel 1)
+# Frequencies chosen based on tetrode 2.
+
+exp4.add_session('17-35-47', 'e', 'ascending', 'threetones_sequence')
+# Reference set to 12 (Tetrode 7, channel 1)
+# Frequencies chosen based on tetrode 8.
+
+exp4.add_session('17-43-10', 'f', 'descending', 'threetones_sequence')
+# Reference set to 12 (Tetrode 7, channel 1)
+# Frequencies chosen based on tetrode 8.
+
+exp4.add_site(877, tetrodes=[1,2,3,4,5,6,7,8])
+
+exp4.add_session('17-59-49', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'h'
+# No reference
+# The behavioral data suffix does indeed correspond to the noiseburst. I accidently saved it as 'h' instead of 'g'.
+
+exp4.add_session('18-08-03', 'g', 'tc', 'am_tuning_curve')
+# No reference
+# 3 intensities
+
+exp4.add_session('18-39-02', 'i', 'ascending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrodes 2,5.
+
+exp4.add_session('18-46-10', 'j', 'descending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrodes 2,5.
+
+exp4.add_session('19-02-13', 'k', 'ascending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrodes 4.
+
+exp4.add_session('19-10-15', 'l', 'descending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrodes 4.
 
 
+exp4.add_site(950, tetrodes=[1,2,3,4,5,6,7,8])
 
+exp4.add_session('19-23-55', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'm'
+# No reference
 
+exp4.add_session('19-29-00', 'n', 'tc', 'am_tuning_curve')
+# No reference
+# 3 intensities
 
+exp4.add_session('19-52-32', 'o', 'ascending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrodes 2,3.
 
+exp4.add_session('20-01-35', 'p', 'descending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrodes 2,3.
 
+exp4.add_session('20-31-52', 'q', 'ascending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrodes 6.
 
+exp4.add_session('20-39-31', 'r', 'descending', 'threetones_sequence')
+# No reference
+# Frequencies chosen based on tetrodes 6.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+exp4.maxDepth = 950
 
 
 
