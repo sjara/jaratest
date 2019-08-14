@@ -6,11 +6,12 @@ PATH_TO_STUDY = '/home/jarauser/src/jaratest/common/2019astrpi'
 PATH_TO_TEST = '/home/jarauser/src/jaratest/allison/d1pi032'
 # List of animals used in this study
 ASTR_D1_CHR2_MICE = ['d1pi026', 'd1pi032', 'd1pi033', 'd1pi036']
-SINGLE_MOUSE = ['d1pi033']  # for data exploration/testing
+SINGLE_MOUSE = ['d1pi036']  # for data exploration/testing
 
 # --- session name --- add new session names here if used the new names
 # ideally, let's use the same session name throughout
 tuningcurve = ['tuningCurve', 'tuningCurve(tc)']
+
 # --- individual parameters for cell selection ---
 ISI_THRESHOLD = 0.02  # maximum allowed % ISI violations per cluster
 SPIKE_QUALITY_THRESHOLD = 2

@@ -1,4 +1,6 @@
 '''
+CLUSTER FIRST!!!
+
 Generate and save database with calculated stats and parameters that will be used in analysis
 '''
 import os

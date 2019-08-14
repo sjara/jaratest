@@ -24,12 +24,12 @@ from jaratoolbox import settings
 import database_generation_funcs as funcs
 import figparams
 
-dbPath = os.path.join(settings.DATABASE_PATH, 'photoidentification_cells.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'photoidentification_cells.h5')
 dbase = celldatabase.load_hdf(dbPath)
 
 figName = 'supplement_figure_gaussian_frequency_tuning_fit'
 
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, figName)
 #dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
 
 # -- Example cells -- #

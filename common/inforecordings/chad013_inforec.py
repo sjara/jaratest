@@ -1,6 +1,6 @@
 from jaratoolbox import celldatabase
 
-subject = 'chad013' 
+subject = 'chad013'
 experiments=[]
 
 exp0 = celldatabase.Experiment(subject, '2019-07-01', 'right AC', info=['midMedialDiD' 'facingAnterior' 'soundLeft'])
@@ -163,7 +163,7 @@ exp3.add_session('16-06-10', 'b', 'tc', 'am_tuning_curve')
 # Reference set to 18 (Tetrode 1, channel 1)
 # 3 intensities
 
-exp2.maxDepth = 977
+exp3.maxDepth = 977
 
 exp4 = celldatabase.Experiment(subject, '2019-07-14', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
 experiments.append(exp4)
@@ -206,7 +206,7 @@ exp4.add_session('17-27-33', 'h', 'oddball', 'oddball_sequence')
 # Reference set to 18 (Tetrode 1, channel 1)
 # No indication of increased response to oddball. ):
 
-exp2.maxDepth = 1484
+exp4.maxDepth = 1484
 
 
 exp5 = celldatabase.Experiment(subject, '2019-07-15', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
@@ -267,7 +267,7 @@ exp6.add_session('17-05-13', 'j', 'tc', 'am_tuning_curve')
 exp6.add_session('17-13-36', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'k'
 
-exp5.maxDepth = 1000
+exp6.maxDepth = 1000
 
 
 exp7 = celldatabase.Experiment(subject, '2019-07-16', 'right AC', info=['farLateralDiD', 'facingAnterior', 'soundLeft'])
@@ -310,6 +310,67 @@ exp7.add_session('17-09-04', 'h', 'oddball', 'oddball_sequence')
 exp7.maxDepth = 1006
 
 
+
+exp8 = celldatabase.Experiment(subject, '2019-08-12', 'left AC', info=['midMedialDiD', 'facingLeft', 'soundRight'])
+experiments.append(exp8)
+#Using probe: C39C
+
+exp8.add_site(1319, tetrodes=[1,2,3,4,5,6,7,8])
+exp8.add_session('17-10-18', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp8.add_session('17-16-45', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'b'
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp8.add_site(1320, tetrodes=[2,3,4,5,6,7,8])
+exp8.add_session('17-29-56', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'c'
+# Reference set to 18 (Tetrode 1, channel 1)
+
+
+exp8.add_session('17-38-44', 'd', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+# 2 intensities: 60, 70dB
+# Frequency preference of tetrode 2.
+
+exp8.add_session('18-01-45', 'e', 'ascending', 'threetones_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+# Frequencies chosen based on tetrodes 2.
+
+exp8.add_session('18-10-51', 'f', 'descending', 'threetones_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+# Frequencies chosen based on tetrodes 2.
+
+
+exp8.maxDepth = 1320
+
+
+
+exp9 = celldatabase.Experiment(subject, '2019-08-13', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+experiments.append(exp9)
+#Using probe: D65D
+
+
+exp9.add_site(1100, tetrodes=[2,4,5,6,7,8])
+exp9.add_session('18-56-36', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp9.add_session('19-01-47', 'b', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+# 2 intensities: 60, 70dB
+
+exp9.add_session('19-20-54', 'c', 'ascending', 'threetones_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+# Frequencies chosen based on tetrodes 2.
+
+exp9.add_session('19-28-22', 'd', 'descending', 'threetones_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+# Frequencies chosen based on tetrodes 2.
+
+exp9.maxDepth = 1100
 
 
 
