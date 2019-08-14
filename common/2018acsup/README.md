@@ -36,11 +36,58 @@ This is the database initially produced by celldatabase.generate_cell_database_f
 ## Base stats
 These are the columns added to the generic database after calculation of base stats:
 
-* *AMRate*: the amplitude modulation rate used during the bandwidth session for this cell
-* *bestBandSession*: the index of the bandwidth session  whose centre frequency was closest to this cell's preferred frequency (useful when multiple bandwidth sessions were recorded at one site)
-* *gaussFit*: the parameters of the Gaussian curve that best fits this cell's frequency tuning curve. The parameters are (in order as saved in the database): mean, amplitude, standard deviation, offset
+### Common
+These columns appear for both the photoidentification and inactivation database:
+
+* *bestBandSession*: the index of the bandwidth session  whose centre frequency was closest to this cell's preferred frequency (useful when multiple bandwidth sessions were recorded at one site).
+* *gaussFit*: the parameters of the Gaussian curve that best fits this cell's frequency tuning curve. The parameters are (in order as saved in the database): mean, amplitude, standard deviation, offset.
+* *tuningTimeRange*: the time range over which the cell's pure tone responses are analysed to calculate a tuning curve.
+* *tuningFitR2*: the R^2 value of the Gaussian curve fit to this cell's frequency tuning.
+* *prefFreq*: this cell's estimated preferred frequency, calculated from the location of the peak of the Gaussian curve fit to this cell's tuning data.
+* *octavesFromPrefFreq*: the difference (in octaves) between this cell's estimated preferred frequency (*prefFreq*) and the centre frequency used during the bandwidth trials.
+* *soundResponseUStat*: the test statistic obtained when testing for significance between baseline firing rate and sound-induced firing rate for any combination of parameters during the bandwidth session. The time ranges used (in seconds from sound onset) were -1.2 to -0.2 for baseline and 0.0 to 1.0 for sound.
+* *soundResponsePVal*: the resulting p value of the test for significant differences in firing rate between baseline firing and sound-induced firing. The test statistic is stored in *soundResponseUStat*.
+* *onsetSoundResponseUStat*: as *soundResponseUStat*, but looking at sound onset. The time ranges used (in seconds from sound onset), were -0.25 to -0.2 for baseline and 0.0 to 0.05 for sound.
+* *onsetSoundResponsePVal*: the resulting p value of the test for significant differences in firing rate between baseline firing and firing at sound onset. The test statistic is stored in *onsetSoundResponsePVal*.
+* *sustainedSoundResponseUStat*: as *soundResponseUStat*, but looking at sustained sound response. The time ranges used (in seconds from sound onset), were -1.0 to -0.2 for baseline and 0.2 to 1.0 for sound.
+* *sustainedSoundResponsePVal*: the resulting p value of the test for significant differences in firing rate between baseline firing and sustained sound-induced firing. The test statistic is stored in *sustainedSoundResponseUStat*.
+* *laserUStat*: the test statistic obtained when testing for significance between baseline firing rate and laser-induced firing rate. The time ranges used (in seconds from laser onset) were (for photoID) -0.05 to -0.04 for baseline and 0.0 to 0.01 for laser, and (for inactivation) -0.3 to -0.2 for baseline and 0.0 to 0.1 for laser.
+* *laserPVal*: the resulting p value of the test for significant differences in firing rate between baseline firing and laser-induced firing. The test statistic is stored in *laserUStat*.
+
+### PhotoID
+These columns only appear in the photoidentification database:
+
+* *AMRate*: the amplitude modulation rate used during the bandwidth session for this cell.
 * *laserChangeFR*: the difference in firing rate (in spikes/second) between the spontaneous firing rate and the laser firing rate. Positive values mean the laser evoked a positive change in firing rate.
-* *laserPVal*: the p value of
+* *spikeWidth*: the average difference in time between the sodium peak and potassium peak. 
+
+### Inactivation
+These columns only appear in the inactivation database:
+
+* *controlSession*: 0 for cells inactivated normally, 1 for cells in the control condition (laser on, not directed at AC)
+* *baselineFRnoLaser*: spontaneous firing rate without laser during bandwidth session. The time range used was (in seconds from sound onset) -0.05 to 0.0, since laser turns on 100ms before sound.
+* *baselineFRLaser*: spontaneous firing rate with laser during bandwidth session. The time range used was (in seconds from sound onset) -0.05 to 0.0, since laser turns on 100ms before sound. First 50ms of laser are excluded to remove effects of laser onset.
+* *baselineChangeFR*: change in spontaneous firing rate between the laser and no laser condition. Difference between *baselineFRLaser* and *baselineFRnoLaser*.
+
+## Indices
+These are the columns added to the database only for cells passing certain criteria in their base stats. The criteria set during database creation are more generous than those used in the final study, to allow us to relax them if needed without regenerating the database.
+
+### PhotoID
+These columns appear in the photoidentification database:
+
+* *R0*, *RD*, *RS*, *m*, *sigmaD*, *sigmaS*: the parameters of the Carandini fit used to model this cell's bandwidth tuning curve. Different versions of these columns exist for different methods of calculating the tuning curve (e.g. *R0noZero*).
+* *bandwidthTuningR2*: the R^2 value of the Carandini model fit to the bandwidth tuning data.
+* *fitSustainedSuppressionIndex*: the suppression index, the normalised ratio between the peak response and white noise response, calculated using predicted firing rates from the model fit.
+* *fitSustainedPrefBandwidth*: the bandwidth eliciting the highest firing rate in this cell, estimated using the predicted firing rates from the model fit.
+
+### Inactivation
+The columns in the photoidentification database also appear here, though split by laser and no laser trials (e.g. *fitSustainedSuppressionIndexLaser* and *fitSustainedSuppressionIndexNoLaser*).
+
+These columns only appear in the inactivation database:
+
+* *laserChangeResponse*: the change in the sustained sound response (200-1000 ms after sound onset) during the bandwidth session with laser presentation. Calculated as the sound response with laser minus the control sound response, averaged over all bandwidths.
+* *fitPeakChangeFR*: the change in peak firing rate during the bandwidth session with laser presentation. Calculated as the model-estimated peak firing rate in the control condition subtracted from the firing rate at the same bandwidth in the laser condition.
+* *fitWNChangeFR*: like *fitPeakChangeFR*, but for the white noise response instead of the peak response.
 
 # Figures
 All figures require access to the databases (`photoidentification_cells.h5` and `inactivation_cells.h5`), the clustered ephys data, and the behaviour data.
