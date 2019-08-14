@@ -245,7 +245,6 @@ for indRow,dbRow in celldb.iterrows():
                 colorEachCond='k',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
         extraplots.plot_psth(spikeCountMatHighFreqOddInOddPara/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
                 colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-        plt.title('High Freq Sound')
         plt.xlabel('Time from event onset [s]')
         plt.ylabel('Firing Rate [Hz]')
         plt.title('{} Hz Sound'.format(arrayOfFrequenciesOdd[1]))
