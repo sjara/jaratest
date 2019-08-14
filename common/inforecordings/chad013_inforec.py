@@ -366,7 +366,7 @@ exp9.add_session('19-20-54', 'c', 'ascending', 'threetones_sequence')
 # Reference set to 18 (Tetrode 1, channel 1)
 # Frequencies chosen based on tetrodes 2.
 
-exp9.add_session('', 'd', 'descending', 'threetones_sequence')
+exp9.add_session('19-28-22', 'd', 'descending', 'threetones_sequence')
 # Reference set to 18 (Tetrode 1, channel 1)
 # Frequencies chosen based on tetrodes 2.
 
