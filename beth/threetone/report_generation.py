@@ -25,6 +25,9 @@ import studyparams
 dbPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
 dbFilename = os.path.join(dbPath,'celldb_{}.h5'.format(studyparams.STUDY_NAME))
 
+figFormat = 'png'
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,'reports')
+
 # -- Load the database of cells --
 celldb = celldatabase.load_hdf(dbFilename)
 
@@ -41,8 +44,14 @@ timeRange = [-0.1, 0.4]  # In seconds
 ax = plt.subplot2grid((4,6), (0,0)) # Subplots
 ax0 = plt.subplot2grid((4,6), (0,0))
 ax0.axis('off')
-plt.text(0.02, 0.8, '{}_{}_{:.0f}um_T{}_c{}'.format(dbRow['subject'], dbRow['date'],
+plt.text(0.0, 0.8, '{}_{}_{:.0f}um_T{}_c{}'.format(dbRow['subject'], dbRow['date'],
         dbRow['depth'], dbRow['tetrode'], dbRow['cluster']), fontsize=10)
+ax20 = plt.subplot2grid((4,6), (0,2))
+ax20.axis('off')
+plt.text(0.3, 0.5, 'Ascending', fontsize=12)
+ax21 = plt.subplot2grid((4,6), (0,4))
+ax21.axis('off')
+plt.text(0.25, 0.5, 'Descending', fontsize=12)
 """
 Noiseburst
 """
@@ -57,14 +66,14 @@ eventOnsetTimesN = ephysDataN['events']['stimOn']
 """
 ax1 = plt.subplot2grid((4,6), (1,0))
 extraplots.raster_plot(spikeTimesFromEventOnsetN,indexLimitsEachTrialN,timeRange)
-plt.title('Noiseburst')
+plt.title('Noiseburst', fontsize=9)
 
 """
 -- Noiseburst waveform --
 """
 ax2 = plt.subplot2grid((4,6), (2,0))
 spikesorting.plot_waveforms(ephysDataN['samples'])
-plt.title('Noiseburst')
+plt.title('Cell Waveform From Noiseburst', fontsize=9)
 
 """
 Tuning Curve
@@ -86,7 +95,7 @@ trialsEachCondT = behavioranalysis.find_trials_each_type(frequencies_each_trial,
 ax4 = plt.subplot2grid((4,6), (0,1), rowspan=3)
 (pRaster,hcond,zline) = extraplots.raster_plot(spikeTimesFromEventOnsetT,indexLimitsEachTrialT,timeRange, trialsEachCondT)
 plt.setp(pRaster,ms=1)
-plt.title('Tuning curve')
+plt.title('Tuning curve', fontsize=9)
 
 """
 -- ISI --
@@ -115,10 +124,9 @@ standardForFirstOddballAscend = firstOddballAscend - 2
 standardForSecondOddballAscend = secondOddballAscend - 4
 
 firstOddballIndexLimitsAscend = indexLimitsEachTrialAscend[:,firstOddballAscend]
-#secondOddballIndexLimitsAscend = indexLimitsEachTrialAscend[:, secondOddballAscend]
+secondOddballIndexLimitsAscend = indexLimitsEachTrialAscend[:, secondOddballAscend]
 # --- Temp ---
-print('Remember to change this!')
-secondOddballIndexLimitsAscend = indexLimitsEachTrialAscend[:,bdataAscend['currentFreq']==22000]
+#secondOddballIndexLimitsAscend = indexLimitsEachTrialAscend[:,bdataAscend['currentFreq']==22000]
 
 standardForFirstOddballIndexLimitsAscend = indexLimitsEachTrialAscend[:, standardForFirstOddballAscend]
 standardForSecondOddballIndexLimitsAscend = indexLimitsEachTrialAscend[:, standardForSecondOddballAscend]
@@ -128,15 +136,15 @@ standardForSecondOddballIndexLimitsAscend = indexLimitsEachTrialAscend[:, standa
 """
 ax7 = plt.subplot2grid((4,6), (1,2))
 extraplots.raster_plot(spikeTimesFromEventOnsetAscend,firstOddballIndexLimitsAscend,timeRange)
-plt.xlabel('Time From Event Onset [s]')
-plt.ylabel('Oddball Trial')
-plt.title('Ascending - First Oddball')
+plt.xlabel('Time From Event Onset [s]', fontsize=9)
+plt.ylabel('Trial', fontsize=9)
+plt.title('First Oddball', fontsize=9)
 
 ax10 = plt.subplot2grid((4,6), (1,3))
 extraplots.raster_plot(spikeTimesFromEventOnsetAscend,secondOddballIndexLimitsAscend,timeRange)
-plt.xlabel('Time From Event Onset [s]')
-plt.ylabel('Oddball Trial')
-plt.title('Ascending - Second Oddball')
+plt.xlabel('Time From Event Onset [s]', fontsize=9)
+plt.ylabel('Trial', fontsize=9)
+plt.title('Second Oddball', fontsize=9)
 
 ax8 = plt.subplot2grid((4,6), (2,2))
 ax11 = plt.subplot2grid((4,6), (2,3))
@@ -145,15 +153,18 @@ ax11 = plt.subplot2grid((4,6), (2,3))
 """
 frequenciesEachTrialAscend = bdataAscend['currentFreq']
 arrayOfFrequenciesAscend = np.unique(bdataAscend['currentFreq'])
-labelsForYaxis = ['%.0f' % f for f in arrayOfFrequenciesAscend]
+arrayOfFrequenciesAscendkHz = arrayOfFrequenciesAscend/1000
+labelsForYaxis = ['%.0f' % f for f in arrayOfFrequenciesAscendkHz]
 
 trialsEachCondAscend = behavioranalysis.find_trials_each_type(frequenciesEachTrialAscend,
         arrayOfFrequenciesAscend)
 
-ax6 = plt.subplot2grid((4,6), (0,2))
+ax6 = plt.subplot2grid((4,6), (0,3))
 (pRaster,hcond,zline) = extraplots.raster_plot(spikeTimesFromEventOnsetAscend,indexLimitsEachTrialAscend,timeRange,
         trialsEachCondAscend, labels=labelsForYaxis)
 plt.setp(pRaster,ms=1)
+plt.xlabel('Time From Event Onset [s]', fontsize=9)
+plt.ylabel('Frequency [kHz]', fontsize=9)
 
 """
 -- PSTH --
@@ -178,25 +189,23 @@ extraplots.plot_psth(spikeCountMatFirstOddballAscend/binWidth, smoothWinSizePsth
                 colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 extraplots.plot_psth(spikeCountMatStdForFirstOddballAscend/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
                 colorEachCond='k',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-plt.xlabel('Time from event onset [s]')
-plt.ylabel('Firing Rate [Hz]')
-plt.title('Ascending - {} Hz Sound'.format(arrayOfFrequenciesAscend[2]))
+plt.xlabel('Time from event onset [s]', fontsize=9)
+plt.ylabel('Firing Rate [Hz]', fontsize=9)
+plt.title('{} kHz Sound'.format(arrayOfFrequenciesAscend[2]/1000), fontsize=9)
 # -- Legend for PSTH --
 oddball_patch = mpatches.Patch(color='b',label='Oddball')
 standard_patch = mpatches.Patch(color='k',label='Standard')
-plt.legend(handles=[oddball_patch, standard_patch])
+plt.legend(handles=[oddball_patch, standard_patch], fontsize=7)
 
 ax12 = plt.subplot2grid((4,6), (3,3))
 extraplots.plot_psth(spikeCountMatSecondOddballAscend/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
                 colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 extraplots.plot_psth(spikeCountMatStdForSecondOddballAscend/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
                 colorEachCond='k',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-plt.xlabel('Time from event onset [s]')
-plt.ylabel('Firing Rate [Hz]')
-plt.title('Ascending - {} Hz Sound'.format(arrayOfFrequenciesAscend[1]))
-plt.legend(handles=[oddball_patch, standard_patch])
-
-
+plt.xlabel('Time from event onset [s]', fontsize=9)
+plt.ylabel('Firing Rate [Hz]', fontsize=9)
+plt.title('{} kHz Sound'.format(arrayOfFrequenciesAscend[1]/1000), fontsize=9)
+plt.legend(handles=[oddball_patch, standard_patch], fontsize=7)
 
 """
 Three tone - Descending
@@ -229,15 +238,15 @@ standardForSecondOddballIndexLimitsDescend = indexLimitsEachTrialDescend[:, stan
 
 ax14 = plt.subplot2grid((4,6), (1,4))
 extraplots.raster_plot(spikeTimesFromEventOnsetDescend,firstOddballIndexLimitsDescend,timeRange)
-plt.xlabel('Time From Event Onset [s]')
-plt.ylabel('Oddball Trial')
-plt.title('Descending - First Oddball')
+plt.xlabel('Time From Event Onset [s]', fontsize=9)
+plt.ylabel('Trial', fontsize=9)
+plt.title('First Oddball', fontsize=9)
 
-ax17 = plt.subplot2grid((4,6), (1,7))
+ax17 = plt.subplot2grid((4,6), (1,5))
 extraplots.raster_plot(spikeTimesFromEventOnsetDescend,secondOddballIndexLimitsDescend,timeRange)
-plt.xlabel('Time From Event Onset [s]')
-plt.ylabel('Oddball Trial')
-plt.title('Descending - Second Oddball')
+plt.xlabel('Time From Event Onset [s]', fontsize=9)
+plt.ylabel('Trial', fontsize=9)
+plt.title('Second Oddball', fontsize=9)
 
 ax15 = plt.subplot2grid((4,6), (2,4))
 ax18 = plt.subplot2grid((4,6), (2,5))
@@ -246,15 +255,19 @@ ax18 = plt.subplot2grid((4,6), (2,5))
 """
 frequenciesEachTrialDescend = bdataDescend['currentFreq']
 arrayOfFrequenciesDescend = np.unique(bdataDescend['currentFreq'])
-labelsForYaxis = ['%.0f' % f for f in arrayOfFrequenciesDescend]
+arrayOfFrequenciesDescendkHz = arrayOfFrequenciesDescend/1000
+labelsForYaxis = ['%.0f' % f for f in arrayOfFrequenciesDescendkHz]
 
 trialsEachCondDescend = behavioranalysis.find_trials_each_type(frequenciesEachTrialDescend,
         arrayOfFrequenciesDescend)
 
-ax13 = plt.subplot2grid((4,6), (0,4))
+ax13 = plt.subplot2grid((4,6), (0,5))
 (pRaster,hcond,zline) = extraplots.raster_plot(spikeTimesFromEventOnsetDescend,indexLimitsEachTrialDescend,timeRange,
         trialsEachCondDescend, labels=labelsForYaxis)
 plt.setp(pRaster,ms=1)
+plt.xlabel('Time From Event Onset [s]', fontsize=9)
+plt.ylabel('Frequency [kHz]', fontsize=9)
+
 
 """
 -- PSTH --
@@ -279,30 +292,39 @@ extraplots.plot_psth(spikeCountMatFirstOddballDescend/binWidth, smoothWinSizePst
                 colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 extraplots.plot_psth(spikeCountMatStdForFirstOddballDescend/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
                 colorEachCond='k',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-plt.xlabel('Time from event onset [s]')
-plt.ylabel('Firing Rate [Hz]')
-#plt.title('Descending - {} Hz Sound'.format(arrayOfFrequenciesDescend[1]))
+plt.xlabel('Time from event onset [s]', fontsize=9)
+plt.ylabel('Firing Rate [Hz]', fontsize=9)
+plt.title('{} kHz Sound'.format(arrayOfFrequenciesDescend[0]/1000), fontsize=9)
 # -- Legend for PSTH --
 oddball_patch = mpatches.Patch(color='b',label='Oddball')
 standard_patch = mpatches.Patch(color='k',label='Standard')
-plt.legend(handles=[oddball_patch, standard_patch])
+plt.legend(handles=[oddball_patch, standard_patch], fontsize=7)
 
 ax19 = plt.subplot2grid((4,6), (3,5))
 extraplots.plot_psth(spikeCountMatSecondOddballDescend/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
                 colorEachCond='b',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
 extraplots.plot_psth(spikeCountMatStdForSecondOddballDescend/binWidth, smoothWinSizePsth,timeVec,trialsEachCond=[],
                 colorEachCond='k',linestyle=None,linewidth=lwPsth,downsamplefactor=downsampleFactorPsth)
-plt.xlabel('Time from event onset [s]')
-plt.ylabel('Firing Rate [Hz]')
-#plt.title('Descending - {} Hz Sound'.format(arrayOfFrequenciesDescend[2]))
-plt.legend(handles=[oddball_patch, standard_patch])
+plt.xlabel('Time from event onset [s]', fontsize=9)
+plt.ylabel('Firing Rate [Hz]', fontsize=9)
+plt.title('{} kHz Sound'.format(arrayOfFrequenciesDescend[1]/1000), fontsize=9)
+plt.legend(handles=[oddball_patch, standard_patch], fontsize=7)
 
 """
 -- Last descending waveform --
 """
 ax3 = plt.subplot2grid((4,6), (3,0))
 spikesorting.plot_waveforms(ephysDataDescend['samples'])
-plt.title('Last Descending')
+plt.title('Cell Waveform From Last Descending', fontsize=9)
+
+'''
+Saving the figure --------------------------------------------------------------
+'''
+figFilename ='{}_{}_{}um_T{}_c{}.{}'.format(dbRow['subject'],dbRow['date'],dbRow['depth'],
+        dbRow['tetrode'],dbRow['cluster'],figFormat)
+figFullpath = os.path.join(outputDir,figFilename)
+plt.savefig(figFullpath,format=figFormat)
+plt.gcf().set_size_inches([18,10])
 
 plt.tight_layout()
 plt.show()
