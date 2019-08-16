@@ -410,7 +410,7 @@ exp10.add_session('14-15-59', 'f', 'descending', 'threetones_sequence')
 # Frequencies chosen based on tetrodes 2,4.
 # 18,000 trials / 60 presentations of oddball
 
-exp10.add_site(1430, tetrodes=[1,2,3,4,5,6,7,8])
+exp10.add_site(1430, tetrodes=[1,2,4,5,6,7,8])
 
 exp10.add_session('14-44-57', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'g'
@@ -433,7 +433,7 @@ exp10.add_session('15-39-16', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'k'
 # Reference set to 25 (Tetrode 3, channel 1)
 
-exp10.add_site(1667, tetrodes=[1,2,3,4,5,6,7,8])
+exp10.add_site(1667, tetrodes=[1,2,4,5,6,7,8])
 
 exp10.add_session('16-01-15', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'l'
