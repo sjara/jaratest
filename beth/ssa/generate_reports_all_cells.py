@@ -29,8 +29,8 @@ celldb = celldatabase.load_hdf(dbFilename)
 number_of_clusters = len(celldb) - 1
 
 # -- Loop through cells and generate reports --
-for indRow,dbRow in celldb.iterrows():
-#for indRow,dbRow in celldb[260:275].iterrows():
+#for indRow,dbRow in celldb.iterrows():
+for indRow,dbRow in celldb[260:261].iterrows():
     ax = plt.subplot2grid((3,4), (0,0)) # Subplots
     #plt.suptitle('{}_{}_{:.0f}um_T{}_c{}'.format(dbRow['subject'], dbRow['date'],
             #dbRow['depth'], dbRow['tetrode'], dbRow['cluster']), ha='right') # Report title
