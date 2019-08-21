@@ -28,10 +28,7 @@ Contains functions called during database generation. Yashar's functions for mod
 
 # Database contents
 ## Generic database
-This is the database initially produced by celldatabase.generate_cell_database_from_subjects. It contains the following columns:
-
-* *behavSuffix*: the suffixes for the behaviour files associated with the sessions this cell is from
-* *brainArea*: which part of the brain this cell is from
+This is the database initially produced by celldatabase.generate_cell_database_from_subjects(). The columns produced by this database can be found in the documentation for celldatabase.
 
 ## Base stats
 These are the columns added to the generic database after calculation of base stats:
