@@ -497,7 +497,7 @@ exp11.maxDepth = 1175
 
 
 
-exp12 = celldatabase.Experiment(subject, '2019-08-19', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+exp12 = celldatabase.Experiment(subject, '2019-08-19', 'left AC', info=['midMedialDiD', 'facingLeft', 'soundRight'])
 experiments.append(exp12)
 #Using probe: DD46
 
@@ -594,19 +594,106 @@ exp12.add_session('18-01-10', 't', 'descending', 'threetones_sequence')
 # Reference set to 25 (Tetrode 3, channel 1)
 # Frequencies chosen based on tetrodes 1,2,4.
 
-
 exp12.maxDepth = 1455
 
 
 
+exp13 = celldatabase.Experiment(subject, '2019-08-20', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+experiments.append(exp13)
+#Using probe: D65D
+
+exp13.add_site(925, tetrodes=[1,2,3,4,7,8])
+
+exp13.add_session('12-00-34', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 3 (Tetrode 6, channel 1)
+# Strong indication of sound responses on tetrode 1. 
+
+exp13.add_session('12-05-59', 'b', 'tc', 'am_tuning_curve')
+# Reference set to 3 (Tetrode 6, channel 1)
+
+exp13.add_session('12-21-20', 'c', 'ascending', 'threetones_sequence')
+# Reference set to 3 (Tetrode 6, channel 1)
+# Frequencies chosen based on tetrode 1.
+
+exp13.add_session('12-30-52', 'd', 'descending', 'threetones_sequence')
+# Reference set to 3 (Tetrode 6, channel 1)
+# Frequencies chosen based on tetrode 1.
 
 
+exp13.add_site(1000, tetrodes=[1,2,3,4,5,6,7,8])
+
+exp13.add_session('13-01-17', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'e'
+# Reference set to 25 (Tetrode 3, channel 1)
+# Indication of sound responses on tetrode 4. 
+
+exp13.add_session('13-06-06', 'f', 'tc', 'am_tuning_curve')
+# Reference set to 25 (Tetrode 3, channel 1)
+
+exp13.add_session('13-29-41', 'g', 'ascending', 'threetones_sequence')
+# Reference set to 25 (Tetrode 3, channel 1)
+# Frequencies chosen based on tetrodes 1,2.
+
+exp13.add_session('13-40-45', 'h', 'descending', 'threetones_sequence')
+# Reference set to 25 (Tetrode 3, channel 1)
+# Frequencies chosen based on tetrodes 1,2.
 
 
+exp13.add_site(1075, tetrodes=[1,2,3,4,6,8])
+
+exp13.add_session('16-34-36', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'i'
+# Reference set to 14 (Tetrode 5, channel 1)
+
+exp13.add_session('16-40-48', 'j', 'tc', 'am_tuning_curve')
+# Reference set to 14 (Tetrode 5, channel 1)
+
+exp13.add_session('16-58-20', 'k', 'ascending', 'threetones_sequence')
+# Reference set to 14 (Tetrode 5, channel 1)
+# Frequencies chosen based on tetrodes 1,4.
+
+exp13.add_session('17-08-25', 'l', 'descending', 'threetones_sequence')
+# Reference set to 14 (Tetrode 5, channel 1)
+# Frequencies chosen based on tetrodes 1,4.
 
 
+exp13.add_site(1150, tetrodes=[1,2,3,4,5,6,8])
+
+exp13.add_session('17-48-43', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'm'
+# Reference set to 12 (Tetrode 7, channel 1)
+
+exp13.add_session('17-52-39', 'n', 'tc', 'am_tuning_curve')
+# Reference set to 12 (Tetrode 7, channel 1)
+
+exp13.add_session('18-12-30', 'o', 'ascending', 'threetones_sequence')
+# Reference set to 12 (Tetrode 7, channel 1)
+# Frequencies chosen based on tetrodes 3,4.
+
+exp13.add_session('18-22-13', 'p', 'descending', 'threetones_sequence')
+# Reference set to 12 (Tetrode 7, channel 1)
+# Frequencies chosen based on tetrodes 3,4.
 
 
+exp13.add_site(1150, tetrodes=[1,2,3,4,5,6,8])
+
+exp13.add_session('18-43-36', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'q'
+# Reference set to 12 (Tetrode 7, channel 1)
+
+exp13.add_session('18-48-23', 'r', 'tc', 'am_tuning_curve')
+# Reference set to 12 (Tetrode 7, channel 1)
+
+exp13.add_session('19-11-37', 's', 'ascending', 'threetones_sequence')
+# Reference set to 12 (Tetrode 7, channel 1)
+# Frequencies chosen based on tetrodes 2,3,4.
+
+exp13.add_session('19-21-37', 't', 'descending', 'threetones_sequence')
+# Reference set to 12 (Tetrode 7, channel 1)
+# Frequencies chosen based on tetrodes 2,3,4.
+
+exp13.maxDepth = 1150
 
 
 
