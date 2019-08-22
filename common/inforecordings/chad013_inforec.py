@@ -621,7 +621,7 @@ exp13.add_session('12-30-52', 'd', 'descending', 'threetones_sequence')
 # Frequencies chosen based on tetrode 1.
 
 
-exp13.add_site(1000, tetrodes=[1,2,3,4,5,6,7,8])
+exp13.add_site(1000, tetrodes=[1,2,4,5,6,7,8])
 
 exp13.add_session('13-01-17', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'e'
