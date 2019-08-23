@@ -698,6 +698,42 @@ exp13.maxDepth = 1150
 
 
 
+exp14 = celldatabase.Experiment(subject, '2019-08-22', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+experiments.append(exp14)
+#Using probe: C39C
+
+exp14.add_site(1200, tetrodes=[1,2,3,4,5,6,7,8])
+
+exp14.add_session('16-51-54', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 14 (Tetrode 5, channel 1)
+
+exp14.add_session('16-56-31', 'b', 'tc', 'am_tuning_curve')
+# Reference set to 14 (Tetrode 5, channel 1)
+
+exp14.add_session('17-13-03', 'c', 'ascending', 'threetones_sequence')
+# Reference set to 14 (Tetrode 5, channel 1)
+# Frequencies chosen based on tetrode 2.
+
+exp14.add_session('17-23-36', 'd', 'descending', 'threetones_sequence')
+# Reference set to 14 (Tetrode 5, channel 1)
+# Frequencies chosen based on tetrode 2.
+
+exp14.maxDepth = 1200
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
