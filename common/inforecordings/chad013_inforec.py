@@ -722,6 +722,43 @@ exp14.add_session('17-23-36', 'd', 'descending', 'threetones_sequence')
 exp14.maxDepth = 1200
 
 
+exp15 = celldatabase.Experiment(subject, '2019-08-25', 'left AC', info=['midMedialDiD', 'facingLeft', 'soundRight'])
+experiments.append(exp15)
+#Using probe: C39C
+
+
+exp15.add_site(1275, tetrodes=[1,2,3,4,5,6,7,8])
+
+exp15.add_session('18-27-55', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp15.add_session('18-35-13', 'b', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+
+# I removed probe, cleaned craniotomy with dura hook and re-inserted probe at new location (midLateral).
+
+exp15.add_site(1205, tetrodes=[1,2,3,4,5,6,7,8])
+
+exp15.add_session('19-35-21', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'c'
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp15.add_session('19-42-26', 'd', 'tc', 'am_tuning_curve')
+# Reference set to 18 (Tetrode 1, channel 1)
+
+exp15.add_session('20-01-29', 'e', 'ascending', 'threetones_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+# Frequencies chosen based on tetrode 2.
+
+exp15.add_session('20-12-31', 'f', 'descending', 'threetones_sequence')
+# Reference set to 18 (Tetrode 1, channel 1)
+# Frequencies chosen based on tetrode 2.
+
+exp15.maxDepth = 1275
+
+
+
 
 
 
