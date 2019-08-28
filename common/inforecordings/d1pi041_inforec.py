@@ -116,7 +116,7 @@ exp0.maxDepth = 3700
 
 exp1 = celldatabase.Experiment(subject, '2019-08-27', 'right_AudStr',
 info=['middleDiD', 'TT1left', 'soundLeft', 'A4x2-tet'])
-experiments.append(exp0)
+experiments.append(exp1)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
 #Used left speaker;laser (445 nm) set to 2.0 mW; Probe C39A; Rig 2
@@ -137,4 +137,51 @@ Power: Value on laser dial, value in output level
 # Animal in rig at: 11:08
 # Probe in at: 11:24
 
-exp1.add_site(2500, tetrodes=[2,4,6,7])
+exp1.add_site(2700, tetrodes=[1,3,6,7,8])
+exp1.add_session('12-45-27', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('12-56-10', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('12-57-40', None, 'lasertrain', 'am_tuning_curve')
+exp1.add_session('12-59-31', 'a', 'tuningTest', 'am_tuning_curve')
+
+exp1.add_site(2800, tetrodes=[1,2,3,4,6,7,8])
+exp1.add_session('13-18-21', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('13-20-20', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('13-21-49', None, 'lasertrain', 'am_tuning_curve')
+exp1.add_session('13-23-25', 'b', 'tuningTest', 'am_tuning_curve')
+exp1.add_session('13-27-40', 'c', 'tuningCurve', 'am_tuning_curve')
+exp1.add_session('13-56-26', 'd', 'am', 'am_tuning_curve')
+
+exp1.add_site(2900, tetrodes=[1,2,6,8])
+exp1.add_session('14-13-20', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('14-14-26', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('14-15-44', None, 'lasertrain', 'am_tuning_curve')
+exp1.add_session('14-18-58', 'e', 'tuningTest', 'am_tuning_curve')
+
+exp1.add_site(3000, tetrodes=[1,2,4,7,8])
+exp1.add_session('14-33-45', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('14-35-03', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('14-36-32', None, 'lasertrain', 'am_tuning_curve')
+exp1.add_session('14-39-11', 'f', 'tuningTest', 'am_tuning_curve')
+
+exp1.add_site(3200, tetrodes=[1,2,4,5,7,8])
+exp1.add_session('15-52-10', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('15-53-22', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('15-54-55', None, 'lasertrain', 'am_tuning_curve')
+exp1.add_session('16-14-56', 'g', 'tuningTest', 'am_tuning_curve')
+exp1.add_session('16-33-35', 'h', 'tuningCurve', 'am_tuning_curve')
+exp1.add_session('17-29-41', 'i', 'am', 'am_tuning_curve')
+
+exp1.add_site(3300, tetrodes=[1,2,4,5,7,8])
+exp1.add_session('18-09-37', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('18-11-29', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('18-12-43', None, 'lasertrain', 'am_tuning_curve')
+exp1.add_session('18-15-43', 'j', 'tuningTest', 'am_tuning_curve')
+
+exp1.add_site(3400, tetrodes=[1,2,4,5,6,7,8])
+exp1.add_session('18-28-04', None, 'noiseburst', 'am_tuning_curve')
+exp1.add_session('18-29-17', None, 'laserpulse', 'am_tuning_curve')
+exp1.add_session('18-30-30', None, 'lasertrain', 'am_tuning_curve')
+exp1.add_session('18-32-01', 'k', 'tuningTest', 'am_tuning_curve')
+exp1.add_session('18-35-30', 'l', 'tuningCurve', 'am_tuning_curve')
+
+exp1.maxDepth = 3400
