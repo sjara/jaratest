@@ -22,7 +22,7 @@ exp0.add_session('14-05-54', 'c', 'ascending', 'threetones_sequence')
 
 exp0.add_session('14-15-45', 'd', 'descending', 'threetones_sequence')
 # Reference set to 3 (Tetrode 6, channel 1)
-# Frequencies chosen based on tetrode 2,4,7,8.
+# Frequencies chosen based on tetrode 2,4,7,8.git commit chad011_inforec.py -m "Updated inforec"
 
 exp0.add_site(975, tetrodes=[1,2,3,4,5,6,7,8])
 
@@ -66,6 +66,54 @@ exp0.add_session('16-49-09', 'm', 'descending', 'threetones_sequence')
 # Frequencies chosen based on tetrode 2,6,8.
 
 exp0.maxDepth = 1155
+
+
+
+exp1 = celldatabase.Experiment(subject, '2019-08-30', 'left AC', info=['farLateral' 'facingLeft' 'soundRight'])
+experiments.append(exp1)
+# Using probe D65D
+
+exp1.add_site(1030, tetrodes=[1,2,3,4,5,6,7,8])
+
+exp1.add_session('16-27-07', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'a'
+# Reference set to 25 (Tetrode 3, channel 1)
+
+exp1.add_session('16-32-32', 'b', 'tc', 'am_tuning_curve')
+# Reference set to 25 (Tetrode 3, channel 1)
+
+exp1.add_session('16-49-30', 'c', 'ascending', 'threetones_sequence')
+# Reference set to 25 (Tetrode 3, channel 1)
+# Frequencies chosen based on tetrode 1,2,3,4,5,6,7,8.
+
+exp1.add_session('16-59-06', 'd', 'descending', 'threetones_sequence')
+# Reference set to 25 (Tetrode 3, channel 1)
+# Frequencies chosen based on tetrode 1,2,3,4,5,6,7,8.
+
+
+exp1.add_site(1115, tetrodes=[1,2,3,4,5,6,7,8])
+
+exp1.add_session('17-19-30', None, 'noiseburst', 'am_tuning_curve')
+# Behavior suffix 'e'
+# Reference set to 25 (Tetrode 3, channel 1)
+
+exp1.add_session('17-25-48', 'f', 'tc', 'am_tuning_curve')
+# Reference set to 25 (Tetrode 3, channel 1)
+
+exp1.add_session('17-43-47', 'g', 'ascending', 'threetones_sequence')
+# Reference set to 25 (Tetrode 3, channel 1)
+# Frequencies chosen based on tetrode 1,2,3,4,5,6,7,8.
+
+exp1.add_session('18-06-09', 'h', 'descending', 'threetones_sequence')
+# Reference set to 25 (Tetrode 3, channel 1)
+# Frequencies chosen based on tetrode 1,2,3,4,5,6,7,8.
+
+exp1.maxDepth = 1155
+
+
+
+
+
 
 
 
