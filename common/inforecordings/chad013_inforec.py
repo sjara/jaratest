@@ -3,7 +3,7 @@ from jaratoolbox import celldatabase
 subject = 'chad013'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2019-07-01', 'right AC', info=['midMedialDiD' 'facingAnterior' 'soundLeft'])
+exp0 = celldatabase.Experiment(subject, '2019-07-01', 'right AC', info=['midMedial' 'facingLeft' 'soundLeft'])
 experiments.append(exp0)
 # Using probe M680
 
@@ -44,7 +44,7 @@ exp0.add_session('15-40-48', 'j', 'oddball', 'oddball_sequence')
 
 exp0.maxDepth = 1125
 
-exp1 = celldatabase.Experiment(subject, '2019-07-02', 'right AC', info=['midMedialDiD' 'facingAnterior' 'soundLeft'])
+exp1 = celldatabase.Experiment(subject, '2019-07-02', 'right AC', info=['midMedial' 'facingLeft' 'soundLeft'])
 experiments.append(exp1)
 # Using probe M680
 
@@ -109,7 +109,7 @@ exp1.add_session('20-13-25', 'm', 'standard', 'oddball_sequence')
 exp1.maxDepth = 1300
 
 
-exp2 = celldatabase.Experiment(subject, '2019-07-05', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
+exp2 = celldatabase.Experiment(subject, '2019-07-05', 'right AC', info=['midLateral' 'facingLeft' 'soundLeft'])
 experiments.append(exp2)
 # Using probe M680
 
@@ -149,7 +149,7 @@ exp2.add_session('18-03-45', 'h', 'standard', 'oddball_sequence')
 exp2.maxDepth = 1400
 
 
-exp3 = celldatabase.Experiment(subject, '2019-07-11', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
+exp3 = celldatabase.Experiment(subject, '2019-07-11', 'right AC', info=['midLateral' 'facingLeft' 'soundLeft'])
 experiments.append(exp3)
 #Using probe: C39C
 
@@ -165,7 +165,7 @@ exp3.add_session('16-06-10', 'b', 'tc', 'am_tuning_curve')
 
 exp3.maxDepth = 977
 
-exp4 = celldatabase.Experiment(subject, '2019-07-14', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
+exp4 = celldatabase.Experiment(subject, '2019-07-14', 'right AC', info=['midLateral' 'facingLeft' 'soundLeft'])
 experiments.append(exp4)
 #Using probe: C39C
 
@@ -209,7 +209,7 @@ exp4.add_session('17-27-33', 'h', 'oddball', 'oddball_sequence')
 exp4.maxDepth = 1484
 
 
-exp5 = celldatabase.Experiment(subject, '2019-07-15', 'right AC', info=['midLateralDiD' 'facingAnterior' 'soundLeft'])
+exp5 = celldatabase.Experiment(subject, '2019-07-15', 'right AC', info=['midLateral' 'facingLeft' 'soundLeft'])
 experiments.append(exp5)
 #Using probe: C39C
 
@@ -239,7 +239,7 @@ exp5.add_session('11-53-58', None, 'noiseburst', 'am_tuning_curve')
 exp5.maxDepth = 1200
 
 
-exp6 = celldatabase.Experiment(subject, '2019-07-15', 'right AC', info=['farLateralDiD', 'facingAnterior', 'soundLeft'])
+exp6 = celldatabase.Experiment(subject, '2019-07-15', 'right AC', info=['farLateral', 'facingLeft', 'soundLeft'])
 experiments.append(exp6)
 #Using probe: C39C
 
@@ -270,7 +270,7 @@ exp6.add_session('17-13-36', None, 'noiseburst', 'am_tuning_curve')
 exp6.maxDepth = 1000
 
 
-exp7 = celldatabase.Experiment(subject, '2019-07-16', 'right AC', info=['farLateralDiD', 'facingAnterior', 'soundLeft'])
+exp7 = celldatabase.Experiment(subject, '2019-07-16', 'right AC', info=['farLateral', 'facingLeft', 'soundLeft'])
 experiments.append(exp7)
 #Using probe: C39C
 
@@ -311,7 +311,7 @@ exp7.maxDepth = 1006
 
 
 
-exp8 = celldatabase.Experiment(subject, '2019-08-12', 'left AC', info=['midMedialDiD', 'facingLeft', 'soundRight'])
+exp8 = celldatabase.Experiment(subject, '2019-08-12', 'left AC', info=['midMedial', 'facingLeft', 'soundRight'])
 experiments.append(exp8)
 #Using probe: C39C
 
@@ -348,7 +348,7 @@ exp8.maxDepth = 1320
 
 
 
-exp9 = celldatabase.Experiment(subject, '2019-08-13', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+exp9 = celldatabase.Experiment(subject, '2019-08-13', 'left AC', info=['midLateral', 'facingLeft', 'soundRight'])
 experiments.append(exp9)
 #Using probe: D65D
 
@@ -375,7 +375,7 @@ exp9.maxDepth = 1100
 
 
 
-exp10 = celldatabase.Experiment(subject, '2019-08-15', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+exp10 = celldatabase.Experiment(subject, '2019-08-15', 'left AC', info=['midLateral', 'facingLeft', 'soundRight'])
 experiments.append(exp10)
 #Using probe: C39A
 
@@ -454,7 +454,7 @@ exp10.maxDepth = 1667
 
 
 
-exp11 = celldatabase.Experiment(subject, '2019-08-18', 'left AC', info=['farMedialDiD', 'facingLeft', 'soundRight'])
+exp11 = celldatabase.Experiment(subject, '2019-08-18', 'left AC', info=['farMedial', 'facingLeft', 'soundRight'])
 experiments.append(exp11)
 #Using probe: C39A
 
@@ -497,7 +497,7 @@ exp11.maxDepth = 1175
 
 
 
-exp12 = celldatabase.Experiment(subject, '2019-08-19', 'left AC', info=['midMedialDiD', 'facingLeft', 'soundRight'])
+exp12 = celldatabase.Experiment(subject, '2019-08-19', 'left AC', info=['midMedial', 'facingLeft', 'soundRight'])
 experiments.append(exp12)
 #Using probe: DD46
 
@@ -598,7 +598,7 @@ exp12.maxDepth = 1455
 
 
 
-exp13 = celldatabase.Experiment(subject, '2019-08-20', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+exp13 = celldatabase.Experiment(subject, '2019-08-20', 'left AC', info=['midLateral', 'facingLeft', 'soundRight'])
 experiments.append(exp13)
 #Using probe: D65D
 
@@ -698,7 +698,7 @@ exp13.maxDepth = 1150
 
 
 
-exp14 = celldatabase.Experiment(subject, '2019-08-22', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+exp14 = celldatabase.Experiment(subject, '2019-08-22', 'left AC', info=['midLateral', 'facingLeft', 'soundRight'])
 experiments.append(exp14)
 #Using probe: C39C
 
@@ -722,12 +722,12 @@ exp14.add_session('17-23-36', 'd', 'descending', 'threetones_sequence')
 exp14.maxDepth = 1200
 
 
-exp15 = celldatabase.Experiment(subject, '2019-08-25', 'left AC', info=['midMedialDiD', 'facingLeft', 'soundRight'])
+exp15 = celldatabase.Experiment(subject, '2019-08-25', 'left AC', info=['midMedial', 'facingLeft', 'soundRight'])
 experiments.append(exp15)
 #Using probe: C39C
 
 
-exp15.add_site(1275, tetrodes=[1,2,3,4,5,6,7,8])
+exp15.add_site(1275, tetrodes=[2,3,4,5,6,7,8])
 
 exp15.add_session('18-27-55', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'a'
@@ -759,7 +759,7 @@ exp15.maxDepth = 1275
 
 
 
-exp16 = celldatabase.Experiment(subject, '2019-08-26', 'left AC', info=['midLateralDiD', 'facingLeft', 'soundRight'])
+exp16 = celldatabase.Experiment(subject, '2019-08-26', 'left AC', info=['midLateral', 'facingLeft', 'soundRight'])
 experiments.append(exp16)
 #Using probe: D65D
 
@@ -820,13 +820,13 @@ exp16.add_session('16-27-09', 'm', 'descending', 'threetones_sequence')
 # Frequencies chosen based on tetrode 1,4.
 
 
-exp16.add_site(1425, tetrodes=[1,2,3,4,5,6,7,8])
+exp16.add_site(1425, tetrodes=[1,3,4,5,6,7,8])
 
 exp16.add_session('16-50-30', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'n'
 # Reference set to 23 (Tetrode 2, channel 3)
 
-exp16.add_site(1500, tetrodes=[1,2,3,4,5,6,7,8])
+exp16.add_site(1500, tetrodes=[1,2,3,4,6,7,8])
 
 exp16.add_session('17-13-48', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'o'
