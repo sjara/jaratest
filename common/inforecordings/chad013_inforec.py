@@ -353,7 +353,7 @@ experiments.append(exp9)
 #Using probe: D65D
 
 
-exp9.add_site(1100, tetrodes=[2,4,5,6,7,8])
+exp9.add_site(1100, tetrodes=[2,5,6,7,8])
 exp9.add_session('18-56-36', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'a'
 # Reference set to 18 (Tetrode 1, channel 1)
