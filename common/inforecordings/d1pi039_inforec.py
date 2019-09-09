@@ -124,7 +124,7 @@ Power: Value on laser dial
 # Probe in at: 09:41
 
 exp1.add_site(2501, tetrodes=[2,3,4,6])
-exp1.add_session('11-05-36', None, 'noisebursts', 'am_tuning_curve')
+exp1.add_session('11-05-36', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('11-06-59', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('11-08-15', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('11-09-48', 'a', 'tuningTest', 'am_tuning_curve')
@@ -150,7 +150,7 @@ exp1.add_session('11-53-56', 'c', 'am', 'am_tuning_curve')
 # exp1.add_session('13-33-52', 'f', 'tuningTest', 'am_tuning_curve')
 
 exp1.add_site(2900, tetrodes=[1,2,3,4,6])
-exp1.add_session('16-00-21', None, 'noisebursts', 'am_tuning_curve')
+exp1.add_session('16-00-21', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('16-01-50', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('16-03-01', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('16-04-39', 'g', 'tuningTest', 'am_tuning_curve')
@@ -158,7 +158,7 @@ exp1.add_session('16-09-08', 'h', 'tuningCurve', 'am_tuning_curve') # accidental
 exp1.add_session('16-40-26', 'i', 'am', 'am_tuning_curve')
 
 exp1.add_site(3000, tetrodes=[1,2,3,4,6])
-exp1.add_session('17-06-30', None, 'noisebursts', 'am_tuning_curve')
+exp1.add_session('17-06-30', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('17-07-46', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('17-08-54', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('17-10-29', 'j', 'tuningTest', 'am_tuning_curve')
@@ -189,7 +189,7 @@ Power: Value on laser dial
 # Probe in at: 11:25
 
 exp2.add_site(2200, tetrodes=[1,2,3,4,6,7,8])
-exp2.add_session('12-13-05', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('12-13-05', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('12-14-56', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('12-16-37', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('12-18-17', 'a', 'tuningTest', 'am_tuning_curve')
@@ -240,7 +240,7 @@ exp2.add_session('13-05-56', 'c', 'am', 'am_tuning_curve')
 
 # Tetrode 3 has the reference
 exp2.add_site(3000, tetrodes=[1,2,4,5,6,7,8])
-exp2.add_session('16-43-34', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('16-43-34', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('16-44-53', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('16-46-06', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('16-47-45', 'k', 'tuningTest', 'am_tuning_curve')
@@ -311,9 +311,11 @@ Power: Value on laser dial
 # exp4.add_session('12-27-51', None, 'noisebursts', 'am_tuning_curve')
 
 exp4.add_site(2900, tetrodes=[1,2,3,4,6,7,8])
-exp4.add_session('13-14-47', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('13-14-47', None, 'noiseburst', 'am_tuning_curve')
 exp4.add_session('13-16-10', None, 'laserpulse', 'am_tuning_curve')
 exp4.add_session('13-17-26', 'a', 'tuningTest', 'am_tuning_curve')
 exp4.add_session('13-20-20', None, 'lasertrain', 'am_tuning_curve')
 exp4.add_session('13-23-47', None, 'laserpulse', 'am_tuning_curve')
 exp4.add_session('13-25-36', 'b', 'tuningCurve', 'am_tuning_curve') #channels went quiet halfway through, paused paradigm to add saline to well
+
+exp4.maxDepth = 2900

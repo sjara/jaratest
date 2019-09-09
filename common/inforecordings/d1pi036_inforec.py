@@ -95,7 +95,7 @@ exp1.maxDepth = 3000
 
 
 exp2 = celldatabase.Experiment(subject, '2019-06-05', 'left_AudStr',
-info=['lateralDiD', 'TT1ant', 'soundRight', 'A4x2-tet'])
+info=['medialDiI', 'TT1ant', 'soundRight', 'A4x2-tet'])
 experiments.append(exp2)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 240 tuningTest, 1760 tc, 220 AM
