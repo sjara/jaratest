@@ -40,11 +40,12 @@ smoothWinSizePsth = 2
 lwPsth = 2
 downsampleFactorPsth = 1
 # -- Legend for PSTH --
-oddball_patch = mpatches.Patch(color='b',label='Oddball')
-standard_patch = mpatches.Patch(color='k',label='Standard')
+oddball_patch = mpatches.Patch(color='b', label='Oddball')
+standard_patch = mpatches.Patch(color='k', label='Standard')
 
 #for indRow,dbRow in celldb.iterrows():
-for indRow,dbRow in celldb[500:].iterrows():
+# -- chad013[742:] / chad015[:] --
+for indRow,dbRow in celldb[700:922].iterrows():
     if not 'ascending' in dbRow['sessionType']:
         print('This cell does not contain the threetone sequence.')
         continue
