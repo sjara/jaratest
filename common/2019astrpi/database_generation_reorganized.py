@@ -20,7 +20,7 @@ if sys.version_info[0] < 3:
 elif sys.version_info[0] >= 3:
     input_func = input
 
-SAVE = 1
+SAVE = 0
 
 
 def calculate_base_stats(db, filename=''):
@@ -100,18 +100,31 @@ def calculate_base_stats(db, filename=''):
             spikeTimes = tuningEphysData['spikeTimes']
             eventOnsetTimes = tuningEphysData['events']['soundDetectorOn']
             eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
+            if len(eventOnsetTimes) == (len(currentFreq) + 1):
+                eventOnsetTimes = eventOnsetTimes[0:-1]
+                print("Correcting ephys data to be same length as behavior data")
+                toCalculate = True
+            elif len(eventOnsetTimes) == len(currentFreq):
+                print("Data is already the same length")
+                toCalculate = True
+            else:
+                print("Something is wrong with the length of these data")
+                toCalculate = False
 
             # TODO: Identify if this fix will need to be used in multiple functions.
-            if len(eventOnsetTimes) == len(currentFreq) + 1:
-                eventOnsetTimes = eventOnsetTimes[:-1]
+            # if len(eventOnsetTimes) == (len(currentFreq) + 1):
+            #     eventOnsetTimes = eventOnsetTimes[:-1]
+            if toCalculate:
                 respLatency = funcs.calculate_latency(eventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
-                                                      uniqueIntensity, spikeTimes, indRow)
-            elif len(eventOnsetTimes) < len(currentFreq):
-                print("Wrong number of events, probably caused by the original sound detector problems")
-                respLatency = np.nan
+                                                   uniqueIntensity, spikeTimes, indRow)
             else:
-                print("Something else is wrong with the number of events")
                 respLatency = np.nan
+            # elif len(eventOnsetTimes) < len(currentFreq):
+            #     print("Wrong number of events, probably caused by the original sound detector problems")
+            #     respLatency = np.nan
+            # else:
+            #     print("Something else is wrong with the number of events")
+            #     respLatency = np.nan
 
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])
@@ -153,6 +166,19 @@ def calculate_base_stats(db, filename=''):
                 else:
                     intensityThreshold = uniqueIntensity[intensityInd]
                     cf = uniqFreq[freqInd]
+
+                    if toCalculate:
+                        monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(eventOnsetTimes, currentFreq,
+                                                                                     currentIntensity,
+                                                                                     uniqueIntensity, spikeTimes, cf)
+                        onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes,
+                                                                 currentFreq, currentIntensity, cf, respLatency)
+                    else:
+                        monoIndex = np.nan
+                        overallMaxSpikes = np.nan
+                        onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes,
+                                                                 currentFreq, currentIntensity, cf, respLatency)
+
                     # [8] getting BW10 value, Bandwidth at 10dB above the neuron's sound intensity Threshold(SIT)
                     ind10Above = intensityInd + int(
                         10 / np.diff(uniqueIntensity)[0])  # How many inds to go above the threshold intensity ind
@@ -178,6 +204,10 @@ def calculate_base_stats(db, filename=''):
                     firstCells.at[indRow, 'bw10'] = bw10
                     firstCells.at[indRow, 'fit_midpoint'] = fit_midpoint
                     firstCells.at[indRow, 'latency'] = respLatency
+                    firstCells.at[indRow, 'monotonicityIndex'] = monoIndex
+                    firstCells.at[indRow, 'onsetRate'] = onsetRate
+                    firstCells.at[indRow, 'sustainedRate'] = sustainedRate
+                    firstCells.at[indRow, 'baseRate'] = baseRate
     return firstCells
 
 
@@ -199,7 +229,7 @@ def calculate_cell_locations(db, filename=''):  # to be filled after complete co
 if __name__ == "__main__":
     # Cluster your data
     CLUSTER_DATA = 0  # We don't generally run this code. We kept this for documentation
-    # d1mice = studyparams.ASTR_D1_CHR2_MICE
+    # d1mice = studyparams.SINGLE_MOUSE
     d1mice = studyparams.ASTR_D1_CHR2_MICE
     if CLUSTER_DATA:  # SPIKE SORTING
         inforecFile = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(d1mice))
@@ -216,8 +246,8 @@ if __name__ == "__main__":
     # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
 
     if SAVE:
-        dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('_'.join(d1mice)))
-        # dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+        # dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('_'.join(d1mice)))
+        dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
         if os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)):
             celldatabase.save_hdf(firstDB, dbpath)
             print("SAVED DATAFRAME to {}".format(dbpath))

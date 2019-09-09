@@ -43,7 +43,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         intensityEachTrial = bdata['currentIntensity']
         possibleIntensity = np.unique(intensityEachTrial)
 
-        cfTrials = freqEachTrial==dbRow['cf']
+        cfTrials = freqEachTrial == dbRow['cf']
         eventsThisFreq = eventOnsetTimes[cfTrials]
         intenThisFreq = intensityEachTrial[cfTrials]
 

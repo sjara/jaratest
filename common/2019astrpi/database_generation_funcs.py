@@ -92,11 +92,11 @@ def calculate_fit_params(uniqFreq, allIntenBase):
     """
     Defines fit input parameters
     Parameters:
-                uniqFreq (list): list of unique frequencices
+                uniqFreq (list): list of unique frequencies
                 allIntenBase (np.array): cumulated number of spikes on pre-stimulus range with all\
                 frequencies and all intensities
     Returns:
-            p0 (list): intial guess
+            p0 (list): initial guess
             bounds (tuple): lower and upper boundaries
     """
     p0 = [1, np.log2(uniqFreq[7]), 1, allIntenBase.mean()]
@@ -210,6 +210,9 @@ def calculate_BW10_params(ind10Above, popts, Rsquareds, responseThreshold, inten
     try:
         popt10AboveSIT = popts[ind10Above]
         Rsquared10AboveSIT = Rsquareds[ind10Above].mean()  # I made up the mean
+        if popt10AboveSIT is None:
+            print("Index returns empty array")  #FIXME: This was done to catch a niche circumstance when the index 10 above grabs an empty array (Ex: Now processing ', 'd1pi041', '2019-08-25', 3400.0, 7, 6, 1410)
+            raise IndexError
     except IndexError:
         print("Failure indexerror didn't get 10 above")
         print(intensityThreshold)
@@ -271,6 +274,7 @@ def calculate_latency(eventOnsetTimes, currentFreq,  uniqFreq, currentIntensity,
     if not np.any(avgRespArray > thresholdResponse):
         print("Nothing above the threshold")
         respLatency = np.nan
+        return respLatency
 
     # Determine trials that come from a I/F pair with a response above the threshold
     fra = avgRespArray > thresholdResponse
@@ -284,6 +288,7 @@ def calculate_latency(eventOnsetTimes, currentFreq,  uniqFreq, currentIntensity,
                                                                  indexLimitsSelectedTrials,
                                                                  timeRangeForLatency, threshold=0.5,
                                                                  win=signal.hanning(11))
+        # TODO capture the exception outside in the database file itself
     except IndexError:
         print("Index error for cell {}".format(indRow))  # If there are no spikes in the timeRangeForLatency
         respLatency = np.nan
@@ -291,3 +296,161 @@ def calculate_latency(eventOnsetTimes, currentFreq,  uniqFreq, currentIntensity,
     print('Response latency: {:0.1f} ms'.format(1e3 * respLatency))
 
     return respLatency
+
+
+def calculate_monotonicity_index(eventOnsetTimes, currentFreq, currentIntensity, uniqueIntensity, spikeTimes, cf):
+    """
+
+    Args:
+        eventOnsetTimes:
+        currentFreq:
+        currentIntensity:
+        uniqueIntensity:
+        spikeTimes:
+        cf:
+
+    Returns:
+
+    """
+
+    # """
+    # :param eventOnsetTimes: np.array of the same size as the number of trials with each value being the time the sound detector turned on
+    # :param currentFreq: np.array of same size as number of trials presented with each value being a specific frequency for that trial
+    # :param currentIntensity: np.array of same size as number of trials presented with each value being a specific intensity for that trial
+    # :param uniqueIntensity: np.array of each intensity presented with no repeats
+    # :param spikeTimes: np.array of time when spikes occurred; obtained from ephys data
+    # :param dbRow: (pandas.series) Current row in the database(dataframe) corresponding to the cluster
+    # :return: The monotonicity index and the maximum spikes across all intensities presented for this cell
+    # """
+
+    # if len(eventOnsetTimes) != len(freqEachTrial):
+    #     eventOnsetTimes = eventOnsetTimes[:-1]
+    #     if len(eventOnsetTimes) != len(freqEachTrial):
+    #         continue
+    # cfTrials = currentFreq == dbRow['cf']  # cf is characteristic frequency
+    cfTrials = currentFreq == cf
+    eventsThisFreq = eventOnsetTimes[cfTrials]
+    intenThisFreq = currentIntensity[cfTrials]
+
+    baseRange = [-0.1, 0]
+    responseRange = [0, 0.1]
+    alignmentRange = [baseRange[0], responseRange[1]]
+
+    meanSpikesAllInten = np.empty(len(uniqueIntensity))
+    maxSpikesAllInten = np.empty(len(uniqueIntensity))
+    baseSpikesAllInten = np.empty(len(uniqueIntensity))
+    for indInten, inten in enumerate(uniqueIntensity):
+        # print inten
+        trialsThisIntensity = intenThisFreq == inten
+        eventsThisCombo = eventsThisFreq[trialsThisIntensity]
+
+        (spikeTimesFromEventOnset,
+         trialIndexForEachSpike,
+         indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
+                                                                       eventsThisCombo,
+                                                                       alignmentRange)
+        nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                            indexLimitsEachTrial,
+                                                            baseRange)
+        nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                            indexLimitsEachTrial,
+                                                            responseRange)
+
+        spikesThisInten = nspkResp[:, 0]
+        baselineThisInten = nspkBase[:, 0]
+        # print spikesThisInten
+        try:
+            meanSpikesThisInten = np.mean(spikesThisInten)
+            meanBaselineSpikesThisInten = np.mean(baselineThisInten)
+            maxSpikesThisInten = np.max(spikesThisInten)
+        except ValueError:
+            meanSpikesThisInten = 0
+            maxSpikesThisInten = 0
+            meanBaselineSpikesThisInten = 0
+
+        meanSpikesAllInten[indInten] = meanSpikesThisInten
+        maxSpikesAllInten[indInten] = maxSpikesThisInten
+        baseSpikesAllInten[indInten] = meanBaselineSpikesThisInten
+
+    baseline = np.mean(baseSpikesAllInten)
+    monoIndex = (meanSpikesAllInten[-1] - baseline) / (np.max(meanSpikesAllInten) - baseline)
+
+    overallMaxSpikes = np.max(maxSpikesAllInten)
+
+    return monoIndex, overallMaxSpikes
+
+
+def calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes, currentFreq, currentIntensity, cf, respLatency):
+    """
+
+    Args:
+        eventOnsetTimes:
+        spikeTimes:
+        currentFreq:
+        currentIntensity:
+        cf:
+        respLatency:
+    Returns:
+
+    """
+    cfTrials = currentFreq == cf
+    eventsThisFreq = eventOnsetTimes[cfTrials]
+    intenThisFreq = currentIntensity[cfTrials]
+
+    # Get only the trials with the CF and the top 5 intensities
+    uniqIntensity = np.unique(intenThisFreq)
+    if len(uniqIntensity) > 4:
+        intenToUse = uniqIntensity[-5:]
+    else:
+        intenToUse = uniqIntensity
+
+    # Boolean of which trials from this frequency were high intensity
+    highIntenTrials = np.in1d(intenThisFreq, intenToUse)
+
+    # Filter the events this frequency to just take the ones from high intensity
+    eventsThisFreqHighIntensity = eventsThisFreq[highIntenTrials]
+
+    if not respLatency > 0:
+        print("Negative latency!! Skipping")
+        onsetRate = np.nan
+        sustainedRate = np.nan
+        baseRate = np.nan
+        return onsetRate, sustainedRate, baseRate
+
+    baseRange = [-0.1, -0.05]
+    # responseRange = [0, 0.05, 0.1]
+    responseRange = [respLatency, respLatency + 0.05, 0.1 + respLatency]
+    # if dbRow['brainArea']=='rightAC':
+    #     # responseRange = [0.02, 0.07, 0.12]
+    #     responseRange = [0.02, 0.07, 0.1]
+    # elif dbRow['brainArea']=='rightThal':
+    #     # responseRange = [0.005, 0.015, 0.105]
+    #     responseRange = [0.005, 0.015, 0.1]
+
+    alignmentRange = [baseRange[0], responseRange[-1]]
+
+    # Align spikes just to the selected event onset times
+    (spikeTimesFromEventOnset,
+     trialIndexForEachSpike,
+     indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
+                                                                   eventsThisFreqHighIntensity,
+                                                                   alignmentRange)
+
+    nspkBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                        indexLimitsEachTrial,
+                                                        baseRange)
+
+    nspkResp = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                        indexLimitsEachTrial,
+                                                        responseRange)
+
+    avgResponse = nspkResp.mean(axis=0)
+    onsetSpikes = avgResponse[0]
+    sustainedSpikes = avgResponse[1]
+    onsetRate = onsetSpikes / (responseRange[1] - responseRange[0])
+    sustainedRate = sustainedSpikes / (responseRange[2] - responseRange[1])
+
+    baseSpikes = nspkBase.mean()
+    baseRate = baseSpikes / (baseRange[1] - baseRange[0])
+
+    return onsetRate, sustainedRate, baseRate
