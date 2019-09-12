@@ -155,7 +155,7 @@ exp1.add_session('13-56-26', 'd', 'am', 'am_tuning_curve')
 exp1.add_site(2900, tetrodes=[1,2,6,8])
 exp1.add_session('14-13-20', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('14-14-26', None, 'laserpulse', 'am_tuning_curve')
-exp1.add_session('14-15-44', None, 'lasertrain', 'am_tuning_curve')
+exp1.add_session('14-16-44', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('14-18-58', 'e', 'tuningTest', 'am_tuning_curve')
 
 exp1.add_site(3000, tetrodes=[1,2,4,7,8])
@@ -183,7 +183,7 @@ exp1.add_session('18-28-04', None, 'noiseburst', 'am_tuning_curve')
 exp1.add_session('18-29-17', None, 'laserpulse', 'am_tuning_curve')
 exp1.add_session('18-30-30', None, 'lasertrain', 'am_tuning_curve')
 exp1.add_session('18-32-01', 'k', 'tuningTest', 'am_tuning_curve')
-exp1.add_session('18-35-30', 'l', 'tuningCurve', 'am_tuning_curve')
+exp1.add_session('18-36-30', 'l', 'tuningCurve', 'am_tuning_curve')
 
 exp1.maxDepth = 3400
 
@@ -258,38 +258,38 @@ exp2.add_session('17-47-19', 'i', 'tuningTest', 'am_tuning_curve')
 exp2.maxDepth = 4100
 
 
-exp3 = celldatabase.Experiment(subject, '2019-08-29', 'right_AudStr',
-info=['anteriorDiD', 'TT1left', 'soundLeft', 'A4x2-tet'])
-experiments.append(exp3)
-
-#50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
-#Used left speaker;laser (445 nm) set to 2.0 mW; Probe C39A; Rig 2
-
-"""
-Laser Calibration
-Power: Value on laser dial, value in output level
-0.5: 1.55, 19.3
-1.0: 2.15, 25.5
-1.5: 2.68, 31.5
-2.0: 3.32, 38.1
-2.5: 3.95, 44.8
-3.0: 4.65, 52.6
-3.5: 5.65, 63.1
-4.0: 6.25, 69.9
-"""
-
-# Animal in rig at:12:41
-# Probe in at: 1:05 (hitting something around 1800 that is causing deflection, moved anterior and problem resolved)
-
-# Seems quiet at 2500
-exp3.add_site(2600, tetrodes=[1])
-exp3.add_session('14-56-14', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('14-58-16', 'a', 'tuningTest', 'am_tuning_curve')
-
-exp3.add_site(2900, tetrodes=[2,7])
-exp3.add_session('16-19-44', None, 'noiseburst', 'am_tuning_curve')
-
-exp3.maxDepth = 3400
+# exp3 = celldatabase.Experiment(subject, '2019-08-29', 'right_AudStr',
+# info=['anteriorDiD', 'TT1left', 'soundLeft', 'A4x2-tet'])
+# experiments.append(exp3)
+#
+# #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
+# #Used left speaker;laser (445 nm) set to 2.0 mW; Probe C39A; Rig 2
+#
+# """
+# Laser Calibration
+# Power: Value on laser dial, value in output level
+# 0.5: 1.55, 19.3
+# 1.0: 2.15, 25.5
+# 1.5: 2.68, 31.5
+# 2.0: 3.32, 38.1
+# 2.5: 3.95, 44.8
+# 3.0: 4.65, 52.6
+# 3.5: 5.65, 63.1
+# 4.0: 6.25, 69.9
+# """
+#
+# # Animal in rig at:12:41
+# # Probe in at: 1:05 (hitting something around 1800 that is causing deflection, moved anterior and problem resolved)
+#
+# # Seems quiet at 2500
+# exp3.add_site(2600, tetrodes=[1])
+# exp3.add_session('14-56-14', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('14-58-16', 'a', 'tuningTest', 'am_tuning_curve')
+#
+# exp3.add_site(2900, tetrodes=[2])
+# exp3.add_session('16-19-44', None, 'noiseburst', 'am_tuning_curve')
+#
+# exp3.maxDepth = 3400
 
 
 exp4 = celldatabase.Experiment(subject, '2019-08-30', 'left_AudStr',
@@ -315,18 +315,18 @@ Power: Value on laser dial, value in output level
 # Animal in rig at: 11:45
 # Probe in at: 1:17 (new side, played a super fun game of "where even is the craniotomy" and "where is all this blood coming from")
 
-exp4.add_site(2500, tetrodes=[2,4,6,7,8])
-exp4.add_session('13-34-38', None, 'noiseburst', 'am_tuning_curve')
-exp4.add_session('13-36-06', 'a', 'tuningTest', 'am_tuning_curve')
+# exp4.add_site(2500, tetrodes=[2,4,7])
+# exp4.add_session('13-34-38', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('13-36-06', 'a', 'tuningTest', 'am_tuning_curve')
 
-exp4.add_site(2700, tetrodes=[1,2,3,4,6,7,8])
-exp4.add_session('13-55-40', None, 'noiseburst', 'am_tuning_curve')
-exp4.add_session('13-56-58', 'b', 'tuningTest', 'am_tuning_curve')
+# exp4.add_site(2700, tetrodes=[1,2,3,4,6,7,8])
+# exp4.add_session('13-55-40', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('13-56-58', 'b', 'tuningTest', 'am_tuning_curve')
 
-exp4.add_site(2900, tetrodes=[1,2,4,6,7,8])
-exp4.add_session('14-12-14', None, 'noiseburst', 'am_tuning_curve')
-exp4.add_session('14-13-39', 'c', 'tuningTest', 'am_tuning_curve')
-exp4.add_session('14-16-02', None, 'laserpulse', 'am_tuning_curve')
+# exp4.add_site(2900, tetrodes=[1,2,4,6,7,8])
+# exp4.add_session('14-12-14', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('14-13-39', 'c', 'tuningTest', 'am_tuning_curve')
+# exp4.add_session('14-16-02', None, 'laserpulse', 'am_tuning_curve')
 
 exp4.add_site(3100, tetrodes=[1,2,3,4,6,7,8])
 exp4.add_session('14-27-03', None, 'noiseburst', 'am_tuning_curve')
@@ -413,18 +413,18 @@ exp5.add_session('13-15-41', None, 'lasertrain', 'am_tuning_curve')
 # after waiting a bit, signals randomly come back, then go away again??
 
 # signals back but kind of weak
-exp5.add_site(3100, tetrodes=[2,3,6,7,8])
-exp5.add_session('13-56-12', None, 'laserpulse', 'am_tuning_curve')
-exp5.add_session('13-57-34', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('13-58-47', 'd', 'tuningTest', 'am_tuning_curve')
+# exp5.add_site(3100, tetrodes=[2,3,6,7,8])
+# exp5.add_session('13-56-12', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_session('13-57-34', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_session('13-58-47', 'd', 'tuningTest', 'am_tuning_curve')
 
-exp5.add_site(3300, tetrodes=[2,4,6,7,8])
-exp5.add_session('14-09-45', None, 'laserpulse', 'am_tuning_curve')
-exp5.add_session('14-11-04', None, 'noiseburst', 'am_tuning_curve')
-exp5.add_session('14-12-24', 'e', 'tuningTest', 'am_tuning_curve')
+# exp5.add_site(3300, tetrodes=[2,4,6,7,8])
+# exp5.add_session('14-09-45', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_session('14-11-04', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_session('14-12-24', 'e', 'tuningTest', 'am_tuning_curve')
 
-exp5.add_site(3400, tetrodes=[2,4,8])
-exp5.add_session('14-18-54', None, 'noiseburst', 'am_tuning_curve')
+# exp5.add_site(3400, tetrodes=[2,4,8])
+# exp5.add_session('14-18-54', None, 'noiseburst', 'am_tuning_curve')
 
 # signals decent again
 exp5.add_site(3500, tetrodes=[2,4,6,8])
@@ -437,34 +437,34 @@ exp5.add_session('15-10-14', None, 'laserpulse', 'am_tuning_curve')
 
 # signals went away again lmao
 # lowered threshold (30mV) and sucked some saline out
-exp5.add_site(3600, tetrodes=[4,6])
-exp5.add_session('15-33-33', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(3600, tetrodes=[4,6])
+# exp5.add_session('15-33-33', None, 'laserpulse', 'am_tuning_curve')
 
-exp5.add_site(3700, tetrodes=[4,8])
-exp5.add_session('15-44-07', None, 'laserpulse', 'am_tuning_curve')
+# exp5.add_site(3700, tetrodes=[4,8])
+# exp5.add_session('15-44-07', None, 'laserpulse', 'am_tuning_curve')
 
 exp5.maxDepth = 3700
 
-exp6 = celldatabase.Experiment(subject, '2019-09-03', 'left_AudStr',
-info=['middleDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
-experiments.append(exp6)
-
-#50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
-#Used right speaker;laser (445 nm) set to 2.0 mW; Probe M680; Rig 2
-
-"""
-Laser Calibration
-Power: Value on laser dial, value in output level
-0.5: 1.40, 19.0
-1.0: 1.85, 23.2
-1.5: 2.35, 28.4
-2.0: 2.85, 33.7
-2.5: 3.50, 40.3
-3.0: 4.08, 46.1
-3.5: 5.95, 55.2
-4.0: 6.00, 65.9
-"""
-
-# Skull seems to have caved in on medial-anterior edge of left well. Mouse was euthanized
-
-exp6.maxDepth = 0
+# exp6 = celldatabase.Experiment(subject, '2019-09-03', 'left_AudStr',
+# info=['middleDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+# experiments.append(exp6)
+#
+# #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
+# #Used right speaker;laser (445 nm) set to 2.0 mW; Probe M680; Rig 2
+#
+# """
+# Laser Calibration
+# Power: Value on laser dial, value in output level
+# 0.5: 1.40, 19.0
+# 1.0: 1.85, 23.2
+# 1.5: 2.35, 28.4
+# 2.0: 2.85, 33.7
+# 2.5: 3.50, 40.3
+# 3.0: 4.08, 46.1
+# 3.5: 5.95, 55.2
+# 4.0: 6.00, 65.9
+# """
+#
+# # Skull seems to have caved in on medial-anterior edge of left well. Mouse was euthanized
+#
+# exp6.maxDepth = 0

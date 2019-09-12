@@ -20,16 +20,16 @@ if sys.version_info[0] < 3:
 elif sys.version_info[0] >= 3:
     input_func = input
 
-SAVE = 0
+SAVE = 1
 
 
-def calculate_base_stats(db, filename=''):
+def calculate_base_stats(cellDB, filename=''):
     """
     Calculate parameters to be used to filter cells in calculate_indices
     """
 
     # FILTERING DATAFRAME
-    firstCells = db.query(studyparams.FIRST_FLTRD_CELLS)  # isiViolations<0.02 and spikeShapeQuality>2
+    firstCells = cellDB.query(studyparams.FIRST_FLTRD_CELLS)  # isiViolations<0.02 and spikeShapeQuality>2
 
     for indIter, (indRow, dbRow) in enumerate(firstCells.iterrows()):
 
@@ -116,7 +116,7 @@ def calculate_base_stats(db, filename=''):
             #     eventOnsetTimes = eventOnsetTimes[:-1]
             if toCalculate:
                 respLatency = funcs.calculate_latency(eventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
-                                                   uniqueIntensity, spikeTimes, indRow)
+                                                      uniqueIntensity, spikeTimes, indRow)
             else:
                 respLatency = np.nan
             # elif len(eventOnsetTimes) < len(currentFreq):
@@ -176,8 +176,9 @@ def calculate_base_stats(db, filename=''):
                     else:
                         monoIndex = np.nan
                         overallMaxSpikes = np.nan
-                        onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes,
-                                                                 currentFreq, currentIntensity, cf, respLatency)
+                        onsetRate = np.nan
+                        sustainedRate = np.nan
+                        baseRate = np.nan
 
                     # [8] getting BW10 value, Bandwidth at 10dB above the neuron's sound intensity Threshold(SIT)
                     ind10Above = intensityInd + int(
@@ -188,11 +189,11 @@ def calculate_base_stats(db, filename=''):
                     # print('lf:{},uf:{},R2:{}'.format(lowerFreq,upperFreq,Rsquared10AboveSIT))
 
                     if (lowerFreq is not None) and (upperFreq is not None):
-                        fit_midpoint = np.sqrt(lowerFreq * upperFreq)
+                        fitMidpoint = np.sqrt(lowerFreq * upperFreq)
                         bw10 = (upperFreq - lowerFreq) / cf
 
                     else:
-                        fit_midpoint = None
+                        fitMidpoint = None
                         bw10 = None
 
                     # ADD PARAMS TO DATAFRAME [9] store data in DB: intensity threshold, rsquaredFit, bw10, cf, fra
@@ -202,12 +203,15 @@ def calculate_base_stats(db, filename=''):
                     firstCells.at[indRow, 'upperFreq'] = upperFreq
                     firstCells.at[indRow, 'rsquaredFit'] = Rsquared10AboveSIT
                     firstCells.at[indRow, 'bw10'] = bw10
-                    firstCells.at[indRow, 'fit_midpoint'] = fit_midpoint
+                    firstCells.at[indRow, 'fit_midpoint'] = fitMidpoint
                     firstCells.at[indRow, 'latency'] = respLatency
                     firstCells.at[indRow, 'monotonicityIndex'] = monoIndex
                     firstCells.at[indRow, 'onsetRate'] = onsetRate
                     firstCells.at[indRow, 'sustainedRate'] = sustainedRate
                     firstCells.at[indRow, 'baseRate'] = baseRate
+    firstCells['cfOnsetivityIndex'] = \
+        (firstCells['onsetRate'] - firstCells['sustainedRate']) / \
+        (firstCells['sustainedRate'] + firstCells['onsetRate'])
     return firstCells
 
 
@@ -246,8 +250,8 @@ if __name__ == "__main__":
     # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
 
     if SAVE:
-        # dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('_'.join(d1mice)))
-        dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+        dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('_'.join(d1mice)))
+        # dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
         if os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)):
             celldatabase.save_hdf(firstDB, dbpath)
             print("SAVED DATAFRAME to {}".format(dbpath))

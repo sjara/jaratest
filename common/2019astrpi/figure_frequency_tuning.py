@@ -17,9 +17,9 @@ import studyparams
 
 
 if sys.version_info[0] < 3:
-    input_func = raw_input
+    inputFunc = raw_input
 elif sys.version_info[0] >= 3:
-    input_func = input
+    inputFunc = input
 
 
 def jitter(arr, frac):
@@ -40,6 +40,7 @@ FIGNAME = 'figure_frequency_tuning'
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '_'.join(d1mice) + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
@@ -416,7 +417,7 @@ if SAVE_FIGURE:
         extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
         print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
     elif not os.path.isdir(os.path.join(figparams.FIGURE_OUTPUT_DIR)):
-        answer = input_func(
+        answer = inputFunc(
                             "Save folder is not present. Would you like to make the desired directory now? (y/n) ")
         if answer in ['y', 'Y', 'Yes', 'YES']:
             os.mkdir(

@@ -13,9 +13,9 @@ from jaratoolbox import celldatabase
 import studyparams
 
 if sys.version_info[0] < 3:
-    input_func = raw_input
+    inputFunc = raw_input
 elif sys.version_info[0] >= 3:
-    input_func = input
+    inputFunc = input
 
 # ===================================parameters=================================
 baseRange = [-0.1, 0]
@@ -28,8 +28,8 @@ titleExampleBW = True
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '_'.join(d1mice) + '.h5'
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
 db = celldatabase.load_hdf(pathtoDB)
 
 
@@ -99,7 +99,7 @@ if os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME
     np.savez(exampleDataPath, **exampleSpikeData)
     print("{} data saved to {}".format(FIGNAME, exampleDataPath))
 elif not os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)):
-    answer = input_func(
+    answer = inputFunc(
         "Save folder is not present. Would you like to make the desired directory now? (y/n) ")
     if answer in ['y', 'Y', 'Yes', 'YES']:
         os.mkdir(
