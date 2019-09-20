@@ -24,7 +24,7 @@ exp0.add_session('14-15-45', 'd', 'descending', 'threetones_sequence')
 # Reference set to 3 (Tetrode 6, channel 1)
 # Frequencies chosen based on tetrode 2,4,7,8.git commit chad011_inforec.py -m "Updated inforec"
 
-exp0.add_site(975, tetrodes=[1,2,3,4,5,6,7,8])
+exp0.add_site(975, tetrodes=[2,3,4,5,6,7,8])
 
 exp0.add_session('15-05-21', None, 'noiseburst', 'am_tuning_curve')
 # Behavior suffix 'e'
@@ -140,7 +140,7 @@ exp2.add_session('16-18-48', 'e', 'descending', 'threetones_sequence')
 # Frequencies chosen based on tetrodes 4,6.
 
 
-exp1.maxDepth = 1275
+exp2.maxDepth = 1275
 
 
 exp3 = celldatabase.Experiment(subject, '2019-09-04', 'left AC', info=['midLateral' 'facingLeft' 'soundRight'])
