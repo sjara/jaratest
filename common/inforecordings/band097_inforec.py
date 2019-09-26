@@ -206,3 +206,104 @@ exp2.add_session('10-31-17', 'a', 'tuningCurve', 'am_tuning_curve')
 exp2.add_session('10-35-42', 'b', 'AM', 'am_tuning_curve')
 exp2.add_session('10-41-45', 'c', 'laserBandwidth', 'bandwidth_am') # 18kHz, 64Hz
 exp2.add_session('11-05-02', 'd', 'laserBandwidth', 'bandwidth_am') # 27kHz, 64Hz
+exp2.add_session('11-28-01', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp2.add_site(1100, tetrodes=[2,4,6])
+exp2.add_session('11-41-26', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('11-42-57', None, 'lasernoisebursts', 'bandwidth_am')
+exp2.add_session('11-44-32', 'e', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('11-49-12', 'f', 'AM', 'am_tuning_curve')
+exp2.add_session('11-56-10', 'g', 'laserBandwidth', 'bandwidth_am')
+exp2.add_session('12-19-20', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp2.add_site(1200, tetrodes=[1,2,4,6])
+exp2.add_session('12-39-46', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('12-42-36', None, 'lasernoisebursts', 'bandwidth_am')
+exp2.add_session('12-44-10', 'h', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('12-48-45', 'i', 'AM', 'am_tuning_curve')
+exp2.add_session('12-55-11', 'j', 'laserBandwidth', 'bandwidth_am')
+exp2.add_session('13-27-12', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp2.add_site(1300, tetrodes=[1,2,3,4,6])
+exp2.add_session('13-35-32', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('13-36-57', None, 'lasernoisebursts', 'bandwidth_am')
+exp2.add_session('13-38-29', 'k', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('13-42-47', 'l', 'AM', 'am_tuning_curve')
+exp2.add_session('13-48-30', 'm', 'laserBandwidth', 'bandwidth_am') # 27kHz, 64Hz
+exp2.add_session('14-13-44', 'n', 'laserBandwidth', 'bandwidth_am') # 5kHz, 64Hz
+exp2.add_session('14-39-10', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp2.add_site(1400, tetrodes=[1,2,3,4,6])
+exp2.add_session('14-59-46', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('15-01-17', None, 'lasernoisebursts', 'bandwidth_am')
+exp2.add_session('15-02-51', 'o', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('15-07-21', 'p', 'AM', 'am_tuning_curve')
+exp2.add_session('15-13-54', 'q', 'laserBandwidth', 'bandwidth_am') # 10kHz, 64Hz
+exp2.add_session('15-37-23', 'r', 'laserBandwidth', 'bandwidth_am') # 22kHz, 64Hz
+exp2.add_session('16-02-14', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp2.add_site(1500, tetrodes=[1,2,4,5,6])
+exp2.add_session('16-11-08', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('16-12-42', None, 'lasernoisebursts', 'bandwidth_am')
+exp2.add_session('16-14-16', 's', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('16-18-54', 't', 'AM', 'am_tuning_curve')
+exp2.add_session('16-27-20', 'u', 'laserBandwidth', 'bandwidth_am')
+exp2.add_session('16-51-58', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp2.add_site(1600, tetrodes=[1,2,4,5,6])
+exp2.add_session('17-00-25', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('17-01-51', None, 'lasernoisebursts', 'bandwidth_am')
+exp2.add_session('17-03-27', 'v', 'tuningCurve', 'am_tuning_curve')
+exp2.add_session('17-08-25', 'w', 'AM', 'am_tuning_curve')
+exp2.add_session('17-15-20', 'x', 'laserBandwidth', 'bandwidth_am')
+exp2.add_session('17-38-18', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp2.maxDepth = 1600
+
+
+exp3 = celldatabase.Experiment(subject, '2019-09-26', 'right_AC', info=['medialDiO','TT1ant','soundleft'])
+experiments.append(exp3)
+
+"""
+Laser Calibration
+Power: Value on laser dial, value in output level
+1.0: 4.0, 21.3
+2.0: 5.25, 40.6
+3.0: 6.45, 60.1
+4.0: 7.65, 79.0
+5.0: 8.8, 97.3
+"""
+
+# Mouse in: 10:26
+# Probe in: 10:31
+# Probe used: DD02 (3 shanks, no TT7/8)
+
+exp3.add_site(1000, tetrodes=[2])
+exp3.add_session('11-01-20', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('11-02-49', None, 'lasernoisebursts', 'bandwidth_am')
+exp3.add_session('11-04-24', 'a', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('11-08-56', 'b', 'AM', 'am_tuning_curve')
+exp3.add_session('11-13-49', 'c', 'laserBandwidth', 'bandwidth_am')
+exp3.add_session('11-36-46', None, 'longLaserPulse', 'am_tuning_curve')
+
+# exp3.add_site(1100, tetrodes=[2])
+# exp3.add_session('11-47-48', None, 'noisebursts', 'am_tuning_curve')
+#
+# exp3.add_site(1200, tetrodes=[1,4])
+# exp3.add_session('11-56-13', None, 'noisebursts', 'am_tuning_curve')
+
+exp3.add_site(1300, tetrodes=[2,4,6])
+exp3.add_session('12-12-53', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('12-14-08', None, 'lasernoisebursts', 'bandwidth_am')
+exp3.add_session('12-15-46', 'd', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('12-20-31', 'e', 'AM', 'am_tuning_curve')
+exp3.add_session('12-26-36', 'f', 'laserBandwidth', 'bandwidth_am') # 32kHz, 64Hz
+exp3.add_session('12-54-58', 'g', 'laserBandwidth', 'bandwidth_am') # 13kHz, 64Hz
+exp3.add_session('13-17-57', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp3.add_site(1400, tetrodes=[1,2,4,6])
+exp3.add_session('13-27-59', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('13-29-18', None, 'lasernoisebursts', 'bandwidth_am')
+exp3.add_session('13-30-45', 'h', 'tuningCurve', 'am_tuning_curve')
+exp3.add_session('13-35-06', 'i', 'AM', 'am_tuning_curve')
+exp3.add_session('13-40-48', 'j', 'laserBandwidth', 'bandwidth_am') # 32kHz, 64Hz
