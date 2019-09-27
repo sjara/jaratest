@@ -337,3 +337,56 @@ exp3.add_session('17-24-01', 'v', 'laserBandwidth', 'bandwidth_am')
 exp3.add_session('17-47-43', None, 'longLaserPulse', 'am_tuning_curve')
 
 exp3.maxDepth = 1700
+
+
+exp4 = celldatabase.Experiment(subject, '2019-09-27', 'right_AC', info=['middleDiD','TT1ant','soundleft'])
+experiments.append(exp4)
+
+"""
+Laser Calibration
+Power: Value on laser dial, value in output level
+1.0: 4.05, 21.8
+2.0: 5.4, 42.6
+3.0: 6.7, 63.7
+4.0: 8.0, 84.5
+5.0: 9.35, 106.3
+"""
+
+# Mouse in: 8:30
+# Probe in: 8:52
+# Probe used: DD02 (3 shanks, no TT7/8)
+
+# only one shank (TT5/6) penetrating
+exp4.add_site(1200, tetrodes=[6])
+exp4.add_session('09-54-45', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('09-56-54', None, 'lasernoisebursts', 'bandwidth_am')
+exp4.add_session('09-58-23', 'a', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('10-03-16', 'b', 'AM', 'am_tuning_curve')
+exp4.add_session('10-08-47', 'c', 'laserBandwidth', 'bandwidth_am')
+exp4.add_session('10-31-45', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp4.add_site(1300, tetrodes=[6])
+exp4.add_session('10-42-59', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('10-44-39', None, 'lasernoisebursts', 'bandwidth_am')
+exp4.add_session('10-46-12', 'd', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('10-50-33', 'e', 'AM', 'am_tuning_curve')
+exp4.add_session('10-56-21', 'f', 'laserBandwidth', 'bandwidth_am')
+exp4.add_session('11-19-23', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp4.add_site(1400, tetrodes=[6])
+exp4.add_session('11-29-52', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('11-31-52', None, 'lasernoisebursts', 'bandwidth_am')
+exp4.add_session('11-33-27', 'g', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('11-37-45', 'h', 'AM', 'am_tuning_curve')
+exp4.add_session('11-44-42', 'i', 'laserBandwidth', 'bandwidth_am')
+exp4.add_session('12-07-39', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp4.add_site(1500, tetrodes=[5,6])
+exp4.add_session('12-20-50', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('12-22-14', None, 'lasernoisebursts', 'bandwidth_am')
+exp4.add_session('12-23-57', 'j', 'tuningCurve', 'am_tuning_curve')
+exp4.add_session('12-28-17', 'k', 'AM', 'am_tuning_curve')
+exp4.add_session('12-34-15', 'l', 'laserBandwidth', 'bandwidth_am')
+exp4.add_session('12-57-11', None, 'longLaserPulse', 'am_tuning_curve')
+
+exp4.maxDepth = 1500
