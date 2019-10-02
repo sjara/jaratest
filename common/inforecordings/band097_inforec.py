@@ -390,3 +390,23 @@ exp4.add_session('12-34-15', 'l', 'laserBandwidth', 'bandwidth_am')
 exp4.add_session('12-57-11', None, 'longLaserPulse', 'am_tuning_curve')
 
 exp4.maxDepth = 1500
+
+
+# exp5 = celldatabase.Experiment(subject, '2019-09-28', 'right_AC', info=['lateralDiO','TT1ant','soundleft'])
+# experiments.append(exp5)
+#
+# """
+# Laser Calibration
+# Power: Value on laser dial, value in output level
+# 1.0: 3.95, 19.8
+# 2.0: 5.2, 39.1
+# 3.0: 6.45, 58.8
+# 4.0: 7.7, 78.8
+# 5.0: 8.9, 98.0
+# """
+
+# Mouse in: 9:46
+# Probe in: 9:55
+# Probe used: DD02 (3 shanks, no TT7/8)
+
+# tried several locations in craniotomy, shanks would not penetrate
