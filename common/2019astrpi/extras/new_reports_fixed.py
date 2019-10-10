@@ -291,8 +291,8 @@ for indRow, dbRow in celldb.iterrows():
         freqLabels = ['{0:.0f}'.format(freq) for freq in amUniqFreq]
         # (axRaster, axRate) = plot_am_with_rate(axAMRaster, amSpikeTimes, amIndexLimitsEachTrial,
         #                                        amCurrentFreq, amUniqFreq)
-        pRaster, hCond, zline = extraplots.raster_plot(amSpikeTimes, amIndexLimitsEachTrial,
-                                                       amTimeRange, amTrialsEachCondition, labels=freqLabels)
+        pRaster, hCond, zline = extraplots.raster_plot(amSpikeTimesFromEventOnset, amIndexLimitsEachTrial,
+                                                       amTimeRange, trialsEachCond=amTrialsEachCondition, labels=freqLabels)
         plt.setp(pRaster, ms=figparams.rasterMS)
         blankLabels = [''] * 11
         for labelPos in [0, 5, 10]:
@@ -300,15 +300,15 @@ for indRow, dbRow in celldb.iterrows():
 
         axAMRaster.set_yticklabels(blankLabels)
 
-        ax = plt.gca()
-        ax.set_xticks([0, 0.5])
-        ax.set_xlabel('Time from\nsound onset (s)', fontsize=fontSizeLabels, labelpad=-1)
-        ax.set_ylabel('AM rate (Hz)', fontsize=fontSizeLabels, labelpad=-5)
+        axAMRaster.set_xticks([0, 0.5])
+        axAMRaster.set_xlabel('Time from\nsound onset (s)', fontsize=fontSizeLabels, labelpad=-1)
+        axAMRaster.set_ylabel('AM rate (Hz)', fontsize=fontSizeLabels, labelpad=-5)
         axAMRaster.set_title('AM Raster')
         # axRate.set_xlim([0, 30])
         # axRate.set_xticks([0, 30])
         # extraplots.set_ticks_fontsize(axRate, fontSizeTicks)
         extraplots.set_ticks_fontsize(axAMRaster, fontSizeTicks)
+
     # -----------tuningCurve------------
     if "tuningCurve" in sessions:
         # Loading data for session
