@@ -62,6 +62,7 @@ nameDB = '_'.join(d1mice) + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 celldb = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
+celldb = celldb.query('subject=="d1pi041"')
 
 # -------------------------------------------------------------------------------
 for indRow, dbRow in celldb.iterrows():
