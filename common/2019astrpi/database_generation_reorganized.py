@@ -261,3 +261,4 @@ if __name__ == "__main__":
                 os.mkdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME))
                 celldatabase.save_hdf(firstDB, dbpath)
                 print("SAVED DATAFRAME to {}".format(dbpath))
+                print(u"\U0001F4A9")

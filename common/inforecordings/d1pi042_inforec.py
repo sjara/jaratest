@@ -212,25 +212,25 @@ exp2.maxDepth = 3400
 # other creating a solidified surface. Removed decent amount of tissue but
 # ultimately had to remove animal due to it hunching in pain while squeaking
 
-exp4 = celldatabase.Experiment(subject, '2019-09-18', 'left_AudStr',
-info=['anteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
-experiments.append(exp4)
-
-#50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
-#Used left speaker;laser (445 nm) set to 2.0 mW; Probe D65D; Rig 2
-
-"""
-Laser Calibration
-Power: Value on laser dial, value in output level
-0.5: 1.45, 19.3
-1.0: 1.92, 24.2
-1.5: 2.40, 30.2
-2.0: 3.05, 36.0
-2.5: 3.65, 42.3
-3.0: 4.28, 48.9
-3.5: 5.25, 69.1
-4.0: 6.00, 67.0
-"""
-
-# Animal in rig at: 10:47
-# Probe in at:
+# exp4 = celldatabase.Experiment(subject, '2019-09-18', 'left_AudStr',
+# info=['anteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+# experiments.append(exp4)
+#
+# #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
+# #Used left speaker;laser (445 nm) set to 2.0 mW; Probe D65D; Rig 2
+#
+# """
+# Laser Calibration
+# Power: Value on laser dial, value in output level
+# 0.5: 1.45, 19.3
+# 1.0: 1.92, 24.2
+# 1.5: 2.40, 30.2
+# 2.0: 3.05, 36.0
+# 2.5: 3.65, 42.3
+# 3.0: 4.28, 48.9
+# 3.5: 5.25, 69.1
+# 4.0: 6.00, 67.0
+# """
+#
+# # Animal in rig at: 10:47
+# # Probe in at:
