@@ -10,13 +10,13 @@ tracks = [
     {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p1-D5-02',
      'recordingTrack': 'medialDiD', 'shank': 1, 'atlasZ': 199},
 
-    {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p1-D1-02',
+    {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p1-D5-02',
      'recordingTrack': 'middleDiD', 'shank': 1, 'atlasZ': 199},
 
     {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p2-A1-02',
      'recordingTrack': 'medialDiD', 'shank': 2, 'atlasZ': 201},
 
-    {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p1-A1-02',
+    {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p2-A1-02',
      'recordingTrack': 'middleDiD', 'shank': 2, 'atlasZ': 201},
 
     {'subject': subject, 'brainArea': 'RightAC', 'histImage': 'p2-A2-02',
