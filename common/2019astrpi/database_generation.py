@@ -196,8 +196,8 @@ if __name__ == "__main__":
     # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
 
     if SAVE:
-        # dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('_'.join(d1mice)))
-        dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+        dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('_'.join(d1mice)))
+        # dbpath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
         if os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)):
             celldatabase.save_hdf(firstDB, dbpath)
             print("SAVED DATAFRAME to {}".format(dbpath))

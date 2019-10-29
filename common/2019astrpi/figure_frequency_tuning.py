@@ -39,8 +39,8 @@ FIGNAME = 'figure_frequency_tuning'
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '_'.join(d1mice) + '.h5'
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
@@ -111,10 +111,10 @@ axLatency = plt.subplot(gs[0:2, 4])
 axOnsetivity = plt.subplot(gs[0:2, 5])
 axMonotonicity = plt.subplot(gs[0:2, 6])
 
-plt.text(-0.45, 1.03, 'A', ha='center', va='center',
+plt.text(-0.3, 1.03, 'A', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=ndOne.transAxes)
-plt.text(-0.45, 1.03, 'B', ha='center', va='center',
+plt.text(-0.3, 1.03, 'B', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=dOne.transAxes)
 plt.text(-0.3, 1.01, 'C', ha='center', va='center',
@@ -302,7 +302,7 @@ if PANELS[4]:
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal) Remove Matt
     messages.append("{} p={}".format(popStatCol, pVal))
 
-    yDataMax = max([max(D1PopStat*1000), max(nD1PopStat*1000)])
+    yDataMax = max([max(D1PopStat*700), max(nD1PopStat*700)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
     starString = None if pVal < 0.05 else 'n.s.'
@@ -414,6 +414,7 @@ print("\n")
 
 if SAVE_FIGURE:
     if os.path.isdir(figparams.FIGURE_OUTPUT_DIR):
+        pass
         extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
         print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
     elif not os.path.isdir(os.path.join(figparams.FIGURE_OUTPUT_DIR)):
