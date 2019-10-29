@@ -28,13 +28,13 @@ tracks = [
     {'subject': subject, 'brainArea': 'LeftAstr', 'histImage': 'p2-a5-03',
      'recordingTrack': 'anteriorDiI', 'shank': 4, 'atlasZ': 268},
 
-    {'subject': subject, 'brainArea': 'LeftAstr', 'histImage': 'p2-a1-02',
-     'recordingTrack': 'anteriorDiI', 'shank': 1, 'atlasZ': 250},
+    {'subject': subject, 'brainArea': 'RightAstr', 'histImage': 'p2-a1-02',
+     'recordingTrack': 'anteriourDiI', 'shank': 1, 'atlasZ': 250},
 
-    {'subject': subject, 'brainArea': 'LeftAstr', 'histImage': 'p2-a1-02',
-     'recordingTrack': 'anteriorDiI', 'shank': 2, 'atlasZ': 250},
+    {'subject': subject, 'brainArea': 'RightAstr', 'histImage': 'p2-a1-02',
+     'recordingTrack': 'anteriourDiI', 'shank': 2, 'atlasZ': 250},
 
-    {'subject': subject, 'brainArea': 'LeftAstr', 'histImage': 'p2-a1-02',
-     'recordingTrack': 'anteriorDiI', 'shank': 3, 'atlasZ': 250},
+    {'subject': subject, 'brainArea': 'RightAstr', 'histImage': 'p2-a1-02',
+     'recordingTrack': 'anteriourDiI', 'shank': 3, 'atlasZ': 250},
 
 ]
