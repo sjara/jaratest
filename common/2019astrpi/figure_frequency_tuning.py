@@ -76,11 +76,11 @@ starGapFactor = figparams.starGapFactor
 starYfactor = figparams.starYfactor
 
 dotEdgeColor = figparams.dotEdgeColor
-nd1ColorMap = 'Blues'
-d1ColorMap = 'Reds'
+nd1ColorMap = 'Reds'
+d1ColorMap = 'Blues'
 
-colornD1 = figparams.cp.TangoPalette['SkyBlue2']
-colorD1 = figparams.cp.TangoPalette['ScarletRed1']
+colornD1 = figparams.cp.TangoPalette['ScarletRed1']
+colorD1 = figparams.cp.TangoPalette['SkyBlue2']
 markerAlpha = 1
 
 # labelPosX = [0.05, 0.24, 0.45, 0.64, 0.835]   Old sizes from Allison. Updated below to match Nick's
