@@ -34,8 +34,8 @@ db = celldatabase.load_hdf(pathtoDB)
 
 
 examples = {}
-examples.update({'D1': 'd1pi032_2019-02-22_3400.0_TT5c4'})
-examples.update({'nD1': 'd1pi033_2019-04-17_2900.0_TT8c2'})
+examples.update({'D1': 'd1pi036_2019-05-29_2900.0_TT5c3'})
+examples.update({'nD1': 'd1pi036_2019-05-29_2800.0_TT2c4'})
 
 exampleCell = [val for key, val in examples.items()]
 exampleKeys = [key for key, val in examples.items()]
