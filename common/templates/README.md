@@ -1,4 +1,9 @@
+#  Project title (Ex: 2019astrpi)
+[Brief explanation of project goes here]
+
 # Producing databases
+The file `studyparams.py` contains the list of animals used in this study as well as 
+relevant file paths and statistical parameters for the database calculations
 
 ## `database_generation.py`
 [Specify here which databases are generated and any special instructions for running this script]
