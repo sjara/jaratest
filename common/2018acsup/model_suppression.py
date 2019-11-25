@@ -169,16 +169,16 @@ def change_in_response(bwTunings):
         
 if __name__ == '__main__':
 
-    nCells = 41
+    nCells = 101
 
     net = Network(nCells)
 
     plt.figure(2)
     plt.clf()
 
-    ampPV = -3; stdPV = 6
-    ampSOM = -1.5; stdSOM = 20
-    ampThal = 10; stdThal = 4
+    ampPV = -20; stdPV = 10
+    ampSOM = -20; stdSOM = 30
+    ampThal = 100; stdThal = 6
     for CASE in [0,1,2]:
         if CASE==0:
             '''Control'''
@@ -199,7 +199,7 @@ if __name__ == '__main__':
             net.setSOM(0, stdSOM)
             net.setThal(ampThal, stdThal)
 
-        bandwidths = np.arange(3,41+2,2)
+        bandwidths = np.arange(3,nCells+2,2)
         centerOutput = net.run_manybw(0, bandwidths)
 
         plt.figure(2)
