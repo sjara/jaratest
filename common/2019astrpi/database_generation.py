@@ -261,7 +261,7 @@ if __name__ == "__main__":
             print("SAVED DATAFRAME to {}".format(dbpath))
         elif not os.path.isdir(dbLocation):
             answer = input_func("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
-            if answer in ['y', 'Y', 'Yes', 'YES']:
+            if answer.upper() in ['Y', 'YES']:
                 os.mkdir(dbLocation)
                 celldatabase.save_hdf(PhotoID, dbpath)
                 print("SAVED DATAFRAME to {}".format(dbpath))
