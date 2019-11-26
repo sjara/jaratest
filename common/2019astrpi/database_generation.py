@@ -265,4 +265,4 @@ if __name__ == "__main__":
                 os.mkdir(dbLocation)
                 celldatabase.save_hdf(PhotoID, dbpath)
                 print("SAVED DATAFRAME to {}".format(dbpath))
-                print(u"\U0001F4A9")
+                print(u"\U0001F4A9"*10)
