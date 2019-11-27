@@ -216,8 +216,8 @@ def calculate_BW10_params(ind10Above, popts, Rsquareds, responseThreshold, inten
     except IndexError:
         print("Failure indexerror didn't get 10 above")
         print(intensityThreshold)
-        # This is for the instance when we are not able to catch 10dB above threshold.\
-        # Even then we can still get cf and threshold, but not uF/lF
+        # This is for the instance when we are not able to catch 10dB above threshold.
+        # Even then we can still get cf and threshold, but not upperFreq/lowerFreq
         upperFreq = None
         lowerFreq = None
         Rsquared10AboveSIT = np.nan
@@ -237,6 +237,21 @@ def calculate_BW10_params(ind10Above, popts, Rsquareds, responseThreshold, inten
 
 
 def calculate_latency(eventOnsetTimes, currentFreq,  uniqFreq, currentIntensity, uniqueIntensity, spikeTimes, indRow):
+    """
+
+    Args:
+        eventOnsetTimes (np.array): Same size as the number of trials with each value being the time sound detector turned on
+        currentFreq (np.array): Same size as number of trials presented with each value being a specific frequency for that trial
+        currentIntensity (np.array): Same size as number of trials presented with each value being a specific intensity for that trial
+        uniqueIntensity (np.array): Uses currentIntensity to find how many unique intensity values were presented and store each unique value
+        uniqFreq (np.array): Uses currentFreq to find how many unique frequency values were presented and store each unique value
+        spikeTimes (np.array): Each value is a time when a spike occurred; obtained from ephys data
+        indRow (int): Row number of cell in database(DataFrame)
+
+    Returns:
+        respLatency (float): Time, in seconds, from when the stimulus is presented and the cell responds
+
+    """
 
     trialsEachCondition = behavioranalysis.find_trials_each_combination(currentIntensity, uniqueIntensity,
                                                                         currentFreq, uniqFreq)
@@ -302,26 +317,17 @@ def calculate_monotonicity_index(eventOnsetTimes, currentFreq, currentIntensity,
     """
 
     Args:
-        eventOnsetTimes:
-        currentFreq:
-        currentIntensity:
-        uniqueIntensity:
-        spikeTimes:
-        cf:
+        eventOnsetTimes (np.array): Same size as the number of trials with each value being the time sound detector turned on
+        currentFreq (np.array): Same size as number of trials presented with each value being a specific frequency for that trial
+        currentIntensity (np.array): Same size as number of trials presented with each value being a specific intensity for that trial
+        uniqueIntensity (np.array): Uses currentIntensity to find how many unique intensity values were presented and store each unique value in ascending order
+        spikeTimes (np.array): Each value is a time when a spike occurred; obtained from ephys data
+        cf (float): Characteristic frequency of the cell, calculated by analyzing lowest threshold value for a cell
 
     Returns:
-
+        monoIndex (float): Index value for monotonicity of a cell, between 0 and 1
+        overallMaxSpikes (float): Mean number of spikes at the intensity that had the most spikes for a stimulus
     """
-
-    # """
-    # :param eventOnsetTimes: np.array of the same size as the number of trials with each value being the time the sound detector turned on
-    # :param currentFreq: np.array of same size as number of trials presented with each value being a specific frequency for that trial
-    # :param currentIntensity: np.array of same size as number of trials presented with each value being a specific intensity for that trial
-    # :param uniqueIntensity: np.array of each intensity presented with no repeats
-    # :param spikeTimes: np.array of time when spikes occurred; obtained from ephys data
-    # :param dbRow: (pandas.series) Current row in the database(dataframe) corresponding to the cluster
-    # :return: The monotonicity index and the maximum spikes across all intensities presented for this cell
-    # """
 
     # if len(eventOnsetTimes) != len(freqEachTrial):
     #     eventOnsetTimes = eventOnsetTimes[:-1]
@@ -384,13 +390,16 @@ def calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes, currentFreq,
     """
 
     Args:
-        eventOnsetTimes:
-        spikeTimes:
-        currentFreq:
-        currentIntensity:
-        cf:
-        respLatency:
+        eventOnsetTimes (np.array): Same size as the number of trials with each value being the time sound detector turned on
+        currentFreq (np.array): Same size as number of trials presented with each value being a specific frequency for that trial
+        currentIntensity (np.array): Same size as number of trials presented with each value being a specific intensity for that trial
+        uniqueIntensity (np.array): Uses currentIntensity to find how many unique intensity values were presented and store each unique value in ascending order
+        spikeTimes (np.array): Each value is a time when a spike occurred; obtained from ephys data
+        respLatency (float): Time in seconds that the cell takes to respond to the stimulus being presented
     Returns:
+        onsetRate (float): The number of spikes that happen within the response time range
+        sustainedRate (float): The number of spikes that happen within the sustained time range
+        baseRate (float): The number of spikes that happen within the baseline time range
 
     """
     cfTrials = currentFreq == cf

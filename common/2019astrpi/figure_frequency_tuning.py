@@ -51,8 +51,8 @@ exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAM
 exData = np.load(exampleDataPath)  # npz data generated from generate_example_freq_tuning
 np.random.seed(8)
 
-D1 = db.query('laserpulse_pVal<0.05 and noiseburst_pVal<0.05')  # bothsoundlaser
-nD1 = db.query('laserpulse_pVal>0.05 and noiseburst_pVal<0.05')  # onlysoundnolaser
+D1 = db.query('laserpulse_pVal<0.05')  # bothsoundlaser
+nD1 = db.query('laserpulse_pVal>0.05')  # onlysoundnolaser
 
 PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
