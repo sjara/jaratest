@@ -27,6 +27,7 @@ def random_in_range(low,high,shape):
 
 if RANDOMIZED:
     nSamples = 200
+    rfWidths = {'PV':5, 'SOM':5, 'Thal':5}
     ampPVvec = random_in_range(-2, -44, nSamples)
     ampSOMvec = random_in_range(-2, -44, nSamples)
     stdThalvec = random_in_range(5, 10, nSamples)
@@ -38,7 +39,7 @@ if RANDOMIZED:
         wParams = {'ampPV':ampPVvec[inds], 'stdPV':10,
                    'ampSOM':ampSOMvec[inds], 'stdSOM':30,
                    'ampThal':100, 'stdThal':stdThalvec[inds]}
-        net = suppmodel.Network(nCells, wParams)
+        net = suppmodel.Network(nCells, wParams, rfWidths)
         centerCellOutput,  bandwidths, condLabels = net.simulate_inactivation()
         suppIndex = suppmodel.suppression_index(centerCellOutput)
         changeAtPeak, changeAtWN = suppmodel.change_in_response(centerCellOutput)

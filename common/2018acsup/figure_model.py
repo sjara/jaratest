@@ -53,7 +53,7 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'Fig8_model' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg' # 'pdf' or 'svg'
 #figFormat = 'svg'
 #figSize = [6.6, 6] # In inches
 figSize = [10,6] # In inches
@@ -65,7 +65,7 @@ fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
 labelPosX = [0.01, 0.3, 0.64]   # Horiz position for panel labels
-labelPosY = [0.96, 0.48, 0.48]    # Vert position for panel labels
+labelPosY = [0.96, 0.48]    # Vert position for panel labels
 
 ExcColor = figparams.colp['excitatoryCell']
 Exclight = matplotlib.colors.colorConverter.to_rgba(ExcColor, alpha=0.5)
@@ -79,7 +79,9 @@ nCells = 101
 wParams = {'ampPV':-20, 'stdPV':10,
            'ampSOM':-20, 'stdSOM':30,
            'ampThal':100, 'stdThal':6}
-net = suppmodel.Network(nCells, wParams)
+#rfWidths = {'PV':5, 'SOM':5, 'Thal':5}
+rfWidths = {'PV':10, 'SOM':10, 'Thal':10}
+net = suppmodel.Network(nCells, wParams, rfWidths)
 centerCellOutput,  bandwidths, condLabels = net.simulate_inactivation()
 maxFiringRate = np.max(centerCellOutput[0,:])
 bandwidthsNormed = bandwidths/float(wParams['stdSOM'])
@@ -139,6 +141,8 @@ markerSize = 3
 
 # -- Plot supp index --
 axSuppIndex = plt.subplot(gs[0, 2:])
+axSuppIndex.annotate('D', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
+                   fontsize=fontSizePanel, fontweight='bold')
 plt.plot(suppIndexVec[0],suppIndexVec[1],'s', color=PVcolor, mfc='none', ms=markerSize)
 plt.plot(suppIndexVec[0],suppIndexVec[2],'o', color=SOMcolor, mfc='none', ms=markerSize)
 xLims = [-0.1,1.1]
@@ -147,11 +151,14 @@ plt.ylim(xLims)
 plt.plot(xLims,xLims,'--',color='0.5')
 plt.xlabel('Suppression Index (control)')
 plt.ylabel('Suppression Index (inactivation)')
+#plt.axis('equal') # For older matplotlib
 plt.axis('square')
 extraplots.boxoff(axSuppIndex)
 
 # -- Plot change in response --
-axSuppIndex = plt.subplot(gs[1, 2:])
+axChange = plt.subplot(gs[1, 2:])
+axChange.annotate('E', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
+                   fontsize=fontSizePanel, fontweight='bold')
 plt.plot(changeAtPeakVec[0,:],changeAtWNVec[0,:],'s', color=PVcolor, mfc='none', ms=markerSize)
 plt.plot(changeAtPeakVec[1,:],changeAtWNVec[1,:],'o', color=SOMcolor, mfc='none', ms=markerSize)
 xLims = [-50,2200]
@@ -160,8 +167,12 @@ plt.ylim(xLims)
 plt.plot(xLims,xLims,'--',color='0.5')
 plt.xlabel('Change in response to preferred bandwidth')
 plt.ylabel('Change in response to WN')
+#plt.axis('equal') # For older matplotlib
 plt.axis('square')
 extraplots.boxoff(axSuppIndex)
 
 plt.show()
 
+
+if SAVE_FIGURE:
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

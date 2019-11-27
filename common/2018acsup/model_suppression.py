@@ -3,7 +3,9 @@ Neural model that accounts for differences in surround supression
 between PV and SOM cells in auditory cortex.
 """
 
+
 from __future__ import division
+import sys
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -14,6 +16,15 @@ def findsigma(x, y, mu, amp):
     """Solve for sigma given Gaussian parameters and one point"""
     return (x-mu)/np.sqrt(-2*np.log(y/amp))
 
+def gRF(inputVec,sigma):
+    """Convolve input with Gaussian to simulate receptive field"""
+    nPoints = len(inputVec)
+    xVec = np.linspace(-nPoints//2+1,nPoints//2,nPoints) # FIXME: only works for odd nunbers?
+    gaussianKernel = gaussian(xVec, 0, 1, sigma, 0)
+    gaussianKernel = gaussianKernel/np.sum(gaussianKernel)
+    outputVec = np.convolve(inputVec, gaussianKernel, 'same')
+    return outputVec, gaussianKernel
+    
 def rect(vecsize, midpoint, bandwidth):
     """
     bandwidth needs to be an odd number.
@@ -25,13 +36,16 @@ def rect(vecsize, midpoint, bandwidth):
     return vec
 
 class Network(object):
-    def __init__(self, nCellsPerLayer, wParams=None):
+    def __init__(self, nCellsPerLayer, wParams=None, rfWidths=None):
         """
         nCellsPerLayer (int): number of cells for each type.
         wParams (dict): dict with parameters that define weights, with the format
                         wParams = {'ampPV':-20, 'stdPV':10,
                                    'ampSOM':-20, 'stdSOM':30,
                                    'ampThal':100, 'stdThal':6}
+        rfWidths (dict): dict with width of receptive fields for each input
+                         defined as the StDev of a Gaussian in units of # neurons.
+                         rfWidths = {'PV':0.1, 'SOM':0.1, 'Thal':0.1}
         """
         self.nColumns = nCellsPerLayer
 
@@ -46,7 +60,16 @@ class Network(object):
             self.setThal(wParams['ampThal'], wParams['stdThal'])
             self.setPV(wParams['ampPV'], wParams['stdPV'])
             self.setSOM(wParams['ampSOM'], wParams['stdSOM'])
-                
+
+        if rfWidths is None:
+            self.rfWidthPV = 0.1
+            self.rfWidthSOM = 0.1
+            self.rfWidthThal = 0.1
+        else:
+            self.rfWidthPV = rfWidths['PV']
+            self.rfWidthSOM = rfWidths['SOM']
+            self.rfWidthThal = rfWidths['Thal']
+
     def make_weights_mat(self, stdev):
         xVec = np.arange(3*self.nColumns)
         midPoint = self.nColumns+self.nColumns//2
@@ -65,6 +88,8 @@ class Network(object):
     def setThal(self, ampThal, stdThal):
         self.wThal = -ampThal * self.make_weights_mat(stdThal)
         
+    #def setRFs(self, rfWidthPV, rfWidthSOM):
+        
     def run(self, center, bandwidth):
         """
         Calculate output.
@@ -73,9 +98,16 @@ class Network(object):
         """
         midpoint = self.nColumns//2 - center
         self.inputVec = rect(self.nColumns, midpoint, bandwidth)
-        self.activationVec = np.dot(self.wPV, self.inputVec) + \
-                         np.dot(self.wSOM, self.inputVec) + \
-                         np.dot(self.wThal, self.inputVec)
+        #inputThal = self.inputVec
+        inputThal, kThal = gRF(self.inputVec, self.rfWidthThal)
+        inputPV, kPV = gRF(self.inputVec, self.rfWidthPV)
+        inputSOM, kSOM = gRF(self.inputVec, self.rfWidthSOM)
+        #self.activationVec = np.dot(self.wPV, self.inputVec) + \
+        #                 np.dot(self.wSOM, self.inputVec) + \
+        #                 np.dot(self.wThal, self.inputVec)
+        self.activationVec = np.dot(self.wPV, inputPV) + \
+                             np.dot(self.wSOM, inputSOM) + \
+                             np.dot(self.wThal, inputThal)
         self.outputVec = self.activationVec*(self.activationVec>0)
         
     def run_manybw(self, center, bandwidths):
@@ -171,21 +203,47 @@ if __name__ == '__main__':
 
     nCells = 101
 
+    '''
+    nPoints = nCells
+    sigma = 0.1
+    xVec = np.linspace(-nPoints//2+1,nPoints//2,nPoints) # FIXME: only works for odd nunbers?
+    gaussianKernel = gaussian(xVec, 0, 1, sigma, 0)
+    gaussianKernel = gaussianKernel/np.sum(gaussianKernel)
+    inputVec = rect(nPoints, nPoints//2, 41)
+    outputVec = np.convolve(inputVec, gaussianKernel, 'same')
+    plt.clf()
+    plt.plot(gaussianKernel/np.max(gaussianKernel),'.')
+    plt.plot(outputVec,'.')
+    sys.exit()
+    '''
+    
     net = Network(nCells)
 
-    plt.figure(2)
+    #plt.figure(2)
     plt.clf()
 
-    ampPV = -20; stdPV = 10
-    ampSOM = -20; stdSOM = 30
+    ampPV = -20; stdPV = 10;
+    ampSOM = -20; stdSOM = 30;
     ampThal = 100; stdThal = 6
+    net.rfWidthPV = 0.1
+    net.rfWidthSOM = 0.1
+    net.rfWidthThal = 0.1
+    '''
+    ampPV = -3.5; stdPV = 10;
+    ampSOM = -3.5; stdSOM = 30;
+    ampThal = 100; stdThal = 1
+    net.rfWidthPV = 10
+    net.rfWidthSOM = 10
+    net.rfWidthThal = 10
+    '''
+    
     for CASE in [0,1,2]:
         if CASE==0:
             '''Control'''
             net.setPV(ampPV, stdPV)
             net.setSOM(ampSOM, stdSOM)
             net.setThal(ampThal, stdThal)
-
+            
             plt.figure(1)
             net.plot_weights()
         if CASE==1:
