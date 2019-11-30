@@ -27,17 +27,18 @@ def random_in_range(low,high,shape):
 
 if RANDOMIZED:
     nSamples = 200
-    rfWidths = {'PV':5, 'SOM':5, 'Thal':5}
-    ampPVvec = random_in_range(-2, -44, nSamples)
-    ampSOMvec = random_in_range(-2, -44, nSamples)
-    stdThalvec = random_in_range(5, 10, nSamples)
+    #rfWidths = {'PV':5, 'SOM':5, 'Thal':5}
+    rfWidths = None
+    ampPVvec = random_in_range(-1, -30, nSamples)
+    ampSOMvec = random_in_range(-1, -30, nSamples)
+    stdThalvec = random_in_range(3, 10, nSamples)
     suppIndexVec = np.empty((3,nSamples))     # 3:Control, PV, SOM
     changeAtPeakVec = np.empty((2,nSamples))  # 2:PV-Control, SOM-Control
     changeAtWNVec = np.empty((2,nSamples))    # 2:PV-Control, SOM-Control
 
     for inds in range(nSamples):
         wParams = {'ampPV':ampPVvec[inds], 'stdPV':10,
-                   'ampSOM':ampSOMvec[inds], 'stdSOM':30,
+                   'ampSOM':ampSOMvec[inds], 'stdSOM':20,
                    'ampThal':100, 'stdThal':stdThalvec[inds]}
         net = suppmodel.Network(nCells, wParams, rfWidths)
         centerCellOutput,  bandwidths, condLabels = net.simulate_inactivation()

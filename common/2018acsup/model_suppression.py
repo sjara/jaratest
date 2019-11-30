@@ -46,6 +46,7 @@ class Network(object):
         rfWidths (dict): dict with width of receptive fields for each input
                          defined as the StDev of a Gaussian in units of # neurons.
                          rfWidths = {'PV':0.1, 'SOM':0.1, 'Thal':0.1}
+                         If rfWidths is None, delta RFs are used.
         """
         self.nColumns = nCellsPerLayer
 
@@ -62,13 +63,15 @@ class Network(object):
             self.setSOM(wParams['ampSOM'], wParams['stdSOM'])
 
         if rfWidths is None:
-            self.rfWidthPV = 0.1
-            self.rfWidthSOM = 0.1
-            self.rfWidthThal = 0.1
+            self.rfWidthPV = None
+            self.rfWidthSOM = None
+            self.rfWidthThal = None
+            self.useRFs = False
         else:
             self.rfWidthPV = rfWidths['PV']
             self.rfWidthSOM = rfWidths['SOM']
             self.rfWidthThal = rfWidths['Thal']
+            self.useRFs = True
 
     def make_weights_mat(self, stdev):
         xVec = np.arange(3*self.nColumns)
@@ -99,15 +102,17 @@ class Network(object):
         midpoint = self.nColumns//2 - center
         self.inputVec = rect(self.nColumns, midpoint, bandwidth)
         #inputThal = self.inputVec
-        inputThal, kThal = gRF(self.inputVec, self.rfWidthThal)
-        inputPV, kPV = gRF(self.inputVec, self.rfWidthPV)
-        inputSOM, kSOM = gRF(self.inputVec, self.rfWidthSOM)
-        #self.activationVec = np.dot(self.wPV, self.inputVec) + \
-        #                 np.dot(self.wSOM, self.inputVec) + \
-        #                 np.dot(self.wThal, self.inputVec)
-        self.activationVec = np.dot(self.wPV, inputPV) + \
-                             np.dot(self.wSOM, inputSOM) + \
-                             np.dot(self.wThal, inputThal)
+        if self.useRFs:
+            inputThal, kThal = gRF(self.inputVec, self.rfWidthThal)
+            inputPV, kPV = gRF(self.inputVec, self.rfWidthPV)
+            inputSOM, kSOM = gRF(self.inputVec, self.rfWidthSOM)
+            self.activationVec = np.dot(self.wPV, inputPV) + \
+                                 np.dot(self.wSOM, inputSOM) + \
+                                 np.dot(self.wThal, inputThal)
+        else:
+            self.activationVec = np.dot(self.wPV, self.inputVec) + \
+                                 np.dot(self.wSOM, self.inputVec) + \
+                                 np.dot(self.wThal, self.inputVec)
         self.outputVec = self.activationVec*(self.activationVec>0)
         
     def run_manybw(self, center, bandwidths):
@@ -225,17 +230,21 @@ if __name__ == '__main__':
     ampPV = -20; stdPV = 10;
     ampSOM = -20; stdSOM = 30;
     ampThal = 100; stdThal = 6
+    '''
     net.rfWidthPV = 0.1
     net.rfWidthSOM = 0.1
     net.rfWidthThal = 0.1
-    '''
-    ampPV = -3.5; stdPV = 10;
-    ampSOM = -3.5; stdSOM = 30;
+    ampPV = -3.3; stdPV = 10;
+    ampSOM = -3.3; stdSOM = 30;
     ampThal = 100; stdThal = 1
-    net.rfWidthPV = 10
-    net.rfWidthSOM = 10
-    net.rfWidthThal = 10
+    # net.rfWidthPV = 10
+    # net.rfWidthSOM = 10
+    # net.rfWidthThal = 10
+    net.rfWidthPV = 15
+    net.rfWidthSOM = net.rfWidthPV
+    net.rfWidthThal = net.rfWidthPV
     '''
+    net.useRFs = False
     
     for CASE in [0,1,2]:
         if CASE==0:

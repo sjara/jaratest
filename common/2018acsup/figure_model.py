@@ -76,11 +76,17 @@ SOMlight = matplotlib.colors.colorConverter.to_rgba(SOMcolor, alpha=0.5)
 
 # -- Simulate model --
 nCells = 101
+wParams = {'ampPV':-25, 'stdPV':10,
+           'ampSOM':-25, 'stdSOM':20,
+           'ampThal':100, 'stdThal':5}
+'''
 wParams = {'ampPV':-20, 'stdPV':10,
            'ampSOM':-20, 'stdSOM':30,
            'ampThal':100, 'stdThal':6}
+'''
+rfWidths = None
 #rfWidths = {'PV':5, 'SOM':5, 'Thal':5}
-rfWidths = {'PV':10, 'SOM':10, 'Thal':10}
+#rfWidths = {'PV':10, 'SOM':10, 'Thal':10}
 net = suppmodel.Network(nCells, wParams, rfWidths)
 centerCellOutput,  bandwidths, condLabels = net.simulate_inactivation()
 maxFiringRate = np.max(centerCellOutput[0,:])
@@ -103,7 +109,7 @@ axCartoon.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fractio
 # -- Panel No PV --
 lineWidth = 3
 #xLims = [16,100]/stdSOM
-xLims = [0.6,3.4]
+xLims = [0.7,3.4]
 #rangeToPlot = [10,100]
 axNoPV = plt.subplot(gs[1, 0])
 axNoPV.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
@@ -161,7 +167,7 @@ axChange.annotate('E', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction
                    fontsize=fontSizePanel, fontweight='bold')
 plt.plot(changeAtPeakVec[0,:],changeAtWNVec[0,:],'s', color=PVcolor, mfc='none', ms=markerSize)
 plt.plot(changeAtPeakVec[1,:],changeAtWNVec[1,:],'o', color=SOMcolor, mfc='none', ms=markerSize)
-xLims = [-50,2200]
+xLims = [-50,1500]
 plt.xlim(xLims)
 plt.ylim(xLims)
 plt.plot(xLims,xLims,'--',color='0.5')
