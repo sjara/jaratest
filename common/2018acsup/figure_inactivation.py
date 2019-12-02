@@ -25,8 +25,8 @@ PANELS = [1,1,1,1] # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'Fig7_effect_of_inhibitory_inactivation_on_suppression' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
-#figFormat = 'svg'
+#figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg'
 figSize = [10,6] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
@@ -64,7 +64,7 @@ exampleNoSOM = 'example_SOM_inactivation_band055_2018-03-20_1200um_T6_c4.npz'
 exampleNoPV = 'example_PV_inactivation_band062_2018-05-24_1300um_T2_c2.npz'
 #exampleNoPV = 'example_PV_inactivation_band062_2018-05-25_1250um_T4_c2.npz'
 
-summaryFileName = 'all_inactivated_cells_stats.npz'
+summaryFileName = 'all_inactivated_cells_stats_full.npz'
 
 
 def bootstrap_median_CI(data, reps=1000, interval=95):
@@ -75,8 +75,7 @@ def bootstrap_median_CI(data, reps=1000, interval=95):
     low = np.percentile(medians,(100-interval)/2.0)
     high = np.percentile(medians,interval+(100-interval)/2.0)
     return [low, high]
-        
-    
+
 
 # --- Raster plots of sound response with and without laser ---
 if PANELS[0]:
@@ -171,7 +170,7 @@ if PANELS[1]:
             line, = plt.plot(fitBands, fits[laser], lineType[laser], lw=1.5, color=colours[indCell][laser])
             lines.append(line)
         #plt.legend([lines[-1],lines[0]],['{}, SI = {:.2f}'.format(figLegends[indCell], SIs[1]),'Control, SI = {:.2f}'.format(SIs[0])], loc='best', frameon=False, fontsize=fontSizeLabels)
-        plt.legend([lines[-1],lines[0]],[figLegends[indCell],'control'], frameon=False, fontsize=fontSizeLegend, bbox_to_anchor=legendLocs[indCell])
+        plt.legend([lines[-1],lines[0]],[figLegends[indCell],'control'], frameon=False, fontsize=fontSizeLegend, bbox_to_anchor=legendLocs[indCell], handlelength=2.4)
         axCurve.annotate(panelLabels[indCell], xy=(labelPosX[indCell],labelPosY[1]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
         axCurve.set_ylim(bottom=0)
@@ -198,6 +197,9 @@ gs2 = gridspec.GridSpecFromSubplotSpec(2,1, subplot_spec=axSummaries, wspace=0.3
 
 # --- plot scatter plot of suppression with and without laser ---   
 if PANELS[2]:
+    # exclude cells with SI=0?
+    EXCLUDE = 0
+    
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
@@ -206,6 +208,15 @@ if PANELS[2]:
     
     SOMsustainedSuppressionNoLaser = summaryData['fitSOMsustainedSuppressionNoZeroNoLaser']
     SOMsustainedSuppressionLaser = summaryData['fitSOMsustainedSuppressionNoZeroLaser']
+    
+    if EXCLUDE:
+        PVnonzeroInds = np.nonzero(PVsustainedSuppressionNoLaser)
+        PVsustainedSuppressionNoLaser = PVsustainedSuppressionNoLaser[PVnonzeroInds]
+        PVsustainedSuppressionLaser = PVsustainedSuppressionLaser[PVnonzeroInds]
+        
+        SOMnonzeroInds = np.nonzero(SOMsustainedSuppressionNoLaser)
+        SOMsustainedSuppressionNoLaser = SOMsustainedSuppressionNoLaser[SOMnonzeroInds]
+        SOMsustainedSuppressionLaser = SOMsustainedSuppressionLaser[SOMnonzeroInds]
 
     PVsupNoLaser = summaryData['fitMeanPVsupNoZeroNoLaser']
     PVsupLaser = summaryData['fitMeanPVsupNoZeroLaser']
@@ -247,78 +258,105 @@ if PANELS[2]:
     noPV = stats.wilcoxon(PVsustainedSuppressionNoLaser,PVsustainedSuppressionLaser)[1]
     noSOM = stats.wilcoxon(SOMsustainedSuppressionNoLaser, SOMsustainedSuppressionLaser)[1]
     print "Change in SI p values:\nno PV: {0}\nno SOM: {1}".format(noPV,noSOM)
+    
+    # downsample SOM data to PV sample size
+    reps = 1000
+    pVals = np.zeros(reps)
+    sampleSize = len(PVsustainedSuppressionLaser)
+    SOMinds = range(len(SOMsustainedSuppressionLaser))
+    for ind in range(reps):
+        indsToUse = np.random.choice(SOMinds, sampleSize, replace=False)
+        pVals[ind] = stats.wilcoxon(SOMsustainedSuppressionNoLaser[indsToUse], SOMsustainedSuppressionLaser[indsToUse])[1]
+    print "Downsampled SOM change in SI median p value ({0} reps): {1}".format(reps, np.median(pVals))
 
 
     # inset showing differences in medians
-    noPVsupDiff = PVsustainedSuppressionLaser-PVsustainedSuppressionNoLaser
-    noSOMsupDiff = SOMsustainedSuppressionLaser-SOMsustainedSuppressionNoLaser
+    # difference in suppression calculated as percent change
+    noPVsupDiff = (PVsustainedSuppressionLaser-PVsustainedSuppressionNoLaser)/np.mean(PVsustainedSuppressionNoLaser)
+    noSOMsupDiff = (SOMsustainedSuppressionLaser-SOMsustainedSuppressionNoLaser)/np.mean(SOMsustainedSuppressionNoLaser)
     
     supDiffs = [noPVsupDiff, noSOMsupDiff]
     
-    axInset = inset_axes(axScatter, width="25%", height="40%", loc=4, bbox_to_anchor=(0.13, 0.03, 1, 1), bbox_transform=axScatter.transAxes)
-    
+    axInset = inset_axes(axScatter, width="20%", height="35%", loc=4, bbox_to_anchor=(0.16, 0.02, 1, 1), bbox_transform=axScatter.transAxes)
+      
     width = 0.6
     loc = np.arange(1,3)
-
-    SIMedians = [np.median(noPVsupDiff), np.median(noSOMsupDiff)]
-    SICIs = [bootstrap_median_CI(noPVsupDiff),bootstrap_median_CI(noSOMsupDiff)]
+  
+    SIMedians = [100.0*np.median(noPVsupDiff), 100.0*np.median(noSOMsupDiff)]
+    SICIs = [bootstrap_median_CI(100.0*noPVsupDiff),bootstrap_median_CI(100.0*noSOMsupDiff)]
+#     SIMedians = [100.0*np.mean(noPVsupDiff), 100.0*np.mean(noSOMsupDiff)]
+#     SICIs = [[SIMedians[0]-stats.sem(100.0*noPVsupDiff),SIMedians[0]+stats.sem(100.0*noPVsupDiff)],[SIMedians[1]-stats.sem(100.0*noSOMsupDiff),SIMedians[1]+stats.sem(100.0*noSOMsupDiff)]]
     for indType in range(len(SIMedians)): 
         plt.plot([loc[indType]-width/2,loc[indType]+width/2], [SIMedians[indType],SIMedians[indType]], color=cellTypeColours[indType], linewidth=3) #medians
+        #axInset.bar(loc[indType], SIMedians[indType], width, color='none', edgecolor=cellTypeColours[indType],linewidth=2)
+          
         # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
+        #loc2 = loc+width/2
         plt.plot([loc[indType], loc[indType]],SICIs[indType], color=cellTypeColours[indType], linewidth=1.5) #error bars
         plt.plot([loc[indType]-width/8,loc[indType]+width/8],[SICIs[indType][0],SICIs[indType][0]], color=cellTypeColours[indType], linewidth=1.5) #bottom caps
         plt.plot([loc[indType]-width/8,loc[indType]+width/8],[SICIs[indType][1],SICIs[indType][1]], color=cellTypeColours[indType], linewidth=1.5) #top caps
-     
-    #plt.plot([-5,5], [0,0], 'k--', zorder=-10)
-    
-    yLims = (-0.2,0.1)
+       
+    #plt.plot([-5,5], [0,0], 'k-', zorder=-10)
+      
+    yLims = (-36,10)
     plt.ylim(yLims)
-    plt.xlim(0.5,2.5)
-    
+    plt.xlim(0.3,3.0)
+      
 #    extraplots.boxoff(axInset, keep='right')
-    
-#     axInset.yaxis.tick_right()
+      
+    axInset.yaxis.tick_right()
     axInset.yaxis.set_ticks_position('right')
     plt.locator_params(axis='y', nbins=5)
     axInset.spines['left'].set_visible(False)
     axInset.spines['top'].set_visible(False)
-    plt.ylabel(r'$\Delta$SI',fontsize=fontSizeLegend,rotation=-90, labelpad=10)
+    plt.ylabel(r'$\Delta$SI (%)',fontsize=fontSizeLegend,rotation=-90, labelpad=15)
     axInset.yaxis.set_label_position('right')
+    axInset.tick_params(axis='y', labelsize=fontSizeLegend)
     plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
-    
-    extraplots.significance_stars([1,2], yLims[1]*0.92, yLims[1]*0.07, gapFactor=0.25, starSize=6)
-    
+      
+    plt.plot(loc[1], 8, '*', mfc='k', clip_on=False)
+    axInset.annotate('ns', xy=(0.6,6), xycoords='data', fontsize=8)
+    #extraplots.significance_stars([1,2], yLims[1]*0.92, yLims[1]*0.07, gapFactor=0.25, starSize=6)
+     
     pVal = stats.ranksums(noPVsupDiff, noSOMsupDiff)[1]
-    print "PV vs SOM change in SI p val: {}".format(pVal)
+    print "PV vs SOM change in SI (%) p val: {}".format(pVal)
 
 
 # RIP DENSITY PLOT    
 #     axInset = inset_axes(axScatter, width="118%", height="20%", loc=4, bbox_to_anchor=(0.25, 0.05, 1, 1), bbox_transform=axScatter.transAxes)
-#
+#  
 #     PVDiff = PVsustainedSuppressionNoLaser-PVsustainedSuppressionLaser
 #     SOMDiff = SOMsustainedSuppressionNoLaser-SOMsustainedSuppressionLaser
-# 
+#   
 #     PVDensity = stats.gaussian_kde(PVDiff)
 #     SOMDensity = stats.gaussian_kde(SOMDiff)
 #     xs = np.linspace(-1,1,200)
-#     
+#       
 #     PVDensity.covariance_factor = lambda : .25
 #     PVDensity._compute_covariance()
 #     SOMDensity.covariance_factor = lambda : .25
 #     SOMDensity._compute_covariance()
-#      
-#     plt.plot(xs,PVDensity(xs),color=PVcolour)
-#     plt.plot(xs,SOMDensity(xs),color=SOMcolour)
+#        
+#     plt.plot(xs,PVDensity(xs),color=PVcolour, lw=2)
+#     plt.plot(xs,SOMDensity(xs),color=SOMcolour, lw=2)
 #     plt.axvline(0, ls='--', color='k')
+#     plt.axvline(np.median(PVDiff), ls='--', color=PVcolour)
+#     plt.axvline(np.median(SOMDiff), ls='--', color=SOMcolour)
 #     plt.xlim(-1,1)
-# 
+#   
 #     extraplots.boxoff(axInset)
 #     axInset.axes.get_yaxis().set_visible(False)
 #     axInset.axes.get_xaxis().set_visible(False)
 #     axInset.spines['left'].set_visible(False)
+    
+#     pVal = stats.ranksums(PVDiff, SOMDiff)[1]
+#     print "PV vs SOM change in SI p val: {}".format(pVal)
 
 # --- plot peak vs white noise change in firing rate with inactivation ---    
 if PANELS[3]:
+    # exclude cells with SI=0?
+    EXCLUDE = 0
+    
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
     
@@ -327,6 +365,13 @@ if PANELS[3]:
     
     SOMpeakChangeFR = summaryData['fitSOMpeakChangeFRNoZero']
     SOMWNChangeFR = summaryData['fitSOMWNChangeFRNoZero']
+    
+    if EXCLUDE:
+        PVpeakChangeFR = PVpeakChangeFR[PVnonzeroInds]
+        PVWNChangeFR = PVWNChangeFR[PVnonzeroInds]
+        
+        SOMpeakChangeFR = SOMpeakChangeFR[SOMnonzeroInds]
+        SOMWNChangeFR = SOMWNChangeFR[SOMnonzeroInds]
     
     PVpeakChange = summaryData['fitMeanPVpeakChangeNoZero']
     PVWNChange = summaryData['fitMeanPVWNChangeNoZero']
@@ -352,8 +397,8 @@ if PANELS[3]:
     
     plt.hold(True)
     plt.plot([-20,30],[-20,30], 'k--')
+    l1, = plt.plot(PVpeakChangeFR,PVWNChangeFR, 's', color=PVcolour, mec='none', ms=4, zorder=10)
     l2, = plt.plot(SOMpeakChangeFR,SOMWNChangeFR, 'o', color='none', mec=SOMcolour, ms=3.2, markeredgewidth=1.2)
-    l1, = plt.plot(PVpeakChangeFR,PVWNChangeFR, 's', color=PVcolour, mec='none', ms=4)
     plt.ylabel('Change in response to WN (spk/s)',fontsize=fontSizeLabels)
     plt.xlabel('Change in response to \n preferred bandwidth (spk/s)',fontsize=fontSizeLabels)
 #     plt.xlim(-5,8)
@@ -371,30 +416,131 @@ if PANELS[3]:
     noSOM = stats.wilcoxon(SOMpeakChangeFR, SOMWNChangeFR)[1]
     print "Change in peak  vs WN response p values:\nno PV: {0}\nno SOM: {1}".format(noPV,noSOM)
     
+#     axInset = inset_axes(axScatter, width="35%", height="40%", loc=4, bbox_to_anchor=(0.13, 0.03, 1, 1), bbox_transform=axScatter.transAxes)
+#      
+#     width = 0.6
+#     loc = [0,2]
+#     
+#     fitPVpeakFRNoLaser = summaryData['fitPVpeakFRNoLaser']
+#     fitPVpeakFRLaser = summaryData['fitPVpeakFRLaser']
+#     PVpeakPercentChange = 100*(fitPVpeakFRLaser-fitPVpeakFRNoLaser)/fitPVpeakFRNoLaser
+#     PVpeakNormChange = (fitPVpeakFRLaser-fitPVpeakFRNoLaser)/(fitPVpeakFRLaser-fitPVpeakFRNoLaser)
+#     
+#     fitPVWNFRNoLaser = summaryData['fitPVWNFRNoLaser']
+#     fitPVWNFRLaser = summaryData['fitPVWNFRLaser']
+#     PVWNPercentChange = 100*(fitPVWNFRLaser-fitPVWNFRNoLaser)/fitPVWNFRNoLaser
+#     PVWNNormChange = (fitPVWNFRLaser-fitPVWNFRNoLaser)/(fitPVpeakFRLaser-fitPVpeakFRNoLaser)
+#     
+#     fitSOMpeakFRNoLaser = summaryData['fitSOMpeakFRNoLaser']
+#     fitSOMpeakFRLaser = summaryData['fitSOMpeakFRLaser']
+#     SOMpeakPercentChange = 100*(fitSOMpeakFRLaser-fitSOMpeakFRNoLaser)/fitSOMpeakFRNoLaser
+#     SOMpeakNormChange = (fitSOMpeakFRLaser-fitSOMpeakFRNoLaser)/(fitSOMpeakFRLaser-fitSOMpeakFRNoLaser)
+#     
+#     fitSOMWNFRNoLaser = summaryData['fitSOMWNFRNoLaser']
+#     fitSOMWNFRLaser = summaryData['fitSOMWNFRLaser']
+#     SOMWNPercentChange = 100*(fitSOMWNFRLaser-fitSOMWNFRNoLaser)/fitSOMWNFRNoLaser
+#     SOMWNNormChange = (fitSOMWNFRLaser-fitSOMWNFRNoLaser)/(fitSOMpeakFRLaser-fitSOMpeakFRNoLaser)
+#  
+#     #changeMeans = [[PVpeakChange, PVWNChange], [SOMpeakChange, SOMWNChange]]
+#     #changeSEMs = [[semPVpeakChange, semPVWNChange], [semSOMpeakChange, semSOMWNChange]]
+#     
+#     changeMeans = [[np.median(PVpeakChangeFR), np.median(PVWNChangeFR)], [np.median(SOMpeakChangeFR), np.median(SOMWNChangeFR)]]
+#     #changeMeans = [[np.mean(PVpeakPercentChange), np.mean(PVWNPercentChange)], [np.mean(SOMpeakPercentChange), np.mean(SOMWNPercentChange)]]
+#     #changeMeans = [[np.mean(PVpeakNormChange), np.mean(PVWNNormChange)],[np.mean(SOMpeakNormChange), np.mean(SOMWNNormChange)]]
+#     
+#     for indType, type in enumerate(changeMeans):
+#         for indCond, cond in enumerate(type):
+#             plt.plot([loc[indType]+indCond-width/2,loc[indType]+indCond+width/2], [cond,cond], color=cellTypeColours[indType], linewidth=3) #medians
+#             #axInset.bar(loc[indType], SIMedians[indType], width, color='none', edgecolor=cellTypeColours[indType],linewidth=2)
+#              
+#             # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
+#             #loc2 = loc+width/2
+#             #plt.plot([loc[indType]+indCond, loc[indType]+indCond],changeSEMs[indType][indCond]+cond, color=cellTypeColours[indType], linewidth=1.5) #error bars
+#             #plt.plot([loc[indType]+indCond-width/8,loc[indType]+indCond+width/8],[changeSEMs[indType][indCond]+cond,changeSEMs[indType][indCond]]+cond, color=cellTypeColours[indType], linewidth=1.5) #bottom caps
+#             #plt.plot([loc[indType]+indCond-width/8,loc[indType]+indCond+width/8],[changeSEMs[indType][indCond],changeSEMs[indType][indCond]], color=cellTypeColours[indType], linewidth=1.5) #top caps
+# 
+#     axInset.yaxis.tick_right()
+#     axInset.yaxis.set_ticks_position('right')
+#     plt.locator_params(axis='y', nbins=4)
+#     axInset.spines['left'].set_visible(False)
+#     axInset.spines['top'].set_visible(False)
+#     plt.ylabel(r'$\Delta$FR (spk/s)',fontsize=fontSizeLegend,rotation=-90, labelpad=15)
+#     axInset.yaxis.set_label_position('right')
+#     axInset.tick_params(axis='y', labelsize=fontSizeLegend)
+#     plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+#     plt.xlim(-1,4)
+
+
+    axInset = inset_axes(axScatter, width="20%", height="40%", loc=4, bbox_to_anchor=(0.16, 0.02, 1, 1), bbox_transform=axScatter.transAxes)
+     
+#     PVInds = (PVWNChangeFR-PVpeakChangeFR)/(PVpeakChangeFR+PVWNChangeFR)
+#     SOMInds = (SOMWNChangeFR-SOMpeakChangeFR)/(SOMWNChangeFR+SOMpeakChangeFR)
+    
+    PVInds = (PVWNChangeFR-PVpeakChangeFR)
+    SOMInds = (SOMWNChangeFR-SOMpeakChangeFR)
+  
+    width = 0.6
+    loc = np.arange(1,3)
+  
+    IndMedians = [np.median(PVInds), np.median(SOMInds)]
+    IndCIs = [bootstrap_median_CI(PVInds),bootstrap_median_CI(SOMInds)]
+#     IndMedians = [np.mean(PVInds), np.mean(SOMInds)]
+#     IndCIs = [[IndMedians[0]-stats.sem(PVInds),IndMedians[0]+stats.sem(PVInds)],[IndMedians[1]-stats.sem(SOMInds),IndMedians[1]+stats.sem(SOMInds)]]
+    for indType in range(len(SIMedians)): 
+        plt.plot([loc[indType]-width/2,loc[indType]+width/2], [IndMedians[indType],IndMedians[indType]], color=cellTypeColours[indType], linewidth=3) #medians
+        #axInset.bar(loc[indType], SIMedians[indType], width, color='none', edgecolor=cellTypeColours[indType],linewidth=2)
+          
+        # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
+        #loc2 = loc+width/2
+        plt.plot([loc[indType], loc[indType]],IndCIs[indType], color=cellTypeColours[indType], linewidth=1.5) #error bars
+        plt.plot([loc[indType]-width/8,loc[indType]+width/8],[IndCIs[indType][0],IndCIs[indType][0]], color=cellTypeColours[indType], linewidth=1.5) #bottom caps
+        plt.plot([loc[indType]-width/8,loc[indType]+width/8],[IndCIs[indType][1],IndCIs[indType][1]], color=cellTypeColours[indType], linewidth=1.5) #top caps 
+    
+    axInset.yaxis.tick_right()
+    axInset.yaxis.set_ticks_position('right')
+    plt.locator_params(axis='y', nbins=4)
+    axInset.spines['left'].set_visible(False)
+    axInset.spines['top'].set_visible(False)
+    plt.ylabel(r'diff in FR ($\Delta$spk/s)',fontsize=fontSizeLegend,rotation=-90, labelpad=15)
+    axInset.yaxis.set_label_position('right')
+    axInset.tick_params(axis='y', labelsize=fontSizeLegend)
+    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+    plt.xlim(0.3,3)
+    plt.ylim(-0.3,1.2)
+    
+    plt.plot(loc[1], 1.15, '*', mfc='k', clip_on=False)
+    axInset.annotate('ns', xy=(0.6,0.3), xycoords='data', fontsize=8)
+
+    
 #     axInset = inset_axes(axScatter, width="59%", height="25%", loc=4, bbox_to_anchor=(0.25, 0.05, 1, 1), bbox_transform=axScatter.transAxes)
-#
+#  
 #     PVDiff = PVpeakChangeFR-PVWNChangeFR
 #     SOMDiff = SOMpeakChangeFR-SOMWNChangeFR
-# 
+#   
 #     PVDensity = stats.gaussian_kde(PVDiff)
 #     SOMDensity = stats.gaussian_kde(SOMDiff)
 #     xs = np.linspace(-5,5,200)
-#     
+#       
 #     PVDensity.covariance_factor = lambda : .25
 #     PVDensity._compute_covariance()
 #     SOMDensity.covariance_factor = lambda : .15
 #     SOMDensity._compute_covariance()
-#          
-#     plt.plot(xs,PVDensity(xs),color=PVcolour)
-#     plt.plot(xs,SOMDensity(xs),color=SOMcolour)
+#            
+#     plt.plot(xs,PVDensity(xs),color=PVcolour, lw=2)
+#     plt.plot(xs,SOMDensity(xs),color=SOMcolour, lw=2)
 #     plt.axvline(0, ls='--', color='k')
+#     plt.axvline(np.median(PVDiff), ls='--', color=PVcolour)
+#     plt.axvline(np.median(SOMDiff), ls='--', color=SOMcolour)
 #     plt.xlim(-5,5)
-#     plt.ylim(0,1.2)
-# 
+#     plt.ylim(0,1.0)
+#   
 #     extraplots.boxoff(axInset)
 #     axInset.axes.get_yaxis().set_visible(False)
 #     axInset.axes.get_xaxis().set_visible(False)
 #     axInset.spines['left'].set_visible(False)
+#     
+#     pVal = stats.ranksums(PVDiff, SOMDiff)[1]
+#     print "PV vs SOM change in change in FR p val: {}".format(pVal)
     
     
 if SAVE_FIGURE:

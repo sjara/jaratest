@@ -16,22 +16,23 @@ from jaratoolbox import settings
 import figparams
 import studyparams
 
-dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells.h5')
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells_full.h5')
 db = celldatabase.load_hdf(dbFilename)
 
 figName = 'supplement_figure_inhibitory_cell_inactivation_control'
 
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
-#dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
+#dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
+dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
 
 PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
 SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 
 # -- find PV and SOM-inactivated cells that are sound responsive
 singleUnits = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
-goodCells = singleUnits.query('spikeShapeQuality>{}'.format(studyparams.SPIKE_QUALITY_THRESHOLD))
-bestCells = goodCells.query('onsetSoundResponsePVal<{0} or sustainedSoundResponsePVal<{0} or soundResponsePVal<{0}'.format(studyparams.SOUND_RESPONSE_PVAL))
-bestCells = bestCells.query('bestBandSession>0')
+#goodCells = singleUnits.query('spikeShapeQuality>{}'.format(studyparams.SPIKE_QUALITY_THRESHOLD))
+#bestCells = singleUnits.query('onsetSoundResponsePVal<{0} or sustainedSoundResponsePVal<{0} or soundResponsePVal<{0}'.format(studyparams.SOUND_RESPONSE_PVAL))
+#bestCells = bestCells.query('bestBandSession>0')
+bestCells = singleUnits.query('bestBandSession>0')
 
 PVCells = bestCells.loc[bestCells['subject'].isin(PV_ARCHT_MICE)]
 SOMCells = bestCells.loc[bestCells['subject'].isin(SOM_ARCHT_MICE)]

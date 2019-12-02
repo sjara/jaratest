@@ -23,7 +23,8 @@ from jaratoolbox import settings
 import figparams
 import studyparams
 
-dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells.h5')
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells_full.h5')
+#dbFilename = '/tmp/inactivation_cells.h5'
 db = celldatabase.load_hdf(dbFilename)
 
 figName = 'figure_inhibitory_cell_inactivation'
@@ -93,23 +94,23 @@ fitSemPVsupNoZeroLaser = scipy.stats.sem(fitPVsustainedSuppressionNoZeroLaser)
 fitMeanSOMsupNoZeroLaser = np.mean(fitSOMsustainedSuppressionNoZeroLaser)
 fitSemSOMsupNoZeroLaser = scipy.stats.sem(fitSOMsustainedSuppressionNoZeroLaser)
 
-fitPVsustainedSuppressionPureToneNoLaser = PVCells['fitSustainedSuppressionIndexPureToneNoLaser']
-fitSOMsustainedSuppressionPureToneNoLaser = SOMCells['fitSustainedSuppressionIndexPureToneNoLaser']
-
-fitPVsustainedSuppressionPureToneLaser = PVCells['fitSustainedSuppressionIndexPureToneLaser']
-fitSOMsustainedSuppressionPureToneLaser = SOMCells['fitSustainedSuppressionIndexPureToneLaser']
-
-fitMeanPVsupPureToneNoLaser = np.mean(fitPVsustainedSuppressionPureToneNoLaser)
-fitSemPVsupPureToneNoLaser = scipy.stats.sem(fitPVsustainedSuppressionPureToneNoLaser)
-
-fitMeanSOMsupPureToneNoLaser = np.mean(fitSOMsustainedSuppressionPureToneNoLaser)
-fitSemSOMsupPureToneNoLaser = scipy.stats.sem(fitSOMsustainedSuppressionPureToneNoLaser)
-
-fitMeanPVsupPureToneLaser = np.mean(fitPVsustainedSuppressionPureToneLaser)
-fitSemPVsupPureToneLaser = scipy.stats.sem(fitPVsustainedSuppressionPureToneLaser)
-
-fitMeanSOMsupPureToneLaser = np.mean(fitSOMsustainedSuppressionPureToneLaser)
-fitSemSOMsupPureToneLaser = scipy.stats.sem(fitSOMsustainedSuppressionPureToneLaser)
+# fitPVsustainedSuppressionPureToneNoLaser = PVCells['fitSustainedSuppressionIndexPureToneNoLaser']
+# fitSOMsustainedSuppressionPureToneNoLaser = SOMCells['fitSustainedSuppressionIndexPureToneNoLaser']
+# 
+# fitPVsustainedSuppressionPureToneLaser = PVCells['fitSustainedSuppressionIndexPureToneLaser']
+# fitSOMsustainedSuppressionPureToneLaser = SOMCells['fitSustainedSuppressionIndexPureToneLaser']
+# 
+# fitMeanPVsupPureToneNoLaser = np.mean(fitPVsustainedSuppressionPureToneNoLaser)
+# fitSemPVsupPureToneNoLaser = scipy.stats.sem(fitPVsustainedSuppressionPureToneNoLaser)
+# 
+# fitMeanSOMsupPureToneNoLaser = np.mean(fitSOMsustainedSuppressionPureToneNoLaser)
+# fitSemSOMsupPureToneNoLaser = scipy.stats.sem(fitSOMsustainedSuppressionPureToneNoLaser)
+# 
+# fitMeanPVsupPureToneLaser = np.mean(fitPVsustainedSuppressionPureToneLaser)
+# fitSemPVsupPureToneLaser = scipy.stats.sem(fitPVsustainedSuppressionPureToneLaser)
+# 
+# fitMeanSOMsupPureToneLaser = np.mean(fitSOMsustainedSuppressionPureToneLaser)
+# fitSemSOMsupPureToneLaser = scipy.stats.sem(fitSOMsustainedSuppressionPureToneLaser)
 
 # -- get preferred bandwidths for all cells responsive during sustained portion of response with and without laser--
 PVsustainedPrefBWNoLaser = PVCells['sustainedPrefBandwidthNoLaser']
@@ -125,10 +126,20 @@ fitPVsustainedPrefBWLaser = PVCells['fitSustainedPrefBandwidthLaser']
 fitSOMsustainedPrefBWLaser = SOMCells['fitSustainedPrefBandwidthLaser']
 
 # -- get changes in firing rate for peak and WN
+fitPVpeakFRNoLaser = PVCells['fitPeakFRNoLaser']
+fitPVpeakFRLaser = PVCells['fitPeakFRLaser']
 fitPVpeakChangeFR = PVCells['fitPeakChangeFR']
+        
+fitPVWNFRNoLaser = PVCells['fitWNFRNoLaser']
+fitPVWNFRLaser = PVCells['fitWNFRLaser']
 fitPVWNChangeFR = PVCells['fitWNChangeFR']
-
+        
+fitSOMpeakFRNoLaser = SOMCells['fitPeakFRNoLaser']
+fitSOMpeakFRLaser = SOMCells['fitPeakFRLaser']
 fitSOMpeakChangeFR = SOMCells['fitPeakChangeFR']
+        
+fitSOMWNFRNoLaser = SOMCells['fitWNFRNoLaser']
+fitSOMWNFRLaser = SOMCells['fitWNFRLaser']
 fitSOMWNChangeFR = SOMCells['fitWNChangeFR']
 
 fitMeanPVpeakChange = np.mean(fitPVpeakChangeFR)
@@ -143,23 +154,23 @@ fitSemSOMpeakChange = scipy.stats.sem(fitSOMpeakChangeFR)
 fitMeanSOMWNChange = np.mean(fitSOMWNChangeFR)
 fitSemSOMWNChange = scipy.stats.sem(fitSOMWNChangeFR)
 
-fitPVpeakChangeFRPureTone = PVCells['fitPeakChangeFRPureTone']
-fitPVWNChangeFRPureTone = PVCells['fitWNChangeFRPureTone']
-
-fitSOMpeakChangeFRPureTone = SOMCells['fitPeakChangeFRPureTone']
-fitSOMWNChangeFRPureTone = SOMCells['fitWNChangeFRPureTone']
-
-fitMeanPVpeakChangePureTone = np.mean(fitPVpeakChangeFRPureTone)
-fitSemPVpeakChangePureTone = scipy.stats.sem(fitPVpeakChangeFRPureTone)
-
-fitMeanPVWNChangePureTone = np.mean(fitPVWNChangeFRPureTone)
-fitSemPVWNChangePureTone = scipy.stats.sem(fitPVWNChangeFRPureTone)
-
-fitMeanSOMpeakChangePureTone = np.mean(fitSOMpeakChangeFRPureTone)
-fitSemSOMpeakChangePureTone = scipy.stats.sem(fitSOMpeakChangeFRPureTone)
-
-fitMeanSOMWNChangePureTone = np.mean(fitSOMWNChangeFRPureTone)
-fitSemSOMWNChangePureTone = scipy.stats.sem(fitSOMWNChangeFRPureTone)
+# fitPVpeakChangeFRPureTone = PVCells['fitPeakChangeFRPureTone']
+# fitPVWNChangeFRPureTone = PVCells['fitWNChangeFRPureTone']
+# 
+# fitSOMpeakChangeFRPureTone = SOMCells['fitPeakChangeFRPureTone']
+# fitSOMWNChangeFRPureTone = SOMCells['fitWNChangeFRPureTone']
+# 
+# fitMeanPVpeakChangePureTone = np.mean(fitPVpeakChangeFRPureTone)
+# fitSemPVpeakChangePureTone = scipy.stats.sem(fitPVpeakChangeFRPureTone)
+# 
+# fitMeanPVWNChangePureTone = np.mean(fitPVWNChangeFRPureTone)
+# fitSemPVWNChangePureTone = scipy.stats.sem(fitPVWNChangeFRPureTone)
+# 
+# fitMeanSOMpeakChangePureTone = np.mean(fitSOMpeakChangeFRPureTone)
+# fitSemSOMpeakChangePureTone = scipy.stats.sem(fitSOMpeakChangeFRPureTone)
+# 
+# fitMeanSOMWNChangePureTone = np.mean(fitSOMWNChangeFRPureTone)
+# fitSemSOMWNChangePureTone = scipy.stats.sem(fitSOMWNChangeFRPureTone)
 
 fitPVpeakChangeFRNoZero = PVCells['fitPeakChangeFRNoZero']
 fitPVWNChangeFRNoZero = PVCells['fitWNChangeFRNoZero']
@@ -198,7 +209,7 @@ rawMeanSOMWNChange = np.mean(rawSOMWNChangeFR)
 rawSemSOMWNChange = scipy.stats.sem(rawSOMWNChangeFR)
         
 # -- save photoidentified suppression scores --
-outputFile = 'all_inactivated_cells_stats.npz'
+outputFile = 'all_inactivated_cells_stats_full.npz'
 outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFullPath,
          rawPVsustainedSuppressionNoLaser = rawPVsustainedSuppressionNoLaser,
@@ -228,14 +239,14 @@ np.savez(outputFullPath,
          fitMeanSOMsupNoZeroLaser = fitMeanSOMsupNoZeroLaser, fitSemSOMsupNoZeroLaser = fitSemSOMsupNoZeroLaser,
          fitMeanSOMsupNoZeroNoLaser = fitMeanSOMsupNoZeroNoLaser, fitSemSOMsupNoZeroNoLaser = fitSemSOMsupNoZeroNoLaser,
          
-         fitPVsustainedSuppressionPureToneNoLaser = fitPVsustainedSuppressionPureToneNoLaser,
-         fitSOMsustainedSuppressionPureToneNoLaser = fitSOMsustainedSuppressionPureToneNoLaser,
-         fitPVsustainedSuppressionPureToneLaser = fitPVsustainedSuppressionPureToneLaser,
-         fitSOMsustainedSuppressionPureToneLaser = fitSOMsustainedSuppressionPureToneLaser,
-         fitMeanPVsupPureToneLaser = fitMeanPVsupPureToneLaser, fitSemPVsupPureToneLaser = fitSemPVsupPureToneLaser,
-         fitMeanPVsupPureToneNoLaser = fitMeanPVsupPureToneNoLaser, fitSemPVsupPureToneNoLaser = fitSemPVsupPureToneNoLaser,
-         fitMeanSOMsupPureToneLaser = fitMeanSOMsupPureToneLaser, fitSemSOMsupPureToneLaser = fitSemSOMsupPureToneLaser,
-         fitMeanSOMsupPureToneNoLaser = fitMeanSOMsupPureToneNoLaser, fitSemSOMsupPureToneNoLaser = fitSemSOMsupPureToneNoLaser,
+#          fitPVsustainedSuppressionPureToneNoLaser = fitPVsustainedSuppressionPureToneNoLaser,
+#          fitSOMsustainedSuppressionPureToneNoLaser = fitSOMsustainedSuppressionPureToneNoLaser,
+#          fitPVsustainedSuppressionPureToneLaser = fitPVsustainedSuppressionPureToneLaser,
+#          fitSOMsustainedSuppressionPureToneLaser = fitSOMsustainedSuppressionPureToneLaser,
+#          fitMeanPVsupPureToneLaser = fitMeanPVsupPureToneLaser, fitSemPVsupPureToneLaser = fitSemPVsupPureToneLaser,
+#          fitMeanPVsupPureToneNoLaser = fitMeanPVsupPureToneNoLaser, fitSemPVsupPureToneNoLaser = fitSemPVsupPureToneNoLaser,
+#          fitMeanSOMsupPureToneLaser = fitMeanSOMsupPureToneLaser, fitSemSOMsupPureToneLaser = fitSemSOMsupPureToneLaser,
+#          fitMeanSOMsupPureToneNoLaser = fitMeanSOMsupPureToneNoLaser, fitSemSOMsupPureToneNoLaser = fitSemSOMsupPureToneNoLaser,
          
          rawPVsustainedPrefBWNoLaser = PVsustainedPrefBWNoLaser,
          rawSOMsustainedPrefBWNoLaser = SOMsustainedPrefBWNoLaser,
@@ -247,23 +258,25 @@ np.savez(outputFullPath,
          fitPVsustainedPrefBWLaser = fitPVsustainedPrefBWLaser,
          fitSOMsustainedPrefBWLaser = fitSOMsustainedPrefBWLaser,
          
-         fitPVpeakChangeFR = fitPVpeakChangeFR,
-         fitPVWNChangeFR = fitPVWNChangeFR,
-         fitSOMpeakChangeFR = fitSOMpeakChangeFR,
-         fitSOMWNChangeFR = fitSOMWNChangeFR,
+         fitPVpeakFRNoLaser = fitPVpeakFRNoLaser, fitPVpeakFRLaser = fitPVpeakFRLaser, fitPVpeakChangeFR = fitPVpeakChangeFR,
+         fitPVWNFRNoLaser = fitPVWNFRNoLaser, fitPVWNFRLaser = fitPVWNFRLaser, fitPVWNChangeFR = fitPVWNChangeFR,
+        
+         fitSOMpeakFRNoLaser = fitSOMpeakFRNoLaser, fitSOMpeakFRLaser = fitSOMpeakFRLaser, fitSOMpeakChangeFR = fitSOMpeakChangeFR,
+         fitSOMWNFRNoLaser = fitSOMWNFRNoLaser, fitSOMWNFRLaser = fitSOMWNFRLaser, fitSOMWNChangeFR = fitSOMWNChangeFR,
+         
          fitMeanPVpeakChange = fitMeanPVpeakChange, fitSemPVpeakChange = fitSemPVpeakChange,
          fitMeanPVWNChange = fitMeanPVWNChange, fitSemPVWNChange = fitSemPVWNChange,
          fitMeanSOMpeakChange = fitMeanSOMpeakChange, fitSemSOMpeakChange = fitSemSOMpeakChange,
          fitMeanSOMWNChange = fitMeanSOMWNChange, fitSemSOMWNChange = fitSemSOMWNChange,
          
-         fitPVpeakChangeFRPureTone = fitPVpeakChangeFRPureTone,
-         fitPVWNChangeFRPureTone = fitPVWNChangeFRPureTone,
-         fitSOMpeakChangeFRPureTone = fitSOMpeakChangeFRPureTone,
-         fitSOMWNChangeFRPureTone = fitSOMWNChangeFRPureTone,
-         fitMeanPVpeakChangePureTone = fitMeanPVpeakChangePureTone, fitSemPVpeakChangePureTone = fitSemPVpeakChangePureTone,
-         fitMeanPVWNChangePureTone = fitMeanPVWNChangePureTone, fitSemPVWNChangePureTone = fitSemPVWNChangePureTone,
-         fitMeanSOMpeakChangePureTone = fitMeanSOMpeakChangePureTone, fitSemSOMpeakChangePureTone = fitSemSOMpeakChangePureTone,
-         fitMeanSOMWNChangePureTone = fitMeanSOMWNChangePureTone, fitSemSOMWNChangePureTone = fitSemSOMWNChangePureTone,
+#          fitPVpeakChangeFRPureTone = fitPVpeakChangeFRPureTone,
+#          fitPVWNChangeFRPureTone = fitPVWNChangeFRPureTone,
+#          fitSOMpeakChangeFRPureTone = fitSOMpeakChangeFRPureTone,
+#          fitSOMWNChangeFRPureTone = fitSOMWNChangeFRPureTone,
+#          fitMeanPVpeakChangePureTone = fitMeanPVpeakChangePureTone, fitSemPVpeakChangePureTone = fitSemPVpeakChangePureTone,
+#          fitMeanPVWNChangePureTone = fitMeanPVWNChangePureTone, fitSemPVWNChangePureTone = fitSemPVWNChangePureTone,
+#          fitMeanSOMpeakChangePureTone = fitMeanSOMpeakChangePureTone, fitSemSOMpeakChangePureTone = fitSemSOMpeakChangePureTone,
+#          fitMeanSOMWNChangePureTone = fitMeanSOMWNChangePureTone, fitSemSOMWNChangePureTone = fitSemSOMWNChangePureTone,
          
          fitPVpeakChangeFRNoZero = fitPVpeakChangeFRNoZero,
          fitPVWNChangeFRNoZero = fitPVWNChangeFRNoZero,
