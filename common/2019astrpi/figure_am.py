@@ -44,7 +44,7 @@ pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.
 db = celldatabase.load_hdf(pathtoDB)
 # TODO: Need to decide what we will filter AM by
 # db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
-exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_AM_tuning_examples.npz')
+# exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_AM_tuning_examples.npz')
 
 
 # ac = dbToUse.groupby('brainArea').get_group('rightAC')

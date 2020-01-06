@@ -9,14 +9,15 @@ from jaratoolbox import histologyanalysis as ha
 from jaratoolbox import settings
 studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
 
+
 def cell_locations(db):
-    '''
+    """
     This function takes as argument a pandas DataFrame and adds new columns.
     The filename should be the full path to where the database will be saved. If a filename is not specified, the database will not be saved.
     
     This function computes the depths and cortical locations of all cells with suppression indices computed.
     This function should be run in a virtual environment because the allensdk has weird dependencies that we don't want tainting our computers.
-    '''
+    """
     
     # lapPath = os.path.join(settings.ATLAS_PATH, 'AllenCCF_25/coronal_laplacian_25.nrrd')
     lapPath = '/mnt/jarahubdata/tmp/coronal_laplacian_25.nrrd'

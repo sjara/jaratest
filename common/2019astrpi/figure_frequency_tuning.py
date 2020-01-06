@@ -155,7 +155,7 @@ if PANELS[0]:
     cax = dOne.imshow(np.flipud(exDataFR), interpolation='nearest', cmap=d1ColorMap)
     cbar = plt.colorbar(cax, ax=dOne, format='%d')
     maxFR = np.max(exDataFR.ravel())
-    cbar.ax.set_ylabel('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-10)
+    cbar.set_label('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-10)
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
@@ -177,7 +177,7 @@ if PANELS[1]:
     cax = ndOne.imshow(np.flipud(exDataFR), interpolation='nearest', cmap=nd1ColorMap)
     cbar = plt.colorbar(cax, ax=ndOne, format='%d')
     maxFR = np.max(exDataFR.ravel())
-    cbar.ax.set_ylabel('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-10)
+    cbar.set_label('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-10)
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
@@ -191,7 +191,7 @@ if PANELS[1]:
     ndOne.set_ylabel('Intensity (dB SPL)', fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(ndOne, fontSizeTicks)
 
-plt.hold(True)
+# plt.hold(True)
 
 # ======================= Beginning of plotting for BW10 ================================
 
@@ -228,9 +228,9 @@ if PANELS[2]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars+2, starString=starString,
                                   gapFactor=starGapFactor)
-    plt.hold(1)
+    #plt.hold(1)
 #
-plt.hold(True)
+#plt.hold(True)
 
 # ======================= Beginning of plotting for threshold ================================
 if PANELS[3]:
@@ -271,7 +271,7 @@ if PANELS[3]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
-    plt.hold(1)
+    #plt.hold(1)
 
 # ======================= Beginning of plotting for latency ================================
 if PANELS[4]:
@@ -310,7 +310,7 @@ if PANELS[4]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
-    plt.hold(1)
+    #plt.hold(1)
 
 # ======================= Beginning of plotting for Onset to sustained ratio ================================
 
@@ -358,7 +358,7 @@ if PANELS[5]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
-    plt.hold(1)
+    #plt.hold(1)
 
 # ======================= Beginning of plotting for monotonicity index ================================
 if PANELS[6]:
@@ -403,9 +403,8 @@ if PANELS[6]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
-    plt.hold(1)
-
-plt.show()
+    #plt.hold(1)
+fig1 = plt.gcf()
 
 print("\nSTATISTICS:\n")
 for message in messages:
@@ -425,3 +424,5 @@ if SAVE_FIGURE:
                 os.path.join(figparams.FIGURE_OUTPUT_DIR))
             extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
             print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
+
+plt.show()

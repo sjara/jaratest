@@ -250,19 +250,21 @@ if __name__ == "__main__":
     # Create and save a database, computing first the base stats and then the indices
     firstDB = append_base_stats(basicDB, filename=d1DBFilename)
     # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
-    PhotoID = photoDB.cell_locations(firstDB)
+    # PhotoID = photoDB.cell_locations(firstDB)
 
     if SAVE:
         dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
-        dbpath = os.path.join(dbLocation, '{}.h5'.format('_'.join(d1mice)))
-        # dbpath = os.path.join(dbLocation '{}.h5'.format('temp'))
+        # dbpath = os.path.join(dbLocation, '{}.h5'.format('_'.join(d1mice)))
+        dbpath = os.path.join(dbLocation, '{}.h5'.format('temp'))
         if os.path.isdir(dbLocation):
-            celldatabase.save_hdf(PhotoID, dbpath)
+            #celldatabase.save_hdf(PhotoID, dbpath)
+            celldatabase.save_hdf(firstDB, dbpath)
             print("SAVED DATAFRAME to {}".format(dbpath))
         elif not os.path.isdir(dbLocation):
             answer = input_func("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
             if answer.upper() in ['Y', 'YES']:
                 os.mkdir(dbLocation)
-                celldatabase.save_hdf(PhotoID, dbpath)
+                #celldatabase.save_hdf(PhotoID, dbpath)
+                celldatabase.save_hdf(firstDB, dbpath)
                 print("SAVED DATAFRAME to {}".format(dbpath))
                 print(u"\U0001F4A9"*10)
