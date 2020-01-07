@@ -38,7 +38,8 @@ def append_base_stats(cellDB, filename=''):
         sessions = dbRow['sessionType']
         oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
 
-        print("Now processing ", dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster'], indRow)
+        print("Now processing ", dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster'],
+              indRow)
         print("Sessions tested in this cell are(is) ", sessions)
 
         # -------------- Noiseburst data calculations -------------------------
@@ -170,10 +171,14 @@ def append_base_stats(cellDB, filename=''):
 
                     if toCalculate:
                         monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(eventOnsetTimes, currentFreq,
-                                                                                     currentIntensity,
-                                                                                     uniqueIntensity, spikeTimes, cf)
-                        onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes,
-                                                                 currentFreq, currentIntensity, cf, respLatency)
+                                                                                         currentIntensity,
+                                                                                         uniqueIntensity, spikeTimes, cf
+                                                                                         )
+                        onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(eventOnsetTimes,
+                                                                                                      spikeTimes,
+                                                                                                      currentFreq,
+                                                                                                      currentIntensity,
+                                                                                                      cf, respLatency)
                     else:
                         monoIndex = np.nan
                         overallMaxSpikes = np.nan

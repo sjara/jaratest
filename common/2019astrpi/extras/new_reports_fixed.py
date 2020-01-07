@@ -32,8 +32,7 @@ def plot_am_with_rate(subplotSpec, spikeTimes, indexLimitsEachTrial, currentFreq
 
     gs = gridspec.GridSpecFromSubplotSpec(4, 4, subplot_spec=subplotSpec, wspace=-0.45, hspace=0.0)
 
-    specRaster = gs[0:3, 0:2]
-    axRaster = plt.Subplot(fig, specRaster)
+    axRaster = plt.ubplot(fig, specRaster)
     # Possible issue in matplotlib backend preventing subplot from working properly. Based on pylab we use TkAgg
     fig.add_subplot(axRaster)
     timeRange = [-0.2, 0.7]

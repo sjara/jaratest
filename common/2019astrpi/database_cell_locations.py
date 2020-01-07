@@ -57,7 +57,7 @@ def cell_locations(db):
             if track is not None:
                 histImage = track['histImage']
                 
-                filenameSVG = ha.get_filename_registered_svg(subject, brainArea, histImage, recordingTrack, shank, "dicks")
+                filenameSVG = ha.get_filename_registered_svg(subject, brainArea, histImage, recordingTrack, shank)
 
                 if tetrode%2==0:
                     depth = dbRow['depth']

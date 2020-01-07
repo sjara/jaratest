@@ -14,12 +14,14 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_am'
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
-# dbPath = '/tmp/database_with_pulse_responses.h5'
+d1mice = studyparams.ASTR_D1_CHR2_MICE
+nameDB = '_'.join(d1mice) + '.h5'
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+# os.path.join(studyparams.PATH_TO_TEST,nameDB)
+db = celldatabase.load_hdf(pathtoDB)
 
-outputDir = '/tmp'
+outputDir = '/var/tmp/figuresdata/2019astrpi/output'
 
 # # db = pd.read_hdf(dbPath, key='dataframe')
 # db = celldatabase.load_hdf(dbPath)
@@ -45,7 +47,7 @@ db = celldatabase.load_hdf(pathtoDB)
 # TODO: Need to decide what we will filter AM by
 # db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
 # exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_AM_tuning_examples.npz')
-
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 
 # ac = dbToUse.groupby('brainArea').get_group('rightAC')
 # thal = dbToUse.groupby('brainArea').get_group('rightThal')
@@ -67,14 +69,14 @@ def medline(yval, midline, width, color='k', linewidth=3):
     plt.plot([start, end], [yval, yval], color=color, lw=linewidth)
 
 
-PANELS = [1, 1, 1, 1, 1, 1, 1]
+PANELS = [1, 1, 1, 1, 0, 0, 0]
 
 SAVE_FIGURE = 1
 # outputDir = '/tmp/'
 # outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_am_tuning' # Do not include extension
-figFormat = 'svg' # 'pdf' or 'svg'
+figFormat = 'svg'  # 'pdf' or 'svg'
 # figFormat = 'pdf' # 'pdf' or 'svg'
 # figSize = [13,8] # In inches
 
@@ -119,7 +121,7 @@ gs.update(left=0.05, right=0.98, top=0.94, bottom=0.10, wspace=0.8, hspace=0.5)
 
 # Load example data
 exampleDataPath = os.path.join(dataDir, 'data_am_examples.npz')
-exampleData = np.load(exampleDataPath)
+exampleData = np.load(exampleDataPath, allow_pickle=True)
 
 exampleFreqEachTrial = exampleData['exampleFreqEachTrial'].item()
 exampleSpikeTimes = exampleData['exampleSpikeTimes'].item()
@@ -149,6 +151,7 @@ def plot_example_with_rate(axRaster, axFR, exampleName, color='k'):
     possibleFreq = np.unique(freqEachTrial)
     freqLabels = ['{0:.0f}'.format(freq) for freq in possibleFreq]
     trialsEachCondition = behavioranalysis.find_trials_each_type(freqEachTrial, possibleFreq)
+    plt.sca(axRaster)
     pRaster, hCond, zline = extraplots.raster_plot(spikeTimes, indexLimitsEachTrial,
                                                    timeRange, trialsEachCondition, labels=freqLabels)
     plt.setp(pRaster, ms=figparams.rasterMS)
@@ -185,7 +188,7 @@ def plot_example_with_rate(axRaster, axFR, exampleName, color='k'):
     stdSpikesArray = np.std(spikesFilteredByTrialType, 0)/np.diff(np.array(countRange))
 
     axRate = plt.subplot(axFR)
-
+    plt.sca(axRate)
     nRates = len(possibleFreq)
     plt.hold(True)
     plt.plot(avgSpikesArray, range(nRates), 'ro-', mec='none', ms=6, lw=3, color=color)
@@ -203,9 +206,9 @@ def plot_example_with_rate(axRaster, axFR, exampleName, color='k'):
 
 if PANELS[0]:
     plot_example_with_rate(axDirectCellEx1, axDirectFREx1, 'Direct1', color=colorD1)
-    axDirectFREx1.set_title('Direct pathway example 1', fontsize=fontSizeTitles)
-    axDirectFREx1.set_xlim([0, 30])
-    axDirectFREx1.set_xticks([0, 30])
+    axDirectCellEx1.set_title('Direct pathway example 1', fontsize=fontSizeTitles)
+    axDirectFREx1.set_xlim([0, 100])
+    axDirectFREx1.set_xticks([0, 100])
     extraplots.set_ticks_fontsize(axDirectFREx1, fontSizeTicks)
     extraplots.set_ticks_fontsize(axDirectCellEx1, fontSizeTicks)
 axDirectCellEx1.annotate('A', xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
@@ -214,8 +217,8 @@ axDirectCellEx1.annotate('A', xy=(labelPosX[0], labelPosY[1]), xycoords='figure 
 if PANELS[1]:
     plot_example_with_rate(axDirectCellEx2, axDirectFREx2, 'Direct2', color=colorD1)
     axDirectCellEx2.set_title('Direct pathway example 2', fontsize=fontSizeTitles)
-    axDirectFREx2.set_xlim([0, 35])
-    axDirectFREx2.set_xticks([0, 35])
+    axDirectFREx2.set_xlim([0, 15])
+    axDirectFREx2.set_xticks([0, 15])
     extraplots.set_ticks_fontsize(axDirectFREx2, fontSizeTicks)
     extraplots.set_ticks_fontsize(axDirectCellEx2, fontSizeTicks)
 axDirectCellEx2.annotate('B', xy=(labelPosX[1], labelPosY[1]), xycoords='figure fraction',
@@ -224,8 +227,8 @@ axDirectCellEx2.annotate('B', xy=(labelPosX[1], labelPosY[1]), xycoords='figure 
 if PANELS[2]:
     plot_example_with_rate(axNonDirectEx1, axNonDirectFREx1, 'nDirect1', color=colornD1)
     axNonDirectEx1.set_title('Non-direct pathway example 1', fontsize=fontSizeTitles)
-    axNonDirectFREx1.set_xlim([0, 12])
-    axNonDirectFREx1.set_xticks([0, 12])
+    axNonDirectFREx1.set_xlim([0, 35])
+    axNonDirectFREx1.set_xticks([0, 35])
     extraplots.set_ticks_fontsize(axNonDirectFREx1, fontSizeTicks)
     extraplots.set_ticks_fontsize(axNonDirectEx1, fontSizeTicks)
 axNonDirectEx1.annotate('E', xy=(labelPosX[0], labelPosY[0]), xycoords='figure fraction',
@@ -234,8 +237,8 @@ axNonDirectEx1.annotate('E', xy=(labelPosX[0], labelPosY[0]), xycoords='figure f
 if PANELS[3]:
     plot_example_with_rate(axNonDirectEx2, axNonDirectFREx2, 'nDirect2', color=colornD1)
     axNonDirectEx2.set_title('Non-direct pathway example 2', fontsize=fontSizeTitles)
-    axNonDirectFREx2.set_xlim([0, 12])
-    axNonDirectFREx2.set_xticks([0, 12])
+    axNonDirectFREx2.set_xlim([0, 25])
+    axNonDirectFREx2.set_xticks([0, 25])
     extraplots.set_ticks_fontsize(axNonDirectFREx2, fontSizeTicks)
     extraplots.set_ticks_fontsize(axNonDirectEx2, fontSizeTicks)
 axNonDirectFREx2.annotate('F', xy=(labelPosX[1], labelPosY[0]), xycoords='figure fraction',
@@ -624,10 +627,8 @@ if PANELS[6]:
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
 
+    extraplots.boxoff(axSummary)
 
-extraplots.boxoff(axSummary)
-
-plt.show()
 print("\nSTATISTICS:\n")
 for message in messages:
     print(message)
@@ -635,3 +636,4 @@ print("\n")
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+plt.show()
