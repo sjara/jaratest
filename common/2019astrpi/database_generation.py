@@ -259,8 +259,8 @@ if __name__ == "__main__":
 
     if SAVE:
         dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
-        # dbpath = os.path.join(dbLocation, '{}.h5'.format('_'.join(d1mice)))
-        dbpath = os.path.join(dbLocation, '{}.h5'.format('temp'))
+        # dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+        dbpath = os.path.join(dbLocation, '{}.h5'.format('python27BranchIn27'))
         if os.path.isdir(dbLocation):
             #celldatabase.save_hdf(PhotoID, dbpath)
             celldatabase.save_hdf(firstDB, dbpath)

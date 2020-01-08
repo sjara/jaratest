@@ -28,18 +28,18 @@ def cell_locations(db):
     rsp = mcc.get_reference_space()
     rspAnnotationVolumeRotated = np.rot90(rsp.annotation, 1, axes=(2, 0))
     
-    tetrodetoshank = {1:1, 2:1, 3:2, 4:2, 5:3, 6:3, 7:4, 8:4} #hardcoded dictionary of tetrode to shank mapping for probe geometry used in this study
+    tetrodetoshank = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4}  # hardcoded dictionary of tetrode to shank mapping for probe geometry used in this study
     
-    bestCells = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF)) #calculate depths for all the cells that we quantify as tuned
+    bestCells = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))  # calculate depths for all the cells that we quantify as tuned
     
-    db['recordingSiteName'] = '' #prefill will empty strings so whole column is strings (no NaNs)
+    db['recordingSiteName'] = ''  # prefill will empty strings so whole column is strings (no NaNs)
     
     for dbIndex, dbRow in bestCells.iterrows():
         subject = dbRow['subject']
         
         try:
-            fileNameInfohist = os.path.join(settings.INFOHIST_PATH,'{}_tracks.py'.format(subject))
-            tracks = imp.load_source('tracks_module',fileNameInfohist).tracks
+            fileNameInfohist = os.path.join(settings.INFOHIST_PATH, '{}_tracks.py'.format(subject))
+            tracks = imp.load_source('tracks_module', fileNameInfohist).tracks
         except IOError:
             print("No such tracks file: {}".format(fileNameInfohist))
         else:
@@ -52,7 +52,7 @@ def cell_locations(db):
             shank = tetrodetoshank[tetrode]
             recordingTrack = dbRow['info'][0]
             
-            track = next((track for track in tracks if (track['brainArea'] == brainArea) and (track['shank']==shank) and (track['recordingTrack']==recordingTrack)),None)
+            track = next((track for track in tracks if (track['brainArea'] == brainArea) and (track['shank'] == shank) and (track['recordingTrack']==recordingTrack)),None)
             
             if track is not None:
                 histImage = track['histImage']
@@ -62,20 +62,20 @@ def cell_locations(db):
                 if tetrode%2==0:
                     depth = dbRow['depth']
                 else:
-                    depth = dbRow['depth'] - 150.0 #odd tetrodes are higher
+                    depth = dbRow['depth'] - 150.0  # odd tetrodes are higher
                 
                 brainSurfCoords, tipCoords, siteCoords = ha.get_coords_from_svg(filenameSVG, [depth], dbRow['maxDepth'])
                 
                 siteCoords = siteCoords[0]
                 
                 atlasZ = track['atlasZ']
-                cortexDepthData = np.rot90(lap[:,:,atlasZ], -1)
+                cortexDepthData = np.rot90(lap[:, :, atlasZ], -1)
                  
                 # We consider the points with depth > 0.95 to be the bottom surface of cortex
-                bottomData = np.where(cortexDepthData>0.95)
+                bottomData = np.where(cortexDepthData > 0.95)
                  
                 # Top of cortex is less than 0.02 but greater than 0
-                topData = np.where((cortexDepthData<0.02) & (cortexDepthData>0))
+                topData = np.where((cortexDepthData < 0.02) & (cortexDepthData > 0))
 
                 # Distance between the cell and each point on the surface of the brain
                 dXTop = topData[1] - siteCoords[0]

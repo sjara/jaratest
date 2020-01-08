@@ -23,10 +23,34 @@ db = celldatabase.load_hdf(pathtoDB)
 
 outputDir = '/var/tmp/figuresdata/2019astrpi/output'
 
+# # db = pd.read_hdf(dbPath, key='dataframe')
+# db = celldatabase.load_hdf(dbPath)
+# # db = db.query("subject=='pinp015'")
+# # goodLaser = db.query('pulsePval<0.05 and pulseZscore>0 and trainRatio>0.8')
+# # goodLaser = db[db['taggedCond']==0]
+# goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
+# goodShape = goodISI.query('spikeShapeQuality > 2')
+# goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018'")
+# # goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018' and summaryPulseLatency < 0.01")
+# goodNSpikes = goodLaser.query('nSpikes>2000')
+# goodPulseLatency = goodNSpikes.query('summaryPulseLatency<0.006')
+
+# goodSoundResponsiveBool = (~pd.isnull(goodNSpikes['BW10'])) | (~pd.isnull(goodNSpikes['highestSyncCorrected'])) | (goodNSpikes['noiseZscore']<0.05)
+# goodSoundResponsive = goodNSpikes[goodSoundResponsiveBool]
+
+d1mice = studyparams.ASTR_D1_CHR2_MICE
+nameDB = '_'.join(d1mice) + '.h5'
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+# os.path.join(studyparams.PATH_TO_TEST,nameDB)
+db = celldatabase.load_hdf(pathtoDB)
 # TODO: Need to decide what we will filter AM by
 # db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
 # exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_AM_tuning_examples.npz')
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+
+# ac = dbToUse.groupby('brainArea').get_group('rightAC')
+# thal = dbToUse.groupby('brainArea').get_group('rightThal')
 
 np.random.seed(1)
 
@@ -52,9 +76,9 @@ SAVE_FIGURE = 1
 # outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_am_tuning' # Do not include extension
-figFormat = 'svg'  # 'pdf' or 'svg'
+figFormat = 'pdf'  # 'pdf' or 'svg'
 # figFormat = 'pdf' # 'pdf' or 'svg'
-# figSize = [13,8] # In inches
+# figSize = [13, 8]  # In inches
 
 fullPanelWidthInches = 6.9
 figSizeFactor = 2
@@ -92,7 +116,7 @@ fig = plt.gcf()
 plt.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 6)
+gs = gridspec.GridSpec(2, 8)
 gs.update(left=0.05, right=0.98, top=0.94, bottom=0.10, wspace=0.8, hspace=0.5)
 
 # Load example data
@@ -104,24 +128,21 @@ exampleSpikeTimes = exampleData['exampleSpikeTimes'].item()
 exampleTrialIndexForEachSpike = exampleData['exampleTrialIndexForEachSpike'].item()
 exampleIndexLimitsEachTrial = exampleData['exampleIndexLimitsEachTrial'].item()
 
-axPanelA = gs[0, 0:2]
-axPanelB = gs[0, 2:4]
-axPanelC = gs[0, 4]
-axPanelD = gs[0, 5]
-axPanelE = gs[1, 0:2]
-axPanelF = gs[1, 2:4]
-axPanelG = gs[1, 4]
-axPanelH = gs[1, 5]
+axDirectCellEx1 = plt.subplot(gs[0, 0:2])
+axDirectFREx1 = plt.subplot(gs[0, 2])
+axDirectCellEx2 = plt.subplot(gs[0, 3:5])
+axDirectFREx2 = plt.subplot(gs[0, 5])
+axNonDirectEx1 = plt.subplot(gs[1, 0:2])
+axNonDirectFREx1 = plt.subplot(gs[1, 2])
+axNonDirectEx2 = plt.subplot(gs[1, 3:5])
+axNonDirectFREx2 = plt.subplot(gs[1, 5])
+axSyncPie = plt.subplot(gs[0, 6])
+axMaxSync = plt.subplot(gs[0, 7])
+axAccuracyAMRate = plt.subplot(gs[1, 6])
+axAccuracyAMPhase = plt.subplot(gs[1, 7])
 
 
-def plot_example_with_rate(subplotSpec, exampleName, color='k'):
-    fig = plt.gcf()
-
-    sub_gs = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=subplotSpec, wspace=-0.45, hspace=0.0)
-
-    specRaster = sub_gs[0:2]
-    axRaster = plt.Subplot(fig, specRaster)
-    fig.add_subplot(axRaster)
+def plot_example_with_rate(axRaster, axFR, exampleName, color='k'):
 
     spikeTimes = exampleSpikeTimes[exampleName]
     indexLimitsEachTrial = exampleIndexLimitsEachTrial[exampleName]
@@ -130,6 +151,7 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
     possibleFreq = np.unique(freqEachTrial)
     freqLabels = ['{0:.0f}'.format(freq) for freq in possibleFreq]
     trialsEachCondition = behavioranalysis.find_trials_each_type(freqEachTrial, possibleFreq)
+    plt.sca(axRaster)
     pRaster, hCond, zline = extraplots.raster_plot(spikeTimes, indexLimitsEachTrial,
                                                    timeRange, trialsEachCondition, labels=freqLabels)
     plt.setp(pRaster, ms=figparams.rasterMS)
@@ -140,19 +162,17 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
 
     axRaster.set_yticklabels(blankLabels)
 
-
-    ax = plt.gca()
-    ax.set_xticks([0, 0.5])
-    ax.set_xlabel('Time from\nsound onset (s)', fontsize=fontSizeLabels, labelpad=-1)
-    ax.set_ylabel('AM rate (Hz)', fontsize=fontSizeLabels, labelpad=-5)
+    # ax = plt.gca()
+    axRaster.set_xticks([0, 0.5])
+    axRaster.set_xlabel('Time from\nsound onset (s)', fontsize=fontSizeLabels, labelpad=-1)
+    axRaster.set_ylabel('AM rate (Hz)', fontsize=fontSizeLabels, labelpad=-5)
 
     # ax.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
     #             fontsize=fontSizePanel, fontweight='bold')
 
     countRange = [0.1, 0.5]
-    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimes, indexLimitsEachTrial, countRange)
-    numSpikesInTimeRangeEachTrial = np.squeeze(spikeCountMat)
-
+    # spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimes, indexLimitsEachTrial, countRange)
+    # numSpikesInTimeRangeEachTrial = np.squeeze(spikeCountMat)
     numSpikesInTimeRangeEachTrial = np.squeeze(np.diff(indexLimitsEachTrial,
                                                        axis=0))
 
@@ -167,10 +187,8 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
         trialsEachCondition, 0).astype('float')/np.diff(np.array(countRange))
     stdSpikesArray = np.std(spikesFilteredByTrialType, 0)/np.diff(np.array(countRange))
 
-    specRate = sub_gs[3]
-    axRate = plt.Subplot(fig, specRate)
-    fig.add_subplot(axRate)
-
+    axRate = plt.subplot(axFR)
+    plt.sca(axRate)
     nRates = len(possibleFreq)
     plt.hold(True)
     plt.plot(avgSpikesArray, range(nRates), 'ro-', mec='none', ms=6, lw=3, color=color)
@@ -181,51 +199,49 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
     axRate.set_yticklabels([])
 
     # ax = plt.gca()
-    axRate.set_xlabel('Firing rate\n(spk/s)', fontsize = fontSizeLabels, labelpad=-1)
+    axRate.set_xlabel('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-1)
     extraplots.boxoff(axRate)
     # extraplots.boxoff(ax, keep='right')
-    return axRaster, axRate
-
 
 if PANELS[0]:
-    (axDirectCellEx1, axDirectFREx1) = plot_example_with_rate(axPanelA, 'Direct1', color=colorD1)
+    plot_example_with_rate(axDirectCellEx1, axDirectFREx1, 'Direct1', color=colorD1)
     axDirectCellEx1.set_title('Direct pathway example 1', fontsize=fontSizeTitles)
     axDirectFREx1.set_xlim([0, 100])
     axDirectFREx1.set_xticks([0, 100])
     extraplots.set_ticks_fontsize(axDirectFREx1, fontSizeTicks)
     extraplots.set_ticks_fontsize(axDirectCellEx1, fontSizeTicks)
-    axDirectCellEx1.annotate('A', xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
-                             fontsize=fontSizePanel, fontweight='bold')
+axDirectCellEx1.annotate('A', xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
+                         fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[1]:
-    (axDirectCellEx2, axDirectFREx2) = plot_example_with_rate(axPanelB, 'Direct2', color=colorD1)
+    plot_example_with_rate(axDirectCellEx2, axDirectFREx2, 'Direct2', color=colorD1)
     axDirectCellEx2.set_title('Direct pathway example 2', fontsize=fontSizeTitles)
     axDirectFREx2.set_xlim([0, 15])
     axDirectFREx2.set_xticks([0, 15])
     extraplots.set_ticks_fontsize(axDirectFREx2, fontSizeTicks)
     extraplots.set_ticks_fontsize(axDirectCellEx2, fontSizeTicks)
-    axDirectCellEx2.annotate('B', xy=(labelPosX[1], labelPosY[1]), xycoords='figure fraction',
-                             fontsize=fontSizePanel, fontweight='bold')
+axDirectCellEx2.annotate('B', xy=(labelPosX[1], labelPosY[1]), xycoords='figure fraction',
+                         fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[2]:
-    (axNonDirectEx1, axNonDirectFREx1) = plot_example_with_rate(axPanelE, 'nDirect1', color=colornD1)
+    plot_example_with_rate(axNonDirectEx1, axNonDirectFREx1, 'nDirect1', color=colornD1)
     axNonDirectEx1.set_title('Non-direct pathway example 1', fontsize=fontSizeTitles)
     axNonDirectFREx1.set_xlim([0, 35])
     axNonDirectFREx1.set_xticks([0, 35])
     extraplots.set_ticks_fontsize(axNonDirectFREx1, fontSizeTicks)
     extraplots.set_ticks_fontsize(axNonDirectEx1, fontSizeTicks)
-    axNonDirectEx1.annotate('E', xy=(labelPosX[0], labelPosY[0]), xycoords='figure fraction',
-                            fontsize=fontSizePanel, fontweight='bold')
+axNonDirectEx1.annotate('E', xy=(labelPosX[0], labelPosY[0]), xycoords='figure fraction',
+                        fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[3]:
-    (axNonDirectEx2, axNonDirectFREx2) = plot_example_with_rate(axPanelF, 'nDirect2', color=colornD1)
+    plot_example_with_rate(axNonDirectEx2, axNonDirectFREx2, 'nDirect2', color=colornD1)
     axNonDirectEx2.set_title('Non-direct pathway example 2', fontsize=fontSizeTitles)
     axNonDirectFREx2.set_xlim([0, 25])
     axNonDirectFREx2.set_xticks([0, 25])
     extraplots.set_ticks_fontsize(axNonDirectFREx2, fontSizeTicks)
     extraplots.set_ticks_fontsize(axNonDirectEx2, fontSizeTicks)
-    axNonDirectFREx2.annotate('F', xy=(labelPosX[1], labelPosY[0]), xycoords='figure fraction',
-                              fontsize=fontSizePanel, fontweight='bold')
+axNonDirectFREx2.annotate('F', xy=(labelPosX[1], labelPosY[0]), xycoords='figure fraction',
+                          fontsize=fontSizePanel, fontweight='bold')
 
 # ---------------- Highest Sync -------------------
 

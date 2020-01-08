@@ -411,6 +411,8 @@ for message in messages:
     print(message)
 print("\n")
 
+#FIXME Delete the variable reassignment below this
+figFilename = figFilename + 'py2_branch_in_py27'
 if SAVE_FIGURE:
     if os.path.isdir(figparams.FIGURE_OUTPUT_DIR):
         pass
