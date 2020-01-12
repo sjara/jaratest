@@ -28,6 +28,20 @@ from jaratoolbox import behavioranalysis
 studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
 figparams = importlib.import_module('jaratest.common.2019astrpi.figparams')
 
+def index_all_true_before(arr):
+    '''
+    Find the index for a boolean array where all the inds after are True
+    Args:
+        arr (1-d array of bool): an array of boolean vals
+    Returns:
+        ind (int): The index of the first True val where all subsequent vals are also True
+    '''
+    if any(~arr):
+        indLastTrue = np.min(np.where(~arr))-1
+    else:
+        indLastTrue = len(arr)-1
+    return indLastTrue
+
 
 def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, freqEachTrial):
     '''
@@ -46,6 +60,7 @@ def plot_am_with_rate(subplotSpec, spikeTimes, indexLimitsEachTrial, currentFreq
 
     gs = gridspec.GridSpecFromSubplotSpec(4, 4, subplot_spec=subplotSpec, wspace=-0.45, hspace=0.0)
 
+    specRaster = gs[0:2]
     axRaster = plt.ubplot(fig, specRaster)
     # Possible issue in matplotlib backend preventing subplot from working properly. Based on pylab we use TkAgg
     fig.add_subplot(axRaster)
@@ -108,6 +123,17 @@ def plot_am_with_rate(subplotSpec, spikeTimes, indexLimitsEachTrial, currentFreq
     return axRaster, axRate
 
 
+def angle_population_vector_zar(angles):
+    '''
+    Copied directly from Biostatistical analysis, Zar, 3rd ed, pg 598 (Mike W has this book)
+    Computes the length of the mean vector for a population of angles
+    '''
+    X = np.mean(np.cos(angles))
+    Y = np.mean(np.sin(angles))
+    r = np.sqrt(X**2 + Y**2)
+    return r
+
+
 def rayleigh_test(angles):
     '''
         Performs Rayleigh Test for non-uniformity of circular data.
@@ -159,7 +185,7 @@ studyname = studyparams.STUDY_NAME
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_all_cells_in_db/')
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = 'python3branch' + '.h5'
+nameDB = 'direct_and_indirect_cells' + '.h5'
 #nameDB = '_'.join(d1mice) + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
@@ -293,6 +319,7 @@ for indRow, dbRow in celldb.iterrows():
 
 # TODO: Add tuning curve and AM in same fashion as laserpulse and noiseburst above
     # -----------AM---------------------
+    significantFreqsArray = np.array([])
     if "am" in sessions:
         # Loading data for session
         amEphysData, amBehavData = oneCell.load('am')
@@ -395,19 +422,22 @@ for indRow, dbRow in celldb.iterrows():
                 # # ralArr = np.concatenate((ralArr, np.array([ral])))
                 # allFreqRal.append(ral)
 
-            possibleFreq = np.unique(freqEachTrial)
             if any(allFreqPval < 0.05):
                 sigPvals = np.array(allFreqPval) < 0.05
                 highestSyncInd = index_all_true_before(sigPvals)
-                dataframe.loc[indRow, 'highestSync'] = possibleFreq[allFreqPval < 0.05].max()
-                dataframe.loc[indRow, 'highestUSync'] = possibleFreq[highestSyncInd]
+                # dataframe.loc[indRow, 'highestSync'] = amUniqFreq[allFreqPval < 0.05].max()
+                # dataframe.loc[indRow, 'highestUSync'] = amUniqFreq[highestSyncInd]
                 # print possibleFreq[pValThisCell<0.05].max()
+                highestSync = amUniqFreq[allFreqPval < 0.05].max()
+                highestUnSync = amUniqFreq[highestSyncInd]
             else:
-                dataframe.loc[indRow, 'highestSync'] = 0
+                # dataframe.loc[indRow, 'highestSync'] = 0
                 # print 'ZERO'
-            correctedPval = 0.05 / len(possibleFreq)
+                highestSync = 0
+            correctedPval = 0.05 / len(amUniqFreq)
             if any(allFreqPval < correctedPval):
-                dataframe.loc[indRow, 'highestSyncCorrected'] = possibleFreq[allFreqPval < correctedPval].max()
+                # dataframe.loc[indRow, 'highestSyncCorrected'] = possibleFreq[allFreqPval < correctedPval].max()
+                highestSyncCorrected = amUniqFreq[allFreqPval < correctedPval].max()
                 freqsBelowThresh = allFreqPval < correctedPval
                 freqsBelowThresh = freqsBelowThresh.astype(int)
                 if len(significantFreqsArray) == 0:
@@ -416,7 +446,10 @@ for indRow, dbRow in celldb.iterrows():
                     # significantFreqsArray = np.concatenate([[significantFreqsArray], [freqsBelowThresh]])
                     significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
             else:
-                dataframe.loc[indRow, 'highestSyncCorrected'] = 0
+                # dataframe.loc[indRow, 'highestSyncCorrected'] = 0
+                highestSyncCorrected = 0
+
+            axAMRaster.axhline(highestSyncCorrected)
 
         # evokedFREachRate = np.zeros(len(amUniqFreq))
         # baselineFREachRate = np.zeros(len(amUniqFreq))
