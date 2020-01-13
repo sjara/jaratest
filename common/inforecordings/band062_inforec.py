@@ -98,7 +98,7 @@ exp1.add_session('16-02-46', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('16-04-16', 'g', 'tuningCurve', 'am_tuning_curve')
 exp1.add_session('16-09-07', 'h', 'AM', 'am_tuning_curve')
 
-exp1.add_site(1400, tetrodes=[1,2,3,4,6,7,8])
+exp1.add_site(1400, tetrodes=[1,2,3,4,7,8])
 exp1.add_session('16-22-16', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('16-23-30', None, 'lasernoisebursts', 'bandwidth_am')
 exp1.add_session('16-25-07', 'i', 'tuningCurve', 'am_tuning_curve')

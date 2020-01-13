@@ -13,7 +13,7 @@ from jaratoolbox import settings
 import studyparams
 import figparams
 
-dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells.h5')
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells_full.h5')
 db = celldatabase.load_hdf(dbFilename)
 
 figName = 'supplement_figure_cells_inactivated_by_archt'
@@ -98,8 +98,9 @@ for indCell, oneCell in enumerate(cellList):
 
 singleUnits = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
 goodCells = singleUnits.query('spikeShapeQuality>{} and controlSession==0'.format(studyparams.SPIKE_QUALITY_THRESHOLD))
-bestCells = goodCells.query('onsetSoundResponsePVal<{} or sustainedSoundResponsePVal<{} or soundResponsePVal<{}'.format(studyparams.SOUND_RESPONSE_PVAL))
+bestCells = goodCells.query('onsetSoundResponsePVal<{0} or sustainedSoundResponsePVal<{0} or soundResponsePVal<{0}'.format(studyparams.SOUND_RESPONSE_PVAL))
 bestCells = bestCells.query('bestBandSession>0')
+#bestCells = goodCells.query('bestBandSession>0')
 
 noPVCells = bestCells.loc[bestCells['subject'].isin(studyparams.PV_ARCHT_MICE)]
 noSOMCells = bestCells.loc[bestCells['subject'].isin(studyparams.SOM_ARCHT_MICE)]

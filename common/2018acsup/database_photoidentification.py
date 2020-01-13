@@ -3,15 +3,11 @@ This script contains a function that computes new columns for a database of phot
 '''
 
 import os
-import pandas as pd
 import numpy as np
-import time
-import nrrd
 import imp
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
-from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import histologyanalysis as ha
@@ -121,8 +117,8 @@ def photoID_base_stats(db, filename = ''):
             trialsEachComb = behavioranalysis.find_trials_each_combination(bandEachTrial, numBands, secondSort, numSec)
             trialsEachBaseCond = trialsEachComb[:,:,-1] #using high amp trials for photoidentified, no laser for inactivation
             testStatistic, pVal = funcs.sound_response_any_stimulus(bandEventOnsetTimes, bandSpikeTimestamps, trialsEachBaseCond, [0.0, 1.0], [-1.2,-0.2])
-            onsetTestStatistic, onsetpVal = funcs.sound_response_any_stimulus(bandEventOnsetTimes, bandSpikeTimestamps, trialsEachBaseCond, [0.0,0.05], [-0.25,0.2])
-            sustainedTestStatistic, sustainedpVal = funcs.sound_response_any_stimulus(bandEventOnsetTimes, bandSpikeTimestamps, trialsEachBaseCond, [0.2,1.0], [-1.0,0.2])
+            onsetTestStatistic, onsetpVal = funcs.sound_response_any_stimulus(bandEventOnsetTimes, bandSpikeTimestamps, trialsEachBaseCond, [0.0,0.05], [-0.25,-0.2])
+            sustainedTestStatistic, sustainedpVal = funcs.sound_response_any_stimulus(bandEventOnsetTimes, bandSpikeTimestamps, trialsEachBaseCond, [0.2,1.0], [-1.0,-0.2])
             pVal *= len(numSec) #correction for multiple comparisons
             onsetpVal *= len(numSec)
             sustainedpVal *= len(numSec)
@@ -414,6 +410,7 @@ def photoDB_cell_locations(db, filename = ''):
     This function computes the depths and cortical locations of all cells with suppression indices computed.
     This function should be run in a virtual environment because the allensdk has weird dependencies that we don't want tainting our computers.
     '''
+    import nrrd
     from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
     
     # lapPath = os.path.join(settings.ATLAS_PATH, 'AllenCCF_25/coronal_laplacian_25.nrrd')

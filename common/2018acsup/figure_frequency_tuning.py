@@ -50,8 +50,6 @@ ExampleFileName = 'band016_2016-12-11_950um_T6_c6.npz'
 #ExampleFileName = 'band044_2018-01-16_975um_T7_c4.npz'
 #ExampleFileName = 'band060_2018-04-02_1275um_T4_c2.npz'
 
-statsFileName = 'all_photoidentified_cells_stats_by_best_freq.npz'
-
 toneSupFileName = 'pure_tone_suppression_stats.npz'
 
 fig = plt.gcf()

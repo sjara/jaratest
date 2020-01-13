@@ -1,18 +1,10 @@
 import os
 import numpy as np
-from numpy import inf
-from scipy import optimize
-from scipy import stats
-from scipy import signal
 from jaratoolbox import spikesanalysis
-from jaratoolbox import behavioranalysis
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import settings
-import figparams
 import studyparams
-import pandas as pd
-reload(spikesanalysis)
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
@@ -38,7 +30,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         print("No tc for cell {}".format(indRow))
 
     else:
-        eventOnsetTimes = ephysData['events']['stimOn']
+        eventOnsetTimes = ephysData['events']['soundDetectorOn']
+        # eventOnsetTimes = ephysData['events']['stimOn']
         spikeTimes = ephysData['spikeTimes']
         freqEachTrial = bdata['currentFreq']
         if len(eventOnsetTimes) != len(freqEachTrial):
@@ -50,7 +43,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         intensityEachTrial = bdata['currentIntensity']
         possibleIntensity = np.unique(intensityEachTrial)
 
-        cfTrials = freqEachTrial==dbRow['cf']
+        cfTrials = freqEachTrial == dbRow['cf']
         eventsThisFreq = eventOnsetTimes[cfTrials]
         intenThisFreq = intensityEachTrial[cfTrials]
 

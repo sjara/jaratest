@@ -7,6 +7,7 @@ from jaratoolbox import settings
 from jaratoolbox import extraplots
 from jaratoolbox import behavioranalysis
 from jaratoolbox import spikesanalysis
+from jaratoolbox import celldatabase
 from scipy import stats
 import pandas as pd
 import figparams
@@ -14,25 +15,31 @@ reload(figparams)
 
 FIGNAME = 'figure_am'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
-# dbPath = '/tmp/celldatabase_new_20180830.h5'
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+# dbPath = '/tmp/database_with_pulse_responses.h5'
 
 outputDir='/tmp'
 
-db = pd.read_hdf(dbPath, key='dataframe')
+# db = pd.read_hdf(dbPath, key='dataframe')
+db = celldatabase.load_hdf(dbPath)
 # db = db.query("subject=='pinp015'")
 # goodLaser = db.query('pulsePval<0.05 and pulseZscore>0 and trainRatio>0.8')
 # goodLaser = db[db['taggedCond']==0]
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018'")
+# goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018' and summaryPulseLatency < 0.01")
 goodNSpikes = goodLaser.query('nSpikes>2000')
+goodPulseLatency = goodNSpikes.query('summaryPulseLatency<0.006')
 
 # goodSoundResponsiveBool = (~pd.isnull(goodNSpikes['BW10'])) | (~pd.isnull(goodNSpikes['highestSyncCorrected'])) | (goodNSpikes['noiseZscore']<0.05)
 # goodSoundResponsive = goodNSpikes[goodSoundResponsiveBool]
 
-ac = goodNSpikes.groupby('brainArea').get_group('rightAC')
-thal = goodNSpikes.groupby('brainArea').get_group('rightThal')
+dbToUse = goodPulseLatency
+
+ac = dbToUse.groupby('brainArea').get_group('rightAC')
+thal = dbToUse.groupby('brainArea').get_group('rightThal')
 
 np.random.seed(1)
 
@@ -57,14 +64,21 @@ SAVE_FIGURE = 1
 figFilename = 'plots_am_tuning' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
 # figFormat = 'pdf' # 'pdf' or 'svg'
-figSize = [13,8] # In inches
+# figSize = [13,8] # In inches
+
+fullPanelWidthInches = 6.9
+figSizeFactor = 2
+figWidth = fullPanelWidthInches * (figSizeFactor)
+figHeight = figWidth / 1.625
+figSize = [figWidth, figHeight] # In inches
+
 
 thalHistColor = '0.4'
 acHistColor = '0.4'
 
-fontSizeLabels = figparams.fontSizeLabels * 2
-fontSizeTicks = figparams.fontSizeTicks * 2
-fontSizePanel = figparams.fontSizePanel * 2
+fontSizeLabels = figparams.fontSizeLabels * figSizeFactor
+fontSizeTicks = figparams.fontSizeTicks * figSizeFactor
+fontSizePanel = figparams.fontSizePanel * figSizeFactor
 fontSizeTitles = 12
 
 #Params for extraplots significance stars
@@ -388,6 +402,8 @@ else:
     starMarker = 'n.s.'
 
 
+axThalPie.annotate('C', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction',
+             fontsize=fontSizePanel, fontweight='bold')
 axThalPie.annotate('D', xy=(labelPosX[3],labelPosY[1]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 axThalPie.annotate('G', xy=(labelPosX[2],labelPosY[0]), xycoords='figure fraction',
@@ -401,17 +417,24 @@ yCircleCenters = [0, 3]
 xTickWidth = 0.2
 yGapWidth = 0.5
 
-def plot_y_lines_with_ticks(ax, x, y1, y2, gapwidth, tickwidth, color='k', starMarker="*", fontSize=9):
-    ax.plot([x, x], [y1, np.mean([y1, y2])-(gapwidth/2)], '-', clip_on=False, color=color)
-    ax.hold(1)
-    ax.plot([x, x], [np.mean([y1, y2])+(gapwidth/2), y2], '-', clip_on=False, color=color)
-    ax.plot([x, x+xTickWidth], [y1, y1], '-', clip_on=False, color=color)
-    ax.plot([x, x+xTickWidth], [y2, y2], '-', clip_on=False, color=color)
+##### -- Plotting stars for the pie charts -- ######
+# def plot_y_lines_with_ticks(ax, x, y1, y2, gapwidth, tickwidth, color='k', starMarker="*", fontSize=9):
+#     ax.plot([x, x], [y1, np.mean([y1, y2])-(gapwidth/2)], '-', clip_on=False, color=color)
+#     ax.hold(1)
+#     ax.plot([x, x], [np.mean([y1, y2])+(gapwidth/2), y2], '-', clip_on=False, color=color)
+#     ax.plot([x, x+xTickWidth], [y1, y1], '-', clip_on=False, color=color)
+#     ax.plot([x, x+xTickWidth], [y2, y2], '-', clip_on=False, color=color)
 
-    ax.plot(x, np.mean([y1, y2]), starMarker, clip_on=False, ms=fontSizeStars, mfc='k', mec='None')
+#     if starMarker == '*':
+#         ax.plot(x, np.mean([y1, y2]), starMarker, clip_on=False, ms=fontSizeStars, mfc='k', mec='None')
+#     else:
+#         ax.text(x, np.mean([y1, y2]), starMarker, fontsize=fontSize, rotation='vertical', va='center', ha='center', clip_on=False)
 
-plot_y_lines_with_ticks(axACPie, xBar, yCircleCenters[0], yCircleCenters[1],
-                        yGapWidth, xTickWidth, starMarker=starMarker)
+
+# plot_y_lines_with_ticks(axACPie, xBar, yCircleCenters[0], yCircleCenters[1],
+#                         yGapWidth, xTickWidth, starMarker=starMarker)
+
+#####################################################
 
 # width = 0.5
 # plt.hold(1)
@@ -444,8 +467,10 @@ plot_y_lines_with_ticks(axACPie, xBar, yCircleCenters[0], yCircleCenters[1],
 
 
 ########## Discrimination of Rate #############
-dbPathRate = os.path.join(dataDir, 'celldatabase_with_am_discrimination_accuracy.h5')
-dataframeRate = pd.read_hdf(dbPathRate, key='dataframe')
+# dbPathRate = os.path.join(dataDir, 'celldatabase_with_am_discrimination_accuracy.h5')
+dbPathRate = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+# dataframeRate = pd.read_hdf(dbPathRate, key='dataframe')
+dataframeRate = celldatabase.load_hdf(dbPathRate)
 #Show population distributions
 colorATh = figparams.cp.TangoPalette['SkyBlue2']
 colorAC = figparams.cp.TangoPalette['ScarletRed1']
@@ -456,10 +481,15 @@ goodShapeRate = goodISIRate.query('spikeShapeQuality > 2')
 goodLaserRate = goodShapeRate.query("autoTagged==1 and subject != 'pinp018'")
 goodNSpikesRate = goodLaserRate.query('nSpikes>2000')
 
-acRate = goodNSpikesRate.groupby('brainArea').get_group('rightAC')
-thalRate = goodNSpikesRate.groupby('brainArea').get_group('rightThal')
+goodPulseLatency = goodNSpikesRate.query('summaryPulseLatency<0.01')
 
-popStatCol = 'accuracy'
+dbToUse = goodPulseLatency
+
+acRate = dbToUse.groupby('brainArea').get_group('rightAC')
+thalRate = dbToUse.groupby('brainArea').get_group('rightThal')
+
+popStatCol = 'rateDiscrimAccuracy'
+# popStatCol = 'accuracySustained'
 acPopStat = acRate[popStatCol][pd.notnull(acRate[popStatCol])]
 thalPopStat = thalRate[popStatCol][pd.notnull(thalRate[popStatCol])]
 
@@ -489,6 +519,7 @@ axSummary.set_ylabel('Discrimination accuracy\nof AM rate (%)', fontsize=fontSiz
 zstat, pVal = stats.mannwhitneyu(thalPopStat, acPopStat)
 
 messages.append("{} p={}".format("Rate discrimination accuracy", pVal))
+messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(thalPopStat), len(acPopStat)))
 
 # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
@@ -503,7 +534,7 @@ yStars = yDataMax + yDataMax*starYfactor
 yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
 starString = None if pVal<0.05 else 'n.s.'
-fontSizeStars = 9
+# fontSizeStars = 9
 extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                             starSize=fontSizeStars, starString=starString,
                             gapFactor=starGapFactor)
@@ -512,8 +543,9 @@ plt.hold(1)
 
 
 ########## Discrimination of Phase #############
-dbPathPhase = os.path.join(dataDir, 'celldatabase_with_phase_discrimination_accuracy.h5')
-dbPhase = pd.read_hdf(dbPathPhase, key='dataframe')
+dbPathPhase = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+# dbPhase = pd.read_hdf(dbPathPhase, key='dataframe')
+dbPhase = celldatabase.load_hdf(dbPathPhase)
 
 goodISIPhase = dbPhase.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShapePhase = goodISIPhase.query('spikeShapeQuality > 2')
@@ -525,7 +557,7 @@ thalPhase = goodNSpikesPhase.groupby('brainArea').get_group('rightThal')
 
 possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
 ratesToUse = possibleRateKeys
-keys = ['phaseAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
+keys = ['phaseDiscrimAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
 
 acData = np.full((len(acPhase), len(ratesToUse)), np.nan)
 thalData = np.full((len(thalPhase), len(ratesToUse)), np.nan)
@@ -570,6 +602,7 @@ axSummary.set_ylabel('Discrimination accuracy\nof AM phase (%)', fontsize=fontSi
 zstat, pVal = stats.mannwhitneyu(thalMeanPerCell, acMeanPerCell)
 
 messages.append("{} p={}".format("Phase discrimination accuracy", pVal))
+messages.append("{} ATh n={}, AC n={}".format("Phase discrimination accuracy", len(thalPopStat), len(acPopStat)))
 
 # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
@@ -584,7 +617,7 @@ yStars = yDataMax + yDataMax*starYfactor
 yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
 starString = None if pVal<0.05 else 'n.s.'
-fontSizeStars = 9
+# fontSizeStars = 9
 extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                             starSize=fontSizeStars, starString=starString,
                             gapFactor=starGapFactor)

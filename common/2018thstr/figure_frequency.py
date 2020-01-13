@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
 from jaratoolbox import extraplots
+from jaratoolbox import celldatabase
 from scipy import stats
 import pandas as pd
 import figparams
@@ -24,16 +25,20 @@ FIGNAME = 'figure_frequency_tuning'
 titleExampleBW=True
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 # dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS.h5')
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_ALLCELLS_MODIFIED_CLU.h5')
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+# dbPath = '/tmp/database_with_pulse_responses.h5'
 # dbPath = '/tmp/celldatabase_new_20180830.h5'
+# db = pd.read_hdf(dbPath, key='dataframe')
 
-db = pd.read_hdf(dbPath, key='dataframe')
+db = celldatabase.load_hdf(dbPath)
 exData = np.load(exampleDataPath)
 np.random.seed(8)
 
 goodISI = db.query('isiViolations<0.02 or modifiedISI<0.02')
 goodShape = goodISI.query('spikeShapeQuality > 2')
 goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018'")
+# goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018' and summaryPulseLatency < 0.01")
 # goodLaser = goodShape.query("autoTagged==1 and subject != 'pinp018' and subject != 'pinp019'")
 
 goodFit = goodLaser.query('rsquaredFit > 0.04')
@@ -42,33 +47,45 @@ goodFit = goodLaser.query('rsquaredFit > 0.04')
 goodFit['fitMidPoint'] = np.sqrt(goodFit['upperFreq']*goodFit['lowerFreq'])
 goodFitToUse = goodFit.query('fitMidPoint<32000')
 goodFitToUseNSpikes = goodFitToUse.query('nSpikes>2000')
+# goodPulseLatency = goodFitToUseNSpikes.query('summaryPulseLatency<0.014')
+goodPulseLatency = goodFitToUseNSpikes.query('summaryPulseLatency<0.01')
 
 #Which dataframe to use
-dataframe = goodFitToUseNSpikes
+dataframe = goodPulseLatency
+# dataframe = goodFitToUseNSpikes
+
+#Calculate CF onsetivity index
+dataframe['cfOnsetivityIndex'] = (dataframe['onsetRateCF'] - dataframe['sustainedRateCF']) / (dataframe['sustainedRateCF'] + dataframe['onsetRateCF'])
 
 ac = dataframe.groupby('brainArea').get_group('rightAC')
 thal = dataframe.groupby('brainArea').get_group('rightThal')
 
-PANELS = [1, 1, 1, 1, 1, 1, 1, 1, 1] # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 1, 1, 1, 1, 1] # Plot panel i if PANELS[i]==1
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 outputDir = '/tmp/'
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'figure_frequency_tuning' # Do not include extension
 # figFormat = 'pdf' # 'pdf' or 'svg'
 figFormat = 'svg' # 'pdf' or 'svg'
-# figSize = [6.5, 3.25] # In inches
-figSize = [13, 6.5] # In inches
+# figSize = [13, 6.5] # In inches, this is 2x printed width
+fullPanelWidthInches = 6.9
+figSizeFactor = 2.5
+figWidth = fullPanelWidthInches * (figSizeFactor)
+# figHeight = figWidth / 2.5
+figHeight = figWidth / 3
+figSize = [figWidth, figHeight] # In inches
 
-fontSizeLabels = figparams.fontSizeLabels*2
-# fontSizeTicks = figparams.fontSizeTicks*2
-fontSizeTicks = fontSizeLabels
-fontSizePanel = figparams.fontSizePanel*2
-fontSizeTitles = figparams.fontSizeTitles*2
+fontSizeModifier = figSizeFactor #Multiply font sizes so that they will be correct when the figure is scaled down.
+fontSizeLabels = figparams.fontSizeLabels * fontSizeModifier
+fontSizeTicks = figparams.fontSizeTicks * fontSizeModifier #TODO: Why aren't we using the tick size var?
+# fontSizeTicks = fontSizeLabels / 2.
+fontSizePanel = figparams.fontSizePanel * fontSizeModifier
+fontSizeTitles = figparams.fontSizeTitles * fontSizeModifier
 
 #Params for extraplots significance stars
-fontSizeNS = figparams.fontSizeNS
-fontSizeStars = figparams.fontSizeStars
+fontSizeNS = figparams.fontSizeNS * (fontSizeModifier*0.5)
+fontSizeStars = figparams.fontSizeStars * (fontSizeModifier*0.5)
 starHeightFactor = figparams.starHeightFactor
 starGapFactor = figparams.starGapFactor
 starYfactor = figparams.starYfactor
@@ -83,7 +100,7 @@ colorATh = figparams.cp.TangoPalette['SkyBlue2']
 colorAC = figparams.cp.TangoPalette['ScarletRed1']
 markerAlpha = 1
 
-labelPosX = [0.05, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
+labelPosX = [0.02, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
 labelPosY = [0.92, 0.42]    # Vert position for panel labels
 
 # Define colors, use figparams
@@ -94,8 +111,9 @@ fig.clf()
 fig.set_facecolor('w')
 
 #Define the layout
-gs = gridspec.GridSpec(2, 5)
-gs.update(left=0.02, right=0.98, top=0.95, bottom=0.125, wspace=0.7, hspace=0.5)
+gs = gridspec.GridSpec(2, 7)
+# gs.update(left=0.06, right=0.98, top=0.95, bottom=0.125, wspace=1.1, hspace=0.5)
+gs.update(left=0.04, right=0.98, top=0.95, bottom=0.175, wspace=1.1, hspace=0.5)
 
 # axBlank1 = plt.subplot(gs[0, 0:3])
 # axBlank1.axis('off')
@@ -109,16 +127,19 @@ axBW = plt.subplot(gs[0:2,2])
 axThresh = plt.subplot(gs[0:2, 3])
 axLatency = plt.subplot(gs[0:2, 4])
 
+axOnsetivity = plt.subplot(gs[0:2, 5])
+axMonotonicity = plt.subplot(gs[0:2, 6])
+
 # plt.text(0.1, 1.2, 'A', ha='center', va='center',
 #          fontsize=fontSizePanel, fontweight='bold',
 #          transform=axBlank1.transAxes)
-plt.text(-0.25, 1.03, 'A', ha='center', va='center',
+plt.text(-0.45, 1.03, 'A', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axThalamus.transAxes)
 # plt.text(0.1, 1.2, 'C', ha='center', va='center',
 #          fontsize=fontSizePanel, fontweight='bold',
 #          transform=axBlank2.transAxes)
-plt.text(-0.25, 1.03, 'B', ha='center', va='center',
+plt.text(-0.45, 1.03, 'B', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axCortex.transAxes)
 plt.text(-0.3, 1.01, 'C', ha='center', va='center',
@@ -130,6 +151,12 @@ plt.text(-0.3, 1.01, 'D', ha='center', va='center',
 plt.text(-0.3, 1.01, 'E', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axLatency.transAxes)
+plt.text(-0.3, 1.01, 'F', ha='center', va='center',
+         fontsize=fontSizePanel, fontweight='bold',
+         transform=axOnsetivity.transAxes)
+plt.text(-0.3, 1.01, 'G', ha='center', va='center',
+         fontsize=fontSizePanel, fontweight='bold',
+         transform=axMonotonicity.transAxes)
 
 # axThalamus.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
 #              fontsize=fontSizePanel, fontweight='bold')
@@ -194,7 +221,7 @@ if PANELS[0]:
 
 
 ##### Cortex #####
-if PANELS[3]:
+if PANELS[1]:
     exampleKey = 'AC0'
 
     exDataFR = exData[exampleKey]/0.1
@@ -233,7 +260,7 @@ colors = {'rightThal':colorATh, 'rightAC':colorAC}
 groups = dataframe.groupby('brainArea')
 
 plt.hold(True)
-if PANELS[8]:
+if PANELS[2]:
 
     popStatCol = 'BW10'
     acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
@@ -264,19 +291,28 @@ if PANELS[8]:
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
+    messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(thalPopStat), len(acPopStat)))
 
     yDataMax = max([max(acPopStat), max(thalPopStat)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
     plt.sca(axBW)
-    starString = None if pVal<0.05 else 'n.s.'
+
+    # starString = None if pVal<0.05 else 'n.s.'
+    if pVal<0.05:
+        starString = None
+        starSize = fontSizeStars
+    else:
+        starString = 'n.s.'
+        starSize = fontSizeNS
+
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
-                                  starSize=fontSizeStars+2, starString=starString,
+                                  starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
     plt.hold(1)
 
 plt.hold(True)
-if PANELS[8]:
+if PANELS[3]:
 
 
     popStatCol = 'threshold'
@@ -314,6 +350,7 @@ if PANELS[8]:
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
+    messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(thalPopStat), len(acPopStat)))
 
     '''
     if pVal<0.05:
@@ -327,15 +364,23 @@ if PANELS[8]:
     yDataMax = max([max(acPopStat), max(thalPopStat)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    starString = None if pVal<0.05 else 'n.s.'
+    # starString = None if pVal<0.05 else 'n.s.'
+
+    if pVal<0.05:
+        starString = None
+        starSize = fontSizeStars
+    else:
+        starString = 'n.s.'
+        starSize = fontSizeNS
+
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
-                                  starSize=fontSizeStars, starString=starString,
+                                  starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
 
     plt.hold(1)
 
 
-if PANELS[8]:
+if PANELS[4]:
 
     popStatCol = 'latency'
     acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
@@ -347,7 +392,7 @@ if PANELS[8]:
     pos = jitter(np.ones(len(acPopStat))*1, 0.20)
     axLatency.plot(pos, acPopStat*1000, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
     medline(axLatency, np.median(acPopStat)*1000, 1, 0.5)
-    axLatency.set_ylabel('Latency (ms)', fontsize=fontSizeTicks)
+    axLatency.set_ylabel('Latency (ms)', fontsize=fontSizeLabels)
     # tickLabels = ['ATh:Str', 'AC:Str']
     tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
     axLatency.set_xticks(range(2))
@@ -362,6 +407,7 @@ if PANELS[8]:
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
+    messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(thalPopStat), len(acPopStat)))
 
     '''
     if pVal<0.05:
@@ -375,12 +421,132 @@ if PANELS[8]:
     yDataMax = max([max(acPopStat*1000), max(thalPopStat*1000)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    starString = None if pVal<0.05 else 'n.s.'
+
+    if pVal<0.05:
+        starString = None
+        starSize = fontSizeStars
+    else:
+        starString = 'n.s.'
+        starSize = fontSizeNS
+
     plt.sca(axLatency)
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
-                                  starSize=fontSizeStars, starString=starString,
+                                  starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
     plt.hold(1)
+
+if PANELS[5]:
+
+
+    popStatCol = 'cfOnsetivityIndex'
+    acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+    thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+
+    pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+    axOnsetivity.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
+    medline(axOnsetivity, np.median(thalPopStat), 0, 0.5)
+    pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+    axOnsetivity.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
+    medline(axOnsetivity, np.median(acPopStat), 1, 0.5)
+    # axOnsetivity.set_ylabel('Onsetivity index', fontsize=fontSizeTicks)
+    axOnsetivity.set_ylabel('Onset to sustained ratio', fontsize=fontSizeLabels)
+    # tickLabels = ['ATh:Str', 'AC:Str']
+    tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
+    axOnsetivity.set_xticks(range(2))
+    axOnsetivity.set_xlim([-0.5, 1.5])
+    axOnsetivity.set_ylim([-0.51, 1.1])
+    extraplots.boxoff(axOnsetivity)
+
+    extraplots.set_ticks_fontsize(axOnsetivity, fontSizeTicks)
+    axOnsetivity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
+
+    zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
+
+    # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+    messages.append("{} p={}".format(popStatCol, pVal))
+    messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(thalPopStat), len(acPopStat)))
+
+    '''
+    if pVal<0.05:
+        starMarker='*'
+    else:
+        starMarker='n.s.'
+    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker=starMarker,
+                                        fontSize=fontSizeStars, gapFactor=starGapFactor,
+                                      ax=axOnsetivity)
+    '''
+    yDataMax = max([max(acPopStat), max(thalPopStat)])
+    yStars = yDataMax + yDataMax*starYfactor
+    yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+    # starString = None if pVal<0.05 else 'n.s.'
+    plt.sca(axOnsetivity)
+    if pVal<0.05:
+        starString = None
+        starSize = fontSizeStars
+    else:
+        starString = 'n.s.'
+        starSize = fontSizeNS
+
+    extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                                  starSize=starSize, starString=starString,
+                                  gapFactor=starGapFactor)
+    plt.hold(1)
+
+if PANELS[6]:
+
+    popStatCol = 'monotonicityIndex'
+    acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
+    thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+
+    pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
+    axMonotonicity.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=markerAlpha)
+    medline(axMonotonicity, np.median(thalPopStat), 0, 0.5)
+    pos = jitter(np.ones(len(acPopStat))*1, 0.20)
+    axMonotonicity.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=markerAlpha)
+    medline(axMonotonicity, np.median(acPopStat), 1, 0.5)
+    axMonotonicity.set_ylabel('Monotonicity index', fontsize=fontSizeLabels)
+    # tickLabels = ['ATh:Str', 'AC:Str']
+    tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
+    axMonotonicity.set_xticks(range(2))
+    axMonotonicity.set_xlim([-0.5, 1.5])
+    axMonotonicity.set_ylim([0, 1.1])
+    extraplots.boxoff(axMonotonicity)
+
+    extraplots.set_ticks_fontsize(axMonotonicity, fontSizeTicks)
+    axMonotonicity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
+
+    zstat, pVal = stats.ranksums(thalPopStat, acPopStat)
+
+    # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
+    messages.append("{} p={}".format(popStatCol, pVal))
+    messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(thalPopStat), len(acPopStat)))
+
+    '''
+    if pVal<0.05:
+        starMarker='*'
+    else:
+        starMarker='n.s.'
+    extraplots.new_significance_stars([0, 1], yStars, yStarHeight, starMarker=starMarker,
+                                        fontSize=fontSizeStars, gapFactor=starGapFactor,
+                                      ax=axMonotonicity)
+    '''
+    yDataMax = max([max(acPopStat), max(thalPopStat)])
+    yStars = yDataMax + yDataMax*starYfactor
+    yStarHeight = (yDataMax*starYfactor)*starHeightFactor
+    # starString = None if pVal<0.05 else 'n.s.'
+    plt.sca(axMonotonicity)
+    if pVal<0.05:
+        starString = None
+        starSize = fontSizeStars
+    else:
+        starString = 'n.s.'
+        starSize = fontSizeNS
+
+    extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
+                                  starSize=starSize, starString=starString,
+                                  gapFactor=starGapFactor)
+    plt.hold(1)
+
 
 
 plt.show()

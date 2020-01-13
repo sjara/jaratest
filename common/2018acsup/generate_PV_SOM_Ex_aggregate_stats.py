@@ -10,7 +10,6 @@ Inputs generated:
 '''
 
 import os
-import pandas as pd
 import numpy as np
 
 from jaratoolbox import celldatabase
@@ -96,7 +95,6 @@ baselineSpikeRates = [PVBaseSpikeRates, SOMBaseSpikeRates, ExBaseSpikeRates]
 highBands = [5,6] #change in FR and average PSTHs for 4 octaves and white noise (high bandwidths)
 
 # -- compute change in firing rate for high bandwidths for all PV and SOM, and Exc. cells
-import pdb
 for ind, cellsThisType in enumerate(cells):
     for indCell in range(len(cellsThisType)):
         cell = cellsThisType.iloc[indCell]
@@ -142,11 +140,15 @@ for ind, cellsThisType in enumerate(cells):
                 trialsHighBands = trialsHighBands | trialsHighAmp[:,band]
         
         # Average firing rate for high amplitude trials
+        if onsetSpikeCountMat.shape[0] == len(trialsHighBands)+1:
+            onsetSpikeCountMat = onsetSpikeCountMat[:-1,:]
         highBandOnsetSpikeCounts = onsetSpikeCountMat[trialsHighBands]
         highBandOnsetMean = np.mean(highBandOnsetSpikeCounts)/(onsetTimeRange[1]-onsetTimeRange[0])
         
         highBandOnsetSpikeRates[ind][indCell] = highBandOnsetMean
         
+        if sustainedSpikeCountMat.shape[0] == len(trialsHighBands)+1:
+            sustainedSpikeCountMat = sustainedSpikeCountMat[:-1,:]
         highBandSustainedSpikeCounts = sustainedSpikeCountMat[trialsHighBands]
         highBandSustainedMean = np.mean(highBandSustainedSpikeCounts)/(sustainedTimeRange[1]-sustainedTimeRange[0])
         
@@ -198,6 +200,9 @@ for ind, cellsThisType in enumerate(cells):
                 trialsHighBands = trialsEachBand[:,band]
             else:
                 trialsHighBands = trialsHighBands | trialsEachBand[:,band]
+                
+        if spikeCountMat.shape[0] == len(trialsHighBands)+1:
+            spikeCountMat = spikeCountMat[:-1,:]
         highBandSpikeCounts = spikeCountMat[trialsHighBands]
         
         thisPSTH = np.mean(highBandSpikeCounts,axis=0)

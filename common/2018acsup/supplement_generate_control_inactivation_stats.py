@@ -8,35 +8,31 @@ Inputs generated:
 '''
 
 import os
-import pandas as pd
 import numpy as np
-import scipy.stats
 
 from jaratoolbox import celldatabase
-from jaratoolbox import spikesanalysis
-from jaratoolbox import ephyscore
-from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
 import figparams
 import studyparams
 
-dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells.h5')
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'inactivation_cells_full.h5')
 db = celldatabase.load_hdf(dbFilename)
 
 figName = 'supplement_figure_inhibitory_cell_inactivation_control'
 
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
-#dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
+#dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', figName)
+dataDir = os.path.join('/home/jarauser/data/figuresdata/2018acsup', figName)
 
-PV_ARCHT_MICE = subjects_info.PV_ARCHT_MICE
-SOM_ARCHT_MICE = subjects_info.SOM_ARCHT_MICE
+PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
+SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 
 # -- find PV and SOM-inactivated cells that are sound responsive
-bestCells = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
-bestCells = bestCells.query('spikeShapeQuality>{}'.format(studyparams.SPIKE_QUALITY_THRESHOLD))
-bestCells = bestCells.query('onsetSoundResponsePVal<@SOUND_RESPONSE_PVAL or sustainedSoundResponsePVal<@SOUND_RESPONSE_PVAL or soundResponsePVal<@SOUND_RESPONSE_PVAL')
-bestCells = bestCells.query('bestBandSession>0')
+singleUnits = db.query(studyparams.SINGLE_UNITS_INACTIVATION)
+#goodCells = singleUnits.query('spikeShapeQuality>{}'.format(studyparams.SPIKE_QUALITY_THRESHOLD))
+#bestCells = singleUnits.query('onsetSoundResponsePVal<{0} or sustainedSoundResponsePVal<{0} or soundResponsePVal<{0}'.format(studyparams.SOUND_RESPONSE_PVAL))
+#bestCells = bestCells.query('bestBandSession>0')
+bestCells = singleUnits.query('bestBandSession>0')
 
 PVCells = bestCells.loc[bestCells['subject'].isin(PV_ARCHT_MICE)]
 SOMCells = bestCells.loc[bestCells['subject'].isin(SOM_ARCHT_MICE)]

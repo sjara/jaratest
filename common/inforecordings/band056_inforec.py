@@ -57,7 +57,7 @@ exp1.laserCalibration = {
     '10.0':8.05
 }
 
-exp1.add_site(900, tetrodes=[2,3,4,6,7,8])
+exp1.add_site(900, tetrodes=[2,3,6,7,8])
 exp1.add_session('09-14-00', None, 'noisebursts', 'am_tuning_curve')
 exp1.add_session('09-15-07', None, 'lasernoisebursts', 'bandwidth_am')
 exp1.add_session('09-16-16', 'a', 'tuningCurve', 'am_tuning_curve')

@@ -7,19 +7,13 @@
 
 import os
 import numpy as np
-from numpy import inf
-from scipy import optimize
-from scipy import stats
 from scipy import signal
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import settings
-import figparams
 import studyparams
-import pandas as pd
-reload(spikesanalysis)
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 # dbPath = '/home/nick/data/jarahubdata/figuresdata/2018thstr/celldatabase.h5'
@@ -42,8 +36,8 @@ for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
         dataframe.loc[indRow, 'latency'] = np.nan
         continue
 
-    # eventOnsetTimes = ephysData['events']['soundDetectorOn']
-    eventOnsetTimes = ephysData['events']['stimOn']
+    eventOnsetTimes = ephysData['events']['soundDetectorOn']
+    # eventOnsetTimes = ephysData['events']['stimOn']
 
     eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
     spikeTimes = ephysData['spikeTimes']

@@ -17,7 +17,7 @@ from jaratoolbox import settings
 from jaratoolbox import extraplots
 
 import figparams
-import studyparams
+
 
 FREQFIGNAME = 'supplement_figure_gaussian_frequency_tuning_fit'
 freqDataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FREQFIGNAME)
@@ -116,8 +116,6 @@ if PANELS[0]:
         labels = ['%.1f' % freq for freq in (2**plt.xticks()[0])/1000]
         thisAx.set_xticks(plt.xticks()[0])
         thisAx.set_xticklabels(labels)
-        print labels
-        print plt.xticks()
         
         plt.xlim(11.5,15.5)
         plt.ylim(-0.1, 1.1)

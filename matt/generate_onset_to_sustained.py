@@ -8,7 +8,8 @@ import studyparams
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '_'.join(d1mice) + '.h5'
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
 db = celldatabase.load_hdf(pathtoDB)
 
 PLOT = 0
@@ -22,7 +23,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         print("No TC for cell {}".format(indRow))
 
     else:
-        eventOnsetTimes = ephysData['events']['stimOn']
+        eventOnsetTimes = ephysData['events']['soundDetectorOn']
+        # eventOnsetTimes = ephysData['events']['stimOn']
         spikeTimes = ephysData['spikeTimes']
         freqEachTrial = bdata['currentFreq']
         if len(eventOnsetTimes) != len(freqEachTrial):
