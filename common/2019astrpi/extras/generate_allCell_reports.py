@@ -244,20 +244,20 @@ for indRow, dbRow in celldb.iterrows():
         # -----------Plotting-------------
         # Plotting raster
         plt.sca(axNoiseburstRaster)
-        pRaster, hcond, zline = extraplots.raster_plot(noiseSpikeTimesFromEventOnset,
+        pRasterNoiseburst, hNoiseburstCond, zlineNoiseburst = extraplots.raster_plot(noiseSpikeTimesFromEventOnset,
                                                        noiseIndexLimitsEachTrial,
                                                        timeRange,
                                                        trialsEachCond=[],
                                                        colorEachCond='g')
-        plt.setp(pRaster, ms=msRaster)
-        plt.setp(hcond, zorder=3)
+        plt.setp(pRasterNoiseburst, ms=msRaster)
+        plt.setp(hNoiseburstCond, zorder=3)
         plt.ylabel('Trial')
         axNoiseburstRaster.set_xlim(-0.3, 0.5)
         plt.title("Noiseburst")
 
         # Plotting PSTH
         plt.sca(axNoiseburstPSTH)
-        pPSTH = extraplots.plot_psth(noiseSpikeCountMat / binWidth,
+        pPSTHNoiseburst = extraplots.plot_psth(noiseSpikeCountMat / binWidth,
                                      smoothWinSizePsth, timeVec,
                                      trialsEachCond=[],
                                      linestyle=None, linewidth=lwPsth,
@@ -285,20 +285,20 @@ for indRow, dbRow in celldb.iterrows():
         # -----------Plotting-------------
         # Plotting raster
         plt.sca(axLaserpulseRaster)
-        pRaster, hcond, zline = extraplots.raster_plot(laserSpikeTimesFromEventOnset,
+        pLaserRaster, hLaserCond, zlineLaser = extraplots.raster_plot(laserSpikeTimesFromEventOnset,
                                                        laserIndexLimitsEachTrial,
                                                        timeRange,
                                                        trialsEachCond=[],
                                                        colorEachCond='r')
-        plt.setp(pRaster, ms=msRaster)
-        plt.setp(hcond, zorder=3)
+        plt.setp(pLaserRaster, ms=msRaster)
+        plt.setp(hLaserCond, zorder=3)
         plt.ylabel('Trial')
         axLaserpulseRaster.set_xlim(-0.3, 0.5)
         plt.title("Laserpulse")
 
         # PSTH plotting
         plt.sca(axLaserpulsePSTH)
-        pPSTH = extraplots.plot_psth(laserSpikeCountMat / binWidth,
+        pLaserPSTH = extraplots.plot_psth(laserSpikeCountMat / binWidth,
                                      smoothWinSizePsth, timeVec,
                                      trialsEachCond=[], linestyle=None,
                                      linewidth=lwPsth,
@@ -312,7 +312,7 @@ for indRow, dbRow in celldb.iterrows():
         # Plot waveforms
         plt.sca(axLaserpulseWaveform)
         if laserWaveform.any():
-            allLaserWaves, meanLaserWaves, scaleBar = spikesorting.plot_waveforms(laserWaveform)
+            allLaserWaves, meanLaserWaves, scaleBarLaser = spikesorting.plot_waveforms(laserWaveform)
             plt.setp(meanLaserWaves, color='r')
         plt.title("Laserpulse Waveform")
 
@@ -350,9 +350,9 @@ for indRow, dbRow in celldb.iterrows():
         freqLabels = ['{0:.0f}'.format(freq) for freq in amUniqFreq]
         # (axRaster, axRate) = plot_am_with_rate(axAMRaster, amSpikeTimes, amIndexLimitsEachTrial,
         #                                        amCurrentFreq, amUniqFreq)
-        pRaster, hCond, zline = extraplots.raster_plot(amSpikeTimesFromEventOnset, amIndexLimitsEachTrial,
+        pAMRaster, hAMCond, zlineAM = extraplots.raster_plot(amSpikeTimesFromEventOnset, amIndexLimitsEachTrial,
                                                        amTimeRange, trialsEachCond=amTrialsEachCondition, labels=freqLabels)
-        plt.setp(pRaster, ms=figparams.rasterMS)
+        plt.setp(pAMRaster, ms=figparams.rasterMS)
         blankLabels = [''] * 11
         for labelPos in [0, 5, 10]:
             blankLabels[labelPos] = freqLabels[labelPos]
@@ -391,15 +391,15 @@ for indRow, dbRow in celldb.iterrows():
         if pVal > 0.05:  # No response
             print("No significant AM response, no synchronization will be calculated")
         elif pVal < 0.05:
-            timeRange = [0.1, 0.5]  # Use this to cut out onset responses
+            amTimeRangeSync = [0.1, 0.5]  # Use this to cut out onset responses
             (amSyncSpikeTimesFromEventOnset,
              amSyncTrialIndexForEachSpike,
              amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
                                                                                  amOnsetTime,
-                                                                                 timeRange)
+                                                                                 amTimeRangeSync)
 
             for indFreq, (freq, spiketimes, trialInds) in enumerate(spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
-                                                                                              amTrialIndexForEachSpike,
+                                                                                              amSyncTrialIndexForEachSpike,
                                                                                               amCurrentFreq)):
                 strength, phase = signal.vectorstrength(spiketimes, 1.0 / freq)
                 # vsArr = np.concatenate((vsArr, np.array([strength])))
@@ -450,6 +450,8 @@ for indRow, dbRow in celldb.iterrows():
                 highestSyncCorrected = 0
 
             axAMRaster.axhline(highestSyncCorrected)
+            # Use the firstCondEachTrial from the extraplots.raster_plot function as the way of
+            # setting where the horizontal line is placed. Copy and paste as a new function in this script
 
         # evokedFREachRate = np.zeros(len(amUniqFreq))
         # baselineFREachRate = np.zeros(len(amUniqFreq))
@@ -565,13 +567,13 @@ for indRow, dbRow in celldb.iterrows():
             trialsEachType = np.delete(trialsEachType, -1, 0)
 
         plt.sca(axTuningCurveRaster)
-        pRaster, hcond, zline = extraplots.raster_plot(tuningSpikeTimesFromEventOnset,
+        pTuningRaster, hTuningCond, zline = extraplots.raster_plot(tuningSpikeTimesFromEventOnset,
                                                        tuningIndexLimitsEachTrial,
                                                        timeRange,
                                                        trialsEachCond=trialsEachType)
 
-        plt.setp(pRaster, ms=msRaster)
-        plt.setp(hcond, zorder=3)
+        plt.setp(pTuningRaster, ms=msRaster)
+        plt.setp(hTuningCond, zorder=3)
         plt.ylabel('Trial')
         axTuningCurveRaster.set_yticks(new_tick_locations)
         axTuningCurveRaster.set_yticklabels(new_tick_locations)
@@ -590,24 +592,24 @@ for indRow, dbRow in celldb.iterrows():
         # Waveform
         plt.sca(axTuningCurveWaveform)
         if tuningWaveform.any():
-            allWaves, meanWaves, scaleBar = \
+            allWavesTuning, meanWavesTuning, scaleBarTuning = \
                 spikesorting.plot_waveforms(tuningWaveform)
-            plt.setp(meanWaves, color='b')
+            plt.setp(meanWavesTuning, color='b')
         plt.axis('off')
         plt.title('Tuning Curve Waveform')
 
         # ISI plot
         plt.sca(axTuningCurveISI)
-        hpISI, ISIhistogram, ISIbins = \
+        hpISITuning, ISIhistogramTuning, ISIbinsTuning = \
             spikesorting.plot_isi_loghist(tuningSpikeTimes)
-        plt.setp(hpISI, color='b')
+        plt.setp(hpISITuning, color='b')
         plt.title('Tuning Curve ISI')
 
         # Plot events in time
         plt.sca(axTuningCurveEvents)
         if tuningSpikeTimes.any():
-            hp_Events = spikesorting.plot_events_in_time(tuningSpikeTimes)
-            plt.setp(hp_Events, color='b')
+            hp_EventsTuning = spikesorting.plot_events_in_time(tuningSpikeTimes)
+            plt.setp(hp_EventsTuning, color='b')
         plt.title('Tuning Curve Events')
 
         # ----------------------- Tuning Curve heatmap --------------------
@@ -617,12 +619,12 @@ for indRow, dbRow in celldb.iterrows():
         cax = axTuningCurveHeatmap.imshow(np.flipud(FRData),
                                           interpolation='nearest',
                                           cmap='Blues')
-        cbar = plt.colorbar(cax, ax=axTuningCurveHeatmap, format='%d')
+        cbarTuning = plt.colorbar(cax, ax=axTuningCurveHeatmap, format='%d')
         maxFR = np.max(FRData.ravel())
-        cbar.ax.set_ylabel('Firing rate\n(spk/s)',
+        cbarTuning.ax.set_ylabel('Firing rate\n(spk/s)',
                            fontsize=fontSizeLabels, labelpad=-10)
-        extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
-        cbar.set_ticks([0, maxFR])
+        extraplots.set_ticks_fontsize(cbarTuning.ax, fontSizeTicks)
+        cbarTuning.set_ticks([0, maxFR])
         cax.set_clim([0, maxFR])
 
         axTuningCurveHeatmap.set_yticks(intenTickLocations)
