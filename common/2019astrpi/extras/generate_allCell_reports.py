@@ -25,6 +25,7 @@ from jaratoolbox import spikesorting
 from jaratoolbox import ephyscore
 from jaratoolbox import celldatabase
 from jaratoolbox import behavioranalysis
+from jaratoolbox.extraplots import trials_each_cond_inds
 studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
 figparams = importlib.import_module('jaratest.common.2019astrpi.figparams')
 
@@ -52,7 +53,7 @@ def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, 
         trialsThisFreq = np.flatnonzero(freqEachTrial==freq)
         spikeTimesThisFreq = spikeTimesFromEventOnset[np.in1d(trialIndexForEachSpike, trialsThisFreq)]
         trialIndicesThisFreq = trialIndexForEachSpike[np.in1d(trialIndexForEachSpike, trialsThisFreq)]
-        yield (freq, spikeTimesThisFreq, trialIndicesThisFreq)
+        yield freq, spikeTimesThisFreq, trialIndicesThisFreq
 
 
 def plot_am_with_rate(subplotSpec, spikeTimes, indexLimitsEachTrial, currentFreq, uniqFreq,  color='k'):
@@ -152,6 +153,47 @@ def rayleigh_test(angles):
     # Compute pvalue (Zar, Eq 27.4)
     pVal = np.exp(np.sqrt(1. + 4*N + 4*(N**2. - R**2)) - 1. - 2.*N)
     return zVal, pVal
+
+
+def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachCond=[],
+                colorEachCond=None, fillWidth=None, labels=None):
+    """
+    :returns the indices for the first trial of each condition presented in a session
+
+    trialsEachCond can be a list of lists of indexes, or a boolean array of shape [nTrials,nConditions]
+    """
+    nTrials = len(indexLimitsEachTrial[0])
+    (trialsEachCond, nTrialsEachCond, nCond) = trials_each_cond_inds(trialsEachCond, nTrials)
+
+    if colorEachCond is None:
+        colorEachCond = ['0.5', '0.75']*int(np.ceil(nCond/2.0))
+
+    if fillWidth is None:
+        fillWidth = 0.05*np.diff(timeRange)
+
+    nSpikesEachTrial = np.diff(indexLimitsEachTrial, axis=0)[0]
+    nSpikesEachTrial = nSpikesEachTrial*(nSpikesEachTrial > 0)  # Some are negative
+    trialIndexEachCond = []
+    spikeTimesEachCond = []
+    for indcond, trialsThisCond in enumerate(trialsEachCond):
+        spikeTimesThisCond = np.empty(0, dtype='float64')
+        trialIndexThisCond = np.empty(0, dtype='int')
+        for indtrial, thisTrial in enumerate(trialsThisCond):
+            indsThisTrial = slice(indexLimitsEachTrial[0, thisTrial],
+                                  indexLimitsEachTrial[1, thisTrial])
+            spikeTimesThisCond = np.concatenate((spikeTimesThisCond,
+                                                 spikeTimesFromEventOnset[indsThisTrial]))
+            trialIndexThisCond = np.concatenate((trialIndexThisCond,
+                                                 np.repeat(indtrial, nSpikesEachTrial[thisTrial])))
+        trialIndexEachCond.append(np.copy(trialIndexThisCond))
+        spikeTimesEachCond.append(np.copy(spikeTimesThisCond))
+
+    xpos = timeRange[0]+np.array([0, fillWidth, fillWidth, 0])
+    lastTrialEachCond = np.cumsum(nTrialsEachCond)
+    firstTrialEachCond = np.r_[0, lastTrialEachCond[:-1]]
+    return firstTrialEachCond
+
+
 
 if sys.version_info[0] < 3:
     inputFunc = raw_input
@@ -448,6 +490,10 @@ for indRow, dbRow in celldb.iterrows():
             else:
                 # dataframe.loc[indRow, 'highestSyncCorrected'] = 0
                 highestSyncCorrected = 0
+
+            # It seems this isn't giving the index I think based off debugging? I need to figure out exactly what this returning
+            first_trials = first_trial_index_of_condition(amSpikeTimesFromEventOnset, amIndexLimitsEachTrial,
+                                   amTimeRange, trialsEachCond=amTrialsEachCondition, labels=freqLabels)
 
             axAMRaster.axhline(highestSyncCorrected)
             # Use the firstCondEachTrial from the extraplots.raster_plot function as the way of
