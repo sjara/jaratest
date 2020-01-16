@@ -1,12 +1,11 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band027'
 experiments=[]
 
 # exp0 = celldatabase.Experiment(subject, '2017-05-03', 'right_AC', info=['medialDiI','TT1ant','sound_left'])
 # experiments.append(exp0)
-# 
+#
 # exp0.laserCalibration = {
 #     '0.5':0.9,
 #     '1.0':1.45,
@@ -48,16 +47,16 @@ exp1.add_session('11-14-42', 'd', 'noiseAmps', 'am_tuning_curve')
 
 # exp1.add_site(1526, tetrodes = [2,4,6,8])
 # exp1.add_session('11-28-13', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1573, tetrodes = [2,4,6,8])
 # exp1.add_session('11-32-45', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1660, tetrodes = [2,4,6,8])
 # exp1.add_session('11-40-06', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1678, tetrodes = [2,4,6,8])
 # exp1.add_session('11-43-35', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1769, tetrodes = [2,4,6,8])
 # exp1.add_session('11-47-37', None, 'laserPulse', 'am_tuning_curve')
 
@@ -79,13 +78,13 @@ exp2.laserCalibration = {
 
 # exp2.add_site(1265, tetrodes= [2,4,6,8])
 # exp2.add_session('12-49-42', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1272, tetrodes = [2,4,6,8])
 # exp2.add_session('12-52-44', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1292, tetrodes = [2,4,6,7,8])
 # exp2.add_session('12-56-03', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1316, tetrodes = [2,3,4,6,7,8])
 # exp2.add_session('12-59-05', None, 'laserPulse', 'am_tuning_curve')
 
@@ -101,13 +100,13 @@ exp2.add_session('13-39-49', 'd', 'noiseAmps', 'am_tuning_curve')
 
 # exp2.add_site(1409, tetrodes = [2,4,6,8])
 # exp2.add_session('13-47-11', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1500, tetrodes = [2,3,4,6,8])
 # exp2.add_session('13-49-37', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1560, tetrodes = [2,4,6,7,8])
 # exp2.add_session('13-52-53', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1565, tetrodes = [2,4,6,8])
 # exp2.add_session('13-55-04', None, 'laserPulse', 'am_tuning_curve')
 # exp2.add_session('13-56-10', None, 'noisebursts', 'am_tuning_curve')
@@ -124,10 +123,10 @@ exp2.add_session('14-36-13', 'h', 'noiseAmps', 'am_tuning_curve')
 
 # exp2.add_site(1653, tetrodes = [2,4,6,8])
 # exp2.add_session('14-43-43', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1734, tetrodes = [2,4,6,7,8])
 # exp2.add_session('14-47-50', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1765, tetrodes = [1,2,3,4,6,7,8])
 # exp2.add_session('14-51-38', None, 'laserPulse', 'am_tuning_curve')
 
@@ -149,7 +148,7 @@ exp3.laserCalibration = {
 
 # exp3.add_site(1050, tetrodes = [2,4,6,7,8])
 # exp3.add_session('11-57-01', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp3.add_site(1090, tetrodes = [1,2,3,4,6,8])
 # exp3.add_session('11-59-01', None, 'laserPulse', 'am_tuning_curve')
 
@@ -179,13 +178,13 @@ exp3.add_session('13-26-37', 'h', 'noiseAmps', 'am_tuning_curve')
 # exp3.add_site(1365, tetrodes = [2,4,6,8])
 # exp3.add_session('13-36-38', None, 'laserPulse', 'am_tuning_curve')
 # exp3.add_session('13-42-19', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp3.add_site(1375, tetrodes = [2,4,6,8])
 # exp3.add_session('13-44-02', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp3.add_site(1525, tetrodes = [2,3,4,6,8])
 # exp3.add_session('13-57-56', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp3.add_site(1551, tetrodes = [2,4,6,8])
 # exp3.add_session('14-06-38', None, 'laserPulse', 'am_tuning_curve')
 
@@ -201,7 +200,7 @@ exp3.add_session('14-48-58', 'l', 'noiseAmps', 'am_tuning_curve')
 
 # exp3.add_site(1620, tetrodes = [2,3,4,6,8])
 # exp3.add_session('14-57-39', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp3.add_site(1656, tetrodes = [1,2,4,6,8])
 # exp3.add_session('15-00-03', None, 'laserPulse', 'am_tuning_curve')
 # exp3.add_session('15-02-57', None, 'laserPulse', 'am_tuning_curve')
@@ -221,7 +220,7 @@ exp3.maxDepth = 1665
 
 # exp4 = celldatabase.Experiment(subject, '2017-05-08', 'right_AC', info=['posteriorlateralDiI','TT1ant','sound_left'])
 # experiments.append(exp4)
-# 
+#
 # exp4.laserCalibration = {
 #     '0.5':0.8,
 #     '1.0':1.35,

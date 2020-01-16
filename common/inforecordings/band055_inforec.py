@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band055'
 experiments=[]
@@ -22,7 +21,7 @@ exp0.laserCalibration = {
 # exp0.add_session('10-57-53', None, 'noisebursts', 'am_tuning_curve')
 # exp0.add_session('11-01-37', None, 'lasernoisebursts', 'bandwidth_am')
 # #no particular difference between laser and non-laser trials
-# 
+#
 # exp0.add_site(925, tetrodes=[1,2,4,6,8])
 # exp0.add_session('11-21-00', None, 'noisebursts', 'am_tuning_curve')
 # exp0.add_session('11-22-13', None, 'lasernoisebursts', 'bandwidth_am')
@@ -47,10 +46,10 @@ exp0.add_session('13-22-58', 'g', 'noiseAmps', 'am_tuning_curve')
 # exp0.add_site(1150, tetrodes=[1,2,3,4,6,8])
 # exp0.add_session('14-42-08', None, 'noisebursts', 'am_tuning_curve')
 # exp0.add_session('14-43-22', None, 'lasernoisebursts', 'bandwidth_am')
-# 
+#
 # exp0.add_site(1175, tetrodes=[1,2,3,4,6,8])
 # exp0.add_session('15-22-55', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1200, tetrodes=[2,4,8])
 # exp0.add_session('15-41-41', None, 'noisebursts', 'am_tuning_curve')
 
@@ -103,19 +102,19 @@ exp1.laserCalibration = {
 
 # exp1.add_site(900, tetrodes=[1,2,4,6,8])
 # exp1.add_session('12-59-10', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(950, tetrodes=[1,2,4,6,8])
 # exp1.add_session('13-07-32', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1000, tetrodes=[1,2,4,6,8])
 # exp1.add_session('13-17-09', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1050, tetrodes=[1,2,4,5,6,8])
 # exp1.add_session('13-36-04', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1075, tetrodes=[1,2,4,5,6,7,8])
 # exp1.add_session('13-55-06', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1100, tetrodes=[1,2,4,5,6,7,8])
 # exp1.add_session('14-03-40', None, 'noisebursts', 'am_tuning_curve')
 # exp1.add_session('14-04-50', None, 'lasernoisebursts', 'bandwidth_am')
@@ -130,10 +129,10 @@ exp1.add_session('15-10-18', 'd', 'noiseAmps', 'am_tuning_curve')
 
 # exp1.add_site(1200, tetrodes=[2,4,6,7,8])
 # exp1.add_session('15-32-45', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1250, tetrodes=[1,2,4,6,7,8])
 # exp1.add_session('15-44-01', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1275, tetrodes=[1,2,4,6,7,8])
 # exp1.add_session('15-50-28', None, 'noisebursts', 'am_tuning_curve')
 
@@ -318,13 +317,13 @@ exp4.laserCalibration = {
 
 # exp4.add_site(950, tetrodes=[1,2,8])
 # exp4.add_session('10-17-19', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp4.add_site(1000, tetrodes=[1,2,8])
 # exp4.add_session('10-29-09', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp4.add_site(1050, tetrodes=[1,2,7,8])
 # exp4.add_session('10-35-39', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp4.add_site(1100, tetrodes=[1,2,7,8])
 # exp4.add_session('10-40-39', None, 'noisebursts', 'am_tuning_curve')
 # exp4.add_session('10-41-39', None, 'lasernoisebursts', 'bandwidth_am')
@@ -388,7 +387,7 @@ exp5.laserCalibration = {
 
 # exp5.add_site(1300, tetrodes=[2,8])
 # exp5.add_session('12-05-51', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp5.add_site(1350, tetrodes=[2,4,8])
 # exp5.add_session('12-12-38', None, 'noisebursts', 'am_tuning_curve')
 

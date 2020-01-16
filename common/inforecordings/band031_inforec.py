@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band031'
 experiments=[]
@@ -18,7 +17,7 @@ exp0.laserCalibration = {
 
 # exp0.add_site(950, tetrodes=[2,4,6,7,8])
 # exp0.add_session('12-22-15', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1000, tetrodes=[2,4,6,7,8])
 # exp0.add_session('12-45-10', None, 'laserPulse', 'am_tuning_curve')
 # exp0.add_session('12-53-05', None, 'noisebursts', 'am_tuning_curve')
@@ -35,10 +34,10 @@ exp0.add_session('13-39-46', 'd', 'noiseAmps', 'am_tuning_curve')
 
 # exp0.add_site(1075, tetrodes=[1,2,4,5,6,7,8])
 # exp0.add_session('13-51-21', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1100, tetrodes=[1,2,4,5,6,7,8])
 # exp0.add_session('14-04-35', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1120, tetrodes=[1,2,4,5,6,7,8])
 # exp0.add_session('14-08-35', None, 'laserPulse', 'am_tuning_curve')
 
@@ -55,13 +54,13 @@ exp0.add_session('15-10-19', 'i', 'noiseAmps', 'am_tuning_curve')
 
 # exp0.add_site(1200, tetrodes=[1,2,4,5,6,7,8])
 # exp0.add_session('15-21-36', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1220, tetrodes=[1,2,4,5,6,7,8])
 # exp0.add_session('15-25-50', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1240, tetrodes=[1,2,4,5,6,7,8])
 # exp0.add_session('15-30-06', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp0.add_site(1260, tetrodes=[1,2,4,5,6,7,8])
 # exp0.add_session('15-33-58', None, 'laserPulse', 'am_tuning_curve')
 
@@ -93,10 +92,10 @@ exp1.laserCalibration = {
 
 # exp1.add_site(1050, tetrodes=[2,4,6,8])
 # exp1.add_session('12-50-12', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1075, tetrodes=[2,4,6,8])
 # exp1.add_session('12-55-19', None, 'laserPulse', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1100, tetrodes=[2,4,6,8])
 # exp1.add_session('12-58-37', None, 'laserPulse', 'am_tuning_curve')
 

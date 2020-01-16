@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band073'
 experiments=[]
@@ -319,7 +318,7 @@ exp5.laserCalibration = {
 # exp5.add_session('12-40-42', None, 'longLaser', 'am_tuning_curve')
 # exp5.add_session('12-44-20', 'c', 'laserBandwidthControl', 'bandwidth_am')
 # exp5.add_session('13-09-42', 'd', 'noiseAmps', 'am_tuning_curve')
-# 
+#
 # exp5.add_site(1350, tetrodes=[3,4,6,7,8])
 # exp5.add_session('13-26-09', None, 'noiseburst', 'am_tuning_curve')
 # exp5.add_session('13-30-35', None, 'lasernoisebursts', 'bandwidth_am')
@@ -328,7 +327,7 @@ exp5.laserCalibration = {
 # exp5.add_session('13-43-52', None, 'longLaser', 'am_tuning_curve')
 # exp5.add_session('13-49-34', 'g', 'laserBandwidthControl', 'bandwidth_am')
 # exp5.add_session('14-48-11', 'h', 'noiseAmps', 'am_tuning_curve')
-# 
+#
 # exp5.add_site(1450, tetrodes=[3,4,6])
 # exp5.add_session('15-04-37', None, 'noiseburst', 'am_tuning_curve')
 # exp5.add_session('15-54-10', None, 'lasernoisebursts', 'bandwidth_am')
@@ -339,5 +338,5 @@ exp5.laserCalibration = {
 # exp5.add_session('16-47-03', 'k', 'laserBandwidthControl', 'bandwidth_am')
 # exp5.add_session('17-14-06', 'l', 'noiseAmps', 'am_tuning_curve')
 # exp5.add_session('17-19-45', 'm', 'laserBandwidthControl', 'bandwidth_am')
- 
+
 exp5.maxDepth = 1450

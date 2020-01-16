@@ -232,9 +232,9 @@ nameDB = 'direct_and_indirect_cells' + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 # celldb = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
-celldb = db.query(('subject=="d1pi039"'))
+# celldb = db.query(('subject=="d1pi039"'))
 # -------------------------------------------------------------------------------
-for indRow, dbRow in celldb.iterrows():
+for indRow, dbRow in db.iterrows():
     oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
 
     rast1 = []

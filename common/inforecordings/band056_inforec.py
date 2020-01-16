@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band056'
 experiments=[]
@@ -348,7 +347,7 @@ exp6.laserCalibration = {
 
 # exp6.add_site(1150, tetrodes=[1,2])
 # exp6.add_session('15-49-50', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp6.add_site(1250, tetrodes=[2])
 # exp6.add_session('16-01-38', None, 'noisebursts', 'am_tuning_curve')
 
