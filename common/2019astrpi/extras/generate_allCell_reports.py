@@ -231,8 +231,8 @@ nameDB = 'direct_and_indirect_cells' + '.h5'
 #nameDB = '_'.join(d1mice) + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
-celldb = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
-
+# celldb = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
+celldb = db.query(('subject=="d1pi039"'))
 # -------------------------------------------------------------------------------
 for indRow, dbRow in celldb.iterrows():
     oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
@@ -396,7 +396,7 @@ for indRow, dbRow in celldb.iterrows():
                                                        amTimeRange, trialsEachCond=amTrialsEachCondition, labels=freqLabels)
         plt.setp(pAMRaster, ms=figparams.rasterMS)
         blankLabels = [''] * 11
-        for labelPos in [0, 5, 10]:
+        for labelPos in range(11):
             blankLabels[labelPos] = freqLabels[labelPos]
 
         axAMRaster.set_yticklabels(blankLabels)
@@ -492,10 +492,19 @@ for indRow, dbRow in celldb.iterrows():
                 highestSyncCorrected = 0
 
             # It seems this isn't giving the index I think based off debugging? I need to figure out exactly what this returning
-            first_trials = first_trial_index_of_condition(amSpikeTimesFromEventOnset, amIndexLimitsEachTrial,
-                                   amTimeRange, trialsEachCond=amTrialsEachCondition, labels=freqLabels)
+            # first_trials = first_trial_index_of_condition(amSpikeTimesFromEventOnset, amIndexLimitsEachTrial,
+            #                        amTimeRange, trialsEachCond=amTrialsEachCondition, labels=freqLabels)
+            if highestSyncCorrected > 0:
+                firstTrials = first_trial_index_of_condition(amSyncSpikeTimesFromEventOnset, amSyncIndexLimitsEachTrial,
+                                                              amTimeRangeSync, trialsEachCond=amTrialsEachCondition,
+                                                              labels=freqLabels)
 
-            axAMRaster.axhline(highestSyncCorrected)
+                highestSyncIndex = np.where(amUniqFreq == highestSyncCorrected)
+                firstTrialOfHighestSync = firstTrials[highestSyncIndex]
+                axAMRaster.axhline(firstTrialOfHighestSync)
+
+            elif highestSyncCorrected == 0:
+                axAMRaster.axhline(0)
             # Use the firstCondEachTrial from the extraplots.raster_plot function as the way of
             # setting where the horizontal line is placed. Copy and paste as a new function in this script
 
