@@ -7,6 +7,7 @@ import sys
 import numpy as np
 import studyparams
 from scipy import stats
+from scipy import signal
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesorting
@@ -215,6 +216,117 @@ def append_base_stats(cellDB, filename=''):
                     firstCells.at[indRow, 'onsetRate'] = onsetRate
                     firstCells.at[indRow, 'sustainedRate'] = sustainedRate
                     firstCells.at[indRow, 'baseRate'] = baseRate
+
+        # -------------------- am calculations ---------------------------
+        session == 'am'
+        try:
+            amEphysData, amBehavData = oneCell.load(session)
+        except IndexError:
+            print('This cell does not contain a {} session'.format(session))
+        else:
+            baseRange = [-0.1, 0] if session != 'am' else [-0.5, -0.1]
+            significantFreqsArray = np.array([])
+            if "am" in sessions:
+                # Loading data for session
+                amEphysData, amBehavData = oneCell.load('am')
+
+                # General variables for am calculations/plotting
+                amSpikeTimes = amEphysData['spikeTimes']
+                amOnsetTime = amEphysData['events']['soundDetectorOn']
+                amCurrentFreq = amBehavData['currentFreq']
+                amUniqFreq = np.unique(amCurrentFreq)
+                amTimeRange = [-0.2, 0.7]
+
+                # if len(amCurrentFreq) != len(amOnsetTime):
+                #     amOnsetTime = amOnsetTime[:-1]
+                # if len(amCurrentFreq) != len(amOnsetTime):
+                #     print('Removing one does not align events and behavior. Skipping AM for cell')
+                # else:
+                (amSpikeTimesFromEventOnset, amTrialIndexForEachSpike,
+                 amIndexLimitsEachTrial) = \
+                    spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
+                                                          amOnsetTime,
+                                                          amTimeRange)
+                amBaseTime = [-0.1, -0.05]
+                amResponseTime = [0, 0.5]
+                amAlignmentTime = [amBaseTime[0], amResponseTime[-1]]
+
+                numFreq = len(amUniqFreq)
+
+                allFreqVS = np.empty(numFreq)
+                allFreqRal = np.empty(numFreq)
+                allFreqPval = np.empty(numFreq)
+
+                amNSpkBaseRange = spikesanalysis.spiketimes_to_spikecounts(amSpikeTimesFromEventOnset,
+                                                                           amIndexLimitsEachTrial,
+                                                                           amBaseTime)
+                amNSpkRespRange = spikesanalysis.spiketimes_to_spikecounts(amSpikeTimesFromEventOnset,
+                                                                           amIndexLimitsEachTrial,
+                                                                           amResponseTime)
+
+                # For now we are not using this statistical values in the reports directly
+                [zScore, pVal] = stats.ranksums(amNSpkRespRange, amNSpkBaseRange)
+                if pVal > 0.05:  # No response
+                    print("No significant AM response, no synchronization will be calculated")
+                elif pVal < 0.05:
+                    amTimeRangeSync = [0.1, 0.5]  # Use this to cut out onset responses
+                    (amSyncSpikeTimesFromEventOnset,
+                     amSyncTrialIndexForEachSpike,
+                     amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
+                                                                                         amOnsetTime,
+                                                                                         amTimeRangeSync)
+
+                    for indFreq, (freq, spiketimes, trialInds) in enumerate(
+                            spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
+                                                      amSyncTrialIndexForEachSpike,
+                                                      amCurrentFreq)):
+                        strength, phase = signal.vectorstrength(spiketimes, 1.0 / freq)
+                        # vsArr = np.concatenate((vsArr, np.array([strength])))
+
+                        # TODO: Check the math here
+                        radsPerSec = freq * 2 * np.pi
+                        spikeRads = (spiketimes * radsPerSec) % (2 * np.pi)
+                        ral = np.array([2 * len(spiketimes) * (strength ** 2)])
+
+                        # NOTE: I checked the math in this function using the text referenced (Mike W. has a copy if needed)
+                        zVal, pVal = rayleigh_test(spikeRads)
+
+                        allFreqVS[indFreq] = strength  # Frequency vector strength
+                        allFreqRal[indFreq] = ral  # Unsure what this is
+                        allFreqPval[indFreq] = pVal  # p-value
+
+                        # # pValArr = np.concatenate((pValArr, np.array([pVal])))
+                        # allFreqPval.append(pVal)
+
+                        # # ralArr = np.concatenate((ralArr, np.array([ral])))
+                        # allFreqRal.append(ral)
+
+                    if any(allFreqPval < 0.05):
+                        sigPvals = np.array(allFreqPval) < 0.05
+                        highestSyncInd = index_all_true_before(sigPvals)
+                        # dataframe.loc[indRow, 'highestSync'] = amUniqFreq[allFreqPval < 0.05].max()
+                        # dataframe.loc[indRow, 'highestUSync'] = amUniqFreq[highestSyncInd]
+                        # print possibleFreq[pValThisCell<0.05].max()
+                        highestSync = amUniqFreq[allFreqPval < 0.05].max()
+                        highestUnSync = amUniqFreq[highestSyncInd]
+                    else:
+                        # dataframe.loc[indRow, 'highestSync'] = 0
+                        # print 'ZERO'
+                        highestSync = 0
+                    correctedPval = 0.05 / len(amUniqFreq)
+                    if any(allFreqPval < correctedPval):
+                        # dataframe.loc[indRow, 'highestSyncCorrected'] = possibleFreq[allFreqPval < correctedPval].max()
+                        highestSyncCorrected = amUniqFreq[allFreqPval < correctedPval].max()
+                        freqsBelowThresh = allFreqPval < correctedPval
+                        freqsBelowThresh = freqsBelowThresh.astype(int)
+                        if len(significantFreqsArray) == 0:
+                            significantFreqsArray = freqsBelowThresh
+                        else:
+                            # significantFreqsArray = np.concatenate([[significantFreqsArray], [freqsBelowThresh]])
+                            significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
+                    else:
+                        firstCells.loc[indRow, 'highestSyncCorrected'] = 0
+
     firstCells['cfOnsetivityIndex'] = \
         (firstCells['onsetRate'] - firstCells['sustainedRate']) / \
         (firstCells['sustainedRate'] + firstCells['onsetRate'])

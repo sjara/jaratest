@@ -5,6 +5,7 @@ import numpy as np
 from numpy import inf
 from scipy import optimize
 from scipy import signal
+from scipy import stats
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 
@@ -463,3 +464,114 @@ def calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes, currentFreq,
     baseRate = baseSpikes / (baseRange[1] - baseRange[0])
 
     return onsetRate, sustainedRate, baseRate
+
+def index_all_true_before(arr):
+    '''
+    Find the index for a boolean array where all the inds after are True
+    Args:
+        arr (1-d array of bool): an array of boolean vals
+    Returns:
+        ind (int): The index of the first True val where all subsequent vals are also True
+    '''
+    if any(~arr):
+        indLastTrue = np.min(np.where(~arr))-1
+    else:
+        indLastTrue = len(arr)-1
+    return indLastTrue
+
+
+def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, freqEachTrial):
+    '''
+    Generator func to return the spiketimes/trial indices for trials of each frequency
+    '''
+    possibleFreq = np.unique(freqEachTrial)
+    for freq in possibleFreq:
+        trialsThisFreq = np.flatnonzero(freqEachTrial==freq)
+        spikeTimesThisFreq = spikeTimesFromEventOnset[np.in1d(trialIndexForEachSpike, trialsThisFreq)]
+        trialIndicesThisFreq = trialIndexForEachSpike[np.in1d(trialIndexForEachSpike, trialsThisFreq)]
+        yield freq, spikeTimesThisFreq, trialIndicesThisFreq
+
+def angle_population_vector_zar(angles):
+    '''
+    Copied directly from Biostatistical analysis, Zar, 3rd ed, pg 598 (Mike W has this book)
+    Computes the length of the mean vector for a population of angles
+    '''
+    X = np.mean(np.cos(angles))
+    Y = np.mean(np.sin(angles))
+    r = np.sqrt(X**2 + Y**2)
+    return r
+
+
+def rayleigh_test(angles):
+    '''
+        Performs Rayleigh Test for non-uniformity of circular data.
+        Compares against Null hypothesis of uniform distribution around circle
+        Assume one mode and data sampled from Von Mises.
+        Use other tests for different assumptions.
+        Maths from [Biostatistical Analysis, Zar].
+    '''
+    if angles.ndim > 1:
+        angles = angles.flatten()
+    N = angles.size
+    # Compute Rayleigh's R
+    R = N*angle_population_vector_zar(angles)
+    # Compute Rayleight's z
+    zVal = R**2. / N
+    # Compute pvalue (Zar, Eq 27.4)
+    pVal = np.exp(np.sqrt(1. + 4*N + 4*(N**2. - R**2)) - 1. - 2.*N)
+    return zVal, pVal
+
+
+def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachCond=[],
+                colorEachCond=None, fillWidth=None, labels=None):
+    """
+    :returns the indices for the first trial of each condition presented in a session
+
+    trialsEachCond can be a list of lists of indexes, or a boolean array of shape [nTrials,nConditions]
+    """
+    nTrials = len(indexLimitsEachTrial[0])
+    (trialsEachCond, nTrialsEachCond, nCond) = trials_each_cond_inds(trialsEachCond, nTrials)
+
+    if colorEachCond is None:
+        colorEachCond = ['0.5', '0.75']*int(np.ceil(nCond/2.0))
+
+    if fillWidth is None:
+        fillWidth = 0.05*np.diff(timeRange)
+
+    nSpikesEachTrial = np.diff(indexLimitsEachTrial, axis=0)[0]
+    nSpikesEachTrial = nSpikesEachTrial*(nSpikesEachTrial > 0)  # Some are negative
+    trialIndexEachCond = []
+    spikeTimesEachCond = []
+    for indcond, trialsThisCond in enumerate(trialsEachCond):
+        spikeTimesThisCond = np.empty(0, dtype='float64')
+        trialIndexThisCond = np.empty(0, dtype='int')
+        for indtrial, thisTrial in enumerate(trialsThisCond):
+            indsThisTrial = slice(indexLimitsEachTrial[0, thisTrial],
+                                  indexLimitsEachTrial[1, thisTrial])
+            spikeTimesThisCond = np.concatenate((spikeTimesThisCond,
+                                                 spikeTimesFromEventOnset[indsThisTrial]))
+            trialIndexThisCond = np.concatenate((trialIndexThisCond,
+                                                 np.repeat(indtrial, nSpikesEachTrial[thisTrial])))
+        trialIndexEachCond.append(np.copy(trialIndexThisCond))
+        spikeTimesEachCond.append(np.copy(spikeTimesThisCond))
+
+    xpos = timeRange[0]+np.array([0, fillWidth, fillWidth, 0])
+    lastTrialEachCond = np.cumsum(nTrialsEachCond)
+    firstTrialEachCond = np.r_[0, lastTrialEachCond[:-1]]
+    return firstTrialEachCond
+
+def calculate_am_significance(amSpikeTimesFromEventOnset, amIndexLimitsEachTrial, amBaseTime, amResponseTime):
+    """
+
+    :return:
+    """
+    amNSpkBaseRange = spikesanalysis.spiketimes_to_spikecounts(amSpikeTimesFromEventOnset,
+                                                               amIndexLimitsEachTrial,
+                                                               amBaseTime)
+    amNSpkRespRange = spikesanalysis.spiketimes_to_spikecounts(amSpikeTimesFromEventOnset,
+                                                               amIndexLimitsEachTrial,
+                                                               amResponseTime)
+
+    # For now we are not using this statistical values in the reports directly
+    [zScore, pVal] = stats.ranksums(amNSpkRespRange, amNSpkBaseRange)
+    return zScore, pVal
