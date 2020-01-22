@@ -123,10 +123,11 @@ fig = plt.gcf()
 fig.clf()
 
 studyname = studyparams.STUDY_NAME
-outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_am/')
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_am_27_lowR/')
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '_'.join(d1mice) + '.h5'
+# nameDB = '_'.join(d1mice) + '.h5'
+nameDB = "{}.h5".format('python27BranchIn27')
 # nameDB = "{}.h5".format('temp')
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
