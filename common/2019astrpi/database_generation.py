@@ -244,10 +244,11 @@ def append_base_stats(cellDB, filename=''):
                                                           amOnsetTimes,
                                                           amTimeRange)
                 amBaseTime = [-0.5, -0.1]
+                amOnsetTime = [0, 0.1]
                 amResponseTime = [0, 0.5]
 
                 allFreqPVal, allFreqZScore, allFreqVectorStrength, allFreqRal = \
-                    funcs.calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amCurrentFreq, amUniqFreq)
+                    funcs.calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTime, amCurrentFreq, amUniqFreq)
 
                 # I am taking the lowest p-value from all the frequencies to store in the dataframe. Possibly need to add
                 # way of identifying what frequency is being used
@@ -361,8 +362,8 @@ if __name__ == "__main__":
 
     if SAVE:
         dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
-        dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
-        # dbpath = os.path.join(dbLocation, '{}.h5'.format('python27BranchIn27'))
+        # dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+        dbpath = os.path.join(dbLocation, '{}.h5'.format('AM_additions'))
         if os.path.isdir(dbLocation):
             #celldatabase.save_hdf(PhotoID, dbpath)
             celldatabase.save_hdf(firstDB, dbpath)
