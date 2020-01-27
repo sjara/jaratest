@@ -343,8 +343,8 @@ def calculate_cell_locations(db, filename=''):  # to be filled after complete co
 if __name__ == "__main__":
     # Cluster your data
     CLUSTER_DATA = 0  # We don't generally run this code. We kept this for documentation
-    # d1mice = studyparams.SINGLE_MOUSE
-    d1mice = studyparams.ASTR_D1_CHR2_MICE
+    d1mice = studyparams.SINGLE_MOUSE
+    # d1mice = studyparams.ASTR_D1_CHR2_MICE
     if CLUSTER_DATA:  # SPIKE SORTING
         inforecFile = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(d1mice))
         clusteringObj = spikesorting.ClusterInforec(inforecFile)
@@ -358,7 +358,7 @@ if __name__ == "__main__":
     # Create and save a database, computing first the base stats and then the indices
     firstDB = append_base_stats(basicDB, filename=d1DBFilename)
     # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
-    # PhotoID = photoDB.cell_locations(firstDB)
+    PhotoID = photoDB.cell_locations(firstDB)
 
     if SAVE:
         dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
