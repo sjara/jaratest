@@ -615,3 +615,59 @@ def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTim
         allFreqZScore[indFreq]= zVal
 
     return allFreqPVal, allFreqZScore, allFreqVectorStrength, allFreqRal
+
+# To calculate the p-value for baseline vs onset response for each individual frequency
+def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTime, amCurrentFreq, amUniqFreq):
+    """
+
+    Args:
+        amSpikeTimes (np.array): Each value is a time when a spike occurred. Obatained from Ephys Data
+        amOnsetTimes (np.array): Contains as many values as there were trials with each value being the tme a
+        trial started.
+        amBaseTime (list): Contains two values that represent the time range for the base firing rate
+        amOnsetTime (list): Contains two values that represent the time range for the onset firing rate
+        amCurrentFreq (np.array): Contains as many values as there were trials with each value being the am rate
+        for a specific trial. Obtained from Behavior Data
+        amUniqFreq (np.array): Contains as many values as there were unique am rates presented over the entire session.
+
+    Returns:
+        allFreqPVal (np.array): Contains one p-value for each unique am rate presented over the entire session
+        allFreqZScore (np.array): Contains one z-value for each unique am rate presented over the entire session
+        allFreqVectorStrength (np.array):
+        allFreqRal (np.array):
+
+    """
+    numFreq = len(amUniqFreq)
+
+    allFreqPVal = np.empty(numFreq)
+    allFreqVectorStrength = np.empty(numFreq)
+    allFreqRal = np.empty(numFreq)
+    allFreqZScore = np.empty(numFreq)
+
+    amTimeRange = [amBaseTime[0], amOnsetTime[1]]
+
+    (amSyncSpikeTimesFromEventOnset,
+     amSyncTrialIndexForEachSpike,
+     amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
+                                                                         amOnsetTimes,
+                                                                         amTimeRange)
+
+    for indFreq, (freq, spiketimes, trialInds) in enumerate(
+            spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
+                                      amSyncTrialIndexForEachSpike,
+                                      amCurrentFreq)):
+        strength, phase = signal.vectorstrength(spiketimes, 1.0 / freq)
+
+        radsPerSec = freq * 2 * np.pi
+        spikeRads = (spiketimes * radsPerSec) % (2 * np.pi)
+        ral = np.array([2 * len(spiketimes) * (strength ** 2)])
+
+        # NOTE: I checked the math in this function using the text referenced (Mike W. has a copy if needed) - Nick
+        zVal, pVal = rayleigh_test(spikeRads)
+
+        allFreqVectorStrength[indFreq] = strength  # Frequency vector strength
+        allFreqRal[indFreq] = ral  # Unsure what this is
+        allFreqPVal[indFreq] = pVal  # p-value
+        allFreqZScore[indFreq]= zVal
+
+    return allFreqPVal, allFreqZScore, allFreqVectorStrength, allFreqRal

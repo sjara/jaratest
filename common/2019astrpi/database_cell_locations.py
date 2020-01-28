@@ -20,7 +20,8 @@ def cell_locations(db):
     """
     
     # lapPath = os.path.join(settings.ATLAS_PATH, 'AllenCCF_25/coronal_laplacian_25.nrrd')
-    lapPath = '/mnt/jarahubdata/tmp/coronal_laplacian_25.nrrd'
+    # lapPath = '/mnt/jarahubdata/tmp/coronal_laplacian_25.nrrd'
+    lapPath = settings.LAP_PATH
     lapData = nrrd.read(lapPath)
     lap = lapData[0]
     
