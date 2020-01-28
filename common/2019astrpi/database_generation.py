@@ -14,7 +14,7 @@ from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import settings
 import database_generation_funcs as funcs
-import database_cell_locations as photoDB
+import database_cell_locations as cellLoc
 
 
 if sys.version_info[0] < 3:
@@ -23,6 +23,10 @@ elif sys.version_info[0] >= 3:
     input_func = input
 
 SAVE = 1
+
+# Check for script arguements to edit function
+if sys.argv[1:] is not None:
+    arguement = sys.argv[1]
 
 
 def append_base_stats(cellDB, filename=''):
@@ -343,8 +347,32 @@ def calculate_cell_locations(db, filename=''):  # to be filled after complete co
 if __name__ == "__main__":
     # Cluster your data
     CLUSTER_DATA = 0  # We don't generally run this code. We kept this for documentation
-    # d1mice = studyparams.SINGLE_MOUSE
-    d1mice = studyparams.ASTR_D1_CHR2_MICE
+
+    # Choosing which mice to do calculations for
+    # Check for script arguements to decide what calculations are done
+    dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
+    if sys.argv[1:] is not None:
+        stat_calc = 0
+        hist_calc = 0
+        arguements = str(sys.argv[1:])
+        d1mice = arguements[0]
+        dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice.join('_')))
+        # Run behavior can either be 'all', 'hist', or 'stats'
+        runBehavior = arguements[1]
+        if runBehavior == 'all':
+            stat_calc = 1
+            hist_calc = 1
+        elif runBehavior == 'hist':
+            hist_calc = 1
+        elif runBehavior == 'stats':
+            stat_calc = 1
+    else:
+        # Calculates everything for all mice in studyparams
+        stat_calc = 1
+        hist_calc = 1
+        d1mice = studyparams.ASTR_D1_CHR2_MICE
+        dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+
     if CLUSTER_DATA:  # SPIKE SORTING
         inforecFile = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(d1mice))
         clusteringObj = spikesorting.ClusterInforec(inforecFile)
@@ -356,16 +384,19 @@ if __name__ == "__main__":
 
     d1DBFilename = os.path.join(settings.FIGURES_DATA_PATH, '{}_d1mice.h5'.format(studyparams.STUDY_NAME))
     # Create and save a database, computing first the base stats and then the indices
-    firstDB = append_base_stats(basicDB, filename=d1DBFilename)
-    # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
-    # PhotoID = photoDB.cell_locations(firstDB)
+    if stat_calc:
+        firstDB = append_base_stats(basicDB, filename=d1DBFilename)
+        # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
+    if hist_calc:
+        histDB = cellLoc.cell_locations(firstDB)
 
     if SAVE:
-        dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
+        # dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
         # dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
-        dbpath = os.path.join(dbLocation, '{}.h5'.format('AM_additions'))
+        # dbpath = os.path.join(dbLocation, '{}.h5'.format('AM_additions'))
+
         if os.path.isdir(dbLocation):
-            #celldatabase.save_hdf(PhotoID, dbpath)
+            #celldatabase.save_hdf(histDB, dbpath)
             celldatabase.save_hdf(firstDB, dbpath)
             print("SAVED DATAFRAME to {}".format(dbpath))
         elif not os.path.isdir(dbLocation):
