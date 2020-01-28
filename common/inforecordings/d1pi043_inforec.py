@@ -67,25 +67,25 @@ Power: Value on laser dial, value in output level
 # Animal in rig at: 10:37
 # Probe in at: 10:42, reinserted at 11:40. Middle cant be penetrated due to large blood vessel abou 900 um deep
 
-exp1.add_site(2900, tetrodes=[2,4,6,7])
-exp1.add_session('12-14-54', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('12-16-03', None, 'laserpulse', 'am_tuning_curve')
-exp1.add_session('12-17-36', None, 'lasertrain', 'am_tuning_curve')
-exp1.add_session('12-19-36', 'a', 'tuningTest', 'am_tuning_curve')
+# exp1.add_site(2900, tetrodes=[2,4,6,7])
+# exp1.add_session('12-14-54', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('12-16-03', None, 'laserpulse', 'am_tuning_curve')
+# exp1.add_session('12-17-36', None, 'lasertrain', 'am_tuning_curve')
+# exp1.add_session('12-19-36', 'a', 'tuningTest', 'am_tuning_curve')
 
-exp1.add_site(3000, tetrodes=[1,2,4,6,7,8])
-exp1.add_session('12-34-46', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('12-35-52', None, 'laserpulse', 'am_tuning_curve')
-exp1.add_session('12-37-01', None, 'lasertrain', 'am_tuning_curve')
-exp1.add_session('12-38-35', 'b', 'tuningTest', 'am_tuning_curve')
-exp1.add_session('12-42-26', 'c', 'am', 'am_tuning_curve') # No am
+# exp1.add_site(3000, tetrodes=[1,2,4,6,7,8])
+# exp1.add_session('12-34-46', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('12-35-52', None, 'laserpulse', 'am_tuning_curve')
+# exp1.add_session('12-37-01', None, 'lasertrain', 'am_tuning_curve')
+# exp1.add_session('12-38-35', 'b', 'tuningTest', 'am_tuning_curve')
+# exp1.add_session('12-42-26', 'c', 'am', 'am_tuning_curve') # No am
 
-exp1.add_site(3100, tetrodes=[4,6,8])
-exp1.add_session('13-01-18', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('13-02-44', None, 'laserpulse', 'am_tuning_curve')
-exp1.add_session('13-06-23', None, 'lasertrain', 'am_tuning_curve')
-exp1.add_session('13-10-02', 'd', 'tuningTest', 'am_tuning_curve')
-exp1.add_session('13-13-47', 'e', 'am', 'am_tuning_curve') # No am
+# exp1.add_site(3100, tetrodes=[4,6,8])
+# exp1.add_session('13-01-18', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('13-02-44', None, 'laserpulse', 'am_tuning_curve')
+# exp1.add_session('13-06-23', None, 'lasertrain', 'am_tuning_curve')
+# exp1.add_session('13-10-02', 'd', 'tuningTest', 'am_tuning_curve')
+# exp1.add_session('13-13-47', 'e', 'am', 'am_tuning_curve') # No am
 
 exp1.add_site(3300, tetrodes=[1,2,4,6,8])
 exp1.add_session('13-36-11', None, 'noiseburst', 'am_tuning_curve')
@@ -127,12 +127,12 @@ Power: Value on laser dial, value in output level
 # Animal in rig at:11:45
 # Probe in at: 12:40; Had to attach a satellite dish as well as clean off a cell blockage. Decent amount of bleeding
 
-exp2.add_site(2900, tetrodes=[1,2,5,6,7])
-exp2.add_session('13-24-58', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('13-26-16', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('13-28-06', None, 'lasertrain', 'am_tuning_curve')
-exp2.add_session('13-29-40', 'a', 'tuningTest', 'am_tuning_curve')
-exp2.add_session('13-33-39', 'b', 'am', 'am_tuning_curve') # No am
+# exp2.add_site(2900, tetrodes=[1,2,5,6,7])
+# exp2.add_session('13-24-58', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('13-26-16', None, 'laserpulse', 'am_tuning_curve')
+# exp2.add_session('13-28-06', None, 'lasertrain', 'am_tuning_curve')
+# exp2.add_session('13-29-40', 'a', 'tuningTest', 'am_tuning_curve')
+# exp2.add_session('13-33-39', 'b', 'am', 'am_tuning_curve') # No am
 
 exp2.add_site(3000, tetrodes=[1,4,5,6,8])
 exp2.add_session('14-06-40', None, 'noiseburst', 'am_tuning_curve')
@@ -142,12 +142,12 @@ exp2.add_session('14-13-02', 'c', 'tuningTest', 'am_tuning_curve')
 exp2.add_session('14-16-44', 'd', 'am', 'am_tuning_curve')
 exp2.add_session('14-24-10', 'e', 'tuningCurve', 'am_tuning_curve')
 
-exp2.add_site(3100, tetrodes=[2,4,5,6,8])
-exp2.add_session('15-14-11', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('15-15-26', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('15-26-40', None, 'lasertrain', 'am_tuning_curve')
-exp2.add_session('15-18-15', 'f', 'tuningTest', 'am_tuning_curve')
-exp2.add_session('15-21-40', 'g', 'am', 'am_tuning_curve') # No am
+# exp2.add_site(3100, tetrodes=[2,4,5,6,8])
+# exp2.add_session('15-14-11', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('15-15-26', None, 'laserpulse', 'am_tuning_curve')
+# exp2.add_session('15-26-40', None, 'lasertrain', 'am_tuning_curve')
+# exp2.add_session('15-18-15', 'f', 'tuningTest', 'am_tuning_curve')
+# exp2.add_session('15-21-40', 'g', 'am', 'am_tuning_curve') # No am
 
 exp2.add_site(3200, tetrodes=[6,8])
 exp2.add_session('15-51-27', None, 'noiseburst', 'am_tuning_curve')
@@ -190,12 +190,12 @@ exp3.add_session('12-38-10', 'a', 'tuningTest', 'am_tuning_curve')
 exp3.add_session('12-40-53', 'b', 'am', 'am_tuning_curve')
 exp3.add_session('13-00-43', 'c', 'tuningCurve', 'am_tuning_curve')
 
-exp3.add_site(3100, tetrodes=[1,2,5,7])
-exp3.add_session('15-02-35', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('15-03-44', None, 'laserpulse', 'am_tuning_curve')
-exp3.add_session('15-05-12', None, 'lasertrain', 'am_tuning_curve')
-exp3.add_session('15-06-58', 'd', 'tuningTest', 'am_tuning_curve')
-exp3.add_session('15-10-16', 'e', 'am', 'am_tuning_curve')
+# exp3.add_site(3100, tetrodes=[1,2,5,7])
+# exp3.add_session('15-02-35', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('15-03-44', None, 'laserpulse', 'am_tuning_curve')
+# exp3.add_session('15-05-12', None, 'lasertrain', 'am_tuning_curve')
+# exp3.add_session('15-06-58', 'd', 'tuningTest', 'am_tuning_curve')
+# exp3.add_session('15-10-16', 'e', 'am', 'am_tuning_curve')
 
 exp3.maxDepth = 3100
 
@@ -223,12 +223,12 @@ Power: Value on laser dial, value in output level
 # Probe in at: 11:15; Extensive bleeding again from the edge of the well as well as the anterior part of the craniotomy
 
 # ref TT6
-exp4.add_site(2800, tetrodes=[1,2,4])
-exp4.add_session('11-40-07', None, 'noiseburst', 'am_tuning_curve')
-exp4.add_session('11-42-05', None, 'laserpulse', 'am_tuning_curve')
-exp4.add_session('11-43-22', None, 'lasertrain', 'am_tuning_curve')
-exp4.add_session('11-44-53', 'a', 'tuningTest', 'am_tuning_curve') # shit tuning, but one spike on TT2 has noise and laser response
-exp4.add_session('11-49-10', 'b', 'am', 'am_tuning_curve')
+# exp4.add_site(2800, tetrodes=[1,2,4])
+# exp4.add_session('11-40-07', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('11-42-05', None, 'laserpulse', 'am_tuning_curve')
+# exp4.add_session('11-43-22', None, 'lasertrain', 'am_tuning_curve')
+# exp4.add_session('11-44-53', 'a', 'tuningTest', 'am_tuning_curve') # shit tuning, but one spike on TT2 has noise and laser response
+# exp4.add_session('11-49-10', 'b', 'am', 'am_tuning_curve')
 
 # changed ref to TT3
 exp4.add_site(2900, tetrodes=[1,2,4,7,8])
