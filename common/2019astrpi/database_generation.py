@@ -1,6 +1,6 @@
 """
 Generate[1] and save[2] database with calculated stats and parameters that will be used in /
-analysis
+analysis. Optionally takes the arguments in the order of: script.py mouse run_parameters
 """
 import os
 import sys
@@ -23,11 +23,6 @@ elif sys.version_info[0] >= 3:
     input_func = input
 
 SAVE = 1
-
-# Check for script arguements to edit function
-if sys.argv[1:] is not None:
-    arguement = sys.argv[1]
-
 
 def append_base_stats(cellDB, filename=''):
     """
