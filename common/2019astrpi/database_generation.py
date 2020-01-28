@@ -349,11 +349,13 @@ if __name__ == "__main__":
     if sys.argv[1:] is not None:
         stat_calc = 0
         hist_calc = 0
-        arguements = str(sys.argv[1:])
-        d1mice = arguements[0]
-        dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice.join('_')))
+        arguements = sys.argv[1:]
+        d1mice = [arguements[0]]
+        print('d1mice = {}'.format(d1mice))
+        dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
         # Run behavior can either be 'all', 'hist', or 'stats'
         runBehavior = arguements[1]
+        print('run behavior is {}'.format(runBehavior))
         if runBehavior == 'all':
             stat_calc = 1
             hist_calc = 1
@@ -376,12 +378,13 @@ if __name__ == "__main__":
 
     # Generate_cell_database_filters cells with the followings: isi < 0.05, spike quality > 2
     basicDB = celldatabase.generate_cell_database_from_subjects(d1mice)
-
+    firstDB = basicDB
     d1DBFilename = os.path.join(settings.FIGURES_DATA_PATH, '{}_d1mice.h5'.format(studyparams.STUDY_NAME))
     # Create and save a database, computing first the base stats and then the indices
     if stat_calc:
         firstDB = append_base_stats(basicDB, filename=d1DBFilename)
         # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
+        histDB = firstDB
     if hist_calc:
         histDB = cellLoc.cell_locations(firstDB)
 
