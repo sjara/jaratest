@@ -3,6 +3,7 @@ import importlib
 import imp
 import nrrd
 import numpy as np
+import pandas as pd
 from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
 
 from jaratoolbox import histologyanalysis as ha
@@ -30,9 +31,12 @@ def cell_locations(db):
     rspAnnotationVolumeRotated = np.rot90(rsp.annotation, 1, axes=(2, 0))
     
     tetrodetoshank = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4}  # hardcoded dictionary of tetrode to shank mapping for probe geometry used in this study
-    
-    bestCells = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))  # calculate depths for all the cells that we quantify as tuned
-    
+
+    try:
+        bestCells = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))  # calculate depths for all the cells that we quantify as tuned
+    except pd.core.computation.ops.UndefinedVariableError:
+        bestCells = db
+
     db['recordingSiteName'] = ''  # prefill will empty strings so whole column is strings (no NaNs)
     
     for dbIndex, dbRow in bestCells.iterrows():
@@ -101,7 +105,12 @@ def cell_locations(db):
                 thisCoordID = rspAnnotationVolumeRotated[int(siteCoords[0]), int(siteCoords[1]), atlasZ]
                 structDict = rsp.structure_tree.get_structures_by_id([thisCoordID])
                 print("This is {}".format(str(structDict[0]['name'])))
-                db.at[dbIndex, 'recordingSiteName'] = structDict[0]['name']
+                db.at[dbIndex, 'recordingSiteName'] = str(structDict[0]['name'])
+
+                # Saving the coordinates in the dataframe
+                db.at[dbIndex, 'x-coord'] = siteCoords[0]
+                db.at[dbIndex, 'y-coord'] = siteCoords[1]
+                db.at[dbIndex, 'z-coord'] = atlasZ
                 
             else:
                 print(subject, brainArea, shank, recordingTrack)
