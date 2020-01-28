@@ -27,9 +27,9 @@ Power: Value on laser dial, value in output level
 # Probe in at: 11:23
 
 # NO TUNING CURVE ONLY TUNING TEST
-exp0.add_site(2807, tetrodes=[1,2,6])
-exp0.add_session('11-52-44', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('11-54-29', 'a', 'tuningTest', 'am_tuning_curve')
+# exp0.add_site(2807, tetrodes=[1,2,6])
+# exp0.add_session('11-52-44', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_session('11-54-29', 'a', 'tuningTest', 'am_tuning_curve')
 
 exp0.add_site(2901, tetrodes=[1,2,4])
 exp0.add_session('12-13-24', None, 'noiseburst', 'am_tuning_curve')
@@ -77,27 +77,27 @@ Power: Value on laser dial, value in output level
 # Animal in rig at: 11:22
 # Probe in at: 11:30
 
-exp1.add_site(3000, tetrodes=[8])
-exp1.add_session('12-12-49', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('12-14-08', 'a', 'tuningTest', 'am_tuning_curve')
+# exp1.add_site(3000, tetrodes=[8])
+# exp1.add_session('12-12-49', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('12-14-08', 'a', 'tuningTest', 'am_tuning_curve')
 
-exp1.add_site(3100, tetrodes=[8])
-exp1.add_session('12-39-47', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('12-41-54', None, 'laserpulse', 'am_tuning_curve')
-exp1.add_session('12-43-29', 'b', 'tuningTest', 'am_tuning_curve')
+# exp1.add_site(3100, tetrodes=[8])
+# exp1.add_session('12-39-47', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('12-41-54', None, 'laserpulse', 'am_tuning_curve')
+# exp1.add_session('12-43-29', 'b', 'tuningTest', 'am_tuning_curve')
 
-exp1.add_site(3300, tetrodes=[7])
-exp1.add_session('13-21-42', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('13-23-15', None, 'laserpulse', 'am_tuning_curve')
-exp1.add_session('13-25-41', 'c', 'tuningTest', 'am_tuning_curve')
+# exp1.add_site(3300, tetrodes=[7])
+# exp1.add_session('13-21-42', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('13-23-15', None, 'laserpulse', 'am_tuning_curve')
+# exp1.add_session('13-25-41', 'c', 'tuningTest', 'am_tuning_curve')
 
-exp1.add_site(3400, tetrodes=[2,4,6,8])
-exp1.add_session('13-38-32', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('13-41-27', 'd', 'tuningTest', 'am_tuning_curve')
+# exp1.add_site(3400, tetrodes=[2,4,6,8])
+# exp1.add_session('13-38-32', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('13-41-27', 'd', 'tuningTest', 'am_tuning_curve')
 
-exp1.add_site(3500, tetrodes=[3,4,6])
-exp1.add_session('13-58-09', None, 'noiseburst', 'am_tuning_curve')
-exp1.add_session('14-00-00', 'e', 'tuningTest', 'am_tuning_curve')
+# exp1.add_site(3500, tetrodes=[3,4,6])
+# exp1.add_session('13-58-09', None, 'noiseburst', 'am_tuning_curve')
+# exp1.add_session('14-00-00', 'e', 'tuningTest', 'am_tuning_curve')
 
 exp1.add_site(3600, tetrodes=[4,6])
 exp1.add_session('14-11-37', None, 'noiseburst', 'am_tuning_curve')
@@ -109,44 +109,44 @@ exp1.add_session('14-33-45', 'h', 'tuningCurve', 'am_tuning_curve')
 
 exp1.maxDepth = 3600
 
-exp2 = celldatabase.Experiment(subject, '2020-01-27', 'left_AudStr',
-info=['posteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
-experiments.append(exp2)
-
-#50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 220 AM
-#Used right speaker; laser (445 nm) set to 2.0 mW; Probe D65D; Rig 2
-
-"""
-Laser Calibration
-Power: Value on laser dial, value in output level
-0.5: 1.60, 18.9
-1.0: 2.25, 25.7
-1.5: 2.92, 33.3
-2.0: 3.50, 39.0
-2.5: 4.10, 43.2
-3.0: 4.95, 54.8
-3.5: 5.80, 64.1
-4.0: 6.45, 71.2
-"""
-
-# Animal in rig at: 11:02
-# Probe in at: 11:24
-
-# Mouse started bleeding after probe was inside. Signlas are wonky
-# Moving from 2900 to 3100 seems to have helped stabilize the signals
-exp2.add_site(3100, tetrodes=[6])
-exp2.add_session('11-57-49', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('11-59-00', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('12-00-09', None, 'lasertrain', 'am_tuning_curve')
-exp2.add_session('12-01-45', 'a', 'tuningTest', 'am_tuning_curve')
-
-exp2.add_site(3400, tetrodes=[3,4])
-exp2.add_session('12-43-41', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('12-45-03', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('12-46-47', None, 'lasertrain', 'am_tuning_curve')
-exp2.add_session('12-48-56', 'b', 'tuningTest', 'am_tuning_curve')
-
-exp2.maxDepth = 3400
+# exp2 = celldatabase.Experiment(subject, '2020-01-27', 'left_AudStr',
+# info=['posteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+# experiments.append(exp2)
+#
+# #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 220 AM
+# #Used right speaker; laser (445 nm) set to 2.0 mW; Probe D65D; Rig 2
+#
+# """
+# Laser Calibration
+# Power: Value on laser dial, value in output level
+# 0.5: 1.60, 18.9
+# 1.0: 2.25, 25.7
+# 1.5: 2.92, 33.3
+# 2.0: 3.50, 39.0
+# 2.5: 4.10, 43.2
+# 3.0: 4.95, 54.8
+# 3.5: 5.80, 64.1
+# 4.0: 6.45, 71.2
+# """
+#
+# # Animal in rig at: 11:02
+# # Probe in at: 11:24
+#
+# # Mouse started bleeding after probe was inside. Signlas are wonky
+# # Moving from 2900 to 3100 seems to have helped stabilize the signals
+# # exp2.add_site(3100, tetrodes=[6])
+# # exp2.add_session('11-57-49', None, 'noiseburst', 'am_tuning_curve')
+# # exp2.add_session('11-59-00', None, 'laserpulse', 'am_tuning_curve')
+# # exp2.add_session('12-00-09', None, 'lasertrain', 'am_tuning_curve')
+# # exp2.add_session('12-01-45', 'a', 'tuningTest', 'am_tuning_curve')
+#
+# # exp2.add_site(3400, tetrodes=[3,4])
+# # exp2.add_session('12-43-41', None, 'noiseburst', 'am_tuning_curve')
+# # exp2.add_session('12-45-03', None, 'laserpulse', 'am_tuning_curve')
+# # exp2.add_session('12-46-47', None, 'lasertrain', 'am_tuning_curve')
+# # exp2.add_session('12-48-56', 'b', 'tuningTest', 'am_tuning_curve')
+#
+# exp2.maxDepth = 3400
 
 exp3 = celldatabase.Experiment(subject, '2020-01-28', 'left_AudStr',
 info=['anteriorDiD', 'TT1left', 'soundRight', 'A4x2-tet'])
@@ -172,11 +172,11 @@ Power: Value on laser dial, value in output level
 # Probe in at: 10:37
 # Went to 2900
 
-exp3.add_site(3000, tetrodes=[2,4])
-exp3.add_session('11-01-29', None, 'noiseburst', 'am_tuning_curve')
-exp3.add_session('11-02-43', None, 'laserpulse', 'am_tuning_curve')
-exp3.add_session('11-07-09', None, 'lasertrain', 'am_tuning_curve')
-exp3.add_session('11-09-46', 'a', 'tuningTest', 'am_tuning_curve')
+# exp3.add_site(3000, tetrodes=[2,4])
+# exp3.add_session('11-01-29', None, 'noiseburst', 'am_tuning_curve')
+# exp3.add_session('11-02-43', None, 'laserpulse', 'am_tuning_curve')
+# exp3.add_session('11-07-09', None, 'lasertrain', 'am_tuning_curve')
+# exp3.add_session('11-09-46', 'a', 'tuningTest', 'am_tuning_curve')
 
 exp3.add_site(3500, tetrodes=[2,4])
 exp3.add_session('12-18-54', None, 'noiseburst', 'am_tuning_curve')
