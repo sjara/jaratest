@@ -254,7 +254,7 @@ exp4.add_session('13-31-59', None, 'noiseburst', 'am_tuning_curve')
 exp4.add_session('13-33-08', None, 'laserpulse', 'am_tuning_curve')
 exp4.add_session('13-34-17', None, 'lasertrain', 'am_tuning_curve')
 exp4.add_session('13-35-55', 'h', 'tuningTest', 'am_tuning_curve')
-exp4.add_session('13-39-51', 'i', 'am', 'am_tuning_curve')
+# exp4.add_session('13-39-51', 'i', 'am', 'am_tuning_curve')
 
 exp4.add_site(3200, tetrodes=[1,2,4,7,8])
 exp4.add_session('13-58-01', None, 'noiseburst', 'am_tuning_curve')

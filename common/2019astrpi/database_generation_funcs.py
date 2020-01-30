@@ -561,7 +561,7 @@ def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTria
     return firstTrialEachCond
 
 # Below defintion applies to if spikes are signficantly synced to a rate as it is comparing the periods of spiking as it cycles through the modulation
-def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTime, amCurrentFreq, amUniqFreq):
+def calculate_am_significance_synchronization(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTime, amCurrentFreq, amUniqFreq):
     """
 
     Args:

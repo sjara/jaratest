@@ -52,11 +52,14 @@ def append_base_stats(cellDB, filename=''):
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
             nspkBase, nspkResp = funcs.calculate_firing_rate(noiseEphysData, baseRange, session)
             respSpikeMean = nspkResp.ravel().mean()
+
+            # Significance calculations for the noiseburst
             try:
                 zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase)
-            except ValueError:  # All numbers identical will cause mann-whitney to fail
+            except ValueError:  # All numbers identical will cause mann-whitney to fail, therefore p-value should be 1 as there is no difference
                 zStats, pVals = [0, 1]
 
+            # Adding noiseburst values to the dataframe
             firstCells.loc[
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
             firstCells.loc[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
@@ -71,11 +74,14 @@ def append_base_stats(cellDB, filename=''):
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
             nspkBase, nspkResp = funcs.calculate_firing_rate(pulseEphysData, baseRange, session)
             respSpikeMean = nspkResp.ravel().mean()
+
+            # Significance calculations for the laserpulse
             try:
                 zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase)
             except ValueError:  # All numbers identical will cause mann-whitney to fail
                 zStats, pVals = [0, 1]
 
+            # Adding laserpulse calculations to the dataframe
             firstCells.loc[
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
             firstCells.loc[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
@@ -89,6 +95,7 @@ def append_base_stats(cellDB, filename=''):
         else:
             baseRange = [-0.1, 0] if session != 'am' else [-0.5, -0.1]
 
+            # Extracting information from ephys and behavior data to do calculations later with
             currentFreq = tuningBehavData['currentFreq']
             currentIntensity = tuningBehavData['currentIntensity']
             # trialsEachType = behavioranalysis.find_trials_each_type(currentFreq, np.unique(currentFreq))
@@ -102,6 +109,8 @@ def append_base_stats(cellDB, filename=''):
             spikeTimes = tuningEphysData['spikeTimes']
             eventOnsetTimes = tuningEphysData['events']['soundDetectorOn']
             eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
+
+            # Checking to see if the ephys data has one more trial than the behavior data and removing the last session if it does
             if len(eventOnsetTimes) == (len(currentFreq) + 1):
                 eventOnsetTimes = eventOnsetTimes[0:-1]
                 print("Correcting ephys data to be same length as behavior data")
@@ -112,21 +121,16 @@ def append_base_stats(cellDB, filename=''):
             else:
                 print("Something is wrong with the length of these data")
                 toCalculate = False
+                # Instead of generating an error I made it just not calculate statistics. I should posisbly have it log all mice
+                # and sites where it failed to calculate so someone can review later
 
-            # TODO: Identify if this fix will need to be used in multiple functions.
-            # if len(eventOnsetTimes) == (len(currentFreq) + 1):
-            #     eventOnsetTimes = eventOnsetTimes[:-1]
+        # -------------------- Start of calculations for the tuningCurve data -------------------------
+            # The latency of the cell from the onset of the stim
             if toCalculate:
                 respLatency = funcs.calculate_latency(eventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
                                                       uniqueIntensity, spikeTimes, indRow)
             else:
                 respLatency = np.nan
-            # elif len(eventOnsetTimes) < len(currentFreq):
-            #     print("Wrong number of events, probably caused by the original sound detector problems")
-            #     respLatency = np.nan
-            # else:
-            #     print("Something else is wrong with the number of events")
-            #     respLatency = np.nan
 
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])
@@ -134,11 +138,12 @@ def append_base_stats(cellDB, filename=''):
                 popts = []
                 pcovs = []
                 ind10AboveButNone = []
+                # ------------ start of frequency specific calculations -------------
                 for indFreq, freq in enumerate(uniqFreq):
                     selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity)).tolist()
 
                     # FIXME: This function does not need to take the whole ephys
-                    # data as an arguement. Needed data is already calculated outside
+                    # data as an arguement. Needed data is already calculated outside so I just need to update the args of the functions
                     nspkBase, nspkResp = funcs.calculate_firing_rate(tuningEphysData, baseRange, session,
                                                                      selectinds=selectinds)
 
@@ -147,11 +152,13 @@ def append_base_stats(cellDB, filename=''):
                     respSpikeMean[indInten, indFreq] = np.mean(nspkResp)
                     allIntenBase = np.concatenate([allIntenBase, nspkBase.ravel()])
 
+                    # ------------------- Significance and fit calculations for tuning ----------------
                     Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
 
                     Rsquareds[indInten, indFreq] = Rsquared
                     popts.append(popt)
 
+                # ------------------------------ Intensity based calculations -------------------------
                 # The reason why we are calculating bw10 here, it is to save the calculation time
                 responseThreshold = funcs.calculate_response_threshold(0.2, allIntenBase, respSpikeMean)
                 # [6] Find Frequency Response Area (FRA) unit: fra boolean set, yes or no, but it's originally a pair
@@ -202,7 +209,7 @@ def append_base_stats(cellDB, filename=''):
                         fitMidpoint = None
                         bw10 = None
 
-                    # ADD PARAMS TO DATAFRAME [9] store data in DB: intensity threshold, rsquaredFit, bw10, cf, fra
+                    # Adding tuningCurve calculations to the dataframe to be saved later
                     firstCells.at[indRow, 'thresholdFRA'] = intensityThreshold
                     firstCells.at[indRow, 'cf'] = cf
                     firstCells.at[indRow, 'lowerFreq'] = lowerFreq
@@ -225,7 +232,7 @@ def append_base_stats(cellDB, filename=''):
         else:
             significantFreqsArray = np.array([])
 
-            # General variables for am calculations/plotting
+            # General variables for am calculations/plotting from ephys and behavior data
             amSpikeTimes = amEphysData['spikeTimes']
             amOnsetTimes = amEphysData['events']['soundDetectorOn']
             amCurrentFreq = amBehavData['currentFreq']
@@ -246,16 +253,19 @@ def append_base_stats(cellDB, filename=''):
                 amOnsetTime = [0, 0.1]
                 amResponseTime = [0, 0.5]
 
+                # Idea: Use Nick's spiketimes function that yields per frequency here to get the spiketimes since those values may be used multiple
+                # times and store values in an empty list generated before the loop
+                # Alternatively: Just do that in each function if I only end up using it for the significance calculations and return the list of values instead of single values
                 allFreqPVal, allFreqZScore, allFreqVectorStrength, allFreqRal = \
                     funcs.calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTime, amCurrentFreq, amUniqFreq)
 
                 # I am taking the lowest p-value from all the frequencies to store in the dataframe. Possibly need to add
-                # way of identifying what frequency is being used
-
+                # way of identifying what frequency is being selected
                 amPValue = np.min(allFreqPVal)
                 firstCells.at[indRow, '{}_pVale'] = amPValue
 
                 # TODO: Finish am data that we want to add to the database below
+                # This p-value used below by Nick was originally testing for synchronization, not just a response
                 # if pVal > 0.05:  # No response
                 #     print("No significant AM response, no synchronization will be calculated")
                 # elif pVal < 0.05:
@@ -338,7 +348,6 @@ def calculate_cell_locations(db, filename=''):  # to be filled after complete co
     pass
 
 
-#TODO: Name for database that isn't just chained together mouse names
 if __name__ == "__main__":
     # Cluster your data
     CLUSTER_DATA = 0  # We don't generally run this code. We kept this for documentation
@@ -346,11 +355,14 @@ if __name__ == "__main__":
     # Choosing which mice to do calculations for
     # Check for script arguements to decide what calculations are done
     dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
-    if sys.argv[1:] is not None:
+    if sys.argv[1:] != []:
         stat_calc = 0
         hist_calc = 0
         arguements = sys.argv[1:]
-        d1mice = [arguements[0]]
+        if arguements[0] == 'all':
+            d1mice = studyparams.ASTR_D1_CHR2_MICE
+        else:
+            d1mice = [arguements[0]]
         print('d1mice = {}'.format(d1mice))
         dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
         # Run behavior can either be 'all', 'hist', or 'stats'

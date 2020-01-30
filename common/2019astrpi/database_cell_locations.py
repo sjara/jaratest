@@ -22,6 +22,7 @@ def cell_locations(db):
     
     # lapPath = os.path.join(settings.ATLAS_PATH, 'AllenCCF_25/coronal_laplacian_25.nrrd')
     # lapPath = '/mnt/jarahubdata/tmp/coronal_laplacian_25.nrrd'
+    # TODO Edit the lapPath to be something more descriptive of what it actually is. Also should not use laplacian for non-cortical areas
     lapPath = settings.LAP_PATH
     lapData = nrrd.read(lapPath)
     lap = lapData[0]
@@ -48,6 +49,7 @@ def cell_locations(db):
         except IOError:
             print("No such tracks file: {}".format(fileNameInfohist))
         else:
+            #TODO Replace this with a more generic way of fomdomg the brain areas for histology saving
             brainArea = dbRow['brainArea']
             if brainArea == 'left_AudStr':
                 brainArea = 'LeftAstr'
@@ -105,7 +107,7 @@ def cell_locations(db):
                 thisCoordID = rspAnnotationVolumeRotated[int(siteCoords[0]), int(siteCoords[1]), atlasZ]
                 structDict = rsp.structure_tree.get_structures_by_id([thisCoordID])
                 print("This is {}".format(str(structDict[0]['name'])))
-                db.at[dbIndex, 'recordingSiteName'] = str(structDict[0]['name'])
+                db.at[dbIndex, 'recordingSiteName'] = structDict[0]['name']
 
                 # Saving the coordinates in the dataframe
                 db.at[dbIndex, 'x-coord'] = siteCoords[0]
