@@ -561,7 +561,7 @@ def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTria
     return firstTrialEachCond
 
 # Below defintion applies to if spikes are signficantly synced to a rate as it is comparing the periods of spiking as it cycles through the modulation
-def calculate_am_significance_synchronization(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTime, amCurrentFreq, amUniqFreq):
+def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amSyncTrialIndexForEachSpike, amSyncTime, amCurrentFreq, amUniqFreq):
     """
 
     Args:
@@ -575,26 +575,18 @@ def calculate_am_significance_synchronization(amSpikeTimes, amOnsetTimes, amBase
         amUniqFreq (np.array): Contains as many values as there were unique am rates presented over the entire session.
 
     Returns:
-        allFreqPVal (np.array): Contains one p-value for each unique am rate presented over the entire session
-        allFreqZScore (np.array): Contains one z-value for each unique am rate presented over the entire session
+        allFreqSyncPVal (np.array): Contains one p-value for each unique am rate presented over the entire session
+        allFreqSyncZScore (np.array): Contains one z-value for each unique am rate presented over the entire session
         allFreqVectorStrength (np.array):
         allFreqRal (np.array):
 
     """
     numFreq = len(amUniqFreq)
 
-    allFreqPVal = np.empty(numFreq)
+    allFreqSyncPVal = np.empty(numFreq)
     allFreqVectorStrength = np.empty(numFreq)
     allFreqRal = np.empty(numFreq)
-    allFreqZScore = np.empty(numFreq)
-
-    amTimeRange = [amBaseTime[0], amOnsetTime[1]]
-
-    (amSyncSpikeTimesFromEventOnset,
-     amSyncTrialIndexForEachSpike,
-     amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
-                                                                         amOnsetTimes,
-                                                                         amTimeRange)
+    allFreqSyncZScore = np.empty(numFreq)
 
     for indFreq, (freq, spiketimes, trialInds) in enumerate(
             spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
@@ -611,13 +603,13 @@ def calculate_am_significance_synchronization(amSpikeTimes, amOnsetTimes, amBase
 
         allFreqVectorStrength[indFreq] = strength  # Frequency vector strength
         allFreqRal[indFreq] = ral  # Unsure what this is
-        allFreqPVal[indFreq] = pVal  # p-value
-        allFreqZScore[indFreq]= zVal
+        allFreqSyncPVal[indFreq] = pVal  # p-value
+        allFreqSyncZScore[indFreq]= zVal
 
-    return allFreqPVal, allFreqZScore, allFreqVectorStrength, allFreqRal
+    return allFreqSyncPVal, allFreqSyncZScore, allFreqVectorStrength, allFreqRal
 
 # To calculate the p-value for baseline vs onset response for each individual frequency
-def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTime, amCurrentFreq, amUniqFreq):
+def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amResponseTime, amCurrentFreq, amUniqFreq):
     """
 
     Args:
@@ -625,7 +617,7 @@ def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTim
         amOnsetTimes (np.array): Contains as many values as there were trials with each value being the tme a
         trial started.
         amBaseTime (list): Contains two values that represent the time range for the base firing rate
-        amOnsetTime (list): Contains two values that represent the time range for the onset firing rate
+        amResponseTime (list): Contains two values that represent the time range for the onset firing rate
         amCurrentFreq (np.array): Contains as many values as there were trials with each value being the am rate
         for a specific trial. Obtained from Behavior Data
         amUniqFreq (np.array): Contains as many values as there were unique am rates presented over the entire session.
@@ -640,34 +632,28 @@ def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTim
     numFreq = len(amUniqFreq)
 
     allFreqPVal = np.empty(numFreq)
-    allFreqVectorStrength = np.empty(numFreq)
-    allFreqRal = np.empty(numFreq)
     allFreqZScore = np.empty(numFreq)
 
-    amTimeRange = [amBaseTime[0], amOnsetTime[1]]
+    amTimeRange = [amBaseTime[0], amResponseTime[1]]
 
     (amSyncSpikeTimesFromEventOnset,
      amSyncTrialIndexForEachSpike,
      amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
                                                                          amOnsetTimes,
                                                                          amTimeRange)
-
+    # Generate spiketimes for each frequency to do comparisons with
     for indFreq, (freq, spiketimes, trialInds) in enumerate(
             spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
                                       amSyncTrialIndexForEachSpike,
                                       amCurrentFreq)):
-        strength, phase = signal.vectorstrength(spiketimes, 1.0 / freq)
 
-        radsPerSec = freq * 2 * np.pi
-        spikeRads = (spiketimes * radsPerSec) % (2 * np.pi)
-        ral = np.array([2 * len(spiketimes) * (strength ** 2)])
+        nBaseSpk = spikesanalysis.spiketimes_to_spikecounts(spiketimes, trialInds, amBaseTime)
+        nRespSpk = spikesanalysis.spiketimes_to_spikecounts(spiketimes, trialInds, amResponseTime)
 
-        # NOTE: I checked the math in this function using the text referenced (Mike W. has a copy if needed) - Nick
-        zVal, pVal = rayleigh_test(spikeRads)
+        # Comparing each frequencies baseline and response range spike counts
+        zStats, pVal = stats.mannwhitneyu(nRespSpk, nBaseSpk)
+        allFreqPVal[indFreq] = pVal
+        allFreqZScore[indFreq] = zStats
 
-        allFreqVectorStrength[indFreq] = strength  # Frequency vector strength
-        allFreqRal[indFreq] = ral  # Unsure what this is
-        allFreqPVal[indFreq] = pVal  # p-value
-        allFreqZScore[indFreq]= zVal
+    return allFreqPVal, allFreqZScore
 
-    return allFreqPVal, allFreqZScore, allFreqVectorStrength, allFreqRal

@@ -253,79 +253,57 @@ def append_base_stats(cellDB, filename=''):
                 amOnsetTime = [0, 0.1]
                 amResponseTime = [0, 0.5]
 
-                # Idea: Use Nick's spiketimes function that yields per frequency here to get the spiketimes since those values may be used multiple
-                # times and store values in an empty list generated before the loop
-                # Alternatively: Just do that in each function if I only end up using it for the significance calculations and return the list of values instead of single values
-                allFreqPVal, allFreqZScore, allFreqVectorStrength, allFreqRal = \
-                    funcs.calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amOnsetTime, amCurrentFreq, amUniqFreq)
+                allFreqPVal, allFreqZScore = \
+                    funcs.calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amResponseTime, amCurrentFreq, amUniqFreq)
+
 
                 # I am taking the lowest p-value from all the frequencies to store in the dataframe. Possibly need to add
-                # way of identifying what frequency is being selected
+                # way of identifying what frequency is being selected.
+                # TODO: Should do some kind of post-hoc/correction on these such as
+                # taking the p-value and dividing by the total number of comparisons done and using that as a threshold
                 amPValue = np.min(allFreqPVal)
-                firstCells.at[indRow, '{}_pVale'] = amPValue
+                firstCells.at[indRow, 'am_response_pVal'] = amPValue
 
-                # TODO: Finish am data that we want to add to the database below
-                # This p-value used below by Nick was originally testing for synchronization, not just a response
-                # if pVal > 0.05:  # No response
-                #     print("No significant AM response, no synchronization will be calculated")
-                # elif pVal < 0.05:
-                #     amTimeRangeSync = [0.1, 0.5]  # Use this to cut out onset responses
-                #     (amSyncSpikeTimesFromEventOnset,
-                #      amSyncTrialIndexForEachSpike,
-                #      amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
-                #                                                                          amOnsetTime,
-                #                                                                          amTimeRangeSync)
-                #
-                #     for indFreq, (freq, spiketimes, trialInds) in enumerate(
-                #             spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
-                #                                       amSyncTrialIndexForEachSpike,
-                #                                       amCurrentFreq)):
-                #         strength, phase = signal.vectorstrength(spiketimes, 1.0 / freq)
-                #         # vsArr = np.concatenate((vsArr, np.array([strength])))
-                #
-                #         # TODO: Check the math here
-                #         radsPerSec = freq * 2 * np.pi
-                #         spikeRads = (spiketimes * radsPerSec) % (2 * np.pi)
-                #         ral = np.array([2 * len(spiketimes) * (strength ** 2)])
-                #
-                #         # NOTE: I checked the math in this function using the text referenced (Mike W. has a copy if needed)
-                #         zVal, pVal = rayleigh_test(spikeRads)
-                #
-                #         allFreqVS[indFreq] = strength  # Frequency vector strength
-                #         allFreqRal[indFreq] = ral  # Unsure what this is
-                #         allFreqPval[indFreq] = pVal  # p-value
-                #
-                #         # # pValArr = np.concatenate((pValArr, np.array([pVal])))
-                #         # allFreqPval.append(pVal)
-                #
-                #         # # ralArr = np.concatenate((ralArr, np.array([ral])))
-                #         # allFreqRal.append(ral)
-                #
-                #     if any(allFreqPval < 0.05):
-                #         sigPvals = np.array(allFreqPval) < 0.05
-                #         highestSyncInd = index_all_true_before(sigPvals)
-                #         # dataframe.loc[indRow, 'highestSync'] = amUniqFreq[allFreqPval < 0.05].max()
-                #         # dataframe.loc[indRow, 'highestUSync'] = amUniqFreq[highestSyncInd]
-                #         # print possibleFreq[pValThisCell<0.05].max()
-                #         highestSync = amUniqFreq[allFreqPval < 0.05].max()
-                #         highestUnSync = amUniqFreq[highestSyncInd]
-                #     else:
-                #         # dataframe.loc[indRow, 'highestSync'] = 0
-                #         # print 'ZERO'
-                #         highestSync = 0
-                #     correctedPval = 0.05 / len(amUniqFreq)
-                #     if any(allFreqPval < correctedPval):
-                #         # dataframe.loc[indRow, 'highestSyncCorrected'] = possibleFreq[allFreqPval < correctedPval].max()
-                #         highestSyncCorrected = amUniqFreq[allFreqPval < correctedPval].max()
-                #         freqsBelowThresh = allFreqPval < correctedPval
-                #         freqsBelowThresh = freqsBelowThresh.astype(int)
-                #         if len(significantFreqsArray) == 0:
-                #             significantFreqsArray = freqsBelowThresh
-                #         else:
-                #             # significantFreqsArray = np.concatenate([[significantFreqsArray], [freqsBelowThresh]])
-                #             significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
-                #     else:
-                #         firstCells.loc[indRow, 'highestSyncCorrected'] = 0
+                # TODO: test calculations below
+
+                if amPValue > 0.05:  # No response
+                    print("No significant AM response, no synchronization will be calculated")
+                elif amPValue < 0.05:
+                    amTimeRangeSync = [0.1, 0.5]  # Use this to cut out onset responses
+                    (amSyncSpikeTimesFromEventOnset,
+                     amSyncTrialIndexForEachSpike,
+                     amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
+                                                                                         amOnsetTime,
+                                                                                         amTimeRangeSync)
+
+                    allFreqSyncPVal, allFreqSyncZScore, allFreqVectorStrength, allFreqRal = \
+                        funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amOnsetTime, amBaseTime, amOnsetTime)
+                    amSyncPValue = np.min(allFreqSyncPVal)
+                    firstCells.at[indRow, 'am_synchronization_pVal'] = amSyncPValue
+
+                    if any(allFreqSyncPVal < 0.05):
+                            sigPvals = np.array(allFreqSyncPVal) < 0.05
+                            highestSyncInd = funcs.index_all_true_before(sigPvals)
+                            firstCells.loc[indRow, 'highestSync'] = amUniqFreq[allFreqSyncPVal < 0.05].max()
+                            firstCells.loc[indRow, 'highestUSync'] = amUniqFreq[highestSyncInd]
+                            # print possibleFreq[pValThisCell<0.05].max()
+
+                    else:
+                        firstCells.loc[indRow, 'highestSync'] = 0
+
+                    correctedPval = 0.05 / len(amUniqFreq)  # TODO: this can go up with where the pvalues are calculated
+                    if any(allFreqSyncPVal < correctedPval):
+                        firstCells.loc[indRow, 'highestSyncCorrected'] = amUniqFreq[allFreqSyncPVal < correctedPval].max()
+                        highestSyncCorrected = amUniqFreq[allFreqSyncPVal < correctedPval].max()
+                        freqsBelowThresh = allFreqSyncPVal < correctedPval
+                        freqsBelowThresh = freqsBelowThresh.astype(int)
+                        if len(significantFreqsArray) == 0:
+                            significantFreqsArray = freqsBelowThresh
+                        else:
+                            # significantFreqsArray = np.concatenate([[significantFreqsArray], [freqsBelowThresh]])
+                            significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
+                    else:
+                        firstCells.loc[indRow, 'highestSyncCorrected'] = 0
 
     firstCells['cfOnsetivityIndex'] = \
         (firstCells['onsetRate'] - firstCells['sustainedRate']) / \
@@ -361,10 +339,11 @@ if __name__ == "__main__":
         arguements = sys.argv[1:]
         if arguements[0] == 'all':
             d1mice = studyparams.ASTR_D1_CHR2_MICE
+            dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
         else:
             d1mice = [arguements[0]]
+            dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
         print('d1mice = {}'.format(d1mice))
-        dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
         # Run behavior can either be 'all', 'hist', or 'stats'
         runBehavior = arguements[1]
         print('run behavior is {}'.format(runBehavior))

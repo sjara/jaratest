@@ -412,18 +412,16 @@ for message in messages:
 print("\n")
 
 #FIXME Delete the variable reassignment below this
-figFilename = figFilename + 'py2_branch_in_py27'
+figFilename = figFilename + FIGNAME
 if SAVE_FIGURE:
     if os.path.isdir(figparams.FIGURE_OUTPUT_DIR):
         pass
         extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
         print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
     elif not os.path.isdir(os.path.join(figparams.FIGURE_OUTPUT_DIR)):
-        answer = inputFunc(
-                            "Save folder is not present. Would you like to make the desired directory now? (y/n) ")
+        answer = inputFunc("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
         if answer in ['y', 'Y', 'Yes', 'YES']:
-            os.mkdir(
-                os.path.join(figparams.FIGURE_OUTPUT_DIR))
+            os.mkdir(os.path.join(figparams.FIGURE_OUTPUT_DIR))
             extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
             print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
 

@@ -49,7 +49,7 @@ exampleSpikeData = {}
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '_'.join(d1mice) + '.h5'
 # pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('python3BranchIn3'))
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format("['d1pi026', 'd1pi032', 'd1pi033', 'd1pi036', 'd1pi039', 'd1pi040', 'd1pi041', 'd1pi042', 'd1pi043', 'd1pi044']"))
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
