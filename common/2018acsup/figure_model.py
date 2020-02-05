@@ -76,9 +76,12 @@ SOMlight = matplotlib.colors.colorConverter.to_rgba(SOMcolor, alpha=0.5)
 
 # -- Simulate model --
 nCells = 101
-wParams = {'ampPV':-25, 'stdPV':10,
-           'ampSOM':-25, 'stdSOM':20,
-           'ampThal':100, 'stdThal':5}
+
+oct_range = 6
+
+wParams = {'ampPV':-25, 'stdPV': 0.8 * (nCells-1)/oct_range,
+           'ampSOM':-25, 'stdSOM':1.6 * (nCells-1)/oct_range,
+           'ampThal':100, 'stdThal':0.4 * (nCells-1)/oct_range}
 '''
 wParams = {'ampPV':-20, 'stdPV':10,
            'ampSOM':-20, 'stdSOM':30,
@@ -111,6 +114,7 @@ lineWidth = 3
 #xLims = [16,100]/stdSOM
 xLims = [0.7,3.4]
 #rangeToPlot = [10,100]
+plt.hold(True)
 axNoPV = plt.subplot(gs[1, 0])
 axNoPV.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
                 fontsize=fontSizePanel, fontweight='bold')
@@ -178,7 +182,7 @@ axChange.annotate('E', xy=(labelPosX[2],labelPosY[1]), xycoords='figure fraction
 l1, = plt.plot(changeAtPeakVec[0,:],changeAtWNVec[0,:],'s', mec='none', mfc=PVcolor, ms=4, zorder=10)
 l2, = plt.plot(changeAtPeakVec[1,:],changeAtWNVec[1,:],'o', mec=SOMcolor, mfc='none', ms=3.2, markeredgewidth=1.2)
 plt.legend([l1,l2], cellLabels, loc='lower right', fontsize=fontSizeLegend, numpoints=1, handlelength=0.3, markerscale=1.7, frameon=False,)
-xLims = [-50,1500]
+xLims = [-50,1700]
 #plt.plot(xLims,xLims,'--',color='0.5')
 plt.plot(xLims,xLims,'k--',zorder=11)
 plt.xlabel('Change in response to \npreferred bandwidth', fontsize=fontSizeLabels)
@@ -192,7 +196,7 @@ plt.xlim(xLims)
 plt.ylim(xLims)
 extraplots.boxoff(axChange)
 
-#plt.show()
+plt.show()
 
 
 if SAVE_FIGURE:

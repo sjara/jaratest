@@ -29,17 +29,26 @@ if RANDOMIZED:
     nSamples = 200
     #rfWidths = {'PV':5, 'SOM':5, 'Thal':5}
     rfWidths = None
-    ampPVvec = random_in_range(-1, -30, nSamples)
-    ampSOMvec = random_in_range(-1, -30, nSamples)
-    stdThalvec = random_in_range(3, 10, nSamples)
+#     ampPVvec = random_in_range(-1, -30, nSamples)
+#     ampSOMvec = random_in_range(-1, -30, nSamples)
+#     stdThalvec = random_in_range(2, 5, nSamples)
     suppIndexVec = np.empty((3,nSamples))     # 3:Control, PV, SOM
     changeAtPeakVec = np.empty((2,nSamples))  # 2:PV-Control, SOM-Control
     changeAtWNVec = np.empty((2,nSamples))    # 2:PV-Control, SOM-Control
+    
+    oct_range = 6
+
+    stdPVoct = 0.8 * (nCells-1)/oct_range
+    ampPVvec = random_in_range(-1, -30, nSamples)                                                
+    ampSOMvec = random_in_range(-1, -30, nSamples)                                          
+    stdSOMvec = random_in_range(1, 2, nSamples)
+    stdThalvec = random_in_range(.2, 1, nSamples)
+
 
     for inds in range(nSamples):
-        wParams = {'ampPV':ampPVvec[inds], 'stdPV':10,
-                   'ampSOM':ampSOMvec[inds], 'stdSOM':20,
-                   'ampThal':100, 'stdThal':stdThalvec[inds]}
+        wParams = {'ampPV':ampPVvec[inds], 'stdPV':stdPVoct, #'stdPV':10,
+                   'ampSOM':ampSOMvec[inds], 'stdSOM':stdSOMvec[inds] * stdPVoct, #'stdSOM':20,      
+                   'ampThal':100, 'stdThal':stdThalvec[inds] * stdPVoct} #stdThalvec[inds]     
         net = suppmodel.Network(nCells, wParams, rfWidths)
         centerCellOutput,  bandwidths, condLabels = net.simulate_inactivation()
         suppIndex = suppmodel.suppression_index(centerCellOutput)
@@ -91,7 +100,7 @@ plt.ylim(xLims)
 plt.plot(xLims,xLims,'--',color='0.5')
 plt.xlabel('Suppression Index (control)')
 plt.ylabel('Suppression Index (inactivation)')
-plt.axis('square')
+#plt.axis('square')
 
 plt.subplot(2,2,2)
 avgSIchangePV = np.median(suppIndexVec[1]-suppIndexVec[0])
@@ -110,7 +119,7 @@ plt.ylim(xLims)
 plt.plot(xLims,xLims,'--',color='0.5')
 plt.xlabel('Change in response to preferred bandwidth')
 plt.ylabel('Change in response to WN')
-plt.axis('square')
+#plt.axis('square')
 
 plt.subplot(2,2,2)
 
