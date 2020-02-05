@@ -227,14 +227,15 @@ studyname = studyparams.STUDY_NAME
 outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_all_cells_in_db/')
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = 'direct_and_indirect_cells' + '.h5'
+# nameDB = 'direct_and_indirect_cells' + '.h5'
+nameDB = "{}.h5".format('saved_frames/python27BranchIn27')
 #nameDB = '_'.join(d1mice) + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 # celldb = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
-celldb = db.query(('subject=="d1pi039"'))
+# celldb = db.query(('subject=="d1pi039"'))
 # -------------------------------------------------------------------------------
-for indRow, dbRow in celldb.iterrows():
+for indRow, dbRow in db.iterrows():
     oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
 
     rast1 = []

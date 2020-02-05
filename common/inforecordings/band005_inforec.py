@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band005'
 experiments=[]
@@ -56,7 +55,7 @@ exp0.maxDepth = 1310
 
 # exp1 = celldatabase.Experiment(subject, '2016-09-20', 'left_AC',info=['middleDiI','TT1ant','sound_left'])
 # experiments.append(exp1)
-# 
+#
 # exp1.laserCalibration = {
 #     '0.5':0.65,
 #     '1.0':1.0,
@@ -66,10 +65,10 @@ exp0.maxDepth = 1310
 #     '3.0':2.7,
 #     '3.5':3.35
 # }
-# 
+#
 # exp2 = celldatabase.Experiment(subject, '2016-09-21', 'left_AC', info=['middleDiI','TT1ant','sound_left'])
 # experiments.append(exp2)
-# 
+#
 # exp2.laserCalibration = {
 #     '0.5':0.8,
 #     '1.0':1.4,
