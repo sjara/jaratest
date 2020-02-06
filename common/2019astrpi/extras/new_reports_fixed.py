@@ -27,6 +27,7 @@ studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
 figparams = importlib.import_module('jaratest.common.2019astrpi.figparams')
 
 # Currently there is an issue with the subplot specs function on our version of matlab, so this function cannot be used
+# UPDATE: This issue seems fixed?
 def plot_am_with_rate(subplotSpec, spikeTimes, indexLimitsEachTrial, currentFreq, uniqFreq,  color='k'):
     fig = plt.gcf()
 

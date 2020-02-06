@@ -224,18 +224,32 @@ fig = plt.gcf()
 fig.clf()
 
 studyname = studyparams.STUDY_NAME
-outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_all_cells_in_db/')
-
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-# nameDB = 'direct_and_indirect_cells' + '.h5'
-nameDB = "{}.h5".format('saved_frames/python27BranchIn27')
-#nameDB = '_'.join(d1mice) + '.h5'
+# nameDB = '{}.h5'.format("direct_and_indirect_cells")
+nameDB = "['d1pi042'].h5"
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
-# celldb = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
-# celldb = db.query(('subject=="d1pi039"'))
+
+# Checks to see if there are parameters passed with the script to only generate reports for specific cells. Otherwise does all
+if sys.argv[1:] != []:
+    arguements = sys.argv[1:]
+    if arguements[0] == 'tuning':
+        # celldb = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
+        celldb = db.query('tuning_pVal < 0.05')
+        print("Generating reports for possibly tuned cells")
+        outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_freq_tuned_cells_in_db/')
+
+    elif arguements[0] == 'am':
+        celldb = db.query("am_response_pVal < 0.05")
+        print("Generating reports for possible synced am cells")
+        outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_am_cells_in_db/')
+else:
+    celldb = db
+    print("Generating reports for all cells")
+    outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_all_cells_in_db/')
+
 # -------------------------------------------------------------------------------
-for indRow, dbRow in db.iterrows():
+for indRow, dbRow in celldb.iterrows():
     oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
 
     rast1 = []

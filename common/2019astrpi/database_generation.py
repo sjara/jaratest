@@ -8,6 +8,7 @@ import numpy as np
 import studyparams
 from scipy import stats
 from scipy import signal
+from jaratoolbox import behavioranalysis
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesorting
@@ -93,29 +94,29 @@ def append_base_stats(cellDB, filename=''):
         except IndexError:
             print('This cell does not contain a {} session'.format(session))
         else:
-            baseRange = [-0.1, 0] if session != 'am' else [-0.5, -0.1]
+            baseRange = [-0.1, 0]
 
             # Extracting information from ephys and behavior data to do calculations later with
             currentFreq = tuningBehavData['currentFreq']
             currentIntensity = tuningBehavData['currentIntensity']
-            # trialsEachType = behavioranalysis.find_trials_each_type(currentFreq, np.unique(currentFreq))
             uniqFreq = np.unique(currentFreq)
             uniqueIntensity = np.unique(currentIntensity)
+            tuningTrialsEachCond = behavioranalysis.find_trials_each_combination(currentFreq, uniqFreq, currentIntensity, uniqueIntensity)
 
             allIntenBase = np.array([])
             respSpikeMean = np.empty((len(uniqueIntensity), len(uniqFreq)))  # same as allIntenResp
             allIntenRespMedian = np.empty((len(uniqueIntensity), len(uniqFreq)))
             Rsquareds = np.empty((len(uniqueIntensity), len(uniqFreq)))
-            spikeTimes = tuningEphysData['spikeTimes']
-            eventOnsetTimes = tuningEphysData['events']['soundDetectorOn']
-            eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
+            tuningSpikeTimes = tuningEphysData['spikeTimes']
+            tuningEventOnsetTimes = tuningEphysData['events']['soundDetectorOn']
+            tuningEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(tuningEventOnsetTimes, minEventOnsetDiff=0.2)
 
             # Checking to see if the ephys data has one more trial than the behavior data and removing the last session if it does
-            if len(eventOnsetTimes) == (len(currentFreq) + 1):
-                eventOnsetTimes = eventOnsetTimes[0:-1]
+            if len(tuningEventOnsetTimes) == (len(currentFreq) + 1):
+                tuningEventOnsetTimes = tuningEventOnsetTimes[0:-1]
                 print("Correcting ephys data to be same length as behavior data")
                 toCalculate = True
-            elif len(eventOnsetTimes) == len(currentFreq):
+            elif len(tuningEventOnsetTimes) == len(currentFreq):
                 print("Data is already the same length")
                 toCalculate = True
             else:
@@ -127,10 +128,15 @@ def append_base_stats(cellDB, filename=''):
         # -------------------- Start of calculations for the tuningCurve data -------------------------
             # The latency of the cell from the onset of the stim
             if toCalculate:
-                respLatency = funcs.calculate_latency(eventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
-                                                      uniqueIntensity, spikeTimes, indRow)
+                tuningZStat, tuningPVal = \
+                    funcs.sound_response_any_stimulus(tuningEventOnsetTimes, tuningSpikeTimes, tuningTrialsEachCond[:, :, -1],
+                                                      timeRange=[0.0, 0.05], baseRange=baseRange)
+                respLatency = funcs.calculate_latency(tuningEventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
+                                                      uniqueIntensity, tuningSpikeTimes, indRow)
             else:
                 respLatency = np.nan
+                tuningPVal = np.nan
+                tuningZStat = np.nan
 
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])
@@ -177,12 +183,12 @@ def append_base_stats(cellDB, filename=''):
                     cf = uniqFreq[freqInd]
 
                     if toCalculate:
-                        monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(eventOnsetTimes, currentFreq,
+                        monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(tuningEventOnsetTimes, currentFreq,
                                                                                          currentIntensity,
-                                                                                         uniqueIntensity, spikeTimes, cf
+                                                                                         uniqueIntensity, tuningSpikeTimes, cf
                                                                                          )
-                        onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(eventOnsetTimes,
-                                                                                                      spikeTimes,
+                        onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(tuningEventOnsetTimes,
+                                                                                                      tuningSpikeTimes,
                                                                                                       currentFreq,
                                                                                                       currentIntensity,
                                                                                                       cf, respLatency)
@@ -222,6 +228,8 @@ def append_base_stats(cellDB, filename=''):
                     firstCells.at[indRow, 'onsetRate'] = onsetRate
                     firstCells.at[indRow, 'sustainedRate'] = sustainedRate
                     firstCells.at[indRow, 'baseRate'] = baseRate
+                    firstCells.at[indRow, 'tuning_pVal'] = tuningPVal
+                    firstCells.at[indRow, 'tuning_ZStat'] = tuningZStat
 
         # -------------------- am calculations ---------------------------
         session = 'am'
@@ -234,37 +242,36 @@ def append_base_stats(cellDB, filename=''):
 
             # General variables for am calculations/plotting from ephys and behavior data
             amSpikeTimes = amEphysData['spikeTimes']
-            amOnsetTimes = amEphysData['events']['soundDetectorOn']
+            amEventOnsetTimes = amEphysData['events']['soundDetectorOn']
             amCurrentFreq = amBehavData['currentFreq']
             amUniqFreq = np.unique(amCurrentFreq)
             amTimeRange = [-0.2, 0.7]
+            amTrialsEachCond = behavioranalysis.find_trials_each_type(amCurrentFreq, amUniqFreq)
 
-            if len(amCurrentFreq) != len(amOnsetTimes):
-                amOnsetTimes = amOnsetTimes[:-1]
-            if len(amCurrentFreq) != len(amOnsetTimes):
+            if len(amCurrentFreq) != len(amEventOnsetTimes):
+                amEventOnsetTimes = amEventOnsetTimes[:-1]
+            if len(amCurrentFreq) != len(amEventOnsetTimes):
                 print('Removing one does not align events and behavior. Skipping AM for cell')
             else:
                 (amSpikeTimesFromEventOnset, amTrialIndexForEachSpike,
                  amIndexLimitsEachTrial) = \
                     spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
-                                                          amOnsetTimes,
+                                                          amEventOnsetTimes,
                                                           amTimeRange)
                 amBaseTime = [-0.5, -0.1]
                 amOnsetTime = [0, 0.1]
                 amResponseTime = [0, 0.5]
 
-                allFreqPVal, allFreqZScore = \
-                    funcs.calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amResponseTime, amCurrentFreq, amUniqFreq)
-
-
-                # I am taking the lowest p-value from all the frequencies to store in the dataframe. Possibly need to add
-                # way of identifying what frequency is being selected.
                 # TODO: Should do some kind of post-hoc/correction on these such as
                 # taking the p-value and dividing by the total number of comparisons done and using that as a threshold
-                amPValue = np.min(allFreqPVal)
+                zStat, amPValue = \
+                    funcs.sound_response_any_stimulus(amEventOnsetTimes, amSpikeTimes, amTrialsEachCond, amResponseTime, amBaseTime)
                 firstCells.at[indRow, 'am_response_pVal'] = amPValue
+                firstCells.at[indRow, 'am_response_ZStat'] = zStat
 
                 # TODO: test calculations below
+                # TODO: Should do some kind of post-hoc/correction on the alpha such as
+                # taking the alpha and dividing by the total number of comparisons done (11) and using that as a threshold
 
                 if amPValue > 0.05:  # No response
                     print("No significant AM response, no synchronization will be calculated")
@@ -273,13 +280,15 @@ def append_base_stats(cellDB, filename=''):
                     (amSyncSpikeTimesFromEventOnset,
                      amSyncTrialIndexForEachSpike,
                      amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
-                                                                                         amOnsetTime,
+                                                                                         amEventOnsetTimes,
                                                                                          amTimeRangeSync)
 
                     allFreqSyncPVal, allFreqSyncZScore, allFreqVectorStrength, allFreqRal = \
-                        funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amOnsetTime, amBaseTime, amOnsetTime)
+                        funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amSyncTrialIndexForEachSpike, amCurrentFreq, amUniqFreq)
                     amSyncPValue = np.min(allFreqSyncPVal)
+                    amSyncZStat = np.max(allFreqSyncZScore)
                     firstCells.at[indRow, 'am_synchronization_pVal'] = amSyncPValue
+                    firstCells.at[indRow, 'am_synchronization_ZStat'] = amSyncZStat
 
                     if any(allFreqSyncPVal < 0.05):
                             sigPvals = np.array(allFreqSyncPVal) < 0.05
