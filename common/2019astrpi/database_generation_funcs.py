@@ -561,7 +561,7 @@ def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTria
     return firstTrialEachCond
 
 # Below defintion applies to if spikes are signficantly synced to a rate as it is comparing the periods of spiking as it cycles through the modulation
-def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amSyncTrialIndexForEachSpike, amSyncTime, amCurrentFreq, amUniqFreq):
+def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amSyncTrialIndexForEachSpike, amCurrentFreq, amUniqFreq):
     """
 
     Args:
@@ -642,6 +642,9 @@ def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amResponse
                                                                          amOnsetTimes,
                                                                          amTimeRange)
     # Generate spiketimes for each frequency to do comparisons with
+    # FIXME: Two options: Add a condition where if spikeTimes and trialInds are empty to not try further calculations.
+    # Otherwise model like Anna's where we get the spiketimes first and then use behavioranalysis.find_trials_each_type to create a mask for each frequency.
+    # Her example is in database_gen_funcs sound_response_any_stim, Line 65
     for indFreq, (freq, spiketimes, trialInds) in enumerate(
             spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
                                       amSyncTrialIndexForEachSpike,
@@ -657,3 +660,46 @@ def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amResponse
 
     return allFreqPVal, allFreqZScore
 
+
+def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond, timeRange=[0.0, 1.0],
+                                baseRange=[-1.1, -0.1]):
+    '''Determines if there is any combination of parameters that yields a change in firing rate.
+
+    Inputs:
+        eventOnsetTimes: array of timestamps indicating sound onsets
+        spikeTimeStamps: array of timestamps indicating when spikes occured
+        trialsEachCond: (N trials x N conditions) array indicating which condition occured for each trial. Currently only checks over one parameter used during session.
+        timeRange: time range (relative to sound onset) to be used as response, list of [start time, end time]
+        baseRange: time range (relative to sound onset) to be used as baseline, list of [start time, end time]
+
+    Outputs:
+        maxzscore: maximum U test statistic found after comparing response for each condition to baseline
+        minpVal: minimum p value found after comparing response for each condition to baseline, NOT CORRECTED FOR MULTIPLE COMPARISONS
+    '''
+    fullTimeRange = [min(min(timeRange), min(baseRange)), max(max(timeRange), max(baseRange))]
+
+    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+        spikeTimeStamps,
+        eventOnsetTimes,
+        fullTimeRange)
+    stimSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial,
+                                                                 timeRange)
+    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial,
+                                                                 baseRange)
+
+    minpVal = np.inf
+    maxzscore = -np.inf
+    for cond in range(trialsEachCond.shape[1]):
+        trialsThisCond = trialsEachCond[:, cond]
+        if stimSpikeCountMat.shape[0] == len(trialsThisCond) + 1:
+            stimSpikeCountMat = stimSpikeCountMat[:-1, :]
+            baseSpikeCountMat = baseSpikeCountMat[:-1, :]
+        if any(trialsThisCond):
+            thisFirstStimCounts = stimSpikeCountMat[trialsThisCond].flatten()
+            thisStimBaseSpikeCouns = baseSpikeCountMat[trialsThisCond].flatten()
+            thiszscore, pValThisFirst = stats.ranksums(thisFirstStimCounts, thisStimBaseSpikeCouns)
+            if pValThisFirst < minpVal:
+                minpVal = pValThisFirst
+            if thiszscore > maxzscore:
+                maxzscore = thiszscore
+    return maxzscore, minpVal
