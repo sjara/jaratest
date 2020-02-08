@@ -20,7 +20,7 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
 figFilename = 'all_PV_SOM_high_band_responses' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'png' # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [6,10] # In inches
 
