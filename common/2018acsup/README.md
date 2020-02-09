@@ -137,7 +137,7 @@ These panels show the differences in firing rate at different time periods for P
 This figure is produced by running `figure_inactivation_controls.py`.
 
 ### Panel A,F
-These panels have a cartoon of a circuit consisting of an Excitatory, PV, and SOM cell, and showing the laser and recording electrode, created in Inkscape. These panels also contain example histology images with the boundaries between cortical areas drawn in Inkscape. The images are contained in `Fig6_images.svg`, located on jarahub in /data/figuresdata/2018acsup/supplement_virus_injections.
+These panels have a cartoon of a circuit consisting of an Excitatory, PV, and SOM cell, and showing the laser and recording electrode, created in Inkscape. These panels also contain example histology images with the boundaries between cortical areas drawn in Inkscape. The final images are contained in `Fig6_images.svg`, located on jarahub in /data/figuresdata/2018acsup/supplement_virus_injections. The images showing the virus expression and recording tracks are `PV_expression.png` and `SOM_expression.png`, located on jarahub in /data/figuresdata/2018acsup/supplement_figure_histology.
 ### Panel B,G
 These panels show histology images of immunostained slices, showing example anti-PV or anti-SOM fluorescence, tdTomato fluorescence, and a merged image. The images are contained in `Fig6_images.svg`, located on jarahub in /data/figuresdata/2018acsup/supplement_virus_injections.
 ### Panel C,H
