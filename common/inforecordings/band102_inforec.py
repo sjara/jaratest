@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band102'
 experiments=[]
@@ -167,7 +166,7 @@ exp2.add_session('17-58-29', None, 'longLaserPulse', 'am_tuning_curve')
 
 exp2.add_site(1400, tetrodes=[1,2,3,4,6])
 exp2.add_session('18-07-30', None, 'noisebursts', 'am_tuning_curve')
-exp2.add_session('18-09-56', None, 'lasernoisebursts', 'bandwidth_am')
+exp2.add_session('18-08-56', None, 'lasernoisebursts', 'bandwidth_am')
 exp2.add_session('18-10-22', 'o', 'tuningCurve', 'am_tuning_curve')
 exp2.add_session('18-15-57', 'p', 'AM', 'am_tuning_curve')
 exp2.add_session('18-23-01', 'q', 'laserBandwidth', 'bandwidth_am') # 12kHz, 64Hz

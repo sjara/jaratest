@@ -6,7 +6,7 @@ from jaratoolbox import colorpalette as cp
 import matplotlib
 from matplotlib import pyplot as plt
 
-plt.rcParams['svg.image_noscale'] = False
+#plt.rcParams['svg.image_noscale'] = False
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 

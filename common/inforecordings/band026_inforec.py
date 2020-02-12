@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band026'
 experiments=[]
@@ -22,7 +21,7 @@ exp0.laserCalibration = {
 # exp0.add_session('10-52-29', None, 'laserPulse', 'am_tuning_curve')
 # exp0.add_session('10-55-09', None, 'laserTrain', 'am_tuning_curve')
 # # clustering shows laser responsive cells are not sound responsive...
-# 
+#
 # exp0.add_site(1010, tetrodes = [4,5,6,8])
 # exp0.add_session('11-05-16', None, 'noisebursts', 'am_tuning_curve')
 
@@ -121,7 +120,7 @@ exp2.laserCalibration = {
 # exp2.add_site(1000, tetrodes = [4,6,8])
 # exp2.add_session('09-48-29', None, 'laserPulse', 'am_tuning_curve')
 # # weak-sauce laser responses
-# 
+#
 # exp2.add_site(1050, tetrodes = [4,6,8])
 # exp2.add_session('09-56-05', None, 'laserPulse', 'am_tuning_curve')
 # # better, still not that great
@@ -233,7 +232,7 @@ exp4.laserCalibration = {
 # exp4.add_site(1125, tetrodes = [3,4,6,8])
 # exp4.add_session('11-36-26', None, 'laserPulse', 'am_tuning_curve')
 # # pretty crappy laser response
-# 
+#
 # exp4.add_site(1341, tetrodes = [4,6,8])
 # exp4.add_session('11-41-23', None, 'laserPulse', 'am_tuning_curve')
 # exp4.add_session('11-42-48', None, 'noisebursts', 'am_tuning_curve')

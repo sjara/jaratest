@@ -27,13 +27,13 @@ studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
 figparams = importlib.import_module('jaratest.common.2019astrpi.figparams')
 
 # Currently there is an issue with the subplot specs function on our version of matlab, so this function cannot be used
+# UPDATE: This issue seems fixed?
 def plot_am_with_rate(subplotSpec, spikeTimes, indexLimitsEachTrial, currentFreq, uniqFreq,  color='k'):
     fig = plt.gcf()
 
     gs = gridspec.GridSpecFromSubplotSpec(4, 4, subplot_spec=subplotSpec, wspace=-0.45, hspace=0.0)
 
-    specRaster = gs[0:3, 0:2]
-    axRaster = plt.Subplot(fig, specRaster)
+    axRaster = plt.ubplot(fig, specRaster)
     # Possible issue in matplotlib backend preventing subplot from working properly. Based on pylab we use TkAgg
     fig.add_subplot(axRaster)
     timeRange = [-0.2, 0.7]
@@ -124,10 +124,11 @@ fig = plt.gcf()
 fig.clf()
 
 studyname = studyparams.STUDY_NAME
-outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_am/')
+outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_am_27_test/')
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '_'.join(d1mice) + '.h5'
+# nameDB = '_'.join(d1mice) + '.h5'
+nameDB = "{}.h5".format('saved_frames/python27BranchIn27')
 # nameDB = "{}.h5".format('temp')
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)

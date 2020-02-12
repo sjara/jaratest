@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'd1pi039'
 experiments=[]
@@ -188,7 +187,7 @@ Power: Value on laser dial
 # Animal in rig at: 10:10
 # Probe in at: 11:25
 
-exp2.add_site(2200, tetrodes=[1,2,3,4,6,7,8])
+exp2.add_site(2200, tetrodes=[1,2,3,6,7])
 exp2.add_session('12-13-05', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('12-14-56', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('12-16-37', None, 'lasertrain', 'am_tuning_curve')

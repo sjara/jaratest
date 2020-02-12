@@ -5,6 +5,7 @@ import numpy as np
 from numpy import inf
 from scipy import optimize
 from scipy import signal
+from scipy import stats
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 
@@ -463,3 +464,242 @@ def calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes, currentFreq,
     baseRate = baseSpikes / (baseRange[1] - baseRange[0])
 
     return onsetRate, sustainedRate, baseRate
+
+def index_all_true_before(arr):
+    '''
+    Find the index for a boolean array where all the inds after are True
+    Args:
+        arr (1-d array of bool): an array of boolean vals
+    Returns:
+        ind (int): The index of the first True val where all subsequent vals are also True
+    '''
+    if any(~arr):
+        indLastTrue = np.min(np.where(~arr))-1
+    else:
+        indLastTrue = len(arr)-1
+    return indLastTrue
+
+
+def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, freqEachTrial):
+    '''
+    Generator func to return the spiketimes/trial indices for trials of each frequency
+    '''
+    possibleFreq = np.unique(freqEachTrial)
+    for freq in possibleFreq:
+        trialsThisFreq = np.flatnonzero(freqEachTrial==freq)
+        spikeTimesThisFreq = spikeTimesFromEventOnset[np.in1d(trialIndexForEachSpike, trialsThisFreq)]
+        trialIndicesThisFreq = trialIndexForEachSpike[np.in1d(trialIndexForEachSpike, trialsThisFreq)]
+        yield freq, spikeTimesThisFreq, trialIndicesThisFreq
+
+def angle_population_vector_zar(angles):
+    '''
+    Copied directly from Biostatistical analysis, Zar, 3rd ed, pg 598 (Mike W has this book)
+    Computes the length of the mean vector for a population of angles
+    '''
+    X = np.mean(np.cos(angles))
+    Y = np.mean(np.sin(angles))
+    r = np.sqrt(X**2 + Y**2)
+    return r
+
+
+def rayleigh_test(angles):
+    '''
+        Performs Rayleigh Test for non-uniformity of circular data.
+        Compares against Null hypothesis of uniform distribution around circle
+        Assume one mode and data sampled from Von Mises.
+        Use other tests for different assumptions.
+        Maths from [Biostatistical Analysis, Zar].
+    '''
+    if angles.ndim > 1:
+        angles = angles.flatten()
+    N = angles.size
+    # Compute Rayleigh's R
+    R = N*angle_population_vector_zar(angles)
+    # Compute Rayleight's z
+    zVal = R**2. / N
+    # Compute pvalue (Zar, Eq 27.4)
+    pVal = np.exp(np.sqrt(1. + 4*N + 4*(N**2. - R**2)) - 1. - 2.*N)
+    return zVal, pVal
+
+
+def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachCond=[],
+                colorEachCond=None, fillWidth=None, labels=None):
+    """
+    :returns the indices for the first trial of each condition presented in a session
+
+    trialsEachCond can be a list of lists of indexes, or a boolean array of shape [nTrials,nConditions]
+    """
+    nTrials = len(indexLimitsEachTrial[0])
+    (trialsEachCond, nTrialsEachCond, nCond) = trials_each_cond_inds(trialsEachCond, nTrials)
+
+    if colorEachCond is None:
+        colorEachCond = ['0.5', '0.75']*int(np.ceil(nCond/2.0))
+
+    if fillWidth is None:
+        fillWidth = 0.05*np.diff(timeRange)
+
+    nSpikesEachTrial = np.diff(indexLimitsEachTrial, axis=0)[0]
+    nSpikesEachTrial = nSpikesEachTrial*(nSpikesEachTrial > 0)  # Some are negative
+    trialIndexEachCond = []
+    spikeTimesEachCond = []
+    for indcond, trialsThisCond in enumerate(trialsEachCond):
+        spikeTimesThisCond = np.empty(0, dtype='float64')
+        trialIndexThisCond = np.empty(0, dtype='int')
+        for indtrial, thisTrial in enumerate(trialsThisCond):
+            indsThisTrial = slice(indexLimitsEachTrial[0, thisTrial],
+                                  indexLimitsEachTrial[1, thisTrial])
+            spikeTimesThisCond = np.concatenate((spikeTimesThisCond,
+                                                 spikeTimesFromEventOnset[indsThisTrial]))
+            trialIndexThisCond = np.concatenate((trialIndexThisCond,
+                                                 np.repeat(indtrial, nSpikesEachTrial[thisTrial])))
+        trialIndexEachCond.append(np.copy(trialIndexThisCond))
+        spikeTimesEachCond.append(np.copy(spikeTimesThisCond))
+
+    xpos = timeRange[0]+np.array([0, fillWidth, fillWidth, 0])
+    lastTrialEachCond = np.cumsum(nTrialsEachCond)
+    firstTrialEachCond = np.r_[0, lastTrialEachCond[:-1]]
+    return firstTrialEachCond
+
+# Below defintion applies to if spikes are signficantly synced to a rate as it is comparing the periods of spiking as it cycles through the modulation
+def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amSyncTrialIndexForEachSpike, amCurrentFreq, amUniqFreq):
+    """
+
+    Args:
+        amSpikeTimes (np.array): Each value is a time when a spike occurred. Obatained from Ephys Data
+        amOnsetTimes (np.array): Contains as many values as there were trials with each value being the tme a
+        trial started.
+        amBaseTime (list): Contains two values that represent the time range for the base firing rate
+        amOnsetTime (list): Contains two values that represent the time range for the onset firing rate
+        amCurrentFreq (np.array): Contains as many values as there were trials with each value being the am rate
+        for a specific trial. Obtained from Behavior Data
+        amUniqFreq (np.array): Contains as many values as there were unique am rates presented over the entire session.
+
+    Returns:
+        allFreqSyncPVal (np.array): Contains one p-value for each unique am rate presented over the entire session
+        allFreqSyncZScore (np.array): Contains one z-value for each unique am rate presented over the entire session
+        allFreqVectorStrength (np.array):
+        allFreqRal (np.array):
+
+    """
+    numFreq = len(amUniqFreq)
+
+    allFreqSyncPVal = np.empty(numFreq)
+    allFreqVectorStrength = np.empty(numFreq)
+    allFreqRal = np.empty(numFreq)
+    allFreqSyncZScore = np.empty(numFreq)
+
+    for indFreq, (freq, spiketimes, trialInds) in enumerate(
+            spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
+                                      amSyncTrialIndexForEachSpike,
+                                      amCurrentFreq)):
+        strength, phase = signal.vectorstrength(spiketimes, 1.0 / freq)
+
+        radsPerSec = freq * 2 * np.pi
+        spikeRads = (spiketimes * radsPerSec) % (2 * np.pi)
+        ral = np.array([2 * len(spiketimes) * (strength ** 2)])
+
+        # NOTE: I checked the math in this function using the text referenced (Mike W. has a copy if needed) - Nick
+        zVal, pVal = rayleigh_test(spikeRads)
+
+        allFreqVectorStrength[indFreq] = strength  # Frequency vector strength
+        allFreqRal[indFreq] = ral  # Unsure what this is
+        allFreqSyncPVal[indFreq] = pVal  # p-value
+        allFreqSyncZScore[indFreq]= zVal
+
+    return allFreqSyncPVal, allFreqSyncZScore, allFreqVectorStrength, allFreqRal
+
+# To calculate the p-value for baseline vs onset response for each individual frequency
+def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amResponseTime, amCurrentFreq, amUniqFreq):
+    """
+
+    Args:
+        amSpikeTimes (np.array): Each value is a time when a spike occurred. Obatained from Ephys Data
+        amOnsetTimes (np.array): Contains as many values as there were trials with each value being the tme a
+        trial started.
+        amBaseTime (list): Contains two values that represent the time range for the base firing rate
+        amResponseTime (list): Contains two values that represent the time range for the onset firing rate
+        amCurrentFreq (np.array): Contains as many values as there were trials with each value being the am rate
+        for a specific trial. Obtained from Behavior Data
+        amUniqFreq (np.array): Contains as many values as there were unique am rates presented over the entire session.
+
+    Returns:
+        allFreqPVal (np.array): Contains one p-value for each unique am rate presented over the entire session
+        allFreqZScore (np.array): Contains one z-value for each unique am rate presented over the entire session
+        allFreqVectorStrength (np.array):
+        allFreqRal (np.array):
+
+    """
+    numFreq = len(amUniqFreq)
+
+    allFreqPVal = np.empty(numFreq)
+    allFreqZScore = np.empty(numFreq)
+
+    amTimeRange = [amBaseTime[0], amResponseTime[1]]
+
+    (amSyncSpikeTimesFromEventOnset,
+     amSyncTrialIndexForEachSpike,
+     amSyncIndexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
+                                                                         amOnsetTimes,
+                                                                         amTimeRange)
+    # Generate spiketimes for each frequency to do comparisons with
+    # FIXME: Two options: Add a condition where if spikeTimes and trialInds are empty to not try further calculations.
+    # Otherwise model like Anna's where we get the spiketimes first and then use behavioranalysis.find_trials_each_type to create a mask for each frequency.
+    # Her example is in database_gen_funcs sound_response_any_stim, Line 65
+    for indFreq, (freq, spiketimes, trialInds) in enumerate(
+            spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
+                                      amSyncTrialIndexForEachSpike,
+                                      amCurrentFreq)):
+
+        nBaseSpk = spikesanalysis.spiketimes_to_spikecounts(spiketimes, trialInds, amBaseTime)
+        nRespSpk = spikesanalysis.spiketimes_to_spikecounts(spiketimes, trialInds, amResponseTime)
+
+        # Comparing each frequencies baseline and response range spike counts
+        zStats, pVal = stats.mannwhitneyu(nRespSpk, nBaseSpk)
+        allFreqPVal[indFreq] = pVal
+        allFreqZScore[indFreq] = zStats
+
+    return allFreqPVal, allFreqZScore
+
+
+def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond, timeRange=[0.0, 1.0],
+                                baseRange=[-1.1, -0.1]):
+    '''Determines if there is any combination of parameters that yields a change in firing rate.
+
+    Inputs:
+        eventOnsetTimes: array of timestamps indicating sound onsets
+        spikeTimeStamps: array of timestamps indicating when spikes occured
+        trialsEachCond: (N trials x N conditions) array indicating which condition occured for each trial. Currently only checks over one parameter used during session.
+        timeRange: time range (relative to sound onset) to be used as response, list of [start time, end time]
+        baseRange: time range (relative to sound onset) to be used as baseline, list of [start time, end time]
+
+    Outputs:
+        maxzscore: maximum U test statistic found after comparing response for each condition to baseline
+        minpVal: minimum p value found after comparing response for each condition to baseline, NOT CORRECTED FOR MULTIPLE COMPARISONS
+    '''
+    fullTimeRange = [min(min(timeRange), min(baseRange)), max(max(timeRange), max(baseRange))]
+
+    spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = spikesanalysis.eventlocked_spiketimes(
+        spikeTimeStamps,
+        eventOnsetTimes,
+        fullTimeRange)
+    stimSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial,
+                                                                 timeRange)
+    baseSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial,
+                                                                 baseRange)
+
+    minpVal = np.inf
+    maxzscore = -np.inf
+    for cond in range(trialsEachCond.shape[1]):
+        trialsThisCond = trialsEachCond[:, cond]
+        if stimSpikeCountMat.shape[0] == len(trialsThisCond) + 1:
+            stimSpikeCountMat = stimSpikeCountMat[:-1, :]
+            baseSpikeCountMat = baseSpikeCountMat[:-1, :]
+        if any(trialsThisCond):
+            thisFirstStimCounts = stimSpikeCountMat[trialsThisCond].flatten()
+            thisStimBaseSpikeCouns = baseSpikeCountMat[trialsThisCond].flatten()
+            thiszscore, pValThisFirst = stats.ranksums(thisFirstStimCounts, thisStimBaseSpikeCouns)
+            if pValThisFirst < minpVal:
+                minpVal = pValThisFirst
+            if thiszscore > maxzscore:
+                maxzscore = thiszscore
+    return maxzscore, minpVal

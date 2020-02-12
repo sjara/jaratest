@@ -1,12 +1,11 @@
-'''
+"""
 studyparams contains the default names and queries used in experiment and analysis
-'''
+"""
 STUDY_NAME = '2019astrpi'
 PATH_TO_STUDY = '/home/jarauser/src/jaratest/common/2019astrpi'
 PATH_TO_TEST = '/home/jarauser/src/jaratest/allison/d1pi032'
 # List of animals used in this study
-ASTR_D1_CHR2_MICE = ['d1pi026', 'd1pi032', 'd1pi033', 'd1pi036', 'd1pi039', 'd1pi040', 'd1pi041', 'd1pi042']
-# ASTR_D1_CHR2_MICE = ['d1pi041']
+ASTR_D1_CHR2_MICE = ['d1pi026', 'd1pi032', 'd1pi033', 'd1pi036', 'd1pi039', 'd1pi040', 'd1pi041', 'd1pi042', 'd1pi043', 'd1pi044']
 SINGLE_MOUSE = ['d1pi041']  # for data exploration/testing
 
 # --- session name --- add new session names here if used the new names
@@ -23,13 +22,13 @@ noiseburst_pVal = 0.05
 laserpulse_pVal = 0.05  # 0.001 if want to be EXTRA sure not to include false positives
 
 
-## --- queries to get specific cell populations ---
+# --- queries to get specific cell populations ---
 FIRST_FLTRD_CELLS = 'isiViolations<{} and spikeShapeQuality>{}'.format(ISI_THRESHOLD, SPIKE_QUALITY_THRESHOLD)
 
 # D1 cells
 D1_CELLS = 'laserpulse_pVal<{} and noiseburst_pVal<{}'.format(noiseburst_pVal,laserpulse_pVal)  # to laser, thus D1 cells
 nD1_CELLS = 'laserpulse_pVal>{} and noiseburst_pVal<{}'.format(noiseburst_pVal,laserpulse_pVal)  # Not responded to laser, thus non-D1 cells
 
-## D2 cells
-# D2_CELLS = 'laserpulse_pVal<{} and noiseburst_pVal<{}'.format(noiseburst_pVal,laserpulse_pVal) #Responded to laser, thus D2 cells
-# nD2_CELLS = 'laserpulse_pVal>{} and noiseburst_pVal<{}'.format(noiseburst_pVal,laserpulse_pVal)#Not responded to laser, thus non-D2 cells
+# D2 cells
+# D2_CELLS = 'laserpulse_pVal<{} and noiseburst_pVal<{}'.format(noiseburst_pVal,laserpulse_pVal)  # Responded to laser, thus D2 cells
+# nD2_CELLS = 'laserpulse_pVal>{} and noiseburst_pVal<{}'.format(noiseburst_pVal,laserpulse_pVal)  # Not responded to laser, thus non-D2 cells

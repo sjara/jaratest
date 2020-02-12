@@ -3,7 +3,6 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import matplotlib.colors
 import matplotlib.patches as patches
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
@@ -27,17 +26,17 @@ SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
 figFilename = 'Fig6_inactivation_controls' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
-#figFormat = 'svg'
-figSize = [12,6] # In inches
+#figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg'
+figSize = [10,10] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.005, 0.2, 0.47, 0.72]   # Horiz position for panel labels
-labelPosY = [0.965, 0.46]    # Vert position for panel labels
+labelPosX = [0.005, 0.36, 0.66, 0.42]   # Horiz position for panel labels
+labelPosY = [0.98, 0.78, 0.48, 0.28]    # Vert position for panel labels
 
 PVFileName = 'example_PV_inactivated_sound_response_band062_2018-05-25_1450um_T5_c5.npz'
 SOMFileName = 'example_SOM_inactivated_sound_response_band073_2018-09-14_1300um_T4_c4.npz'
@@ -55,8 +54,8 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2,4, width_ratios=[0.6,1.2,1,1.1])
-gs.update(top=0.97, bottom=0.08, left=0.08, right=0.95, wspace=0.6, hspace=0.3)
+gs = gridspec.GridSpec(4,3, width_ratios=[1.2,1,1], height_ratios=[0.7,1,0.7,1])
+gs.update(top=0.99, bottom=0.05, left=0.07, right=0.94, wspace=0.5, hspace=0.3)
 
 # --- suppressed responses of example cells ---
 if PANELS[0]:
@@ -64,12 +63,12 @@ if PANELS[0]:
     
     cellColours = [PVColour, SOMColour]
     
-    panelLabels = ['B', 'F']
+    panelLabels = ['C', 'H']
     
     PSTHylims = [(-1, 47), (-0.4,16)]
     
     for indCell, cell in enumerate(exampleCells):
-        axExample = gs[indCell, 1]
+        axExample = gs[2*indCell+1, 0]
         
         exampleDataFullPath = os.path.join(inactDataDir,cell)
         exampleData = np.load(exampleDataFullPath)
@@ -136,13 +135,18 @@ if PANELS[0]:
         plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
         plt.ylabel("Trial", fontsize=fontSizeLabels)
 
-        axRaster.annotate(panelLabels[indCell], xy=(labelPosX[1],labelPosY[indCell]), xycoords='figure fraction',
+        axRaster.annotate(panelLabels[indCell], xy=(labelPosX[0],labelPosY[2*indCell+1]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
         
-        # make panel labels for cartoons
-        cartoonLabels = ['A', 'E']
+        # make panel labels for histology
+        cartoonLabels = ['A', 'F']
         for ind, label in enumerate(cartoonLabels):
-            axRaster.annotate(label, xy=(labelPosX[0],labelPosY[ind]), xycoords='figure fraction',
+            axRaster.annotate(label, xy=(labelPosX[0],labelPosY[2*ind]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
+            
+        cartoonLabels = ['B', 'G']
+        for ind, label in enumerate(cartoonLabels):
+            axRaster.annotate(label, xy=(labelPosX[3],labelPosY[2*ind]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
         
 # --- plots of cells immediately suppressed and their sustained suppression
@@ -152,7 +156,7 @@ if PANELS[1]:
     
     cellColours = [PVColour, SOMColour]
     
-    panelLabels = ['C', 'G']
+    panelLabels = ['D', 'I']
     
     PVcontrolResponses = summaryData['PVcontrolResponses']
     PVlaserResponses = summaryData['PVlaserResponses']
@@ -187,7 +191,7 @@ if PANELS[1]:
 #     yRanges = [[-40,0],[-20,0]]
     
     for indType, cellType in enumerate(responses):
-        axScatter = plt.subplot(gs[indType, 2])
+        axScatter = plt.subplot(gs[2*indType+1, 1])
         
         plt.hold(True)
         
@@ -210,13 +214,13 @@ if PANELS[1]:
         plt.xlim(xRanges[indType])
         plt.ylim(yRanges[indType])
     
-        axScatter.annotate(panelLabels[indType], xy=(labelPosX[2],labelPosY[indType]), xycoords='figure fraction',
+        axScatter.annotate(panelLabels[indType], xy=(labelPosX[1],labelPosY[2*indType+1]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
         extraplots.boxoff(axScatter)
         axScatter.set(adjustable='box-forced', aspect='equal')
         
 if PANELS[2]:
-    panelLabels = ['D', 'H']
+    panelLabels = ['E', 'J']
     cellLabels = [r'no PV$^+$', r'no SOM$^+$']
     
     dataFullPath = os.path.join(controlDataDir,controlFileName)
@@ -234,6 +238,10 @@ if PANELS[2]:
     controlPVLaser = data['PVControlLaser']
     controlPVChange = 100.0*(controlPVLaser-controlPVNoLaser)/controlPVNoLaser
     
+    # normalisation fails in some cases due to control firing rate being 0
+    notNanInds = np.where(np.isfinite(controlPVChange))
+    controlPVChange = controlPVChange[notNanInds]
+    
     SOMNoLaser = data['SOMNoLaser']
     SOMLaser = data['SOMLaser']
     noSOMChange = 100.0*(SOMLaser-SOMNoLaser)/SOMNoLaser
@@ -246,13 +254,23 @@ if PANELS[2]:
     controlSOMLaser = data['SOMControlLaser']
     controlSOMChange = 100.0*(controlSOMLaser-controlSOMNoLaser)/controlSOMNoLaser
     
+    # normalisation fails in some cases due to control firing rate being 0
+    notNanInds = np.where(np.isfinite(controlSOMChange))
+    controlSOMChange = controlSOMChange[notNanInds]
+    
+    noPVpVal = stats.ranksums((PVLaser-PVNoLaser), (controlPVLaser-controlPVNoLaser))[1]
+    noSOMpVal = stats.ranksums((SOMLaser-SOMNoLaser), (controlSOMLaser-controlSOMNoLaser))[1]
+    print "Laser vs. control change in FR p values:\nno PV: {0}\nno SOM: {1}".format(noPVpVal, noSOMpVal)
+    
+    
     cellTypeData = [[PVNoLaser, PVLaser], [SOMNoLaser, SOMLaser]]
     controlCellTypeData = [[controlPVNoLaser, controlPVLaser], [controlSOMNoLaser, controlSOMLaser]]
     cellTypeChangeData = [[noPVChange, controlPVChange],[noSOMChange, controlSOMChange]]
     cellTypeColours = [PVColour, SOMColour]
     
+    yRanges = [[0,170],[-20,110]]
     for indType in range(2):
-        axScatter = plt.subplot(gs[indType,3])
+        axScatter = plt.subplot(gs[2*indType+1,2])
         
         laserData = cellTypeData[indType]
         controlData = controlCellTypeData[indType]
@@ -288,7 +306,7 @@ if PANELS[2]:
         extraplots.boxoff(axScatter)
         axScatter.set(adjustable='box-forced', aspect='equal')
         
-        axScatter.annotate(panelLabels[indType], xy=(labelPosX[3],labelPosY[indType]), xycoords='figure fraction',
+        axScatter.annotate(panelLabels[indType], xy=(labelPosX[2],labelPosY[2*indType+1]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
         
         pControl = stats.wilcoxon(controlData[0],controlData[1])[1]
@@ -296,7 +314,7 @@ if PANELS[2]:
     
         print "Change in FR for {0} p values:\ncontrol: {1}\nlaser: {2}".format(cellLabels[indType],pControl,pLaser)
         
-        axInset = inset_axes(axScatter, width="20%", height="40%", loc=4, bbox_to_anchor=(0.1, 0.05, 1, 1), bbox_transform=axScatter.transAxes)
+        axInset = inset_axes(axScatter, width="20%", height="30%", loc=4, bbox_to_anchor=(0.12, 0.02, 1, 1), bbox_transform=axScatter.transAxes)
         
         barWidth = 0.9
         xVals = np.arange(2)
@@ -311,7 +329,7 @@ if PANELS[2]:
         axInset.tick_params(axis='y', labelsize=fontSizeLegend)
         
         plt.xlim(-0.2,2.2)
-        plt.ylim(bottom=0)
+        plt.ylim(yRanges[indType])
 
 #         laserDiff = np.log2(laserData[0])-np.log2(laserData[1])
 #         controlDiff = np.log2(controlData[0])-np.log2(controlData[1])
@@ -331,7 +349,7 @@ if PANELS[2]:
         #extraplots.boxoff(axInset, keep='right')
         axInset.yaxis.tick_right()
         axInset.yaxis.set_ticks_position('right')
-        plt.locator_params(axis='y', nbins=3)
+        plt.locator_params(axis='y', nbins=4)
         axInset.spines['left'].set_visible(False)
         axInset.spines['top'].set_visible(False)
         plt.ylabel(r'$\Delta$FR (%)', fontsize=fontSizeLegend, rotation=-90, labelpad=12)

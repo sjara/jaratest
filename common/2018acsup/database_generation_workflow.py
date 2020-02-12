@@ -2,7 +2,6 @@
 This script runs everything needed to create the two databases required for this study (photoidentified and inactivated cells).
 
 Can specify which database to generate with user input (0: photoID database, 1: inactivation database).
-No user input will result in both being generated.
 '''
 import os
 import sys

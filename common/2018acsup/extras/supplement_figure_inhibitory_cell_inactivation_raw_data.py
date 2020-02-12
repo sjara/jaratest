@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from scipy import stats
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -23,8 +24,8 @@ PANELS = [1,1] # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
-figFilename = 'effect_of_inhibitory_inactivation_on_suppression_raw_data' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
+figFilename = 'Extra_effect_of_inhibitory_inactivation_on_suppression_raw_data' # Do not include extension
+figFormat = 'png' # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [8,4] # In inches
 
@@ -96,6 +97,10 @@ if PANELS[0]:
     axScatter.annotate(panelLabel, xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
     
+    noPV = stats.wilcoxon(PVsustainedSuppressionNoLaser,PVsustainedSuppressionLaser)[1]
+    noSOM = stats.wilcoxon(SOMsustainedSuppressionNoLaser, SOMsustainedSuppressionLaser)[1]
+    print "Change in SI p values:\nno PV: {0}\nno SOM: {1}".format(noPV,noSOM)
+    
 if PANELS[1]:
     summaryDataFullPath = os.path.join(dataDir,summaryFileName)
     summaryData = np.load(summaryDataFullPath)
@@ -142,6 +147,10 @@ if PANELS[1]:
     axScatter.annotate(panelLabel, xy=(labelPosX[1],labelPosY[0]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
     extraplots.boxoff(axScatter)
+    
+    noPV = stats.wilcoxon(PVpeakChangeFR,PVWNChangeFR)[1]
+    noSOM = stats.wilcoxon(SOMpeakChangeFR, SOMWNChangeFR)[1]
+    print "Change in peak  vs WN response p values:\nno PV: {0}\nno SOM: {1}".format(noPV,noSOM)
     
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

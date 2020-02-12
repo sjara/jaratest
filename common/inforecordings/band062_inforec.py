@@ -1,5 +1,4 @@
 from jaratoolbox import celldatabase
-reload(celldatabase)
 
 subject = 'band062'
 experiments=[]
@@ -68,13 +67,13 @@ exp1.add_session('11-14-54', 'a', 'tuningCurve', 'am_tuning_curve')
 
 # exp1.add_site(950, tetrodes=[1,2,3,4,6,7,8])
 # exp1.add_session('11-45-40', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1000, tetrodes=[1,2,3,4,6,7,8])
 # exp1.add_session('11-53-37', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1050, tetrodes=[1,2,3,4,6,7,8])
 # exp1.add_session('12-39-19', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp1.add_site(1100, tetrodes=[1,2,3,4,6,7,8])
 # exp1.add_session('13-20-19', None, 'noisebursts', 'am_tuning_curve')
 
@@ -131,7 +130,7 @@ exp2.add_session('15-24-53', 'd', 'noiseAmps', 'am_tuning_curve')
 
 # exp2.add_site(1600, tetrodes=[4])
 # exp2.add_session('15-53-13', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp2.add_site(1650, tetrodes=[2,4,6])
 # exp2.add_session('16-07-53', None, 'noisebursts', 'am_tuning_curve')
 # exp2.add_session('16-13-10', None, 'noisebursts', 'am_tuning_curve')
@@ -189,10 +188,10 @@ exp3.add_session('16-35-37', 'h', 'tuningCurve', 'am_tuning_curve')
 
 # exp3.add_site(1500, tetrodes=[2])
 # exp3.add_session('16-52-55', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp3.add_site(1550, tetrodes=[2])
 # exp3.add_session('16-59-53', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp3.add_site(1600, tetrodes=[2,4,8])
 # exp3.add_session('17-07-31', None, 'noisebursts', 'am_tuning_curve')
 
@@ -348,10 +347,10 @@ exp6.laserCalibration = {
 
 # exp6.add_site(950, tetrodes=[2,4,8])
 # exp6.add_session('14-41-12', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp6.add_site(1000, tetrodes=[2,4,6,8])
 # exp6.add_session('14-57-45', None, 'noisebursts', 'am_tuning_curve')
-# 
+#
 # exp6.add_site(1050, tetrodes=[2,4,6,8])
 # exp6.add_session('15-05-28', None, 'noisebursts', 'am_tuning_curve')
 

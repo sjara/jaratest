@@ -24,8 +24,8 @@ PANELS = [1,1,1,1] # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 #outputDir = '/home/jarauser/data/figuresdata/2018acsup/figures'
-figFilename = 'SuppFig_effect_of_inhibitory_inactivation_on_suppression_pure_tone' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
+figFilename = 'Extra_effect_of_inhibitory_inactivation_on_suppression_pure_tone' # Do not include extension
+figFormat = 'png' # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [5,6] # In inches
 
