@@ -52,16 +52,16 @@ exp0.add_site(3100, tetrodes=[7,8])
 exp0.add_session('12-34-16', None, 'noiseburst', 'am_tuning_curve')
 exp0.add_session('12-36-23', None, 'laserpulse', 'am_tuning_curve')
 
-exp0.add_site(3200, tetrodes=[7,8])
-exp0.add_session('12-47-33', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('12-49-19', None, 'laserpulse', 'am_tuning_curve')
+# exp0.add_site(3200, tetrodes=[7,8])
+# exp0.add_session('12-47-33', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_session('12-49-19', None, 'laserpulse', 'am_tuning_curve')
 
-exp0.add_site(3600, tetrodes=[5])
-exp0.add_session('13-43-15', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_site(3600, tetrodes=[5])
+# exp0.add_session('13-43-15', None, 'noiseburst', 'am_tuning_curve')
 
-exp0.add_site(3700, tetrodes=[5,6])
-exp0.add_session('14-52-44', None, 'noiseburst', 'am_tuning_curve')
-exp0.add_session('14-54-02', None, 'laserpulse', 'am_tuning_curve')
+# exp0.add_site(3700, tetrodes=[5,6])
+# exp0.add_session('14-52-44', None, 'noiseburst', 'am_tuning_curve')
+# exp0.add_session('14-54-02', None, 'laserpulse', 'am_tuning_curve')
 
 exp0.maxDepth = 3700
 
@@ -253,7 +253,7 @@ exp2.add_session('15-30-19', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('15-32-10', 'r', 'tuningTest', 'am_tuning_curve')
 exp2.add_session('15-34-29', 's', 'am', 'am_tuning_curve')
 
-exp2.add_site(3500, tetrodes=[1,2,3,4,5,6,8])
+exp2.add_site(3500, tetrodes=[4])
 exp2.add_session('15-45-34', None, 'noiseburst', 'am_tuning_curve')
 exp2.add_session('15-46-42', None, 'laserpulse', 'am_tuning_curve')
 exp2.add_session('15-47-52', None, 'laserpulse', 'am_tuning_curve')
