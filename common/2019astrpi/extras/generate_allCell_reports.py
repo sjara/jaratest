@@ -225,8 +225,8 @@ fig.clf()
 
 studyname = studyparams.STUDY_NAME
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-# nameDB = '{}.h5'.format("direct_and_indirect_cells")
-nameDB = "['d1pi042'].h5"
+nameDB = '{}.h5'.format("direct_and_indirect_cells")
+# nameDB = "['d1pi042'].h5"
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 

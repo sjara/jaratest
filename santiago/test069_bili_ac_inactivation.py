@@ -17,13 +17,19 @@ import sys
 
 #subjects = ['bili001','bili002','bili003','bili004','bili005','bili006','bili007']
 
-subjects = ['bili002']
-#sessions = ['20190219a','20190220a','20190222a','20190225a','20190228a','20190302a','20190304a'] # Laser inside
-#sessions = ['20190221a','20190223a','20190224a','20190301a','20190303a'] # Control (outside brain)
+#subjects = ['bili002']
+#sessions = ['20190219a','20190220a','20190222a','20190225a','20190228a','20190302a','20190304a','20190306a','20190308a','20190310a','20190312a','20190314a'] # Laser inside
+#sessions = ['20190221a','20190223a','20190224a','20190301a','20190303a','20190305a','20190307a','20190309a','20190311a','20190313a'] # Control (outside brain)
+#sessions = ['20190315a','20190317a','20190319a'] # Left laser
+#sessions = ['20190316a','20190318a','20190320a'] # Right laser
 
 subjects = ['bili006']
-#sessions = ['20190301a','20190303a','20190305a'] # Laser inside
-sessions = ['20190302a','20190304a'] # Laser inside
+#sessions = ['20190301a','20190303a','20190305a','20190307a','20190309a','20190311a','20190313a','20190315a'] # Laser inside
+#sessions = ['20190302a','20190304a','20190306a','20190308a','20190310a','20190312a','20190314a','20190316a'] # Control (outside brain)
+#sessions = ['20190317a','20190319a'] # Left laser
+#sessions = ['20190318a','20190320a'] # Right laser
+#sessions = ['20190408a','20190410a'] # Extra Left laser
+#sessions = ['20190409a','20190411a'] # Extra Right laser
 
 paradigm = '2afc'
 
@@ -86,5 +92,7 @@ sys.exit()
 
 '''
 extraplots.save_figure('/tmp/bili002_laser','pdf',[5,5],outputDir='/tmp/')
+extraplots.save_figure('/tmp/bili002_control','pdf',[5,5],outputDir='/tmp/')
+extraplots.save_figure('/tmp/bili006_laser','pdf',[5,5],outputDir='/tmp/')
 extraplots.save_figure('/tmp/bili002_control','pdf',[5,5],outputDir='/tmp/')
 '''

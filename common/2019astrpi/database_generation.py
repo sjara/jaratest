@@ -61,9 +61,9 @@ def append_base_stats(cellDB, filename=''):
                 zStats, pVals = [0, 1]
 
             # Adding noiseburst values to the dataframe
-            firstCells.loc[
+            cellDB.at[
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
-            firstCells.loc[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
+            cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
 
         # ------------ Laserpulse calculations --------------------------------
         session = 'laserpulse'
@@ -83,9 +83,9 @@ def append_base_stats(cellDB, filename=''):
                 zStats, pVals = [0, 1]
 
             # Adding laserpulse calculations to the dataframe
-            firstCells.loc[
+            cellDB.at[
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
-            firstCells.loc[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
+            cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
 
         # -------------- Tuning curve calculations ----------------------------
         session = 'tuningCurve'
@@ -216,20 +216,20 @@ def append_base_stats(cellDB, filename=''):
                         bw10 = None
 
                     # Adding tuningCurve calculations to the dataframe to be saved later
-                    firstCells.at[indRow, 'thresholdFRA'] = intensityThreshold
-                    firstCells.at[indRow, 'cf'] = cf
-                    firstCells.at[indRow, 'lowerFreq'] = lowerFreq
-                    firstCells.at[indRow, 'upperFreq'] = upperFreq
-                    firstCells.at[indRow, 'rsquaredFit'] = Rsquared10AboveSIT
-                    firstCells.at[indRow, 'bw10'] = bw10
-                    firstCells.at[indRow, 'fit_midpoint'] = fitMidpoint
-                    firstCells.at[indRow, 'latency'] = respLatency
-                    firstCells.at[indRow, 'monotonicityIndex'] = monoIndex
-                    firstCells.at[indRow, 'onsetRate'] = onsetRate
-                    firstCells.at[indRow, 'sustainedRate'] = sustainedRate
-                    firstCells.at[indRow, 'baseRate'] = baseRate
-                    firstCells.at[indRow, 'tuning_pVal'] = tuningPVal
-                    firstCells.at[indRow, 'tuning_ZStat'] = tuningZStat
+                    cellDB.at[indRow, 'thresholdFRA'] = intensityThreshold
+                    cellDB.at[indRow, 'cf'] = cf
+                    cellDB.at[indRow, 'lowerFreq'] = lowerFreq
+                    cellDB.at[indRow, 'upperFreq'] = upperFreq
+                    cellDB.at[indRow, 'rsquaredFit'] = Rsquared10AboveSIT
+                    cellDB.at[indRow, 'bw10'] = bw10
+                    cellDB.at[indRow, 'fit_midpoint'] = fitMidpoint
+                    cellDB.at[indRow, 'latency'] = respLatency
+                    cellDB.at[indRow, 'monotonicityIndex'] = monoIndex
+                    cellDB.at[indRow, 'onsetRate'] = onsetRate
+                    cellDB.at[indRow, 'sustainedRate'] = sustainedRate
+                    cellDB.at[indRow, 'baseRate'] = baseRate
+                    cellDB.at[indRow, 'tuning_pVal'] = tuningPVal
+                    cellDB.at[indRow, 'tuning_ZStat'] = tuningZStat
 
         # -------------------- am calculations ---------------------------
         session = 'am'
@@ -266,8 +266,8 @@ def append_base_stats(cellDB, filename=''):
                 # taking the p-value and dividing by the total number of comparisons done and using that as a threshold
                 zStat, amPValue = \
                     funcs.sound_response_any_stimulus(amEventOnsetTimes, amSpikeTimes, amTrialsEachCond, amResponseTime, amBaseTime)
-                firstCells.at[indRow, 'am_response_pVal'] = amPValue
-                firstCells.at[indRow, 'am_response_ZStat'] = zStat
+                cellDB.at[indRow, 'am_response_pVal'] = amPValue
+                cellDB.at[indRow, 'am_response_ZStat'] = zStat
 
                 # TODO: test calculations below
                 # TODO: Should do some kind of post-hoc/correction on the alpha such as
@@ -287,22 +287,22 @@ def append_base_stats(cellDB, filename=''):
                         funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amSyncTrialIndexForEachSpike, amCurrentFreq, amUniqFreq)
                     amSyncPValue = np.min(allFreqSyncPVal)
                     amSyncZStat = np.max(allFreqSyncZScore)
-                    firstCells.at[indRow, 'am_synchronization_pVal'] = amSyncPValue
-                    firstCells.at[indRow, 'am_synchronization_ZStat'] = amSyncZStat
+                    cellDB.at[indRow, 'am_synchronization_pVal'] = amSyncPValue
+                    cellDB.at[indRow, 'am_synchronization_ZStat'] = amSyncZStat
 
                     if any(allFreqSyncPVal < 0.05):
                             sigPvals = np.array(allFreqSyncPVal) < 0.05
                             highestSyncInd = funcs.index_all_true_before(sigPvals)
-                            firstCells.loc[indRow, 'highestSync'] = amUniqFreq[allFreqSyncPVal < 0.05].max()
-                            firstCells.loc[indRow, 'highestUSync'] = amUniqFreq[highestSyncInd]
+                            cellDB.at[indRow, 'highestSync'] = amUniqFreq[allFreqSyncPVal < 0.05].max()
+                            cellDB.at[indRow, 'highestUSync'] = amUniqFreq[highestSyncInd]
                             # print possibleFreq[pValThisCell<0.05].max()
 
                     else:
-                        firstCells.loc[indRow, 'highestSync'] = 0
+                        cellDB.at[indRow, 'highestSync'] = 0
 
                     correctedPval = 0.05 / len(amUniqFreq)  # TODO: this can go up with where the pvalues are calculated
                     if any(allFreqSyncPVal < correctedPval):
-                        firstCells.loc[indRow, 'highestSyncCorrected'] = amUniqFreq[allFreqSyncPVal < correctedPval].max()
+                        cellDB.at[indRow, 'highestSyncCorrected'] = amUniqFreq[allFreqSyncPVal < correctedPval].max()
                         highestSyncCorrected = amUniqFreq[allFreqSyncPVal < correctedPval].max()
                         freqsBelowThresh = allFreqSyncPVal < correctedPval
                         freqsBelowThresh = freqsBelowThresh.astype(int)
@@ -312,12 +312,12 @@ def append_base_stats(cellDB, filename=''):
                             # significantFreqsArray = np.concatenate([[significantFreqsArray], [freqsBelowThresh]])
                             significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
                     else:
-                        firstCells.loc[indRow, 'highestSyncCorrected'] = 0
+                        cellDB.loc[indRow, 'highestSyncCorrected'] = 0
 
-    firstCells['cfOnsetivityIndex'] = \
-        (firstCells['onsetRate'] - firstCells['sustainedRate']) / \
-        (firstCells['sustainedRate'] + firstCells['onsetRate'])
-    return firstCells
+    cellDB['cfOnsetivityIndex'] = \
+        (cellDB['onsetRate'] - cellDB['sustainedRate']) / \
+        (cellDB['sustainedRate'] + cellDB['onsetRate'])
+    return cellDB
 
 
 def calculate_indices(db, filename=''):
@@ -355,7 +355,7 @@ if __name__ == "__main__":
         print('d1mice = {}'.format(d1mice))
         # Run behavior can either be 'all', 'hist', or 'stats'
         runBehavior = arguements[1]
-        print('run behavior is {}'.format(runBehavior))
+        print('Run behavior is {}'.format(runBehavior))
         if runBehavior == 'all':
             stat_calc = 1
             hist_calc = 1
@@ -389,19 +389,13 @@ if __name__ == "__main__":
         histDB = cellLoc.cell_locations(firstDB)
 
     if SAVE:
-        # dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
-        # dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
-        # dbpath = os.path.join(dbLocation, '{}.h5'.format('AM_additions'))
-
         if os.path.isdir(dbLocation):
-            #celldatabase.save_hdf(histDB, dbpath)
-            celldatabase.save_hdf(firstDB, dbpath)
+            celldatabase.save_hdf(histDB, dbpath)
             print("SAVED DATAFRAME to {}".format(dbpath))
         elif not os.path.isdir(dbLocation):
             answer = input_func("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
             if answer.upper() in ['Y', 'YES']:
                 os.mkdir(dbLocation)
-                #celldatabase.save_hdf(PhotoID, dbpath)
-                celldatabase.save_hdf(firstDB, dbpath)
+                celldatabase.save_hdf(histDB, dbpath)
                 print("SAVED DATAFRAME to {}".format(dbpath))
                 print(u"\U0001F4A9"*10)
