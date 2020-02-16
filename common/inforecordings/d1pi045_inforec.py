@@ -263,3 +263,33 @@ exp2.add_session('15-52-42', 'u', 'am', 'am_tuning_curve')
 # signals went away for good
 
 exp2.maxDepth = 3500
+
+
+exp3 = celldatabase.Experiment(subject, '2020-02-11', 'right_AudStr',
+info=['posteriorDiI', 'TT1left', 'soundLeft', 'A4x2-tet'])
+experiments.append(exp3)
+
+# 50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 220 AM, 1760 tuningCurve
+# Used left speaker; laser (445 nm) set to 2.0 mW; Probe P429; Rig 2
+
+"""
+Laser Calibration
+Power: Value on laser dial, value in output level
+0.5: 1.5, 19.7
+1.0: 1.95, 24.4
+1.5: 2.5, 30.4
+2.0: 3.15, 36.6
+2.5: 3.65, 42.5
+3.0: 4.45, 50.4
+3.5: 5.5, 61.9
+4.0: 6.2, 69.3
+"""
+
+# Animal in rig at: 9:10, bleeding pretty heavily from right craniotomy
+# Probe in at: 9:30, started bleeding again during penetration, pulled out, stuck in diagonally 9:50
+
+exp3.add_site(2900, tetrodes=[1,2,3,6,7])
+exp3.add_session('10-02-48', None, 'noiseburst', 'am_tuning_curve')
+exp3.add_session('10-02-48', None, 'laserpulse', 'am_tuning_curve')
+
+# Upon opening rig, mouse and wheel were covered in blood
