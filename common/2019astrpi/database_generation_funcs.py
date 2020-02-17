@@ -703,3 +703,9 @@ def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond
             if thiszscore > maxzscore:
                 maxzscore = thiszscore
     return maxzscore, minpVal
+
+def calculate_rate_discrimination_accuracy(): # Case 2 in Nick's file, just change to save as 'rateDiscrimAccuracy'
+    pass
+
+def calculate_phase_discrim_accuracy(): # Case 5 in am_preceptron, but save as 'phaseDiscrimAccuracy_{}Hz'
+    pass
