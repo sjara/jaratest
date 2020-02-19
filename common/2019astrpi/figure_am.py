@@ -442,7 +442,7 @@ if PANELS[5]:
     pos = jitter(np.ones(len(nD1PopStat)) * 1, jitterFrac)
     axPanelG.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=1, ms=dataMS)
     medline(np.median(nD1PopStat), 1, 0.5)
-    tickLabels = ['ATh:Str'.format(len(D1PopStat)), 'AC:Str'.format(len(nD1PopStat))]
+    tickLabels = ['D1'.format(len(D1PopStat)), 'nD1'.format(len(nD1PopStat))]
     axPanelG.set_xticks(range(2))
     axPanelG.set_xticklabels(tickLabels, rotation=45)
     extraplots.set_ticks_fontsize(axPanelG, fontSizeLabels)
