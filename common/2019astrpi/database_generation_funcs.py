@@ -2,10 +2,12 @@
 create functions for calculating parameters
 """
 import numpy as np
+import copy
 from numpy import inf
 from scipy import optimize
 from scipy import signal
 from scipy import stats
+from collections import Counter
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
 
@@ -503,13 +505,13 @@ def angle_population_vector_zar(angles):
 
 
 def rayleigh_test(angles):
-    '''
+    """
         Performs Rayleigh Test for non-uniformity of circular data.
         Compares against Null hypothesis of uniform distribution around circle
         Assume one mode and data sampled from Von Mises.
         Use other tests for different assumptions.
         Maths from [Biostatistical Analysis, Zar].
-    '''
+    """
     if angles.ndim > 1:
         angles = angles.flatten()
     N = angles.size
@@ -521,44 +523,43 @@ def rayleigh_test(angles):
     pVal = np.exp(np.sqrt(1. + 4*N + 4*(N**2. - R**2)) - 1. - 2.*N)
     return zVal, pVal
 
-
-def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachCond=[],
-                colorEachCond=None, fillWidth=None, labels=None):
-    """
-    :returns the indices for the first trial of each condition presented in a session
-
-    trialsEachCond can be a list of lists of indexes, or a boolean array of shape [nTrials,nConditions]
-    """
-    nTrials = len(indexLimitsEachTrial[0])
-    (trialsEachCond, nTrialsEachCond, nCond) = trials_each_cond_inds(trialsEachCond, nTrials)
-
-    if colorEachCond is None:
-        colorEachCond = ['0.5', '0.75']*int(np.ceil(nCond/2.0))
-
-    if fillWidth is None:
-        fillWidth = 0.05*np.diff(timeRange)
-
-    nSpikesEachTrial = np.diff(indexLimitsEachTrial, axis=0)[0]
-    nSpikesEachTrial = nSpikesEachTrial*(nSpikesEachTrial > 0)  # Some are negative
-    trialIndexEachCond = []
-    spikeTimesEachCond = []
-    for indcond, trialsThisCond in enumerate(trialsEachCond):
-        spikeTimesThisCond = np.empty(0, dtype='float64')
-        trialIndexThisCond = np.empty(0, dtype='int')
-        for indtrial, thisTrial in enumerate(trialsThisCond):
-            indsThisTrial = slice(indexLimitsEachTrial[0, thisTrial],
-                                  indexLimitsEachTrial[1, thisTrial])
-            spikeTimesThisCond = np.concatenate((spikeTimesThisCond,
-                                                 spikeTimesFromEventOnset[indsThisTrial]))
-            trialIndexThisCond = np.concatenate((trialIndexThisCond,
-                                                 np.repeat(indtrial, nSpikesEachTrial[thisTrial])))
-        trialIndexEachCond.append(np.copy(trialIndexThisCond))
-        spikeTimesEachCond.append(np.copy(spikeTimesThisCond))
-
-    xpos = timeRange[0]+np.array([0, fillWidth, fillWidth, 0])
-    lastTrialEachCond = np.cumsum(nTrialsEachCond)
-    firstTrialEachCond = np.r_[0, lastTrialEachCond[:-1]]
-    return firstTrialEachCond
+# def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachCond=[],
+#                 colorEachCond=None, fillWidth=None, labels=None):
+#     """
+#     :returns the indices for the first trial of each condition presented in a session
+#
+#     trialsEachCond can be a list of lists of indexes, or a boolean array of shape [nTrials,nConditions]
+#     """
+#     nTrials = len(indexLimitsEachTrial[0])
+#     (trialsEachCond, nTrialsEachCond, nCond) = trials_each_cond_inds(trialsEachCond, nTrials)
+#
+#     if colorEachCond is None:
+#         colorEachCond = ['0.5', '0.75']*int(np.ceil(nCond/2.0))
+#
+#     if fillWidth is None:
+#         fillWidth = 0.05*np.diff(timeRange)
+#
+#     nSpikesEachTrial = np.diff(indexLimitsEachTrial, axis=0)[0]
+#     nSpikesEachTrial = nSpikesEachTrial*(nSpikesEachTrial > 0)  # Some are negative
+#     trialIndexEachCond = []
+#     spikeTimesEachCond = []
+#     for indcond, trialsThisCond in enumerate(trialsEachCond):
+#         spikeTimesThisCond = np.empty(0, dtype='float64')
+#         trialIndexThisCond = np.empty(0, dtype='int')
+#         for indtrial, thisTrial in enumerate(trialsThisCond):
+#             indsThisTrial = slice(indexLimitsEachTrial[0, thisTrial],
+#                                   indexLimitsEachTrial[1, thisTrial])
+#             spikeTimesThisCond = np.concatenate((spikeTimesThisCond,
+#                                                  spikeTimesFromEventOnset[indsThisTrial]))
+#             trialIndexThisCond = np.concatenate((trialIndexThisCond,
+#                                                  np.repeat(indtrial, nSpikesEachTrial[thisTrial])))
+#         trialIndexEachCond.append(np.copy(trialIndexThisCond))
+#         spikeTimesEachCond.append(np.copy(spikeTimesThisCond))
+#
+#     xpos = timeRange[0]+np.array([0, fillWidth, fillWidth, 0])
+#     lastTrialEachCond = np.cumsum(nTrialsEachCond)
+#     firstTrialEachCond = np.r_[0, lastTrialEachCond[:-1]]
+#     return firstTrialEachCond
 
 # Below defintion applies to if spikes are signficantly synced to a rate as it is comparing the periods of spiking as it cycles through the modulation
 def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amSyncTrialIndexForEachSpike, amCurrentFreq, amUniqFreq):
@@ -704,8 +705,141 @@ def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond
                 maxzscore = thiszscore
     return maxzscore, minpVal
 
-def calculate_rate_discrimination_accuracy(): # Case 2 in Nick's file, just change to save as 'rateDiscrimAccuracy'
-    pass
 
-def calculate_phase_discrim_accuracy(): # Case 5 in am_preceptron, but save as 'phaseDiscrimAccuracy_{}Hz'
-    pass
+def linear_discriminator(spikesPref, spikesNonPref):
+
+    if len(spikesPref)==0:
+        raise ValueError('SpikesPref is an empty thing')
+    if len(spikesNonPref)==0:
+        raise ValueError('SpikesNonPref is an empty thing')
+
+    # Count number of times each spike number occurred for pref and nonpref
+    prefSpikeCount = Counter(spikesPref)
+    nonPrefSpikeCount = Counter(spikesNonPref)
+
+    # Find possible threshold values
+    minSpikes = np.min(np.concatenate([spikesPref, spikesNonPref]))
+    maxSpikes = np.max(np.concatenate([spikesPref, spikesNonPref]))
+    possibleThresh = np.arange(minSpikes, maxSpikes+1)
+
+    # Init array for accuracy
+    accuracy = np.empty(len(possibleThresh))
+
+    # Try each possible threshold
+    for indThresh, threshold in enumerate(possibleThresh):
+
+        # Misclassified preferred - below the threshold
+        misPref = sum([prefSpikeCount[i] for i in possibleThresh[:indThresh]])
+
+        # Misclassified non-preferred - above the threshold
+        misNonPref = sum([nonPrefSpikeCount[i] for i in possibleThresh[indThresh:]])
+
+        # Calculate accuracy for this threshold value
+        totalTrials = sum([len(spikesPref), len(spikesNonPref)])
+        accuracy[indThresh] = (totalTrials - (misPref + misNonPref)) / float(totalTrials)
+
+    # Return max accuracy and corresponding threshold
+    indMaxAccuracy = np.argmax(accuracy)
+    maxAccuracy = accuracy[indMaxAccuracy]
+    threshold = possibleThresh[indMaxAccuracy]
+    return maxAccuracy, threshold
+
+
+def calculate_rate_discrimination_accuracy(spikeTimes, eventOnsetTimes, baseRange, responseRange, currentFreq,
+                                           shuffle=False):  # From case==2 of am_preceptron.py of Nick's 2018thstr
+    SHUFFLE = shuffle  # Set to true to shuffle AM rates, giving an estimate of the chance level.
+
+    # if pVal > 0.05:  # No response
+    #     svmScore = np.nan  # Unsure what this is used for so I am not bloating my db with it
+
+    # --- Calculate best and worst rate ---
+
+    (spikeTimesFromEventOnset,
+     trialIndexForEachSpike,
+     indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
+                                                                   eventOnsetTimes,
+                                                                   responseRange)
+
+    if SHUFFLE:
+        currentFreq = np.random.permutation(currentFreq)
+
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial,
+                                                             responseRange)
+    spikeCountEachTrial = spikeCountMat.flatten()
+    if len(currentFreq) == len(spikeCountEachTrial) - 1:
+        spikeCountEachTrial = spikeCountEachTrial[:-1]
+
+    possibleRates = np.unique(currentFreq)
+    avgSpikesEachRate = np.empty(len(possibleRates))
+    for indRate, thisRate in enumerate(possibleRates):
+        spikesThisRate = spikeCountEachTrial[currentFreq == thisRate]
+        avgSpikesEachRate[indRate] = np.mean(spikesThisRate.ravel())
+
+    # Find spikes each trial for pref and nonpref frequencies
+    indPref = np.argmax(avgSpikesEachRate)
+    indNonPref = np.argmin(avgSpikesEachRate)
+    spikesPref = spikeCountEachTrial[currentFreq == possibleRates[indPref]]
+    spikesNonPref = spikeCountEachTrial[currentFreq == possibleRates[indNonPref]]
+
+    maxAccuracy, threshold = linear_discriminator(spikesPref, spikesNonPref)
+    rateDiscrimAccuracy = maxAccuracy
+
+    return rateDiscrimAccuracy
+
+
+def calculate_phase_discrim_accuracy(spikeTimes, eventOnsetTimes, currentFreq, uniqFreq, shuffle=False):
+    SHUFFLE = shuffle
+
+    # Timerange for alignment?
+    timeRange = [0.05, 0.5]  # Ignoring onset responses TODO: Is this the best way to do this??
+
+    phaseDiscrimAccuracy = {}
+    for thisFreq in uniqFreq:
+
+        # Only use events for this frequency
+        eventsThisFreq = eventOnsetTimes[currentFreq == thisFreq]
+
+        (spikeTimesFromEventOnset,
+         trialIndexForEachSpike,
+         indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
+                                                                       eventsThisFreq,
+                                                                       timeRange)
+
+        # This is really all we need to do to bin things by phase.
+        radsPerSec = thisFreq * 2 * np.pi
+        spikeRads = (spikeTimesFromEventOnset * radsPerSec) % (2 * np.pi)
+
+        strength, phase = signal.vectorstrength(spikeTimesFromEventOnset, 1.0 / thisFreq)
+        phase = (phase + 2 * np.pi) % (2 * np.pi)
+
+        shiftedRads = ((spikeRads - phase) + 2.25 * np.pi)
+        if any(shiftedRads < 0):
+            raise ValueError("Some shifted rads below 0")
+        # shiftedRads = ((spikeRads - phase) + 2.25*np.pi)%(2*np.pi)
+        spikeRads = shiftedRads % (2 * np.pi)
+
+        nBins = 4
+        binEdges = np.arange(0, 2.01 * np.pi, 2 * np.pi / nBins)  # The 2.01 makes it actually include 2pi
+        spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeRads, indexLimitsEachTrial, binEdges)
+
+        spikeCountMatCopy = copy.deepcopy(spikeCountMat)
+        spikeCountMatShuffle = np.empty(np.shape(spikeCountMatCopy))
+        for indMatRow in range(np.shape(spikeCountMatCopy)[0]):
+            numRolls = np.random.choice(range(np.shape(spikeCountMatCopy)[1]))
+            # numRolls = 0
+            spikeCountMatShuffle[indMatRow, :] = np.roll(spikeCountMatCopy[indMatRow, :], numRolls)
+        if SHUFFLE:
+            spikeCountMat = spikeCountMatShuffle
+
+        binMeans = np.mean(spikeCountMat, axis=0)
+        prefInd = np.argmax(binMeans)
+        nonPrefInd = np.argmin(binMeans)
+
+        spikesPref = spikeCountMat[:, prefInd]
+        spikesNonPref = spikeCountMat[:, nonPrefInd]
+
+        maxAccuracy, threshold = linear_discriminator(spikesPref, spikesNonPref)
+
+        # dataframe.set_value(indRow, 'phaseAccuracy_{}Hz'.format(int(thisFreq)), maxAccuracy)
+        phaseDiscrimAccuracy[int(thisFreq)] = maxAccuracy
+    return phaseDiscrimAccuracy
