@@ -272,10 +272,12 @@ def append_base_stats(cellDB, filename=''):
                 # TODO: test calculations below
                 # TODO: Should do some kind of post-hoc/correction on the alpha such as
                 # taking the alpha and dividing by the total number of comparisons done (11) and using that as a threshold
+                correctedPval = 0.05 / len(amUniqFreq)
 
-                if amPValue > 0.05:  # No response
+                # Decide whether to make the next calculations based on 0.05 or on corrected value
+                if amPValue > correctedPval:  # No response
                     print("No significant AM response, no synchronization will be calculated")
-                elif amPValue < 0.05:
+                elif amPValue < correctedPval:
                     amTimeRangeSync = [0.1, 0.5]  # Use this to cut out onset responses
                     (amSyncSpikeTimesFromEventOnset,
                      amSyncTrialIndexForEachSpike,
@@ -284,12 +286,24 @@ def append_base_stats(cellDB, filename=''):
                                                                                          amTimeRangeSync)
 
                     allFreqSyncPVal, allFreqSyncZScore, allFreqVectorStrength, allFreqRal = \
-                        funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, amSyncTrialIndexForEachSpike, amCurrentFreq, amUniqFreq)
+                        funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset,
+                                                                        amSyncTrialIndexForEachSpike, amCurrentFreq,
+                                                                        amUniqFreq)
                     amSyncPValue = np.min(allFreqSyncPVal)
                     amSyncZStat = np.max(allFreqSyncZScore)
                     cellDB.at[indRow, 'am_synchronization_pVal'] = amSyncPValue
                     cellDB.at[indRow, 'am_synchronization_ZStat'] = amSyncZStat
 
+                    phaseDiscrimAccuracyDict = funcs.calculate_phase_discrim_accuracy(amSpikeTimes, amEventOnsetTimes,
+                                                                                      amCurrentFreq, amUniqFreq)
+                    for rate in amUniqFreq:
+                        cellDB.at[indRow, 'phaseDiscrimAccuracy_{}Hz'.format(int(rate))] = \
+                            phaseDiscrimAccuracyDict[int(rate)]
+
+                    rateDiscrimAccuracy = funcs.calculate_rate_discrimination_accuracy(amSpikeTimes, amEventOnsetTimes,
+                                                                                       amBaseTime, amResponseTime,
+                                                                                       amCurrentFreq)
+                    cellDB.at[indRow, 'rateDiscrimAccuracy'] = rateDiscrimAccuracy
                     if any(allFreqSyncPVal < 0.05):
                             sigPvals = np.array(allFreqSyncPVal) < 0.05
                             highestSyncInd = funcs.index_all_true_before(sigPvals)
@@ -300,7 +314,6 @@ def append_base_stats(cellDB, filename=''):
                     else:
                         cellDB.at[indRow, 'highestSync'] = 0
 
-                    correctedPval = 0.05 / len(amUniqFreq)  # TODO: this can go up with where the pvalues are calculated
                     if any(allFreqSyncPVal < correctedPval):
                         cellDB.at[indRow, 'highestSyncCorrected'] = amUniqFreq[allFreqSyncPVal < correctedPval].max()
                         highestSyncCorrected = amUniqFreq[allFreqSyncPVal < correctedPval].max()
@@ -312,7 +325,7 @@ def append_base_stats(cellDB, filename=''):
                             # significantFreqsArray = np.concatenate([[significantFreqsArray], [freqsBelowThresh]])
                             significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
                     else:
-                        cellDB.loc[indRow, 'highestSyncCorrected'] = 0
+                        cellDB.at[indRow, 'highestSyncCorrected'] = 0
 
     cellDB['cfOnsetivityIndex'] = \
         (cellDB['onsetRate'] - cellDB['sustainedRate']) / \

@@ -21,6 +21,9 @@ pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
+D1 = db.query('laserpulse_pVal<0.05')
+nD1 = db.query('laserpulse_pVal>0.05')
+
 outputDir = '/var/tmp/figuresdata/2019astrpi/output'
 
 # TODO: Need to decide what we will filter AM by
@@ -231,65 +234,66 @@ if PANELS[3]:
 
 if PANELS[4]:
     popStatCol = 'highestSyncCorrected'
-    acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
-    thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
+    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
 
-    acPopStat = acPopStat[acPopStat > 0]
-    thalPopStat = thalPopStat[thalPopStat > 0]
+    nD1PopStat = nD1PopStat[nD1PopStat > 0]
+    D1PopStat = D1PopStat[D1PopStat > 0]
 
     # possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
     ytickLabels = [4, 8, 16, 32, 64, 128]
     yticks = np.log(ytickLabels)
 
-    acPopStat = np.log(acPopStat)
-    thalPopStat = np.log(thalPopStat)
+    nD1PopStat = np.log(nD1PopStat)
+    D1PopStat = np.log(D1PopStat)
 
-    axSummary = plt.subplot(gs[0, 5])
+    # axSummary = plt.subplot(gs[0, 5])
     spacing = 0.07
-    plt.sca(axSummary)
+    # plt.sca(axSummary)
+    plt.sca(axPanelD)
 
     # pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
     # axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
     plt.hold(1)
-    markers = extraplots.spread_plot(0, thalPopStat, spacing)
+    markers = extraplots.spread_plot(0, D1PopStat, spacing)
     plt.setp(markers, mec=colorD1, mfc='None')
     plt.setp(markers, ms=dataMS)
 
     plt.hold(1)
-    medline(np.median(thalPopStat), 0, 0.5)
+    medline(np.median(D1PopStat), 0, 0.5)
     plt.hold(1)
 
     # pos = jitter(np.ones(len(acPopStat))*1, 0.20)
     # axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
-    markers = extraplots.spread_plot(1, acPopStat, spacing)
+    markers = extraplots.spread_plot(1, nD1PopStat, spacing)
     plt.setp(markers, mec=colornD1, mfc='None')
     plt.setp(markers, ms=dataMS)
 
     plt.hold(1)
-    medline(np.median(acPopStat), 1, 0.5)
+    medline(np.median(nD1PopStat), 1, 0.5)
     plt.hold(1)
 
-    axSummary.set_yticks(yticks)
-    axSummary.set_yticklabels(ytickLabels)
+    axPanelD.set_yticks(yticks)
+    axPanelD.set_yticklabels(ytickLabels)
 
 
     # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
-    tickLabels = ['ATh:Str', 'AC:Str']
-    axSummary.set_xticks(range(2))
-    axSummary.set_xticklabels(tickLabels, rotation=45)
-    axSummary.set_xlim([-0.5, 1.5])
-    extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
-    extraplots.boxoff(axSummary)
+    tickLabels = ['D1', 'nD1']
+    axPanelD.set_xticks(range(2))
+    axPanelD.set_xticklabels(tickLabels, rotation=45)
+    axPanelD.set_xlim([-0.5, 1.5])
+    extraplots.set_ticks_fontsize(axPanelD, fontSizeLabels)
+    extraplots.boxoff(axPanelD)
     # axSummary.set_yticks(np.unique(thalPopStat))
     # axSummary.set_yticklabels(possibleFreqLabels)
     # axSummary.set_ylim([-0.001, 0.161])
 
 
-    yDataMax = max([max(acPopStat), max(thalPopStat)])
+    yDataMax = max([max(nD1PopStat), max(D1PopStat)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
-    zVal, pVal = stats.mannwhitneyu(thalPopStat, acPopStat)
+    zVal, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat)
     messages.append("{} p={}".format(popStatCol, pVal))
     # if pVal < 0.05:
     #     extraplots.new_significance_stars([0, 1], np.log(170), np.log(1.1), starMarker='*',
@@ -302,17 +306,17 @@ if PANELS[4]:
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
 
-    axSummary.set_ylim([np.log(3.6), np.log(150)])
-    axSummary.set_ylabel('Highest AM sync. rate (Hz)', labelpad=-1, fontsize=fontSizeLabels)
+    axPanelD.set_ylim([np.log(3.6), np.log(150)])
+    axPanelD.set_ylabel('Highest AM sync. rate (Hz)', labelpad=-1, fontsize=fontSizeLabels)
     plt.hold(1)
 
     # ---------------- Percent non-sync --------------------
     # axSummary = plt.subplot(gs[0, 5])
 
-    pieChartGS = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs[0, 4])
+    pieChartGS = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=axPanelC)
 
-    axThalPie = plt.subplot(pieChartGS[0, 0])
-    axACPie = plt.subplot(pieChartGS[1, 0])
+    axD1Pie = plt.subplot(pieChartGS[0, 0])
+    axnD1Pie = plt.subplot(pieChartGS[1, 0])
 
     annotateX = 0.2
     annotateY = np.array([-0.3, -0.45]) + 0.1
@@ -323,64 +327,64 @@ if PANELS[4]:
     rectHeight = 0.1
 
     # TODO: Move these to the axis transform
-    axACPie.annotate('Unsynchronized', xy=(annotateX, annotateY[0]), xycoords='axes fraction', fontsize=fontSizeTicks-2)
-    axACPie.annotate('Synchronized', xy=(annotateX, annotateY[1]), xycoords='axes fraction', fontsize=fontSizeTicks-2)
+    axnD1Pie.annotate('Unsynchronized', xy=(annotateX, annotateY[0]), xycoords='axes fraction', fontsize=fontSizeTicks - 2)
+    axnD1Pie.annotate('Synchronized', xy=(annotateX, annotateY[1]), xycoords='axes fraction', fontsize=fontSizeTicks - 2)
 
     fig = plt.gcf()
     rect1 = mpatches.Rectangle(xy=(rectX, rectY[0]), width=rectWidth, height=rectHeight, fc='w', ec='k', clip_on=False,
-                               transform=axACPie.transAxes)
+                               transform=axnD1Pie.transAxes)
     rect2 = mpatches.Rectangle(xy=(rectX, rectY[1]), width=rectWidth, height=rectHeight, fc='k', ec='k', clip_on=False,
-                               transform=axACPie.transAxes)
+                               transform=axnD1Pie.transAxes)
 
-    axACPie.add_patch(rect1)
-    axACPie.add_patch(rect2)
+    axnD1Pie.add_patch(rect1)
+    axnD1Pie.add_patch(rect2)
 
 
     popStatCol = 'highestSyncCorrected'
-    acPopStat = ac[popStatCol][pd.notnull(ac[popStatCol])]
-    acPopStat = acPopStat[pd.notnull(acPopStat)]
-    thalPopStat = thal[popStatCol][pd.notnull(thal[popStatCol])]
-    thalPopStat = thalPopStat[pd.notnull(thalPopStat)]
+    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+    nD1PopStat = nD1PopStat[pd.notnull(nD1PopStat)]
+    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+    D1PopStat = D1PopStat[pd.notnull(D1PopStat)]
 
-    acSyncN = len(acPopStat[acPopStat > 0])
-    acNonSyncN = len(acPopStat[acPopStat == 0])
-    acSyncFrac = acSyncN/float(acSyncN + acNonSyncN)
-    acNonSyncFrac = acNonSyncN/float(acSyncN + acNonSyncN)
+    nD1SyncN = len(nD1PopStat[nD1PopStat > 0])
+    nD1NonSyncN = len(nD1PopStat[nD1PopStat == 0])
+    nD1SyncFrac = nD1SyncN / float(nD1SyncN + nD1NonSyncN)
+    nD1NonSyncFrac = nD1NonSyncN / float(nD1SyncN + nD1NonSyncN)
 
-    pieWedges = axACPie.pie([acNonSyncFrac, acSyncFrac], colors=['w', colornD1], shadow=False, startangle=0)
+    pieWedges = axnD1Pie.pie([nD1NonSyncFrac, nD1SyncFrac], colors=['w', colornD1], shadow=False, startangle=0)
     for wedge in pieWedges[0]:
         wedge.set_edgecolor(colornD1)
 
     # axACPie.annotate('Non-Sync\n{}%'.format(int(100*acNonSyncFrac)), xy=[0.8, 0.8], rotation=0, fontweight='bold', textcoords='axes fraction')
     # axACPie.annotate('Sync\n{}%'.format(int(100*acSyncFrac)), xy=[-0.05, -0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
     fontSizePercent = 12
-    axACPie.annotate('{:0.0f}%'.format(np.round(100*acNonSyncFrac)), xy=[0.48, 0.6], rotation=0,
-                     fontweight='regular', textcoords='axes fraction', fontsize=fontSizePercent)
-    axACPie.annotate('{:0.0f}%'.format(np.round(100*acSyncFrac)), xy=[0.25, 0.25], rotation=0,
-                     fontweight='bold', textcoords='axes fraction', fontsize=fontSizePercent, color='w')
-    axACPie.set_aspect('equal')
+    axnD1Pie.annotate('{:0.0f}%'.format(np.round(100 * nD1NonSyncFrac)), xy=[0.48, 0.6], rotation=0,
+                      fontweight='regular', textcoords='axes fraction', fontsize=fontSizePercent)
+    axnD1Pie.annotate('{:0.0f}%'.format(np.round(100 * nD1SyncFrac)), xy=[0.25, 0.25], rotation=0,
+                      fontweight='bold', textcoords='axes fraction', fontsize=fontSizePercent, color='w')
+    axnD1Pie.set_aspect('equal')
 
-    thalSyncN = len(thalPopStat[thalPopStat > 0])
-    thalNonSyncN = len(thalPopStat[thalPopStat == 0])
-    thalSyncFrac = thalSyncN/float(thalSyncN + thalNonSyncN)
-    thalNonSyncFrac = thalNonSyncN/float(thalSyncN + thalNonSyncN)
+    D1SyncN = len(D1PopStat[D1PopStat > 0])
+    D1NonSyncN = len(D1PopStat[D1PopStat == 0])
+    D1SyncFrac = D1SyncN / float(D1SyncN + D1NonSyncN)
+    D1NonSyncFrac = D1NonSyncN / float(D1SyncN + D1NonSyncN)
 
-    pieWedges = axThalPie.pie([thalNonSyncFrac, thalSyncFrac], colors=['w', colorD1], shadow=False, startangle=0)
+    pieWedges = axD1Pie.pie([D1NonSyncFrac, D1SyncFrac], colors=['w', colorD1], shadow=False, startangle=0)
     for wedge in pieWedges[0]:
         wedge.set_edgecolor(colorD1)
 
     # axThalPie.annotate('Non-Sync\n{}%'.format(int(100*thalNonSyncFrac)), xy=[0.8, 0.8], rotation=0, fontweight='bold', textcoords='axes fraction')
     # axThalPie.annotate('Sync\n{}%'.format(int(100*thalSyncFrac)), xy=[-0.05, -0.05], rotation=0, fontweight='bold', textcoords='axes fraction')
-    axThalPie.annotate('{:0.0f}%'.format(np.round(100*thalNonSyncFrac)), xy=[0.57, 0.525], rotation=0,
+    axD1Pie.annotate('{:0.0f}%'.format(np.round(100 * D1NonSyncFrac)), xy=[0.57, 0.525], rotation=0,
                      fontweight='regular', textcoords='axes fraction', fontsize=fontSizePercent)
-    axThalPie.annotate('{:0.0f}%'.format(np.round(100*thalSyncFrac)), xy=[0.2, 0.3], rotation=0,
-                       fontweight='bold', textcoords='axes fraction', fontsize=fontSizePercent, color='w')
-    axThalPie.set_aspect('equal')
+    axD1Pie.annotate('{:0.0f}%'.format(np.round(100 * D1SyncFrac)), xy=[0.2, 0.3], rotation=0,
+                     fontweight='bold', textcoords='axes fraction', fontsize=fontSizePercent, color='w')
+    axD1Pie.set_aspect('equal')
 
-    oddsratio, pValue = stats.fisher_exact([[acSyncN, thalSyncN],
-                                            [acNonSyncN, thalNonSyncN]])
-    print("AC: {} Nonsync / {} total".format(acNonSyncN, acSyncN+acNonSyncN))
-    print("Thal: {} Nonsync / {} total".format(thalNonSyncN, thalSyncN+thalNonSyncN))
+    oddsratio, pValue = stats.fisher_exact([[nD1SyncN, D1SyncN],
+                                            [nD1NonSyncN, D1NonSyncN]])
+    print("AC: {} Nonsync / {} total".format(nD1NonSyncN, nD1SyncN + nD1NonSyncN))
+    print("Thal: {} Nonsync / {} total".format(D1NonSyncN, D1SyncN + D1NonSyncN))
     print("p-Val for fisher exact test: {}".format(pValue))
     if pValue < 0.05:
         starMarker = '*'
@@ -388,14 +392,14 @@ if PANELS[4]:
         starMarker = 'n.s.'
 
 
-    axThalPie.annotate('C', xy=(labelPosX[2], labelPosY[1]), xycoords='figure fraction',
-                       fontsize=fontSizePanel, fontweight='bold')
-    axThalPie.annotate('D', xy=(labelPosX[3], labelPosY[1]), xycoords='figure fraction',
-                       fontsize=fontSizePanel, fontweight='bold')
-    axThalPie.annotate('G', xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
-                       fontsize=fontSizePanel, fontweight='bold')
-    axThalPie.annotate('H', xy=(labelPosX[3], labelPosY[0]), xycoords='figure fraction',
-                       fontsize=fontSizePanel, fontweight='bold')
+    axD1Pie.annotate('C', xy=(labelPosX[2], labelPosY[1]), xycoords='figure fraction',
+                     fontsize=fontSizePanel, fontweight='bold')
+    axD1Pie.annotate('D', xy=(labelPosX[3], labelPosY[1]), xycoords='figure fraction',
+                     fontsize=fontSizePanel, fontweight='bold')
+    axD1Pie.annotate('G', xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
+                     fontsize=fontSizePanel, fontweight='bold')
+    axD1Pie.annotate('H', xy=(labelPosX[3], labelPosY[0]), xycoords='figure fraction',
+                     fontsize=fontSizePanel, fontweight='bold')
 
     xBar = -2
     # FarUntagged, CloseUntagged, tagged
@@ -477,21 +481,21 @@ if PANELS[5]:
 
     popStatCol = 'rateDiscrimAccuracy'
     # popStatCol = 'accuracySustained'
-    acPopStat = acRate[popStatCol][pd.notnull(acRate[popStatCol])]
-    thalPopStat = thalRate[popStatCol][pd.notnull(thalRate[popStatCol])]
+    nD1PopStat = acRate[popStatCol][pd.notnull(acRate[popStatCol])]
+    D1PopStat = thalRate[popStatCol][pd.notnull(thalRate[popStatCol])]
 
     # plt.clf()
     # axSummary = plt.subplot(111)
     axSummary = plt.subplot(gs[1, 4])
 
     jitterFrac = 0.2
-    pos = jitter(np.ones(len(thalPopStat))*0, jitterFrac)
-    axSummary.plot(pos, thalPopStat, 'o', mec=colorATh, mfc='None', alpha=1, ms=dataMS)
-    medline(np.median(thalPopStat), 0, 0.5)
-    pos = jitter(np.ones(len(acPopStat))*1, jitterFrac)
-    axSummary.plot(pos, acPopStat, 'o', mec=colorAC, mfc='None', alpha=1, ms=dataMS)
-    medline(np.median(acPopStat), 1, 0.5)
-    tickLabels = ['ATh:Str'.format(len(thalPopStat)), 'AC:Str'.format(len(acPopStat))]
+    pos = jitter(np.ones(len(D1PopStat)) * 0, jitterFrac)
+    axSummary.plot(pos, D1PopStat, 'o', mec=colorATh, mfc='None', alpha=1, ms=dataMS)
+    medline(np.median(D1PopStat), 0, 0.5)
+    pos = jitter(np.ones(len(nD1PopStat)) * 1, jitterFrac)
+    axSummary.plot(pos, nD1PopStat, 'o', mec=colorAC, mfc='None', alpha=1, ms=dataMS)
+    medline(np.median(nD1PopStat), 1, 0.5)
+    tickLabels = ['ATh:Str'.format(len(D1PopStat)), 'AC:Str'.format(len(nD1PopStat))]
     axSummary.set_xticks(range(2))
     axSummary.set_xticklabels(tickLabels, rotation=45)
     extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
@@ -503,10 +507,10 @@ if PANELS[5]:
     axSummary.set_ylabel('Discrimination accuracy\nof AM rate (%)', fontsize=fontSizeLabels, labelpad=-12)
     # extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
 
-    zstat, pVal = stats.mannwhitneyu(thalPopStat, acPopStat)
+    zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat)
 
     messages.append("{} p={}".format("Rate discrimination accuracy", pVal))
-    messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(thalPopStat), len(acPopStat)))
+    messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(D1PopStat), len(nD1PopStat)))
 
     # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
@@ -516,7 +520,7 @@ if PANELS[5]:
     # starHeightFactor = 0.2
     # starGapFactor = 0.3
     # starYfactor = 0.1
-    yDataMax = max([max(acPopStat), max(thalPopStat)]) - 0.025
+    yDataMax = max([max(nD1PopStat), max(D1PopStat)]) - 0.025
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
@@ -590,7 +594,7 @@ if PANELS[6]:
     zstat, pVal = stats.mannwhitneyu(thalMeanPerCell, acMeanPerCell)
 
     messages.append("{} p={}".format("Phase discrimination accuracy", pVal))
-    messages.append("{} ATh n={}, AC n={}".format("Phase discrimination accuracy", len(thalPopStat), len(acPopStat)))
+    messages.append("{} ATh n={}, AC n={}".format("Phase discrimination accuracy", len(D1PopStat), len(nD1PopStat)))
 
     # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
