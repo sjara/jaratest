@@ -15,14 +15,12 @@ import studyparams
 
 FIGNAME = 'figure_am'
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '_'.join(d1mice) + '.h5'
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
-# os.path.join(studyparams.PATH_TO_TEST,nameDB)
+nameDB = '{}.h5'.format('direct_and_indirect_cells')
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
-D1 = db.query('laserpulse_pVal<0.05')
-nD1 = db.query('laserpulse_pVal>0.05')
+D1 = db.query('laserpulse_pVal<0.05 and am_response_pVal<0.05')
+nD1 = db.query('laserpulse_pVal>0.05 and am_response_pVal<0.05')
 
 outputDir = '/var/tmp/figuresdata/2019astrpi/output'
 
@@ -48,15 +46,15 @@ def medline(yval, midline, width, color='k', linewidth=3):
     plt.plot([start, end], [yval, yval], color=color, lw=linewidth)
 
 
-PANELS = [1, 1, 1, 1, 0, 0, 0]
+PANELS = [1, 1, 1, 1, 1, 1, 1]
 
 SAVE_FIGURE = 1
 # outputDir = '/tmp/'
 # outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_am_tuning' # Do not include extension
-figFormat = 'svg'  # 'pdf' or 'svg'
-# figFormat = 'pdf' # 'pdf' or 'svg'
+# figFormat = 'svg'  # 'pdf' or 'svg'
+figFormat = 'pdf' # 'pdf' or 'svg'
 # figSize = [13,8] # In inches
 
 fullPanelWidthInches = 6.9
@@ -107,14 +105,14 @@ exampleSpikeTimes = exampleData['exampleSpikeTimes'].item()
 exampleTrialIndexForEachSpike = exampleData['exampleTrialIndexForEachSpike'].item()
 exampleIndexLimitsEachTrial = exampleData['exampleIndexLimitsEachTrial'].item()
 
-axPanelA = gs[0, 0:2]
-axPanelB = gs[0, 2:4]
-axPanelC = gs[0, 4]
-axPanelD = gs[0, 5]
-axPanelE = gs[1, 0:2]
-axPanelF = gs[1, 2:4]
-axPanelG = gs[1, 4]
-axPanelH = gs[1, 5]
+gsPanelA = gs[0, 0:2]
+gsPanelB = gs[0, 2:4]
+gsPanelC = gs[0, 4]
+gsPanelD = gs[0, 5]
+gsPanelE = gs[1, 0:2]
+gsPanelF = gs[1, 2:4]
+gsPanelG = gs[1, 4]
+gsPanelH = gs[1, 5]
 
 
 def plot_example_with_rate(subplotSpec, exampleName, color='k'):
@@ -191,7 +189,7 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
 
 
 if PANELS[0]:
-    (axDirectCellEx1, axDirectFREx1) = plot_example_with_rate(axPanelA, 'Direct1', color=colorD1)
+    (axDirectCellEx1, axDirectFREx1) = plot_example_with_rate(gsPanelA, 'Direct1', color=colorD1)
     axDirectCellEx1.set_title('Direct pathway example 1', fontsize=fontSizeTitles)
     axDirectFREx1.set_xlim([0, 100])
     axDirectFREx1.set_xticks([0, 100])
@@ -201,7 +199,7 @@ if PANELS[0]:
                              fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[1]:
-    (axDirectCellEx2, axDirectFREx2) = plot_example_with_rate(axPanelB, 'Direct2', color=colorD1)
+    (axDirectCellEx2, axDirectFREx2) = plot_example_with_rate(gsPanelB, 'Direct2', color=colorD1)
     axDirectCellEx2.set_title('Direct pathway example 2', fontsize=fontSizeTitles)
     axDirectFREx2.set_xlim([0, 15])
     axDirectFREx2.set_xticks([0, 15])
@@ -211,7 +209,7 @@ if PANELS[1]:
                              fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[2]:
-    (axNonDirectEx1, axNonDirectFREx1) = plot_example_with_rate(axPanelE, 'nDirect1', color=colornD1)
+    (axNonDirectEx1, axNonDirectFREx1) = plot_example_with_rate(gsPanelE, 'nDirect1', color=colornD1)
     axNonDirectEx1.set_title('Non-direct pathway example 1', fontsize=fontSizeTitles)
     axNonDirectFREx1.set_xlim([0, 35])
     axNonDirectFREx1.set_xticks([0, 35])
@@ -221,7 +219,7 @@ if PANELS[2]:
                             fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[3]:
-    (axNonDirectEx2, axNonDirectFREx2) = plot_example_with_rate(axPanelF, 'nDirect2', color=colornD1)
+    (axNonDirectEx2, axNonDirectFREx2) = plot_example_with_rate(gsPanelF, 'nDirect2', color=colornD1)
     axNonDirectEx2.set_title('Non-direct pathway example 2', fontsize=fontSizeTitles)
     axNonDirectFREx2.set_xlim([0, 25])
     axNonDirectFREx2.set_xticks([0, 25])
@@ -250,6 +248,7 @@ if PANELS[4]:
     # axSummary = plt.subplot(gs[0, 5])
     spacing = 0.07
     # plt.sca(axSummary)
+    axPanelD = plt.subplot(gsPanelD)
     plt.sca(axPanelD)
 
     # pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
@@ -312,8 +311,9 @@ if PANELS[4]:
 
     # ---------------- Percent non-sync --------------------
     # axSummary = plt.subplot(gs[0, 5])
-
-    pieChartGS = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=axPanelC)
+    axPanelC = plt.subplot(gsPanelC)
+    plt.sca(axPanelC)
+    pieChartGS = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gsPanelC)
 
     axD1Pie = plt.subplot(pieChartGS[0, 0])
     axnD1Pie = plt.subplot(pieChartGS[1, 0])
@@ -383,8 +383,8 @@ if PANELS[4]:
 
     oddsratio, pValue = stats.fisher_exact([[nD1SyncN, D1SyncN],
                                             [nD1NonSyncN, D1NonSyncN]])
-    print("AC: {} Nonsync / {} total".format(nD1NonSyncN, nD1SyncN + nD1NonSyncN))
-    print("Thal: {} Nonsync / {} total".format(D1NonSyncN, D1SyncN + D1NonSyncN))
+    print("nD1: {} Nonsync / {} total".format(nD1NonSyncN, nD1SyncN + nD1NonSyncN))
+    print("D1: {} Nonsync / {} total".format(D1NonSyncN, D1SyncN + D1NonSyncN))
     print("p-Val for fisher exact test: {}".format(pValue))
     if pValue < 0.05:
         starMarker = '*'
@@ -407,110 +407,57 @@ if PANELS[4]:
     xTickWidth = 0.2
     yGapWidth = 0.5
 
-    # -- Plotting stars for the pie charts -- ######
-    # def plot_y_lines_with_ticks(ax, x, y1, y2, gapwidth, tickwidth, color='k', starMarker="*", fontSize=9):
-    #     ax.plot([x, x], [y1, np.mean([y1, y2])-(gapwidth/2)], '-', clip_on=False, color=color)
-    #     ax.hold(1)
-    #     ax.plot([x, x], [np.mean([y1, y2])+(gapwidth/2), y2], '-', clip_on=False, color=color)
-    #     ax.plot([x, x+xTickWidth], [y1, y1], '-', clip_on=False, color=color)
-    #     ax.plot([x, x+xTickWidth], [y2, y2], '-', clip_on=False, color=color)
-
-    #     if starMarker == '*':
-    #         ax.plot(x, np.mean([y1, y2]), starMarker, clip_on=False, ms=fontSizeStars, mfc='k', mec='None')
-    #     else:
-    #         ax.text(x, np.mean([y1, y2]), starMarker, fontsize=fontSize, rotation='vertical', va='center', ha='center', clip_on=False)
-
-
-    # plot_y_lines_with_ticks(axACPie, xBar, yCircleCenters[0], yCircleCenters[1],
-    #                         yGapWidth, xTickWidth, starMarker=starMarker)
-
-    #####################################################
-
-    # width = 0.5
-    # plt.hold(1)
-    # loc = [1, 2]
-    # # axSummary.bar(loc[0]-width/2, thalNonSyncPercent, width, color=colorATh)
-    # # axSummary.bar(loc[0]-width/2, thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
-    # # axSummary.bar(loc[1]-width/2, acNonSyncPercent, width, color=colorAC)
-    # # axSummary.bar(loc[1]-width/2, acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
-    # axSummary.bar(loc[0], thalNonSyncPercent, width, color=colorATh)
-    # axSummary.bar(loc[0], thalSyncPercent, width, bottom=thalNonSyncPercent, color=colorATh, alpha=0.5)
-    # axSummary.bar(loc[1], acNonSyncPercent, width, color=colorAC)
-    # axSummary.bar(loc[1], acSyncPercent, width, bottom=acNonSyncPercent, color=colorAC, alpha=0.5)
-    # extraplots.boxoff(axSummary)
-
-    # extraplots.new_significance_stars([1, 2], 105, 2.5, starMarker='*',
-    #                                     fontSize=fontSizeStars, gapFactor=starGapFactor)
-
-    # axSummary.text(2.65, 30, 'Non-Sync.', rotation=90, fontweight='bold')
-    # axSummary.text(2.65, 75, 'Sync.', rotation=90, fontweight='bold', color='0.5')
-
-    # axSummary.set_xlim([0.5, 2.6])
-    # # extraplots.boxoff(axSummary)
-    # axSummary.set_ylim([0, 100.5])
-    # axSummary.set_xticks([1, 2])
-    # tickLabels = ['ATh:Str', 'AC:Str']
-    # axSummary.set_xticklabels(tickLabels)
-    # axSummary.set_ylabel('% neurons', labelpad=-5)
-
-    ##########################################################
-
-
 # ---------------- Discrimination of Rate ----------------
 if PANELS[5]:
     # dbPathRate = os.path.join(dataDir, 'celldatabase_with_am_discrimination_accuracy.h5')
-    dbPathRate = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+    # dbPathRate = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
     # dataframeRate = pd.read_hdf(dbPathRate, key='dataframe')
-    dataframeRate = celldatabase.load_hdf(dbPathRate)
-    # Show population distributions
-    colorATh = figparams.cp.TangoPalette['SkyBlue2']
-    colorAC = figparams.cp.TangoPalette['ScarletRed1']
-    # dataMS=5
+    # dataframeRate = celldatabase.load_hdf(dbPathRate)
 
-    goodISIRate = dataframeRate.query('isiViolations<0.02 or modifiedISI<0.02')
-    goodShapeRate = goodISIRate.query('spikeShapeQuality > 2')
-    goodLaserRate = goodShapeRate.query("autoTagged==1 and subject != 'pinp018'")
-    goodNSpikesRate = goodLaserRate.query('nSpikes>2000')
+    # -------- Future things I could calculate and filter by similar to what Nick did --------
+    # goodISIRate = dataframeRate.query('isiViolations<0.02 or modifiedISI<0.02')
+    # goodShapeRate = goodISIRate.query('spikeShapeQuality > 2')
+    # goodLaserRate = goodShapeRate.query("autoTagged==1 and subject != 'pinp018'")
+    # goodNSpikesRate = goodLaserRate.query('nSpikes>2000')
+    # goodPulseLatency = goodNSpikesRate.query('summaryPulseLatency<0.01')
+    # dbToUse = goodPulseLatency
 
-    goodPulseLatency = goodNSpikesRate.query('summaryPulseLatency<0.01')
-
-    dbToUse = goodPulseLatency
-
-    acRate = dbToUse.groupby('brainArea').get_group('rightAC')
-    thalRate = dbToUse.groupby('brainArea').get_group('rightThal')
+    # nD1Rate = nD1.groupby('brainArea').get_group('rightAC')
+    # D1Rate = D1.groupby('brainArea').get_group('rightThal')
 
     popStatCol = 'rateDiscrimAccuracy'
     # popStatCol = 'accuracySustained'
-    nD1PopStat = acRate[popStatCol][pd.notnull(acRate[popStatCol])]
-    D1PopStat = thalRate[popStatCol][pd.notnull(thalRate[popStatCol])]
+    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
 
     # plt.clf()
     # axSummary = plt.subplot(111)
-    axSummary = plt.subplot(gs[1, 4])
+    axPanelG = plt.subplot(gsPanelG)
+    plt.sca(axPanelG)
 
     jitterFrac = 0.2
     pos = jitter(np.ones(len(D1PopStat)) * 0, jitterFrac)
-    axSummary.plot(pos, D1PopStat, 'o', mec=colorATh, mfc='None', alpha=1, ms=dataMS)
+    axPanelG.plot(pos, D1PopStat, 'o', mec=colorD1, mfc='None', alpha=1, ms=dataMS)
     medline(np.median(D1PopStat), 0, 0.5)
     pos = jitter(np.ones(len(nD1PopStat)) * 1, jitterFrac)
-    axSummary.plot(pos, nD1PopStat, 'o', mec=colorAC, mfc='None', alpha=1, ms=dataMS)
+    axPanelG.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=1, ms=dataMS)
     medline(np.median(nD1PopStat), 1, 0.5)
-    tickLabels = ['ATh:Str'.format(len(D1PopStat)), 'AC:Str'.format(len(nD1PopStat))]
-    axSummary.set_xticks(range(2))
-    axSummary.set_xticklabels(tickLabels, rotation=45)
-    extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
-    axSummary.set_ylim([0.5, 1])
+    tickLabels = ['D1'.format(len(D1PopStat)), 'nD1'.format(len(nD1PopStat))]
+    axPanelG.set_xticks(range(2))
+    axPanelG.set_xticklabels(tickLabels, rotation=45)
+    extraplots.set_ticks_fontsize(axPanelG, fontSizeLabels)
+    axPanelG.set_ylim([0.5, 1])
     yticks = [0.5, 0.6, 0.7, 0.8, 0.9, 1]
-    axSummary.set_yticks(yticks)
+    axPanelG.set_yticks(yticks)
     ytickLabels = ['50', '', '', '', '', '100']
-    axSummary.set_yticklabels(ytickLabels)
-    axSummary.set_ylabel('Discrimination accuracy\nof AM rate (%)', fontsize=fontSizeLabels, labelpad=-12)
+    axPanelG.set_yticklabels(ytickLabels)
+    axPanelG.set_ylabel('Discrimination accuracy\nof AM rate (%)', fontsize=fontSizeLabels, labelpad=-12)
     # extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
 
     zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat)
 
     messages.append("{} p={}".format("Rate discrimination accuracy", pVal))
-    messages.append("{} ATh n={}, AC n={}".format(popStatCol, len(D1PopStat), len(nD1PopStat)))
+    messages.append("{} D1 n={}, nD1 n={}".format(popStatCol, len(D1PopStat), len(nD1PopStat)))
 
     # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
@@ -529,72 +476,71 @@ if PANELS[5]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
-    extraplots.boxoff(axSummary)
+    extraplots.boxoff(axPanelG)
     plt.hold(1)
 
 
 # -------------Discrimination of Phase -------------------
 if PANELS[6]:
-    dbPathPhase = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
-    # dbPhase = pd.read_hdf(dbPathPhase, key='dataframe')
-    dbPhase = celldatabase.load_hdf(dbPathPhase)
+    # dbPathPhase = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
+    # # dbPhase = pd.read_hdf(dbPathPhase, key='dataframe')
+    # dbPhase = celldatabase.load_hdf(dbPathPhase)
 
-    goodISIPhase = dbPhase.query('isiViolations<0.02 or modifiedISI<0.02')
-    goodShapePhase = goodISIPhase.query('spikeShapeQuality > 2')
-    goodLaserPhase = goodShapePhase.query("autoTagged==1 and subject != 'pinp018'")
-    goodNSpikesPhase = goodLaserPhase.query('nSpikes>2000')
-
-    acPhase = goodNSpikesPhase.groupby('brainArea').get_group('rightAC')
-    thalPhase = goodNSpikesPhase.groupby('brainArea').get_group('rightThal')
+    # -------- Filters I could calculate and add if we think it is necessary ------
+    # goodISIPhase = dbPhase.query('isiViolations<0.02 or modifiedISI<0.02')
+    # goodShapePhase = goodISIPhase.query('spikeShapeQuality > 2')
+    # goodLaserPhase = goodShapePhase.query("autoTagged==1 and subject != 'pinp018'")
+    # goodNSpikesPhase = goodLaserPhase.query('nSpikes>2000')
 
     possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
     ratesToUse = possibleRateKeys
     keys = ['phaseDiscrimAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
 
-    acData = np.full((len(acPhase), len(ratesToUse)), np.nan)
-    thalData = np.full((len(thalPhase), len(ratesToUse)), np.nan)
+    nD1Data = np.full((len(nD1), len(ratesToUse)), np.nan)
+    D1Data = np.full((len(D1), len(ratesToUse)), np.nan)
 
-    for externalInd, (indRow, row) in enumerate(acPhase.iterrows()):
+    for externalInd, (indRow, row) in enumerate(nD1.iterrows()):
         for indKey, key in enumerate(keys):
-            acData[externalInd, indKey] = row[key]
+            nD1Data[externalInd, indKey] = row[key]
 
-    for externalInd, (indRow, row) in enumerate(thalPhase.iterrows()):
+    for externalInd, (indRow, row) in enumerate(D1.iterrows()):
         for indKey, key in enumerate(keys):
-            thalData[externalInd, indKey] = row[key]
+            D1Data[externalInd, indKey] = row[key]
 
-    acMeanPerCell = np.nanmean(acData, axis=1)
-    acMeanPerCell = acMeanPerCell[~np.isnan(acMeanPerCell)]
-    thalMeanPerCell = np.nanmean(thalData, axis=1)
-    thalMeanPerCell = thalMeanPerCell[~np.isnan(thalMeanPerCell)]
+    nD1MeanPerCell = np.nanmean(nD1Data, axis=1)
+    nD1MeanPerCell = nD1MeanPerCell[~np.isnan(nD1MeanPerCell)]
+    D1MeanPerCell = np.nanmean(D1Data, axis=1)
+    D1MeanPerCell = D1MeanPerCell[~np.isnan(D1MeanPerCell)]
 
     # plt.clf()
 
-    axSummary = plt.subplot(gs[1, 5])
+    # axSummary = plt.subplot(gs[1, 5])
+    axPanelH = plt.subplot(gsPanelH)
 
     jitterFrac = 0.2
-    pos = jitter(np.ones(len(thalMeanPerCell))*0, jitterFrac)
-    axSummary.plot(pos, thalMeanPerCell, 'o', mec=colorATh, mfc='None', alpha=1, ms=dataMS)
-    medline(np.median(thalMeanPerCell), 0, 0.5)
-    pos = jitter(np.ones(len(acMeanPerCell))*1, jitterFrac)
-    axSummary.plot(pos, acMeanPerCell, 'o', mec=colorAC, mfc='None', alpha=1, ms=dataMS)
-    medline(np.median(acMeanPerCell), 1, 0.5)
-    tickLabels = ['ATh:Str'.format(len(thalMeanPerCell)), 'AC:Str'.format(len(acMeanPerCell))]
-    axSummary.set_xticks(range(2))
-    axSummary.set_xticklabels(tickLabels, rotation=45)
-    extraplots.set_ticks_fontsize(axSummary, fontSizeLabels)
-    axSummary.set_ylim([0.5, 1])
+    pos = jitter(np.ones(len(D1MeanPerCell)) * 0, jitterFrac)
+    axPanelH.plot(pos, D1MeanPerCell, 'o', mec=colorD1, mfc='None', alpha=1, ms=dataMS)
+    medline(np.median(D1MeanPerCell), 0, 0.5)
+    pos = jitter(np.ones(len(nD1MeanPerCell)) * 1, jitterFrac)
+    axPanelH.plot(pos, nD1MeanPerCell, 'o', mec=colornD1, mfc='None', alpha=1, ms=dataMS)
+    medline(np.median(nD1MeanPerCell), 1, 0.5)
+    tickLabels = ['D1'.format(len(D1MeanPerCell)), 'nD1'.format(len(nD1MeanPerCell))]
+    axPanelH.set_xticks(range(2))
+    axPanelH.set_xticklabels(tickLabels, rotation=45)
+    extraplots.set_ticks_fontsize(axPanelH, fontSizeLabels)
+    axPanelH.set_ylim([0.5, 1])
     yticks = [0.5, 0.6, 0.7, 0.8, 0.9, 1]
-    axSummary.set_yticks(yticks)
+    axPanelH.set_yticks(yticks)
     ytickLabels = ['50', '', '', '', '', '100']
-    axSummary.set_yticklabels(ytickLabels)
+    axPanelH.set_yticklabels(ytickLabels)
     # axSummary.set_yticklabels(map(str, [50, 60, 70, 80, 90, 100]))
-    axSummary.set_ylabel('Discrimination accuracy\nof AM phase (%)', fontsize=fontSizeLabels, labelpad=-12)
+    axPanelH.set_ylabel('Discrimination accuracy\nof AM phase (%)', fontsize=fontSizeLabels, labelpad=-12)
 
 
-    zstat, pVal = stats.mannwhitneyu(thalMeanPerCell, acMeanPerCell)
+    zstat, pVal = stats.mannwhitneyu(D1MeanPerCell, nD1MeanPerCell)
 
     messages.append("{} p={}".format("Phase discrimination accuracy", pVal))
-    messages.append("{} ATh n={}, AC n={}".format("Phase discrimination accuracy", len(D1PopStat), len(nD1PopStat)))
+    messages.append("{} D1 n={}, nD1 n={}".format("Phase discrimination accuracy", len(D1PopStat), len(nD1PopStat)))
 
     # plt.title('p = {}'.format(np.round(pVal, decimals=5)))
 
@@ -604,7 +550,7 @@ if PANELS[6]:
     # starHeightFactor = 0.2
     # starGapFactor = 0.3
     # starYfactor = 0.1
-    yDataMax = max([max(acMeanPerCell), max(thalMeanPerCell)])
+    yDataMax = max([max(nD1MeanPerCell), max(D1MeanPerCell)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
 
@@ -614,7 +560,7 @@ if PANELS[6]:
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
 
-    extraplots.boxoff(axSummary)
+    extraplots.boxoff(axPanelH)
 
 print("\nSTATISTICS:\n")
 for message in messages:
