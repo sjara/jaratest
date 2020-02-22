@@ -339,7 +339,6 @@ if PANELS[4]:
     axnD1Pie.add_patch(rect1)
     axnD1Pie.add_patch(rect2)
 
-
     popStatCol = 'highestSyncCorrected'
     nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
     nD1PopStat = nD1PopStat[pd.notnull(nD1PopStat)]
@@ -390,7 +389,6 @@ if PANELS[4]:
         starMarker = '*'
     else:
         starMarker = 'n.s.'
-
 
     axD1Pie.annotate('C', xy=(labelPosX[2], labelPosY[1]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')

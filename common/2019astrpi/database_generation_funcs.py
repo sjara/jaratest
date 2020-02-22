@@ -843,3 +843,4 @@ def calculate_phase_discrim_accuracy(spikeTimes, eventOnsetTimes, currentFreq, u
         # dataframe.set_value(indRow, 'phaseAccuracy_{}Hz'.format(int(thisFreq)), maxAccuracy)
         phaseDiscrimAccuracy[int(thisFreq)] = maxAccuracy
     return phaseDiscrimAccuracy
+
