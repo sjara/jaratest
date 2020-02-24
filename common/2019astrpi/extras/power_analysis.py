@@ -25,16 +25,21 @@ def cohens_D(pop1, pop2):
     return (mean1 - mean2)/pooledDeviation
 
 
-def calculate_power(effectSize, alpha=0.05):
+# TODO: Add graph of power at differing effect sizes
+def calculate_power(effectSize, powerThreshold=0.8, alpha=0.05):
     """
     Calculates the power at multiple different number of observations and will return
     a plot of the power curve as well as giving the minimum value to have a power over
     0.80 for the given effect size.
     Args:
-        effectSize (float): A value between 0 and 1 (calculated by cohens_D)
+        effectSize (list or array of floats): A value between 0 and 1 (calculated by cohens_D)
+        powerThreshold (float): Value used to determine minimum number of observations needed to commit type II errors
+        with a (1 - value) chance. ie a powerThreshold of 0.8 means that the output will be  the minimum number of
+        observations needed  to only have a 20% chance of committing type II error
         alpha (float): Non-zero value that is less than 1 that acts as the threshold for significance
 
     Returns:
+        Number of of observations needed to pass the specified power threshold for a given effect size
 
     """
     messages = []
@@ -43,8 +48,8 @@ def calculate_power(effectSize, alpha=0.05):
     for size in effectSize:
         for count in cellCount:
             pow_value = analysis.power(size, count, alpha)
-            if pow_value > 0.8:
-                messages.append("Effect size of {0} requires {1} cells to have a power greater than 0.8".format(size, count))
+            if pow_value > powerThreshold:
+                messages.append("Effect size of {0} requires {1} cells to have a power greater than {2}".format(size, count, powerThreshold))
                 break
     for message in messages:
         print(message)
