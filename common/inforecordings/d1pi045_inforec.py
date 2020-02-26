@@ -293,3 +293,4 @@ exp3.add_session('10-02-48', None, 'noiseburst', 'am_tuning_curve')
 exp3.add_session('10-02-48', None, 'laserpulse', 'am_tuning_curve')
 
 # Upon opening rig, mouse and wheel were covered in blood
+exp3.maxDepth = 2900
