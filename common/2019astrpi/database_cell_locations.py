@@ -76,32 +76,32 @@ def cell_locations(db):
                 siteCoords = siteCoords[0]
                 
                 atlasZ = track['atlasZ']
-                cortexDepthData = np.rot90(lap[:, :, atlasZ], -1)
-                 
-                # We consider the points with depth > 0.95 to be the bottom surface of cortex
-                bottomData = np.where(cortexDepthData > 0.95)
-                 
-                # Top of cortex is less than 0.02 but greater than 0
-                topData = np.where((cortexDepthData < 0.02) & (cortexDepthData > 0))
-
-                # Distance between the cell and each point on the surface of the brain
-                dXTop = topData[1] - siteCoords[0]
-                dYTop = topData[0] - siteCoords[1]
-                distanceTop = np.sqrt(dXTop**2 + dYTop**2)
-                
-                # The index and distance to the closest point on the top surface
-                indMinTop = np.argmin(distanceTop)
-                minDistanceTop = distanceTop.min()
-            
-                # Same for the distance from the cell to the bottom surface of cortex
-                dXBottom = bottomData[1] - siteCoords[0]
-                dYBottom = bottomData[0] - siteCoords[1]
-                distanceBottom = np.sqrt(dXBottom**2 + dYBottom**2)
-                minDistanceBottom = distanceBottom.min()
-            
-                # The metric we want is the relative distance from the top surface
-                cellRatio = minDistanceTop / (minDistanceBottom + minDistanceTop)
-                db.at[dbIndex, 'cortexRatioDepth'] = cellRatio
+                # cortexDepthData = np.rot90(lap[:, :, atlasZ], -1)
+                #
+                # # We consider the points with depth > 0.95 to be the bottom surface of cortex
+                # bottomData = np.where(cortexDepthData > 0.95)
+                #
+                # # Top of cortex is less than 0.02 but greater than 0
+                # topData = np.where((cortexDepthData < 0.02) & (cortexDepthData > 0))
+                #
+                # # Distance between the cell and each point on the surface of the brain
+                # dXTop = topData[1] - siteCoords[0]
+                # dYTop = topData[0] - siteCoords[1]
+                # distanceTop = np.sqrt(dXTop**2 + dYTop**2)
+                #
+                # # The index and distance to the closest point on the top surface
+                # indMinTop = np.argmin(distanceTop)
+                # minDistanceTop = distanceTop.min()
+                #
+                # # Same for the distance from the cell to the bottom surface of cortex
+                # dXBottom = bottomData[1] - siteCoords[0]
+                # dYBottom = bottomData[0] - siteCoords[1]
+                # distanceBottom = np.sqrt(dXBottom**2 + dYBottom**2)
+                # minDistanceBottom = distanceBottom.min()
+                #
+                # # The metric we want is the relative distance from the top surface
+                # cellRatio = minDistanceTop / (minDistanceBottom + minDistanceTop)
+                # db.at[dbIndex, 'cortexRatioDepth'] = cellRatio
                 
                 # use allen annotated atlas to figure out where recording site is
                 thisCoordID = rspAnnotationVolumeRotated[int(siteCoords[0]), int(siteCoords[1]), atlasZ]

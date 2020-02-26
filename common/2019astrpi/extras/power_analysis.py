@@ -7,6 +7,7 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 
 
+# Below calculation is from https://machinelearningmastery.com/effect-size-measures-in-python/
 def cohens_D(pop1, pop2):
     """
     Takes the two populations given and calculates an effect size for them
