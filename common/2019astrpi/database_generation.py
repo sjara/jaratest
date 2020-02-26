@@ -25,6 +25,7 @@ elif sys.version_info[0] >= 3:
 
 SAVE = 1
 
+
 def append_base_stats(cellDB, filename=''):
     """
     Calculate parameters to be used to filter cells in calculate_indices
