@@ -141,7 +141,6 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
 
     axRaster.set_yticklabels(blankLabels)
 
-
     ax = plt.gca()
     ax.set_xticks([0, 0.5])
     ax.set_xlabel('Time from\nsound onset (s)', fontsize=fontSizeLabels, labelpad=-1)

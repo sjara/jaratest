@@ -234,13 +234,12 @@ db = celldatabase.load_hdf(pathtoDB)
 if sys.argv[1:] != []:
     arguements = sys.argv[1:]
     if arguements[0] == 'tuning':
-        # celldb = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
-        celldb = db.query('tuning_pVal < 0.05')
+        celldb = db.query(studyparams.TUNING_FILTER)
         print("Generating reports for possibly tuned cells")
         outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_freq_tuned_cells_in_db/')
 
     elif arguements[0] == 'am':
-        celldb = db.query("am_response_pVal < 0.05")
+        celldb = db.query(studyparams.AM_FILTER)
         print("Generating reports for possible synced am cells")
         outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_am_cells_in_db/')
 else:

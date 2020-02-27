@@ -64,6 +64,7 @@ def append_base_stats(cellDB, filename=''):
             # Adding noiseburst values to the dataframe
             cellDB.at[
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
+            cellDB.at[indRow, '{}_zStat'.format(session)] = zStats
             cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
 
         # ------------ Laserpulse calculations --------------------------------
@@ -86,6 +87,7 @@ def append_base_stats(cellDB, filename=''):
             # Adding laserpulse calculations to the dataframe
             cellDB.at[
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
+            cellDB.at[indRow, '{}_zStat'.format(session)] = zStats
             cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
 
         # -------------- Tuning curve calculations ----------------------------
