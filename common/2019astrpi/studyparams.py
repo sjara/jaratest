@@ -19,20 +19,21 @@ SPIKE_QUALITY_THRESHOLD = 2
 
 R2_CUTOFF = 0.03  # minimum R^2 value for a cell to be considered frequency tuned
 
-noiseburst_pVal = 0.05
-laserpulse_pVal = 0.05  # 0.001 if want to be EXTRA sure not to include false positives
-am_pVal = 0.05
-tuning_pVal = 0.05
+noiseburst_pVal_threshold = 0.05
+laserpulse_pVal_threshold = 0.05  # 0.001 if want to be EXTRA sure not to include false positives
+am_pVal_threshold = 0.05
+corrected_am_pVal_threshold = 0.05/11
+tuning_pVal_threshold = 0.05
 
 
 # --- queries to get specific cell populations ---
 FIRST_FLTRD_CELLS = 'isiViolations<{} and spikeShapeQuality>{}'.format(ISI_THRESHOLD, SPIKE_QUALITY_THRESHOLD)
 
 # D1 cells
-D1_CELLS = 'laserpulse_pVal<{}'.format(laserpulse_pVal)  # Respond to laser, thus D1-expressing cells
-nD1_CELLS = 'laserpulse_pVal>{}'.format(laserpulse_pVal)  # Not responded to laser, thus non-D1-expressing cells
-AM_FILTER = 'am_response_pVal<{}'.format(am_pVal)
-TUNING_FILTER = 'tuning_pVal<{} and rsquaredFit>{}'.format(tuning_pVal, R2_CUTOFF)
+D1_CELLS = 'laserpulse_pVal<{}'.format(laserpulse_pVal_threshold)  # Respond to laser, thus D1-expressing cells
+nD1_CELLS = 'laserpulse_pVal>{}'.format(laserpulse_pVal_threshold)  # Not responded to laser, thus non-D1-expressing cells
+AM_FILTER = 'am_response_pVal<{}'.format(am_pVal_threshold)
+TUNING_FILTER = 'tuning_pVal<{} and rsquaredFit>{}'.format(tuning_pVal_threshold, R2_CUTOFF)
 
 # D2 cells
 # D2_CELLS = 'laserpulse_pVal<{} and noiseburst_pVal<{}'.format(noiseburst_pVal,laserpulse_pVal)  # Responded to laser, thus D2 cells

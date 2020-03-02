@@ -38,12 +38,12 @@ def medline(ax, yval, midline, width, color='k', linewidth=3):
 FIGNAME = 'figure_frequency_tuning'
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '_'.join(d1mice) + '.h5'
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+nameDB = 'direct_and_indirect_cells.h5'
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
-db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
+db = db.query(studyparams.TUNING_FILTER)
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 
 # =======================================================================
@@ -292,7 +292,7 @@ if PANELS[4]:
     axLatency.set_xticks(range(2))
     axLatency.set_xlim([-0.5, 1.5])
     extraplots.boxoff(axLatency)
-    axLatency.set_ylim([-0.001, 18])
+    axLatency.set_ylim([-0.001, 40])
 
     extraplots.set_ticks_fontsize(axLatency, fontSizeTicks)
     axLatency.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
@@ -411,8 +411,6 @@ for message in messages:
     print(message)
 print("\n")
 
-#FIXME Delete the variable reassignment below this
-figFilename = figFilename + FIGNAME
 if SAVE_FIGURE:
     if os.path.isdir(figparams.FIGURE_OUTPUT_DIR):
         pass

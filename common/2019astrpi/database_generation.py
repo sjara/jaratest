@@ -261,7 +261,7 @@ def append_base_stats(cellDB, filename=''):
                     spikesanalysis.eventlocked_spiketimes(amSpikeTimes,
                                                           amEventOnsetTimes,
                                                           amTimeRange)
-                amBaseTime = [-0.5, -0.1]
+                amBaseTime = [-0.6, -0.1]
                 amOnsetTime = [0, 0.1]
                 amResponseTime = [0, 0.5]
 

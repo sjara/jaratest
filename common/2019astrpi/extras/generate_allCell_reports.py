@@ -637,9 +637,9 @@ for indRow, dbRow in celldb.iterrows():
 
         plt.sca(axTuningCurveRaster)
         pTuningRaster, hTuningCond, zline = extraplots.raster_plot(tuningSpikeTimesFromEventOnset,
-                                                       tuningIndexLimitsEachTrial,
-                                                       timeRange,
-                                                       trialsEachCond=trialsEachType)
+                                                                   tuningIndexLimitsEachTrial,
+                                                                   timeRange,
+                                                                   trialsEachCond=trialsEachType)
 
         plt.setp(pTuningRaster, ms=msRaster)
         plt.setp(hTuningCond, zorder=3)
