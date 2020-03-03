@@ -53,7 +53,8 @@ def append_base_stats(cellDB, filename=''):
         else:
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
             nspkBase, nspkResp = funcs.calculate_firing_rate(noiseEphysData, baseRange, session)
-            respSpikeMean = nspkResp.ravel().mean()
+            respSpikeMean = np.mean(nspkResp)
+
 
             # Significance calculations for the noiseburst
             try:
@@ -67,6 +68,7 @@ def append_base_stats(cellDB, filename=''):
             cellDB.at[indRow, '{}_zStat'.format(session)] = zStats
             cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
 
+
         # ------------ Laserpulse calculations --------------------------------
         session = 'laserpulse'
         try:
@@ -76,7 +78,9 @@ def append_base_stats(cellDB, filename=''):
         else:
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
             nspkBase, nspkResp = funcs.calculate_firing_rate(pulseEphysData, baseRange, session)
-            respSpikeMean = nspkResp.ravel().mean()
+            respSpikeMean = np.mean(nspkResp)
+            baseSpikeMean = np.mean(nspkBase)
+            changeFiring = respSpikeMean - baseSpikeMean
 
             # Significance calculations for the laserpulse
             try:
@@ -89,6 +93,7 @@ def append_base_stats(cellDB, filename=''):
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
             cellDB.at[indRow, '{}_zStat'.format(session)] = zStats
             cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
+            cellDB.at[indRow, '{}_dFR'.format(session)] = changeFiring  # Difference between base and response firing rate
 
         # -------------- Tuning curve calculations ----------------------------
         session = 'tuningCurve'

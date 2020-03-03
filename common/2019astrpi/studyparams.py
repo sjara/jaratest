@@ -30,8 +30,9 @@ tuning_pVal_threshold = 0.05
 FIRST_FLTRD_CELLS = 'isiViolations<{} and spikeShapeQuality>{}'.format(ISI_THRESHOLD, SPIKE_QUALITY_THRESHOLD)
 
 # D1 cells
-D1_CELLS = 'laserpulse_pVal<{}'.format(laserpulse_pVal_threshold)  # Respond to laser, thus D1-expressing cells
-nD1_CELLS = 'laserpulse_pVal>{}'.format(laserpulse_pVal_threshold)  # Not responded to laser, thus non-D1-expressing cells
+D1_CELLS = 'laserpulse_pVal<{} and laserpulse_dFR>0'.format(laserpulse_pVal_threshold)  # Respond to laser, thus D1-expressing cells
+nD1_CELLS = 'not (laserpulse_pVal<{} and laserpulse_dFR>0)'.format(laserpulse_pVal_threshold)
+# nD1_CELLS = 'laserpulse_pVal>{0} or (laserpulse_pVal<{0} and laserpulse_dFR<0)'.format(laserpulse_pVal_threshold)  # Not responded to laser, thus non-D1-expressing cells
 AM_FILTER = 'am_response_pVal<{}'.format(am_pVal_threshold)
 TUNING_FILTER = 'tuning_pVal<{} and rsquaredFit>{}'.format(tuning_pVal_threshold, R2_CUTOFF)
 

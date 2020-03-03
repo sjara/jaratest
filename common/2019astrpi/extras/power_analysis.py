@@ -47,6 +47,7 @@ def calculate_power(effectSize, powerThreshold=0.8, alpha=0.05):
     cellCount = np.arange(1, 100, 1)
     analysis = power.TTestIndPower()
     for size in effectSize:
+        size = 0.1 if size < 0.1 else size  # effect size less than 0.2 is trivial. Anything less than 0.1 is set to 0.1
         for count in cellCount:
             pow_value = analysis.power(size, count, alpha)
             if pow_value > powerThreshold:
