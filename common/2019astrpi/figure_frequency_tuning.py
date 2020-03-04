@@ -212,6 +212,7 @@ if PANELS[2]:
     tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
     axBW.set_xticks(range(2))
     axBW.set_xlim([-0.5, 1.5])
+    axBW.set_ylim([-0.5, 6])
     extraplots.boxoff(axBW)
     extraplots.set_ticks_fontsize(axBW, fontSizeTicks)
     axBW.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
