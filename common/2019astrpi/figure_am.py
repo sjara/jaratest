@@ -19,13 +19,13 @@ nameDB = '{}.h5'.format('direct_and_indirect_cells')
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
-D1 = db.query('laserpulse_pVal<0.05 and am_response_pVal<0.05')
-nD1 = db.query('laserpulse_pVal>0.05 and am_response_pVal<0.05')
+D1 = db.query(studyparams.D1_CELLS)
+nD1 = db.query(studyparams.nD1_CELLS)
+D1 = D1.query(studyparams.AM_FILTER)
+nD1 = nD1.query(studyparams.AM_FILTER)
 
 outputDir = '/var/tmp/figuresdata/2019astrpi/output'
 
-# TODO: Need to decide what we will filter AM by
-# db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
 # exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_AM_tuning_examples.npz')
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 
@@ -54,7 +54,7 @@ SAVE_FIGURE = 1
 # outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_am_tuning' # Do not include extension
 # figFormat = 'svg'  # 'pdf' or 'svg'
-figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'pdf'  # 'pdf' or 'svg'
 # figSize = [13,8] # In inches
 
 fullPanelWidthInches = 6.9
@@ -274,9 +274,8 @@ if PANELS[4]:
     axPanelD.set_yticks(yticks)
     axPanelD.set_yticklabels(ytickLabels)
 
-
     # tickLabels = ['ATh:Str\nn={}'.format(len(thalPopStat)), 'AC:Str\nn={}'.format(len(acPopStat))]
-    tickLabels = ['D1', 'nD1']
+    tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axPanelD.set_xticks(range(2))
     axPanelD.set_xticklabels(tickLabels, rotation=45)
     axPanelD.set_xlim([-0.5, 1.5])
@@ -285,7 +284,6 @@ if PANELS[4]:
     # axSummary.set_yticks(np.unique(thalPopStat))
     # axSummary.set_yticklabels(possibleFreqLabels)
     # axSummary.set_ylim([-0.001, 0.161])
-
 
     yDataMax = max([max(nD1PopStat), max(D1PopStat)])
     yStars = yDataMax + yDataMax*starYfactor
@@ -439,7 +437,7 @@ if PANELS[5]:
     pos = jitter(np.ones(len(nD1PopStat)) * 1, jitterFrac)
     axPanelG.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=1, ms=dataMS)
     medline(np.median(nD1PopStat), 1, 0.5)
-    tickLabels = ['D1'.format(len(D1PopStat)), 'nD1'.format(len(nD1PopStat))]
+    tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axPanelG.set_xticks(range(2))
     axPanelG.set_xticklabels(tickLabels, rotation=45)
     extraplots.set_ticks_fontsize(axPanelG, fontSizeLabels)
@@ -521,7 +519,7 @@ if PANELS[6]:
     pos = jitter(np.ones(len(nD1MeanPerCell)) * 1, jitterFrac)
     axPanelH.plot(pos, nD1MeanPerCell, 'o', mec=colornD1, mfc='None', alpha=1, ms=dataMS)
     medline(np.median(nD1MeanPerCell), 1, 0.5)
-    tickLabels = ['D1'.format(len(D1MeanPerCell)), 'nD1'.format(len(nD1MeanPerCell))]
+    tickLabels = ['D1\nn={}'.format(len(D1MeanPerCell)), 'nD1\nn={}'.format(len(nD1MeanPerCell))]
     axPanelH.set_xticks(range(2))
     axPanelH.set_xticklabels(tickLabels, rotation=45)
     extraplots.set_ticks_fontsize(axPanelH, fontSizeLabels)
