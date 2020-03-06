@@ -263,3 +263,66 @@ exp2.add_session('17-48-58', 'q', 'am', 'am_tuning_curve')
 exp2.add_session('17-55-03', 'r', 'tuningCurve', 'am_tuning_curve')
 
 exp2.maxDepth = 4000
+
+# exp3 = celldatabase.Experiment(subject, '2020-03-03', 'left_AudStr',
+# info=['middleDiD', 'TT1left', 'soundRight', 'A4x2-tet'])
+# experiments.append(exp3)
+#
+# # 50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 220 AM, 1760 tuningCurve
+# # Used right speaker; laser (445 nm) set to 2.0 mW; Probe D65D; Rig 2; THREE SHANKER ALERT (missing shank 1)
+#
+# """
+# Laser Calibration
+# Power: Value on laser dial, value in output level
+# 0.5: 1.45, 19.3
+# 1.0: 1.94, 24.1
+# 1.5: 2.48, 29.7
+# 2.0: 3.02, 35.4
+# 2.5: 3.65, 42.0
+# 3.0: 4.30, 48.8
+# 3.5: 5.45, 60.5
+# 4.0: 6.30, 69.3
+# """
+#
+# # Animal in rig at: 10:49
+# # Probe in at: 10:58 (three shanks, no TT1/2)
+#
+# # Initial signals look suspiciously quiet
+# exp3.maxDepth = 3300
+
+
+# exp4 = celldatabase.Experiment(subject, '2020-03-04', 'left_AudStr',
+# info=['posteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+# experiments.append(exp4)
+#
+# # 50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 220 AM, 1760 tuningCurve
+# # Used right speaker; laser (445 nm) set to 2.0 mW; Probe P429; Rig 2
+#
+# """
+# Laser Calibration
+# Power: Value on laser dial, value in output level
+# 0.5: 1.5, 19.1
+# 1.0: 2.05, 24.5
+# 1.5: 2.7, 31.2
+# 2.0: 3.35, 37.7
+# 2.5: 4.05, 44.9
+# 3.0: 4.95, 54.5
+# 3.5: 6.05, 65.9
+# 4.0: 6.85, 73.9
+# """
+#
+# # Animal in rig at: 11:15
+# # Probe in at: 11:21
+#
+# # Again, signals look quiet
+# # Changed to M680
+#
+# exp4.add_site(3100, tetrodes=[2,8])
+# exp4.add_session('13-13-43', None, 'noiseburst', 'am_tuning_curve')
+# exp4.add_session('13-14-55', None, 'laserpulse', 'am_tuning_curve')
+# exp4.add_session('13-16-03', None, 'lasertrain', 'am_tuning_curve')
+# exp4.add_session('13-17-35', 'a', 'tuningTest', 'am_tuning_curve')
+# exp4.add_session('13-20-39', 'b', 'am', 'am_tuning_curve')
+#
+# # Signals went away again...
+# exp4.maxDepth = 3200
