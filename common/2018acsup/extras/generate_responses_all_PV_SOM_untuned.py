@@ -1,12 +1,12 @@
+import os
 import numpy as np
-import scipy.stats
-import matplotlib.pyplot as plt
 import copy
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
+from jaratoolbox import settings
 
 db = celldatabase.load_hdf('/mnt/jarahubdata/figuresdata/2018acsup/photoidentification_cells.h5')
 bestCells = db.query('isiViolations<0.02 or modifiedISI<0.02')
@@ -173,8 +173,8 @@ for ind, cellsThisType in enumerate(cells):
     
     averagePSTHs.append(thisCellTypePSTH)
     
-outputFile = '/home/jarauser/data/figuresdata/2018acsup/all_photoidentified_cells_untuned_stats.npz'
-#outputFullPath = os.path.join(dataDir,outputFile)
+outputFile = 'all_photoidentified_cells_untuned_stats.npz'
+outputFullPath = os.path.join(dataDir,outputFile)
 np.savez(outputFile,
          PVTunedSustainedResponses = highBandSustainedSpikeRates[0],
          PVTunedOffCentreSustainedResponses = highBandSustainedSpikeRates[1],

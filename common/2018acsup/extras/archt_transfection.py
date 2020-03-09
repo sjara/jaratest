@@ -1,10 +1,13 @@
+import os
 import matplotlib.pyplot as plt
 from scipy import ndimage
 
+from jaratoolbox import settings
 
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, '2018acsup', 'supplement_figure_histology')
 
-histImagePV = ndimage.imread('/home/jarauser/data/figuresdata/2018acsup/appeal_figures/PV_expression.png')
-histImageSOM = ndimage.imread('/home/jarauser/data/figuresdata/2018acsup/appeal_figures/SOM_expression.png')
+histImagePV = ndimage.imread(os.path.join(dataDir,'PV_expression.png'))
+histImageSOM = ndimage.imread(os.path.join(dataDir,'SOM_expression.png'))
 
 imageBounds = [400, 900, 0, 500] #for band055
 imageBounds2 = [430, 930, 0, 500] #for band004
