@@ -217,7 +217,7 @@ if PANELS[2]:
     extraplots.set_ticks_fontsize(axBW, fontSizeTicks)
     axBW.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat)  # Nick used stats.ranksum
+    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')  # Nick used stats.ranksum
 
     messages.append("{} p={}".format(popStatCol, pVal))
 
@@ -256,12 +256,13 @@ if PANELS[3]:
     tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
     axThresh.set_xticks(range(2))
     axThresh.set_xlim([-0.5, 1.5])
+    axThresh.set_ylim([0, 71])
     extraplots.boxoff(axThresh)
     extraplots.set_ticks_fontsize(axThresh, fontSizeTicks)
 
     axThresh.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat)  # Nick used stats.ranksum
+    zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat, alternative='two-sided')  # Nick used stats.ranksum
 
     messages.append("{} p={}".format(popStatCol, pVal))
 
@@ -298,7 +299,7 @@ if PANELS[4]:
     extraplots.set_ticks_fontsize(axLatency, fontSizeTicks)
     axLatency.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.ranksums(nD1PopStat, D1PopStat)
+    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal) Remove Matt
     messages.append("{} p={}".format(popStatCol, pVal))
@@ -339,7 +340,7 @@ if PANELS[5]:
     extraplots.set_ticks_fontsize(axOnsetivity, fontSizeTicks)
     axOnsetivity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.ranksums(nD1PopStat, D1PopStat)
+    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
@@ -384,7 +385,7 @@ if PANELS[6]:
     extraplots.set_ticks_fontsize(axMonotonicity, fontSizeTicks)
     axMonotonicity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.ranksums(nD1PopStat, D1PopStat)
+    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
