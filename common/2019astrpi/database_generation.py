@@ -1,10 +1,11 @@
 """
 Generate[1] and save[2] database with calculated stats and parameters that will be used in /
-analysis. Optionally takes the arguments in the order of: script.py mouse run_parameters
+analysis. Optionally takes the arguments in the order of: script.py run_parameters mouse
 """
 import os
 import sys
 import numpy as np
+import pandas as pd
 import studyparams
 from scipy import stats
 from scipy import signal
@@ -58,7 +59,7 @@ def append_base_stats(cellDB, filename=''):
 
             # Significance calculations for the noiseburst
             try:
-                zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase)
+                zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase, alternative='two-sided')
             except ValueError:  # All numbers identical will cause mann-whitney to fail, therefore p-value should be 1 as there is no difference
                 zStats, pVals = [0, 1]
 
@@ -84,7 +85,7 @@ def append_base_stats(cellDB, filename=''):
 
             # Significance calculations for the laserpulse
             try:
-                zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase)
+                zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase, alternative='two-sided')
             except ValueError:  # All numbers identical will cause mann-whitney to fail
                 zStats, pVals = [0, 1]
 
@@ -352,8 +353,31 @@ def calculate_indices(db, filename=''):
     # return bestCells
 
 
-def calculate_cell_locations(db, filename=''):  # to be filled after complete collecting histology data
+def calculate_cell_locations(db, filename=''):
+    # We do not have this function in this file as it relies on the allensdk
+    # module which must be installed in a virtual environment
+    # The function is located in database_cell_locations.py
     pass
+
+
+def merge_dataframes(df1, df2):
+    """
+    Takes two dataframes and concatenates them so we can process one mouse at a time
+    instead of having to regenerate an entire database when we add on a new mouse
+    Args:
+        df1 (list): List of strings containing full paths to dataframe(s).
+        df2 (string): Full path to second dataframe to which the list of dataframes will be appended to the end of
+
+    Returns:
+        new_df (pandas.DataFrame): Two given dataframes appended through index value
+
+    """
+    df2 = celldatabase.load_hdf(df2)
+    for frame in df1:
+        appendedFrame = celldatabase.load_hdf(frame)
+        df2 = pd.concat([df2, appendedFrame], axis=0, ignore_index=True, sort=False)
+
+    return df2
 
 
 if __name__ == "__main__":
@@ -364,30 +388,31 @@ if __name__ == "__main__":
     # Check for script arguements to decide what calculations are done
     dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
     if sys.argv[1:] != []:
-        stat_calc = 0
-        hist_calc = 0
-        arguements = sys.argv[1:]
-        if arguements[0] == 'all':
+        calc_stats = 0
+        calc_locations = 0
+        arguments = sys.argv[1:]
+        if arguments[0] == 'all':
             d1mice = studyparams.ASTR_D1_CHR2_MICE
             dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
         else:
-            d1mice = [arguements[0]]
+            d1mice = [arguments[0]]
             dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
         print('d1mice = {}'.format(d1mice))
         # Run behavior can either be 'all', 'hist', or 'stats'
-        runBehavior = arguements[1]
+        runBehavior = arguments[1]
         print('Run behavior is {}'.format(runBehavior))
         if runBehavior == 'all':
-            stat_calc = 1
-            hist_calc = 1
-        elif runBehavior == 'hist':
-            hist_calc = 1
+            calc_stats = 1
+            calc_locations = 1
+        elif runBehavior == 'locations':
+            calc_locations = 1
         elif runBehavior == 'stats':
-            stat_calc = 1
+            calc_stats = 1
+
     else:
         # Calculates everything for all mice in studyparams
-        stat_calc = 1
-        hist_calc = 1
+        calc_stats = 1
+        calc_locations = 1
         d1mice = studyparams.ASTR_D1_CHR2_MICE
         dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
 
@@ -402,11 +427,11 @@ if __name__ == "__main__":
     firstDB = basicDB
     d1DBFilename = os.path.join(settings.FIGURES_DATA_PATH, '{}_d1mice.h5'.format(studyparams.STUDY_NAME))
     # Create and save a database, computing first the base stats and then the indices
-    if stat_calc:
+    if calc_stats:
         firstDB = append_base_stats(basicDB, filename=d1DBFilename)
         # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
         histDB = firstDB
-    if hist_calc:
+    if calc_locations:
         histDB = cellLoc.cell_locations(firstDB)
 
     if SAVE:

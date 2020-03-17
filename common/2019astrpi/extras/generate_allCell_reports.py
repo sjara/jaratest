@@ -29,6 +29,7 @@ from jaratoolbox.extraplots import trials_each_cond_inds
 studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
 figparams = importlib.import_module('jaratest.common.2019astrpi.figparams')
 
+
 def index_all_true_before(arr):
     '''
     Find the index for a boolean array where all the inds after are True

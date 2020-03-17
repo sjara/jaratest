@@ -655,7 +655,7 @@ def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amResponse
         nRespSpk = spikesanalysis.spiketimes_to_spikecounts(spiketimes, trialInds, amResponseTime)
 
         # Comparing each frequencies baseline and response range spike counts
-        zStats, pVal = stats.mannwhitneyu(nRespSpk, nBaseSpk)
+        zStats, pVal = stats.mannwhitneyu(nRespSpk, nBaseSpk, alternative='two-sided')
         allFreqPVal[indFreq] = pVal
         allFreqZScore[indFreq] = zStats
 
@@ -698,7 +698,7 @@ def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond
         if any(trialsThisCond):
             thisFirstStimCounts = stimSpikeCountMat[trialsThisCond].flatten()
             thisStimBaseSpikeCouns = baseSpikeCountMat[trialsThisCond].flatten()
-            thiszscore, pValThisFirst = stats.ranksums(thisFirstStimCounts, thisStimBaseSpikeCouns)
+            thiszscore, pValThisFirst = stats.mannwhitneyu(thisFirstStimCounts, thisStimBaseSpikeCouns, alternative='two-sided')
             if pValThisFirst < minpVal:
                 minpVal = pValThisFirst
             if thiszscore > maxzscore:

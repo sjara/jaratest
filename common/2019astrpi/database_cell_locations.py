@@ -1,5 +1,4 @@
 import os
-import importlib
 import imp
 import nrrd
 import numpy as np
@@ -8,7 +7,7 @@ from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
 
 from jaratoolbox import histologyanalysis as ha
 from jaratoolbox import settings
-studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
+import studyparams
 
 
 def cell_locations(db):
@@ -49,7 +48,7 @@ def cell_locations(db):
         except IOError:
             print("No such tracks file: {}".format(fileNameInfohist))
         else:
-            #TODO Replace this with a more generic way of finding the brain areas for histology saving.
+            # TODO Replace this with a more generic way of finding the brain areas for histology saving.
             brainArea = dbRow['brainArea']
             if brainArea == 'left_AudStr':
                 brainArea = 'LeftAstr'
