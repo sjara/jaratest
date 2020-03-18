@@ -3,7 +3,8 @@ from jaratoolbox import celldatabase
 subject = 'd1pi032'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2019-02-19', 'right_AudStr', info=['FacingPosterior', 'AnteriorDiD'])
+exp0 = celldatabase.Experiment(subject, '2019-02-19', 'right_AudStr', 'AnteriorDiD',
+                                   info=['FacingPosterior'])
 experiments.append(exp0)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest 1760 tc, 220 AM
@@ -45,7 +46,8 @@ exp0.add_session('19-36-18', 'b', 'am', 'am_tuning_curve')
 exp0.maxDepth = 3200
 
 
-exp1 = celldatabase.Experiment(subject, '2019-02-22', 'right_AudStr', info=['FacingPosterior', 'MiddleDiI'])
+exp1 = celldatabase.Experiment(subject, '2019-02-22', 'right_AudStr', 'MiddleDiI',
+                                   info=['FacingPosterior'])
 experiments.append(exp1)
 
 #100 noiseburst, 50 laser train, 100 laser pulse, 240 tuningCurve, 330 AM, 2880 tc
@@ -103,9 +105,9 @@ exp1.add_session('18-41-18', 'l', 'am', 'am_tuning_curve')
 
 exp1.maxDepth = 3400
 
-
-# exp2 = celldatabase.Experiment(subject, '2019-02-28', 'right_AudStr', info=['FacingPosterior', 'MiddleDiD'])
-# experiments.append(exp1)
+exp2 = celldatabase.Experiment(subject, '2019-02-28', 'right_AudStr',  'MiddleDiD',
+                                   info=['FacingPosterior'])
+experiments.append(exp1)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest 1760 tc, 220 AM
 #Used left speaker;laser (445 nm) set to 2 mW; Probe CEC2; Rig 2
@@ -121,7 +123,8 @@ exp1.maxDepth = 3400
 #     '4.0':8.3,
 # }
 
-exp3 = celldatabase.Experiment(subject, '2019-03-05', 'left_AudStr', info=['FacingPosterior', 'MiddleDiD'])
+exp3 = celldatabase.Experiment(subject, '2019-03-05', 'left_AudStr', 'MiddleDiD',
+                                   info=['FacingPosterior'])
 experiments.append(exp3)
 
 exp3.laserCalibration = {

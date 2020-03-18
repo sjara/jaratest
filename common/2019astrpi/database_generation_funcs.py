@@ -698,7 +698,11 @@ def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond
         if any(trialsThisCond):
             thisFirstStimCounts = stimSpikeCountMat[trialsThisCond].flatten()
             thisStimBaseSpikeCouns = baseSpikeCountMat[trialsThisCond].flatten()
-            thiszscore, pValThisFirst = stats.mannwhitneyu(thisFirstStimCounts, thisStimBaseSpikeCouns, alternative='two-sided')
+            try:
+                thiszscore, pValThisFirst = stats.mannwhitneyu(thisFirstStimCounts, thisStimBaseSpikeCouns, alternative='two-sided')
+            except ValueError:  # If all numbers are identical in the population, mannwhitney fails
+                pValThisFirst = 1
+                thiszscore = 0
             if pValThisFirst < minpVal:
                 minpVal = pValThisFirst
             if thiszscore > maxzscore:

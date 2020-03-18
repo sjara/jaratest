@@ -3,8 +3,8 @@ from jaratoolbox import celldatabase
 subject = 'd1pi043'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2020-01-13', 'right_AudStr',
-info=['posteriorDiI', 'TT1left', 'soundLeft', 'A4x2-tet'])
+exp0 = celldatabase.Experiment(subject, '2020-01-13', 'right_AudStr', 'posteriorDiI',
+    info=['TT1left', 'soundLeft', 'A4x2-tet'])
 experiments.append(exp0)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -44,8 +44,8 @@ exp0.add_session('14-55-03', 'e', 'am','am_tuning_curve')
 
 exp0.maxDepth = 3000
 
-exp1 = celldatabase.Experiment(subject, '2020-01-14', 'right_AudStr',
-info=['anteriorDiD', 'TT1left', 'soundLeft', 'A4x2-tet'])
+exp1 = celldatabase.Experiment(subject, '2020-01-14', 'right_AudStr', 'anteriorDiD',
+    info=['TT1left', 'soundLeft', 'A4x2-tet'])
 experiments.append(exp1)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -104,8 +104,8 @@ exp1.add_session('14-51-07', 'j', 'am', 'am_tuning_curve')
 
 exp1.maxDepth = 3400
 
-exp2 = celldatabase.Experiment(subject, '2020-01-15', 'left_AudStr',
-info=['posteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+exp2 = celldatabase.Experiment(subject, '2020-01-15', 'left_AudStr', 'posteriorDiI',
+    info=['TT1left', 'soundRight', 'A4x2-tet'])
 experiments.append(exp2)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -159,8 +159,8 @@ exp2.add_session('16-09-59', 'j', 'tuningCurve', 'am_tuning_curve')
 
 exp2.maxDepth = 3200
 
-exp3 = celldatabase.Experiment(subject, '2020-01-16', 'left_AudStr',
-info=['medialDiD', 'TT1left', 'soundRight', 'A4x2-tet'])
+exp3 = celldatabase.Experiment(subject, '2020-01-16', 'left_AudStr', 'medialDiD',
+    info=['TT1left', 'soundRight', 'A4x2-tet'])
 experiments.append(exp3)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -199,8 +199,8 @@ exp3.add_session('13-00-43', 'c', 'tuningCurve', 'am_tuning_curve')
 
 exp3.maxDepth = 3100
 
-exp4 = celldatabase.Experiment(subject, '2020-01-17', 'left_AudStr',
-info=['anteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+exp4 = celldatabase.Experiment(subject, '2020-01-17', 'left_AudStr', 'anteriorDiI',
+    info=['TT1left', 'soundRight', 'A4x2-tet'])
 experiments.append(exp4)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
