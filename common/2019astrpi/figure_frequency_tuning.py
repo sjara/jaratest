@@ -38,7 +38,7 @@ def medline(ax, yval, midline, width, color='k', linewidth=3):
 FIGNAME = 'figure_frequency_tuning'
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = 'direct_and_indirect_cells.h5'
+nameDB = studyparams.DATABASE_NAME + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 # pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)

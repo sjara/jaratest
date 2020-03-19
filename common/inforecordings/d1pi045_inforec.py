@@ -253,12 +253,12 @@ exp2.add_session('15-30-19', None, 'lasertrain', 'am_tuning_curve')
 exp2.add_session('15-32-10', 'r', 'tuningTest', 'am_tuning_curve')
 exp2.add_session('15-34-29', 's', 'am', 'am_tuning_curve')
 
-exp2.add_site(3500, tetrodes=[4])
-exp2.add_session('15-45-34', None, 'noiseburst', 'am_tuning_curve')
-exp2.add_session('15-46-42', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('15-47-52', None, 'laserpulse', 'am_tuning_curve')
-exp2.add_session('15-49-45', 't', 'tuningTest', 'am_tuning_curve')
-exp2.add_session('15-52-42', 'u', 'am', 'am_tuning_curve')
+# exp2.add_site(3500, tetrodes=[4])
+# exp2.add_session('15-45-34', None, 'noiseburst', 'am_tuning_curve')
+# exp2.add_session('15-46-42', None, 'laserpulse', 'am_tuning_curve')
+# exp2.add_session('15-47-52', None, 'laserpulse', 'am_tuning_curve')
+# exp2.add_session('15-49-45', 't', 'tuningTest', 'am_tuning_curve')
+# exp2.add_session('15-52-42', 'u', 'am', 'am_tuning_curve')
 
 # signals went away for good
 

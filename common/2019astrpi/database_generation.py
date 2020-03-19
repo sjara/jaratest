@@ -38,7 +38,6 @@ def append_base_stats(cellDB, filename=''):
 
     for indIter, (indRow, dbRow) in enumerate(firstCells.iterrows()):
 
-        dbRow = firstCells.loc[indRow]
         sessions = dbRow['sessionType']
         oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
 
