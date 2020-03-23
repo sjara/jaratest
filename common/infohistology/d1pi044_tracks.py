@@ -1,4 +1,5 @@
 subject = 'd1pi044'
+
 tracks = [
     {'subject':subject, 'brainArea': 'RightAstr', 'histImage': 'p1-a5-02',
      'recordingTrack': 'posteriorDiI', 'shank': 1, 'atlasZ': 247},
