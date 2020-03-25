@@ -6,13 +6,13 @@ from jaratoolbox import settings
 
 import studyparams
 
-# figname =
-# dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+figName = 'figure_inhibitory_inactivation'
+#dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
 mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE]
-    
 
 laserAccuracy = []
 controlAccuracy = []
@@ -68,5 +68,16 @@ for indType, mice in enumerate(mouseType):
     
     laserBias.append(thisLaserBias)
     controlBias.append(thisControlBias)
+
+# -- save responses of all sound responsive cells to 0.25 bandwidth sounds --
+outputFile = 'all_behaviour_inhib_inactivation.npz'
+outputFullPath = os.path.join(dataDir,outputFile)
+np.savez(outputFullPath,
+         PVlaserAccuracy = laserAccuracy[0], PVcontrolAccuracy = controlAccuracy[0],
+         PVlaserBias = laserBias[0], PVcontrolBias = controlBias[0],
+         SOMlaserAccuracy=laserAccuracy[1], SOMcontrolAccuracy=controlAccuracy[1],
+         SOMlaserBias=laserBias[1], SOMcontrolBias=controlBias[1]
+         )
+print(outputFile + " saved")
     
     
