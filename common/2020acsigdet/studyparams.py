@@ -10,8 +10,8 @@ CAMKII_ARCH_MICE = ['band011', 'band012']
 # mice used for inactivating specific inhibitory cell types in AC
 PV_ARCHT_MICE = ['band081', 'band087', 'band091', 'band093']
 PV_ARCHT_WT_MICE = []
-SOM_ARCHT_MICE = ['band065', 'band069', 'band070', 'band108']
-SOM_ARCHT_WT_MICE = ['band066', 'band105']
+SOM_ARCHT_MICE = ['band065', 'band069', 'band070', 'band108', 'band110', 'band111']
+SOM_ARCHT_WT_MICE = ['band066', 'band105', 'band112']
 
 # lists of sessions of one type for each mouse
 band006_muscimol = ['20161201a', '20161203a', '20161205a', '20161207a']
@@ -50,14 +50,16 @@ band081_10mW_control = ['20190309a', '20190312a', '20190315a', '20190318a']
 band087_10mW_laser = ['20190307a', '20190308a', '20190310a', '20190311a', '20190313a', '20190314a', '20190316a', '20190317a']
 band087_10mW_control = ['20190309a', '20190312a', '20190315a', '20190318a']
 
-band091_10mW_laser = ['20200206a', '20200207a', '20200209a', '20200210a', '20200213a', '20200214a', '20200216a', '20200217a']
-band091_10mW_control = ['20200208a', '20200212a', '20200215a', '20200218a']
+band091_10mW_laser_bad = ['20200206a', '20200207a', '20200209a', '20200210a', '20200213a', '20200214a', '20200216a', '20200217a']
+band091_10mW_control_bad = ['20200208a', '20200212a', '20200215a', '20200218a']
+band091_10mW_laser = ['20200317a', '20200318a', '20200320a', '20200321a', '20200323a']
+band091_10mW_control = ['20200319a', '20200322a', '20200324a']
 band091_15mW_laser = ['20200301a', '20200302a', '20200303a', '20200305a', '20200306a', '20200308a', '20200311a', '20200312a']
 band091_15mW_control = ['20200304a', '20200307a', '20200309a', '20200310a']
 band091_10mW_unilateral = ['20200220a', '20200221a', '20200222a', '20200223a', '20200224a', '20200226a', '20200227a', '20200228a', '20200229a']
 
-band093_5mW_laser = []
-band093_5mW_control = []
+band093_5mW_laser = ['20200306a', '20200307a', '20200308a', '20200310a', '20200311a', '20200313a', '20200317a', '20200319a']
+band093_5mW_control = ['20200309a', '20200312a', '20200318a', '20200320a']
 band093_10mW_laser = ['20200131a', '20200201a', '20200203a', '20200204a', '20200206a', '20200207a', '20200209a', '20200210a']
 band093_10mW_control = ['20200202a', '20200205a', '20200208a', '20200211a']
 band093_15mW_laser = ['20200115a', '20200116a', '20200117a', '20200119a', '20200120a', '20200122a', '20200123a', '20200128a', '20200129a']
@@ -66,11 +68,22 @@ band093_10mW_unilateral = ['20200224a', '20200226a', '20200228a', '20200229a', '
 band093_15mw_unilateral = ['20200212a', '20200213a', '20200214a', '20200216a', '20200217a', '20200218a', '20200220a', '20200221a', '20200222a']
 band093_15mW_unilateral_control = ['20200215a', '20200219a', '20200223a']
 
-band105_10mW_laser = []
-band105_10mW_control = []
+band105_10mW_laser = ['20200305a', '20200306a', '20200308a', '20200309a', '20200311a', '20200312a', '20200317a', '20200318a']
+band105_10mW_control = ['20200307a', '20200310a', '20200313a', '20200319a']
+band105_15mW_laser = ['20200320a', '20200321a', '20200323a']
+band105_15mW_control = ['20200322a', '20200324a']
 
 band108_10mW_laser = ['20200305a', '20200306a', '20200308a']
 band108_10mW_control = ['20200307a']
+
+band110_10mW_laser = ['20200321a', '20200322a']
+band110_10mW_control = ['20200323a']
+
+band111_10mW_laser = ['20200321a', '20200322a']
+band111_10mW_control = ['20200323a']
+
+band112_10mW_laser = ['20200321a', '20200322a']
+band112_10mW_control = ['20200323a']
 
 # dictionaries for assigning sessions to mice
 miceDict = {'band006': {'muscimol': band006_muscimol, 'saline': band006_saline},
