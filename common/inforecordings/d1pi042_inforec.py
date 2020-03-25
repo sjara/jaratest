@@ -3,8 +3,8 @@ from jaratoolbox import celldatabase
 subject = 'd1pi042'
 experiments=[]
 
-# exp0 = celldatabase.Experiment(subject, '2019-09-07', 'right_AudStr',
-# info=['anteriourDiI', 'TT1left', 'soundLeft', 'A4x2-tet'])
+# exp0 = celldatabase.Experiment(subject, '2019-09-07', 'right_AudStr', 'anteriourDiI',
+    # info=['TT1left', 'soundLeft', 'A4x2-tet'])
 # experiments.append(exp0)
 #
 # #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -31,8 +31,8 @@ experiments=[]
 #
 # exp0.maxDepth = 0
 
-exp1 = celldatabase.Experiment(subject, '2019-09-10', 'left_AudStr',
-info=['posteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+exp1 = celldatabase.Experiment(subject, '2019-09-10', 'left_AudStr', 'posteriorDiI',
+    info=['TT1left', 'soundRight', 'A4x2-tet'])
 experiments.append(exp1)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -96,8 +96,8 @@ exp1.add_session('17-04-29', 'g', 'tuningTest', 'am_tuning_curve')
 
 exp1.maxDepth = 3400
 
-exp2 = celldatabase.Experiment(subject, '2019-09-11', 'left_AudStr',
-info=['middleDiD', 'TT1left', 'soundRight', 'A4x2-tet'])
+exp2 = celldatabase.Experiment(subject, '2019-09-11', 'left_AudStr', 'middleDiD',
+    info=['TT1left', 'soundRight', 'A4x2-tet'])
 experiments.append(exp2)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -185,8 +185,8 @@ exp2.add_session('19-59-17', 'w', 'am', 'am_tuning_curve')
 
 exp2.maxDepth = 3400
 
-# exp3 = celldatabase.Experiment(subject, '2019-09-17', 'left_AudStr',
-# info=['anteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+# exp3 = celldatabase.Experiment(subject, '2019-09-17', 'left_AudStr', 'anteriorDiI',
+    # info=['TT1left', 'soundRight', 'A4x2-tet'])
 # experiments.append(exp3)
 #
 # #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -211,8 +211,8 @@ exp2.maxDepth = 3400
 # other creating a solidified surface. Removed decent amount of tissue but
 # ultimately had to remove animal due to it hunching in pain while squeaking
 
-# exp4 = celldatabase.Experiment(subject, '2019-09-18', 'left_AudStr',
-# info=['anteriorDiI', 'TT1left', 'soundRight', 'A4x2-tet'])
+# exp4 = celldatabase.Experiment(subject, '2019-09-18', 'left_AudStr', 'anteriorDiI',
+    # info=['TT1left', 'soundRight', 'A4x2-tet'])
 # experiments.append(exp4)
 #
 # #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM

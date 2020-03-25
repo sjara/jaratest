@@ -4,6 +4,7 @@ Tuning curve figure for 2019astrpi
 
 import os
 import sys
+import importlib
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -12,8 +13,8 @@ from jaratoolbox import extraplots
 from jaratoolbox import celldatabase
 from scipy import stats
 import pandas as pd
-import figparams
-import studyparams
+studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
+figparams = importlib.import_module('jaratest.common.2019astrpi.figparams')
 
 
 if sys.version_info[0] < 3:
@@ -38,12 +39,12 @@ def medline(ax, yval, midline, width, color='k', linewidth=3):
 FIGNAME = 'figure_frequency_tuning'
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = studyparams.DATABASE_NAME + '.h5'
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+nameDB = '_'.join(d1mice) + '.h5'
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
-db = db.query(studyparams.TUNING_FILTER)
+db = db.query('rsquaredFit>{}'.format(studyparams.R2_CUTOFF))
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 
 # =======================================================================
@@ -51,15 +52,15 @@ exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAM
 exData = np.load(exampleDataPath)  # npz data generated from generate_example_freq_tuning
 np.random.seed(8)
 
-D1 = db.query(studyparams.D1_CELLS)  # laser activation response
-nD1 = db.query(studyparams.nD1_CELLS)  # no laser repsonse or laser inactivation response
+D1 = db.query('laserpulse_pVal<0.05 and noiseburst_pVal<0.05')  # bothsoundlaser
+nD1 = db.query('laserpulse_pVal>0.05 and noiseburst_pVal<0.05')  # onlysoundnolaser
 
 PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = figparams.FIGURE_OUTPUT_DIR
-figFilename = 'figure_frequency_tuning'  # Do not include extension
-figFormat = 'pdf'  # 'pdf' or 'svg'
+figFilename = 'figure_frequency_tuning_pres'  # Do not include extension
+figFormat = 'png'  # 'pdf' or 'svg'
 figSize = [17.25, 5.75]  # In inches (originally [13, 6.5]. Matt changed to current values based off Nick's paper)
 
 fontSizeLabels = figparams.fontSizeLabels*2
@@ -99,31 +100,32 @@ fig.set_facecolor('w')
 # gs = gridspec.GridSpec(2, 5)
 # gs.update(left=0.02, right=0.98, top=0.95, bottom=0.125, wspace=0.7, hspace=0.5)
 gs = gridspec.GridSpec(2, 7)
-gs.update(left=0.04, right=0.98, top=0.95, bottom=0.175, wspace=1.1, hspace=0.5)
+gs.update(left=0.04, right=0.98, top=0.95, bottom=0.150, wspace=1.1, hspace=0.7)
 
 ndOne = plt.subplot(gs[0, 0:2])
 dOne = plt.subplot(gs[1, 0:2])
 
-axBW = plt.subplot(gs[0:2, 2])
 axThresh = plt.subplot(gs[0:2, 3])
-axLatency = plt.subplot(gs[0:2, 4])
+axBW = plt.subplot(gs[0:2, 4])
+axLatency = plt.subplot(gs[0:2, 2])
+
 
 axOnsetivity = plt.subplot(gs[0:2, 5])
 axMonotonicity = plt.subplot(gs[0:2, 6])
 
-plt.text(-0.3, 1.03, 'A', ha='center', va='center',
+plt.text(-0.4, 1.03, 'A', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=ndOne.transAxes)
-plt.text(-0.3, 1.03, 'B', ha='center', va='center',
+plt.text(-0.4, 1.03, 'B', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=dOne.transAxes)
-plt.text(-0.3, 1.01, 'C', ha='center', va='center',
+plt.text(-0.3, 1.01, 'E', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axBW.transAxes)
 plt.text(-0.3, 1.01, 'D', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axThresh.transAxes)
-plt.text(-0.3, 1.01, 'E', ha='center', va='center',
+plt.text(-0.3, 1.01, 'C', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axLatency.transAxes)
 plt.text(-0.3, 1.01, 'F', ha='center', va='center',
@@ -155,10 +157,11 @@ if PANELS[0]:
     cax = dOne.imshow(np.flipud(exDataFR), interpolation='nearest', cmap=d1ColorMap)
     cbar = plt.colorbar(cax, ax=dOne, format='%d')
     maxFR = np.max(exDataFR.ravel())
-    cbar.set_label('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-10)
+    cbar.ax.set_ylabel('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-10)
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
+    dOne.set_title('Direct pathway example cell')
 
     dOne.set_yticks(intenTickLocations)
     dOne.set_yticklabels(intensities[::-1])
@@ -177,10 +180,11 @@ if PANELS[1]:
     cax = ndOne.imshow(np.flipud(exDataFR), interpolation='nearest', cmap=nd1ColorMap)
     cbar = plt.colorbar(cax, ax=ndOne, format='%d')
     maxFR = np.max(exDataFR.ravel())
-    cbar.set_label('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-10)
+    cbar.ax.set_ylabel('Firing rate\n(spk/s)', fontsize=fontSizeLabels, labelpad=-10)
     extraplots.set_ticks_fontsize(cbar.ax, fontSizeTicks)
     cbar.set_ticks([0, maxFR])
     cax.set_clim([0, maxFR])
+    ndOne.set_title('Non-direct pathway example cell')
 
     ndOne.set_yticks(intenTickLocations)
     ndOne.set_yticklabels(intensities[::-1])
@@ -191,7 +195,7 @@ if PANELS[1]:
     ndOne.set_ylabel('Intensity (dB SPL)', fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(ndOne, fontSizeTicks)
 
-# plt.hold(True)
+plt.hold(True)
 
 # ======================= Beginning of plotting for BW10 ================================
 
@@ -209,15 +213,14 @@ if PANELS[2]:
     medline(axBW, np.median(D1PopStat), 1, 0.5)
     axBW.set_ylabel('BW10', fontsize=fontSizeLabels)
 
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['Non-direct', 'Direct']
     axBW.set_xticks(range(2))
     axBW.set_xlim([-0.5, 1.5])
-    axBW.set_ylim([-0.5, 6])
     extraplots.boxoff(axBW)
     extraplots.set_ticks_fontsize(axBW, fontSizeTicks)
     axBW.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')  # Nick used stats.ranksum
+    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat)  # Nick used stats.ranksum
 
     messages.append("{} p={}".format(popStatCol, pVal))
 
@@ -229,9 +232,9 @@ if PANELS[2]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars+2, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
+    plt.hold(1)
 #
-#plt.hold(True)
+plt.hold(True)
 
 # ======================= Beginning of plotting for threshold ================================
 if PANELS[3]:
@@ -253,16 +256,15 @@ if PANELS[3]:
 
     medline(axThresh, np.median(D1PopStat), 1, 0.5)
     axThresh.set_ylabel('Threshold (dB SPL)', fontsize=fontSizeLabels)
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['Non-direct', 'Direct']
     axThresh.set_xticks(range(2))
     axThresh.set_xlim([-0.5, 1.5])
-    axThresh.set_ylim([0, 71])
     extraplots.boxoff(axThresh)
     extraplots.set_ticks_fontsize(axThresh, fontSizeTicks)
 
     axThresh.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat, alternative='two-sided')  # Nick used stats.ranksum
+    zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat)  # Nick used stats.ranksum
 
     messages.append("{} p={}".format(popStatCol, pVal))
 
@@ -273,7 +275,7 @@ if PANELS[3]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
+    plt.hold(1)
 
 # ======================= Beginning of plotting for latency ================================
 if PANELS[4]:
@@ -290,16 +292,16 @@ if PANELS[4]:
     medline(axLatency, np.median(D1PopStat)*1000, 1, 0.5)
     axLatency.set_ylabel('Latency (ms)', fontsize=fontSizeTicks)
     # tickLabels = ['ATh:Str', 'AC:Str']
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['Non-direct', 'Direct']
     axLatency.set_xticks(range(2))
     axLatency.set_xlim([-0.5, 1.5])
     extraplots.boxoff(axLatency)
-    axLatency.set_ylim([-0.001, 40])
+    axLatency.set_ylim([-0.001, 18])
 
     extraplots.set_ticks_fontsize(axLatency, fontSizeTicks)
     axLatency.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
+    zstat, pVal = stats.ranksums(nD1PopStat, D1PopStat)
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal) Remove Matt
     messages.append("{} p={}".format(popStatCol, pVal))
@@ -312,7 +314,7 @@ if PANELS[4]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
+    plt.hold(1)
 
 # ======================= Beginning of plotting for Onset to sustained ratio ================================
 
@@ -331,7 +333,7 @@ if PANELS[5]:
     # axOnsetivity.set_ylabel('Onsetivity index', fontsize=fontSizeTicks)
     axOnsetivity.set_ylabel('Onset to sustained ratio', fontsize=fontSizeLabels)
     # tickLabels = ['ATh:Str', 'AC:Str']
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['Non-direct', 'Direct']
     axOnsetivity.set_xticks(range(2))
     axOnsetivity.set_xlim([-0.5, 1.5])
     axOnsetivity.set_ylim([-0.51, 1.1])
@@ -340,7 +342,7 @@ if PANELS[5]:
     extraplots.set_ticks_fontsize(axOnsetivity, fontSizeTicks)
     axOnsetivity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
+    zstat, pVal = stats.ranksums(nD1PopStat, D1PopStat)
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
@@ -360,7 +362,7 @@ if PANELS[5]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
+    plt.hold(1)
 
 # ======================= Beginning of plotting for monotonicity index ================================
 if PANELS[6]:
@@ -376,7 +378,7 @@ if PANELS[6]:
     axMonotonicity.plot(pos, D1PopStat, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
     medline(axMonotonicity, np.median(D1PopStat), 1, 0.5)
     axMonotonicity.set_ylabel('Monotonicity index', fontsize=fontSizeLabels)
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['Non-direct', 'Direct']
     axMonotonicity.set_xticks(range(2))
     axMonotonicity.set_xlim([-0.5, 1.5])
     axMonotonicity.set_ylim([0, 1.1])
@@ -385,7 +387,7 @@ if PANELS[6]:
     extraplots.set_ticks_fontsize(axMonotonicity, fontSizeTicks)
     axMonotonicity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
 
-    zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
+    zstat, pVal = stats.ranksums(nD1PopStat, D1PopStat)
 
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
@@ -405,8 +407,9 @@ if PANELS[6]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
-fig1 = plt.gcf()
+    plt.hold(1)
+
+#plt.show()
 
 print("\nSTATISTICS:\n")
 for message in messages:
@@ -419,10 +422,10 @@ if SAVE_FIGURE:
         extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
         print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
     elif not os.path.isdir(os.path.join(figparams.FIGURE_OUTPUT_DIR)):
-        answer = inputFunc("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
+        answer = inputFunc(
+                            "Save folder is not present. Would you like to make the desired directory now? (y/n) ")
         if answer in ['y', 'Y', 'Yes', 'YES']:
-            os.mkdir(os.path.join(figparams.FIGURE_OUTPUT_DIR))
+            os.mkdir(
+                os.path.join(figparams.FIGURE_OUTPUT_DIR))
             extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
             print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
-
-plt.show()

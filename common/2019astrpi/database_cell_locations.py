@@ -22,9 +22,9 @@ def cell_locations(db):
     # lapPath = os.path.join(settings.ATLAS_PATH, 'AllenCCF_25/coronal_laplacian_25.nrrd')
     # lapPath = '/mnt/jarahubdata/tmp/coronal_laplacian_25.nrrd'
     # TODO Edit the lapPath to be something more descriptive of what it actually is. Also should not use laplacian for non-cortical areas
-    lapPath = settings.LAP_PATH
-    lapData = nrrd.read(lapPath)
-    lap = lapData[0]
+    # lapPath = settings.LAP_PATH
+    # lapData = nrrd.read(lapPath)
+    # lap = lapData[0]
     
     mcc = MouseConnectivityCache(resolution=25)
     rsp = mcc.get_reference_space()

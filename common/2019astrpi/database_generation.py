@@ -15,6 +15,7 @@ from jaratoolbox import ephyscore
 from jaratoolbox import spikesorting
 from jaratoolbox import spikesanalysis
 from jaratoolbox import settings
+from jaratoolbox import histologyanalysis
 import database_generation_funcs as funcs
 import database_cell_locations as cellLoc
 
@@ -37,7 +38,6 @@ def append_base_stats(cellDB, filename=''):
 
     for indIter, (indRow, dbRow) in enumerate(firstCells.iterrows()):
 
-        dbRow = firstCells.loc[indRow]
         sessions = dbRow['sessionType']
         oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
 
@@ -395,8 +395,9 @@ if __name__ == "__main__":
             d1mice = studyparams.ASTR_D1_CHR2_MICE
             dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
         else:
-            d1mice = [arguments[0]]
+            d1mice = arguments[0]
             dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
+            d1mice = [d1mice]
         print('d1mice = {}'.format(d1mice))
         # Run behavior can either be 'all', 'hist', or 'stats'
         runBehavior = arguments[1]
@@ -432,7 +433,7 @@ if __name__ == "__main__":
         # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
         histDB = firstDB
     if calc_locations:
-        histDB = cellLoc.cell_locations(firstDB)
+        histDB = histologyanalysis.cell_locations(firstDB, brainAreaDict=studyparams.BRAIN_AREA_DICT)
 
     if SAVE:
         if os.path.isdir(dbLocation):

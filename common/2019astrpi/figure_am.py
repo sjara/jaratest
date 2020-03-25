@@ -172,7 +172,7 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
     fig.add_subplot(axRate)
 
     nRates = len(possibleFreq)
-    plt.hold(True)
+    # plt.hold(True)
     plt.plot(avgSpikesArray, range(nRates), 'ro-', mec='none', ms=6, lw=3, color=color)
     plt.plot(avgSpikesArray-stdSpikesArray, range(len(possibleFreq)), 'k:')
     plt.plot(avgSpikesArray+stdSpikesArray, range(len(possibleFreq)), 'k:')
@@ -252,14 +252,14 @@ if PANELS[4]:
 
     # pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
     # axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
-    plt.hold(1)
+    # plt.hold(1)
     markers = extraplots.spread_plot(0, D1PopStat, spacing)
     plt.setp(markers, mec=colorD1, mfc='None')
     plt.setp(markers, ms=dataMS)
 
-    plt.hold(1)
+    # plt.hold(1)
     medline(np.median(D1PopStat), 0, 0.5)
-    plt.hold(1)
+    # plt.hold(1)
 
     # pos = jitter(np.ones(len(acPopStat))*1, 0.20)
     # axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
@@ -267,9 +267,9 @@ if PANELS[4]:
     plt.setp(markers, mec=colornD1, mfc='None')
     plt.setp(markers, ms=dataMS)
 
-    plt.hold(1)
+    # plt.hold(1)
     medline(np.median(nD1PopStat), 1, 0.5)
-    plt.hold(1)
+    # plt.hold(1)
 
     axPanelD.set_yticks(yticks)
     axPanelD.set_yticklabels(ytickLabels)
@@ -304,7 +304,7 @@ if PANELS[4]:
 
     axPanelD.set_ylim([np.log(3.6), np.log(150)])
     axPanelD.set_ylabel('Highest AM sync. rate (Hz)', labelpad=-1, fontsize=fontSizeLabels)
-    plt.hold(1)
+   #  plt.hold(1)
 
     # ---------------- Percent non-sync --------------------
     # axSummary = plt.subplot(gs[0, 5])
@@ -472,7 +472,7 @@ if PANELS[5]:
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
     extraplots.boxoff(axPanelG)
-    plt.hold(1)
+    # plt.hold(1)
 
 
 # -------------Discrimination of Phase -------------------

@@ -3,7 +3,8 @@ from jaratoolbox import celldatabase
 subject = 'd1pi033'
 experiments=[]
 
-exp0 = celldatabase.Experiment(subject, '2019-04-17', 'right_AudStr', info=['FacingPosterior', 'PosteriorDiD'])
+exp0 = celldatabase.Experiment(subject, '2019-04-17', 'right_AudStr', 'PosteriorDiD',
+                                   info=['FacingPosterior'])
 experiments.append(exp0)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -53,7 +54,8 @@ exp0.add_session('17-31-50', 'i', 'am', 'am_tuning_curve')
 exp0.maxDepth = 3100
 
 
-# exp1 = celldatabase.Experiment(subject, '2019-04-18', 'right_AudStr', info=['FacingPosterior', 'middleDiI'])
+exp1 = celldatabase.Experiment(subject, '2019-04-18', 'right_AudStr',  'middleDiI',
+                                   info=['FacingPosterior'])
 # experiments.append(exp1)
 # #Shank 4 is now missing
 #
@@ -74,7 +76,8 @@ exp0.maxDepth = 3100
 #Noticed saline was emptying very quickly. Possible hole has formed in glue of right well
 
 
-exp2 = celldatabase.Experiment(subject, '2019-04-24', 'left_AudStr', info=['FacingPosterior', 'middleDiD'])
+exp2 = celldatabase.Experiment(subject, '2019-04-24', 'left_AudStr', 'middleDiD',
+                                   info=['FacingPosterior'])
 experiments.append(exp2)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
@@ -116,7 +119,8 @@ exp2.add_session('15-17-52', 'f', 'am', 'am_tuning_curve')
 exp2.maxDepth = 3100
 
 
-# exp3 = celldatabase.Experiment(subject, '2019-05-01', 'left_AudStr', info=['shank1Ant', 'middleDiI'])
+exp3 = celldatabase.Experiment(subject, '2019-05-01', 'left_AudStr',  'middleDiI',
+                                   info=['shank1Ant'])
 # experiments.append(exp3)
 #
 # #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest, 1760 tc, 220 AM
