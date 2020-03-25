@@ -541,8 +541,11 @@ def plot_blind_cell_quality(cell):
     spikesorting.plot_events_in_time(tsThisCluster)
     
 
-def plot_bandwidth_report(cell, bandIndex, type='normal'):
+def plot_bandwidth_report(cell, type='normal', bandTimeRange = [0.2,1.0], bandBaseRange = [-1.0,-0.2]):
     plt.clf()
+    
+    bandIndex = int(cell['bestBandSession'])
+    
     if bandIndex is None:
         print 'No bandwidth session given'
         return
@@ -599,9 +602,7 @@ def plot_bandwidth_report(cell, bandIndex, type='normal'):
            
     # -- plot bandwidth tuning curves --
     plt.subplot(gs[5+offset:, 3:])
-    timeRange = [0.2, 1.0]# if type=='normal' else [0.1, 1.1]
-    baseRange = [-1.1, -0.3]
-    tuningDict = ephysanalysis.calculate_tuning_curve_inputs(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, timeRange, info='plotting')
+    tuningDict = ephysanalysis.calculate_tuning_curve_inputs(bandSpikeTimestamps, bandEventOnsetTimes, bandEachTrial, secondSort, bandTimeRange, baseRange=bandBaseRange, info='plotting')
     plot_tuning_curve(tuningDict['responseArray'], tuningDict['errorArray'], numBands, tuningDict['baselineSpikeRate'], linecolours=colours, errorcolours=errorColours)
 
     # load tuning ephys and behaviour data
