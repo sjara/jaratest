@@ -226,8 +226,8 @@ fig.clf()
 
 studyname = studyparams.STUDY_NAME
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '{}.h5'.format("direct_and_indirect_cells")
-# nameDB = "['d1pi042'].h5"
+# nameDB = '{}.h5'.format("direct_and_indirect_cells")
+nameDB = "ttDBR2.h5"
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
@@ -274,7 +274,7 @@ for indRow, dbRow in celldb.iterrows():
     axLaserpulsePSTH = plt.subplot(gs[1, 2:4])
 
     axTuningCurveISI = plt.subplot(gs[3, 0:2])
-    axLaserpulseISI = plt.subplot(gs[2, 0:2])
+    # axLaserpulseISI = plt.subplot(gs[2, 0:2])
     axTuningCurveWaveform = plt.subplot(gs[3, 2:4])
     axLaserpulseWaveform = plt.subplot(gs[2, 2:4])
     axTuningCurveEvents = plt.subplot(gs[2, 0:2])
@@ -666,7 +666,7 @@ for indRow, dbRow in celldb.iterrows():
                 spikesorting.plot_waveforms(tuningWaveform)
             plt.setp(meanWavesTuning, color='b')
         plt.axis('off')
-        plt.title('Tuning Curve Waveform')
+        plt.title('Tuning Curve Waveform\nSSQ={}'.format(dbRow['spikeShapeQuality']))
 
         # ISI plot
         plt.sca(axTuningCurveISI)
@@ -707,6 +707,7 @@ for indRow, dbRow in celldb.iterrows():
         axTuningCurveHeatmap.set_ylabel('Intensity (dB SPL)',
                                         fontsize=fontSizeLabels)
         extraplots.set_ticks_fontsize(axTuningCurveHeatmap, fontSizeTicks)
+        axTuningCurveHeatmap.set_title('R2 = {0}\nttR2 = {1}'.format(dbRow.rsquaredFit, dbRow.ttR2Fit))
 
         # ###############################################################################
 

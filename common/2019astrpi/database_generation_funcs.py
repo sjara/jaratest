@@ -43,7 +43,8 @@ def retrofit_gaussian_log2(y, a, x0, sigma, y0):
         return [lower, upper]
 
 
-def calculate_firing_rate(ephysData, baseRange, session, selectinds=[]):
+def calculate_firing_rate(eventOnsetTimes, spikeTimes, baseRange, selectinds=[]):
+    # TODO: Update with the new arguements for the docstring
     """
     Creates functions for calculating spike rates
     Within the function, the module calculates response range(responseRange), \
@@ -63,17 +64,13 @@ def calculate_firing_rate(ephysData, baseRange, session, selectinds=[]):
             nspkResp (np.array): [ntrials, 1], each row represents the nubmer of \
             spikes occured in the trial within response range(post-stimulus)
     """
-    eventOnsetTimes = ephysData['events']['stimOn']
     if selectinds != []:
         # =====================index mismatch correction========================
         while selectinds[-1] >= eventOnsetTimes.shape[0]:
             selectinds = np.delete(selectinds, -1, 0)
     # -----------------end of correction--------------------------------------
         eventOnsetTimes = eventOnsetTimes[selectinds]
-    else:
-        pass
 
-    spikeTimes = ephysData['spikeTimes']
     binTime = baseRange[1]-baseRange[0]
     responseRangeStart = baseRange[1]*(-1)  # if session != laserpulse else 0
     responseRange = [responseRangeStart, responseRangeStart+binTime]
@@ -214,7 +211,7 @@ def calculate_BW10_params(ind10Above, popts, Rsquareds, responseThreshold, inten
         popt10AboveSIT = popts[ind10Above]
         Rsquared10AboveSIT = Rsquareds[ind10Above].mean()  # I made up the mean
         if popt10AboveSIT is None:
-            print("Index returns empty array")  #FIXME: This was done to catch a niche circumstance when the index 10 above grabs an empty array (Ex: Now processing ', 'd1pi041', '2019-08-25', 3400.0, 7, 6, 1410)
+            print("Index returns empty array")  # FIXME: This was done to catch a niche circumstance when the index 10 above grabs an empty array (Ex: Now processing ', 'd1pi041', '2019-08-25', 3400.0, 7, 6, 1410)
             raise IndexError
     except IndexError:
         print("Failure indexerror didn't get 10 above")

@@ -21,6 +21,7 @@ db = celldatabase.load_hdf(pathtoDB)
 # FIXME: Consider what it would be better to fill empty values with instead of NaNs
 db['tuningTestPVal'] = np.nan
 db['tuningTestZStat'] = np.nan
+db['ttR2Fit'] = np.nan
 for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
 
     sessions = dbRow['sessionType']
@@ -63,13 +64,34 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             print("Something is wrong with the length of these data")
             toCalculate = False
 
-        # -------------------- Start of calculations for the tuningCurve data -------------------------
-        # The latency of the cell from the onset of the stim
         if toCalculate:
             ttZStat, ttPVal = \
                 funcs.sound_response_any_stimulus(ttEventOnsetTimes, ttSpikeTimes, tuningTrialsEachCond[:, :, -1],
                                                   timeRange=[0.0, 0.05], baseRange=baseRange)
+
+            for indInten, intensity in enumerate(uniqueIntensity):
+                spks = np.array([])
+                freqs = np.array([])
+                popts = []
+                pcovs = []
+                ind10AboveButNone = []
+                # ------------ start of frequency specific calculations -------------
+                for indFreq, freq in enumerate(uniqFreq):
+                    selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity)).tolist()
+
+                    nspkBase, nspkResp = funcs.calculate_firing_rate(ttEventOnsetTimes, ttSpikeTimes, baseRange,
+                                                                     selectinds=selectinds)
+
+                    spks = np.concatenate([spks, nspkResp.ravel()])
+                    freqs = np.concatenate([freqs, np.ones(len(nspkResp.ravel())) * freq])
+                    respSpikeMean[indInten, indFreq] = np.mean(nspkResp)
+                    allIntenBase = np.concatenate([allIntenBase, nspkBase.ravel()])
+                    Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
+
+                    Rsquareds[indInten, indFreq] = Rsquared
+
             db.at[indRow, 'tuningTestPVal'] = ttPVal
             db.at[indRow, 'tuningTestZStat'] = ttZStat
+        db.at[indRow, 'ttR2Fit'] = Rsquareds[-1].mean()
 
-celldatabase.save_hdf(db, '/var/tmp/figuresdata/2019astrpi/ttDB.h5')
+celldatabase.save_hdf(db, '/var/tmp/figuresdata/2019astrpi/ttDBR2.h5')

@@ -53,9 +53,10 @@ def append_base_stats(cellDB, filename=''):
             print('This cell does not contain a {} session'.format(session))
         else:
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
-            nspkBase, nspkResp = funcs.calculate_firing_rate(noiseEphysData, baseRange, session)
+            noiseEventOnsetTimes = noiseEphysData['events']['soundDetectorOn']
+            noiseSpikeTimes = noiseEphysData['spikeTimes']
+            nspkBase, nspkResp = funcs.calculate_firing_rate(noiseEventOnsetTimes, noiseSpikeTimes, baseRange)
             respSpikeMean = np.mean(nspkResp)
-
 
             # Significance calculations for the noiseburst
             try:
@@ -69,7 +70,6 @@ def append_base_stats(cellDB, filename=''):
             cellDB.at[indRow, '{}_zStat'.format(session)] = zStats
             cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
 
-
         # ------------ Laserpulse calculations --------------------------------
         session = 'laserpulse'
         try:
@@ -78,7 +78,9 @@ def append_base_stats(cellDB, filename=''):
             print('This cell does not contain a {} session'.format(session))
         else:
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
-            nspkBase, nspkResp = funcs.calculate_firing_rate(pulseEphysData, baseRange, session)
+            laserEventOnsetTimes = pulseEphysData['events']['soundDetectorOn']
+            laserSpikeTimes = pulseEphysData['spikeTimes']
+            nspkBase, nspkResp = funcs.calculate_firing_rate(laserEventOnsetTimes, laserSpikeTimes, baseRange)
             respSpikeMean = np.mean(nspkResp)
             baseSpikeMean = np.mean(nspkBase)
             changeFiring = respSpikeMean - baseSpikeMean
@@ -157,9 +159,7 @@ def append_base_stats(cellDB, filename=''):
                 for indFreq, freq in enumerate(uniqFreq):
                     selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity)).tolist()
 
-                    # FIXME: This function does not need to take the whole ephys
-                    # data as an arguement. Needed data is already calculated outside so I just need to update the args of the functions
-                    nspkBase, nspkResp = funcs.calculate_firing_rate(tuningEphysData, baseRange, session,
+                    nspkBase, nspkResp = funcs.calculate_firing_rate(tuningEventOnsetTimes, tuningSpikeTimes, baseRange,
                                                                      selectinds=selectinds)
 
                     spks = np.concatenate([spks, nspkResp.ravel()])
@@ -168,6 +168,7 @@ def append_base_stats(cellDB, filename=''):
                     allIntenBase = np.concatenate([allIntenBase, nspkBase.ravel()])
 
                     # ------------------- Significance and fit calculations for tuning ----------------
+                    # TODO: Do we really need to calculate this for each frequency at each intensity?
                     Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
 
                     Rsquareds[indInten, indFreq] = Rsquared
@@ -208,7 +209,7 @@ def append_base_stats(cellDB, filename=''):
                         sustainedRate = np.nan
                         baseRate = np.nan
 
-                    # [8] getting BW10 value, Bandwidth at 10dB above the neuron's sound intensity Threshold(SIT)
+                    # [8] getting BW10 value, Bandwidth at 10dB above the neuron's sound intensity threshold(SIT)
                     ind10Above = intensityInd + int(
                         10 / np.diff(uniqueIntensity)[0])  # How many inds to go above the threshold intensity ind
                     lowerFreq, upperFreq, Rsquared10AboveSIT = funcs.calculate_BW10_params(ind10Above, popts, Rsquareds,
@@ -432,6 +433,7 @@ if __name__ == "__main__":
         firstDB = append_base_stats(basicDB, filename=d1DBFilename)
         # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
         histDB = firstDB
+        celldatabase.save_hdf(histDB, os.path.join(dbLocation, '{}.h5'.format('temp_rescue_db')))
     if calc_locations:
         histDB = histologyanalysis.cell_locations(firstDB, brainAreaDict=studyparams.BRAIN_AREA_DICT)
 
