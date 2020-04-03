@@ -373,8 +373,6 @@ for indRow, dbRow in celldb.iterrows():
             plt.setp(meanLaserWaves, color='r')
         plt.title("Laserpulse Waveform")
 
-
-# TODO: Add tuning curve and AM in same fashion as laserpulse and noiseburst above
     # -----------AM---------------------
     significantFreqsArray = np.array([])
     if "am" in sessions:

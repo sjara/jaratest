@@ -17,7 +17,6 @@ from jaratoolbox import spikesanalysis
 from jaratoolbox import settings
 from jaratoolbox import histologyanalysis
 import database_generation_funcs as funcs
-import database_cell_locations as cellLoc
 
 
 if sys.version_info[0] < 3:

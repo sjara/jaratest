@@ -18,7 +18,7 @@ tuningcurve = ['tuningCurve', 'tuningCurve(tc)']
 
 # --- individual parameters for cell selection ---
 ISI_THRESHOLD = 0.02  # maximum allowed % ISI violations per cluster
-SPIKE_QUALITY_THRESHOLD = 2
+SPIKE_QUALITY_THRESHOLD = 2.5
 
 R2_CUTOFF = 0.03  # minimum R^2 value for a cell to be considered frequency tuned
 
