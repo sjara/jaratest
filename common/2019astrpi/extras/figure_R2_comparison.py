@@ -7,7 +7,7 @@ from jaratoolbox import celldatabase
 studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
 
 
-def normalized_hist(data_column, output_dir='/var/tmp/'):
+def normalized_hist(data_column, bin_number=50, output_dir='/var/tmp/'):
     db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/ttDBR2.h5")
     # dbTuned = db.query(studyparams.TUNING_FILTER)
     D1DB = db.query(studyparams.D1_CELLS)
@@ -16,8 +16,8 @@ def normalized_hist(data_column, output_dir='/var/tmp/'):
     nD1DB = nD1DB.replace([np.inf, -np.inf], np.nan)
     D1DB = D1DB[D1DB[data_column].notnull()]
     nD1DB = nD1DB[nD1DB[data_column].notnull()]
-    D1Hist, D1bins = np.histogram(D1DB[data_column], bins=50, density=True)
-    nD1Hist, nD1bins = np.histogram(nD1DB[data_column], bins=50, density=True)
+    D1Hist, D1bins = np.histogram(D1DB[data_column], bins=bin_number, density=True)
+    nD1Hist, nD1bins = np.histogram(nD1DB[data_column], bins=bin_number, density=True)
     center = (D1bins[:-1] + D1bins[1:])/2
     width = 0.7 * (D1bins[1] - D1bins[0])
 
@@ -33,3 +33,4 @@ def normalized_hist(data_column, output_dir='/var/tmp/'):
     ax.set_title(data_column)
     fig.savefig(os.path.join(output_dir + "{}.png".format(data_column)))
     plt.show()
+    return fig, ax
