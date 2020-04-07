@@ -54,12 +54,12 @@ def append_base_stats(cellDB, filename=''):
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
             noiseEventOnsetTimes = noiseEphysData['events']['soundDetectorOn']
             noiseSpikeTimes = noiseEphysData['spikeTimes']
-            nspkBase, nspkResp = funcs.calculate_firing_rate(noiseEventOnsetTimes, noiseSpikeTimes, baseRange)
-            respSpikeMean = np.mean(nspkResp)
+            nspkBaseNoise, nspkRespNoise = funcs.calculate_firing_rate(noiseEventOnsetTimes, noiseSpikeTimes, baseRange)
+            respSpikeMean = np.mean(nspkRespNoise)
 
             # Significance calculations for the noiseburst
             try:
-                zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase, alternative='two-sided')
+                zStats, pVals = stats.mannwhitneyu(nspkRespNoise, nspkBaseNoise, alternative='two-sided')
             except ValueError:  # All numbers identical will cause mann-whitney to fail, therefore p-value should be 1 as there is no difference
                 zStats, pVals = [0, 1]
 
@@ -77,16 +77,16 @@ def append_base_stats(cellDB, filename=''):
             print('This cell does not contain a {} session'.format(session))
         else:
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
-            laserEventOnsetTimes = pulseEphysData['events']['soundDetectorOn']
+            laserEventOnsetTimes = pulseEphysData['events']['laserOn']
             laserSpikeTimes = pulseEphysData['spikeTimes']
-            nspkBase, nspkResp = funcs.calculate_firing_rate(laserEventOnsetTimes, laserSpikeTimes, baseRange)
-            respSpikeMean = np.mean(nspkResp)
-            baseSpikeMean = np.mean(nspkBase)
+            nspkBaseLaser, nspkRespLaser = funcs.calculate_firing_rate(laserEventOnsetTimes, laserSpikeTimes, baseRange)
+            respSpikeMean = np.mean(nspkRespLaser)
+            baseSpikeMean = np.mean(nspkBaseLaser)
             changeFiring = respSpikeMean - baseSpikeMean
 
             # Significance calculations for the laserpulse
             try:
-                zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase, alternative='two-sided')
+                zStats, pVals = stats.mannwhitneyu(nspkRespLaser, nspkBaseLaser, alternative='two-sided')
             except ValueError:  # All numbers identical will cause mann-whitney to fail
                 zStats, pVals = [0, 1]
 

@@ -8,7 +8,7 @@ studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
 
 
 def normalized_hist(data_column, bin_number=50, output_dir='/var/tmp/'):
-    db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/ttDBR2.h5")
+    db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/direct_and_indirect_cells.h5")
     # dbTuned = db.query(studyparams.TUNING_FILTER)
     D1DB = db.query(studyparams.D1_CELLS)
     nD1DB = db.query(studyparams.nD1_CELLS)
@@ -25,8 +25,8 @@ def normalized_hist(data_column, bin_number=50, output_dir='/var/tmp/'):
     fig.clf()
 
     ax = fig.add_subplot()
-    ax.bar(center, D1Hist, width=width, align='center', label='D1')
-    ax.bar(center, nD1Hist, width=width, align='center', label='nD1')
+    ax.bar(center, D1Hist, width=width, align='center', label='D1', alpha=0.5)
+    ax.bar(center, nD1Hist, width=width, align='center', label='nD1', alpha=0.5)
     ax.legend()
     ax.set_xlabel('{} value'.format(data_column))
     ax.set_ylabel('Frequency')

@@ -18,7 +18,7 @@ nameDB = '{}.h5'.format(studyparams.DATABASE_NAME)
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
-# FIXME: Consider what it would be better to fill empty values with instead of NaNs
+# TODO: Consider what it would be better to fill empty values with instead of NaNs
 db['tuningTestPVal'] = np.nan
 db['tuningTestZStat'] = np.nan
 db['ttR2Fit'] = np.nan
@@ -90,8 +90,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
 
                     Rsquareds[indInten, indFreq] = Rsquared
 
-            db.at[indRow, 'tuningTestPVal'] = ttPVal
-            db.at[indRow, 'tuningTestZStat'] = ttZStat
-        db.at[indRow, 'ttR2Fit'] = Rsquareds[-1].mean()
+            db.at[indRow, 'tuningTest_pVal'] = ttPVal
+            db.at[indRow, 'tuningTest_zStat'] = ttZStat
+        db.at[indRow, 'ttR2Fit'] = Rsquareds[-1].mean()  # Using the highest (only) intensity
 
 celldatabase.save_hdf(db, '/var/tmp/figuresdata/2019astrpi/ttDBR2.h5')
