@@ -72,21 +72,34 @@ if PANELS[1]:
     PVcontrolAccuracy = summaryData['PVcontrolAccuracy']
     SOMlaserAccuracy = summaryData['SOMlaserAccuracy']
     SOMcontrolAccuracy = summaryData['SOMcontrolAccuracy']
+    possibleBands = summaryData['possibleBands']
 
-    PVdata = np.hstack((np.reshape(PVcontrolAccuracy, (len(PVcontrolAccuracy),1)), np.reshape(PVlaserAccuracy, (len(PVlaserAccuracy),1))))
-    SOMdata = np.hstack((np.reshape(SOMcontrolAccuracy, (len(SOMcontrolAccuracy), 1)), np.reshape(SOMlaserAccuracy, (len(SOMlaserAccuracy), 1))))
-    accuracyData = [PVdata, SOMdata]
+    colours = [PVColour, SOMColour]
+    accuracyData = [[PVcontrolAccuracy, PVlaserAccuracy], [SOMcontrolAccuracy, SOMlaserAccuracy]]
 
-    for ind, data in enumerate(accuracyData):
-        axScatter = plt.subplot(gs[ind,1])
+    for indType, accuracies in enumerate(accuracyData):
+        axScatter = plt.subplot(gs[indType,1])
 
-        xVals = range(2)
-        for indSubj in range(data.shape[0]):
-            plt.plot(xVals, data[indSubj,:], 'o-', color=ExcColour)
+        barLoc = np.array([-0.24, 0.24])
+        xLocs = np.arange(2)
+        xTickLabels = possibleBands
 
-        axScatter.set_xlim(-0.3, 1.3)
-        axScatter.set_xticks(xVals)
-        axScatter.set_xticklabels(['control', 'laser'])
+        for indBand in range(len(possibleBands)):
+            thisxLocs = barLoc + xLocs[indBand]
+
+            for indMouse in range(accuracies[0].shape[0]):
+                plt.plot(thisxLocs, [accuracies[0][indMouse, indBand], accuracies[1][indMouse, indBand]], '-', color=ExcColour)
+
+            plt.plot(np.tile(thisxLocs[0],accuracies[0].shape[0]), accuracies[0][:,indBand], 'o', color=ExcColour)
+            plt.plot(np.tile(thisxLocs[1],accuracies[1].shape[0]), accuracies[1][:,indBand], 'o', mec=colours[indType], mfc='white')
+
+            #median = np.median(accuracyData, axis=0)
+            #plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+
+        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
+        axScatter.set_xticks(xLocs)
+        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
+        axScatter.set_xlabel('Masker bandwidth (octaves)')
 
         axScatter.set_ylim(50, 80)
         axScatter.set_ylabel('Accuracy (%)')
@@ -102,6 +115,7 @@ if PANELS[2]:
     PVcontrolAccuracy = summaryData['PVcontrolAccuracy']
     SOMlaserAccuracy = summaryData['SOMlaserAccuracy']
     SOMcontrolAccuracy = summaryData['SOMcontrolAccuracy']
+    possibleBands = summaryData['possibleBands']
 
     PVchange = PVlaserAccuracy - PVcontrolAccuracy
     SOMchange = SOMlaserAccuracy - SOMcontrolAccuracy
@@ -110,27 +124,33 @@ if PANELS[2]:
 
     cellTypeColours = [PVColour, SOMColour]
 
-    width = 0.6
-    loc = np.arange(1, 3)
+    width = 0.45
+    barLoc = np.array([-0.24, 0.24])
+    xLocs = np.arange(2)
+    xTickLabels = possibleBands
 
-    medianChangeAccuracy = [np.median(PVchange), np.median(SOMchange)]
-    changeCIs = [bootstrap_median_CI(PVchange), bootstrap_median_CI(SOMchange)]
+    changeAccuracy = [PVchange, SOMchange]
+    medianChangeAccuracy = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
+    #changeCIs = [bootstrap_median_CI(PVchange), bootstrap_median_CI(SOMchange)]
+    for indBand in range(len(possibleBands)):
+        for indType in range(len(medianChangeAccuracy)):
+            plt.plot([xLocs[indBand] + barLoc[indType] - width / 2, xLocs[indBand] + barLoc[indType] + width / 2],
+                     [medianChangeAccuracy[indType][indBand], medianChangeAccuracy[indType][indBand]],
+                     color=cellTypeColours[indType], linewidth=3)  # medians
 
-    for indType in range(len(medianChangeAccuracy)):
-        plt.plot([loc[indType] - width / 2, loc[indType] + width / 2], [medianChangeAccuracy[indType], medianChangeAccuracy[indType]],
-                 color=cellTypeColours[indType], linewidth=3)  # medians
+            accuracyCI = bootstrap_median_CI(changeAccuracy[indType][:,indBand])
+            # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
+            plt.plot([xLocs[indBand] + barLoc[indType], xLocs[indBand] + barLoc[indType]], accuracyCI,
+                     color=cellTypeColours[indType], linewidth=1.5)  # error bars
+            plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
+                     [accuracyCI[0], accuracyCI[0]], color=cellTypeColours[indType], linewidth=1.5)  # bottom caps
+            plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
+                     [accuracyCI[1], accuracyCI[1]], color=cellTypeColours[indType], linewidth=1.5)  # top caps
 
-        # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
-        plt.plot([loc[indType], loc[indType]], changeCIs[indType], color=cellTypeColours[indType],
-                 linewidth=1.5)  # error bars
-        plt.plot([loc[indType] - width / 8, loc[indType] + width / 8], [changeCIs[indType][0], changeCIs[indType][0]],
-                 color=cellTypeColours[indType], linewidth=1.5)  # bottom caps
-        plt.plot([loc[indType] - width / 8, loc[indType] + width / 8], [changeCIs[indType][1], changeCIs[indType][1]],
-                 color=cellTypeColours[indType], linewidth=1.5)  # top caps
-
-    axBar.set_xlim(0.3, 2.7)
-    axBar.set_xticks(loc)
-    axBar.set_xticklabels(['no PV', 'no SOM'])
+    axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
+    axBar.set_xticks(xLocs)
+    axBar.set_xticklabels(possibleBands)
+    axBar.set_xlabel('Masker bandwidth (octaves)')
 
     yLims = (-12, 2)
     axBar.set_ylim(yLims)
@@ -138,10 +158,14 @@ if PANELS[2]:
 
     extraplots.boxoff(axBar)
 
-    pVal = stats.ranksums(PVchange, SOMchange)[1]
-    print('PV accuracy change vs SOM accuracy change p val: {}'.format(pVal))
+    for band in range(len(possibleBands)):
+        pVal = stats.ranksums(PVchange[:, band], SOMchange[:, band])
+        print(f'PV accuracy change vs SOM accuracy change for bw {possibleBands[band]} p val: {pVal}')
 
-# --- summary of change in bias towards one side during PV or SOM inactivation ---
+    # extraplots.significance_stars(barLoc + xLocs[0], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
+    # extraplots.significance_stars(barLoc + xLocs[1], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
+
+# --- comparison in change in bias with PV and SOM inactivation ---
 if PANELS[3]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
@@ -150,29 +174,44 @@ if PANELS[3]:
     PVcontrolBias = summaryData['PVcontrolBias']
     SOMlaserBias = summaryData['SOMlaserBias']
     SOMcontrolBias = summaryData['SOMcontrolBias']
+    possibleBands = summaryData['possibleBands']
 
-    PVdata = np.hstack((np.reshape(PVcontrolBias, (len(PVcontrolBias),1)), np.reshape(PVlaserBias, (len(PVlaserBias),1))))
-    SOMdata = np.hstack((np.reshape(SOMcontrolBias, (len(SOMcontrolBias), 1)), np.reshape(SOMlaserBias, (len(SOMlaserBias), 1))))
-    biasData = [PVdata, SOMdata]
+    colours = [PVColour, SOMColour]
+    biasData = [[PVcontrolBias, PVlaserBias], [SOMcontrolBias, SOMlaserBias]]
 
-    for ind, data in enumerate(biasData):
-        axScatter = plt.subplot(gs[ind,2])
+    for indType, biases in enumerate(biasData):
+        axScatter = plt.subplot(gs[indType, 2])
 
-        xVals = range(2)
-        for indSubj in range(data.shape[0]):
-            plt.plot(xVals, data[indSubj,:], 'o-', color=ExcColour)
+        barLoc = np.array([-0.24, 0.24])
+        xLocs = np.arange(2)
+        xTickLabels = possibleBands
 
-        axScatter.set_xlim(-0.3, 1.3)
-        axScatter.set_xticks(xVals)
-        axScatter.set_xticklabels(['control', 'laser'])
+        for indBand in range(len(possibleBands)):
+            thisxLocs = barLoc + xLocs[indBand]
 
-        axScatter.set_ylim(-0.7, 0.7)
+            for indMouse in range(biases[0].shape[0]):
+                plt.plot(thisxLocs, [biases[0][indMouse, indBand], biases[1][indMouse, indBand]], '-',
+                         color=ExcColour)
+
+            plt.plot(np.tile(thisxLocs[0], biases[0].shape[0]), biases[0][:, indBand], 'o', color=ExcColour)
+            plt.plot(np.tile(thisxLocs[1], biases[1].shape[0]), biases[1][:, indBand], 'o',
+                     mec=colours[indType], mfc='white')
+
+            # median = np.median(accuracyData, axis=0)
+            # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+
+        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
+        axScatter.set_xticks(xLocs)
+        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
+        axScatter.set_xlabel('Masker bandwidth (octaves)')
+
+        axScatter.set_ylim(-0.75,0.4)
         axScatter.set_ylabel('Bias')
 
         extraplots.boxoff(axScatter)
 
-# --- comparison in change in accuracy with PV and SOM inactivation ---
-if PANELS[2]:
+# --- summary of change in bias towards one side during PV or SOM inactivation ---
+if PANELS[4]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
@@ -188,39 +227,48 @@ if PANELS[2]:
 
     cellTypeColours = [PVColour, SOMColour]
 
-    width = 0.6
-    loc = np.arange(1, 3)
+    width = 0.45
+    barLoc = np.array([-0.24, 0.24])
+    xLocs = np.arange(2)
+    xTickLabels = possibleBands
 
-    medianChangeBias = [np.median(PVchange), np.median(SOMchange)]
-    changeCIs = [bootstrap_median_CI(PVchange), bootstrap_median_CI(SOMchange)]
+    changeBias = [PVchange, SOMchange]
+    medianChangeBias = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
+    for indBand in range(len(possibleBands)):
+        for indType in range(len(medianChangeBias)):
+            plt.plot([xLocs[indBand] + barLoc[indType] - width / 2, xLocs[indBand] + barLoc[indType] + width / 2],
+                     [medianChangeBias[indType][indBand], medianChangeBias[indType][indBand]],
+                     color=cellTypeColours[indType], linewidth=3)  # medians
 
-    for indType in range(len(medianChangeBias)):
-        plt.plot([loc[indType] - width / 2, loc[indType] + width / 2], [medianChangeBias[indType], medianChangeBias[indType]],
-                 color=cellTypeColours[indType], linewidth=3)  # medians
+            biasCI = bootstrap_median_CI(changeBias[indType][:, indBand])
+            # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
+            plt.plot([xLocs[indBand] + barLoc[indType], xLocs[indBand] + barLoc[indType]], biasCI,
+                     color=cellTypeColours[indType], linewidth=1.5)  # error bars
+            plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
+                     [biasCI[0], biasCI[0]], color=cellTypeColours[indType], linewidth=1.5)  # bottom caps
+            plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
+                     [biasCI[1], biasCI[1]], color=cellTypeColours[indType], linewidth=1.5)  # top caps
 
-        # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
-        plt.plot([loc[indType], loc[indType]], changeCIs[indType], color=cellTypeColours[indType],
-                 linewidth=1.5)  # error bars
-        plt.plot([loc[indType] - width / 8, loc[indType] + width / 8], [changeCIs[indType][0], changeCIs[indType][0]],
-                 color=cellTypeColours[indType], linewidth=1.5)  # bottom caps
-        plt.plot([loc[indType] - width / 8, loc[indType] + width / 8], [changeCIs[indType][1], changeCIs[indType][1]],
-                 color=cellTypeColours[indType], linewidth=1.5)  # top caps
+    axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
+    axBar.set_xticks(xLocs)
+    axBar.set_xticklabels(possibleBands)
+    axBar.set_xlabel('Masker bandwidth (octaves)')
 
-    axBar.set_xlim(0.3, 2.7)
-    axBar.set_xticks(loc)
-    axBar.set_xticklabels(['no PV', 'no SOM'])
-
-    yLims = (-0.3, 0.3)
+    yLims = (-0.5, 0.3)
     axBar.set_ylim(yLims)
     axBar.set_ylabel('Change in bias')
 
     extraplots.boxoff(axBar)
-    extraplots.significance_stars([1, 2], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
 
-    pVal = stats.ranksums(PVchange, SOMchange)[1]
-    print('PV bias change vs SOM bias change p val: {}'.format(pVal))
+    # calculate those stats!
+    for band in range(len(possibleBands)):
+        pVal = stats.ranksums(PVchange[:,band], SOMchange[:,band])
+        print(f'PV bias change vs SOM bias change for bw {possibleBands[band]} p val: {pVal}')
 
-plt.show()
+    extraplots.significance_stars(barLoc + xLocs[0], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
+    extraplots.significance_stars(barLoc + xLocs[1], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+
+# plt.show()
