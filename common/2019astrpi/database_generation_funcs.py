@@ -47,11 +47,11 @@ def calculate_firing_rate(eventOnsetTimes, spikeTimes, baseRange, selectinds=[])
     # TODO: Update with the new arguements for the docstring
     """
     Creates functions for calculating spike rates
-    Within the function, the module calculates response range(responseRange), \
+    Within the function, the module calculates response range(responseRange),
     and entire range(alignmentRange). response Range mirrors baseRange but on the\
     post-stimulus time. It has the equal time distance from the stimulus\
     and the same amount of time range as baseRange
-            ephysData (dict): generated using ephyscore.Cell.load. it contains three\
+            ephysData (dict): generated using ephyscore.Cell.load. it contains three
             keys (['samples'(float64,np.array), 'spikeTimes'(float64,np.array), 'events'(dict)])
             electro physiology data, see ephyscore for more detailed information
             baseRange (list): range of the time frame before the application of stimulus
@@ -59,9 +59,9 @@ def calculate_firing_rate(eventOnsetTimes, spikeTimes, baseRange, selectinds=[])
             selectinds (list): indices of event onset time points for specific frequency\
             and specific intensity, used for frequency tuning analysis, empty by default
     Returns:
-            nspkBase (np.array): [ntrials, 1], each row represents the number of \
+            nspkBase (np.array): [ntrials, 1], each row represents the number of
             spikes occured in the trial within base range(pre-stimulus)
-            nspkResp (np.array): [ntrials, 1], each row represents the nubmer of \
+            nspkResp (np.array): [ntrials, 1], each row represents the nubmer of
             spikes occured in the trial within response range(post-stimulus)
     """
     if selectinds != []:
@@ -209,7 +209,7 @@ def calculate_BW10_params(ind10Above, popts, Rsquareds, responseThreshold, inten
 
     try:
         popt10AboveSIT = popts[ind10Above]
-        Rsquared10AboveSIT = Rsquareds[ind10Above].mean()  # I made up the mean
+        Rsquared10AboveSIT = Rsquareds[ind10Above]
         if popt10AboveSIT is None:
             print("Index returns empty array")  # FIXME: This was done to catch a niche circumstance when the index 10 above grabs an empty array (Ex: Now processing ', 'd1pi041', '2019-08-25', 3400.0, 7, 6, 1410)
             raise IndexError

@@ -47,5 +47,3 @@ nD1DBResponse = nD1DB.query("(noiseburst_pVal < 0.05 or tuning_pVal < 0.05 or am
 D1ResponseClusters = D1DBResponse.__len__()
 nD1ResponseClusters = nD1DBResponse.__len__()
 print("D1 sound responsive clusters = {0}\nnD1 sound responsive clusters = {1}".format(D1ResponseClusters, nD1ResponseClusters))
-
-# TODO Change to using the DB with tuningTest data and then also add that in as a possible pass for sound repsonse
