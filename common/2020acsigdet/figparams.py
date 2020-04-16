@@ -22,6 +22,6 @@ colp['PVcell'] = cp.TangoPalette['SkyBlue2']
 
 colp['blueLaser'] = '#00FFFF'
 colp['greenLaser'] = '#34FF7A'
-colp['sound'] = '#d3d3c2'
+#colp['sound'] = '#d3d3c2'
 #colp['sound'] = '#fcee25'
-#colp['sound'] = cp.TangoPalette['Butter2']
+colp['sound'] = cp.TangoPalette['Butter2']

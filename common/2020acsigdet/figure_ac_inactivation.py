@@ -14,18 +14,18 @@ from jaratoolbox import extraplots
 import figparams
 import studyparams
 
-FIGNAME = 'figure_inhibitory_inactivation'
+FIGNAME = 'figure_ac_inactivation'
 # inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
-PANELS = [1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 0, 1, 0]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'FigX_inhib_inactivation'  # Do not include extension
+figFilename = 'FigX_ac_inactivation'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 # figFormat = 'svg'
-figSize = [9,9]  # In inches
+figSize = [8,3]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -35,9 +35,8 @@ fontSizeLegend = figparams.fontSizeLegend
 labelPosX = [0.005, 0.36, 0.66, 0.42]  # Horiz position for panel labels
 labelPosY = [0.98, 0.78, 0.48, 0.28]  # Vert position for panel labels
 
-PVInactExample = 'band081_psycurve.npz'
-SOMInactExample = 'band065_psycurve.npz'
-summaryFileName = 'all_behaviour_inhib_inactivation.npz'
+ACInactExample = ''
+summaryFileName = 'all_behaviour_ac_inactivation.npz'
 
 ExcColour = figparams.colp['excitatoryCell']
 PVColour = figparams.colp['PVcell']
@@ -47,8 +46,8 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(3, 3, width_ratios=[1.5, 1, 1])
-gs.update(top=0.99, bottom=0.05, left=0.07, right=0.94, wspace=0.5, hspace=0.3)
+gs = gridspec.GridSpec(1, 3, width_ratios=[1.5, 1, 1])
+gs.update(top=0.97, bottom=0.16, left=0.07, right=0.94, wspace=0.5, hspace=0.3)
 
 def bootstrap_median_CI(data, reps=1000, interval=95):
     medians = np.zeros(reps)
@@ -61,89 +60,53 @@ def bootstrap_median_CI(data, reps=1000, interval=95):
 
 # --- example psychometric curves ---
 if PANELS[0]:
-    examples = [PVInactExample, SOMInactExample]
-    cellTypeColours = [PVColour, SOMColour]
-    labels = ['no PV', 'no SOM']
+    pass
 
-    for indType, exampleFileName in enumerate(examples):
-        dataFullPath = os.path.join(inactDataDir, exampleFileName)
-        data = np.load(dataFullPath)
-
-        axCurve = plt.subplot(gs[indType, 0])
-
-        psyCurveControl = data['psyCurveControl']
-        upperErrorControl = data['upperErrorControl']
-        lowerErrorControl = data['lowerErrorControl']
-        possibleSNRs = data['possibleSNRs']
-
-        l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=ExcColour, lw=3, ms=8)
-        plt.errorbar(range(len(possibleSNRs)), psyCurveControl, yerr=[lowerErrorControl, upperErrorControl], fmt='none',
-                     color=ExcColour, lw=2, capsize=5, capthick=1)
-
-        psyCurveLaser = data['psyCurveLaser']
-        upperErrorLaser = data['upperErrorLaser']
-        lowerErrorLaser = data['lowerErrorLaser']
-
-        l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8)
-        plt.errorbar(range(len(possibleSNRs)), psyCurveLaser, yerr=[lowerErrorLaser, upperErrorLaser], fmt='none',
-                     color=cellTypeColours[indType], lw=2, capsize=5, capthick=1, zorder=-10)
-
-        axCurve.legend([l1, l2], ['control', labels[indType]])
-
-        axCurve.set_xlim(-0.2, len(possibleSNRs) - 0.8)
-        axCurve.set_xticks(range(len(possibleSNRs)))
-        axCurve.set_xticklabels(possibleSNRs)
-        axCurve.set_xlabel('SNR (dB)')
-
-        axCurve.set_ylim(0, 100)
-        axCurve.set_ylabel('% tone reported')
-
-        extraplots.boxoff(axCurve)
-
-# --- summary of change in accuracy during PV or SOM inactivation ---
+# --- summary of change in accuracy during AC inactivation ---
 if PANELS[1]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserAccuracy = summaryData['PVlaserAccuracy']
-    PVcontrolAccuracy = summaryData['PVcontrolAccuracy']
-    SOMlaserAccuracy = summaryData['SOMlaserAccuracy']
-    SOMcontrolAccuracy = summaryData['SOMcontrolAccuracy']
+    laserAccuracy = summaryData['laserAccuracy']
+    controlAccuracy = summaryData['controlAccuracy']
     possibleBands = summaryData['possibleBands']
 
-    colours = [PVColour, SOMColour]
-    accuracyData = [[PVcontrolAccuracy, PVlaserAccuracy], [SOMcontrolAccuracy, SOMlaserAccuracy]]
+    axScatter = plt.subplot(gs[0,1])
 
-    for indType, accuracies in enumerate(accuracyData):
-        axScatter = plt.subplot(gs[indType,1])
+    barLoc = np.array([-0.24, 0.24])
+    xLocs = np.arange(len(possibleBands))
+    xTickLabels = possibleBands
+    legendLabels = ['control', 'PV activated']
 
-        barLoc = np.array([-0.24, 0.24])
-        xLocs = np.arange(2)
-        xTickLabels = possibleBands
+    for indBand in range(len(possibleBands)):
+        thisxLocs = barLoc + xLocs[indBand]
 
-        for indBand in range(len(possibleBands)):
-            thisxLocs = barLoc + xLocs[indBand]
+        for indMouse in range(laserAccuracy.shape[0]):
+            plt.plot(thisxLocs, [controlAccuracy[indMouse, indBand], laserAccuracy[indMouse, indBand]], '-', color=ExcColour)
 
-            for indMouse in range(accuracies[0].shape[0]):
-                plt.plot(thisxLocs, [accuracies[0][indMouse, indBand], accuracies[1][indMouse, indBand]], '-', color=ExcColour)
+        l1, = plt.plot(np.tile(thisxLocs[1],laserAccuracy.shape[0]), laserAccuracy[:,indBand], 'o', color=PVColour)
+        l2, = plt.plot(np.tile(thisxLocs[0],controlAccuracy.shape[0]), controlAccuracy[:,indBand], 'o', color=ExcColour)
 
-            plt.plot(np.tile(thisxLocs[0],accuracies[0].shape[0]), accuracies[0][:,indBand], 'o', color=ExcColour)
-            plt.plot(np.tile(thisxLocs[1],accuracies[1].shape[0]), accuracies[1][:,indBand], 'o', mec=colours[indType], mfc='white')
+        #median = np.median(accuracyData, axis=0)
+        #plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+    axScatter.legend([l2, l1], legendLabels, loc='best')
 
-            #median = np.median(accuracyData, axis=0)
-            #plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+    axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
+    axScatter.set_xlabel('Masker bandwidth (oct)')
 
-        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (octaves)')
+    axScatter.set_ylim(50, 95)
+    axScatter.set_ylabel('Accuracy (%)')
 
-        axScatter.set_ylim(50, 80)
-        axScatter.set_ylabel('Accuracy (%)')
+    extraplots.boxoff(axScatter)
 
-        extraplots.boxoff(axScatter)
+    # -- stats!! --
+    for band in range(len(possibleBands)):
+        pVal = stats.wilcoxon(laserAccuracy[:,band], controlAccuracy[:,band])[1]
+        print(f"Change in accuracy at {possibleBands[band]} oct pVal: {pVal}")
 
-# --- comparison in change in accuracy with PV and SOM inactivation ---
+# --- comparison in change in accuracy with AC inactivation ---
 if PANELS[2]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
@@ -207,45 +170,45 @@ if PANELS[3]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserBias = summaryData['PVlaserBias']
-    PVcontrolBias = summaryData['PVcontrolBias']
-    SOMlaserBias = summaryData['SOMlaserBias']
-    SOMcontrolBias = summaryData['SOMcontrolBias']
+    laserBias = summaryData['laserBias']
+    controlBias = summaryData['controlBias']
     possibleBands = summaryData['possibleBands']
 
-    colours = [PVColour, SOMColour]
-    biasData = [[PVcontrolBias, PVlaserBias], [SOMcontrolBias, SOMlaserBias]]
+    axScatter = plt.subplot(gs[0, 2])
 
-    for indType, biases in enumerate(biasData):
-        axScatter = plt.subplot(gs[indType, 2])
+    barLoc = np.array([-0.24, 0.24])
+    xLocs = np.arange(len(possibleBands))
+    xTickLabels = possibleBands
+    legendLabels = ['control', 'PV activated']
 
-        barLoc = np.array([-0.24, 0.24])
-        xLocs = np.arange(2)
-        xTickLabels = possibleBands
+    for indBand in range(len(possibleBands)):
+        thisxLocs = barLoc + xLocs[indBand]
 
-        for indBand in range(len(possibleBands)):
-            thisxLocs = barLoc + xLocs[indBand]
+        for indMouse in range(laserBias.shape[0]):
+            plt.plot(thisxLocs, [controlBias[indMouse, indBand], laserBias[indMouse, indBand]], '-',
+                     color=ExcColour)
 
-            for indMouse in range(biases[0].shape[0]):
-                plt.plot(thisxLocs, [biases[0][indMouse, indBand], biases[1][indMouse, indBand]], '-',
-                         color=ExcColour)
+        l1, = plt.plot(np.tile(thisxLocs[1], laserBias.shape[0]), laserBias[:, indBand], 'o', color=PVColour)
+        l2, = plt.plot(np.tile(thisxLocs[0], controlBias.shape[0]), controlBias[:, indBand], 'o', color=ExcColour)
 
-            plt.plot(np.tile(thisxLocs[0], biases[0].shape[0]), biases[0][:, indBand], 'o', color=ExcColour)
-            plt.plot(np.tile(thisxLocs[1], biases[1].shape[0]), biases[1][:, indBand], 'o',
-                     mec=colours[indType], mfc='white')
+        # median = np.median(accuracyData, axis=0)
+        # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+    axScatter.legend([l2, l1], legendLabels, loc='best')
 
-            # median = np.median(accuracyData, axis=0)
-            # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+    axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
+    axScatter.set_xlabel('Masker bandwidth (oct)')
 
-        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (octaves)')
+    axScatter.set_ylim(-0.75,0.4)
+    axScatter.set_ylabel('Bias')
 
-        axScatter.set_ylim(-0.75,0.4)
-        axScatter.set_ylabel('Bias')
+    extraplots.boxoff(axScatter)
 
-        extraplots.boxoff(axScatter)
+    # -- stats!! --
+    for band in range(len(possibleBands)):
+        pVal = stats.wilcoxon(laserBias[:,band], controlBias[:,band])[1]
+        print(f"Change in bias at {possibleBands[band]} oct pVal: {pVal}")
 
 # --- summary of change in bias towards one side during PV or SOM inactivation ---
 if PANELS[4]:
@@ -289,7 +252,7 @@ if PANELS[4]:
     axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
     axBar.set_xticks(xLocs)
     axBar.set_xticklabels(possibleBands)
-    axBar.set_xlabel('Masker bandwidth (octaves)')
+    axBar.set_xlabel('Masker bandwidth (oct)')
 
     yLims = (-0.5, 0.3)
     axBar.set_ylim(yLims)

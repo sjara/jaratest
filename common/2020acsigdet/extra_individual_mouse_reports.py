@@ -14,9 +14,10 @@ import studyparams
 
 SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
-mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE]
-mouseLabel = ['PV-ArchT', 'SOM-ArchT']
-legendLabel = ['no PV', 'no SOM']
+PV_CHR2_MICE = studyparams.PV_CHR2_MICE
+mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE, PV_CHR2_MICE]
+mouseLabel = ['PV-ArchT', 'SOM-ArchT', 'PV-ChR2']
+legendLabel = ['no PV', 'no SOM', 'PV activated']
 
 for indType, mice in enumerate(mouseType):
     for mouse in mice:
@@ -24,10 +25,13 @@ for indType, mice in enumerate(mouseType):
         fig.clf()
         fig.set_facecolor('w')
 
-        gs = gridspec.GridSpec(1,3, width_ratios=[1.6, 1, 1])
+        gs = gridspec.GridSpec(1, 3, width_ratios=[1.6, 1, 1])
         gs.update(top=0.90, bottom=0.15, left=0.07, right=0.98, wspace=0.5, hspace=0.3)
 
-        laserSessions = studyparams.miceDict[mouse]['10mW laser']
+        if indType == 2:
+            laserSessions = studyparams.miceDict[mouse]['3mW laser']
+        else:
+            laserSessions = studyparams.miceDict[mouse]['10mW laser']
         laserBehavData = behavioranalysis.load_many_sessions(mouse, laserSessions)
 
         numLasers = np.unique(laserBehavData['laserSide'])
@@ -38,7 +42,8 @@ for indType, mice in enumerate(mouseType):
                                                                        laserBehavData['currentBand'], numBands)
         trialsEachSNR = behavioranalysis.find_trials_each_type(laserBehavData['currentSNR'], numSNRs)
 
-        trialsEachCond3Params = np.zeros((len(laserBehavData['laserSide']), len(numLasers), len(numBands), len(numSNRs)), dtype=bool)
+        trialsEachCond3Params = np.zeros(
+            (len(laserBehavData['laserSide']), len(numLasers), len(numBands), len(numSNRs)), dtype=bool)
         for ind in range(len(numSNRs)):
             trialsEachCond3Params[:, :, :, ind] = trialsEachCond & trialsEachSNR[:, ind][:, np.newaxis, np.newaxis]
 
@@ -60,9 +65,9 @@ for indType, mice in enumerate(mouseType):
             noiseChoice = leftChoice
 
         # -- plot psychometric curves for each bandwidth and laser presentation --
-        axPsyCurve = plt.subplot(gs[0,0])
+        axPsyCurve = plt.subplot(gs[0, 0])
 
-        bandColours = ['r', 'k']
+        bandColours = ['r', 'k', 'b']
         laserLines = ['-', '--']
         patches = []
 
@@ -73,11 +78,12 @@ for indType, mice in enumerate(mouseType):
                 upperErrorBar = np.zeros(len(numSNRs))
                 lowerErrorBar = np.zeros(len(numSNRs))
                 for snr in range(len(numSNRs)):
-                    validThisCond = valid[trialsEachCond3Params[:,laser,band,snr]]
-                    toneChoiceThisCond = toneChoice[trialsEachCond3Params[:,laser,band,snr]]
+                    validThisCond = valid[trialsEachCond3Params[:, laser, band, snr]]
+                    toneChoiceThisCond = toneChoice[trialsEachCond3Params[:, laser, band, snr]]
                     thisPsyCurve[snr] = 100.0 * np.sum(toneChoiceThisCond) / np.sum(validThisCond)
 
-                    CIthisSNR = np.array(proportion_confint(np.sum(toneChoiceThisCond), np.sum(validThisCond), method='wilson'))
+                    CIthisSNR = np.array(
+                        proportion_confint(np.sum(toneChoiceThisCond), np.sum(validThisCond), method='wilson'))
                     upperErrorBar[snr] = 100.0 * CIthisSNR[1] - thisPsyCurve[snr]
                     lowerErrorBar[snr] = thisPsyCurve[snr] - 100.0 * CIthisSNR[0]
 
@@ -90,7 +96,7 @@ for indType, mice in enumerate(mouseType):
 
         axPsyCurve.set_xticks(range(len(numSNRs)))
         axPsyCurve.set_xticklabels(numSNRs)
-        axPsyCurve.set_xlabel('SNR (db)')
+        axPsyCurve.set_xlabel('SNR (dB)')
 
         axPsyCurve.set_ylim(0, 100)
         axPsyCurve.set_ylabel('% trials tone reported')
@@ -98,16 +104,17 @@ for indType, mice in enumerate(mouseType):
         extraplots.boxoff(axPsyCurve)
 
         # -- plot accuracies for each bandwidth and laser presentation --
-        axAccuracy = plt.subplot(gs[0,1])
+        axAccuracy = plt.subplot(gs[0, 1])
 
         barLoc = np.array([-0.24, 0.24])
-        xLocs = np.arange(2)
+        xLocs = np.arange(len(numBands))
         xTickLabels = numBands
 
         for band in range(len(numBands)):
             accuracy = np.zeros(len(numLasers))
             for laser in range(len(numLasers)):
-                accuracy[laser] = 100.0 * np.sum(correct[trialsEachCond[:, laser, band]]) / np.sum(valid[trialsEachCond[:, laser, band]])
+                accuracy[laser] = 100.0 * np.sum(correct[trialsEachCond[:, laser, band]]) / np.sum(
+                    valid[trialsEachCond[:, laser, band]])
 
             xVals = barLoc + xLocs[band]
             plt.plot(xVals, accuracy, 'k-', lw=2)
@@ -116,13 +123,13 @@ for indType, mice in enumerate(mouseType):
 
         axAccuracy.legend([l1, l2], ['control', legendLabel[indType]])
 
-        axAccuracy.set_xlim(-0.5, 1.5)
+        axAccuracy.set_xlim(xLocs[0] - 0.5, xLocs[-1] + 0.5)
         axAccuracy.set_xticks(xLocs)
         axAccuracy.set_xticklabels(numBands)
-        axAccuracy.set_xlabel('Masker bandwidth (octaves)')
+        axAccuracy.set_xlabel('Masker bandwidth (oct)')
 
         yLims = axAccuracy.get_ylim()
-        axAccuracy.set_ylim(yLims[0]-10, yLims[1]+10)
+        axAccuracy.set_ylim(yLims[0] - 10, yLims[1] + 10)
         axAccuracy.set_ylabel('Accuracy (%)')
 
         extraplots.boxoff(axAccuracy)
@@ -131,7 +138,7 @@ for indType, mice in enumerate(mouseType):
         axBias = plt.subplot(gs[0, 2])
 
         barLoc = np.array([-0.24, 0.24])
-        xLocs = np.arange(2)
+        xLocs = np.arange(len(numBands))
         xTickLabels = numBands
 
         for band in range(len(numBands)):
@@ -148,13 +155,13 @@ for indType, mice in enumerate(mouseType):
 
         axBias.legend([l1, l2], ['control', legendLabel[indType]])
 
-        axBias.set_xlim(-0.5, 1.5)
+        axBias.set_xlim(xLocs[0] - 0.5, xLocs[-1] + 0.5)
         axBias.set_xticks(xLocs)
         axBias.set_xticklabels(numBands)
-        axBias.set_xlabel('Masker bandwidth (octaves)')
+        axBias.set_xlabel('Masker bandwidth (oct)')
 
         yLims = axBias.get_ylim()
-        axBias.set_ylim(yLims[0]-0.1, yLims[1]+0.1)
+        axBias.set_ylim(yLims[0] - 0.1, yLims[1] + 0.1)
         axBias.set_ylabel('Bias')
 
         extraplots.boxoff(axBias)
@@ -162,4 +169,4 @@ for indType, mice in enumerate(mouseType):
         plt.suptitle(mouse + ' ({})'.format(mouseLabel[indType]))
 
         figFilename = '{}_behav_report'.format(mouse)
-        extraplots.save_figure(figFilename, 'png', [9,4], '/tmp/')
+        extraplots.save_figure(figFilename, 'png', [9, 4], '/tmp/')

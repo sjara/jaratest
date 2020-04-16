@@ -4,7 +4,7 @@ STUDY_NAME = '2020acsigdet'
 
 # mice used for inactivating entire AC
 MUSC_MICE = ['band006', 'band008', 'band010']
-PV_CHR2_MICE = ['band017', 'band020', 'band046', 'band051', 'band052']
+PV_CHR2_MICE = ['band046', 'band051', 'band052']
 CAMKII_ARCH_MICE = ['band011', 'band012']
 
 # mice used for inactivating specific inhibitory cell types in AC
@@ -22,6 +22,10 @@ band008_saline = ['20161130a', '20161202a', '20161204a', '20161206a']
 
 band010_muscimol = ['20161201a', '20161203a', '20161205a', '20161207a']
 band010_saline = ['20161130a', '20161202a', '20161204a', '20161206a']
+
+band017_3mW_laser = ['20170228a', '20170226a', '20170224a', '20170222a']
+
+band020_3mW_laser = ['20170228a', '20170226a', '20170224a', '20170222a']
 
 band046_3mW_laser = ['20180523a', '20180525a', '20180528a', '20180530a', '20180601a', '20180603a', '20180605a', '20180607a', '20180609a', '20180611a', '20180613a', '20180615a']
 band046_3mW_control = ['20180522a', '20180524a', '20180526a', '20180529a', '20180531a', '20180602a', '20180604a', '20180606a', '20180608a', '20180610a', '20180612a', '20180614a']
@@ -87,34 +91,122 @@ band112_10mW_control = ['20200323a']
 
 # dictionaries for assigning sessions to mice
 miceDict = {'band006': {'muscimol': band006_muscimol, 'saline': band006_saline},
-            
+
             'band008': {'muscimol': band008_muscimol, 'saline': band008_saline},
-            
+
             'band010': {'muscimol': band010_muscimol, 'saline': band010_saline},
-            
+
+            'band017': {'3mW laser': band017_3mW_laser},
+
+            'band020': {'3mW laser': band020_3mW_laser},
+
             'band046': {'3mW laser': band046_3mW_laser, '3mW control': band046_3mW_control},
-            
+
             'band051': {'3mW laser': band051_3mW_laser, '3mW control': band051_3mW_control},
-            
+
             'band052': {'3mW laser': band052_3mW_laser, '3mW control': band052_3mW_control},
-            
+
             'band065': {'10mW laser': band065_10mW_laser, '10mW control': band065_10mW_control},
-            
+
             'band066': {'10mW laser': band066_10mW_laser, '10mW control': band066_10mW_control},
-            
+
             'band069': {'10mW laser': band069_10mW_laser, '10mW control': band069_10mW_control},
-            
+
             'band070': {'10mW laser': band070_10mW_laser, '10mW control': band070_10mW_control},
-            
+
             'band081': {'10mW laser': band081_10mW_laser, '10mW control': band081_10mW_control},
-            
+
             'band087': {'10mW laser': band087_10mW_laser, '10mW control': band087_10mW_control},
-            
+
             'band091': {'10mW laser': band091_10mW_laser, '10mW control': band091_10mW_control,
                         '10mW unilateral': band091_10mW_unilateral},
-            
-            'band093': {'10mW laser': band093_10mW_laser, '10mW control': band093_10mW_control, 
+
+            'band093': {'10mW laser': band093_10mW_laser, '10mW control': band093_10mW_control,
                         '15mW laser': band093_15mW_laser, '15mW control': band093_15mW_control,
                         '10mW unilateral': band093_10mW_unilateral},
-            
-            'band108': {'10mW laser': band108_10mW_laser, '10mW control': band108_10mW_control}}
+
+            'band105': {'10mW laser': band105_10mW_laser, '10mW control': band105_10mW_control,
+                        '15mW laser': band105_15mW_laser, '15mW control': band105_15mW_control},
+
+            'band108': {'10mW laser': band108_10mW_laser, '10mW control': band108_10mW_control},
+
+            'band110': {'10mW laser': band110_10mW_laser, '10mW control': band110_10mW_control},
+
+            'band111': {'10mW laser': band111_10mW_laser, '10mW control': band111_10mW_control},
+
+            'band112': {'10mW laser': band112_10mW_laser, '10mW control': band112_10mW_control}}
+
+# lists of sessions before implantation for characterising behaviour
+band046_unimplanted = ['20180'+str(day)+'a' for day in range(402,427)]
+band047_unimplanted = ['20180'+str(day)+'a' for day in range(402,407)]+['20180'+str(day)+'a' for day in range(408,427)]
+band048_unimplanted = ['20180'+str(day)+'a' for day in range(402,427)]
+band049_unimplanted = ['20180'+str(day)+'a' for day in range(402,427)]
+band051_unimplanted = ['20180'+str(day)+'a' for day in range(305,312)]
+band052_unimplanted = ['20180'+str(day)+'a' for day in range(402,427)]
+band053_unimplanted = ['20180'+str(day)+'a' for day in range(402,427)]
+
+band065_unimplanted = ['2018100'+str(day)+'a' for day in range(1,9)]
+band066_unimplanted = ['2018'+str(day)+'a' for day in range(1001,1032)]+['20181'+str(day)+'a' for day in range(101,121)]
+band067_unimplanted = ['2018'+str(day)+'a' for day in range(1001,1032)]+['20181'+str(day)+'a' for day in range(101,121)]
+band068_unimplanted = ['2018'+str(day)+'a' for day in range(1001,1032)]+['20181'+str(day)+'a' for day in range(101,121)]
+band069_unimplanted = ['2018'+str(day)+'a' for day in range(1001,1032)]+['20181'+str(day)+'a' for day in range(101,109)]+['20181'+str(day)+'a' for day in range(110,121)]
+band070_unimplanted = ['2018100'+str(day)+'a' for day in range(1,9)]
+band071_unimplanted = ['2018'+str(day)+'a' for day in range(1001,1032)]+['20181'+str(day)+'a' for day in range(101,106)]+['20181'+str(day)+'a' for day in range(107,121)]
+
+band078_unimplanted = ['201902'+str(day)+'a' for day in range(18,27)]+['20190'+str(day)+'a' for day in range(301,318)]
+band079_unimplanted = ['201902'+str(day)+'a' for day in range(18,27)]+['20190'+str(day)+'a' for day in range(301,318)]
+band080_unimplanted = ['201902'+str(day)+'a' for day in range(18,27)]+['20190'+str(day)+'a' for day in range(301,318)]
+band081_unimplanted = ['201902'+str(day)+'a' for day in range(11,27)]
+band082_unimplanted = ['201902'+str(day)+'a' for day in range(20,27)]+['20190'+str(day)+'a' for day in range(301,318)]
+band083_unimplanted = ['201902'+str(day)+'a' for day in range(18,27)]+['20190'+str(day)+'a' for day in range(301,318)]
+band084_unimplanted = ['201902'+str(day)+'a' for day in range(18,27)]+['20190'+str(day)+'a' for day in range(301,318)]
+band085_unimplanted = ['201902'+str(day)+'a' for day in range(20,27)]+['20190'+str(day)+'a' for day in range(301,318)]
+band086_unimplanted = ['201902'+str(day)+'a' for day in range(20,27)]+['20190'+str(day)+'a' for day in range(301,318)]
+band087_unimplanted = ['201902'+str(day)+'a' for day in range(10,27)]
+
+band088_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+band089_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+band090_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+band091_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+band092_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+band093_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+band094_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+band095_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+band096_unimplanted = ['201911'+str(day)+'a' for day in range(11,26)]+['2019120'+str(day)+'a' for day in range(2,6)]
+
+band105_unimplanted = ['202002'+str(day)+'a' for day in range(18,24)]
+band107_unimplanted = ['202002'+str(day)+'a' for day in range(16,24)]
+band108_unimplanted = ['202002'+str(day)+'a' for day in range(16,24)]
+band109_unimplanted = ['202002'+str(day)+'a' for day in range(16,24)]
+band110_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band111_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band112_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band113_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band114_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band115_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band116_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band117_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band118_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band119_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+band120_unimplanted = ['202002'+str(day)+'a' for day in range(24,30)]+['2020030'+str(day)+'a' for day in range(1,10)]
+
+unimplanted_PVCHR2 = {'band046': band046_unimplanted, 'band047': band047_unimplanted, 'band048': band048_unimplanted,
+                      'band049': band049_unimplanted, 'band051': band051_unimplanted, 'band052': band052_unimplanted,
+                      'band053': band053_unimplanted}
+
+unimplanted_PVARCHT = {'band078': band078_unimplanted, 'band079': band079_unimplanted, 'band080': band080_unimplanted,
+                       'band081': band081_unimplanted, 'band082': band082_unimplanted, 'band083': band083_unimplanted,
+                       'band084': band084_unimplanted, 'band085': band085_unimplanted, 'band086': band086_unimplanted,
+                       'band087': band087_unimplanted, 'band088': band088_unimplanted, 'band089': band089_unimplanted,
+                       'band090': band090_unimplanted, 'band091': band091_unimplanted, 'band092': band092_unimplanted,
+                       'band093': band093_unimplanted, 'band094': band094_unimplanted, 'band095': band095_unimplanted,
+                       'band096': band096_unimplanted, 'band113': band113_unimplanted, 'band114': band114_unimplanted,
+                       'band115': band115_unimplanted, 'band116': band116_unimplanted, 'band117': band117_unimplanted,
+                       'band118': band118_unimplanted, 'band119': band119_unimplanted, 'band120': band120_unimplanted}
+
+unimplanted_SOMARCHT = {'band065': band065_unimplanted, 'band068': band068_unimplanted, 'band069': band069_unimplanted,
+                        'band070': band070_unimplanted, 'band107': band107_unimplanted, 'band108': band108_unimplanted,
+                        'band110': band108_unimplanted, 'band111': band108_unimplanted}
+
+unimplanted_wt = {'band066': band066_unimplanted, 'band067': band067_unimplanted, 'band071': band071_unimplanted,
+                  'band105': band105_unimplanted, 'band109': band109_unimplanted, 'band112': band112_unimplanted}

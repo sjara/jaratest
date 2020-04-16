@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from statsmodels.stats.proportion import proportion_confint
 
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
@@ -89,6 +90,10 @@ for miceThisType in mouseDicts:
     percentCorrectEachBand.append(percentCorrectEachBandThisType)
     biasEachBand.append(biasEachBandThisType)
 
+allToneDetect = np.concatenate(tuple(percentToneDetectEachSNR), axis=0)
+allPercentCorrect = np.concatenate(tuple(percentCorrect[:,(0,-1)] for percentCorrect in percentCorrectEachBand), axis=0)
+allBias = np.concatenate(tuple(bias[:,(0,-1)] for bias in biasEachBand), axis=0)
+
 # # --- comparisons by noise amp ---
 # possibleNoiseAmps = np.unique(noiseAmpEachTrial)
 # trialsEachNoiseAmp = behavioranalysis.find_trials_each_type(noiseAmpEachTrial, possibleNoiseAmps)
@@ -108,11 +113,44 @@ for miceThisType in mouseDicts:
 
 # -- save data --
 outputFile = 'unimplanted_behaviour.npz'
-outputFullPath = os.path.join(dataDir,outputFile)
+outputFullPath = os.path.join(dataDir, outputFile)
 np.savez(outputFullPath,
          PVCHR2toneDetect = percentToneDetectEachSNR[0], PVCHR2correctByBand = percentCorrectEachBand[0], PVCHR2biasByBand = biasEachBand[0],
          PVARCHTtoneDetect = percentToneDetectEachSNR[1], PVARCHTcorrectByBand = percentCorrectEachBand[1], PVARCHTbiasByBand = biasEachBand[1],
          SOMARCHTtoneDetect = percentToneDetectEachSNR[2], SOMARCHTcorrectByBand = percentCorrectEachBand[2], SOMARCHTbiasByBand = biasEachBand[2],
          wtToneDetect = percentToneDetectEachSNR[3], wtCorrectByBand = percentCorrectEachBand[3], wtBiasByBand = biasEachBand[3],
+         allToneDetect = allToneDetect, allPercentCorrect = allPercentCorrect, allBias = allBias,
          possibleSNRs = possibleSNRs, possibleBands = possibleBands)
+print(outputFile + " saved")
+
+# -- example psychometric curve for behav figure --
+mouse = 'band068'
+sessions = [studyparams.band068_unimplanted[-1]]
+behavData = behavioranalysis.load_many_sessions(mouse, sessions)
+
+numBands = np.unique(behavData['currentBand'])
+numSNRs = np.unique(behavData['currentSNR'])
+trialsEachSNR = behavioranalysis.find_trials_each_type(behavData['currentSNR'], numSNRs)
+
+valid = behavData['valid'].astype(bool)
+toneChoice = behavData['choice'] == behavData.labels['choice']['right']
+
+thisPsyCurve = np.zeros(len(numSNRs))
+upperErrorBar = np.zeros(len(numSNRs))
+lowerErrorBar = np.zeros(len(numSNRs))
+for snr in range(len(numSNRs)):
+    validThisCond = valid[trialsEachSNR[:, snr]]
+    toneChoiceThisCond = toneChoice[trialsEachSNR[:, snr]]
+    thisPsyCurve[snr] = 100.0 * np.sum(toneChoiceThisCond) / np.sum(validThisCond)
+
+    CIthisSNR = np.array(proportion_confint(np.sum(toneChoiceThisCond), np.sum(validThisCond), method='wilson'))
+    upperErrorBar[snr] = 100.0 * CIthisSNR[1] - thisPsyCurve[snr]
+    lowerErrorBar[snr] = thisPsyCurve[snr] - 100.0 * CIthisSNR[0]
+
+# -- save data --
+outputFile = 'band068_unimplanted_psycurve.npz'
+outputFullPath = os.path.join(dataDir, outputFile)
+np.savez(outputFullPath,
+         psyCurve = thisPsyCurve, upperError = upperErrorBar, lowerError = lowerErrorBar,
+         possibleSNRs = possibleSNRs, numTrials = np.sum(valid))
 print(outputFile + " saved")
