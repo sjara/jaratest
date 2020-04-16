@@ -40,7 +40,7 @@ FIGNAME = 'figure_frequency_tuning'
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = studyparams.DATABASE_NAME + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('temp'))
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('ttDBR2'))
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 db = db.query(studyparams.TUNING_FILTER)
@@ -212,7 +212,8 @@ if PANELS[2]:
     tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
     axBW.set_xticks(range(2))
     axBW.set_xlim([-0.5, 1.5])
-    axBW.set_ylim([-0.5, 6])
+    ylim = [-0.5, 6]
+    axBW.set_ylim(ylim)
     extraplots.boxoff(axBW)
     extraplots.set_ticks_fontsize(axBW, fontSizeTicks)
     axBW.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
@@ -222,7 +223,8 @@ if PANELS[2]:
     messages.append("{} p={}".format(popStatCol, pVal))
 
     yDataMax = max([max(D1PopStat), max(nD1PopStat)])
-    yStars = yDataMax + yDataMax*starYfactor
+    # yStars = yDataMax + yDataMax*starYfactor
+    yStars = max(ylim) * 1.05
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
     plt.sca(axBW)
     starString = None if pVal < 0.05 else 'n.s.'
@@ -305,7 +307,8 @@ if PANELS[4]:
     messages.append("{} p={}".format(popStatCol, pVal))
 
     yDataMax = max([max(D1PopStat*700), max(nD1PopStat*700)])
-    yStars = yDataMax + yDataMax*starYfactor
+    # yStars = yDataMax + yDataMax*starYfactor
+    yStars = yDataMax * 1.05
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
     starString = None if pVal < 0.05 else 'n.s.'
     plt.sca(axLatency)
@@ -415,7 +418,6 @@ print("\n")
 
 if SAVE_FIGURE:
     if os.path.isdir(figparams.FIGURE_OUTPUT_DIR):
-        pass
         extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
         print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
     elif not os.path.isdir(os.path.join(figparams.FIGURE_OUTPUT_DIR)):

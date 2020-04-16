@@ -33,7 +33,7 @@ def append_base_stats(cellDB, filename=''):
     """
 
     # FILTERING DATAFRAME
-    firstCells = cellDB.query(studyparams.FIRST_FLTRD_CELLS)  # isiViolations<0.02 and spikeShapeQuality>2
+    firstCells = cellDB.query(studyparams.FIRST_FLTRD_CELLS)  # isiViolations<0.02 and spikeShapeQuality>2.5
 
     for indIter, (indRow, dbRow) in enumerate(firstCells.iterrows()):
 
@@ -54,12 +54,12 @@ def append_base_stats(cellDB, filename=''):
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
             noiseEventOnsetTimes = noiseEphysData['events']['soundDetectorOn']
             noiseSpikeTimes = noiseEphysData['spikeTimes']
-            nspkBase, nspkResp = funcs.calculate_firing_rate(noiseEventOnsetTimes, noiseSpikeTimes, baseRange)
-            respSpikeMean = np.mean(nspkResp)
+            nspkBaseNoise, nspkRespNoise = funcs.calculate_firing_rate(noiseEventOnsetTimes, noiseSpikeTimes, baseRange)
+            respSpikeMean = np.mean(nspkRespNoise)
 
             # Significance calculations for the noiseburst
             try:
-                zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase, alternative='two-sided')
+                zStats, pVals = stats.mannwhitneyu(nspkRespNoise, nspkBaseNoise, alternative='two-sided')
             except ValueError:  # All numbers identical will cause mann-whitney to fail, therefore p-value should be 1 as there is no difference
                 zStats, pVals = [0, 1]
 
@@ -77,16 +77,16 @@ def append_base_stats(cellDB, filename=''):
             print('This cell does not contain a {} session'.format(session))
         else:
             baseRange = [-0.1, 0]  # if session != 'laserpulse' else [-0.05,-0.04]
-            laserEventOnsetTimes = pulseEphysData['events']['soundDetectorOn']
+            laserEventOnsetTimes = pulseEphysData['events']['laserOn']
             laserSpikeTimes = pulseEphysData['spikeTimes']
-            nspkBase, nspkResp = funcs.calculate_firing_rate(laserEventOnsetTimes, laserSpikeTimes, baseRange)
-            respSpikeMean = np.mean(nspkResp)
-            baseSpikeMean = np.mean(nspkBase)
+            nspkBaseLaser, nspkRespLaser = funcs.calculate_firing_rate(laserEventOnsetTimes, laserSpikeTimes, baseRange)
+            respSpikeMean = np.mean(nspkRespLaser)
+            baseSpikeMean = np.mean(nspkBaseLaser)
             changeFiring = respSpikeMean - baseSpikeMean
 
             # Significance calculations for the laserpulse
             try:
-                zStats, pVals = stats.mannwhitneyu(nspkResp, nspkBase, alternative='two-sided')
+                zStats, pVals = stats.mannwhitneyu(nspkRespLaser, nspkBaseLaser, alternative='two-sided')
             except ValueError:  # All numbers identical will cause mann-whitney to fail
                 zStats, pVals = [0, 1]
 
@@ -116,7 +116,8 @@ def append_base_stats(cellDB, filename=''):
             allIntenBase = np.array([])
             respSpikeMean = np.empty((len(uniqueIntensity), len(uniqFreq)))  # same as allIntenResp
             allIntenRespMedian = np.empty((len(uniqueIntensity), len(uniqFreq)))
-            Rsquareds = np.empty((len(uniqueIntensity), len(uniqFreq)))
+            Rsquareds = []
+            popts = []
             tuningSpikeTimes = tuningEphysData['spikeTimes']
             tuningEventOnsetTimes = tuningEphysData['events']['soundDetectorOn']
             tuningEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(tuningEventOnsetTimes, minEventOnsetDiff=0.2)
@@ -140,7 +141,7 @@ def append_base_stats(cellDB, filename=''):
             if toCalculate:
                 tuningZStat, tuningPVal = \
                     funcs.sound_response_any_stimulus(tuningEventOnsetTimes, tuningSpikeTimes, tuningTrialsEachCond[:, :, -1],
-                                                      timeRange=[0.0, 0.05], baseRange=baseRange)
+                                                      timeRange=[0.0, 0.05], baseRange=baseRange)  # All trials at all frequencies at the highest intensity
                 respLatency = funcs.calculate_latency(tuningEventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
                                                       uniqueIntensity, tuningSpikeTimes, indRow)
             else:
@@ -151,12 +152,11 @@ def append_base_stats(cellDB, filename=''):
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])
                 freqs = np.array([])
-                popts = []
                 pcovs = []
                 ind10AboveButNone = []
                 # ------------ start of frequency specific calculations -------------
                 for indFreq, freq in enumerate(uniqFreq):
-                    selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity)).tolist()
+                    selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity))#.tolist()
 
                     nspkBase, nspkResp = funcs.calculate_firing_rate(tuningEventOnsetTimes, tuningSpikeTimes, baseRange,
                                                                      selectinds=selectinds)
@@ -167,78 +167,78 @@ def append_base_stats(cellDB, filename=''):
                     allIntenBase = np.concatenate([allIntenBase, nspkBase.ravel()])
 
                     # ------------------- Significance and fit calculations for tuning ----------------
-                    # TODO: Do we really need to calculate this for each frequency at each intensity?
-                    Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
+                # TODO: Do we really need to calculate this for each frequency at each intensity?
+                Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
 
-                    Rsquareds[indInten, indFreq] = Rsquared
-                    popts.append(popt)
+                Rsquareds.append(Rsquared)
+                popts.append(popt)
 
-                # ------------------------------ Intensity based calculations -------------------------
-                # The reason why we are calculating bw10 here, it is to save the calculation time
-                responseThreshold = funcs.calculate_response_threshold(0.2, allIntenBase, respSpikeMean)
-                # [6] Find Frequency Response Area (FRA) unit: fra boolean set, yes or no, but it's originally a pair
-                fra = respSpikeMean > responseThreshold
-                # [6.5] get the intensity threshold
-                intensityInd, freqInd = funcs.calculate_intensity_threshold_and_CF_indices(fra, respSpikeMean)
-                if intensityInd is None:  # None of the intensities had anything
-                    bw10 = None
-                    lowerFreq = None
-                    upperFreq = None
-                    cf = None
-                    intensityThreshold = None
-                    fit_midpoint = None
+            # ------------------------------ Intensity based calculations -------------------------
+            # The reason why we are calculating bw10 here, it is to save the calculation time
+            responseThreshold = funcs.calculate_response_threshold(0.2, allIntenBase, respSpikeMean)
+            # [6] Find Frequency Response Area (FRA) unit: fra boolean set, yes or no, but it's originally a pair
+            fra = respSpikeMean > responseThreshold
+            # [6.5] get the intensity threshold
+            intensityInd, freqInd = funcs.calculate_intensity_threshold_and_CF_indices(fra, respSpikeMean)
+            if intensityInd is None:  # None of the intensities had anything
+                bw10 = None
+                lowerFreq = None
+                upperFreq = None
+                cf = None
+                intensityThreshold = None
+                fit_midpoint = None
+            else:
+                intensityThreshold = uniqueIntensity[intensityInd]
+                cf = uniqFreq[freqInd]
+
+                if toCalculate:
+                    monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(tuningEventOnsetTimes, currentFreq,
+                                                                                     currentIntensity,
+                                                                                     uniqueIntensity, tuningSpikeTimes, cf
+                                                                                     )
+                    onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(tuningEventOnsetTimes,
+                                                                                                  tuningSpikeTimes,
+                                                                                                  currentFreq,
+                                                                                                  currentIntensity,
+                                                                                                  cf, respLatency)
                 else:
-                    intensityThreshold = uniqueIntensity[intensityInd]
-                    cf = uniqFreq[freqInd]
+                    monoIndex = np.nan
+                    overallMaxSpikes = np.nan
+                    onsetRate = np.nan
+                    sustainedRate = np.nan
+                    baseRate = np.nan
 
-                    if toCalculate:
-                        monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(tuningEventOnsetTimes, currentFreq,
-                                                                                         currentIntensity,
-                                                                                         uniqueIntensity, tuningSpikeTimes, cf
-                                                                                         )
-                        onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(tuningEventOnsetTimes,
-                                                                                                      tuningSpikeTimes,
-                                                                                                      currentFreq,
-                                                                                                      currentIntensity,
-                                                                                                      cf, respLatency)
-                    else:
-                        monoIndex = np.nan
-                        overallMaxSpikes = np.nan
-                        onsetRate = np.nan
-                        sustainedRate = np.nan
-                        baseRate = np.nan
+                # [8] getting BW10 value, Bandwidth at 10dB above the neuron's sound intensity threshold(SIT)
+                ind10Above = intensityInd + int(
+                    10 / np.diff(uniqueIntensity)[0])  # How many inds to go above the threshold intensity ind
+                lowerFreq, upperFreq, Rsquared10AboveSIT = funcs.calculate_BW10_params(ind10Above, popts, Rsquareds,
+                                                                                       responseThreshold,
+                                                                                       intensityThreshold)
+                # print('lf:{},uf:{},R2:{}'.format(lowerFreq,upperFreq,Rsquared10AboveSIT))
 
-                    # [8] getting BW10 value, Bandwidth at 10dB above the neuron's sound intensity threshold(SIT)
-                    ind10Above = intensityInd + int(
-                        10 / np.diff(uniqueIntensity)[0])  # How many inds to go above the threshold intensity ind
-                    lowerFreq, upperFreq, Rsquared10AboveSIT = funcs.calculate_BW10_params(ind10Above, popts, Rsquareds,
-                                                                                           responseThreshold,
-                                                                                           intensityThreshold)
-                    # print('lf:{},uf:{},R2:{}'.format(lowerFreq,upperFreq,Rsquared10AboveSIT))
+                if (lowerFreq is not None) and (upperFreq is not None):
+                    fitMidpoint = np.sqrt(lowerFreq * upperFreq)
+                    bw10 = (upperFreq - lowerFreq) / cf
 
-                    if (lowerFreq is not None) and (upperFreq is not None):
-                        fitMidpoint = np.sqrt(lowerFreq * upperFreq)
-                        bw10 = (upperFreq - lowerFreq) / cf
+                else:
+                    fitMidpoint = None
+                    bw10 = None
 
-                    else:
-                        fitMidpoint = None
-                        bw10 = None
-
-                    # Adding tuningCurve calculations to the dataframe to be saved later
-                    cellDB.at[indRow, 'thresholdFRA'] = intensityThreshold
-                    cellDB.at[indRow, 'cf'] = cf
-                    cellDB.at[indRow, 'lowerFreq'] = lowerFreq
-                    cellDB.at[indRow, 'upperFreq'] = upperFreq
-                    cellDB.at[indRow, 'rsquaredFit'] = Rsquared10AboveSIT
-                    cellDB.at[indRow, 'bw10'] = bw10
-                    cellDB.at[indRow, 'fit_midpoint'] = fitMidpoint
-                    cellDB.at[indRow, 'latency'] = respLatency
-                    cellDB.at[indRow, 'monotonicityIndex'] = monoIndex
-                    cellDB.at[indRow, 'onsetRate'] = onsetRate
-                    cellDB.at[indRow, 'sustainedRate'] = sustainedRate
-                    cellDB.at[indRow, 'baseRate'] = baseRate
-                    cellDB.at[indRow, 'tuning_pVal'] = tuningPVal
-                    cellDB.at[indRow, 'tuning_ZStat'] = tuningZStat
+                # Adding tuningCurve calculations to the dataframe to be saved later
+                cellDB.at[indRow, 'thresholdFRA'] = intensityThreshold
+                cellDB.at[indRow, 'cf'] = cf
+                cellDB.at[indRow, 'lowerFreq'] = lowerFreq
+                cellDB.at[indRow, 'upperFreq'] = upperFreq
+                cellDB.at[indRow, 'rsquaredFit'] = Rsquared10AboveSIT
+                cellDB.at[indRow, 'bw10'] = bw10
+                cellDB.at[indRow, 'fit_midpoint'] = fitMidpoint
+                cellDB.at[indRow, 'latency'] = respLatency
+                cellDB.at[indRow, 'monotonicityIndex'] = monoIndex
+                cellDB.at[indRow, 'onsetRate'] = onsetRate
+                cellDB.at[indRow, 'sustainedRate'] = sustainedRate
+                cellDB.at[indRow, 'baseRate'] = baseRate
+                cellDB.at[indRow, 'tuning_pVal'] = tuningPVal
+                cellDB.at[indRow, 'tuning_ZStat'] = tuningZStat
 
         # -------------------- am calculations ---------------------------
         session = 'am'
@@ -415,9 +415,10 @@ if __name__ == "__main__":
         calc_stats = 1
         calc_locations = 1
         d1mice = studyparams.ASTR_D1_CHR2_MICE
-        dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+        dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
 
     if CLUSTER_DATA:  # SPIKE SORTING
+        # TODO: Need to loop through d1mice as it is a list
         inforecFile = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(d1mice))
         clusteringObj = spikesorting.ClusterInforec(inforecFile)
         clusteringObj.process_all_experiments()
