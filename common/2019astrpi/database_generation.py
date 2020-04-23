@@ -1,6 +1,6 @@
 """
 Generate[1] and save[2] database with calculated stats and parameters that will be used in /
-analysis. Optionally takes the arguments in the order of: script.py run_parameters mouse
+analysis. Optionally takes the arguments in the order of: script.py concat run_parameters mouse_name
 """
 import os
 import sys
@@ -374,8 +374,12 @@ def merge_dataframes(df1, df2):
     """
     df2 = celldatabase.load_hdf(df2)
     for frame in df1:
-        appendedFrame = celldatabase.load_hdf(frame)
-        df2 = pd.concat([df2, appendedFrame], axis=0, ignore_index=True, sort=False)
+        try:
+            appendedFrame = celldatabase.load_hdf(frame)
+        except OSError:
+            print("Mouse {} does not have an h5 file")
+        else:
+            df2 = pd.concat([df2, appendedFrame], axis=0, ignore_index=True, sort=False)
 
     return df2
 
@@ -390,25 +394,29 @@ if __name__ == "__main__":
     if sys.argv[1:] != []:
         calc_stats = 0
         calc_locations = 0
+        concat_mice = False
         arguments = sys.argv[1:]
-        if arguments[0] == 'all':
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
-            dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+        if arguments[0] == "concat":
+            concat_mice = True
         else:
-            d1mice = arguments[0]
-            dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
-            d1mice = [d1mice]
-        print('d1mice = {}'.format(d1mice))
-        # Run behavior can either be 'all', 'hist', or 'stats'
-        runBehavior = arguments[1]
-        print('Run behavior is {}'.format(runBehavior))
-        if runBehavior == 'all':
-            calc_stats = 1
-            calc_locations = 1
-        elif runBehavior == 'locations':
-            calc_locations = 1
-        elif runBehavior == 'stats':
-            calc_stats = 1
+            if arguments[2] == 'all':
+                d1mice = studyparams.ASTR_D1_CHR2_MICE
+                dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+            else:
+                d1mice = arguments[2]
+                dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
+                d1mice = [d1mice]
+            print('d1mice = {}'.format(d1mice))
+            # Run behavior can either be 'all', 'hist', or 'stats'
+            runBehavior = arguments[1]
+            print('Run behavior is {}'.format(runBehavior))
+            if runBehavior == 'all':
+                calc_stats = 1
+                calc_locations = 1
+            elif runBehavior == 'locations':
+                calc_locations = 1
+            elif runBehavior == 'stats':
+                calc_stats = 1
 
     else:
         # Calculates everything for all mice in studyparams
@@ -436,6 +444,11 @@ if __name__ == "__main__":
         celldatabase.save_hdf(histDB, os.path.join(dbLocation, '{}.h5'.format('temp_rescue_db')))
     if calc_locations:
         histDB = histologyanalysis.cell_locations(firstDB, brainAreaDict=studyparams.BRAIN_AREA_DICT)
+
+    if concat_mice:
+        first_mouse, *list_of_mice = studyparams.ASTR_D1_CHR2_MICE
+        histDB = merge_dataframes(list_of_mice, first_mouse)
+        dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
 
     if SAVE:
         if os.path.isdir(dbLocation):

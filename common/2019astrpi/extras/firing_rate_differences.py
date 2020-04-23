@@ -2,10 +2,12 @@
 Look at the baseline and evoked firing rates compared between D1 and nD1 cells for laserpulse, noiseburst, tuningTest, tuningCurve, and AM. Graphically, then
 numerically.
 """
+import copy
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import matplotlib.gridspec as gridspec
+from scipy import stats
 import studyparams
 from jaratoolbox import behavioranalysis
 from jaratoolbox import celldatabase
@@ -196,7 +198,7 @@ for name_ind, database in enumerate([D1DB, nD1DB]):
             df.at[indIter, "amBase"] = np.NaN
             df.at[indIter, "amResp"] = np.NaN
         else:
-            amBaseRange = [-0.5, 0]
+            amBaseRange = [-0.5, -0.1]
             amSpikeTimes = amEphysData['spikeTimes']
             amEventOnsetTimes = amEphysData['events']['soundDetectorOn']
             amCurrentFreq = amBehavData['currentFreq']
@@ -215,7 +217,6 @@ for name_ind, database in enumerate([D1DB, nD1DB]):
                 df.at[indIter, "amResp"] = meanAMResp
 
 #%% ---Backups of dataframes while testing ---
-import copy
 D1ResultsCopy = copy.deepcopy(D1Results)
 nD1ResultsCopy = copy.deepcopy((nD1Results))
 
@@ -271,10 +272,23 @@ D1AMResp = D1AMResp.iloc[D1AMResp.to_numpy().nonzero()]
 nD1AMBase = nD1AMBase.iloc[nD1AMBase.to_numpy().nonzero()]
 nD1AMResp = nD1AMResp.iloc[nD1AMResp.to_numpy().nonzero()]
 
-#%% ------------ Plotting -------------
+#%% ------------ Statistical calculations -------------
+baseNoiseZStat, baseNoisePVal = stats.mannwhitneyu(D1NoiseBase, nD1NoiseBase, alternative='two-sided')
+respNoseZStat, respNoisePVal = stats.mannwhitneyu(D1NoiseResp, nD1NoiseResp, alternative='two-sided')
+
+baseTTZStat, baseTTPVal = stats.mannwhitneyu(D1TuningTestBase, nD1TuningTestBase, alternative='two-sided')
+respTTZStat, respTTPVal = stats.mannwhitneyu(D1TuningTestResp, nD1TuningTestResp, alternative='two-sided')
+
+baseTuningZStat, baseTuningPVal = stats.mannwhitneyu(D1TuningCurveBase, nD1TuningCurveBase, alternative='two-sided')
+respTuningZStat, respTuningPVal = stats.mannwhitneyu(D1TuningCurveResp, nD1TuningCurveResp, alternative='two-sided')
+
+baseAMZStat, baseAMPVal = stats.mannwhitneyu(D1AMBase, nD1AMBase, alternative='two-sided')
+respAMZStat, respAMPVal = stats.mannwhitneyu(D1AMResp, nD1AMResp, alternative='two-sided')
+
+#%% ------------ Evoked Plotting -------------
 outputDir = figparams.FIGURE_OUTPUT_DIR
-figFilename = 'FR_Comparisons_Baseline_no_zeros'  # Do not include extension
-figFormat = 'pdf'  # 'pdf' or 'svg'
+figFilename = 'FR_Comparisons_Evoked_no_zeros'  # Do not include extension
+figFormat = 'png'  # 'pdf' or 'svg'
 figSize = [15, 10]
 
 fontSizeLabels = figparams.fontSizeLabels*2
@@ -327,10 +341,81 @@ plt.text(0, 1.1, 'AM', ha='center', va='center',
 # --- Noiseburst plotting ---
 plt.sca(axNoise)
 
+histDraw.normalized_hist(D1NoiseResp, nD1NoiseResp, axNoise, colorD1, colornD1, bin_number=300)
+axNoise.set_xlabel("Firing Rate")
+axNoise.set_ylabel("Frequency")
+axNoise.set_title("Noiseburst evoked FRs\np-value={}".format(round(respNoisePVal, 4)))
+axNoise.set_xlim([0, 1])
+
+# --- TuningTest plotting ---
+plt.sca(axTT)
+
+histDraw.normalized_hist(D1TuningTestResp, nD1TuningTestResp, axTT, colorD1,
+                         colornD1, bin_number=60)
+axTT.set_xlabel("Firing Rate")
+axTT.set_ylabel("Frequency")
+axTT.set_title("Tuning Test evoked FRs\np-value={}".format(round(respTTPVal, 4)))
+axTT.set_xlim([0, 2])
+
+# --- TuningCurve plotting ---
+plt.sca(axTuning)
+
+histDraw.normalized_hist(D1TuningCurveResp, nD1TuningCurveResp, axTuning, colorD1,
+                         colornD1, bin_number=80)
+axTuning.set_xlabel("Firing Rate")
+axTuning.set_ylabel("Frequency")
+axTuning.set_title("Tuning Curve evoked FRs\np-value={}".format(round(respTuningPVal, 4)))
+axTuning.set_xlim([0, 1])
+
+# --- AM plotting ---
+plt.sca(axAM)
+
+histDraw.normalized_hist(D1AMResp, nD1AMResp, axAM, colorD1, colornD1, bin_number=100)
+axAM.set_xlabel("Firing Rate")
+axAM.set_ylabel("Frequency")
+axAM.set_title("AM evoked FRs\np-value={}".format(round(respAMPVal, 4)))
+axAM.set_xlim([0, 2])
+
+
+extraplots.save_figure(figFilename, figFormat, figSize, outputDir, 'w')
+print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
+
+plt.show()
+
+# ------------  Baseline Plotting -------------
+fig.clf()
+fig.set_facecolor('w')
+figFilename = 'FR_Comparisons_Baseline_no_zeros'
+
+# Define the layout
+gs = gridspec.GridSpec(2, 2)
+gs.update(left=0.04, right=0.97, top=0.94, bottom=0.05, wspace=0.3, hspace=0.3)
+
+axNoise = plt.subplot(gs[0, 0])
+axTT = plt.subplot(gs[0, 1])
+axTuning = plt.subplot(gs[1, 0])
+axAM = plt.subplot(gs[1, 1])
+
+plt.text(0, 1.1, 'Noise', ha='center', va='center',
+         fontsize=fontSizePanel, fontweight='bold',
+         transform=axNoise.transAxes)
+plt.text(0, 1.1, 'TT', ha='center', va='center',
+         fontsize=fontSizePanel, fontweight='bold',
+         transform=axTT.transAxes)
+plt.text(0, 1.1, 'TC', ha='center', va='center',
+         fontsize=fontSizePanel, fontweight='bold',
+         transform=axTuning.transAxes)
+plt.text(0, 1.1, 'AM', ha='center', va='center',
+         fontsize=fontSizePanel, fontweight='bold',
+         transform=axAM.transAxes)
+
+# --- Noiseburst plotting ---
+plt.sca(axNoise)
+
 histDraw.normalized_hist(D1NoiseBase, nD1NoiseBase, axNoise, colorD1, colornD1, bin_number=300)
 axNoise.set_xlabel("Firing Rate")
 axNoise.set_ylabel("Frequency")
-axNoise.set_title("Noiseburst baseline FRs")
+axNoise.set_title("Noiseburst baseline FRs\np-value={}".format(round(baseNoisePVal, 4)))
 axNoise.set_xlim([0, 1])
 
 # --- TuningTest plotting ---
@@ -340,7 +425,8 @@ histDraw.normalized_hist(D1TuningTestBase, nD1TuningTestBase, axTT, colorD1,
                          colornD1, bin_number=60)
 axTT.set_xlabel("Firing Rate")
 axTT.set_ylabel("Frequency")
-axTT.set_title("Tuning Test baseline FRs")
+axTT.set_title("Tuning Test baseline FRs\np-value={}".format(round(baseTTPVal, 4)))
+axTT.set_xlim([0, 1.5])
 
 # --- TuningCurve plotting ---
 plt.sca(axTuning)
@@ -349,7 +435,8 @@ histDraw.normalized_hist(D1TuningCurveBase, nD1TuningCurveBase, axTuning, colorD
                          colornD1, bin_number=80)
 axTuning.set_xlabel("Firing Rate")
 axTuning.set_ylabel("Frequency")
-axTuning.set_title("Tuning Curve baseline FRs")
+axTuning.set_title("Tuning Curve baseline FRs\np-value={}".format(round(baseTuningPVal, 4)))
+axTuning.set_xlim([0, 1.5])
 
 # --- AM plotting ---
 plt.sca(axAM)
@@ -357,11 +444,11 @@ plt.sca(axAM)
 histDraw.normalized_hist(D1AMBase, nD1AMBase, axAM, colorD1, colornD1, bin_number=100)
 axAM.set_xlabel("Firing Rate")
 axAM.set_ylabel("Frequency")
-axAM.set_title("AM baseline FRs")
-axAM.set_xlim([0, 7])
+axAM.set_title("AM baseline FRs\np-value={}".format(round(baseAMPVal, 4)))
+axAM.set_xlim([0, 2])
 
 
-extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
+extraplots.save_figure(figFilename, figFormat, figSize, outputDir, 'w')
 print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
 
 plt.show()
