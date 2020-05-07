@@ -38,7 +38,8 @@ def calculate_cell_locations(db): # to be filled after complete collecting histo
 if __name__ == "__main__":
 
     SAVE = 1  # 1: Save database
-
+    startTime = time.time()
+    
     # -- Cluster your data --
     CLUSTER_DATA = 0  # We don't generally run this code. We kept this for documentation
     miceList = studyparams.MICE_LIST
@@ -49,16 +50,19 @@ if __name__ == "__main__":
         pass
 
     # -- Generate_cell_database_filters cells with the followings: isi < 0.05, spike quality > 2 --
-    basicDB = celldatabase.generate_cell_database_from_subjects(miceList)
+    celldb = celldatabase.generate_cell_database_from_subjects(miceList)
 
     # Computing first the base stats and then the indices
-    firstDB = calculate_base_stats(basicDB)
 
     if SAVE:
         dbPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
         dbFilename = os.path.join(dbPath,'celldb_{}.h5'.format(studyparams.STUDY_NAME))
         if os.path.isdir(dbPath):
-            celldatabase.save_hdf(firstDB, dbFilename)
+            celldatabase.save_hdf(celldb, dbFilename)
             print('Saved database to {}'.format(dbFilename))
         else:
             print('{} does not exist. Please create this folder.'.format(dbPath))
+
+    totalTime = time.time() - startTime
+    totalTimeMins = totalTime / 60
+    print ('The script took {:.2f} minutes'.format(totalTimeMins))
