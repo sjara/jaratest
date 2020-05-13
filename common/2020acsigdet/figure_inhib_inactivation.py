@@ -22,9 +22,9 @@ PANELS = [1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'FigX_inhib_inactivation'  # Do not include extension
-figFormat = 'pdf'  # 'pdf' or 'svg'
-# figFormat = 'svg'
+figFilename = 'Fig3_inhib_inactivation'  # Do not include extension
+#figFormat = 'pdf'  # 'pdf' or 'svg'
+figFormat = 'svg'
 figSize = [9,9]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
@@ -32,8 +32,8 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.005, 0.36, 0.66, 0.42]  # Horiz position for panel labels
-labelPosY = [0.98, 0.78, 0.48, 0.28]  # Vert position for panel labels
+labelPosX = [0.003, 0.39, 0.675]  # Horiz position for panel labels
+labelPosY = [0.98, 0.64, 0.3]  # Vert position for panel labels
 
 PVInactExample = 'band081_psycurve.npz'
 SOMInactExample = 'band065_psycurve.npz'
@@ -48,7 +48,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(3, 3, width_ratios=[1.5, 1, 1])
-gs.update(top=0.99, bottom=0.05, left=0.07, right=0.94, wspace=0.5, hspace=0.3)
+gs.update(top=0.98, bottom=0.05, left=0.07, right=0.94, wspace=0.5, hspace=0.4)
 
 def bootstrap_median_CI(data, reps=1000, interval=95):
     medians = np.zeros(reps)
@@ -64,6 +64,7 @@ if PANELS[0]:
     examples = [PVInactExample, SOMInactExample]
     cellTypeColours = [PVColour, SOMColour]
     labels = ['no PV', 'no SOM']
+    panelLabels = ['A', 'D']
 
     for indType, exampleFileName in enumerate(examples):
         dataFullPath = os.path.join(inactDataDir, exampleFileName)
@@ -93,17 +94,25 @@ if PANELS[0]:
         axCurve.set_xlim(-0.2, len(possibleSNRs) - 0.8)
         axCurve.set_xticks(range(len(possibleSNRs)))
         axCurve.set_xticklabels(possibleSNRs)
-        axCurve.set_xlabel('SNR (dB)')
+        axCurve.set_xlabel('SNR (dB)', fontsize=fontSizeLabels)
 
         axCurve.set_ylim(0, 100)
-        axCurve.set_ylabel('% tone reported')
+        axCurve.set_ylabel('Trials with tone reported (%)', fontsize=fontSizeLabels)
 
         extraplots.boxoff(axCurve)
+        extraplots.breakaxis(0.5, 0, 0.15, 5, gap=0.5)
+        extraplots.set_ticks_fontsize(axCurve, fontSizeTicks)
+
+    for indLabel, label in enumerate(panelLabels):
+        axCurve.annotate(label, xy=(labelPosX[0], labelPosY[indLabel]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
 
 # --- summary of change in accuracy during PV or SOM inactivation ---
 if PANELS[1]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
+
+    panelLabels = ['B', 'E']
 
     PVlaserAccuracy = summaryData['PVlaserAccuracy']
     PVcontrolAccuracy = summaryData['PVcontrolAccuracy']
@@ -136,12 +145,17 @@ if PANELS[1]:
         axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
         axScatter.set_xticks(xLocs)
         axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (octaves)')
+        axScatter.set_xlabel('Masker bandwidth (octaves)', fontsize=fontSizeLabels)
 
         axScatter.set_ylim(50, 80)
-        axScatter.set_ylabel('Accuracy (%)')
+        axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
 
         extraplots.boxoff(axScatter)
+        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+
+    for indLabel, label in enumerate(panelLabels):
+        axScatter.annotate(label, xy=(labelPosX[1], labelPosY[indLabel]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
 
 # --- comparison in change in accuracy with PV and SOM inactivation ---
 if PANELS[2]:
@@ -158,11 +172,13 @@ if PANELS[2]:
     SOMchange = SOMlaserAccuracy - SOMcontrolAccuracy
 
     axBar = plt.subplot(gs[2,1])
+    cartoonLabel = 'G'
+    panelLabel = 'H'
 
     cellTypeColours = [PVColour, SOMColour]
 
-    width = 0.45
-    barLoc = np.array([-0.24, 0.24])
+    width = 0.3
+    barLoc = np.array([-0.18, 0.18])
     xLocs = np.arange(2)
     xTickLabels = possibleBands
 
@@ -183,17 +199,19 @@ if PANELS[2]:
                      [accuracyCI[0], accuracyCI[0]], color=cellTypeColours[indType], linewidth=1.5)  # bottom caps
             plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
                      [accuracyCI[1], accuracyCI[1]], color=cellTypeColours[indType], linewidth=1.5)  # top caps
+    plt.plot([-10, 10], [0, 0], '--', color='0.5')  # line at 0 indicating direction of change
 
     axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
     axBar.set_xticks(xLocs)
     axBar.set_xticklabels(possibleBands)
-    axBar.set_xlabel('Masker bandwidth (octaves)')
+    axBar.set_xlabel('Masker bandwidth (octaves)', fontsize=fontSizeLabels)
 
     yLims = (-12, 2)
     axBar.set_ylim(yLims)
-    axBar.set_ylabel('Change in accuracy (%)')
+    axBar.set_ylabel('Change in accuracy (%)', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axBar)
+    extraplots.set_ticks_fontsize(axBar, fontSizeTicks)
 
     for band in range(len(possibleBands)):
         pVal = stats.ranksums(PVchange[:, band], SOMchange[:, band])
@@ -202,10 +220,17 @@ if PANELS[2]:
     # extraplots.significance_stars(barLoc + xLocs[0], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
     # extraplots.significance_stars(barLoc + xLocs[1], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
 
+    axBar.annotate(panelLabel, xy=(labelPosX[1], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
+                     fontweight='bold')
+    axBar.annotate(cartoonLabel, xy=(labelPosX[0], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
+                   fontweight='bold')
+
 # --- comparison in change in bias with PV and SOM inactivation ---
 if PANELS[3]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
+
+    panelLabels = ['C', 'F']
 
     PVlaserBias = summaryData['PVlaserBias']
     PVcontrolBias = summaryData['PVcontrolBias']
@@ -240,17 +265,24 @@ if PANELS[3]:
         axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
         axScatter.set_xticks(xLocs)
         axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (octaves)')
+        axScatter.set_xlabel('Masker bandwidth (octaves)', fontsize=fontSizeLabels)
 
         axScatter.set_ylim(-0.75,0.4)
-        axScatter.set_ylabel('Bias')
+        axScatter.set_ylabel('Bias', fontsize=fontSizeLabels)
 
         extraplots.boxoff(axScatter)
+        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+
+    for indLabel, label in enumerate(panelLabels):
+        axScatter.annotate(label, xy=(labelPosX[2], labelPosY[indLabel]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
 
 # --- summary of change in bias towards one side during PV or SOM inactivation ---
 if PANELS[4]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
+
+    panelLabel = 'I'
 
     PVlaserBias = summaryData['PVlaserBias']
     PVcontrolBias = summaryData['PVcontrolBias']
@@ -264,8 +296,8 @@ if PANELS[4]:
 
     cellTypeColours = [PVColour, SOMColour]
 
-    width = 0.45
-    barLoc = np.array([-0.24, 0.24])
+    width = 0.3
+    barLoc = np.array([-0.18, 0.18])
     xLocs = np.arange(2)
     xTickLabels = possibleBands
 
@@ -285,17 +317,22 @@ if PANELS[4]:
                      [biasCI[0], biasCI[0]], color=cellTypeColours[indType], linewidth=1.5)  # bottom caps
             plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
                      [biasCI[1], biasCI[1]], color=cellTypeColours[indType], linewidth=1.5)  # top caps
+    plt.plot([-10,10], [0,0], '--', color='0.5') # line at 0 indicating direction of change
 
     axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
     axBar.set_xticks(xLocs)
     axBar.set_xticklabels(possibleBands)
-    axBar.set_xlabel('Masker bandwidth (octaves)')
+    axBar.set_xlabel('Masker bandwidth (octaves)', fontsize=fontSizeLabels)
 
     yLims = (-0.5, 0.3)
     axBar.set_ylim(yLims)
-    axBar.set_ylabel('Change in bias')
+    axBar.set_ylabel('Change in bias', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axBar)
+    extraplots.set_ticks_fontsize(axBar, fontSizeTicks)
+
+    axBar.annotate(panelLabel, xy=(labelPosX[2], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
+                   fontweight='bold')
 
     # calculate those stats!
     for band in range(len(possibleBands)):

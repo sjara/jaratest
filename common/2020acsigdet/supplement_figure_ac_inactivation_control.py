@@ -14,29 +14,28 @@ from jaratoolbox import extraplots
 import figparams
 import studyparams
 
-FIGNAME = 'figure_ac_inactivation'
+FIGNAME = 'figure_ac_inactivation' # data for control figure in same folder
 # inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
-PANELS = [1, 1, 1]  # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
-figFilename = 'Fig2_ac_inactivation'  # Do not include extension
-# figFormat = 'pdf'  # 'pdf' or 'svg'
-figFormat = 'svg'
-figSize = [6,6]  # In inches
+figFilename = 'SuppFig2_ac_inactivation_controls'  # Do not include extension
+figFormat = 'pdf'  # 'pdf' or 'svg'
+#figFormat = 'svg'
+figSize = [5,6]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.005, 0.4, 0.48]  # Horiz position for panel labels
-labelPosY = [0.96, 0.48]  # Vert position for panel labels
+labelPosX = [0.005, 0.58]  # Horiz position for panel labels
+labelPosY = [0.97, 0.49]  # Vert position for panel labels
 
-ACInactExample = 'band046_psycurve.npz'
-summaryFileName = 'all_behaviour_ac_inactivation.npz'
+summaryFileName = 'all_behaviour_ac_inactivation_control.npz'
 
 ExcColour = figparams.colp['excitatoryCell']
 PVColour = figparams.colp['PVcell']
@@ -46,59 +45,11 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 2)
-gs.update(top=0.97, bottom=0.08, left=0.08, right=0.97, wspace=0.3, hspace=0.3)
+gs = gridspec.GridSpec(2, 2, width_ratios=[1.0, 0.5])
+gs.update(top=0.99, bottom=0.12, left=0.13, right=0.97, wspace=0.5, hspace=0.3)
 
-axCartoons = gs[0, :]
-gs2 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=axCartoons, wspace=0.3, hspace=0.4, width_ratios=[0.7,1.0])
-# --- example psychometric curves ---
+# --- summary of change in accuracy with laser but without inactivation ---
 if PANELS[0]:
-    dataFullPath = os.path.join(inactDataDir, ACInactExample)
-    data = np.load(dataFullPath)
-
-    psyCurveControl = data['psyCurveControl']
-    upperErrorControl = data['upperErrorControl']
-    lowerErrorControl = data['lowerErrorControl']
-    possibleSNRs = data['possibleSNRs']
-
-    axCurve = plt.subplot(gs2[0, 1])
-    panelLabels = ['A', 'B']  # labels for psy curve and cartoons
-    xTickLabels = ['-inf']
-    xTickLabels.extend([int(x) for x in possibleSNRs.tolist()[1:]])
-
-    l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=ExcColour, lw=3, ms=8)
-    plt.errorbar(range(len(possibleSNRs)), psyCurveControl, yerr=[lowerErrorControl, upperErrorControl], fmt='none',
-                 color=ExcColour, lw=2, capsize=5, capthick=1)
-
-    psyCurveLaser = data['psyCurveLaser']
-    upperErrorLaser = data['upperErrorLaser']
-    lowerErrorLaser = data['lowerErrorLaser']
-
-    l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o-', color=PVColour, lw=3,
-                   ms=8)
-    plt.errorbar(range(len(possibleSNRs)), psyCurveLaser, yerr=[lowerErrorLaser, upperErrorLaser], fmt='none',
-                 color=PVColour, lw=2, capsize=5, capthick=1, zorder=-10)
-
-    axCurve.legend([l1, l2], ['control', 'PV activated'])
-
-    axCurve.set_xlim(-0.2, len(possibleSNRs) - 0.8)
-    axCurve.set_xticks(range(len(possibleSNRs)))
-    axCurve.set_xticklabels(xTickLabels)
-    axCurve.set_xlabel('SNR (dB)', fontsize=fontSizeLabels)
-
-    axCurve.set_ylim(0, 100)
-    axCurve.set_ylabel('Trials with tone reported (%)', fontsize=fontSizeLabels)
-
-    extraplots.boxoff(axCurve)
-    extraplots.breakaxis(0.5, 0, 0.15, 5, gap=0.5)
-    extraplots.set_ticks_fontsize(axCurve, fontSizeTicks)
-
-    for indLabel, label in enumerate(panelLabels):
-        axCurve.annotate(label, xy=(labelPosX[indLabel], labelPosY[0]), xycoords='figure fraction',
-                           fontsize=fontSizePanel, fontweight='bold')
-
-# --- summary of change in accuracy during AC inactivation ---
-if PANELS[1]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
@@ -106,13 +57,13 @@ if PANELS[1]:
     controlAccuracy = summaryData['controlAccuracy']
     possibleBands = summaryData['possibleBands']
 
-    axScatter = plt.subplot(gs[1,0])
-    panelLabel = 'C'
+    axScatter = plt.subplot(gs[0,0])
+    panelLabel = 'A'
 
     barLoc = np.array([-0.24, 0.24])
     xLocs = np.arange(len(possibleBands))
     xTickLabels = possibleBands
-    legendLabels = ['control', 'PV activated']
+    legendLabels = ['no laser', 'laser']
 
     for indBand in range(len(possibleBands)):
         thisxLocs = barLoc + xLocs[indBand]
@@ -138,7 +89,7 @@ if PANELS[1]:
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
 
-    axScatter.annotate(panelLabel, xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
+    axScatter.annotate(panelLabel, xy=(labelPosX[0], labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
 
     # -- stats!! --
@@ -146,8 +97,8 @@ if PANELS[1]:
         pVal = stats.wilcoxon(laserAccuracy[:,band], controlAccuracy[:,band])[1]
         print(f"Change in accuracy at {possibleBands[band]} oct pVal: {pVal}")
 
-# --- comparison in change in bias with AC inactivation ---
-if PANELS[2]:
+# --- comparison in change in bias with laser but not inactivation ---
+if PANELS[1]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
@@ -155,13 +106,13 @@ if PANELS[2]:
     controlBias = summaryData['controlBias']
     possibleBands = summaryData['possibleBands']
 
-    axScatter = plt.subplot(gs[1, 1])
-    panelLabel = 'D'
+    axScatter = plt.subplot(gs[1, 0])
+    panelLabel = 'C'
 
     barLoc = np.array([-0.24, 0.24])
     xLocs = np.arange(len(possibleBands))
     xTickLabels = possibleBands
-    legendLabels = ['control', 'PV activated']
+    legendLabels = ['no laser', 'laser']
 
     for indBand in range(len(possibleBands)):
         thisxLocs = barLoc + xLocs[indBand]
@@ -188,13 +139,89 @@ if PANELS[2]:
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
 
-    axScatter.annotate(panelLabel, xy=(labelPosX[2], labelPosY[1]), xycoords='figure fraction',
+    axScatter.annotate(panelLabel, xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
                        fontsize=fontSizePanel, fontweight='bold')
 
     # -- stats!! --
     for band in range(len(possibleBands)):
         pVal = stats.wilcoxon(laserBias[:,band], controlBias[:,band])[1]
         print(f"Change in bias at {possibleBands[band]} oct pVal: {pVal}")
+
+# -- comparison of change in accuracy between inactivation and no inactivation conditions --
+if PANELS[2]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
+
+    controlChangeAccuracy = summaryData['controlChangeAccuracy']
+    inactChangeAccuracy = summaryData['expChangeAccuracy']
+
+    axScatter = plt.subplot(gs[0, 1])
+    panelLabel = 'B'
+
+    xLocs = range(2)
+    yLims = (-20,1)
+
+    plt.plot(np.tile(xLocs[0], len(controlChangeAccuracy)), controlChangeAccuracy, 'o', color=ExcColour, alpha=0.3)
+    plt.plot(np.tile(xLocs[1], len(inactChangeAccuracy)), inactChangeAccuracy, 'o', color=PVColour, alpha=0.3)
+
+    plt.plot([xLocs[0]-0.2, xLocs[0]+0.2], np.tile(np.median(controlChangeAccuracy),2), '-', color='k', lw=3)
+    plt.plot([xLocs[1] - 0.2, xLocs[1] + 0.2], np.tile(np.median(inactChangeAccuracy), 2), '-', color='k', lw=3)
+
+    axScatter.set_xlim(-0.5, 1.5)
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(['control', 'inactivation'], rotation=-45)
+
+    axScatter.set_ylim(yLims)
+    axScatter.set_ylabel('Change in accuracy (%)', fontsize=fontSizeLabels)
+
+    extraplots.boxoff(axScatter)
+    extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+
+    pVal = stats.ranksums(controlChangeAccuracy, inactChangeAccuracy)[1]
+    print(f"Control vs inactivation change in accuracy p val = {pVal}")
+    if pVal < 0.05:
+        extraplots.significance_stars(xLocs, 0.98 * yLims[1], 0.03 * np.diff(yLims), gapFactor=0.2)
+
+    axScatter.annotate(panelLabel, xy=(labelPosX[1], labelPosY[0]), xycoords='figure fraction',
+                       fontsize=fontSizePanel, fontweight='bold')
+
+# -- comparison of change in bias between inactivation and no inactivation conditions --
+if PANELS[3]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
+
+    controlChangeBias = summaryData['controlChangeBias']
+    inactChangeBias = summaryData['expChangeBias']
+
+    axScatter = plt.subplot(gs[1, 1])
+    panelLabel = 'D'
+
+    xLocs = range(2)
+    yLims = (-0.5, 0.1)
+
+    plt.plot(np.tile(xLocs[0], len(controlChangeBias)), controlChangeBias, 'o', color=ExcColour, alpha=0.3)
+    plt.plot(np.tile(xLocs[1], len(inactChangeBias)), inactChangeBias, 'o', color=PVColour, alpha=0.3)
+
+    plt.plot([xLocs[0]-0.2, xLocs[0]+0.2], np.tile(np.median(controlChangeBias),2), '-', color='k', lw=3)
+    plt.plot([xLocs[1] - 0.2, xLocs[1] + 0.2], np.tile(np.median(inactChangeBias), 2), '-', color='k', lw=3)
+
+    axScatter.set_xlim(-0.5, 1.5)
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(['control', 'inactivation'], rotation=-45)
+
+    axScatter.set_ylim(yLims)
+    axScatter.set_ylabel('Change in bias', fontsize=fontSizeLabels)
+
+    extraplots.boxoff(axScatter)
+    extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+
+    pVal = stats.ranksums(controlChangeBias, inactChangeBias)[1]
+    print(f"Control vs inactivation change in bias p val = {pVal}")
+    if pVal < 0.05:
+        extraplots.significance_stars(xLocs, 0.98 * yLims[1], 0.03 * np.diff(yLims), gapFactor=0.2)
+
+    axScatter.annotate(panelLabel, xy=(labelPosX[1], labelPosY[1]), xycoords='figure fraction',
+                       fontsize=fontSizePanel, fontweight='bold')
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
