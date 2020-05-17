@@ -1,0 +1,45 @@
+
+This file lists issues found by Santiago on Jan 2019 as he was going through the code for Lan's paper.
+
+=== reward_change_generate_cell_database.py ===
+173: CASE 6 uses file in Lan's folder, not in common:
+     '/home/languo/src/jaratest/lan/analysis_reward_change/calculate_reward_modulation_celldb.py'
+     There is a copy in 'common', but the script still points to the one in Lan's folder.
+
+=== reward_change_generate_cell_database.py ===
+175: Lan run these things by executing the python script via subprocess.
+     That's very weird. We should just run it within (not externally via shell python).
+
+=== calculate_reward_modulation_celldb.py ===
+85: File uses NEW_DATABASE_FOLDER. Instead it should use
+    settings.DATABASE_PATH, figparams.STUDY_NAME
+    
+=== Save missing trials ===
+It would be hard to save missing trials in the database, so I saved in the evlockedspikes files.
+
+=== Some cells have missing trials evens after fix ===
+This means that the query should use missingTrialsBehav:
+goodQualCells = celldb.query("missingTrialsBehav==0 and keepAfterDupTest==1 and cellInTargetArea==1 and brainArea=='{}'".format(brainArea))
+
+=== The data for some cells doesn't load ===
+adap071_2017-09-18_1100.0_T6_c2
+The file size does not match a integer number of records
+
+=== calculate_reward_modulation_celldb.py ===
+Lan used (line 282) spikeCountMat = spikesanalysis.spiketimes_to_spikecounts()
+but then (line 298) used spikesanalysis.evaluate_modulation() which does the same thing.
+However, to estimate things by block it's useful to have the spikeCountMat, so maybe
+using evaluate_modulation() is redundant here.
+
+=== calculate_reward_modulation_celldb.py ===
+In line 204 Lan has code to estimate block sizes, but the behavior class has a method to do that.
+loadbehavior.FlexCategBehaviorData.find_trials_each_block()
+
+
+
+
+movementAveFrLeft_[0.0, 0.3]_removedsidein  is calculated by:
+evaluateMovementSel.evaluate_movement_zScore_celldb()
+
+
+sigModIEncodeMvAC

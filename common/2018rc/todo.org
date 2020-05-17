@@ -1,0 +1,38 @@
+#+STARTUP: hidestars
+#+STARTUP: odd
+
+
+* DONE Load inforec to see minimal db
+* DONE Write efficient preprocessing
+* DONE save all preprocessed (include missing trials)
+
+
+low=17.73% high=14.89%  rightAC
+low=22.73% high=19.09%  rightAStr
+
+low=2.84% high=0.71%  rightAC
+low=4.55% high=11.82%  rightAStr
+
+low=2.13% high=3.55%  rightAC
+low=2.73% high=5.45%  rightAStr
+
+
+Number of trials differs between behav and ephys (even after fix)
+/var/tmp/processed_data/gosi008_2017-03-17_940.0_T1_c4_sound.npz
+/var/tmp/processed_data/gosi008_2017-03-17_940.0_T5_c10_sound.npz
+/var/tmp/processed_data/gosi008_2017-03-17_940.0_T8_c10_sound.npz
+/var/tmp/processed_data/adap067_2017-09-08_660.0_T8_c10_sound.npz
+/var/tmp/processed_data/adap067_2017-10-06_1780.0_T6_c2_sound.npz
+/var/tmp/processed_data/adap067_2017-10-06_1780.0_T6_c4_sound.npz
+/var/tmp/processed_data/adap067_2017-10-06_1780.0_T7_c10_sound.npz
+/var/tmp/processed_data/adap067_2017-10-06_1780.0_T8_c5_sound.npz
+/var/tmp/processed_data/adap071_2017-09-18_1100.0_T6_c2_sound.npz
+/var/tmp/processed_data/adap015_2016-02-25_3320.0_T1_c4_sound.npz
+/var/tmp/processed_data/adap015_2016-02-25_3320.0_T3_c3_sound.npz
+/var/tmp/processed_data/adap015_2016-02-25_3320.0_T4_c2_sound.npz
+/var/tmp/processed_data/adap015_2016-02-25_3320.0_T4_c11_sound.npz
+/var/tmp/processed_data/adap015_2016-02-25_3320.0_T8_c11_sound.npz
+/var/tmp/processed_data/adap017_2016-05-04_3560.0_T1_c5_sound.npz
+/var/tmp/processed_data/adap017_2016-05-04_3560.0_T6_c3_sound.npz
+/var/tmp/processed_data/adap017_2016-05-04_3560.0_T7_c12_sound.npz
+
