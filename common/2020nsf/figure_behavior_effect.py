@@ -30,8 +30,11 @@ nSched = len(schedMapping)
 featureToPlot = 'Day2post'
 
 
-dataMedian = dataBySchedule.median()
-#dataMedian = dataBySchedule.mean()
+#dataMedian = dataBySchedule.median()
+dataMean = dataBySchedule.mean()
+dataStDev = dataBySchedule.std()
+dataNeach = dataBySchedule.size()
+dataSEM = dataBySchedule.std()
 #day2median = dataMedian['Day2post']
 #stest = stats.ranksums
 stest = stats.mannwhitneyu
@@ -54,7 +57,8 @@ print('p-value (AP-Ax) = {}'.format(pval))
 
 
 plt.clf()
-gs = gridspec.GridSpec(ncols=1, nrows=1, left=0.2)
+#gs = gridspec.GridSpec(ncols=1, nrows=1, left=0.25, right=0.95) # Four sched
+gs = gridspec.GridSpec(ncols=1, nrows=1, left=0.3, right=0.98, top=0.96) # Three sches
 ax0 = plt.gcf().add_subplot(gs[0])
 
 labelsFontSize = 20
@@ -63,19 +67,32 @@ pointsColor = '0.5'
 barEdgeColor = '0.25'
 barFaceColor = '0.85'
 
+
 for schedName, schedData in dataBySchedule:
+    # Don't plot schedule Ax.
+    if schedName=='SA':
+        continue
     nSamplesThisSched = len(schedData)
     xvals = np.tile(schedMapping[schedName],nSamplesThisSched) + 0.1*np.random.rand(nSamplesThisSched)
-    plt.plot(xvals, schedData[featureToPlot], 'o', mfc='none', mec=pointsColor)
-    thisMedian = dataMedian[featureToPlot][schedName]
-    plt.bar(schedMapping[schedName],thisMedian, width=0.75, lw=2,
+    #plt.plot(xvals, schedData[featureToPlot], 'o', mfc='none', mec=pointsColor)
+    #thisAvg = dataMedian[featureToPlot][schedName]
+    thisAvg = dataMean[featureToPlot][schedName]
+    thisSEM = dataStDev[featureToPlot][schedName]/np.sqrt(nSamplesThisSched)
+    print(thisSEM)
+    plt.bar(schedMapping[schedName],thisAvg, width=0.75, lw=2,
             fc=barFaceColor, ec=barEdgeColor)
+    plt.errorbar(schedMapping[schedName],thisAvg, thisSEM, color=barEdgeColor,
+                 elinewidth=2, capsize=4)
             
 #plt.ylabel(featureToPlot, fontsize=labelFontSize)
 plt.ylabel('Performance (%)', fontsize=labelsFontSize)
 
-ax0.set_xticks(np.arange(nSched))
-ax0.set_xticklabels(schedSorted, fontsize=labelsFontSize)
+#ax0.set_xticks(np.arange(nSched))
+#ax0.set_xticklabels(schedSorted, fontsize=labelsFontSize)
+    # Don't plot schedule Ax.
+ax0.set_xticks(np.arange(nSched-1))
+ax0.set_xticklabels(schedSorted[:-1], fontsize=labelsFontSize)
+
 if featureToPlot == 'Difference':
     plt.ylim([-20,50])
 else:
@@ -88,5 +105,7 @@ plt.show()
 SAVEFIG = 1
 if SAVEFIG:
     figname = 'behavior_effect_{}'.format(featureToPlot)
-    extraplots.save_figure(figname, 'svg', [4.5, 3], facecolor='w', outputDir='/tmp/')
+    # extraplots.save_figure(figname, 'svg', [4.5, 3], facecolor='w', outputDir='/tmp/') # Old version
+    # extraplots.save_figure(figname, 'svg', [3.5, 2.7], facecolor='w', outputDir='/tmp/') # Four schedules
+    extraplots.save_figure(figname, 'svg', [2.6, 2.5], facecolor='None', outputDir='/tmp/') # Three schedules
 

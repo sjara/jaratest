@@ -24,3 +24,7 @@ docs/_build/
 /test/nick/ephysExperiments/.ropeproject/config.py
 /test/nick/ephysExperiments/.ropeproject/history
 /test/nick/ephysExperiments/.ropeproject/objectdb
+/common/2020nsf/RawData_NSFNCS.txt
+/common/2020nsf/old01_figure_behavior_effect.py
+/common/2020nsf/boxplot_Accent_Points_MBB.pdf
+test*
