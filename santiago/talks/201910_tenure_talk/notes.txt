@@ -1,0 +1,15 @@
+From Beth on 2019-09-23
+
+SSA:
+chad013_2019-07-02_1225um_T4_c2
+chad013_2019-07-02_1225um_T6_c2
+chad013_2019-07-02_1300um_T8_c6
+chad013_2019-07-16_1006um_T6_c2
+
+Three-tone:
+chad015_2019-08-06_930um_T8_c6
+chad015_2019-08-08_1025um_T6_c5
+chad016_2019-08-29_1155um_T2_c2
+chad016_2019-08-30_1030um_T5_c5
+
+The code to create a single PSTH and corresponding raster(s) for the SSA and Three-tone experiments is attached. They are located in /mnt/jarahubdata/reports/.
