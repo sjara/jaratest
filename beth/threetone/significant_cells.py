@@ -14,14 +14,124 @@ importlib.reload(studyparams)
 
 #dbPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
 dbPath = settings.FIGURES_DATA_PATH
-dbFilename = os.path.join(dbPath,'responsivedb_{}.h5'.format(studyparams.STUDY_NAME))
+dbFilenameA = os.path.join(dbPath,'newresponsivedb_{}_A.h5'.format(studyparams.STUDY_NAME))
+dbFilenameD = os.path.join(dbPath,'newresponsivedb_{}_D.h5'.format(studyparams.STUDY_NAME))
+
 # -- Load the database of responsive cells --
-responsivedb = celldatabase.load_hdf(dbFilename)
+responsivedbA = celldatabase.load_hdf(dbFilenameA)
+responsivedbD = celldatabase.load_hdf(dbFilenameD)
 
-dbFilenamex = os.path.join(dbPath,'celldb_{}.h5'.format(studyparams.STUDY_NAME))
-# -- Load the database of cells --
-celldb = celldatabase.load_hdf(dbFilenamex)
+pValueThreshold = 0.05
 
+def comparing_odd_std_significance_ascending(responsivedb, pValueThreshold):
+    """
+    Counts how many of the responsive cells show a significant difference between oddball and standard firing rates for their most responsive frequency in the ascending sequence.
+
+    Inputs:
+        responsivedb: Cell database that contains only the cells that are sound responsive and that allows for loading of ephys and behavior data and calculated base stats and indices.
+        pValueThreshold: Number below which the number of spikes in the evoked time range is significantly different than in the baseline time range.
+
+    Outputs:
+        responsivedb: Cell database with two additional columns including the p-Value corresponding to whichever frequency (high, middle, low) had the lowest p-Value when comparing evoked to baseline spike counts for the ascending and descending sequence.
+    """
+
+    significantCells = np.tile(np.nan, len(responsivedb))
+    expUnexpRatio = np.tile(np.nan, len(responsivedb))
+
+    for indRow, dbRow in responsivedb.iterrows():
+        # -- 'pVal{Freq}Response{Session}' refers to the p-value between baseline and evoked for all frequencies for all trials --
+        pValueHigh = responsivedb['pValHighResponseA'][indRow]
+        pValueMid = responsivedb['pValMidResponseA'][indRow]
+        pValueLow = responsivedb['pValLowResponseA'][indRow]
+        pValues = dict(pValueHigh = pValueHigh, pValueMid = pValueMid, pValueLow = pValueLow)
+
+        # -- The best frequency is the one with the lowest pValue --
+        minimum = min(pValues, key=pValues.get)
+
+        # -- This adds to a list the pValue for expectation (between oddball and standard) corresponding to whichever frequency (high, middle, low) had the lowest pValue when comparing evoked to baseline spike counts for the sequence in question --
+        if minimum == 'pValueHigh':
+            significantCells[indRow] = responsivedb['pValHighFRA'][indRow]
+            expUnexpRatio[indRow] = responsivedb['meanEvokedFirstOddA'][indRow] / responsivedb['meanEvokedFirstStdA'][indRow]
+        elif minimum == 'pValueMid':
+            significantCells[indRow] = responsivedb['pValMidFRA'][indRow]
+            expUnexpRatio[indRow] = responsivedb['meanEvokedSecondOddA'][indRow] / responsivedb['meanEvokedSecondStdA'][indRow]
+        else:
+            significantCells[indRow] = responsivedb['pValLowFRA'][indRow]
+            expUnexpRatio[indRow] = responsivedb['meanEvokedThirdOddA'][indRow] / responsivedb['meanEvokedThirdStdA'][indRow]
+
+    # -- Adding a new column to the database using the array we created earlier. --
+    responsivedb['mostRespFreqExpectationPValueA'] = significantCells
+    responsivedb['expUnexpRatioMostRespFreqA'] = expUnexpRatio
+
+    # -- If either of the smallest pValues in the sequence are below the pValue threshold and there is increased firing for the oddball, that cell is significantly modulated. --
+    #signModulatedCellsA = np.where((responsivedb['mostRespFreqExpectationPValueA'] < pValueThreshold) & (responsivedb['expUnexpRatioMostRespFreqA'] > 1))
+    signCells = responsivedb[responsivedb.mostRespFreqExpectationPValueA < pValueThreshold]
+    signModulatedCells = signCells[signCells.expUnexpRatioMostRespFreqA > 1]
+
+
+    print('Number of responsive cells in the ascending session: {}'.format(len(responsivedb)))
+
+    print('Number of cells that showed a significant difference between expected and unexpected firing rates in the ascending session: {}'.format(len(signCells)))
+
+    print('Number of cells that showed a significant difference between expected and unexpected firing rates where there was more firing for the unexpected tone in the ascending session: {}'.format(len(signModulatedCells)))
+
+    return responsivedb
+
+def comparing_odd_std_significance_descending(responsivedb, pValueThreshold):
+    """
+    Counts how many of the responsive cells show a significant difference between oddball and standard firing rates for their most responsive frequency in the descending sequence.
+
+    Inputs:
+        responsivedb: Cell database that contains only the cells that are sound responsive and that allows for loading of ephys and behavior data and calculated base stats and indices.
+        pValueThreshold: Number below which the number of spikes in the evoked time range is significantly different than in the baseline time range.
+
+    Outputs:
+        responsivedb: Cell database with two additional columns including the p-Value corresponding to whichever frequency (high, middle, low) had the lowest p-Value when comparing evoked to baseline spike counts for the ascending and descending sequence.
+    """
+
+    significantCells = np.tile(np.nan, len(responsivedb))
+    expUnexpRatio = np.tile(np.nan, len(responsivedb))
+
+    for indRow, dbRow in responsivedb.iterrows():
+        # -- 'pVal{Freq}Response{Session}' refers to the p-value between baseline and evoked for all frequencies for all trials --
+        pValueHigh = responsivedb['pValHighResponseD'][indRow]
+        pValueMid = responsivedb['pValMidResponseD'][indRow]
+        pValueLow = responsivedb['pValLowResponseD'][indRow]
+        pValues = dict(pValueHigh = pValueHigh, pValueMid = pValueMid, pValueLow = pValueLow)
+
+        # -- The best frequency is the one with the lowest pValue --
+        minimum = min(pValues, key=pValues.get)
+
+        # -- This adds to a list the pValue for expectation (between oddball and standard) corresponding to whichever frequency (high, middle, low) had the lowest pValue when comparing evoked to baseline spike counts for the sequence in question --
+        if minimum == 'pValueHigh':
+            significantCells[indRow] = responsivedb['pValHighFRD'][indRow]
+            expUnexpRatio[indRow] = responsivedb['meanEvokedFirstOddD'][indRow] / responsivedb['meanEvokedFirstStdD'][indRow]
+        elif minimum == 'pValueMid':
+            significantCells[indRow] = responsivedb['pValMidFRD'][indRow]
+            expUnexpRatio[indRow] = responsivedb['meanEvokedSecondOddD'][indRow] / responsivedb['meanEvokedSecondStdD'][indRow]
+        else:
+            significantCells[indRow] = responsivedb['pValLowFRD'][indRow]
+            expUnexpRatio[indRow] = responsivedb['meanEvokedThirdOddD'][indRow] / responsivedb['meanEvokedThirdStdD'][indRow]
+
+    # -- Adding a new column to the database using the array we created earlier. --
+    responsivedb['mostRespFreqExpectationPValueD'] = significantCells
+    responsivedb['expUnexpRatioMostRespFreqD'] = expUnexpRatio
+
+    # -- If either of the smallest pValues in the sequence are below the pValue threshold and there is increased firing for the oddball, that cell is significantly modulated. --
+    #signModulatedCellsA = np.where((responsivedb['mostRespFreqExpectationPValueA'] < pValueThreshold) & (responsivedb['expUnexpRatioMostRespFreqA'] > 1))
+    signCells = responsivedb[responsivedb.mostRespFreqExpectationPValueD < pValueThreshold]
+    signModulatedCells = signCells[signCells.expUnexpRatioMostRespFreqD > 1]
+
+
+    print('Number of responsive cells in the descending session: {}'.format(len(responsivedb)))
+
+    print('Number of cells that showed a significant difference between expected and unexpected firing rates in the descending session: {}'.format(len(signCells)))
+
+    print('Number of cells that showed a significant difference between expected and unexpected firing rates where there was more firing for the unexpected tone in the descending session: {}'.format(len(signModulatedCells)))
+
+    return responsivedb
+
+'''
 def comparing_odd_std_significance(responsivedb):
     """
     Counts how many of the responsive cells show a significant difference between oddball and standard firing rates for their most responsive frequency.
@@ -77,15 +187,18 @@ def comparing_odd_std_significance(responsivedb):
     #print(cellInfo)
     numSignRespCells = len(signRespCells)
 
-    print('Number of cells recorded from: {}'.format(len(celldb)))
     print('Number of responsive cells: {}'.format(len(responsivedb)))
     print('Number of cells that showed a significant difference between expected and unexpected firing rates: {}'.format(numSignRespCells))
     percentSignRespCells = numSignRespCells / len(responsivedb) * 100
     print('Percentage of significantly responsive cells: {:.2f}%'.format(percentSignRespCells))
 
     return signRespCells
+'''
 
-signRespCellsdb = comparing_odd_std_significance(responsivedb)
+#signRespCellsdb = comparing_odd_std_significance(responsivedb)
+signRespCellsdbA = comparing_odd_std_significance_ascending(responsivedbA, pValueThreshold)
+signRespCellsdbD = comparing_odd_std_significance_descending(responsivedbD, pValueThreshold)
+
 
 '''
 # -- Saving the responsive database --
@@ -93,8 +206,7 @@ celldatabase.save_hdf(responsivedb, dbFilename)
 print('Saved responsive database to {}'.format(dbFilename))
 
 # -- Saving the database of significantly responsive cells. --
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
-dbFilename = os.path.join(dbPath,'signRespCellsdb_{}.h5'.format(studyparams.STUDY_NAME))
+dbFilename = os.path.join(dbPath,'newsignRespCellsdb_{}.h5'.format(studyparams.STUDY_NAME))
 celldatabase.save_hdf(signRespCellsdb, dbFilename)
 print('Saved significantly responsive cell database to {}'.format(dbFilename))
 '''
