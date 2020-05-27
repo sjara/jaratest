@@ -1,6 +1,12 @@
 """
 Generate[1] and save[2] database with calculated stats and parameters that will be used in /
-analysis. Optionally takes the arguments in the order of: script.py concat run_parameters mouse_name
+analysis. Optionally takes the arguments in the order of: script.py run_parameters mouse_name
+Run parameters include:
+    "concat" will grab all mouse names in studyparams.py and load the dataframs. It then concatenates all the frames together to make the total repository database
+    "locations" will just generate the minimum dataframe from the inforecs and then find the locations of where the cells were located from
+    "stats" will calculate generate a dataframe and then append base stats to it for each session type that was run
+    "all" will calculate both "stats" and "locations"
+mouse_name can either be a singular mouse name or "all". "all" will use the mouse list in studyparams.py
 """
 import os
 import sys
@@ -144,6 +150,8 @@ def append_base_stats(cellDB, filename=''):
                                                       timeRange=[0.0, 0.05], baseRange=baseRange)  # All trials at all frequencies at the highest intensity
                 respLatency = funcs.calculate_latency(tuningEventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
                                                       uniqueIntensity, tuningSpikeTimes, indRow)
+                if tuningPVal > 0.05:
+                    toCalculate = False
             else:
                 respLatency = np.nan
                 tuningPVal = np.nan
@@ -360,28 +368,29 @@ def calculate_cell_locations(db, filename=''):
     pass
 
 
-def merge_dataframes(df1, df2):
+def merge_dataframes(listOfMice, firstMouse, dataframe_location='/var/tmp/figuresdata/2019astrpi/'):
     """
     Takes two dataframes and concatenates them so we can process one mouse at a time
     instead of having to regenerate an entire database when we add on a new mouse
     Args:
-        df1 (list): List of strings containing full paths to dataframe(s).
-        df2 (string): Full path to second dataframe to which the list of dataframes will be appended to the end of
+        listOfMice (list): List of mouse names as strings
+        firstMouse (string): Name of first mouse to load the dataframe for. All
+        mice in listOfMice will be appened to the end of this frame in order
 
     Returns:
         new_df (pandas.DataFrame): Two given dataframes appended through index value
 
     """
-    df2 = celldatabase.load_hdf(df2)
-    for frame in df1:
+    df = celldatabase.load_hdf(os.path.join(dataframe_location, "{}.h5".format(firstMouse)))
+    for mouse in listOfMice:
         try:
-            appendedFrame = celldatabase.load_hdf(frame)
+            appendedFrame = celldatabase.load_hdf(mouse)
         except OSError:
             print("Mouse {} does not have an h5 file")
         else:
-            df2 = pd.concat([df2, appendedFrame], axis=0, ignore_index=True, sort=False)
+            df = pd.concat([df, appendedFrame], axis=0, ignore_index=True, sort=False)
 
-    return df2
+    return df
 
 
 if __name__ == "__main__":
@@ -399,16 +408,19 @@ if __name__ == "__main__":
         if arguments[0] == "concat":
             concat_mice = True
         else:
-            if arguments[2] == 'all':
+            if arguments[1] == 'all':
                 d1mice = studyparams.ASTR_D1_CHR2_MICE
                 dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
-            else:
-                d1mice = arguments[2]
+            elif isinstance(arguments[1], str):
+                d1mice = arguments[1]
                 dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
                 d1mice = [d1mice]
+            else:
+                d1mice = studyparams.ASTR_D1_CHR2_MICE
+                dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
             print('d1mice = {}'.format(d1mice))
             # Run behavior can either be 'all', 'hist', or 'stats'
-            runBehavior = arguments[1]
+            runBehavior = arguments[0]
             print('Run behavior is {}'.format(runBehavior))
             if runBehavior == 'all':
                 calc_stats = 1
@@ -422,6 +434,7 @@ if __name__ == "__main__":
         # Calculates everything for all mice in studyparams
         calc_stats = 1
         calc_locations = 1
+        concat_mice = 0
         d1mice = studyparams.ASTR_D1_CHR2_MICE
         dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
 
@@ -433,9 +446,14 @@ if __name__ == "__main__":
         pass
 
     # Generate_cell_database_filters cells with the followings: isi < 0.05, spike quality > 2
-    basicDB = celldatabase.generate_cell_database_from_subjects(d1mice)
-    firstDB = basicDB
-    d1DBFilename = os.path.join(settings.FIGURES_DATA_PATH, '{}_d1mice.h5'.format(studyparams.STUDY_NAME))
+    if concat_mice:
+        first_mouse, *list_of_mice = studyparams.ASTR_D1_CHR2_MICE
+        histDB = merge_dataframes(list_of_mice, first_mouse)
+        dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+    else:
+        basicDB = celldatabase.generate_cell_database_from_subjects(d1mice)
+        firstDB = basicDB
+        d1DBFilename = os.path.join(settings.FIGURES_DATA_PATH, '{}_d1mice.h5'.format(studyparams.STUDY_NAME))
     # Create and save a database, computing first the base stats and then the indices
     if calc_stats:
         firstDB = append_base_stats(basicDB, filename=d1DBFilename)
@@ -445,15 +463,12 @@ if __name__ == "__main__":
     if calc_locations:
         histDB = histologyanalysis.cell_locations(firstDB, brainAreaDict=studyparams.BRAIN_AREA_DICT)
 
-    if concat_mice:
-        first_mouse, *list_of_mice = studyparams.ASTR_D1_CHR2_MICE
-        histDB = merge_dataframes(list_of_mice, first_mouse)
-        dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
 
     if SAVE:
         if os.path.isdir(dbLocation):
             celldatabase.save_hdf(histDB, dbpath)
             print("SAVED DATAFRAME to {}".format(dbpath))
+            print(u"\U0001F4A9" * 10)
         elif not os.path.isdir(dbLocation):
             answer = input_func("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
             if answer.upper() in ['Y', 'YES']:

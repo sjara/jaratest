@@ -6,7 +6,9 @@ import numpy as np
 from jaratoolbox import celldatabase
 import studyparams
 
-db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/ttDBR2.h5")
+# db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/direct_and_indirect_cells_with_R2_change.h5")
+db = celldatabase.load_hdf('/var/tmp/figuresdata/2019astrpi/ttDBR2.h5')
+db = db.query(studyparams.FIRST_FLTRD_CELLS)
 
 #%% Calculations of how many clusters there are just sorting by brain region and z-coordinate
 brainAreaDB = db.query("recordingSiteName == 'Caudoputamen'")
@@ -47,3 +49,29 @@ nD1DBResponse = nD1DB.query("(noiseburst_pVal < 0.05 or tuning_pVal < 0.05 or am
 D1ResponseClusters = D1DBResponse.__len__()
 nD1ResponseClusters = nD1DBResponse.__len__()
 print("D1 sound responsive clusters = {0}\nnD1 sound responsive clusters = {1}".format(D1ResponseClusters, nD1ResponseClusters))
+
+#%% AM cells
+D1AM = D1DB.query("am_response_pVal < 0.05")
+nD1AM = nD1DB.query("am_response_pVal < 0.05")
+D1AMCount = D1AM.__len__()
+nD1AMCount = nD1AM.__len__()
+print("D1 AM cell count: {0}\nnD1 AM cell count: {1}".format(D1AMCount, nD1AMCount))
+
+D1Synced = D1DB.query("am_synchronization_pVal < 0.05")
+nD1Synced = nD1DB.query("am_synchronization_pVal < 0.05")
+D1SyncedCount = D1Synced.__len__()
+nD1SyncedCount = nD1Synced.__len__()
+print("D1 synced cell count: {0}\nnD1 synced cell count: {1}".format(D1SyncedCount, nD1SyncedCount))
+
+#%% Tuning test counts
+D1tt = D1DB.query("tuningTest_pVal < 0.05")
+nD1tt = nD1DB.query("tuningTest_pVal < 0.05")
+D1TTCount = D1tt.__len__()
+nD1TTCount = nD1tt.__len__()
+print("D1 tuning test responsive cells: {0}\nnD1 tuning test responsive cells: {1}".format(D1TTCount, nD1TTCount))
+
+D1TTTuned = D1tt.query("ttR2Fit > 0.03")
+nD1TTTuned = nD1tt.query("ttR2Fit > 0.03")
+D1TTTunedCount = D1TTTuned.__len__()
+nD1TTTunedCount = nD1TTTuned.__len__()
+print("D1 tuned TT cells: {0}\nnD1 tuned TT cells: {1}".format(D1TTTunedCount, nD1TTTunedCount))

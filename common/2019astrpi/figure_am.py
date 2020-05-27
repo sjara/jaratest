@@ -18,6 +18,10 @@ d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = '{}.h5'.format('direct_and_indirect_cells')
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
+zDB = db.query(studyparams.LABELLED_Z)
+zDB2 = db[db['z_coord'].isnull()]
+zDBt = pd.concat([zDB, zDB2], axis=0, ignore_index=True, sort=False)
+db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
 
 D1 = db.query(studyparams.D1_CELLS)
 nD1 = db.query(studyparams.nD1_CELLS)

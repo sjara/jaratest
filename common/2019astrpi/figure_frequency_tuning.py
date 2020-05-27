@@ -44,6 +44,10 @@ pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, name
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 db = db.query(studyparams.TUNING_FILTER)
+zDB = db.query(studyparams.LABELLED_Z)
+zDB2 = db[db['z_coord'].isnull()]
+zDBt = pd.concat([zDB, zDB2], axis=0, ignore_index=True, sort=False)
+db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 
 # =======================================================================
@@ -59,7 +63,7 @@ PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'figure_frequency_tuning'  # Do not include extension
-figFormat = 'pdf'  # 'pdf' or 'svg'
+figFormat = 'png'  # 'pdf' or 'svg'
 figSize = [17.25, 5.75]  # In inches (originally [13, 6.5]. Matt changed to current values based off Nick's paper)
 
 fontSizeLabels = figparams.fontSizeLabels*2
@@ -101,8 +105,8 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(2, 7)
 gs.update(left=0.04, right=0.98, top=0.95, bottom=0.175, wspace=1.1, hspace=0.5)
 
-ndOne = plt.subplot(gs[0, 0:2])
-dOne = plt.subplot(gs[1, 0:2])
+ndOne = plt.subplot(gs[1, 0:2])
+dOne = plt.subplot(gs[0, 0:2])
 
 axBW = plt.subplot(gs[0:2, 2])
 axThresh = plt.subplot(gs[0:2, 3])
@@ -111,19 +115,23 @@ axLatency = plt.subplot(gs[0:2, 4])
 axOnsetivity = plt.subplot(gs[0:2, 5])
 axMonotonicity = plt.subplot(gs[0:2, 6])
 
+# for axis in [axBW, axLatency, axThresh, axOnsetivity, axMonotonicity]:
+#     for side in axis.spines.keys():
+#         axis.spines[side].linewidth = 200
+
 plt.text(-0.3, 1.03, 'A', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
-         transform=ndOne.transAxes)
+         transform=dOne.transAxes)
 plt.text(-0.3, 1.03, 'B', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
-         transform=dOne.transAxes)
-plt.text(-0.3, 1.01, 'C', ha='center', va='center',
+         transform=ndOne.transAxes)
+plt.text(-0.41, 1.01, 'C', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axBW.transAxes)
-plt.text(-0.3, 1.01, 'D', ha='center', va='center',
+plt.text(-0.38, 1.01, 'D', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axThresh.transAxes)
-plt.text(-0.3, 1.01, 'E', ha='center', va='center',
+plt.text(-0.38, 1.01, 'E', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axLatency.transAxes)
 plt.text(-0.3, 1.01, 'F', ha='center', va='center',
@@ -194,29 +202,28 @@ if PANELS[1]:
 # plt.hold(True)
 
 # ======================= Beginning of plotting for BW10 ================================
-
 if PANELS[2]:
 
     popStatCol = 'bw10'
     D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
     nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
 
-    pos = jitter(np.ones(len(nD1PopStat))*0, 0.20)
+    pos = jitter(np.ones(len(nD1PopStat))*1, 0.20)
     axBW.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
-    medline(axBW, np.median(nD1PopStat), 0, 0.5)
-    pos = jitter(np.ones(len(D1PopStat))*1, 0.20)
+    medline(axBW, np.median(nD1PopStat), 1, 0.5)
+    pos = jitter(np.ones(len(D1PopStat))*0, 0.20)
     axBW.plot(pos, D1PopStat, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
-    medline(axBW, np.median(D1PopStat), 1, 0.5)
+    medline(axBW, np.median(D1PopStat), 0, 0.5)
     axBW.set_ylabel('BW10', fontsize=fontSizeLabels)
 
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axBW.set_xticks(range(2))
     axBW.set_xlim([-0.5, 1.5])
-    ylim = [-0.5, 6]
+    ylim = [-0.5, 3]
     axBW.set_ylim(ylim)
     extraplots.boxoff(axBW)
     extraplots.set_ticks_fontsize(axBW, fontSizeTicks)
-    axBW.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
+    axBW.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=60)
 
     zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')  # Nick used stats.ranksum
 
@@ -246,23 +253,23 @@ if PANELS[3]:
 
     spacing = 0.05
 
-    markers = extraplots.spread_plot(0, nD1PopStat, spacing)
+    markers = extraplots.spread_plot(1, nD1PopStat, spacing)
     plt.setp(markers, mec=colornD1, mfc='None')
-    medline(axThresh, np.median(nD1PopStat), 0, 0.5)
+    medline(axThresh, np.median(nD1PopStat), 1, 0.5)
 
-    markers = extraplots.spread_plot(1, D1PopStat, spacing)
+    markers = extraplots.spread_plot(0, D1PopStat, spacing)
     plt.setp(markers, mec=colorD1, mfc='None')
 
-    medline(axThresh, np.median(D1PopStat), 1, 0.5)
+    medline(axThresh, np.median(D1PopStat), 0, 0.5)
     axThresh.set_ylabel('Threshold (dB SPL)', fontsize=fontSizeLabels)
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axThresh.set_xticks(range(2))
     axThresh.set_xlim([-0.5, 1.5])
     axThresh.set_ylim([0, 71])
     extraplots.boxoff(axThresh)
     extraplots.set_ticks_fontsize(axThresh, fontSizeTicks)
 
-    axThresh.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
+    axThresh.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=60)
 
     zstat, pVal = stats.mannwhitneyu(D1PopStat, nD1PopStat, alternative='two-sided')  # Nick used stats.ranksum
 
@@ -284,25 +291,25 @@ if PANELS[4]:
     D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
     nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
 
-    pos = jitter(np.ones(len(nD1PopStat))*0, 0.20)
+    pos = jitter(np.ones(len(nD1PopStat))*1, 0.20)
     axLatency.plot(pos, nD1PopStat*1000, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
-    medline(axLatency, np.median(nD1PopStat)*1000, 0, 0.5)
-    pos = jitter(np.ones(len(D1PopStat))*1, 0.20)
+    medline(axLatency, np.median(nD1PopStat)*1000, 1, 0.5)
+    pos = jitter(np.ones(len(D1PopStat))*0, 0.20)
     axLatency.plot(pos, D1PopStat*1000, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
-    medline(axLatency, np.median(D1PopStat)*1000, 1, 0.5)
+    medline(axLatency, np.median(D1PopStat)*1000, 0, 0.5)
     axLatency.set_ylabel('Latency (ms)', fontsize=fontSizeTicks)
     # tickLabels = ['ATh:Str', 'AC:Str']
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axLatency.set_xticks(range(2))
     axLatency.set_xlim([-0.5, 1.5])
     extraplots.boxoff(axLatency)
     axLatency.set_ylim([-0.001, 40])
 
     extraplots.set_ticks_fontsize(axLatency, fontSizeTicks)
-    axLatency.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
+    axLatency.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=60)
 
     zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
-
+    print("D1 meidan = {0}\nnD1 median = {1}".format(np.median(D1PopStat)*1000, np.median(nD1PopStat)*1000))
     # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal) Remove Matt
     messages.append("{} p={}".format(popStatCol, pVal))
 
@@ -325,23 +332,23 @@ if PANELS[5]:
     D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
     nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
 
-    pos = jitter(np.ones(len(nD1PopStat))*0, 0.20)
+    pos = jitter(np.ones(len(nD1PopStat))*1, 0.20)
     axOnsetivity.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
-    medline(axOnsetivity, np.median(nD1PopStat), 0, 0.5)
-    pos = jitter(np.ones(len(D1PopStat))*1, 0.20)
+    medline(axOnsetivity, np.median(nD1PopStat), 1, 0.5)
+    pos = jitter(np.ones(len(D1PopStat))*0, 0.20)
     axOnsetivity.plot(pos, D1PopStat, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
-    medline(axOnsetivity, np.median(D1PopStat), 1, 0.5)
+    medline(axOnsetivity, np.median(D1PopStat), 0, 0.5)
     # axOnsetivity.set_ylabel('Onsetivity index', fontsize=fontSizeTicks)
     axOnsetivity.set_ylabel('Onset to sustained ratio', fontsize=fontSizeLabels)
     # tickLabels = ['ATh:Str', 'AC:Str']
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axOnsetivity.set_xticks(range(2))
     axOnsetivity.set_xlim([-0.5, 1.5])
     axOnsetivity.set_ylim([-0.51, 1.1])
     extraplots.boxoff(axOnsetivity)
 
     extraplots.set_ticks_fontsize(axOnsetivity, fontSizeTicks)
-    axOnsetivity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
+    axOnsetivity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=60)
 
     zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
 
@@ -372,21 +379,21 @@ if PANELS[6]:
     D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
     nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
 
-    pos = jitter(np.ones(len(nD1PopStat))*0, 0.20)
+    pos = jitter(np.ones(len(nD1PopStat))*1, 0.20)
     axMonotonicity.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
-    medline(axMonotonicity, np.median(nD1PopStat), 0, 0.5)
-    pos = jitter(np.ones(len(D1PopStat))*1, 0.20)
+    medline(axMonotonicity, np.median(nD1PopStat), 1, 0.5)
+    pos = jitter(np.ones(len(D1PopStat))*0, 0.20)
     axMonotonicity.plot(pos, D1PopStat, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
-    medline(axMonotonicity, np.median(D1PopStat), 1, 0.5)
+    medline(axMonotonicity, np.median(D1PopStat), 0, 0.5)
     axMonotonicity.set_ylabel('Monotonicity index', fontsize=fontSizeLabels)
-    tickLabels = ['nD1:Str\nn={}'.format(len(nD1PopStat)), 'D1:Str\nn={}'.format(len(D1PopStat))]
+    tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axMonotonicity.set_xticks(range(2))
     axMonotonicity.set_xlim([-0.5, 1.5])
     axMonotonicity.set_ylim([0, 1.1])
     extraplots.boxoff(axMonotonicity)
 
     extraplots.set_ticks_fontsize(axMonotonicity, fontSizeTicks)
-    axMonotonicity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=45)
+    axMonotonicity.set_xticklabels(tickLabels, fontsize=fontSizeLabels, rotation=60)
 
     zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
 

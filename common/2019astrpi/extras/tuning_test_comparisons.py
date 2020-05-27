@@ -47,7 +47,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         allIntenBase = np.array([])
         respSpikeMean = np.empty((len(uniqueIntensity), len(uniqFreq)))  # same as allIntenResp
         allIntenRespMedian = np.empty((len(uniqueIntensity), len(uniqFreq)))
-        Rsquareds = np.empty((len(uniqueIntensity), len(uniqFreq)))
+        Rsquareds = []
         ttSpikeTimes = ttEphysData['spikeTimes']
         ttEventOnsetTimes = ttEphysData['events']['soundDetectorOn']
         ttEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(ttEventOnsetTimes, minEventOnsetDiff=0.2)
@@ -72,12 +72,11 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])
                 freqs = np.array([])
-                popts = []
                 pcovs = []
                 ind10AboveButNone = []
                 # ------------ start of frequency specific calculations -------------
                 for indFreq, freq in enumerate(uniqFreq):
-                    selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity)).tolist()
+                    selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity))  # .tolist()
 
                     nspkBase, nspkResp = funcs.calculate_firing_rate(ttEventOnsetTimes, ttSpikeTimes, baseRange,
                                                                      selectinds=selectinds)
@@ -86,12 +85,15 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                     freqs = np.concatenate([freqs, np.ones(len(nspkResp.ravel())) * freq])
                     respSpikeMean[indInten, indFreq] = np.mean(nspkResp)
                     allIntenBase = np.concatenate([allIntenBase, nspkBase.ravel()])
-                    Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
 
-                    Rsquareds[indInten, indFreq] = Rsquared
+                    # ------------------- Significance and fit calculations for tuning ----------------
+                # TODO: Do we really need to calculate this for each frequency at each intensity?
+                Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
+
+                Rsquareds.append(Rsquared)
 
             db.at[indRow, 'tuningTest_pVal'] = ttPVal
             db.at[indRow, 'tuningTest_zStat'] = ttZStat
-        db.at[indRow, 'ttR2Fit'] = Rsquareds[-1].mean()  # Using the highest (only) intensity
+            db.at[indRow, 'ttR2Fit'] = Rsquared  # Using the highest (only) intensity
 
 celldatabase.save_hdf(db, '/var/tmp/figuresdata/2019astrpi/ttDBR2.h5')

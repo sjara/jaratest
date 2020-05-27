@@ -15,6 +15,7 @@ import importlib
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import matplotlib.patches as patches
 from scipy import stats
 from scipy import signal
 
@@ -417,7 +418,6 @@ for indRow, dbRow in celldb.iterrows():
         axAMRaster.set_xticks([0, 0.5])
         axAMRaster.set_xlabel('Time from\nsound onset (s)', fontsize=fontSizeLabels, labelpad=-1)
         axAMRaster.set_ylabel('AM rate (Hz)', fontsize=fontSizeLabels, labelpad=-5)
-        axAMRaster.set_title('AM Raster')
         # axRate.set_xlim([0, 30])
         # axRate.set_xticks([0, 30])
         # extraplots.set_ticks_fontsize(axRate, fontSizeTicks)
@@ -518,6 +518,7 @@ for indRow, dbRow in celldb.iterrows():
 
             elif highestSyncCorrected == 0:
                 axAMRaster.axhline(0)
+            axAMRaster.set_title('AM Raster\nMax sync = {0}'.format(highestSyncCorrected))
             # Use the firstCondEachTrial from the extraplots.raster_plot function as the way of
             # setting where the horizontal line is placed. Copy and paste as a new function in this script
 
@@ -599,115 +600,145 @@ for indRow, dbRow in celldb.iterrows():
         intensities = intensities.astype(np.int)
         intenTickLocations = np.linspace(0, nIntenLabels - 1, nIntenLabels)
         allIntenResp = np.empty((len(possibleIntensity), len(tuningUniqFreq)))
-        for indinten, inten in enumerate(possibleIntensity):
 
-            for indfreq, freq in enumerate(tuningUniqFreq):
-                selectinds = np.flatnonzero((tuningCurrentFreq == freq) & (currentIntensity == inten))
-                # =====================index mismatch======================
-                while selectinds[-1] >= tuningOnsetTime.shape[0]:
-                    selectinds = np.delete(selectinds, -1, 0)
+        if len(tuningOnsetTime) == (len(tuningCurrentFreq) + 1):
+            tuningOnsetTime = tuningOnsetTime[0:-1]
+            print("Correcting ephys data to be same length as behavior data")
+            toCalculate = True
+        elif len(tuningOnsetTime) == len(tuningCurrentFreq):
+            print("Data is already the same length")
+            toCalculate = True
+        else:
+            print("Something is wrong with the length of these data")
+            toCalculate = False
+        if toCalculate:
+            for indinten, inten in enumerate(possibleIntensity):
 
-                # ---------------------------------------------------------
-                selectedOnsetTimes = tuningOnsetTime[selectinds]
-                (tuningSpikeTimesFromEventOnset, tuningTrialIndexForEachSpike,
-                 tuningIndexLimitsEachTrial) = \
-                    spikesanalysis.eventlocked_spiketimes(tuningSpikeTimes,
-                                                          selectedOnsetTimes,
-                                                          alignmentRange)
+                for indfreq, freq in enumerate(tuningUniqFreq):
+                    selectinds = np.flatnonzero((tuningCurrentFreq == freq) & (currentIntensity == inten))
+                    # =====================index mismatch======================
+                    # while selectinds[-1] >= tuningOnsetTime.shape[0]:
+                    #     selectinds = np.delete(selectinds, -1, 0)
 
-                nspkResp = spikesanalysis.spiketimes_to_spikecounts(tuningSpikeTimesFromEventOnset, tuningIndexLimitsEachTrial,
-                                                                    responseRange)
+                    # ---------------------------------------------------------
+                    selectedOnsetTimes = tuningOnsetTime[selectinds]
+                    (tuningSpikeTimesFromEventOnset, tuningTrialIndexForEachSpike,
+                     tuningIndexLimitsEachTrial) = \
+                        spikesanalysis.eventlocked_spiketimes(tuningSpikeTimes,
+                                                              selectedOnsetTimes,
+                                                              alignmentRange)
 
-                allIntenResp[indinten, indfreq] = np.mean(nspkResp)
-                FRData = allIntenResp / 0.1
+                    nspkResp = spikesanalysis.spiketimes_to_spikecounts(tuningSpikeTimesFromEventOnset, tuningIndexLimitsEachTrial,
+                                                                        responseRange)
 
-        (tuningSpikeTimesFromEventOnset, tuningTrialIndexForEachSpike, tuningIndexLimitsEachTrial) = \
-            spikesanalysis.eventlocked_spiketimes(tuningSpikeTimes, tuningOnsetTime, timeRange)
+                    allIntenResp[indinten, indfreq] = np.mean(nspkResp)
+                    FRData = allIntenResp / 0.1
 
-        # Spike count matrix for PSTH
-        tuningSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(tuningSpikeTimesFromEventOnset,
+            (tuningSpikeTimesFromEventOnset, tuningTrialIndexForEachSpike, tuningIndexLimitsEachTrial) = \
+                spikesanalysis.eventlocked_spiketimes(tuningSpikeTimes, tuningOnsetTime, timeRange)
+
+            # Spike count matrix for PSTH
+            tuningSpikeCountMat = spikesanalysis.spiketimes_to_spikecounts(tuningSpikeTimesFromEventOnset,
+                                                                           tuningIndexLimitsEachTrial,
+                                                                           timeVec)
+
+            # -----------Plotting-------------
+            # if the length doesn't match, abandon last one from trialsEachType
+            # while tuningIndexLimitsEachTrial.shape[1] < trialsEachType.shape[0]:
+            #     trialsEachType = np.delete(trialsEachType, -1, 0)
+
+            plt.sca(axTuningCurveRaster)
+            pTuningRaster, hTuningCond, zline = extraplots.raster_plot(tuningSpikeTimesFromEventOnset,
                                                                        tuningIndexLimitsEachTrial,
-                                                                       timeVec)
+                                                                       timeRange,
+                                                                       trialsEachCond=trialsEachType)
 
-        # -----------Plotting-------------
-        # if the length doesn't match, abandon last one from trialsEachType
-        while tuningIndexLimitsEachTrial.shape[1] < trialsEachType.shape[0]:
-            trialsEachType = np.delete(trialsEachType, -1, 0)
+            plt.setp(pTuningRaster, ms=msRaster)
+            plt.setp(hTuningCond, zorder=3)
+            plt.ylabel('Trial')
+            axTuningCurveRaster.set_yticks(new_tick_locations)
+            axTuningCurveRaster.set_yticklabels(new_tick_locations)
+            plt.xticks(np.arange(timeRange[0], timeRange[1], 0.1))
+            plt.xlim([-0.05, 0.3])
 
-        plt.sca(axTuningCurveRaster)
-        pTuningRaster, hTuningCond, zline = extraplots.raster_plot(tuningSpikeTimesFromEventOnset,
-                                                                   tuningIndexLimitsEachTrial,
-                                                                   timeRange,
-                                                                   trialsEachCond=trialsEachType)
+            ylim = axTuningCurveRaster.get_ylim()
+            plt.vlines(dbRow['latency'], ylim[0], ylim[1], colors='b')
+            onsetPatch = patches.Rectangle((dbRow.latency, ylim[1]*1.03),
+                                           0.05, ylim[1]*0.02, linewidth=0.3,
+                                           edgecolor='green', facecolor='green', clip_on=False)
+            sustainedPatch = patches.Rectangle((dbRow.latency+.05, ylim[1]*1.03),
+                                           0.05, ylim[1]*0.02, linewidth=0.3,
+                                           edgecolor='red', facecolor='red', clip_on=False)
+            axTuningCurveRaster.add_patch(onsetPatch)
+            axTuningCurveRaster.add_patch(sustainedPatch)
 
-        plt.setp(pTuningRaster, ms=msRaster)
-        plt.setp(hTuningCond, zorder=3)
-        plt.ylabel('Trial')
-        axTuningCurveRaster.set_yticks(new_tick_locations)
-        axTuningCurveRaster.set_yticklabels(new_tick_locations)
-        plt.xticks(np.arange(timeRange[0], timeRange[1], 0.1))
-        plt.xlim([-0.05, 0.3])
+            plt.title('Tuning Curve Raster at {0} db SPL\nlatency= {1:.2f}'.format('all', dbRow.latency*1000), pad=15)
+            # still raster plot, plotting frequency levels
+            axTuningCurveRaster.set_yticks(new_tick_locations)
+            axTuningCurveRaster.set_yticklabels(freqTicks)
+            axTuningCurveRaster.set_ylabel('Frequency(Hz)')
 
-        ylim = axTuningCurveRaster.get_ylim()
-        plt.vlines(dbRow['latency'], ylim[0], ylim[1], colors='b')
+            # Waveform
+            plt.sca(axTuningCurveWaveform)
+            if tuningWaveform.any():
+                allWavesTuning, meanWavesTuning, scaleBarTuning = \
+                    spikesorting.plot_waveforms(tuningWaveform)
+                plt.setp(meanWavesTuning, color='b')
+            plt.axis('off')
+            plt.title('Tuning Curve Waveform\nSSQ={0:.4f}'.format(dbRow['spikeShapeQuality']))
 
-        plt.title('Tuning Curve Raster at {} db SPL'.format('all'))
-        # still raster plot, plotting frequency levels
-        axTuningCurveRaster.set_yticks(new_tick_locations)
-        axTuningCurveRaster.set_yticklabels(freqTicks)
-        axTuningCurveRaster.set_ylabel('Frequency(Hz)')
+            # ISI plot
+            plt.sca(axTuningCurveISI)
+            hpISITuning, ISIhistogramTuning, ISIbinsTuning = \
+                spikesorting.plot_isi_loghist(tuningSpikeTimes)
+            plt.setp(hpISITuning, color='b')
+            plt.title('Tuning Curve ISI')
 
-        # Waveform
-        plt.sca(axTuningCurveWaveform)
-        if tuningWaveform.any():
-            allWavesTuning, meanWavesTuning, scaleBarTuning = \
-                spikesorting.plot_waveforms(tuningWaveform)
-            plt.setp(meanWavesTuning, color='b')
-        plt.axis('off')
-        plt.title('Tuning Curve Waveform\nSSQ={}'.format(dbRow['spikeShapeQuality']))
+            # Plot events in time
+            plt.sca(axTuningCurveEvents)
+            if tuningSpikeTimes.any():
+                hp_EventsTuning = spikesorting.plot_events_in_time(tuningSpikeTimes)
+                plt.setp(hp_EventsTuning, color='b')
+            plt.title('Tuning Curve Events')
 
-        # ISI plot
-        plt.sca(axTuningCurveISI)
-        hpISITuning, ISIhistogramTuning, ISIbinsTuning = \
-            spikesorting.plot_isi_loghist(tuningSpikeTimes)
-        plt.setp(hpISITuning, color='b')
-        plt.title('Tuning Curve ISI')
+            # ----------------------- Tuning Curve heatmap --------------------
+            fontSizeLabels = figparams.fontSizeLabels * 2
+            fontSizeTicks = fontSizeLabels
 
-        # Plot events in time
-        plt.sca(axTuningCurveEvents)
-        if tuningSpikeTimes.any():
-            hp_EventsTuning = spikesorting.plot_events_in_time(tuningSpikeTimes)
-            plt.setp(hp_EventsTuning, color='b')
-        plt.title('Tuning Curve Events')
+            plt.sca(axTuningCurveHeatmap)
+            cax = axTuningCurveHeatmap.imshow(np.flipud(FRData),
+                                              interpolation='nearest',
+                                              cmap='Blues',
+                                              extent=[0, 15, 11, 0])
+            cbarTuning = plt.colorbar(cax, ax=axTuningCurveHeatmap, format='%d')
+            maxFR = np.max(FRData.ravel())
+            cbarTuning.ax.set_ylabel('Firing rate\n(spk/s)',
+                               fontsize=fontSizeLabels, labelpad=-10)
+            extraplots.set_ticks_fontsize(cbarTuning.ax, fontSizeTicks)
+            cbarTuning.set_ticks([0, maxFR])
+            cax.set_clim([0, maxFR])
 
-        # ----------------------- Tuning Curve heatmap --------------------
-        fontSizeLabels = figparams.fontSizeLabels * 2
-        fontSizeTicks = fontSizeLabels
+            axTuningCurveHeatmap.set_yticks(intenTickLocations)
+            axTuningCurveHeatmap.set_yticklabels(intensities[::-1])
+            axTuningCurveHeatmap.set_xticks(freqTickLocations)
+            freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
+            axTuningCurveHeatmap.set_xticklabels(freqLabels)
+            axTuningCurveHeatmap.set_xlabel('Frequency (kHz)\nThreshold={0}\nBW10={1:.3f}'.format(dbRow.thresholdFRA, dbRow.bw10),
+                                            fontsize=fontSizeLabels)
+            axTuningCurveHeatmap.set_ylabel('Intensity (dB SPL)',
+                                            fontsize=fontSizeLabels)
 
-        cax = axTuningCurveHeatmap.imshow(np.flipud(FRData),
-                                          interpolation='nearest',
-                                          cmap='Blues')
-        cbarTuning = plt.colorbar(cax, ax=axTuningCurveHeatmap, format='%d')
-        maxFR = np.max(FRData.ravel())
-        cbarTuning.ax.set_ylabel('Firing rate\n(spk/s)',
-                           fontsize=fontSizeLabels, labelpad=-10)
-        extraplots.set_ticks_fontsize(cbarTuning.ax, fontSizeTicks)
-        cbarTuning.set_ticks([0, maxFR])
-        cax.set_clim([0, maxFR])
+            reversedIntensities = possibleIntensity[::-1]
+            thresholdIndex = np.where(reversedIntensities == dbRow.thresholdFRA)
+            plt.axhline(thresholdIndex[0][0], xmin=0, xmax=1)
+            # plt.axvline(6, ymin=0, ymax=1)
+            # plt.axvline(10, 0, 1)
 
-        axTuningCurveHeatmap.set_yticks(intenTickLocations)
-        axTuningCurveHeatmap.set_yticklabels(intensities[::-1])
-        axTuningCurveHeatmap.set_xticks(freqTickLocations)
-        freqLabels = ['{0:.1f}'.format(freq) for freq in freqs]
-        axTuningCurveHeatmap.set_xticklabels(freqLabels)
-        axTuningCurveHeatmap.set_xlabel('Frequency (kHz)',
-                                        fontsize=fontSizeLabels)
-        axTuningCurveHeatmap.set_ylabel('Intensity (dB SPL)',
-                                        fontsize=fontSizeLabels)
-        extraplots.set_ticks_fontsize(axTuningCurveHeatmap, fontSizeTicks)
-        axTuningCurveHeatmap.set_title('R2 = {0}\nttR2 = {1}'.format(dbRow.rsquaredFit, dbRow.ttR2Fit))
+            extraplots.set_ticks_fontsize(axTuningCurveHeatmap, fontSizeTicks)
+            # axTuningCurveHeatmap.set_title('R2 = {0}\nttR2 = {1}\nMonoton = {2}'.format(dbRow.rsquaredFit, dbRow.ttR2Fit, dbRow.monotonicityIndex))
+            axTuningCurveHeatmap.set_title('R2 = {0:.3f}\nttR2 = {1:.3f}'.format(dbRow.rsquaredFit, dbRow.ttR2Fit))
 
-        # ###############################################################################
+            # ###############################################################################
 
     title = '[{5}]{0}, {1}, {2}um, T{3}c{4}, session ={6}'.format(
         dbRow['subject'], dbRow['date'], dbRow['depth'], tetnum, chanum,
