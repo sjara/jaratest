@@ -1,13 +1,22 @@
 """
-Generate[1] and save[2] database with calculated stats and parameters that will be used in /
-analysis. Optionally takes the arguments in the order of: script.py run_parameters mouse_name
-Run parameters include:
-    "concat" will grab all mouse names in studyparams.py and load the dataframs. It then concatenates all the frames together to make the total repository database
-    "locations" will just generate the minimum dataframe from the inforecs and then find the locations of where the cells were located from
-    "stats" will calculate generate a dataframe and then append base stats to it for each session type that was run
-    "all" will calculate both "stats" and "locations"
-mouse_name can either be a singular mouse name or "all". "all" will use the mouse list in studyparams.py
+Generate and save database of parameters and stats for each recorded cell.
+
+Run as:
+python3 database_generation.py RUNMODE SUBJECT
+
+where RUNMODE can be:
+- concat: grab all mouse names in studyparams.py, load all dataframes, and
+          concatenate all the dataframes together to make the full database.
+- locations: generate only the minimum dataframe from the inforecs and find
+          the anatomical location of each cell.
+- stats: generate a dataframe and append base stats to it for each session type.
+          It does not estimate anatomical locations.
+- all: calculate both "stats" and "locations"
+
+and SUBJECT can be either a singular mouse or the word 'all',
+which will use the mouse list in studyparams.py
 """
+
 import os
 import sys
 import numpy as np
