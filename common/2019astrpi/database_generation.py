@@ -34,9 +34,9 @@ from jaratoolbox import histologyanalysis
 import database_generation_funcs as funcs
 
 
-if sys.version_info[0] < 3:
+if sys.version_info.major < 3:
     input_func = raw_input
-elif sys.version_info[0] >= 3:
+elif sys.version_info.major >= 3:
     input_func = input
 
 SAVE = 1
