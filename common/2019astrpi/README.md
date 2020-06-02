@@ -8,16 +8,11 @@ for the database calculations
 ## databasename.h5
 
 ### database_generation.py
-` break up the sentences after the first into a series of steps instead`
 This script will generate the database that's concatenated with all subjects defined
-as d1pimouse in studyparams.py. At first, it will generate the concatenated database,
-then calculate_base_stats will be called to run statistics testing to filter cells 
-that we considered to have a good signal(ISI<0.02 and SpikeQuality >2), and to create 
-the parameters that will be used in data analysis in further study, such as p-Values,
-R squared and frequency parameters(BW10 and intensity threshold). Next calculate_indices
-will be called to filter the cells with the statistically valid fitting models by 
-using R squared value that's calculated from calculate_base_stats. Lastly, if the
-researcher desires, it will save the database to the local machine
+as d1pi mouse in studyparams.py. This script can create databases for individual
+mice or concatenate previously made databases together. Output is an h5 file 
+containing all the below information in `Database contents` Check the docstring
+for info on how to run the script. 
 
 This script uses following module:
 ### database_generation_funcs.py
@@ -45,9 +40,7 @@ threshold. Calculated by database_generation_funcs.calculate_BW10_params.
 * *RsquaredFit*: The mean of all of the r<sup>2</sup> values of the 10 dB SPL above 
 the sound intensity threshold. Calculated by database_generation_funcs.calculate_BW10_params.
 
-* *cf*: The characteristic frequency for peak firing rate at a given intensity. Found 
-using the frequency index from database_generation_funcs.calculate_intensity_threshold_and_CF_indices
-and indexing the unique frequencies (uniqFreq) for a session.
+* *cf*: The characteristic frequency is the frequency that is most sensitive to sound.
 
 * *bw10*: The bandwidth 10 above the sound intenisty threshold. Calculated by the 
 equation: (*upperFreq* - *lowerFreq*) / *cf*
