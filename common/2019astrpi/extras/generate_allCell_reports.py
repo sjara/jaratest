@@ -568,6 +568,7 @@ for indRow, dbRow in celldb.iterrows():
         # General variables for calculations
         tuningSpikeTimes = tuningEphysData['spikeTimes']
         tuningOnsetTime = tuningEphysData['events']['soundDetectorOn']
+        tuningOnsetTime = spikesanalysis.minimum_event_onset_diff(tuningOnsetTime, minEventOnsetDiff=0.2)
         tuningCurrentFreq = tuningBehavData['currentFreq']
         trialsEachType = behavioranalysis.find_trials_each_type(tuningCurrentFreq,
                                                                 np.unique(tuningCurrentFreq))
@@ -642,6 +643,19 @@ for indRow, dbRow in celldb.iterrows():
                                                                            tuningIndexLimitsEachTrial,
                                                                            timeVec)
 
+            # Log transforms of data for plotting vertical lines
+            numberFreqs = len(tuningUniqFreq)
+            lowestPresentedFreq = np.min(tuningUniqFreq)
+            highestPresentedFreq = np.max(tuningUniqFreq)
+            logLowPresentedFreq = np.log2(lowestPresentedFreq)
+            logHighPresentedFreq = np.log2(highestPresentedFreq)
+            logCF = np.log2(dbRow.cf)
+            logUpperBoundFreq = np.log2(dbRow.upperFreq)
+            logLowerBoundFreq = np.log2(dbRow.lowerFreq)
+            axLineCF = ((logCF - logLowPresentedFreq)/(logHighPresentedFreq - logLowPresentedFreq))*numberFreqs
+            axLineUpperBound = ((logUpperBoundFreq - logLowPresentedFreq)/(logHighPresentedFreq - logLowPresentedFreq))*numberFreqs
+            axLineLowerBound = ((logLowerBoundFreq - logLowPresentedFreq)/(logHighPresentedFreq - logLowPresentedFreq))*numberFreqs
+
             # -----------Plotting-------------
             # if the length doesn't match, abandon last one from trialsEachType
             # while tuningIndexLimitsEachTrial.shape[1] < trialsEachType.shape[0]:
@@ -663,10 +677,10 @@ for indRow, dbRow in celldb.iterrows():
 
             ylim = axTuningCurveRaster.get_ylim()
             plt.vlines(dbRow['latency'], ylim[0], ylim[1], colors='b')
-            onsetPatch = patches.Rectangle((dbRow.latency, ylim[1]*1.03),
+            onsetPatch = patches.Rectangle((dbRow.latency, ylim[1]*1.01),
                                            0.05, ylim[1]*0.02, linewidth=0.3,
                                            edgecolor='green', facecolor='green', clip_on=False)
-            sustainedPatch = patches.Rectangle((dbRow.latency+.05, ylim[1]*1.03),
+            sustainedPatch = patches.Rectangle((dbRow.latency+.05, ylim[1]*1.01),
                                            0.05, ylim[1]*0.02, linewidth=0.3,
                                            edgecolor='red', facecolor='red', clip_on=False)
             axTuningCurveRaster.add_patch(onsetPatch)
@@ -731,8 +745,9 @@ for indRow, dbRow in celldb.iterrows():
             reversedIntensities = possibleIntensity[::-1]
             thresholdIndex = np.where(reversedIntensities == dbRow.thresholdFRA)
             plt.axhline(thresholdIndex[0][0], xmin=0, xmax=1)
-            # plt.axvline(6, ymin=0, ymax=1)
-            # plt.axvline(10, 0, 1)
+            plt.axvline(axLineCF, color='r')
+            plt.axvline(axLineLowerBound, color='black')
+            plt.axvline(axLineUpperBound, color='black')
 
             extraplots.set_ticks_fontsize(axTuningCurveHeatmap, fontSizeTicks)
             # axTuningCurveHeatmap.set_title('R2 = {0}\nttR2 = {1}\nMonoton = {2}'.format(dbRow.rsquaredFit, dbRow.ttR2Fit, dbRow.monotonicityIndex))
