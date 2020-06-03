@@ -16,12 +16,10 @@ fontSizeTitles = 12
 fontSizeLegend = 10
 
 colp = {}
-colp['excitatoryCell'] = 'k'
-colp['SOMcell'] = cp.TangoPalette['ScarletRed1']
-colp['PVcell'] = cp.TangoPalette['SkyBlue2']
+colp['baseline'] = 'k'
+colp['SOMmanip'] = cp.TangoPalette['ScarletRed1']
+colp['PVmanip'] = cp.TangoPalette['SkyBlue2']
 
-colp['blueLaser'] = '#00FFFF'
-colp['greenLaser'] = '#34FF7A'
-#colp['sound'] = '#d3d3c2'
-#colp['sound'] = '#fcee25'
-colp['sound'] = cp.TangoPalette['Butter2']
+colp['control'] = cp.TangoPalette['Orange1']
+
+colp['connectLine'] = '0.7'

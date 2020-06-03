@@ -18,38 +18,40 @@ FIGNAME = 'figure_ac_inactivation'
 # inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
-PANELS = [1, 1, 1]  # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'Fig2_ac_inactivation'  # Do not include extension
-# figFormat = 'pdf'  # 'pdf' or 'svg'
-figFormat = 'svg'
-figSize = [6,6]  # In inches
+figFormat = 'pdf'  # 'pdf' or 'svg'
+#figFormat = 'svg'
+figSize = [10,6]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.005, 0.4, 0.48]  # Horiz position for panel labels
-labelPosY = [0.96, 0.48]  # Vert position for panel labels
+labelPosX = [0.005, 0.2, 0.55, 0.77, 0.25, 0.5, 0.77]  # Horiz position for panel labels
+labelPosY = [0.97, 0.47]  # Vert position for panel labels
 
 ACInactExample = 'band046_psycurve.npz'
+ACInactReactionExample = 'band046_reaction_times.npz'
 summaryFileName = 'all_behaviour_ac_inactivation.npz'
+reactionTimesFileName = 'all_reaction_times_ac_inactivation.npz'
 
-ExcColour = figparams.colp['excitatoryCell']
-PVColour = figparams.colp['PVcell']
-SOMColour = figparams.colp['SOMcell']
+baseColour = figparams.colp['baseline']
+PVColour = figparams.colp['PVmanip']
+connectLineColour = figparams.colp['connectLine']
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 2)
-gs.update(top=0.97, bottom=0.08, left=0.08, right=0.97, wspace=0.3, hspace=0.3)
+gs = gridspec.GridSpec(2, 4, wspace=0.3, hspace=0.4, width_ratios=[1.0,1.0,0.7,0.7])
+gs.update(top=0.97, bottom=0.08, left=0.03, right=0.98, wspace=0.5, hspace=0.3)
 
-axCartoons = gs[0, :]
+axCartoons = gs[0, :2]
 gs2 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=axCartoons, wspace=0.3, hspace=0.4, width_ratios=[0.7,1.0])
 # --- example psychometric curves ---
 if PANELS[0]:
@@ -66,9 +68,9 @@ if PANELS[0]:
     xTickLabels = ['-inf']
     xTickLabels.extend([int(x) for x in possibleSNRs.tolist()[1:]])
 
-    l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=ExcColour, lw=3, ms=8)
+    l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=baseColour, lw=3, ms=8)
     plt.errorbar(range(len(possibleSNRs)), psyCurveControl, yerr=[lowerErrorControl, upperErrorControl], fmt='none',
-                 color=ExcColour, lw=2, capsize=5, capthick=1)
+                 color=baseColour, lw=2, capsize=5, capthick=1)
 
     psyCurveLaser = data['psyCurveLaser']
     upperErrorLaser = data['upperErrorLaser']
@@ -106,7 +108,7 @@ if PANELS[1]:
     controlAccuracy = summaryData['controlAccuracy']
     possibleBands = summaryData['possibleBands']
 
-    axScatter = plt.subplot(gs[1,0])
+    axScatter = plt.subplot(gs[0,2])
     panelLabel = 'C'
 
     barLoc = np.array([-0.24, 0.24])
@@ -118,10 +120,10 @@ if PANELS[1]:
         thisxLocs = barLoc + xLocs[indBand]
 
         for indMouse in range(laserAccuracy.shape[0]):
-            plt.plot(thisxLocs, [controlAccuracy[indMouse, indBand], laserAccuracy[indMouse, indBand]], '-', color=ExcColour)
+            plt.plot(thisxLocs, [controlAccuracy[indMouse, indBand], laserAccuracy[indMouse, indBand]], '-', color=connectLineColour)
 
         l1, = plt.plot(np.tile(thisxLocs[1],laserAccuracy.shape[0]), laserAccuracy[:,indBand], 'o', color=PVColour)
-        l2, = plt.plot(np.tile(thisxLocs[0],controlAccuracy.shape[0]), controlAccuracy[:,indBand], 'o', color=ExcColour)
+        l2, = plt.plot(np.tile(thisxLocs[0],controlAccuracy.shape[0]), controlAccuracy[:,indBand], 'o', color=baseColour)
 
         #median = np.median(accuracyData, axis=0)
         #plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
@@ -138,7 +140,7 @@ if PANELS[1]:
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
 
-    axScatter.annotate(panelLabel, xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
+    axScatter.annotate(panelLabel, xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
 
     # -- stats!! --
@@ -155,7 +157,7 @@ if PANELS[2]:
     controlBias = summaryData['controlBias']
     possibleBands = summaryData['possibleBands']
 
-    axScatter = plt.subplot(gs[1, 1])
+    axScatter = plt.subplot(gs[0, 3])
     panelLabel = 'D'
 
     barLoc = np.array([-0.24, 0.24])
@@ -168,10 +170,10 @@ if PANELS[2]:
 
         for indMouse in range(laserBias.shape[0]):
             plt.plot(thisxLocs, [controlBias[indMouse, indBand], laserBias[indMouse, indBand]], '-',
-                     color=ExcColour)
+                     color=connectLineColour)
 
         l1, = plt.plot(np.tile(thisxLocs[1], laserBias.shape[0]), laserBias[:, indBand], 'o', color=PVColour)
-        l2, = plt.plot(np.tile(thisxLocs[0], controlBias.shape[0]), controlBias[:, indBand], 'o', color=ExcColour)
+        l2, = plt.plot(np.tile(thisxLocs[0], controlBias.shape[0]), controlBias[:, indBand], 'o', color=baseColour)
 
         # median = np.median(accuracyData, axis=0)
         # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
@@ -188,13 +190,183 @@ if PANELS[2]:
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
 
-    axScatter.annotate(panelLabel, xy=(labelPosX[2], labelPosY[1]), xycoords='figure fraction',
+    axScatter.annotate(panelLabel, xy=(labelPosX[3], labelPosY[0]), xycoords='figure fraction',
                        fontsize=fontSizePanel, fontweight='bold')
 
     # -- stats!! --
     for band in range(len(possibleBands)):
         pVal = stats.wilcoxon(laserBias[:,band], controlBias[:,band])[1]
         print(f"Change in bias at {possibleBands[band]} oct pVal: {pVal}")
+
+axReactions = gs[1,:]
+gs3 = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=axReactions, wspace=0.4, hspace=0.4, width_ratios=[1.0,0.65,1.0,0.65])
+# --- histograms of reaction times with and without laser ---
+if PANELS[3]:
+    panelLabel = 'E'
+
+    exampleDataFullPath = os.path.join(inactDataDir, ACInactReactionExample)
+    exampleData = np.load(exampleDataFullPath)
+
+    axHist = plt.subplot(gs3[0, 0])
+
+    controlReactionTimes = exampleData['controlReactionTimes']
+    laserReactionTimes = exampleData['laserReactionTimes']
+
+    bins = np.linspace(0, 0.4, 12)
+    n, bins, patches = plt.hist([controlReactionTimes, laserReactionTimes], bins=bins, color=[baseColour, PVColour],
+             density=True)
+
+    axHist.set_xlabel('Sampling time (s)', fontsize=fontSizeLabels)
+
+    # axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
+
+    extraplots.boxoff(axHist)
+    extraplots.set_ticks_fontsize(axHist, fontSizeTicks)
+
+    axHist.annotate(panelLabel, xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
+                     fontsize=fontSizePanel, fontweight='bold')
+
+    # -- stats!! --
+    pVal = stats.ranksums(controlReactionTimes, laserReactionTimes)[1]
+    print(f"Change in reaction times pVal: {pVal}")
+
+# --- comparison in change in reaction times with inactivation ---
+if PANELS[4]:
+    reactionTimesDataFullPath = os.path.join(inactDataDir, reactionTimesFileName)
+    reactionTimesData = np.load(reactionTimesDataFullPath)
+
+    laserReaction = reactionTimesData['laserReaction']
+    controlReaction = reactionTimesData['controlReaction']
+    possibleBands = reactionTimesData['possibleBands']
+
+    panelLabel = 'F'
+
+    barLoc = np.array([-0.24, 0.24])
+    xLocs = np.arange(len(possibleBands))
+    yLims = (0, 0.15)
+    xTickLabels = possibleBands
+
+    axScatter = plt.subplot(gs3[0, 1])
+    for indBand in range(len(possibleBands)):
+        thisxLocs = barLoc + xLocs[indBand]
+
+        for indMouse in range(laserReaction.shape[0]):
+            plt.plot(thisxLocs, [controlReaction[indMouse, indBand], laserReaction[indMouse, indBand]], '-',
+                     color=connectLineColour)
+
+        l1, = plt.plot(np.tile(thisxLocs[1], laserReaction.shape[0]), laserReaction[:, indBand], 'o',
+                       color=PVColour)
+        l2, = plt.plot(np.tile(thisxLocs[0], controlReaction.shape[0]), controlReaction[:, indBand], 'o',
+                       color=baseColour)
+
+        # median = np.median(accuracyData, axis=0)
+        # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+    axScatter.legend([l2, l1], ['control', 'PV activated'], loc='best')
+
+    axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
+    axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+
+    axScatter.set_ylim(yLims)
+    axScatter.set_ylabel('Sampling time (s)', fontsize=fontSizeLabels)
+
+    extraplots.boxoff(axScatter)
+    extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+
+    axScatter.annotate(panelLabel, xy=(labelPosX[4], labelPosY[1]), xycoords='figure fraction',
+                       fontsize=fontSizePanel, fontweight='bold')
+
+    # -- stats!! --
+    for band in range(len(possibleBands)):
+        pVal = stats.wilcoxon(laserReaction[:,band], controlReaction[:,band])[1]
+        if pVal < 0.05:
+            extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLims[1], 0.02 * np.diff(yLims), gapFactor=0.3)
+        print(f"Change in reaction time at {possibleBands[band]} oct pVal: {pVal}")
+
+# --- histograms of reaction times with and without laser ---
+if PANELS[5]:
+    panelLabel = 'G'
+
+    exampleDataFullPath = os.path.join(inactDataDir, ACInactReactionExample)
+    exampleData = np.load(exampleDataFullPath)
+
+    axHist = plt.subplot(gs3[0, 2])
+
+    controlDecisionTimes = exampleData['controlDecisionTimes']
+    laserDecisionTimes = exampleData['laserDecisionTimes']
+
+    bins = np.linspace(0.1, 1.0, 15)
+    n, bins, patches = plt.hist([controlDecisionTimes, laserDecisionTimes], bins=bins, color=[baseColour, PVColour],
+             density=True)
+
+    axHist.set_xlabel('Time to decision (s)', fontsize=fontSizeLabels)
+
+    # axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
+
+    extraplots.boxoff(axHist)
+    extraplots.set_ticks_fontsize(axHist, fontSizeTicks)
+
+    axHist.annotate(panelLabel, xy=(labelPosX[5], labelPosY[1]), xycoords='figure fraction',
+                     fontsize=fontSizePanel, fontweight='bold')
+
+    # -- stats!! --
+    pVal = stats.ranksums(controlDecisionTimes, laserDecisionTimes)[1]
+    print(f"Change in reaction times pVal: {pVal}")
+
+# --- comparison in change in reaction times with inactivation ---
+if PANELS[6]:
+    reactionTimesDataFullPath = os.path.join(inactDataDir, reactionTimesFileName)
+    reactionTimesData = np.load(reactionTimesDataFullPath)
+
+    laserDecision = reactionTimesData['laserDecision']
+    controlDecision = reactionTimesData['controlDecision']
+    possibleBands = reactionTimesData['possibleBands']
+
+    panelLabel = 'H'
+
+    barLoc = np.array([-0.24, 0.24])
+    xLocs = np.arange(len(possibleBands))
+    yLims = (0.3, 0.55)
+    xTickLabels = possibleBands
+
+    axScatter = plt.subplot(gs3[0, 3])
+    for indBand in range(len(possibleBands)):
+        thisxLocs = barLoc + xLocs[indBand]
+
+        for indMouse in range(laserDecision.shape[0]):
+            plt.plot(thisxLocs, [controlDecision[indMouse, indBand], laserDecision[indMouse, indBand]], '-',
+                     color=connectLineColour)
+
+        l1, = plt.plot(np.tile(thisxLocs[1], laserDecision.shape[0]), laserDecision[:, indBand], 'o',
+                       color=PVColour)
+        l2, = plt.plot(np.tile(thisxLocs[0], controlDecision.shape[0]), controlDecision[:, indBand], 'o',
+                       color=baseColour)
+
+        # median = np.median(accuracyData, axis=0)
+        # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+    axScatter.legend([l2, l1], ['control', 'PV activated'], loc='best')
+
+    axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
+    axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+
+    axScatter.set_ylim(yLims)
+    axScatter.set_ylabel('Time to decision (s)', fontsize=fontSizeLabels)
+
+    extraplots.boxoff(axScatter)
+    extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+
+    axScatter.annotate(panelLabel, xy=(labelPosX[6], labelPosY[1]), xycoords='figure fraction',
+                       fontsize=fontSizePanel, fontweight='bold')
+
+    # -- stats!! --
+    for band in range(len(possibleBands)):
+        pVal = stats.wilcoxon(laserDecision[:,band], controlDecision[:,band])[1]
+        if pVal < 0.05:
+            extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLims[1], 0.02 * np.diff(yLims), gapFactor=0.3)
+        print(f"Change in reaction time at {possibleBands[band]} oct pVal: {pVal}")
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

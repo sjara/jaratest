@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from scipy import stats
 
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
@@ -17,6 +18,9 @@ controlAccuracy = None
 
 laserBias = None
 controlBias = None
+
+rewardPVals = None
+sideChoicePVals = None
 
 for indMouse, mouse in enumerate(PV_CHR2_MICE):
 
@@ -52,6 +56,10 @@ for indMouse, mouse in enumerate(PV_CHR2_MICE):
             controlAccuracy = np.zeros((len(PV_CHR2_MICE), len(numBands)))
         controlAccuracy[indMouse, indBand] = 100.0 * np.sum(controlCorrect) / np.sum(controlValid)
 
+        if rewardPVals is None:
+            rewardPVals = np.zeros((len(PV_CHR2_MICE), len(numBands)))
+        rewardPVals[indMouse, indBand] = stats.ranksums(laserCorrect[laserValid], controlCorrect[controlValid])[1]
+
         # -- compute bias to a side as difference/sum --
         leftChoice = laserBehavData['choice'] == laserBehavData.labels['choice']['left']
         rightChoice = laserBehavData['choice'] == laserBehavData.labels['choice']['right']
@@ -84,11 +92,16 @@ for indMouse, mouse in enumerate(PV_CHR2_MICE):
         controlBias[indMouse, indBand] = 1.0 * (np.sum(controlToneChoice) - np.sum(controlNoiseChoice)) / \
                                     (np.sum(controlToneChoice) + np.sum(controlNoiseChoice))
 
+        if sideChoicePVals is None:
+            sideChoicePVals = np.zeros((len(PV_CHR2_MICE), len(numBands)))
+        sideChoicePVals[indMouse, indBand] = stats.ranksums(laserToneChoice[laserValid], controlToneChoice[controlValid])[1]
+
 # -- save responses of all sound responsive cells to 0.25 bandwidth sounds --
 outputFile = 'all_behaviour_ac_inactivation.npz'
 outputFullPath = os.path.join(dataDir, outputFile)
 np.savez(outputFullPath,
          laserAccuracy=laserAccuracy, controlAccuracy=controlAccuracy,
          laserBias=laserBias, controlBias=controlBias,
+         rewardPVals=rewardPVals, sideChoicePVals=sideChoicePVals,
          possibleBands=numBands)
 print(outputFile + " saved")

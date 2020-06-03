@@ -10,7 +10,7 @@ CAMKII_ARCH_MICE = ['band011', 'band012']
 # mice used for inactivating specific inhibitory cell types in AC
 PV_ARCHT_MICE = ['band081', 'band087', 'band091', 'band093']
 PV_ARCHT_WT_MICE = []
-SOM_ARCHT_MICE = ['band065', 'band069', 'band070', 'band108', 'band110', 'band111']
+SOM_ARCHT_MICE = ['band065', 'band069', 'band070', 'band108']#, 'band110', 'band111']
 SOM_ARCHT_WT_MICE = ['band066', 'band105', 'band112']
 
 # lists of sessions of one type for each mouse

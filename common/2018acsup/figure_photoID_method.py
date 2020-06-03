@@ -20,10 +20,12 @@ import studyparams
 
 
 FIGNAME = 'supplement_figure_photoidentification'
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+#dataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 HISTFIGNAME = 'supplement_figure_histology'
-histDataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, HISTFIGNAME)
+#histDataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, HISTFIGNAME)
+histDataDir = os.path.join(settings.FIGURES_DATA_PATH, HISTFIGNAME)
 
 
 PANELS = [1,1,1,1] # Plot panel i if PANELS[i]==1
@@ -31,8 +33,8 @@ PANELS = [1,1,1,1] # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'Fig1_photoidentification_method' # Do not include extension
-figFormat = 'pdf' # 'pdf' or 'svg'
-#figFormat = 'svg'
+#figFormat = 'pdf' # 'pdf' or 'svg'
+figFormat = 'svg'
 figSize = [10,6] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
@@ -63,7 +65,8 @@ waveformsFileName = 'photoidentified_cells_waveforms.npz'
 
 laserResponsesFileName = 'all_cells_laser_responses.npz'
 
-histFileName = 'band055_outlines.jpg'
+#histFileName = 'band055_outlines.jpg'
+histFileName = 'band015_dyes.png'
 
 ExcColor = figparams.colp['excitatoryCell']
 excludedExcColor = figparams.colp['excludedExcitatory']
@@ -95,8 +98,9 @@ if PANELS[0]:
     histFullPath = os.path.join(histDataDir, histFileName)
     histImage = ndimage.imread(histFullPath)
     
-    imageBounds = [400, 800, 0, 400] #for band055
-    #imageBounds = [300, 700, 988, 1388] #for band004
+    #imageBounds = [400, 800, 0, 400] #for band055
+    #imageBounds = [350, 750, 988, 1388] #for band004
+    imageBounds = [440, 840, 0, 400]  # for band015
     
     axImage = plt.subplot(gs[2,0])
     plt.imshow(histImage[imageBounds[0]:imageBounds[1],imageBounds[2]:imageBounds[3],:])
@@ -108,9 +112,12 @@ if PANELS[0]:
         axImage.annotate(label, xy=(labelPosX[0],labelPosY[ind]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
     
-    axImage.annotate('AUDp', xy=(0.6,0.35), xycoords='axes fraction', fontsize=fontSizeLegend, color='w')
-    axImage.annotate('AUDpo', xy=(0.65,0.75), xycoords='axes fraction', fontsize=fontSizeLegend, color='w')
-    axImage.annotate('AUDv', xy=(0.45,0.05), xycoords='axes fraction', fontsize=fontSizeLegend, color='w')
+    # axImage.annotate('AUDp', xy=(0.6,0.35), xycoords='axes fraction', fontsize=fontSizeLegend, color='w')
+    # axImage.annotate('AUDpo', xy=(0.65,0.75), xycoords='axes fraction', fontsize=fontSizeLegend, color='w')
+    # axImage.annotate('AUDv', xy=(0.45,0.05), xycoords='axes fraction', fontsize=fontSizeLegend, color='w')
+
+    axImage.annotate('AUDd', xy=(0.65,0.4), xycoords='axes fraction', fontsize=fontSizeLegend, color='w')
+    axImage.annotate('AUDp', xy=(0.5,0.15), xycoords='axes fraction', fontsize=fontSizeLegend, color='w')
     
 
 # --- Raster plots of example Exc., PV, and SOM cell ---
@@ -141,6 +148,7 @@ if PANELS[1]:
     
     for indCell, cell in enumerate(cellData):
         axRaster = plt.subplot(gs[indCell:indCell+1,1])
+        axRaster.tick_params(direction='in')
         plt.cla()
         bandSpikeTimesFromEventOnset = cell['spikeTimesFromEventOnset']
         bandIndexLimitsEachTrial = cell['indexLimitsEachTrial']
@@ -171,7 +179,7 @@ if PANELS[1]:
         rect = patches.Rectangle((0,yLims[1]*1.03),0.1,yLims[1]*0.04,linewidth=1,edgecolor=laserColor,facecolor=laserColor,clip_on=False)
         axRaster.add_patch(rect)
     
-    extraplots.set_ticks_fontsize(axRaster,fontSizeTicks)
+        extraplots.set_ticks_fontsize(axRaster,fontSizeTicks)
 
 # --- histograms of spike widths as well as waveforms for all recorded Exc., PV, SOM cells    
 if PANELS[2]:
@@ -208,15 +216,16 @@ if PANELS[2]:
     plt.hold(True)
     for indType, cellTypeData in enumerate(spikeWidthData):
         axHist = plt.subplot(gs[indType:indType+1,2])
+        axHist.tick_params(direction='in')
         plt.hist(cellTypeData*1000.0, bins=bins, color=histColours[indType], edgecolor=histColours[indType], linewidth=0.3) #plot in ms
-        plt.ylabel('Cell count')
+        plt.ylabel('Cell count', fontsize=fontSizeLabels)
         plt.locator_params(axis='y', nbins=5)
         if indType<2:
             axHist.set_xticklabels('')
         else:
             plt.hist(cellTypeData[ExcSpikeWidths<studyparams.EXC_SPIKE_WIDTH]*1000.0, bins=bins, color=excludedExcColor, edgecolor=excludedExcColor, linewidth=0.3)
-            axHist.set_xticklabels([0,'',0.4,'',0.8,''])
-            plt.xlabel('Peak to trough time (ms)')
+            #axHist.set_xticklabels([0,'',0.4,'',0.8,''])
+            plt.xlabel('Peak to trough time (ms)', fontsize=fontSizeLabels)
         
         axInset = inset_axes(axHist, width="35%", height="35%", loc=insetLocs[indType], bbox_to_anchor=insetAnchors[indType], bbox_transform=axHist.transAxes,)
         for indCell in range(waveformData[indType].shape[0]):
@@ -231,6 +240,7 @@ if PANELS[2]:
         axHist.annotate(panelLabels[indType], xy=(labelPosX[2],labelPosY[indType]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
         extraplots.boxoff(axHist)
+        extraplots.set_ticks_fontsize(axHist, fontSizeTicks)
         
 # --- indicate which cells from all "good" ones were identified as PV or SOM ---
 if PANELS[3]:
@@ -261,6 +271,7 @@ if PANELS[3]:
     panelLabel = 'J'
     
     axScatter = plt.subplot(gs[:,3])
+    axScatter.tick_params(direction='in')
     
     plt.hold(True)
     for category in range(len(changesFR)):
@@ -285,8 +296,9 @@ if PANELS[3]:
     axScatter.set_xticks(range(1,len(changesFR)+1))
     axScatter.set_xticklabels(categoryLabels, fontsize=fontSizeLabels, rotation=-45)#, ha='left')
     plt.ylim(-20,125)
-    plt.ylabel('Response to first 10ms of laser (spk/s)')
+    plt.ylabel('Response to first 10ms of laser (spk/s)', fontsize=fontSizeLabels)
     extraplots.boxoff(axScatter)
+    extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
         
     
 if SAVE_FIGURE:

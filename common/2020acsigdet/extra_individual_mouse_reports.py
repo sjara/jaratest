@@ -19,6 +19,10 @@ mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE, PV_CHR2_MICE]
 mouseLabel = ['PV-ArchT', 'SOM-ArchT', 'PV-ChR2']
 legendLabel = ['no PV', 'no SOM', 'PV activated']
 
+# 'control' or 'laser'
+sessionType = 'control'
+#sessionType = 'laser'
+
 for indType, mice in enumerate(mouseType):
     for mouse in mice:
         fig = plt.gcf()
@@ -29,9 +33,9 @@ for indType, mice in enumerate(mouseType):
         gs.update(top=0.90, bottom=0.15, left=0.07, right=0.98, wspace=0.5, hspace=0.3)
 
         if indType == 2:
-            laserSessions = studyparams.miceDict[mouse]['3mW laser']
+            laserSessions = studyparams.miceDict[mouse][f'3mW {sessionType}']
         else:
-            laserSessions = studyparams.miceDict[mouse]['10mW laser']
+            laserSessions = studyparams.miceDict[mouse][f'10mW {sessionType}']
         laserBehavData = behavioranalysis.load_many_sessions(mouse, laserSessions)
 
         numLasers = np.unique(laserBehavData['laserSide'])
@@ -168,5 +172,5 @@ for indType, mice in enumerate(mouseType):
 
         plt.suptitle(mouse + ' ({})'.format(mouseLabel[indType]))
 
-        figFilename = '{}_behav_report'.format(mouse)
+        figFilename = f'{mouse}_behav_report_{sessionType}'
         extraplots.save_figure(figFilename, 'png', [9, 4], '/tmp/')

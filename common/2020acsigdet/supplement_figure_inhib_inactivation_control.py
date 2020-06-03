@@ -30,21 +30,23 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.005, 0.29, 0.49, 0.78]  # Horiz position for panel labels
+labelPosX = [0.04, 0.33, 0.51, 0.79]  # Horiz position for panel labels
 labelPosY = [0.97, 0.49]  # Vert position for panel labels
 
 summaryFileName = 'all_behaviour_inhib_inactivation_control.npz'
 
-ExcColour = figparams.colp['excitatoryCell']
-PVColour = figparams.colp['PVcell']
-SOMColour = figparams.colp['SOMcell']
+baseColour = figparams.colp['baseline']
+controlColour = figparams.colp['control']
+PVColour = figparams.colp['PVmanip']
+SOMColour = figparams.colp['SOMmanip']
+connectColour = figparams.colp['connectLine']
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 4, width_ratios=[1.0, 0.5, 1.0, 0.5])
-gs.update(top=0.99, bottom=0.12, left=0.06, right=0.98, wspace=0.6, hspace=0.3)
+gs.update(top=0.99, bottom=0.10, left=0.10, right=0.99, wspace=0.6, hspace=0.3)
 
 # --- summary of change in accuracy with laser but without inactivation ---
 if PANELS[0]:
@@ -67,6 +69,9 @@ if PANELS[0]:
     xTickLabels = possibleBands
     legendLabels = ['no laser', 'laser']
     colours = [PVColour, SOMColour]
+    rowTitles = ['PV-ArchT mice', 'SOM-ArchT mice']
+    rowTitleX = 0.01
+    rowTitleY = [0.9, 0.4]
 
     for type in range(len(laserAccuracies)):
         axScatter = plt.subplot(gs[type, 0])
@@ -77,10 +82,10 @@ if PANELS[0]:
             thisxLocs = barLoc + xLocs[indBand]
 
             for indMouse in range(laserAccuracy.shape[0]):
-                plt.plot(thisxLocs, [controlAccuracy[indMouse, indBand], laserAccuracy[indMouse, indBand]], '-', color=ExcColour)
+                plt.plot(thisxLocs, [controlAccuracy[indMouse, indBand], laserAccuracy[indMouse, indBand]], '-', color=connectColour)
 
-            l1, = plt.plot(np.tile(thisxLocs[1],laserAccuracy.shape[0]), laserAccuracy[:,indBand], 'o', color=colours[type])
-            l2, = plt.plot(np.tile(thisxLocs[0],controlAccuracy.shape[0]), controlAccuracy[:,indBand], 'o', color=ExcColour)
+            l1, = plt.plot(np.tile(thisxLocs[1],laserAccuracy.shape[0]), laserAccuracy[:,indBand], 'o', color=controlColour)
+            l2, = plt.plot(np.tile(thisxLocs[0],controlAccuracy.shape[0]), controlAccuracy[:,indBand], 'o', color=baseColour)
 
             #median = np.median(accuracyData, axis=0)
             #plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
@@ -99,6 +104,8 @@ if PANELS[0]:
 
         axScatter.annotate(panelLabels[type], xy=(labelPosX[0], labelPosY[type]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
+        axScatter.annotate(rowTitles[type], xy=(rowTitleX, rowTitleY[type]), xycoords='figure fraction',
+                          fontsize=fontSizePanel, fontweight='bold', color=colours[type], rotation=90)
 
         # -- stats!! --
         for band in range(len(possibleBands)):
@@ -137,10 +144,10 @@ if PANELS[1]:
 
             for indMouse in range(laserBias.shape[0]):
                 plt.plot(thisxLocs, [controlBias[indMouse, indBand], laserBias[indMouse, indBand]], '-',
-                         color=ExcColour)
+                         color=connectColour)
 
-            l1, = plt.plot(np.tile(thisxLocs[1], laserBias.shape[0]), laserBias[:, indBand], 'o', color=colours[type])
-            l2, = plt.plot(np.tile(thisxLocs[0], controlBias.shape[0]), controlBias[:, indBand], 'o', color=ExcColour)
+            l1, = plt.plot(np.tile(thisxLocs[1], laserBias.shape[0]), laserBias[:, indBand], 'o', color=controlColour)
+            l2, = plt.plot(np.tile(thisxLocs[0], controlBias.shape[0]), controlBias[:, indBand], 'o', color=baseColour)
 
             # median = np.median(accuracyData, axis=0)
             # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
@@ -180,6 +187,7 @@ if PANELS[2]:
 
     panelLabels = ['B', 'F']
     colours = [PVColour, SOMColour]
+    legendLabels = ['no PV', 'no SOM']
     xLocs = range(2)
     yLims = [(-8, 1), (-10, 1)]
 
@@ -188,15 +196,17 @@ if PANELS[2]:
         controlChangeAccuracy = controlChangesAccuracy[type]
         inactChangeAccuracy = inactChangesAccuracy[type]
 
-        plt.plot(np.tile(xLocs[0], len(controlChangeAccuracy)), controlChangeAccuracy, 'o', color=ExcColour, alpha=0.3)
-        plt.plot(np.tile(xLocs[1], len(inactChangeAccuracy)), inactChangeAccuracy, 'o', color=colours[type], alpha=0.3)
+        for indMouse in range(len(controlChangeAccuracy)):
+            plt.plot(xLocs, [controlChangeAccuracy[indMouse], inactChangeAccuracy[indMouse]], '-', color=connectColour)
+        plt.plot(np.tile(xLocs[0], len(controlChangeAccuracy)), controlChangeAccuracy, 'o', color=controlColour)
+        plt.plot(np.tile(xLocs[1], len(inactChangeAccuracy)), inactChangeAccuracy, 'o', mec=colours[type], mfc='white')
 
         plt.plot([xLocs[0]-0.2, xLocs[0]+0.2], np.tile(np.median(controlChangeAccuracy),2), '-', color='k', lw=3)
         plt.plot([xLocs[1] - 0.2, xLocs[1] + 0.2], np.tile(np.median(inactChangeAccuracy), 2), '-', color='k', lw=3)
 
         axScatter.set_xlim(-0.5, 1.5)
         axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(['control', 'inactivation'], rotation=-45)
+        axScatter.set_xticklabels(['control', legendLabels[type]], rotation=-45)
 
         axScatter.set_ylim(yLims[type])
         axScatter.set_ylabel('Change in accuracy (%)', fontsize=fontSizeLabels)
@@ -227,6 +237,7 @@ if PANELS[3]:
 
     panelLabels = ['D', 'H']
     colours = [PVColour, SOMColour]
+    legendLabels = ['no PV', 'no SOM']
     xLocs = range(2)
     yLims = [(-0.2, 0.15), (-0.3, 0.15)]
 
@@ -235,15 +246,17 @@ if PANELS[3]:
         controlChangeBias = controlChangesBias[type]
         inactChangeBias = inactChangesBias[type]
 
-        plt.plot(np.tile(xLocs[0], len(controlChangeBias)), controlChangeBias, 'o', color=ExcColour, alpha=0.3)
-        plt.plot(np.tile(xLocs[1], len(inactChangeBias)), inactChangeBias, 'o', color=colours[type], alpha=0.3)
+        for indMouse in range(len(controlChangeBias)):
+            plt.plot(xLocs, [controlChangeBias[indMouse], inactChangeBias[indMouse]], '-', color=connectColour)
+        plt.plot(np.tile(xLocs[0], len(controlChangeBias)), controlChangeBias, 'o', color=controlColour)
+        plt.plot(np.tile(xLocs[1], len(inactChangeBias)), inactChangeBias, 'o', mec=colours[type], mfc='white')
 
         plt.plot([xLocs[0]-0.2, xLocs[0]+0.2], np.tile(np.median(controlChangeBias),2), '-', color='k', lw=3)
         plt.plot([xLocs[1] - 0.2, xLocs[1] + 0.2], np.tile(np.median(inactChangeBias), 2), '-', color='k', lw=3)
 
         axScatter.set_xlim(-0.5, 1.5)
         axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(['control', 'inactivation'], rotation=-45)
+        axScatter.set_xticklabels(['control', legendLabels[type]], rotation=-45)
 
         axScatter.set_ylim(yLims[type])
         axScatter.set_ylabel('Change in bias', fontsize=fontSizeLabels)
