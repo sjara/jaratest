@@ -31,14 +31,14 @@ print("D1 clusters = {0}\nnD1 clusters = {1}".format(D1Clusters, nD1Clusters))
 
 #%% Tuning seperation
 # Removing the NaNs
-D1DBTuned = D1DB[D1DB.rsquaredFit.notnull()]
-nD1DBTuned = nD1DB[nD1DB.rsquaredFit.notnull()]
-D1ClustersTuned = D1DBTuned.__len__()
-nD1ClustersTuned = nD1DBTuned.__len__()
-print("D1 total R2 = {0}\nnD1 total R2 = {1}".format(D1ClustersTuned, nD1ClustersTuned))
+D1DBPure = D1DB[D1DB.rsquaredFit.notnull()]
+nD1DBPure = nD1DB[nD1DB.rsquaredFit.notnull()]
+D1ClustersResponsive = D1DBPure.__len__()
+nD1ClustersResponsive = nD1DBPure.__len__()
+print("D1 total R2 = {0}\nnD1 total R2 = {1}".format(D1ClustersResponsive, nD1ClustersResponsive))
 # Now filtering to R2 > 0.03
-D1DBTuned = D1DBTuned.query(studyparams.TUNING_FILTER)
-nD1DBTuned = nD1DBTuned.query(studyparams.TUNING_FILTER)
+D1DBTuned = D1DBPure.query(studyparams.TUNING_FILTER)
+nD1DBTuned = nD1DBPure.query(studyparams.TUNING_FILTER)
 D1ClustersTuned = D1DBTuned.__len__()
 nD1ClustersTuned = nD1DBTuned.__len__()
 print("D1 filtered R2 = {0}\nnD1 filtered R2 = {1}".format(D1ClustersTuned, nD1ClustersTuned))

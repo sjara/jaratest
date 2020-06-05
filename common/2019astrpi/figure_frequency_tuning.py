@@ -259,8 +259,8 @@ if PANELS[3]:
 
     markers = extraplots.spread_plot(0, D1PopStat, spacing)
     plt.setp(markers, mec=colorD1, mfc='None')
-
     medline(axThresh, np.median(D1PopStat), 0, 0.5)
+
     axThresh.set_ylabel('Threshold (dB SPL)', fontsize=fontSizeLabels)
     tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axThresh.set_xticks(range(2))
