@@ -47,9 +47,9 @@ exampleSpikeData = {}
 # Determine upper and lower bounds of tc
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '_'.join(d1mice) + '.h5'
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format("['d1pi026', 'd1pi032', 'd1pi033', 'd1pi036', 'd1pi039', 'd1pi040', 'd1pi041', 'd1pi042', 'd1pi043', 'd1pi044']"))
+nameDB = studyparams.DATABASE_NAME + '.h5'
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
+# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format("20200602DB"))
 # os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
@@ -85,6 +85,8 @@ for exampleInd, cellName in enumerate(exampleList):
         print("No am for cell {}".format(indRow))
     spikeTimes = ephysData['spikeTimes']
     eventOnsetTimes = ephysData['events']['stimOn']
+    eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
+
     freqEachTrial = bdata['currentFreq']
     alignmentRange = [-0.2, 0.7]
     (spikeTimesFromEventOnset,

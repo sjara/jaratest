@@ -761,8 +761,8 @@ for indRow, dbRow in celldb.iterrows():
     plt.suptitle(title, fontsize=15, fontname="Times New Roman Bold")
     fig.set_size_inches([20, 10])
     # pathtoPng = os.path.join(outputDir, 'cellreport/')
-    fig.savefig(outputDir + '[c#{0}] {1}_{2}_tetrode{3}_cluster{4}.png'.format(
-        dbRow.name, dbRow['subject'], dbRow['depth'], tetnum, chanum))
+    fig.savefig(outputDir + '[c#{0}]_{5}_{1}_{2}_tetrode{3}_cluster{4}.png'.format(
+        dbRow.name, dbRow['subject'], dbRow['depth'], tetnum, chanum, dbRow.date))
     plt.clf()
     countreport += 1
     print("Report number {} generated!".format(countreport))

@@ -256,6 +256,9 @@ def append_base_stats(cellDB, filename=''):
                 cellDB.at[indRow, 'baseRate'] = baseRate
                 cellDB.at[indRow, 'tuning_pVal'] = tuningPVal
                 cellDB.at[indRow, 'tuning_ZStat'] = tuningZStat
+                cellDB['cfOnsetivityIndex'] = \
+                    (cellDB['onsetRate'] - cellDB['sustainedRate']) / \
+                    (cellDB['sustainedRate'] + cellDB['onsetRate'])
 
         # -------------------- am calculations ---------------------------
         session = 'am'
@@ -269,6 +272,7 @@ def append_base_stats(cellDB, filename=''):
             # General variables for am calculations/plotting from ephys and behavior data
             amSpikeTimes = amEphysData['spikeTimes']
             amEventOnsetTimes = amEphysData['events']['soundDetectorOn']
+            amEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(amEventOnsetTimes, minEventOnsetDiff=0.2)
             amCurrentFreq = amBehavData['currentFreq']
             amUniqFreq = np.unique(amCurrentFreq)
             amTimeRange = [-0.2, 0.7]
@@ -353,9 +357,6 @@ def append_base_stats(cellDB, filename=''):
                     else:
                         cellDB.at[indRow, 'highestSyncCorrected'] = 0
 
-    cellDB['cfOnsetivityIndex'] = \
-        (cellDB['onsetRate'] - cellDB['sustainedRate']) / \
-        (cellDB['sustainedRate'] + cellDB['onsetRate'])
     return cellDB
 
 
@@ -458,7 +459,7 @@ if __name__ == "__main__":
     if concat_mice:
         first_mouse, *list_of_mice = studyparams.ASTR_D1_CHR2_MICE
         histDB = merge_dataframes(list_of_mice, first_mouse)
-        dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+        dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
     else:
         basicDB = celldatabase.generate_cell_database_from_subjects(d1mice)
         firstDB = basicDB
@@ -471,7 +472,6 @@ if __name__ == "__main__":
         celldatabase.save_hdf(histDB, os.path.join(dbLocation, '{}.h5'.format('temp_rescue_db')))
     if calc_locations:
         histDB = histologyanalysis.cell_locations(firstDB, brainAreaDict=studyparams.BRAIN_AREA_DICT)
-
 
     if SAVE:
         if os.path.isdir(dbLocation):

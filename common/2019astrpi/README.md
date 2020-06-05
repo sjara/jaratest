@@ -8,8 +8,8 @@ for the database calculations
 ## databasename.h5
 
 ### database_generation.py
-This script will generate the database that's concatenated with all subjects defined
-as d1pi mouse in studyparams.py. This script can create databases for individual
+This script will generate the database with all subjects defined
+as d1pi mice in studyparams.py. This script can create databases for individual
 mice or concatenate previously made databases together. Output is an h5 file 
 containing all the below information in `Database contents` Check the docstring
 for info on how to run the script. 
