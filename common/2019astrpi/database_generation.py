@@ -7,6 +7,8 @@ python3 database_generation.py RUNMODE SUBJECT
 where RUNMODE can be:
 - concat: grab all mouse names in studyparams.py, load all dataframes, and
           concatenate all the dataframes together to make the full database.
+- basic: generate only the minimum dataframe from the inforecs, no other
+        other information is added.
 - locations: generate only the minimum dataframe from the inforecs and find
           the anatomical location of each cell.
 - stats: generate a dataframe and append base stats to it for each session type.
@@ -211,8 +213,8 @@ def append_base_stats(cellDB, filename=''):
                 if toCalculate:
                     monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(tuningEventOnsetTimes, currentFreq,
                                                                                      currentIntensity,
-                                                                                     uniqueIntensity, tuningSpikeTimes, cf
-                                                                                     )
+                                                                                     uniqueIntensity, tuningSpikeTimes,
+                                                                                     cf)
                     onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(tuningEventOnsetTimes,
                                                                                                   tuningSpikeTimes,
                                                                                                   currentFreq,
@@ -411,6 +413,7 @@ if __name__ == "__main__":
     # Check for script arguements to decide what calculations are done
     dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
     if sys.argv[1:] != []:
+        basic_generation = 0
         calc_stats = 0
         calc_locations = 0
         concat_mice = False
@@ -433,18 +436,24 @@ if __name__ == "__main__":
             runBehavior = arguments[0]
             print('Run behavior is {}'.format(runBehavior))
             if runBehavior == 'all':
+                basic_generation = 1
                 calc_stats = 1
                 calc_locations = 1
             elif runBehavior == 'locations':
+                basic_generation = 1
                 calc_locations = 1
             elif runBehavior == 'stats':
+                basic_generation = 1
                 calc_stats = 1
+            elif runBehavior == 'basic':
+                basic_generation = 1
 
     else:
         # Calculates everything for all mice in studyparams
         calc_stats = 1
         calc_locations = 1
-        concat_mice = 0
+        basic_generation = 1
+        concat_mice = False
         d1mice = studyparams.ASTR_D1_CHR2_MICE
         dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
 
@@ -460,9 +469,10 @@ if __name__ == "__main__":
         first_mouse, *list_of_mice = studyparams.ASTR_D1_CHR2_MICE
         histDB = merge_dataframes(list_of_mice, first_mouse)
         dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
-    else:
+    if basic_generation:
         basicDB = celldatabase.generate_cell_database_from_subjects(d1mice)
         firstDB = basicDB
+        histDB = basicDB
         d1DBFilename = os.path.join(settings.FIGURES_DATA_PATH, '{}_d1mice.h5'.format(studyparams.STUDY_NAME))
     # Create and save a database, computing first the base stats and then the indices
     if calc_stats:

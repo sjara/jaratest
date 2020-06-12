@@ -4,6 +4,8 @@
 3.) Add signficance to values and ID if there are a greater % of D1 cells tuned rather than non-D1
 """
 import os
+import sys
+sys.path.append('..')
 import numpy as np
 import studyparams
 from jaratoolbox import behavioranalysis
@@ -68,7 +70,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             ttZStat, ttPVal = \
                 funcs.sound_response_any_stimulus(ttEventOnsetTimes, ttSpikeTimes, tuningTrialsEachCond[:, :, -1],
                                                   timeRange=[0.0, 0.05], baseRange=baseRange)
-
+            #TODO: Add a correction term for this p-value as we are just taking it from 16 possible comparisons
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])
                 freqs = np.array([])

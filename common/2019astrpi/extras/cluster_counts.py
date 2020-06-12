@@ -1,6 +1,8 @@
 """
 Calulcate number of clusters by D1 vs nD1, by brain region filters, by tuning filters, etc
 """
+import sys
+sys.path.append('..')
 import pandas as pd
 import numpy as np
 from jaratoolbox import celldatabase

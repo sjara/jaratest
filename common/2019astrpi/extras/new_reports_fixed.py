@@ -11,6 +11,7 @@ case you have more than one same sessions such as laserpulse
 
 import os
 import sys
+sys.path.append('..')
 import importlib
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,8 +24,8 @@ from jaratoolbox import spikesorting
 from jaratoolbox import ephyscore
 from jaratoolbox import celldatabase
 from jaratoolbox import behavioranalysis
-studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
-figparams = importlib.import_module('jaratest.common.2019astrpi.figparams')
+import studyparams
+import figparams
 
 # Currently there is an issue with the subplot specs function on our version of matlab, so this function cannot be used
 # UPDATE: This issue seems fixed?

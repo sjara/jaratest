@@ -4,6 +4,7 @@ Tuning curve figure for 2019astrpi
 
 import os
 import sys
+sys.path.append('..')
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec

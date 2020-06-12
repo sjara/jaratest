@@ -4,7 +4,8 @@ import importlib
 import os
 from jaratoolbox import celldatabase
 from jaratoolbox import extraplots
-studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
+import sys
+import studyparams
 
 
 def normalized_hist_dataframe(data_column, bin_number=50, output_dir='/var/tmp/'):

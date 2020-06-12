@@ -1,5 +1,6 @@
 import os
 import sys
+sys.path.append('..')
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -26,7 +27,7 @@ def medline(ax, yval, midline, width, color='k', linewidth=3):
 #%% Figure parameters
 SAVE_FIGURE = 1
 outputDir = figparams.FIGURE_OUTPUT_DIR
-figFilename = 'figure_frequency_tuning'  # Do not include extension
+figFilename = 'sound_responses'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 figSize = [20, 5.75]
 
@@ -291,4 +292,5 @@ axEight.set_xticklabels(["D1", "nD1"])
 axEight.set_ylabel("p-value")
 axEight.set_title("AM Synchronization p-values")
 
+extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 plt.show()

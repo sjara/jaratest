@@ -2,6 +2,8 @@
 Look at the baseline and evoked firing rates compared between D1 and nD1 cells for laserpulse, noiseburst, tuningTest, tuningCurve, and AM. Graphically, then
 numerically.
 """
+import sys
+sys.path.append('..')
 import copy
 import matplotlib.pyplot as plt
 import numpy as np

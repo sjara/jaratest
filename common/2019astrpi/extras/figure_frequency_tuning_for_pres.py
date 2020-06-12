@@ -4,6 +4,7 @@ Tuning curve figure for 2019astrpi
 
 import os
 import sys
+sys.path.append('..')
 import importlib
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,9 +14,8 @@ from jaratoolbox import extraplots
 from jaratoolbox import celldatabase
 from scipy import stats
 import pandas as pd
-studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
-figparams = importlib.import_module('jaratest.common.2019astrpi.figparams')
-
+import studyparams
+import figparams
 
 if sys.version_info[0] < 3:
     inputFunc = raw_input

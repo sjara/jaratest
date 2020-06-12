@@ -602,7 +602,7 @@ def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, am
         allFreqVectorStrength[indFreq] = strength  # Frequency vector strength
         allFreqRal[indFreq] = ral  # Unsure what this is
         allFreqSyncPVal[indFreq] = pVal  # p-value
-        allFreqSyncZScore[indFreq]= zVal
+        allFreqSyncZScore[indFreq] = zVal
 
     return allFreqSyncPVal, allFreqSyncZScore, allFreqVectorStrength, allFreqRal
 

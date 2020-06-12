@@ -84,7 +84,7 @@ for exampleInd, cellName in enumerate(exampleList):
         failed = True
         print("No am for cell {}".format(indRow))
     spikeTimes = ephysData['spikeTimes']
-    eventOnsetTimes = ephysData['events']['stimOn']
+    eventOnsetTimes = ephysData['events']['soundDetectorOn']
     eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
 
     freqEachTrial = bdata['currentFreq']
