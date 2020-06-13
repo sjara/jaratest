@@ -105,9 +105,9 @@ exp1.add_session('18-41-18', 'l', 'am', 'am_tuning_curve')
 
 exp1.maxDepth = 3400
 
-exp2 = celldatabase.Experiment(subject, '2019-02-28', 'right_AudStr',  'MiddleDiD',
-                                   info=['FacingPosterior'])
-experiments.append(exp1)
+# exp2 = celldatabase.Experiment(subject, '2019-02-28', 'right_AudStr',  'MiddleDiD',
+#                                    info=['FacingPosterior'])
+# experiments.append(exp2)
 
 #50 noiseburst, 50 laser pulse, 40 laser train, 160 tuningTest 1760 tc, 220 AM
 #Used left speaker;laser (445 nm) set to 2 mW; Probe CEC2; Rig 2

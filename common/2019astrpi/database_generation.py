@@ -423,14 +423,14 @@ if __name__ == "__main__":
         else:
             if arguments[1] == 'all':
                 d1mice = studyparams.ASTR_D1_CHR2_MICE
-                dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+                dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
             elif isinstance(arguments[1], str):
                 d1mice = arguments[1]
                 dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
                 d1mice = [d1mice]
             else:
                 d1mice = studyparams.ASTR_D1_CHR2_MICE
-                dbpath = os.path.join(dbLocation, '{}.h5'.format('direct_and_indirect_cells'))
+                dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
             print('d1mice = {}'.format(d1mice))
             # Run behavior can either be 'all', 'hist', or 'stats'
             runBehavior = arguments[0]
