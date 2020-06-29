@@ -10,30 +10,15 @@ FIGNAME = 'figure_am'
 outputDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 
 # Example cells we want to show am rasters for
-# AC
 examples = {}
-# Format: {name}_{date}_{}
-# examples.update({'AC1' : 'pinp017_2017-03-22_1143_4_5'})
-# examples.update({'AC2' : 'pinp017_2017-03-23_1281_7_2'})
 
-examples.update({'Direct1': 'd1pi036_2019-05-29_2800.0_TT2c4'})
-examples.update({'Direct2': 'd1pi036_2019-05-29_2800.0_TT6c2'})
-
-# Thalamus
-# examples.update({'Thal1' : 'pinp015_2017-02-15_3110_7_3'})
-# examples.update({'Thal2' : 'pinp026_2017-11-16_3046_4_3'})
-
-examples.update({'nDirect1': 'd1pi036_2019-05-29_2900.0_TT5c5'})
-examples.update({'nDirect2': 'd1pi041_2019-08-25_3000.0_TT7c3'})
-# examples.update({'Thal2' : 'pinp026_2017-11-15_3252.0_TT2c2'})
-# examples.update({'Thal3' : 'pinp026_2017-11-16_3046.0_TT4c3'})
+# examples.update({'Direct1': 'd1pi036_2019-05-29_2800.0_TT2c4'})
+# examples.update({'Direct2': 'd1pi036_2019-05-29_2800.0_TT6c2'})
+examples.update({'Direct1': 'd1pi042_2019-09-11_3200.0_TT3c4'})
 
 
-# Striatum
-# examples.update({'Str1' : 'pinp029_2017-11-08_2052_2_3'})
-# examples.update({'Str1' : 'pinp020_2017-05-09_2702_8_2'})
-# examples.update({'Str2' : 'pinp020_2017-05-09_2802_7_2'})
-# examples.update({'Str3' : 'pinp029_2017-11-08_2052_2_3'})
+examples.update({'nDirect1': 'd1pi042_2019-09-11_3100.0_TT3c4'})
+# examples.update({'nDirect2': 'd1pi041_2019-08-25_3000.0_TT7c3'})
 
 exampleList = [val for key, val in examples.items()]
 exampleKeys = [key for key, val in examples.items()]
@@ -49,8 +34,6 @@ exampleSpikeData = {}
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = studyparams.DATABASE_NAME + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format("20200602DB"))
-# os.path.join(studyparams.PATH_TO_TEST,nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
 #Only process the examples

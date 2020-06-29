@@ -98,7 +98,7 @@ fig = plt.gcf()
 plt.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 6)
+gs = gridspec.GridSpec(2, 5)  # Reduced from 2x6 to 2x5 after removing one example cell for each cell group
 gs.update(left=0.05, right=0.98, top=0.94, bottom=0.10, wspace=0.8, hspace=0.5)
 
 # Load example data
@@ -110,14 +110,14 @@ exampleSpikeTimes = exampleData['exampleSpikeTimes'].item()
 exampleTrialIndexForEachSpike = exampleData['exampleTrialIndexForEachSpike'].item()
 exampleIndexLimitsEachTrial = exampleData['exampleIndexLimitsEachTrial'].item()
 
-gsPanelA = gs[0, 0:2]
-gsPanelB = gs[0, 2:4]
-gsPanelC = gs[0, 4]
-gsPanelD = gs[0, 5]
-gsPanelE = gs[1, 0:2]
-gsPanelF = gs[1, 2:4]
-gsPanelG = gs[1, 4]
-gsPanelH = gs[1, 5]
+gsPanelA = gs[0, 0:3]
+# gsPanelB = gs[0, 2:4]
+gsPanelC = gs[0, 3]
+gsPanelD = gs[0, 4]
+gsPanelE = gs[1, 0:3]
+# gsPanelF = gs[1, 2:4]
+gsPanelG = gs[1, 3]
+gsPanelH = gs[1, 4]
 
 
 def plot_example_with_rate(subplotSpec, exampleName, color='k'):
@@ -195,42 +195,44 @@ def plot_example_with_rate(subplotSpec, exampleName, color='k'):
 if PANELS[0]:
     (axDirectCellEx1, axDirectFREx1) = plot_example_with_rate(gsPanelA, 'Direct1', color=colorD1)
     axDirectCellEx1.set_title('Direct pathway example 1', fontsize=fontSizeTitles)
-    axDirectFREx1.set_xlim([0, 100])
-    axDirectFREx1.set_xticks([0, 100])
+    axDirectFREx1.set_xlim([0, 75])
+    axDirectFREx1.set_xticks([0, 75])
     extraplots.set_ticks_fontsize(axDirectFREx1, fontSizeTicks)
     extraplots.set_ticks_fontsize(axDirectCellEx1, fontSizeTicks)
     axDirectCellEx1.annotate('A', xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
 
-if PANELS[1]:
-    (axDirectCellEx2, axDirectFREx2) = plot_example_with_rate(gsPanelB, 'Direct2', color=colorD1)
-    axDirectCellEx2.set_title('Direct pathway example 2', fontsize=fontSizeTitles)
-    axDirectFREx2.set_xlim([0, 15])
-    axDirectFREx2.set_xticks([0, 15])
-    extraplots.set_ticks_fontsize(axDirectFREx2, fontSizeTicks)
-    extraplots.set_ticks_fontsize(axDirectCellEx2, fontSizeTicks)
-    axDirectCellEx2.annotate('B', xy=(labelPosX[1], labelPosY[1]), xycoords='figure fraction',
-                             fontsize=fontSizePanel, fontweight='bold')
+# Went down to one example cell each for D1/nD1 instead of two, so this is being commented out
+# if PANELS[1]:
+#     (axDirectCellEx2, axDirectFREx2) = plot_example_with_rate(gsPanelB, 'Direct2', color=colorD1)
+#     axDirectCellEx2.set_title('Direct pathway example 2', fontsize=fontSizeTitles)
+#     axDirectFREx2.set_xlim([0, 15])
+#     axDirectFREx2.set_xticks([0, 15])
+#     extraplots.set_ticks_fontsize(axDirectFREx2, fontSizeTicks)
+#     extraplots.set_ticks_fontsize(axDirectCellEx2, fontSizeTicks)
+#     axDirectCellEx2.annotate('B', xy=(labelPosX[1], labelPosY[1]), xycoords='figure fraction',
+#                              fontsize=fontSizePanel, fontweight='bold')
 
 if PANELS[2]:
     (axNonDirectEx1, axNonDirectFREx1) = plot_example_with_rate(gsPanelE, 'nDirect1', color=colornD1)
     axNonDirectEx1.set_title('Non-direct pathway example 1', fontsize=fontSizeTitles)
-    axNonDirectFREx1.set_xlim([0, 35])
-    axNonDirectFREx1.set_xticks([0, 35])
+    axNonDirectFREx1.set_xlim([0, 75])
+    axNonDirectFREx1.set_xticks([0, 75])
     extraplots.set_ticks_fontsize(axNonDirectFREx1, fontSizeTicks)
     extraplots.set_ticks_fontsize(axNonDirectEx1, fontSizeTicks)
-    axNonDirectEx1.annotate('E', xy=(labelPosX[0], labelPosY[0]), xycoords='figure fraction',
+    axNonDirectEx1.annotate('D', xy=(labelPosX[0], labelPosY[0]), xycoords='figure fraction',
                             fontsize=fontSizePanel, fontweight='bold')
 
-if PANELS[3]:
-    (axNonDirectEx2, axNonDirectFREx2) = plot_example_with_rate(gsPanelF, 'nDirect2', color=colornD1)
-    axNonDirectEx2.set_title('Non-direct pathway example 2', fontsize=fontSizeTitles)
-    axNonDirectFREx2.set_xlim([0, 25])
-    axNonDirectFREx2.set_xticks([0, 25])
-    extraplots.set_ticks_fontsize(axNonDirectFREx2, fontSizeTicks)
-    extraplots.set_ticks_fontsize(axNonDirectEx2, fontSizeTicks)
-    axNonDirectFREx2.annotate('F', xy=(labelPosX[1], labelPosY[0]), xycoords='figure fraction',
-                              fontsize=fontSizePanel, fontweight='bold')
+# Went down to one example cell each for D1/nD1 instead of two, so this is being commented out
+# if PANELS[3]:
+#     (axNonDirectEx2, axNonDirectFREx2) = plot_example_with_rate(gsPanelF, 'nDirect2', color=colornD1)
+#     axNonDirectEx2.set_title('Non-direct pathway example 2', fontsize=fontSizeTitles)
+#     axNonDirectFREx2.set_xlim([0, 25])
+#     axNonDirectFREx2.set_xticks([0, 25])
+#     extraplots.set_ticks_fontsize(axNonDirectFREx2, fontSizeTicks)
+#     extraplots.set_ticks_fontsize(axNonDirectEx2, fontSizeTicks)
+#     axNonDirectFREx2.annotate('F', xy=(labelPosX[1], labelPosY[0]), xycoords='figure fraction',
+#                               fontsize=fontSizePanel, fontweight='bold')
 
 # ---------------- Highest Sync -------------------
 
@@ -392,13 +394,13 @@ if PANELS[4]:
     else:
         starMarker = 'n.s.'
 
-    axD1Pie.annotate('C', xy=(labelPosX[2], labelPosY[1]), xycoords='figure fraction',
+    axD1Pie.annotate('B', xy=(labelPosX[2], labelPosY[1]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
-    axD1Pie.annotate('D', xy=(labelPosX[3], labelPosY[1]), xycoords='figure fraction',
+    axD1Pie.annotate('C', xy=(labelPosX[3], labelPosY[1]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
-    axD1Pie.annotate('G', xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
+    axD1Pie.annotate('E', xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
-    axD1Pie.annotate('H', xy=(labelPosX[3], labelPosY[0]), xycoords='figure fraction',
+    axD1Pie.annotate('F', xy=(labelPosX[3], labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
 
     xBar = -2

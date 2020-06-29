@@ -72,7 +72,6 @@ def append_base_stats(cellDB, filename=''):
             noiseEventOnsetTimes = noiseEphysData['events']['soundDetectorOn']
             noiseSpikeTimes = noiseEphysData['spikeTimes']
             nspkBaseNoise, nspkRespNoise = funcs.calculate_firing_rate(noiseEventOnsetTimes, noiseSpikeTimes, baseRange)
-            respSpikeMean = np.mean(nspkRespNoise)
 
             # Significance calculations for the noiseburst
             try:
@@ -84,7 +83,10 @@ def append_base_stats(cellDB, filename=''):
             cellDB.at[
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
             cellDB.at[indRow, '{}_zStat'.format(session)] = zStats
-            cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
+            # If we want to save the spikes themselves, we must convert the 'nspkBase' variables to a pandas series to
+            # store it in the DF. We must then use Series.to_list() after to use the data normally again
+            cellDB.at[indRow, '{}_baselineFR'.format(session)] = np.mean(nspkBaseNoise) # mean firing rate (formally called noiseburst_FR)
+            cellDB.at[indRow, '{}_responseFR'.format(session)] = np.mean(nspkRespNoise)
 
         # ------------ Laserpulse calculations --------------------------------
         session = 'laserpulse'
@@ -97,9 +99,9 @@ def append_base_stats(cellDB, filename=''):
             laserEventOnsetTimes = pulseEphysData['events']['laserOn']
             laserSpikeTimes = pulseEphysData['spikeTimes']
             nspkBaseLaser, nspkRespLaser = funcs.calculate_firing_rate(laserEventOnsetTimes, laserSpikeTimes, baseRange)
-            respSpikeMean = np.mean(nspkRespLaser)
-            baseSpikeMean = np.mean(nspkBaseLaser)
-            changeFiring = respSpikeMean - baseSpikeMean
+            respSpikeMeanLaser = np.mean(nspkRespLaser)
+            baseSpikeMeanLaser = np.mean(nspkBaseLaser)
+            changeFiring = respSpikeMeanLaser - baseSpikeMeanLaser
 
             # Significance calculations for the laserpulse
             try:
@@ -111,8 +113,10 @@ def append_base_stats(cellDB, filename=''):
             cellDB.at[
                 indRow, '{}_pVal'.format(session)] = pVals  # changed from at to loc via recommendation from pandas
             cellDB.at[indRow, '{}_zStat'.format(session)] = zStats
-            cellDB.at[indRow, '{}_FR'.format(session)] = respSpikeMean  # mean firing rate
+            # cellDB.at[indRow, '{}_meanRespFR'.format(session)] = respSpikeMeanLaser  # mean firing rate
             cellDB.at[indRow, '{}_dFR'.format(session)] = changeFiring  # Difference between base and response firing rate
+            cellDB.at[indRow, '{}_baselineFR'.format(session)] = baseSpikeMeanLaser
+            cellDB.at[indRow, '{}_responseFR'.format(session)] = respSpikeMeanLaser
 
         # -------------- Tuning curve calculations ----------------------------
         session = 'tuningCurve'
@@ -131,7 +135,7 @@ def append_base_stats(cellDB, filename=''):
             tuningTrialsEachCond = behavioranalysis.find_trials_each_combination(currentFreq, uniqFreq, currentIntensity, uniqueIntensity)
 
             allIntenBase = np.array([])
-            respSpikeMean = np.empty((len(uniqueIntensity), len(uniqFreq)))  # same as allIntenResp
+            respSpikeMeanLaser = np.empty((len(uniqueIntensity), len(uniqFreq)))  # same as allIntenResp
             allIntenRespMedian = np.empty((len(uniqueIntensity), len(uniqFreq)))
             Rsquareds = []
             popts = []
@@ -163,11 +167,18 @@ def append_base_stats(cellDB, filename=''):
                                                       uniqueIntensity, tuningSpikeTimes, indRow)
                 if tuningPVal > 0.05:
                     toCalculate = False
+                tuningTimeRange = [-0.1, 0.1]
+                (tuningSpikeTimesFromEventOnset, tuningTrialIndexForEachSpike,
+                 tuningIndexLimitsEachTrial) = \
+                    spikesanalysis.eventlocked_spiketimes(tuningSpikeTimes,
+                                                          tuningEventOnsetTimes,
+                                                          tuningTimeRange)
             else:
                 respLatency = np.nan
                 tuningPVal = np.nan
                 tuningZStat = np.nan
 
+            highestFR = 0
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])
                 freqs = np.array([])
@@ -177,13 +188,21 @@ def append_base_stats(cellDB, filename=''):
                 for indFreq, freq in enumerate(uniqFreq):
                     selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity))#.tolist()
 
-                    nspkBase, nspkResp = funcs.calculate_firing_rate(tuningEventOnsetTimes, tuningSpikeTimes, baseRange,
-                                                                     selectinds=selectinds)
-
-                    spks = np.concatenate([spks, nspkResp.ravel()])
-                    freqs = np.concatenate([freqs, np.ones(len(nspkResp.ravel())) * freq])
-                    respSpikeMean[indInten, indFreq] = np.mean(nspkResp)
-                    allIntenBase = np.concatenate([allIntenBase, nspkBase.ravel()])
+                    nspkBaseTuning, nspkRespTuning = funcs.calculate_firing_rate(tuningEventOnsetTimes,
+                                                                                 tuningSpikeTimes, baseRange,
+                                                                                 selectinds=selectinds)
+                    spks = np.concatenate([spks, nspkRespTuning.ravel()])
+                    freqs = np.concatenate([freqs, np.ones(len(nspkRespTuning.ravel())) * freq])
+                    respSpikeMeanLaser[indInten, indFreq] = np.mean(nspkRespTuning)
+                    allIntenBase = np.concatenate([allIntenBase, nspkBaseTuning.ravel()])
+                    if intensity == uniqueIntensity[-1]:
+                        meanRespFRTuning = np.mean(nspkRespTuning)
+                        if meanRespFRTuning > highestFR:
+                            highestFR = meanRespFRTuning
+                            # Storing the highest response spikes as well as the frequency to save in the database later
+                            bestFreqMaxInt = freq
+                            baseSpksTuning = nspkBaseTuning
+                            respSpksTuning = nspkRespTuning
 
                     # ------------------- Significance and fit calculations for tuning ----------------
                 # TODO: Do we really need to calculate this for each frequency at each intensity?
@@ -194,11 +213,11 @@ def append_base_stats(cellDB, filename=''):
 
             # ------------------------------ Intensity based calculations -------------------------
             # The reason why we are calculating bw10 here, it is to save the calculation time
-            responseThreshold = funcs.calculate_response_threshold(0.2, allIntenBase, respSpikeMean)
+            responseThreshold = funcs.calculate_response_threshold(0.2, allIntenBase, respSpikeMeanLaser)
             # [6] Find Frequency Response Area (FRA) unit: fra boolean set, yes or no, but it's originally a pair
-            fra = respSpikeMean > responseThreshold
+            fra = respSpikeMeanLaser > responseThreshold
             # [6.5] get the intensity threshold
-            intensityInd, freqInd = funcs.calculate_intensity_threshold_and_CF_indices(fra, respSpikeMean)
+            intensityInd, freqInd = funcs.calculate_intensity_threshold_and_CF_indices(fra, respSpikeMeanLaser)
             if intensityInd is None:  # None of the intensities had anything
                 bw10 = None
                 lowerFreq = None
@@ -258,6 +277,9 @@ def append_base_stats(cellDB, filename=''):
                 cellDB.at[indRow, 'baseRate'] = baseRate
                 cellDB.at[indRow, 'tuning_pVal'] = tuningPVal
                 cellDB.at[indRow, 'tuning_ZStat'] = tuningZStat
+                cellDB.at[indRow, 'baseFRBestFreqMaxInt'] = np.mean(baseSpksTuning)
+                cellDB.at[indRow, 'respFRBestFreqMaxInt'] = np.mean(respSpksTuning)
+                cellDB.at[indRow, 'bestFreqMaxInt'] = bestFreqMaxInt
                 cellDB['cfOnsetivityIndex'] = \
                     (cellDB['onsetRate'] - cellDB['sustainedRate']) / \
                     (cellDB['sustainedRate'] + cellDB['onsetRate'])
@@ -275,14 +297,14 @@ def append_base_stats(cellDB, filename=''):
             amSpikeTimes = amEphysData['spikeTimes']
             amEventOnsetTimes = amEphysData['events']['soundDetectorOn']
             amEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(amEventOnsetTimes, minEventOnsetDiff=0.2)
-            amCurrentFreq = amBehavData['currentFreq']
-            amUniqFreq = np.unique(amCurrentFreq)
+            amCurrentRate = amBehavData['currentFreq']
+            amUniqRate = np.unique(amCurrentRate)
             amTimeRange = [-0.2, 0.7]
-            amTrialsEachCond = behavioranalysis.find_trials_each_type(amCurrentFreq, amUniqFreq)
+            amTrialsEachCond = behavioranalysis.find_trials_each_type(amCurrentRate, amUniqRate)
 
-            if len(amCurrentFreq) != len(amEventOnsetTimes):
+            if len(amCurrentRate) != len(amEventOnsetTimes):
                 amEventOnsetTimes = amEventOnsetTimes[:-1]
-            if len(amCurrentFreq) != len(amEventOnsetTimes):
+            if len(amCurrentRate) != len(amEventOnsetTimes):
                 print('Removing one does not align events and behavior. Skipping AM for cell')
             else:
                 (amSpikeTimesFromEventOnset, amTrialIndexForEachSpike,
@@ -294,17 +316,51 @@ def append_base_stats(cellDB, filename=''):
                 amOnsetTime = [0, 0.1]
                 amResponseTime = [0, 0.5]
 
+                amBaseTimeOnset = [-0.1, 0]
+                amBaseTimeSustained = [-0.5, -0.1]
+                amSusFR = 0
+                amOnsetFR = 0
+
+                #TODO: Maybe make this into a funciton in funcs file?
+                for rate in amUniqRate:
+                    AMSelectInds = np.flatnonzero(amCurrentRate == rate)
+                    nspkBaseOnset, nspkRespOnset = funcs.calculate_firing_rate(amEventOnsetTimes,
+                                                                               amSpikeTimes,
+                                                                               amBaseTimeOnset,
+                                                                               selectinds=AMSelectInds)
+                    nspkBaseSustained, nspkRespSustained = funcs.calculate_firing_rate(amEventOnsetTimes,
+                                                                                       amSpikeTimes,
+                                                                                       amBaseTimeSustained,
+                                                                                       selectinds=AMSelectInds)
+                    if np.mean(nspkRespOnset) > amOnsetFR:
+                        amOnsetFR = np.mean(nspkRespOnset)
+                        amRespOnsetSpikes = nspkRespOnset
+                        amBaseOnsetSpikes = nspkBaseOnset
+                        amRateBestOnset = rate
+                    if np.mean(nspkRespSustained) > amSusFR:
+                        amSusFR = np.mean(nspkRespSustained)
+                        amRespSustainedSpikes = nspkRespSustained
+                        amBaseSustainedSpikes = nspkBaseSustained
+                        amRateBestSustained = rate
+                cellDB.at[indRow, 'baseFROnset'] = np.mean(amBaseOnsetSpikes)
+                cellDB.at[indRow, 'respFROnset'] = np.mean(amRespOnsetSpikes)
+                cellDB.at[indRow, 'bestRateOnset'] = amRateBestOnset
+                cellDB.at[indRow, 'baseFRSustained'] = np.mean(amBaseSustainedSpikes)
+                cellDB.at[indRow, 'respFRSustained'] = np.mean(amRespSustainedSpikes)
+                cellDB.at[indRow, 'bestRateSustained'] = amRateBestSustained
+
                 # TODO: Should do some kind of post-hoc/correction on these such as
                 # taking the p-value and dividing by the total number of comparisons done and using that as a threshold
                 zStat, amPValue = \
-                    funcs.sound_response_any_stimulus(amEventOnsetTimes, amSpikeTimes, amTrialsEachCond, amResponseTime, amBaseTime)
+                    funcs.sound_response_any_stimulus(amEventOnsetTimes, amSpikeTimes, amTrialsEachCond, amResponseTime,
+                                                      amBaseTime)
                 cellDB.at[indRow, 'am_response_pVal'] = amPValue
                 cellDB.at[indRow, 'am_response_ZStat'] = zStat
 
                 # TODO: test calculations below
                 # TODO: Should do some kind of post-hoc/correction on the alpha such as
                 # taking the alpha and dividing by the total number of comparisons done (11) and using that as a threshold
-                correctedPval = 0.05 / len(amUniqFreq)
+                correctedPval = 0.05 / len(amUniqRate)
 
                 # Decide whether to make the next calculations based on 0.05 or on corrected value
                 if amPValue > correctedPval:  # No response
@@ -319,36 +375,37 @@ def append_base_stats(cellDB, filename=''):
 
                     allFreqSyncPVal, allFreqSyncZScore, allFreqVectorStrength, allFreqRal = \
                         funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset,
-                                                                        amSyncTrialIndexForEachSpike, amCurrentFreq,
-                                                                        amUniqFreq)
+                                                                        amSyncTrialIndexForEachSpike, amCurrentRate,
+                                                                        amUniqRate)
                     amSyncPValue = np.min(allFreqSyncPVal)
                     amSyncZStat = np.max(allFreqSyncZScore)
                     cellDB.at[indRow, 'am_synchronization_pVal'] = amSyncPValue
                     cellDB.at[indRow, 'am_synchronization_ZStat'] = amSyncZStat
 
                     phaseDiscrimAccuracyDict = funcs.calculate_phase_discrim_accuracy(amSpikeTimes, amEventOnsetTimes,
-                                                                                      amCurrentFreq, amUniqFreq)
-                    for rate in amUniqFreq:
+                                                                                      amCurrentRate, amUniqRate)
+
+                    for rate in amUniqRate:
                         cellDB.at[indRow, 'phaseDiscrimAccuracy_{}Hz'.format(int(rate))] = \
                             phaseDiscrimAccuracyDict[int(rate)]
 
                     rateDiscrimAccuracy = funcs.calculate_rate_discrimination_accuracy(amSpikeTimes, amEventOnsetTimes,
                                                                                        amBaseTime, amResponseTime,
-                                                                                       amCurrentFreq)
+                                                                                       amCurrentRate)
                     cellDB.at[indRow, 'rateDiscrimAccuracy'] = rateDiscrimAccuracy
                     if any(allFreqSyncPVal < 0.05):
                             sigPvals = np.array(allFreqSyncPVal) < 0.05
                             highestSyncInd = funcs.index_all_true_before(sigPvals)
-                            cellDB.at[indRow, 'highestSync'] = amUniqFreq[allFreqSyncPVal < 0.05].max()
-                            cellDB.at[indRow, 'highestUSync'] = amUniqFreq[highestSyncInd]
+                            cellDB.at[indRow, 'highestSync'] = amUniqRate[allFreqSyncPVal < 0.05].max()
+                            cellDB.at[indRow, 'highestUSync'] = amUniqRate[highestSyncInd]
                             # print possibleFreq[pValThisCell<0.05].max()
 
                     else:
                         cellDB.at[indRow, 'highestSync'] = 0
 
                     if any(allFreqSyncPVal < correctedPval):
-                        cellDB.at[indRow, 'highestSyncCorrected'] = amUniqFreq[allFreqSyncPVal < correctedPval].max()
-                        highestSyncCorrected = amUniqFreq[allFreqSyncPVal < correctedPval].max()
+                        cellDB.at[indRow, 'highestSyncCorrected'] = amUniqRate[allFreqSyncPVal < correctedPval].max()
+                        highestSyncCorrected = amUniqRate[allFreqSyncPVal < correctedPval].max()
                         freqsBelowThresh = allFreqSyncPVal < correctedPval
                         freqsBelowThresh = freqsBelowThresh.astype(int)
                         if len(significantFreqsArray) == 0:
