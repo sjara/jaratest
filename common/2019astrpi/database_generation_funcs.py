@@ -93,7 +93,7 @@ def calculate_fit_params(uniqFreq, allIntenBase):
     Defines fit input parameters
     Parameters:
                 uniqFreq (list): list of unique frequencies
-                allIntenBase (np.array): cumulated number of spikes on pre-stimulus range with all\
+                allIntenBase (np.array): cumulated number of spikes on pre-stimulus range with all
                 frequencies and all intensities
     Returns:
             p0 (list): initial guess
@@ -110,7 +110,7 @@ def calculate_fit(uniqFreq, allIntenBase, freqs, spks):
     Parameters:
                 Used for calculate_fit_params:
                     uniqFreq: list of unique frequencices
-                    allIntenBase: cumulated number of spikes on pre-stimulus range with all\
+                    allIntenBase: cumulated number of spikes on pre-stimulus range with all
                     frequencies and intensities
                 Used for curve_fit:
                 freqs (np.array): [total ntrials of all frequencies in response range] each number represents frequency
@@ -141,8 +141,8 @@ def calculate_fit(uniqFreq, allIntenBase, freqs, spks):
 
 def calculate_response_threshold(fraThreshold, allIntenBase, respSpikeMean):
     """
-    Response threshold is defined to be the baseline firiting rate plus 20%(fraThreshold)\
-    of the difference between baseline and the cell's maximum firitng rate under any \
+    Response threshold is defined to be the baseline firing rate plus 20%(fraThreshold)
+    of the difference between baseline and the cell's maximum firing rate under any
     condition (Sutter and Schreiner, https://doi.org/10.1152/jn.1991.65.5.1207)
     returns responseThreshold(float)
     """
