@@ -29,7 +29,7 @@ SAVE_FIGURE = 1
 outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'sound_responses'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
-figSize = [20, 11.5]
+figSize = [20, 18]
 
 fontSizeLabels = figparams.fontSizeLabels*2
 # fontSizeTicks = figparams.fontSizeTicks*2
@@ -313,6 +313,7 @@ axEight.set_xticklabels(["D1", "nD1"])
 axEight.set_ylabel("p-value")
 axEight.set_title("AM Synchronization p-values")
 
+# ############# RESPONSE INDEX PLOTS #################
 # ----------- Noiseburst Response Index --------------
 D1NoiseIndex = (d1DB.noiseburst_responseFR - d1DB.noiseburst_baselineFR) /\
                (d1DB.noiseburst_responseFR + d1DB.noiseburst_baselineFR)
@@ -517,6 +518,8 @@ zStats, pVals = stats.mannwhitneyu(D1TunedFR, nD1TunedFR, alternative='two-sided
 messages.append("Tuned cell FR = {}".format(pVals))
 axSixteen.set_title("Tuned Cell Firing Rates\np-value = {:.4}".format(pVals))
 
+# ############# MORE FIRING RATE PLOTS ###############
+# ------------- Onset FR for pure tones --------------
 extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 plt.show()
 
