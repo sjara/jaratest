@@ -35,7 +35,7 @@ from jaratoolbox import settings
 from jaratoolbox import histologyanalysis
 import database_generation_funcs as funcs
 
-
+# Identifying what version of input to use based on python version
 if sys.version_info.major < 3:
     input_func = raw_input
 elif sys.version_info.major >= 3:
@@ -408,12 +408,12 @@ def append_base_stats(cellDB, filename=''):
                         cellDB.at[indRow, 'highestSync'] = 0
 
                     if any(allFreqSyncPVal < correctedPval):
-                        cellDB.at[indRow, 'highestSyncCorrected'] = amUniqRate[allFreqSyncPVal < correctedPval].max()
+                        cellDB.at[indRow, 'highestSyncCorrected'] = amUniqRate[allFreqSyncPVal < correctedPval].max()  # Storing the highest rate that should synchronization from the Rayleigh test
                         highestSyncCorrected = amUniqRate[allFreqSyncPVal < correctedPval].max()
                         freqsBelowThresh = allFreqSyncPVal < correctedPval
                         freqsBelowThresh = freqsBelowThresh.astype(int)
                         if len(significantFreqsArray) == 0:
-                            significantFreqsArray = freqsBelowThresh
+                            significantFreqsArray = freqsBelowThresh  #TODO Should we save all the frequencies that showed synchronization?
                         else:
                             significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
                     else:
@@ -473,13 +473,14 @@ if __name__ == "__main__":
     # Check for script arguements to decide what calculations are done
     dbLocation = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME)
     if sys.argv[1:] != []:
+        # Defaulting all calculations to false
         basic_generation = 0
         calc_stats = 0
         calc_locations = 0
-        concat_mice = False
+        concat_mice = 0
         arguments = sys.argv[1:]
         if arguments[0] == "concat":
-            concat_mice = True
+            concat_mice = 1
         else:
             if arguments[1] == 'all':
                 d1mice = studyparams.ASTR_D1_CHR2_MICE
@@ -487,33 +488,42 @@ if __name__ == "__main__":
             elif isinstance(arguments[1], str):
                 d1mice = arguments[1]
                 dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
+
+                #FIXME: Storing the string as a list since the database generation tries to loop through the mice. A
+                # single mouse string would instead cause it to loop through letters. A list of one fixes this
                 d1mice = [d1mice]
             else:
+                # If no mice are specified, default to using all mice in the studyparams
                 d1mice = studyparams.ASTR_D1_CHR2_MICE
                 dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
-            print('d1mice = {}'.format(d1mice))
-            # Run behavior can either be 'all', 'hist', or 'stats'
+            print('d1mice = {}'.format(d1mice))  # Printing mice so user can see what is being used
+            # Run behavior can either be 'all', 'hist', or 'stats' if not concatenating
             runBehavior = arguments[0]
-            print('Run behavior is {}'.format(runBehavior))
+            print('Run behavior is {}'.format(runBehavior))  # Printing behavior so user is aware
             if runBehavior == 'all':
+                # Generates dataframe from inforec, calculates in-depth statistics, and then finds locations from tracks
                 basic_generation = 1
                 calc_stats = 1
                 calc_locations = 1
             elif runBehavior == 'locations':
+                # Generates a dataframe from inforec and then finds locations from the tracks files
                 basic_generation = 1
                 calc_locations = 1
             elif runBehavior == 'stats':
+                # Generates a dataframe from the inforec and then calculates in-depth statistics
                 basic_generation = 1
                 calc_stats = 1
             elif runBehavior == 'basic':
+                # Just generates a dataframe from the inforecs. Good for checking if you have all needed files available
+                # to your system (besides tracks/histology files)
                 basic_generation = 1
 
     else:
-        # Calculates everything for all mice in studyparams
+        # Calculates everything and finds locations for all mice in studyparams if no system arguements are provided
         calc_stats = 1
         calc_locations = 1
         basic_generation = 1
-        concat_mice = False
+        concat_mice = 0
         d1mice = studyparams.ASTR_D1_CHR2_MICE
         dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
 
@@ -524,13 +534,20 @@ if __name__ == "__main__":
         clusteringObj.process_all_experiments()
         pass
 
-    # Generate_cell_database_filters cells with the followings: isi < 0.05, spike quality > 2
+    # Generate_cell_database filters cells with the following: isi < 0.05, spike quality > 2
     if concat_mice:
+        # Fetches individual mice dataframes and merges into one dataframe
         first_mouse, *list_of_mice = studyparams.ASTR_D1_CHR2_MICE
         histDB = merge_dataframes(list_of_mice, first_mouse)
         dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
     if basic_generation:
         basicDB = celldatabase.generate_cell_database_from_subjects(d1mice)
+
+        '''
+        These renaming variables below are to account for if only some calculations are done. Otherwise the save
+        function would have to do four different if-elif clauses to test for what dataframe to save. Instead I just
+        have each variable get overwritten as more advanced calculations are done.
+        '''
         firstDB = basicDB
         histDB = basicDB
         d1DBFilename = os.path.join(settings.FIGURES_DATA_PATH, '{}_d1mice.h5'.format(studyparams.STUDY_NAME))
