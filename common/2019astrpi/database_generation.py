@@ -165,8 +165,13 @@ def append_base_stats(cellDB, filename=''):
                     funcs.sound_response_any_stimulus(tuningEventOnsetTimes, tuningSpikeTimes,
                                                       tuningTrialsEachCond[:, :, -1], timeRange=[0.0, 0.05],
                                                       baseRange=baseRange)  # All trials at all frequencies at the highest intensity
-                respLatency = funcs.calculate_latency(tuningEventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
-                                                      uniqueIntensity, tuningSpikeTimes, indRow)
+                try:
+                    respLatency = funcs.calculate_latency(tuningEventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
+                                                          uniqueIntensity, tuningSpikeTimes)
+                except IndexError:
+                    print("Index error for cell {}".format(indRow))  # If there are no spikes in the timeRangeForLatency
+                    respLatency = np.nan
+
                 if tuningPVal > 0.05:
                     toCalculate = False  # Excludes doing calculations/fitting a Gaussian for non-responsive cells
                 tuningTimeRange = [-0.1, 0.1]  # Includes baseline and response range
@@ -240,6 +245,7 @@ def append_base_stats(cellDB, filename=''):
                                                                                                   tuningSpikeTimes,
                                                                                                   currentFreq,
                                                                                                   currentIntensity,
+                                                                                                  uniqueIntensity,
                                                                                                   cf, respLatency)
                 else:
                     monoIndex = np.nan
