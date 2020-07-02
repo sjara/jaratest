@@ -69,14 +69,14 @@ def calculate_firing_rate(eventOnsetTimes, spikeTimes, baseRange, selectinds=[])
     and the same amount of time range as baseRange
     Args:
         eventOnsetTimes (np.array): [nTrials, 1], each row is the time of the
-        trial start
+            trial start
         spikeTimes (np.array): [nTrials, 1], each row is a timestamp for when a
-        spike was detected
+            spike was detected
         baseRange (list): [startTime, endTime], contains the time range defined
-        for the baseline spikes
+            for the baseline spikes
         selectinds (np.array): indices of event onset time points for specific
-        frequency and specific intensity, used for frequency tuning analysis,
-        empty by default
+            frequency and specific intensity, used for frequency tuning analysis,
+            empty by default
 
     Returns:
         nspkBase (np.array): [ntrials, 1], each row represents the number of
@@ -112,9 +112,10 @@ def calculate_fit_params(uniqFreq, allIntenBase):
     """
     Defines fit input parameters for a Gaussian
     Args:
-        uniqFreq (list): list of unique frequencies
+        uniqFreq (np.array): Contains unique frequencies presented during the
+            session
         allIntenBase (np.array): Cumulated number of spikes on pre-stimulus
-        range with all frequencies and all intensities
+            range with all frequencies and all intensities
 
     Returns:
         p0 (list): initial guess parameters to fit to
@@ -130,14 +131,15 @@ def calculate_fit(uniqFreq, allIntenBase, freqs, spks):
     Calculates curve fitting with given pre-stimulus spikes
     Args:
         Used for calculate_fit_params:
-            uniqFreq: list of unique frequencices
-            allIntenBase: cumulated number of spikes on pre-stimulus range with
-            all frequencies and intensities
+            uniqFreq (np.array): Contains unique frequencies presented during
+                the session
+            allIntenBase (list): cumulated number of spikes on pre-stimulus
+                range with all frequencies and intensities
         Used for curve_fit:
             freqs (np.array): [total ntrials of all frequencies in response range]
-            each number represents frequency
+                each number represents frequency
             spks (np.array): [total ntrials of all frequencies in response range]
-            an array of spikes in each trial
+                an array of spikes in each trial
 
     Returns:
         Rsquared (float): R-squared value of the curve
@@ -170,10 +172,10 @@ def calculate_response_threshold(fraThreshold, allIntenBase, respSpikeMean):
     condition (Sutter and Schreiner, https://doi.org/10.1152/jn.1991.65.5.1207)
     Args:
         fraThreshold (float): Chosen firing rate threshold for the frequency
-        response area
+            response area
         allIntenBase (np.array): [nTrials, 1], each value is the number of spikes
         respSpikeMean (np.array): [Intensity, Frequency], each value is the mean
-        number of spikes at a specific frequncy and intensity combination
+            number of spikes at a specific frequency and intensity combination
 
     Returns:
         Response threshold value (float)
@@ -188,11 +190,11 @@ def calculate_intensity_threshold_and_CF_indices(fra, respSpikeMean, threshold=0
     the FRA where 85%(theshold) of the intensities above were also within the FRA
     Args:
         fra (np.array): boolean array of shape (nInten, nFreq). Higher index
-        means higher intensity
+            means higher intensity
         respSpikeMean (np.array): response spike number array of shape
         (nInten, nFreq). Higher index = higher intensity
         threshold (float): At least this proportion of the intensities above
-        must have a response for the freq to be cf
+            must have a response for the freq to be cf
 
     Returns:
         intensityInd (int): intensity threshold index
@@ -233,11 +235,11 @@ def calculate_BW10_params(ind10Above, popts, Rsquareds, responseThreshold, inten
         ind10Above (int): represents the index of intensity threshold plus 10dB
         popts: optimal parameters for gaussian curve
         Rsquareds (np.array): [nIntensity, nFrequency] within the Rsquareds array,
-        each array represents the intensities in sequencial order. Each intensity
-        array contains R-squared value for each frequency
+            each array represents the intensities in sequencial order. Each
+            intensity array contains R-squared value for each frequency
         responseThreshold (float): response firing threshold
         intensityThreshold (float): minimum intensity where 85% of the rest of
-        intensity above is within FRA
+            intensity above is within FRA
 
     Returns:
         lowerFreq (float): lower bound frequency of BW10
@@ -282,21 +284,21 @@ def calculate_latency(eventOnsetTimes, currentFreq,  uniqFreq, currentIntensity,
     to it
     Args:
         eventOnsetTimes (np.array): Same size as the number of trials with each
-        value being the time sound detector turned on
+            value being the time sound detector turned on
         currentFreq (np.array): Same size as number of trials presented with each
-        value being a specific frequency for that trial
+            value being a specific frequency for that trial
         currentIntensity (np.array): Same size as number of trials presented with
-        each value being a specific intensity for that trial
+            each value being a specific intensity for that trial
         uniqueIntensity (np.array): Uses currentIntensity to find how many unique
-        intensity values were presented and store each unique value
+            intensity values were presented and store each unique value
         uniqFreq (np.array): Uses currentFreq to find how many unique frequency
-        values were presented and store each unique value
+            values were presented and store each unique value
         spikeTimes (np.array): Each value is a time when a spike occurred;
-        obtained from ephys data
+            obtained from ephys data
 
     Returns:
         respLatency (float): Time, in seconds, from when the stimulus is
-        presented and the cell responds
+            presented and the cell responds
 
     """
 
@@ -360,23 +362,24 @@ def calculate_monotonicity_index(eventOnsetTimes, currentFreq, currentIntensity,
 
     Args:
         eventOnsetTimes (np.array): Same size as the number of trials with each
-        value being the time sound detector turned on
+            value being the time sound detector turned on
         currentFreq (np.array): Same size as number of trials presented with each
-        value being a specific frequency for that trial
+            value being a specific frequency for that trial
         currentIntensity (np.array): Same size as number of trials presented
-        with each value being a specific intensity for that trial
+            with each value being a specific intensity for that trial
         uniqueIntensity (np.array): Uses currentIntensity to find how many unique
-        intensity values were presented and store each unique value in ascending
-        order
+            intensity values were presented and store each unique value in
+            ascending order
         spikeTimes (np.array): Each value is a time when a spike occurred;
-        obtained from ephys data
+            obtained from ephys data
         cf (float): Characteristic frequency of the cell, calculated by analyzing
-        lowest threshold value for a cell
+            lowest threshold value for a cell
 
     Returns:
-        monoIndex (float): Index value for monotonicity of a cell, between 0 and 1
+        monoIndex (float): Index value for monotonicity of a cell, between 0
+            and 1
         overallMaxSpikes (float): Mean number of spikes at the intensity that
-        had the most spikes for a stimulus
+            had the most spikes for a stimulus
     """
 
     # if len(eventOnsetTimes) != len(freqEachTrial):
@@ -443,25 +446,26 @@ def calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes, currentFreq,
     of the cell.
     Args:
         eventOnsetTimes (np.array): Same size as the number of trials with each
-        value being the time sound detector turned on
+            value being the time sound detector turned on
         spikeTimes (np.array): Each value is a time when a spike occurred;
-        obtained from ephys data
-        currentFreq (np.array): Same size as number of trials presented with each
-        value being a specific frequency for that trial
+            obtained from ephys data
+        currentFreq (np.array): Same size as number of trials presented with
+            each value being a specific frequency for that trial
         currentIntensity (np.array): Same size as number of trials presented with
-        each value being a specific intensity for that trial
+            each value being a specific intensity for that trial
         uniqIntensity (np.array): Uses currentIntensity to find how many unique
-        intensity values were presented and store each unique value in ascending order
+            intensity values were presented and store each unique value in
+            ascending order
         cf (float): The characteristic frequency of the neuron
         respLatency (float): Time in seconds that the cell takes to respond to
-        the stimulus being presented
+            the stimulus being presented
     Returns:
         onsetRate (float): The number of spikes that happen within the response
-        time range
+            time range
         sustainedRate (float): The number of spikes that happen within the
-        sustained time range
+            sustained time range
         baseRate (float): The number of spikes that happen within the baseline
-        time range
+            time range
 
     """
     cfTrials = currentFreq == cf
@@ -533,7 +537,7 @@ def index_all_true_before(arr):
         arr (1-d array of bool): an array of boolean vals
     Returns:
         ind (int): The index of the first True val where all subsequent vals
-        are also True
+            are also True
     """
     if any(~arr):
         indLastTrue = np.min(np.where(~arr))-1
@@ -544,16 +548,17 @@ def index_all_true_before(arr):
 
 def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, currentFreq, uniqFreq):
     """
-    Generator func to return the spiketimes/trial indices for trials of each frequency
+    Generator func to return the spiketimes/trial indices for trials of each
+    frequency
     Args:
         spikeTimesFromEventOnset (np.array): Contains the spike times relative
-        to the onset of the event (the event start being 0)
+            to the onset of the event (the event start being 0)
         trialIndexForEachSpike (np.array): Contains all the indices of the
-        spikes to use
+            spikes to use
         currentFreq (np.array): [nTrials, 1] Each value is the frequency
-        presented during the specific trial number
+            presented during the specific trial number
         uniqFreq (np.array): An array of each unique frequency presented over
-        the whole session
+            the whole session
     """
     for freq in uniqFreq:
         trialsThisFreq = np.flatnonzero(currentFreq == freq)
@@ -610,24 +615,24 @@ def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, am
     the amplitude modulation presentations.
     Args:
         amSpikeTimes (np.array): Each value is a time when a spike occurred.
-        Obatained from Ephys Data
+            Obatained from Ephys Data
         amOnsetTimes (np.array): Contains as many values as there were trials
-        with each value being the tme a trial started.
+            with each value being the tme a trial started.
         amBaseTime (list): Contains two values that represent the time range
-        for the base firing rate
+            for the base firing rate
         amOnsetTime (list): Contains two values that represent the time range
-        for the onset firing rate
+            for the onset firing rate
         amCurrentFreq (np.array): Contains as many values as there were trials
-        with each value being the am rate for a specific trial. Obtained from
-        Behavior Data
+            with each value being the am rate for a specific trial. Obtained
+            from Behavior Data
         amUniqFreq (np.array): Contains as many values as there were unique am
-        rates presented over the entire session.
+            rates presented over the entire session.
 
     Returns:
         allFreqSyncPVal (np.array): Contains one p-value for each unique am
-        rate presented over the entire session
+            rate presented over the entire session
         allFreqSyncZScore (np.array): Contains one z-value for each unique am
-        rate presented over the entire session
+            rate presented over the entire session
         allFreqVectorStrength (np.array):
         allFreqRal (np.array):
 
@@ -665,24 +670,24 @@ def calculate_am_significance(amSpikeTimes, amOnsetTimes, amBaseTime, amResponse
     Calculate significance values for all rates of amplitude modulation sessions
     Args:
         amSpikeTimes (np.array): Each value is a time when a spike occurred.
-        Obatained from Ephys Data
+            Obatained from Ephys Data
         amOnsetTimes (np.array): Contains as many values as there were trials
-        with each value being the time a trial started.
+            with each value being the time a trial started.
         amBaseTime (list): Contains two values that represent the time range
-        for the base firing rate
+            for the base firing rate
         amResponseTime (list): Contains two values that represent the time
-        range for the onset firing rate
+            range for the onset firing rate
         amCurrentFreq (np.array): Contains as many values as there were trials
-        with each value being the am rate for a specific trial. Obtained from
-        Behavior Data
+            with each value being the am rate for a specific trial. Obtained
+            from Behavior Data
         amUniqFreq (np.array): Contains as many values as there were unique am
-        rates presented over the entire session.
+            rates presented over the entire session.
 
     Returns:
         allFreqPVal (np.array): Contains one p-value for each unique am rate
-        presented over the entire session
+            presented over the entire session
         allFreqZScore (np.array): Contains one z-value for each unique am rate
-        presented over the entire session
+            presented over the entire session
         allFreqVectorStrength (np.array):
         allFreqRal (np.array):
 
@@ -728,18 +733,18 @@ def sound_response_any_stimulus(eventOnsetTimes, spikeTimeStamps, trialsEachCond
         eventOnsetTimes: array of timestamps indicating sound onsets
         spikeTimeStamps: array of timestamps indicating when spikes occured
         trialsEachCond: (N trials x N conditions) array indicating which
-        condition occured for each trial. Currently only checks over one
-        parameter used during session.
+            condition occured for each trial. Currently only checks over one
+            parameter used during session.
         timeRange: time range (relative to sound onset) to be used as response,
-        list of [start time, end time]
+            list of [start time, end time]
         baseRange: time range (relative to sound onset) to be used as baseline,
-        list of [start time, end time]
+            list of [start time, end time]
 
     Outputs:
         maxzscore: maximum U test statistic found after comparing response for
-        each condition to baseline
+            each condition to baseline
         minpVal: minimum p value found after comparing response for each
-        condition to baseline, NOT CORRECTED FOR MULTIPLE COMPARISONS
+            condition to baseline, NOT CORRECTED FOR MULTIPLE COMPARISONS
     """
     fullTimeRange = [min(min(timeRange), min(baseRange)), max(max(timeRange), max(baseRange))]
 
@@ -786,7 +791,7 @@ def linear_discriminator(spikesPref, spikesNonPref):
     Returns:
         maxAccuracy (float): The accuracy of the chosen threshold
         threshold (float): The threshold that yielded the highest accuracy for
-        the discriminator
+            the discriminator
     """
 
     if len(spikesPref) == 0:
@@ -833,19 +838,19 @@ def calculate_rate_discrimination_accuracy(spikeTimes, eventOnsetTimes, baseRang
     modulation rates
     Args:
         spikeTimes (np.array): [nTrials, 1] each value is a time stamp for when
-        a spike was detected
+            a spike was detected
         eventOnsetTimes (np.array): [nTrials, 1] each value is a time stamp for
-        when an event started
+            when an event started
         baseRange (list): Contains the start and end time of the baseline range
         responseRange (list): Contains the start and end time of the response
-        range
+            range
         currentFreq (np.array): [nTrials, 1] where each value is the rate of
-        amplitude modulation
+            amplitude modulation
         shuffle (bool): Whether to shuffle the AM rates or not
 
     Returns:
         rateDiscrimAccuracy (float): Value between 0 and 1 with 1 meaning the
-        cells perfectly discriminate the rates of amplitude modulation
+            cells perfectly discriminate the rates of amplitude modulation
 
     """
     SHUFFLE = shuffle  # Set to true to shuffle AM rates, giving an estimate of the chance level.
@@ -894,17 +899,17 @@ def calculate_phase_discrim_accuracy(spikeTimes, eventOnsetTimes, currentFreq, u
     modulation rates
     Args:
         spikeTimes (np.array): [nTrials, 1] where each value is a time stamp
-        for when a spike was detected
+            for when a spike was detected
         eventOnsetTimes (np.array): [nTrials, 1] where each value is a time
-        stamp for when an event started 
+            stamp for when an event started
         currentFreq (np.array): [nTrials, 1] where each value is the frequency
-        for a specific trial
+            for a specific trial
         uniqFreq (np.array): Contains all the unique frequencies presented
         shuffle (bool): Whether to shuffle AM rates or not
 
     Returns:
         phaseDiscrimAccuracy (float): Value between 0 and 1 where 1 means a
-        neuron can perfectly tell the phase of amplitude modulation
+            neuron can perfectly tell the phase of amplitude modulation
 
     """
     SHUFFLE = shuffle
