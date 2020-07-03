@@ -1,5 +1,7 @@
-"""Calculating ttoal number of cells that respond to sound while outside of
-the striatum across all subjects histology data is known for."""
+"""
+Calculating total number of cells that respond to sound while outside of
+the striatum across all subjects histology data is known for.
+"""
 #%%
 import sys
 sys.path.append('..')

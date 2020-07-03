@@ -535,6 +535,7 @@ if __name__ == "__main__":
 
     if CLUSTER_DATA:  # SPIKE SORTING
         # TODO: Need to loop through d1mice as it is a list
+        #FIXME: Add an error for if a list of mice is going to be given to the cluster inforec function
         inforecFile = os.path.join(settings.INFOREC_PATH, '{}_inforec.py'.format(d1mice))
         clusteringObj = spikesorting.ClusterInforec(inforecFile)
         clusteringObj.process_all_experiments()

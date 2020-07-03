@@ -18,7 +18,7 @@ from jaratoolbox import extraplots
 from jaratoolbox import spikesanalysis
 import database_generation_funcs as funcs
 import figparams
-from extras import figure_R2_comparison as histDraw
+from extras import normalized_hist_plot_funcitons as histDraw
 
 #%% Calculations of various data to plot
 db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/ttDBR2.h5")

@@ -167,9 +167,10 @@ def calculate_fit(uniqFreq, allIntenBase, freqs, spks):
 
 def calculate_response_threshold(fraThreshold, allIntenBase, respSpikeMean):
     """
-    Response threshold is defined to be the baseline firing rate plus 20%(fraThreshold)
-    of the difference between baseline and the cell's maximum firing rate under any
-    condition (Sutter and Schreiner, https://doi.org/10.1152/jn.1991.65.5.1207)
+    Response threshold is defined to be the baseline firing rate plus
+    20%(fraThreshold) of the difference between baseline and the cell's maximum
+    firing rate under any condition
+    (Sutter and Schreiner, https://doi.org/10.1152/jn.1991.65.5.1207)
     Args:
         fraThreshold (float): Chosen firing rate threshold for the frequency
             response area
@@ -569,8 +570,9 @@ def spiketimes_each_frequency(spikeTimesFromEventOnset, trialIndexForEachSpike, 
 
 def angle_population_vector_zar(angles):
     """
-    Copied directly from Biostatistical analysis, Zar, 3rd ed, pg 598 (Mike Wehr has this book)
-    Computes the length of the mean vector for a population of angles
+    Computes the length of the mean vector for a population of angles.
+    Copied directly from Biostatistical analysis, Zar, 3rd ed, pg 598
+    (Mike Wehr has this book)
     Args:
         angles (np.array): Each value is an angle in radians
     Returns:
@@ -633,8 +635,9 @@ def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, am
             rate presented over the entire session
         allFreqSyncZScore (np.array): Contains one z-value for each unique am
             rate presented over the entire session
-        allFreqVectorStrength (np.array):
-        allFreqRal (np.array):
+        allFreqVectorStrength (np.array): Vector strength of the response for
+            each AM rate
+        allFreqRal (np.array): Related to Rayleigh Test
 
     """
     numFreq = len(amUniqFreq)

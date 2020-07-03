@@ -1,3 +1,7 @@
+"""
+Using hand-picked cells, this script will find the cells' ephys data and save
+what is needed to plot a raster plot in the figure_am.py file
+"""
 import os
 import numpy as np
 from jaratoolbox import spikesanalysis
@@ -11,47 +15,23 @@ outputDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME,
 
 # Example cells we want to show am rasters for
 examples = {}
-
-# examples.update({'Direct1': 'd1pi036_2019-05-29_2800.0_TT2c4'})
-# examples.update({'Direct2': 'd1pi036_2019-05-29_2800.0_TT6c2'})
 examples.update({'Direct1': 'd1pi042_2019-09-11_3200.0_TT3c4'})
-
-
 examples.update({'nDirect1': 'd1pi042_2019-09-11_3100.0_TT3c4'})
-# examples.update({'nDirect2': 'd1pi041_2019-08-25_3000.0_TT7c3'})
 
 exampleList = [val for key, val in examples.items()]
 exampleKeys = [key for key, val in examples.items()]
 exampleSpikeData = {}
-
-# THE METHOD
-# Calculate response range spikes for each combo
-# Calculate baseline rate
-# Calculate intensity threshold for cell by using response threshold
-# Fit gaussian to spike data 10db above intensity threshold
-# Determine upper and lower bounds of tc
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
 nameDB = studyparams.DATABASE_NAME + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
-#Only process the examples
-# dataframe = db.query('cellLabel in @exampleList')
-
-#Make labels for all the cells
-# db['cellLabel'] = db.apply(lambda row:'{}_{}_{}_{}_{}'.format(row['subject'], row['date'], int(row['depth']), int(row['tetrode']), int(row['cluster'])), axis=1)
-
-# examplesDB = db.query('cellLabel in @exampleList')
-
-# dataframe = examplesDB
-
 exampleSpikeTimes = {}
 exampleTrialIndexForEachSpike = {}
 exampleIndexLimitsEachTrial = {}
 exampleFreqEachTrial = {}
 
-# for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 for exampleInd, cellName in enumerate(exampleList):
 
     (subject, date, depth, tetrodeCluster) = cellName.split('_')
@@ -63,7 +43,7 @@ for exampleInd, cellName in enumerate(exampleList):
     cell = ephyscore.Cell(dbRow)
     try:
         ephysData, bdata = cell.load('am')
-    except (IndexError, ValueError):  # The cell does not have a tc or the tc session has no spikes
+    except (IndexError, ValueError):
         failed = True
         print("No am for cell {}".format(indRow))
     spikeTimes = ephysData['spikeTimes']
@@ -71,18 +51,24 @@ for exampleInd, cellName in enumerate(exampleList):
     eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
 
     freqEachTrial = bdata['currentFreq']
-    alignmentRange = [-0.2, 0.7]
+    alignmentRange = [-0.2, 0.7]  # Time chosen to include spikes visually for pre- and post-response period
+
+    # Finding spike times that are relative to the event onset for the raster plot
     (spikeTimesFromEventOnset,
         trialIndexForEachSpike,
         indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
                                                                       eventOnsetTimes,
                                                                       alignmentRange)
+    # Saving all the data into a dictionary which will become the npz file
     exampleFreqEachTrial.update({exampleKeys[exampleInd]: freqEachTrial})
     exampleSpikeTimes.update({exampleKeys[exampleInd]: spikeTimesFromEventOnset})
     exampleTrialIndexForEachSpike.update({exampleKeys[exampleInd]: trialIndexForEachSpike})
     exampleIndexLimitsEachTrial.update({exampleKeys[exampleInd]: indexLimitsEachTrial})
 
+# Set path/filename for data output
 exampleDataPath = os.path.join(outputDataDir, 'data_am_examples.npz')
+
+# Saving the dictionary as an npz
 np.savez(exampleDataPath,
          exampleIDs=exampleList,
          exampleNames=exampleKeys,

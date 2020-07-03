@@ -1,14 +1,15 @@
 """
-Calulcate number of clusters by D1 vs nD1, by brain region filters, by tuning filters, etc
+Calulcate number of clusters by D1 vs nD1, by brain region filters, by
+tuning filters, etc. Needs a database that has calculations for tuningTest
+paradigms stored (from extras/tuning_test_comparisons.py)
 """
 import sys
-sys.path.append('..')
+sys.path.append('..')  # Added to allow import of studyparams using a relative import
 import pandas as pd
 import numpy as np
 from jaratoolbox import celldatabase
 import studyparams
 
-# db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/direct_and_indirect_cells_with_R2_change.h5")
 db = celldatabase.load_hdf('/var/tmp/figuresdata/2019astrpi/ttDBR2.h5')
 db = db.query(studyparams.FIRST_FLTRD_CELLS)
 

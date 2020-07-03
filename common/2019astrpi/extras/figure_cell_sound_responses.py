@@ -1,3 +1,8 @@
+"""
+Generates a figures used to explore all aspects of sound responses for the
+various stimuli we presented to the mice. Panels from here may or may not make
+it into the final paper.
+"""
 import os
 import sys
 sys.path.append('..')

@@ -1,7 +1,8 @@
 """
-1.) Load in existing database
-2.) calculate the firing rate differences for tuningTest paradigm
-3.) Add signficance to values and ID if there are a greater % of D1 cells tuned rather than non-D1
+Calculates some statistics and sound response properties for tuningTest paradigm.
+The database generated from here is needed by:
+extras/cluster_counts.py
+extras/generate_allCell_reports.py
 """
 import os
 import sys

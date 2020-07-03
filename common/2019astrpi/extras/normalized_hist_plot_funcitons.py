@@ -1,3 +1,7 @@
+"""
+Contains functions used for plotting normalized histograms for comparisons.
+One function needs a datafrome, the other can use raw data fed to it.
+"""
 import matplotlib.pyplot as plt
 import numpy as np
 import importlib

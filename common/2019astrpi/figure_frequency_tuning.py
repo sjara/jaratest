@@ -1,5 +1,5 @@
 """
-Tuning curve figure for 2019astrpi
+Plots relating to pure tone presentations for 2019astrpi
 """
 
 import os
