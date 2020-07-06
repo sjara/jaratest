@@ -650,7 +650,7 @@ def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, am
     for indFreq, (freq, spiketimes, trialInds) in enumerate(
             spiketimes_each_frequency(amSyncSpikeTimesFromEventOnset,
                                       amSyncTrialIndexForEachSpike,
-                                      amCurrentFreq)):
+                                      amCurrentFreq, amUniqFreq)):
         strength, phase = signal.vectorstrength(spiketimes, 1.0 / freq)
 
         radsPerSec = freq * 2 * np.pi
