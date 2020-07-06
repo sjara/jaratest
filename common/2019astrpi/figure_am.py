@@ -398,7 +398,7 @@ if PANELS[4]:
                      fontsize=fontSizePanel, fontweight='bold')
     axD1Pie.annotate('C', xy=(labelPosX[3], labelPosY[1]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
-    axD1Pie.annotate('E', xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
+    axD1Pie.annotate('E', xy=(0.64, labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
     axD1Pie.annotate('F', xy=(labelPosX[3], labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')

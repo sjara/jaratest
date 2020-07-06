@@ -81,7 +81,7 @@ def append_base_stats(cellDB, filename=''):
 
             # Adding noiseburst values to the dataframe
             cellDB.at[indRow, '{}_pVal'.format(session)] = pVals  # p-value from Mann-Whitney U test
-            cellDB.at[indRow, '{}_zStat'.format(session)] = zStats  # U-statistic from Mann-Whitney U test
+            cellDB.at[indRow, '{}_ZStat'.format(session)] = zStats  # U-statistic from Mann-Whitney U test
             # If we want to save the spikes themselves, we must convert the 'nspkBase' variables to a pandas series to
             # store it in the DF. We must then use Series.to_list() after to use the data normally again. Instead I just
             # saved the mean of spikes below as it was good enough for what I needed
@@ -111,7 +111,7 @@ def append_base_stats(cellDB, filename=''):
 
             # Adding laserpulse calculations to the dataframe
             cellDB.at[indRow, '{}_pVal'.format(session)] = pVals  # p-value from Mann-Whitney U test
-            cellDB.at[indRow, '{}_zStat'.format(session)] = zStats  # U-statistic from Mann-Whitney U test
+            cellDB.at[indRow, '{}_ZStat'.format(session)] = zStats  # U-statistic from Mann-Whitney U test
             cellDB.at[indRow, '{}_dFR'.format(session)] = changeFiring  # Difference between base and response firing rate
             cellDB.at[indRow, '{}_baselineFR'.format(session)] = baseSpikeMeanLaser  # Mean of baseline firing rate
             cellDB.at[indRow, '{}_responseFR'.format(session)] = respSpikeMeanLaser  # Mean of response firing rate
@@ -164,7 +164,7 @@ def append_base_stats(cellDB, filename=''):
                 tuningZStat, tuningPVal = \
                     funcs.sound_response_any_stimulus(tuningEventOnsetTimes, tuningSpikeTimes,
                                                       tuningTrialsEachCond[:, :, -1], timeRange=[0.0, 0.05],
-                                                      baseRange=baseRange)  # All trials at all frequencies at the highest intensity
+                                                      baseRange=[-0.05, 0])  # All trials at all frequencies at the highest intensity
                 try:
                     respLatency = funcs.calculate_latency(tuningEventOnsetTimes, currentFreq, uniqFreq, currentIntensity,
                                                           uniqueIntensity, tuningSpikeTimes)
@@ -279,17 +279,17 @@ def append_base_stats(cellDB, filename=''):
                 cellDB.at[indRow, 'fit_midpoint'] = fitMidpoint  # Midpoint of the Gaussian
                 cellDB.at[indRow, 'latency'] = respLatency  # How long the cell takes to have an onset response after presentation
                 cellDB.at[indRow, 'monotonicityIndex'] = monoIndex  # How linearly the cell increases FR with intensity
-                cellDB.at[indRow, 'onsetRate'] = onsetRate  # The FR of the onset of the cell response (first 50 ms)
-                cellDB.at[indRow, 'sustainedRate'] = sustainedRate  # The FR of the sustained cell response (last 50 ms)
-                cellDB.at[indRow, 'baseRate'] = baseRate  # Baseline FR of the cell (-100 ms to 0 ms)
-                cellDB.at[indRow, 'tuning_pVal'] = tuningPVal  # p-value from Mann-Whitney U test
-                cellDB.at[indRow, 'tuning_ZStat'] = tuningZStat  # U-statistic from Mann-Whitney U test
-                cellDB.at[indRow, 'baseFRBestFreqMaxInt'] = np.mean(baseSpksTuning)  # Highest baseline FR at max intensity
-                cellDB.at[indRow, 'respFRBestFreqMaxInt'] = np.mean(respSpksTuning)  # Highest response FR at max intensity
-                cellDB.at[indRow, 'bestFreqMaxInt'] = bestFreqMaxInt  # The frequency used for the two above variables
+                cellDB.at[indRow, 'tuningOnsetRate'] = onsetRate  # The FR of the onset of the cell response (first 50 ms)
+                cellDB.at[indRow, 'tuningSustainedRate'] = sustainedRate  # The FR of the sustained cell response (last 50 ms)
+                cellDB.at[indRow, 'tuningBaseRate'] = baseRate  # Baseline FR of the cell (-100 ms to 0 ms)
+                cellDB.at[indRow, 'tuning_pVal'] = tuningPVal  # p-value from Mann-Whitney U test of Onset spikes
+                cellDB.at[indRow, 'tuning_ZStat'] = tuningZStat  # U-statistic from Mann-Whitney U test of Onset spikes
+                cellDB.at[indRow, 'tuningBaseFRBestFreqMaxInt'] = np.mean(baseSpksTuning)  # Highest baseline FR at max intensity
+                cellDB.at[indRow, 'tuningRespFRBestFreqMaxInt'] = np.mean(respSpksTuning)  # Highest response FR at max intensity
+                cellDB.at[indRow, 'tuningBestFreqMaxInt'] = bestFreqMaxInt  # The frequency used for the two above variables
                 cellDB['cfOnsetivityIndex'] = \
-                    (cellDB['onsetRate'] - cellDB['sustainedRate']) / \
-                    (cellDB['sustainedRate'] + cellDB['onsetRate'])
+                    (cellDB['tuningOnsetRate'] - cellDB['tuningSustainedRate']) / \
+                    (cellDB['tuningSustainedRate'] + cellDB['tuningOnsetRate'])
 
         # -------------------- am calculations ---------------------------
         session = 'am'
@@ -353,12 +353,12 @@ def append_base_stats(cellDB, filename=''):
                         amRespSustainedSpikes = nspkRespSustained
                         amBaseSustainedSpikes = nspkBaseSustained
                         amRateBestSustained = rate
-                cellDB.at[indRow, 'baseFROnset'] = np.mean(amBaseOnsetSpikes)  # Mean baseline FR matched for the onset period (-100 ms to 0 ms)
-                cellDB.at[indRow, 'respFROnset'] = np.mean(amRespOnsetSpikes)  # Mean response FR for the onset period (0 ms to 100 ms)
-                cellDB.at[indRow, 'bestRateOnset'] = amRateBestOnset  # Rate that gave the highest onset response
-                cellDB.at[indRow, 'baseFRSustained'] = np.mean(amBaseSustainedSpikes)  # Mean baseline FR paired with sustained period (-500 ms to -100 ms)
-                cellDB.at[indRow, 'respFRSustained'] = np.mean(amRespSustainedSpikes)  # Mean response FR for sustained period (100 ms to 500 ms)
-                cellDB.at[indRow, 'bestRateSustained'] = amRateBestSustained  # Rate that gave the highest sustained response
+                cellDB.at[indRow, 'AMBaseFROnset'] = np.mean(amBaseOnsetSpikes)  # Mean baseline FR matched for the onset period (-100 ms to 0 ms)
+                cellDB.at[indRow, 'AMRespFROnset'] = np.mean(amRespOnsetSpikes)  # Mean response FR for the onset period (0 ms to 100 ms)
+                cellDB.at[indRow, 'AMBestRateOnset'] = amRateBestOnset  # Rate that gave the highest onset response
+                cellDB.at[indRow, 'AMBaseFRSustained'] = np.mean(amBaseSustainedSpikes)  # Mean baseline FR paired with sustained period (-500 ms to -100 ms)
+                cellDB.at[indRow, 'AMRespFRSustained'] = np.mean(amRespSustainedSpikes)  # Mean response FR for sustained period (100 ms to 500 ms)
+                cellDB.at[indRow, 'AMBestRateSustained'] = amRateBestSustained  # Rate that gave the highest sustained response
 
                 #TODO: Should do some kind of post-hoc/correction on these such as
                 # taking the p-value and dividing by the total number of comparisons done and using that as a threshold
@@ -415,7 +415,6 @@ def append_base_stats(cellDB, filename=''):
 
                     if any(allFreqSyncPVal < correctedPval):
                         cellDB.at[indRow, 'highestSyncCorrected'] = amUniqRate[allFreqSyncPVal < correctedPval].max()  # Storing the highest rate that should synchronization from the Rayleigh test
-                        highestSyncCorrected = amUniqRate[allFreqSyncPVal < correctedPval].max()
                         freqsBelowThresh = allFreqSyncPVal < correctedPval
                         freqsBelowThresh = freqsBelowThresh.astype(int)
                         if len(significantFreqsArray) == 0:

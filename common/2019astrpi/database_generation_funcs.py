@@ -133,7 +133,7 @@ def calculate_fit(uniqFreq, allIntenBase, freqs, spks):
         Used for calculate_fit_params:
             uniqFreq (numpy.ndarray): Contains unique frequencies presented during
                 the session
-            allIntenBase (list): cumulated number of spikes on pre-stimulus
+            allIntenBase (numpy.ndarray): cumulated number of spikes on pre-stimulus
                 range with all frequencies and intensities
         Used for curve_fit:
             freqs (numpy.ndarray): [total ntrials of all frequencies in response range]
@@ -236,9 +236,8 @@ def calculate_BW10_params(ind10Above, popts, Rsquareds, responseThreshold, inten
     Args:
         ind10Above (int): represents the index of intensity threshold plus 10dB
         popts: optimal parameters for gaussian curve
-        Rsquareds (numpy.ndarray): [nIntensity, nFrequency] within the Rsquareds
-            array, each array represents the intensities in sequencial order.
-            Each intensity array contains R-squared value for each frequency
+        Rsquareds (list): Rsquare value for each intensity presented, with the
+            intensities in sequential order
         responseThreshold (float): response firing threshold
         intensityThreshold (float): minimum intensity where 85% of the rest of
             intensity above is within FRA

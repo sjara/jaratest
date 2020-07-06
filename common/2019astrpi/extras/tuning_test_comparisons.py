@@ -102,7 +102,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                 Rsquareds.append(Rsquared)
 
             db.at[indRow, 'tuningTest_pVal'] = ttPVal
-            db.at[indRow, 'tuningTest_zStat'] = ttZStat
+            db.at[indRow, 'tuningTest_ZStat'] = ttZStat
             db.at[indRow, 'ttR2Fit'] = Rsquared  # Using the highest (only) intensity
 
 celldatabase.save_hdf(db, '/var/tmp/figuresdata/2019astrpi/ttDBR2.h5')
