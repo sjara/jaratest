@@ -91,7 +91,13 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
 
                     # ------------------- Significance and fit calculations for tuning ----------------
                 # TODO: Do we really need to calculate this for each frequency at each intensity?
-                Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
+                if np.mean(spks) == 0:
+                    Rsquared = None
+                    # If there are no spikes than the rsquared value will be infinity from dividing by zero.
+                    # Upon further investigation, it's division by a np.float64 0 that causes infinity. A normal 0 just
+                    # causes a ZeroDivisionError
+                else:
+                    Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
 
                 Rsquareds.append(Rsquared)
 
