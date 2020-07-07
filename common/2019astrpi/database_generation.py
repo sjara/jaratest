@@ -287,9 +287,8 @@ def append_base_stats(cellDB, filename=''):
                 cellDB.at[indRow, 'tuningBaseFRBestFreqMaxInt'] = np.mean(baseSpksTuning)  # Highest baseline FR at max intensity
                 cellDB.at[indRow, 'tuningRespFRBestFreqMaxInt'] = np.mean(respSpksTuning)  # Highest response FR at max intensity
                 cellDB.at[indRow, 'tuningBestFreqMaxInt'] = bestFreqMaxInt  # The frequency used for the two above variables
-                cellDB['cfOnsetivityIndex'] = \
-                    (cellDB['tuningOnsetRate'] - cellDB['tuningSustainedRate']) / \
-                    (cellDB['tuningSustainedRate'] + cellDB['tuningOnsetRate'])
+                # Onset-to-sustained ratio is calculated right before the database is returned since it is calculated
+                # purely from columns in the database, so look near line 430
 
         # -------------------- am calculations ---------------------------
         session = 'am'
@@ -423,6 +422,11 @@ def append_base_stats(cellDB, filename=''):
                             significantFreqsArray = np.vstack((significantFreqsArray, freqsBelowThresh))
                     else:
                         cellDB.at[indRow, 'highestSyncCorrected'] = 0
+
+    # Calculating the onset-to-sustained ratio from the relevant columns
+    cellDB['cfOnsetivityIndex'] = \
+        (cellDB['tuningOnsetRate'] - cellDB['tuningSustainedRate']) / \
+        (cellDB['tuningSustainedRate'] + cellDB['tuningOnsetRate'])
 
     return cellDB
 

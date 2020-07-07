@@ -63,7 +63,7 @@ PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'figure_frequency_tuning'  # Do not include extension
-figFormat = 'png'  # 'pdf' or 'svg'
+figFormat = 'pdf'  # 'pdf' or 'svg'
 figSize = [17.25, 5.75]  # In inches (originally [13, 6.5]. Matt changed to current values based off Nick's paper)
 
 fontSizeLabels = figparams.fontSizeLabels*2
@@ -340,7 +340,6 @@ if PANELS[5]:
     medline(axOnsetivity, np.median(D1PopStat), 0, 0.5)
     # axOnsetivity.set_ylabel('Onsetivity index', fontsize=fontSizeTicks)
     axOnsetivity.set_ylabel('Onset to sustained ratio', fontsize=fontSizeLabels)
-    # tickLabels = ['ATh:Str', 'AC:Str']
     tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axOnsetivity.set_xticks(range(2))
     axOnsetivity.set_xlim([-0.5, 1.5])
@@ -352,7 +351,6 @@ if PANELS[5]:
 
     zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
 
-    # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
 
     yDataMax = max([max(D1PopStat), max(nD1PopStat)])
@@ -370,7 +368,6 @@ if PANELS[5]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
 
 # ======================= Beginning of plotting for monotonicity index ================================
 if PANELS[6]:

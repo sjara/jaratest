@@ -4,7 +4,7 @@ studyparams contains the default names and queries used in experiment and analys
 STUDY_NAME = '2019astrpi'
 PATH_TO_STUDY = '/home/jarauser/src/jaratest/common/2019astrpi'
 PATH_TO_TEST = '/home/jarauser/src/jaratest/allison/d1pi032'
-DATABASE_NAME = 'direct_and_indirect_cells_time'
+DATABASE_NAME = 'direct_and_indirect_cells'
 # List of animals used in this study
 ASTR_D1_CHR2_MICE = ['d1pi026', 'd1pi032', 'd1pi033', 'd1pi036', 'd1pi039', 'd1pi040', 'd1pi041', 'd1pi042', 'd1pi043', 'd1pi044', 'd1pi045', 'd1pi046', 'd1pi047', 'd1pi048', 'd1pi049']
 SINGLE_MOUSE = ['d1pi041']  # for data exploration/testing
