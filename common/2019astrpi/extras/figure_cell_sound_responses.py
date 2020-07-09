@@ -349,10 +349,10 @@ messages.append("Whitenoise index = {}".format(pVals))
 axNine.set_title("Noiseburst Response Index\np-value = {:.4}".format(pVals))
 
 # ---------- Pure Tone Response Index --------------
-D1PureToneIndex = (d1DB.respFRBestFreqMaxInt - d1DB.baseFRBestFreqMaxInt) /\
-                  (d1DB.respFRBestFreqMaxInt + d1DB.baseFRBestFreqMaxInt)
-nD1PureToneIndex = (nD1DB.respFRBestFreqMaxInt - nD1DB.baseFRBestFreqMaxInt) /\
-                   (nD1DB.respFRBestFreqMaxInt + nD1DB.baseFRBestFreqMaxInt)
+D1PureToneIndex = (d1DB.tuningRespFRBestFreqMaxInt - d1DB.tuningBaseFRBestFreqMaxInt) /\
+                  (d1DB.tuningRespFRBestFreqMaxInt + d1DB.tuningBaseFRBestFreqMaxInt)
+nD1PureToneIndex = (nD1DB.tuningRespFRBestFreqMaxInt - nD1DB.tuningBaseFRBestFreqMaxInt) /\
+                   (nD1DB.tuningRespFRBestFreqMaxInt + nD1DB.tuningBaseFRBestFreqMaxInt)
 
 # Dropping NaNs and then converting from a series to a list
 D1PureToneIndex = D1PureToneIndex.dropna()
@@ -379,10 +379,10 @@ messages.append("Pure tone index = {}".format(pVals))
 axTen.set_title("Pure Tone Response Index\np-value = {:.4}".format(pVals))
 
 # ---------- Onset Response Index --------------
-D1OnsetIndex = (d1DB.respFROnset - d1DB.baseFROnset) /\
-              (d1DB.respFROnset + d1DB.baseFROnset)
-nD1OnsetIndex = (nD1DB.respFROnset - nD1DB.baseFROnset) /\
-               (nD1DB.respFROnset + nD1DB.baseFROnset)
+D1OnsetIndex = (d1DB.AMRespFROnset - d1DB.AMBaseFROnset) /\
+              (d1DB.AMRespFROnset + d1DB.AMBaseFROnset)
+nD1OnsetIndex = (nD1DB.AMRespFROnset - nD1DB.AMBaseFROnset) /\
+               (nD1DB.AMRespFROnset + nD1DB.AMBaseFROnset)
 
 # Dropping NaNs and then converting from a series to a list
 D1OnsetIndex = D1OnsetIndex.dropna()
@@ -410,10 +410,10 @@ messages.append("AM onset index = {}".format(pVals))
 axEleven.set_title("AM Onset Response Index\np-value = {:.4}".format(pVals))
 
 # ---------- Sustained Response Index --------------
-D1SustainedIndex = (d1DB.respFRSustained - d1DB.baseFRSustained) /\
-                   (d1DB.respFRSustained + d1DB.baseFRSustained)
-nD1SustainedIndex = (nD1DB.respFRSustained - nD1DB.baseFRSustained) /\
-                    (nD1DB.respFRSustained + nD1DB.baseFRSustained)
+D1SustainedIndex = (d1DB.AMRespFRSustained - d1DB.AMBaseFRSustained) /\
+                   (d1DB.AMRespFRSustained + d1DB.AMBaseFRSustained)
+nD1SustainedIndex = (nD1DB.AMRespFRSustained - nD1DB.AMBaseFRSustained) /\
+                    (nD1DB.AMRespFRSustained + nD1DB.AMBaseFRSustained)
 
 # Dropping NaNs and then converting from a series to a list
 D1SustainedIndex = D1SustainedIndex.dropna()
@@ -440,8 +440,8 @@ messages.append("AM sustained index = {}".format(pVals))
 axTwelve.set_title("AM Sustained Response Index\np-value = {:.4}".format(pVals))
 
 # ------------ Pure Tone Firing Rate -------------
-D1PureToneFR = d1DB.respFRBestFreqMaxInt.dropna().to_list()
-nD1PureToneFR = nD1DB.respFRBestFreqMaxInt.dropna().to_list()
+D1PureToneFR = d1DB.tuningRespFRBestFreqMaxInt.dropna().to_list()
+nD1PureToneFR = nD1DB.tuningRespFRBestFreqMaxInt.dropna().to_list()
 D1PureToneFRX = jitter(np.ones(len(D1PureToneFR))*0, 0.20)
 nD1PureToneFRX = jitter(np.ones(len(nD1PureToneFR))*1, 0.20)
 
@@ -462,8 +462,8 @@ messages.append("Pure tone firing rates = {}".format(pVals))
 axThirteen.set_title("Pure Tone Firing Rates\np-value = {:.4}".format(pVals))
 
 # ------------ Pure Tone Firing Rate (limited y-axis) -------------
-D1PureToneFR = d1DB.respFRBestFreqMaxInt.dropna().to_list()
-nD1PureToneFR = nD1DB.respFRBestFreqMaxInt.dropna().to_list()
+D1PureToneFR = d1DB.tuningRespFRBestFreqMaxInt.dropna().to_list()
+nD1PureToneFR = nD1DB.tuningRespFRBestFreqMaxInt.dropna().to_list()
 D1PureToneFRX = jitter(np.ones(len(D1PureToneFR))*0, 0.20)
 nD1PureToneFRX = jitter(np.ones(len(nD1PureToneFR))*1, 0.20)
 
@@ -481,8 +481,8 @@ axFourteen.set_ylim([0, 5])
 axFourteen.set_title("Pure Tone Firing Rates\nLimited y-axis")
 
 # ------------ Pure Tone Firing Rate (even more restricted axis) -------------
-D1PureToneFR = d1DB.respFRBestFreqMaxInt.dropna().to_list()
-nD1PureToneFR = nD1DB.respFRBestFreqMaxInt.dropna().to_list()
+D1PureToneFR = d1DB.tuningRespFRBestFreqMaxInt.dropna().to_list()
+nD1PureToneFR = nD1DB.tuningRespFRBestFreqMaxInt.dropna().to_list()
 D1PureToneFRX = jitter(np.ones(len(D1PureToneFR))*0, 0.20)
 nD1PureToneFRX = jitter(np.ones(len(nD1PureToneFR))*1, 0.20)
 
@@ -502,8 +502,8 @@ axFifteen.set_title("Pure Tone Firing Rates\nLimited y-axis")
 # ------------ Tuned Cell Firing Rate -------------
 D1DBTuned = d1DB.query(studyparams.TUNING_FILTER)
 nD1DBTuned = nD1DB.query(studyparams.TUNING_FILTER)
-D1TunedFR = D1DBTuned.respFRBestFreqMaxInt.dropna().to_list()
-nD1TunedFR = nD1DBTuned.respFRBestFreqMaxInt.dropna().to_list()
+D1TunedFR = D1DBTuned.tuningRespFRBestFreqMaxInt.dropna().to_list()
+nD1TunedFR = nD1DBTuned.tuningRespFRBestFreqMaxInt.dropna().to_list()
 D1TunedFRX = jitter(np.ones(len(D1TunedFR))*0, 0.20)
 nD1TunedFRX = jitter(np.ones(len(nD1TunedFR))*1, 0.20)
 
@@ -525,6 +525,268 @@ axSixteen.set_title("Tuned Cell Firing Rates\np-value = {:.4}".format(pVals))
 
 # ############# MORE FIRING RATE PLOTS ###############
 # ------------- Onset FR for pure tones --------------
+# For plotting only tuned cells
+D1DBTuned = d1DB.query(studyparams.TUNING_FILTER)
+nD1DBTuned = nD1DB.query(studyparams.TUNING_FILTER)
+D1OnsetFR = D1DBTuned.tuningOnsetRate.dropna().to_list()
+nD1OnsetFR = nD1DBTuned.tuningOnsetRate.dropna().to_list()
+
+# For plotting all pure tone responses, not just tuned cells
+# D1OnsetFR = d1DB.tuningOnsetRate.dropna().to_list()
+# nD1OnsetFR = nD1DB.tuningOnsetRate.dropna().to_list()
+
+D1OnsetFRX = jitter(np.ones(len(D1OnsetFR))*0, 0.20)
+nD1OnsetFRX = jitter(np.ones(len(nD1OnsetFR))*1, 0.20)
+
+plt.sca(axSeventeen)
+axSeventeen.plot(D1OnsetFRX, D1OnsetFR, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
+axSeventeen.plot(nD1OnsetFRX, nD1OnsetFR, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
+
+medline(axSeventeen, np.median(D1OnsetFR), 0, 0.5)
+medline(axSeventeen, np.median(nD1OnsetFR), 1, 0.5)
+
+axSeventeen.set_xticks(range(2))
+axSeventeen.set_xticklabels(["D1", "nD1"])
+axSeventeen.set_ylabel("Mean FR (spks/s)")
+
+# Statistics
+zStats, pVals = stats.mannwhitneyu(D1OnsetFR, nD1OnsetFR, alternative='two-sided')
+messages.append("Pure tone onset FR = {}".format(pVals))
+axSeventeen.set_title("Tuned Cell\nOnset Firing Rates\np-value = {:.4}".format(pVals))
+
+# ------------- Sustained FR for pure tones --------------
+# For plotting only tuned cells
+D1DBTuned = d1DB.query(studyparams.TUNING_FILTER)
+nD1DBTuned = nD1DB.query(studyparams.TUNING_FILTER)
+D1SustainedFR = D1DBTuned.tuningSustainedRate.dropna().to_list()
+nD1SustainedFR = nD1DBTuned.tuningSustainedRate.dropna().to_list()
+
+# For plotting all pure tone responses, not just tuned cells
+# D1SustainedFR = d1DB.tuningSustainedRate.dropna().to_list()
+# nD1SustainedFR = nD1DB.tuningSustainedRate.dropna().to_list()
+
+D1SustainedFRX = jitter(np.ones(len(D1SustainedFR))*0, 0.20)
+nD1SustainedFRX = jitter(np.ones(len(nD1SustainedFR))*1, 0.20)
+
+plt.sca(axEighteen)
+axEighteen.plot(D1SustainedFRX, D1SustainedFR, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
+axEighteen.plot(nD1SustainedFRX, nD1SustainedFR, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
+
+medline(axEighteen, np.median(D1SustainedFR), 0, 0.5)
+medline(axEighteen, np.median(nD1SustainedFR), 1, 0.5)
+
+axEighteen.set_xticks(range(2))
+axEighteen.set_xticklabels(["D1", "nD1"])
+axEighteen.set_ylabel("Mean FR (spks/s)")
+
+# Statistics
+zStats, pVals = stats.mannwhitneyu(D1SustainedFR, nD1SustainedFR, alternative='two-sided')
+messages.append("Pure tone sustained FR = {}".format(pVals))
+axEighteen.set_title("Tuned Cell\nSustained Firing Rates\np-value = {:.4}".format(pVals))
+
+
+# ----------- Onset FR for AM ------------------
+# Only AM responsive cells
+d1DBAMResp = d1DB.query(studyparams.AM_FILTER)
+nD1DBAMResp = nD1DB.query(studyparams.AM_FILTER)
+D1DBAMOnset = d1DBAMResp.AMRespFROnset.dropna().to_list()
+nD1DBAMOnset = nD1DBAMResp.AMRespFROnset.dropna().to_list()
+
+# All cells AM data was collected for
+# D1DBAMOnset = d1DB.AMRespFROnset.dropna().to_list()
+# nD1DBAMOnset = nD1DB.AMRespFROnset.dropna().to_list()
+
+D1DBAMOnsetX = jitter(np.ones(len(D1DBAMOnset))*0, 0.20)
+nD1DBAMOnsetX = jitter(np.ones(len(nD1DBAMOnset))*1, 0.20)
+
+plt.sca(axTwenty)
+axTwenty.plot(D1DBAMOnsetX, D1DBAMOnset, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
+axTwenty.plot(nD1DBAMOnsetX, nD1DBAMOnset, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
+
+medline(axTwenty, np.median(D1DBAMOnset), 0, 0.5)
+medline(axTwenty, np.median(nD1DBAMOnset), 1, 0.5)
+
+axTwenty.set_xticks(range(2))
+axTwenty.set_xticklabels(["D1", "nD1"])
+axTwenty.set_ylabel("Mean FR (spks/s)")
+
+# Statistics
+zStats, pVals = stats.mannwhitneyu(D1DBAMOnset, nD1DBAMOnset, alternative='two-sided')
+messages.append("AM Onset FR = {}".format(pVals))
+axTwenty.set_title("AM\nOnset Firing Rates\np-value = {:.4}".format(pVals))
+
+# ----------- Sustained FR for AM ------------------
+# Only AM responsive cells
+d1DBAMResp = d1DB.query(studyparams.AM_FILTER)
+nD1DBAMResp = nD1DB.query(studyparams.AM_FILTER)
+D1DBAMSustained = d1DBAMResp.AMRespFRSustained.dropna().to_list()
+nD1DBAMSustained = nD1DBAMResp.AMRespFRSustained.dropna().to_list()
+
+# All cells AM data was collected for
+# D1DBAMSustained = d1DB.AMRespFRSustained.dropna().to_list()
+# nD1DBAMSustained = nD1DB.AMRespFRSustained.dropna().to_list()
+
+D1DBAMSustainedX = jitter(np.ones(len(D1DBAMSustained))*0, 0.20)
+nD1DBAMSustainedX = jitter(np.ones(len(nD1DBAMSustained))*1, 0.20)
+
+plt.sca(axTwentyOne)
+axTwentyOne.plot(D1DBAMSustainedX, D1DBAMSustained, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
+axTwentyOne.plot(nD1DBAMSustainedX, nD1DBAMSustained, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
+
+medline(axTwentyOne, np.median(D1DBAMSustained), 0, 0.5)
+medline(axTwentyOne, np.median(nD1DBAMSustained), 1, 0.5)
+
+axTwentyOne.set_xticks(range(2))
+axTwentyOne.set_xticklabels(["D1", "nD1"])
+axTwentyOne.set_ylabel("Mean FR (spks/s)")
+
+# Statistics
+zStats, pVals = stats.mannwhitneyu(D1DBAMSustained, nD1DBAMSustained, alternative='two-sided')
+messages.append("AM Sustained FR = {}".format(pVals))
+axTwentyOne.set_title("AM\nSustained Firing Rates\np-value = {:.4}".format(pVals))
+
+# ------------- Response indices selected by FR thresholds -------------
+# ------------ Pure tones ----------
+# Filtering by some arbitrary FR
+FRThreshold = 5
+D1DBPureToneLimited = d1DB.query("(tuningOnsetRate > {0} or tuningSustainedRate > {0} or tuningBaseRate > {0})".format(FRThreshold))
+nD1DBPureToneLimited = nD1DB.query("(tuningOnsetRate > {0} or tuningSustainedRate > {0} or tuningBaseRate > {0})".format(FRThreshold))
+
+# Index calculation
+D1PureToneIndexFiltered = (D1DBPureToneLimited.tuningRespFRBestFreqMaxInt - D1DBPureToneLimited.tuningBaseFRBestFreqMaxInt) / \
+                          (D1DBPureToneLimited.tuningRespFRBestFreqMaxInt + D1DBPureToneLimited.tuningBaseFRBestFreqMaxInt)
+nD1PureToneIndexFiltered = (nD1DBPureToneLimited.tuningRespFRBestFreqMaxInt - nD1DBPureToneLimited.tuningBaseFRBestFreqMaxInt) / \
+                           (nD1DBPureToneLimited.tuningRespFRBestFreqMaxInt + nD1DBPureToneLimited.tuningBaseFRBestFreqMaxInt)
+
+# Dropping NaNs and converting from a series to a list
+D1PureToneIndexFiltered = D1PureToneIndexFiltered.dropna()
+nD1PureToneIndexFiltered = nD1PureToneIndexFiltered.dropna()
+D1PureToneIndexFiltered = D1PureToneIndexFiltered.to_list()
+nD1PureToneIndexFiltered = nD1PureToneIndexFiltered.to_list()
+
+# Generating x-coords
+D1PureToneIndexFilteredX = jitter(np.ones(len(D1PureToneIndexFiltered))*0, 0.20)
+nD1PureToneIndexFilteredX = jitter(np.ones(len(nD1PureToneIndexFiltered))*1, 0.20)
+
+plt.sca(axNineteen)
+axNineteen.plot(D1PureToneIndexFilteredX, D1PureToneIndexFiltered, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
+axNineteen.plot(nD1PureToneIndexFilteredX, nD1PureToneIndexFiltered, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
+
+medline(axNineteen, np.median(D1PureToneIndexFiltered), 0, 0.5)
+medline(axNineteen, np.median(nD1PureToneIndexFiltered), 1, 0.5)
+
+axNineteen.set_xticks(range(2))
+axNineteen.set_xticklabels(["D1", "nD1"])
+axNineteen.set_ylabel("Response Index (spks/s)")
+
+# Statistics
+zStats, pVals = stats.mannwhitneyu(D1PureToneIndexFiltered, nD1PureToneIndexFiltered, alternative='two-sided')
+messages.append("Pure Tone RI limited by FR = {}".format(pVals))
+axNineteen.set_title("Response Index pure tones\nLimited by FR > {0}\np-value = {1:.4}".format(FRThreshold, pVals))
+
+# ------------- AM Onset --------------
+FRThreshold = 2
+D1DBAMOnsetLimited = d1DB.query("(AMBaseFROnset > {0} or AMRespFROnset > {0})".format(FRThreshold))
+nD1DBAMOnsetLimited = nD1DB.query("(AMBaseFROnset > {0} or AMRespFROnset > {0})".format(FRThreshold))
+
+D1OnsetIndexFiltered = (D1DBAMOnsetLimited.AMRespFROnset - D1DBAMOnsetLimited.AMBaseFROnset) /\
+              (D1DBAMOnsetLimited.AMRespFROnset + D1DBAMOnsetLimited.AMBaseFROnset)
+nD1OnsetIndexFiltered = (nD1DBAMOnsetLimited.AMRespFROnset - nD1DBAMOnsetLimited.AMBaseFROnset) /\
+               (nD1DBAMOnsetLimited.AMRespFROnset + nD1DBAMOnsetLimited.AMBaseFROnset)
+
+# Dropping NaNs and then converting from a series to a list
+D1OnsetIndexFiltered = D1OnsetIndexFiltered.dropna()
+nD1OnsetIndexFiltered = nD1OnsetIndexFiltered.dropna()
+D1OnsetIndexFiltered = D1OnsetIndexFiltered.to_list()
+nD1OnsetIndexFiltered = nD1OnsetIndexFiltered.to_list()
+D1OnsetIndexFilteredX = jitter(np.ones(len(D1OnsetIndexFiltered))*0, 0.20)
+nD1OnsetIndexFilteredX = jitter(np.ones(len(nD1OnsetIndexFiltered))*1, 0.20)
+
+plt.sca(axTwentyTwo)
+axTwentyTwo.plot(D1OnsetIndexFilteredX, D1OnsetIndexFiltered, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
+axTwentyTwo.plot(nD1OnsetIndexFilteredX, nD1OnsetIndexFiltered, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
+
+medline(axTwentyTwo, np.median(D1OnsetIndexFiltered), 0, 0.5)
+medline(axTwentyTwo, np.median(nD1OnsetIndexFiltered), 1, 0.5)
+
+axTwentyTwo.set_xticks(range(2))
+axTwentyTwo.set_xticklabels(["D1", "nD1"])
+axTwentyTwo.set_ylabel("RI")
+
+
+# Statistics
+zStats, pVals = stats.mannwhitneyu(D1OnsetIndexFiltered, nD1OnsetIndexFiltered, alternative='two-sided')
+messages.append("AM onset index = {}".format(pVals))
+axTwentyTwo.set_title("AM Onset Response Index\nLimited by FR > {0}\np-value = {1:.4}".format(FRThreshold, pVals))
+
+# ------------- AM Sustained --------------
+FRThreshold = 2
+D1DBAMSustainedLimited = d1DB.query("(AMBaseFRSustained > {0} or AMRespFRSustained > {0})".format(FRThreshold))
+nD1DBAMSustainedLimited = nD1DB.query("(AMBaseFRSustained > {0} or AMRespFRSustained > {0})".format(FRThreshold))
+
+D1SustainedIndexFiltered = (D1DBAMSustainedLimited.AMRespFRSustained - D1DBAMSustainedLimited.AMBaseFRSustained) /\
+              (D1DBAMSustainedLimited.AMRespFRSustained + D1DBAMSustainedLimited.AMBaseFRSustained)
+nD1SustainedIndexFiltered = (nD1DBAMSustainedLimited.AMRespFRSustained - nD1DBAMSustainedLimited.AMBaseFRSustained) /\
+               (nD1DBAMSustainedLimited.AMRespFRSustained + nD1DBAMSustainedLimited.AMBaseFRSustained)
+
+# Dropping NaNs and then converting from a series to a list
+D1SustainedIndexFiltered = D1SustainedIndexFiltered.dropna()
+nD1SustainedIndexFiltered = nD1SustainedIndexFiltered.dropna()
+D1SustainedIndexFiltered = D1SustainedIndexFiltered.to_list()
+nD1SustainedIndexFiltered = nD1SustainedIndexFiltered.to_list()
+D1SustainedIndexFilteredX = jitter(np.ones(len(D1SustainedIndexFiltered))*0, 0.20)
+nD1SustainedIndexFilteredX = jitter(np.ones(len(nD1SustainedIndexFiltered))*1, 0.20)
+
+plt.sca(axTwentyThree)
+axTwentyThree.plot(D1SustainedIndexFilteredX, D1SustainedIndexFiltered, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
+axTwentyThree.plot(nD1SustainedIndexFilteredX, nD1SustainedIndexFiltered, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
+
+medline(axTwentyThree, np.median(D1SustainedIndexFiltered), 0, 0.5)
+medline(axTwentyThree, np.median(nD1SustainedIndexFiltered), 1, 0.5)
+
+axTwentyThree.set_xticks(range(2))
+axTwentyThree.set_xticklabels(["D1", "nD1"])
+axTwentyThree.set_ylabel("RI")
+
+
+# Statistics
+zStats, pVals = stats.mannwhitneyu(D1SustainedIndexFiltered, nD1SustainedIndexFiltered, alternative='two-sided')
+messages.append("AM sustained index = {}".format(pVals))
+axTwentyThree.set_title("AM Sustained Response Index\nLimited by FR > {0}\np-value = {1:.4}".format(FRThreshold, pVals))
+
+# ---------- Noiseburst Response Index -----------
+FRThreshold = 3
+D1DBNoiseburstLimited = d1DB.query("(noiseburst_baselineFR > {0} or noiseburst_responseFR > {0})".format(FRThreshold))
+nD1DBNoiseburstLimited = nD1DB.query("(noiseburst_baselineFR > {0} or noiseburst_responseFR > {0})".format(FRThreshold))
+
+D1NoiseFilteredIndex = (D1DBNoiseburstLimited.noiseburst_responseFR - D1DBNoiseburstLimited.noiseburst_baselineFR) /\
+               (D1DBNoiseburstLimited.noiseburst_responseFR + D1DBNoiseburstLimited.noiseburst_baselineFR)
+nD1NoiseFilteredIndex = (nD1DBNoiseburstLimited.noiseburst_responseFR - nD1DBNoiseburstLimited.noiseburst_baselineFR) /\
+                (nD1DBNoiseburstLimited.noiseburst_responseFR + nD1DBNoiseburstLimited.noiseburst_baselineFR)
+# Dropping NaNs and then converting from a series to a list
+D1NoiseFilteredIndex = D1NoiseFilteredIndex.dropna()
+nD1NoiseFilteredIndex = nD1NoiseFilteredIndex.dropna()
+D1NoiseFilteredIndex = D1NoiseFilteredIndex.to_list()
+nD1NoiseFilteredIndex = nD1NoiseFilteredIndex.to_list()
+D1NoiseFilteredIndexX = jitter(np.ones(len(D1NoiseFilteredIndex))*0, 0.20)
+nD1NoiseFilteredIndexX = jitter(np.ones(len(nD1NoiseFilteredIndex))*1, 0.20)
+
+plt.sca(axTwentyFour)
+axTwentyFour.plot(D1NoiseFilteredIndexX, D1NoiseFilteredIndex, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
+axTwentyFour.plot(nD1NoiseFilteredIndexX, nD1NoiseFilteredIndex, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
+
+medline(axTwentyFour, np.median(D1NoiseFilteredIndex), 0, 0.5)
+medline(axTwentyFour, np.median(nD1NoiseFilteredIndex), 1, 0.5)
+
+axTwentyFour.set_xticks(range(2))
+axTwentyFour.set_xticklabels(["D1", "nD1"])
+axTwentyFour.set_ylabel("RI")
+
+# Statistics
+zStats, pVals = stats.mannwhitneyu(D1NoiseFilteredIndex, nD1NoiseFilteredIndex, alternative='two-sided')
+messages.append("Whitenoise index = {}".format(pVals))
+axTwentyFour.set_title("Noiseburst Response Index\nLimited by FR > {0}\np-value = {1:.4}".format(FRThreshold, pVals))
+
 extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
 plt.show()
 
