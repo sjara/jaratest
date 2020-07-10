@@ -9,9 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from jaratoolbox import settings
 from jaratoolbox import extraplots
-from jaratoolbox import celldatabase
 from scipy import stats
-import pandas as pd
 import figparams
 import studyparams
 
@@ -37,26 +35,12 @@ def medline(ax, yval, midline, width, color='k', linewidth=3):
 
 FIGNAME = 'figure_frequency_tuning'
 
-d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = studyparams.DATABASE_NAME + '.h5'
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format('ttDBR2'))
-# os.path.join(studyparams.PATH_TO_TEST,nameDB)
-db = celldatabase.load_hdf(pathtoDB)
-db = db.query(studyparams.TUNING_FILTER)
-zDB = db.query(studyparams.LABELLED_Z)
-zDB2 = db[db['z_coord'].isnull()]
-zDBt = pd.concat([zDB, zDB2], axis=0, ignore_index=True, sort=False)
-db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
 exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
 
 # =======================================================================
 
 exData = np.load(exampleDataPath)  # npz data generated from generate_example_freq_tuning
 np.random.seed(8)
-
-D1 = db.query(studyparams.D1_CELLS)  # laser activation response
-nD1 = db.query(studyparams.nD1_CELLS)  # no laser repsonse or laser inactivation response
 
 PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
@@ -87,11 +71,8 @@ colornD1 = figparams.cp.TangoPalette['ScarletRed1']
 colorD1 = figparams.cp.TangoPalette['SkyBlue2']
 markerAlpha = 1
 
-# labelPosX = [0.05, 0.24, 0.45, 0.64, 0.835]   Old sizes from Allison. Updated below to match Nick's
-# labelPosY = [0.92, 0.42]
 labelPosX = [0.02, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
 labelPosY = [0.92, 0.42]    # Vert position for panel labels
-
 
 # Define colors, use figparams
 laserColor = figparams.colp['blueLaser']
@@ -100,8 +81,6 @@ fig.clf()
 fig.set_facecolor('w')
 
 # Define the layout
-# gs = gridspec.GridSpec(2, 5)
-# gs.update(left=0.02, right=0.98, top=0.95, bottom=0.125, wspace=0.7, hspace=0.5)
 gs = gridspec.GridSpec(2, 7)
 gs.update(left=0.04, right=0.98, top=0.95, bottom=0.175, wspace=1.1, hspace=0.5)
 
@@ -115,6 +94,7 @@ axLatency = plt.subplot(gs[0:2, 4])
 axOnsetivity = plt.subplot(gs[0:2, 5])
 axMonotonicity = plt.subplot(gs[0:2, 6])
 
+# Make the axes thicker
 # for axis in [axBW, axLatency, axThresh, axOnsetivity, axMonotonicity]:
 #     for side in axis.spines.keys():
 #         axis.spines[side].linewidth = 200
@@ -205,8 +185,8 @@ if PANELS[1]:
 if PANELS[2]:
 
     popStatCol = 'bw10'
-    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+    D1PopStat = exData["D1_{}".format(popStatCol)]
+    nD1PopStat = exData["nD1_{}".format(popStatCol)]
 
     pos = jitter(np.ones(len(nD1PopStat))*1, 0.20)
     axBW.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
@@ -239,15 +219,13 @@ if PANELS[2]:
                                   starSize=fontSizeStars+2, starString=starString,
                                   gapFactor=starGapFactor)
     #plt.hold(1)
-#
-#plt.hold(True)
 
 # ======================= Beginning of plotting for threshold ================================
 if PANELS[3]:
 
     popStatCol = 'thresholdFRA'
-    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+    D1PopStat = exData["D1_{}".format(popStatCol)]
+    nD1PopStat = exData["nD1_{}".format(popStatCol)]
 
     plt.sca(axThresh)
 
@@ -288,8 +266,8 @@ if PANELS[3]:
 if PANELS[4]:
 
     popStatCol = 'latency'
-    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+    D1PopStat = exData["D1_{}".format(popStatCol)]
+    nD1PopStat = exData["nD1_{}".format(popStatCol)]
 
     pos = jitter(np.ones(len(nD1PopStat))*1, 0.20)
     axLatency.plot(pos, nD1PopStat*1000, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
@@ -310,7 +288,6 @@ if PANELS[4]:
 
     zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
     print("D1 meidan = {0}\nnD1 median = {1}".format(np.median(D1PopStat)*1000, np.median(nD1PopStat)*1000))
-    # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal) Remove Matt
     messages.append("{} p={}".format(popStatCol, pVal))
 
     yDataMax = max([max(D1PopStat*700), max(nD1PopStat*700)])
@@ -322,15 +299,14 @@ if PANELS[4]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
 
 # ======================= Beginning of plotting for Onset to sustained ratio ================================
 
 if PANELS[5]:
 
     popStatCol = 'cfOnsetivityIndex'
-    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+    D1PopStat = exData["D1_{}".format(popStatCol)]
+    nD1PopStat = exData["nD1_{}".format(popStatCol)]
 
     pos = jitter(np.ones(len(nD1PopStat))*1, 0.20)
     axOnsetivity.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
@@ -338,7 +314,6 @@ if PANELS[5]:
     pos = jitter(np.ones(len(D1PopStat))*0, 0.20)
     axOnsetivity.plot(pos, D1PopStat, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
     medline(axOnsetivity, np.median(D1PopStat), 0, 0.5)
-    # axOnsetivity.set_ylabel('Onsetivity index', fontsize=fontSizeTicks)
     axOnsetivity.set_ylabel('Onset to sustained ratio', fontsize=fontSizeLabels)
     tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axOnsetivity.set_xticks(range(2))
@@ -373,8 +348,8 @@ if PANELS[5]:
 if PANELS[6]:
 
     popStatCol = 'monotonicityIndex'
-    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+    D1PopStat = exData["D1_{}".format(popStatCol)]
+    nD1PopStat = exData["nD1_{}".format(popStatCol)]
 
     pos = jitter(np.ones(len(nD1PopStat))*1, 0.20)
     axMonotonicity.plot(pos, nD1PopStat, 'o', mec=colornD1, mfc='None', alpha=markerAlpha)
@@ -394,7 +369,6 @@ if PANELS[6]:
 
     zstat, pVal = stats.mannwhitneyu(nD1PopStat, D1PopStat, alternative='two-sided')
 
-    # print "Ranksums test between thalamus and AC population stat ({}) vals: p={}".format(popStatCol, pVal)
     messages.append("{} p={}".format(popStatCol, pVal))
 
     yDataMax = max([max(D1PopStat), max(nD1PopStat)])
@@ -412,8 +386,6 @@ if PANELS[6]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
-fig1 = plt.gcf()
 
 print("\nSTATISTICS:\n")
 for message in messages:

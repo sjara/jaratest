@@ -4,6 +4,7 @@ what is needed to plot a raster plot in the figure_am.py file
 """
 import os
 import numpy as np
+import pandas as pd
 from jaratoolbox import spikesanalysis
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
@@ -65,6 +66,81 @@ for exampleInd, cellName in enumerate(exampleList):
     exampleTrialIndexForEachSpike.update({exampleKeys[exampleInd]: trialIndexForEachSpike})
     exampleIndexLimitsEachTrial.update({exampleKeys[exampleInd]: indexLimitsEachTrial})
 
+# Filtering DB for AM cells
+zDB = db.query(studyparams.LABELLED_Z)
+zDB2 = db[db['z_coord'].isnull()]
+zDBt = pd.concat([zDB, zDB2], axis=0, ignore_index=True, sort=False)
+db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
+
+D1 = db.query(studyparams.D1_CELLS)
+nD1 = db.query(studyparams.nD1_CELLS)
+D1 = D1.query(studyparams.AM_FILTER)
+nD1 = nD1.query(studyparams.AM_FILTER)
+
+plotting_data = {}
+
+popStatCol = 'highestSyncCorrected'
+nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+nD1PopStat = nD1PopStat[nD1PopStat > 0]
+D1PopStat = D1PopStat[D1PopStat > 0]
+nD1PopStat = np.log(nD1PopStat)
+D1PopStat = np.log(D1PopStat)
+plotting_data.update({"D1_highestSyncCorrected": D1PopStat, "nD1_highestSyncCorrected": nD1PopStat})
+
+popStatCol = 'highestSyncCorrected'
+nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+nD1PopStat = nD1PopStat[pd.notnull(nD1PopStat)]
+D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+D1PopStat = D1PopStat[pd.notnull(D1PopStat)]
+nD1SyncN = len(nD1PopStat[nD1PopStat > 0])
+nD1NonSyncN = len(nD1PopStat[nD1PopStat == 0])
+nD1SyncFrac = nD1SyncN / float(nD1SyncN + nD1NonSyncN)
+nD1NonSyncFrac = nD1NonSyncN / float(nD1SyncN + nD1NonSyncN)
+D1SyncN = len(D1PopStat[D1PopStat > 0])
+D1NonSyncN = len(D1PopStat[D1PopStat == 0])
+D1SyncFrac = D1SyncN / float(D1SyncN + D1NonSyncN)
+D1NonSyncFrac = D1NonSyncN / float(D1SyncN + D1NonSyncN)
+plotting_data.update({"D1_pieSync": D1SyncFrac, "nD1_pieSync": nD1SyncFrac,
+                      "D1_pieNonSync": D1NonSyncFrac, "nD1_pieNonSync": nD1NonSyncFrac})
+plotting_data.update({"D1_pieSyncN": D1SyncN, "nD1_pieSyncN": nD1SyncN,
+                      "D1_pieNonSyncN": D1NonSyncN, "nD1_pieNonSyncN": nD1NonSyncN})
+
+popStatCol = 'rateDiscrimAccuracy'
+nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+plotting_data.update({"D1_rateDiscrimAccuracy": D1PopStat, "nD1_rateDiscrimAccuracy": nD1PopStat})
+
+possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
+ratesToUse = possibleRateKeys
+keys = ['phaseDiscrimAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
+
+nD1Data = np.full((len(nD1), len(ratesToUse)), np.nan)
+D1Data = np.full((len(D1), len(ratesToUse)), np.nan)
+
+for externalInd, (indRow, row) in enumerate(nD1.iterrows()):
+    for indKey, key in enumerate(keys):
+        nD1Data[externalInd, indKey] = row[key]
+
+for externalInd, (indRow, row) in enumerate(D1.iterrows()):
+    for indKey, key in enumerate(keys):
+        D1Data[externalInd, indKey] = row[key]
+
+nD1MeanPerCell = np.nanmean(nD1Data, axis=1)
+nD1MeanPerCell = nD1MeanPerCell[~np.isnan(nD1MeanPerCell)]
+D1MeanPerCell = np.nanmean(D1Data, axis=1)
+D1MeanPerCell = D1MeanPerCell[~np.isnan(D1MeanPerCell)]
+plotting_data.update({"D1_phaseDiscrimAccuracy": D1MeanPerCell,
+                      "nD1_phaseDiscrimAccuracy": nD1MeanPerCell})
+
+
+# possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
+ytickLabels = [4, 8, 16, 32, 64, 128]
+yticks = np.log(ytickLabels)
+
+nD1PopStat = np.log(nD1PopStat)
+D1PopStat = np.log(D1PopStat)
+
 # Set path/filename for data output
 exampleDataPath = os.path.join(outputDataDir, 'data_am_examples.npz')
 
@@ -75,6 +151,7 @@ np.savez(exampleDataPath,
          exampleFreqEachTrial=exampleFreqEachTrial,
          exampleSpikeTimes=exampleSpikeTimes,
          exampleTrialIndexForEachSpike=exampleTrialIndexForEachSpike,
-         exampleIndexLimitsEachTrial=exampleIndexLimitsEachTrial)
+         exampleIndexLimitsEachTrial=exampleIndexLimitsEachTrial,
+         **plotting_data)
 
 print('Saved data to {}'.format(exampleDataPath))

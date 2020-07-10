@@ -92,7 +92,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                     # ------------------- Significance and fit calculations for tuning ----------------
                 # TODO: Do we really need to calculate this for each frequency at each intensity?
                 if np.mean(spks) == 0:
-                    Rsquared = None
+                    Rsquared = np.NaN
+                    print("Spike matrix was 0")
                     # If there are no spikes than the rsquared value will be infinity from dividing by zero.
                     # Upon further investigation, it's division by a np.float64 0 that causes infinity. A normal 0 just
                     # causes a ZeroDivisionError

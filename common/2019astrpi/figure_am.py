@@ -7,31 +7,14 @@ from jaratoolbox import settings
 from jaratoolbox import extraplots
 from jaratoolbox import behavioranalysis
 from jaratoolbox import spikesanalysis
-from jaratoolbox import celldatabase
 from scipy import stats
-import pandas as pd
 import figparams
 import studyparams
 
 FIGNAME = 'figure_am'
-d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '{}.h5'.format(studyparams.DATABASE_NAME)
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format("20200602DB"))
-db = celldatabase.load_hdf(pathtoDB)
-zDB = db.query(studyparams.LABELLED_Z)
-zDB2 = db[db['z_coord'].isnull()]
-zDBt = pd.concat([zDB, zDB2], axis=0, ignore_index=True, sort=False)
-db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
-
-D1 = db.query(studyparams.D1_CELLS)
-nD1 = db.query(studyparams.nD1_CELLS)
-D1 = D1.query(studyparams.AM_FILTER)
-nD1 = nD1.query(studyparams.AM_FILTER)
 
 outputDir = '/var/tmp/figuresdata/2019astrpi/output'
 
-# exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_AM_tuning_examples.npz')
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 
 np.random.seed(1)
@@ -55,12 +38,8 @@ PANELS = [1, 1, 1, 1, 1, 1, 1]
 
 SAVE_FIGURE = 1
 # outputDir = '/tmp/'
-# outputDir = '/mnt/jarahubdata/reports/nick/20171218_all_2018thstr_figures'
-# outputDir = figparams.FIGURE_OUTPUT_DIR
 figFilename = 'plots_am_tuning' # Do not include extension
-# figFormat = 'svg'  # 'pdf' or 'svg'
 figFormat = 'pdf'  # 'pdf' or 'svg'
-# figSize = [13,8] # In inches
 
 fullPanelWidthInches = 6.9
 figSizeFactor = 2
@@ -238,18 +217,11 @@ if PANELS[2]:
 
 if PANELS[4]:
     popStatCol = 'highestSyncCorrected'
-    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
-    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+    D1PopStat = exampleData["D1_{}".format(popStatCol)]
+    nD1PopStat = exampleData["nD1_{}".format(popStatCol)]
 
-    nD1PopStat = nD1PopStat[nD1PopStat > 0]
-    D1PopStat = D1PopStat[D1PopStat > 0]
-
-    # possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
     ytickLabels = [4, 8, 16, 32, 64, 128]
     yticks = np.log(ytickLabels)
-
-    nD1PopStat = np.log(nD1PopStat)
-    D1PopStat = np.log(D1PopStat)
 
     # axSummary = plt.subplot(gs[0, 5])
     spacing = 0.07
@@ -259,14 +231,11 @@ if PANELS[4]:
 
     # pos = jitter(np.ones(len(thalPopStat))*0, 0.20)
     # axSummary.plot(pos, thalPopStat, 'o', mec = colorATh, mfc = 'None', alpha=0.5)
-    # plt.hold(1)
     markers = extraplots.spread_plot(0, D1PopStat, spacing)
     plt.setp(markers, mec=colorD1, mfc='None')
     plt.setp(markers, ms=dataMS)
 
-    # plt.hold(1)
     medline(np.median(D1PopStat), 0, 0.5)
-    # plt.hold(1)
 
     # pos = jitter(np.ones(len(acPopStat))*1, 0.20)
     # axSummary.plot(pos, acPopStat, 'o', mec = colorAC, mfc = 'None', alpha=0.5)
@@ -274,9 +243,7 @@ if PANELS[4]:
     plt.setp(markers, mec=colornD1, mfc='None')
     plt.setp(markers, ms=dataMS)
 
-    # plt.hold(1)
     medline(np.median(nD1PopStat), 1, 0.5)
-    # plt.hold(1)
 
     axPanelD.set_yticks(yticks)
     axPanelD.set_yticklabels(ytickLabels)
@@ -343,16 +310,8 @@ if PANELS[4]:
     axnD1Pie.add_patch(rect1)
     axnD1Pie.add_patch(rect2)
 
-    popStatCol = 'highestSyncCorrected'
-    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
-    nD1PopStat = nD1PopStat[pd.notnull(nD1PopStat)]
-    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-    D1PopStat = D1PopStat[pd.notnull(D1PopStat)]
-
-    nD1SyncN = len(nD1PopStat[nD1PopStat > 0])
-    nD1NonSyncN = len(nD1PopStat[nD1PopStat == 0])
-    nD1SyncFrac = nD1SyncN / float(nD1SyncN + nD1NonSyncN)
-    nD1NonSyncFrac = nD1NonSyncN / float(nD1SyncN + nD1NonSyncN)
+    nD1SyncFrac = exampleData['nD1_pieSync']
+    nD1NonSyncFrac = exampleData["nD1_pieNonSync"]
 
     pieWedges = axnD1Pie.pie([nD1NonSyncFrac, nD1SyncFrac], colors=['w', colornD1], shadow=False, startangle=0)
     for wedge in pieWedges[0]:
@@ -367,10 +326,8 @@ if PANELS[4]:
                       fontweight='bold', textcoords='axes fraction', fontsize=fontSizePercent, color='w')
     axnD1Pie.set_aspect('equal')
 
-    D1SyncN = len(D1PopStat[D1PopStat > 0])
-    D1NonSyncN = len(D1PopStat[D1PopStat == 0])
-    D1SyncFrac = D1SyncN / float(D1SyncN + D1NonSyncN)
-    D1NonSyncFrac = D1NonSyncN / float(D1SyncN + D1NonSyncN)
+    D1SyncFrac = exampleData["D1_pieSync"]
+    D1NonSyncFrac = exampleData["D1_pieNonSync"]
 
     pieWedges = axD1Pie.pie([D1NonSyncFrac, D1SyncFrac], colors=['w', colorD1], shadow=False, startangle=0)
     for wedge in pieWedges[0]:
@@ -383,6 +340,11 @@ if PANELS[4]:
     axD1Pie.annotate('{:0.0f}%'.format(np.round(100 * D1SyncFrac)), xy=[0.2, 0.3], rotation=0,
                      fontweight='bold', textcoords='axes fraction', fontsize=fontSizePercent, color='w')
     axD1Pie.set_aspect('equal')
+
+    D1SyncN = exampleData["D1_pieSyncN"]
+    D1NonSyncN = exampleData["D1_pieNonSyncN"]
+    nD1SyncN = exampleData["nD1_pieSyncN"]
+    nD1NonSyncN = exampleData["nD1_pieNonSyncN"]
 
     oddsratio, pValue = stats.fisher_exact([[nD1SyncN, D1SyncN],
                                             [nD1NonSyncN, D1NonSyncN]])
@@ -411,26 +373,10 @@ if PANELS[4]:
 
 # ---------------- Discrimination of Rate ----------------
 if PANELS[5]:
-    # dbPathRate = os.path.join(dataDir, 'celldatabase_with_am_discrimination_accuracy.h5')
-    # dbPathRate = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
-    # dataframeRate = pd.read_hdf(dbPathRate, key='dataframe')
-    # dataframeRate = celldatabase.load_hdf(dbPathRate)
-
-    # -------- Future things I could calculate and filter by similar to what Nick did --------
-    # goodISIRate = dataframeRate.query('isiViolations<0.02 or modifiedISI<0.02')
-    # goodShapeRate = goodISIRate.query('spikeShapeQuality > 2')
-    # goodLaserRate = goodShapeRate.query("autoTagged==1 and subject != 'pinp018'")
-    # goodNSpikesRate = goodLaserRate.query('nSpikes>2000')
-    # goodPulseLatency = goodNSpikesRate.query('summaryPulseLatency<0.01')
-    # dbToUse = goodPulseLatency
-
-    # nD1Rate = nD1.groupby('brainArea').get_group('rightAC')
-    # D1Rate = D1.groupby('brainArea').get_group('rightThal')
 
     popStatCol = 'rateDiscrimAccuracy'
-    # popStatCol = 'accuracySustained'
-    nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
-    D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+    D1PopStat = exampleData["D1_{}".format(popStatCol)]
+    nD1PopStat = exampleData["nD1_{}".format(popStatCol)]
 
     # plt.clf()
     # axSummary = plt.subplot(111)
@@ -484,35 +430,8 @@ if PANELS[5]:
 
 # -------------Discrimination of Phase -------------------
 if PANELS[6]:
-    # dbPathPhase = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'celldatabase_calculated_columns.h5')
-    # # dbPhase = pd.read_hdf(dbPathPhase, key='dataframe')
-    # dbPhase = celldatabase.load_hdf(dbPathPhase)
-
-    # -------- Filters I could calculate and add if we think it is necessary ------
-    # goodISIPhase = dbPhase.query('isiViolations<0.02 or modifiedISI<0.02')
-    # goodShapePhase = goodISIPhase.query('spikeShapeQuality > 2')
-    # goodLaserPhase = goodShapePhase.query("autoTagged==1 and subject != 'pinp018'")
-    # goodNSpikesPhase = goodLaserPhase.query('nSpikes>2000')
-
-    possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
-    ratesToUse = possibleRateKeys
-    keys = ['phaseDiscrimAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
-
-    nD1Data = np.full((len(nD1), len(ratesToUse)), np.nan)
-    D1Data = np.full((len(D1), len(ratesToUse)), np.nan)
-
-    for externalInd, (indRow, row) in enumerate(nD1.iterrows()):
-        for indKey, key in enumerate(keys):
-            nD1Data[externalInd, indKey] = row[key]
-
-    for externalInd, (indRow, row) in enumerate(D1.iterrows()):
-        for indKey, key in enumerate(keys):
-            D1Data[externalInd, indKey] = row[key]
-
-    nD1MeanPerCell = np.nanmean(nD1Data, axis=1)
-    nD1MeanPerCell = nD1MeanPerCell[~np.isnan(nD1MeanPerCell)]
-    D1MeanPerCell = np.nanmean(D1Data, axis=1)
-    D1MeanPerCell = D1MeanPerCell[~np.isnan(D1MeanPerCell)]
+    D1MeanPerCell = exampleData["D1_phaseDiscrimAccuracy"]
+    nD1MeanPerCell = exampleData["nD1_phaseDiscrimAccuracy"]
 
     # plt.clf()
 

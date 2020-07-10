@@ -29,76 +29,76 @@ this database can be found in the documentation for celldatabase.
 These are the columns added to the generic database after calculation of base stats. 
 They are grouped by questions they were used to answer:
 
-### Are cells identifiable *in situ* and do they respond differently to basic sounds?
-*laserpulse_pVal*: The p-value for comparing the baseline and response firing
+### Are cells identifiable *in vivo* and do they respond differently to basic sounds? (Figure 1)
+* *laserpulse_pVal*: The p-value for comparing the baseline and response firing
 rates of the laserpulse paradigm using a Mann-Whitney U test.
 
-*laserpulse_ZStat*: The corresponding U-statistic for the above p-value
+* *laserpulse_ZStat*: The corresponding U-statistic for the above p-value
 
-*laserpulse_dFR*: The change in firing rate for the laserpulse as calculated by
+* *laserpulse_dFR*: The change in firing rate for the laserpulse as calculated by
 `response - baseline`
 
-*laserpulse_baselineFR*: The baseline laserpulse firing rate. Baseline period
+* *laserpulse_baselineFR*: The baseline laserpulse firing rate. Baseline period
 was [-100 ms, 0 ms]
 
-*laserpulse_responseFR*: The response laserpulse firing rate. Response period
+* *laserpulse_responseFR*: The response laserpulse firing rate. Response period
 was [0 ms, 100 ms]
 
-*noiseburst_pVal*: The p-value for comparing the baseline and response firing
+* *noiseburst_pVal*: The p-value for comparing the baseline and response firing
 rates of the noiseburst paradigm using a Mann-Whitney U test.
 
-*noiseburst_ZStat*: The corresponding U-statistic for the above p-value
+* *noiseburst_ZStat*: The corresponding U-statistic for the above p-value
 
-*noiseburst_baselineFR*: The baseline noiseburst firing rate. Baseline period 
+* *noiseburst_baselineFR*: The baseline noiseburst firing rate. Baseline period 
 was [-100 ms, 0 ms] 
 
-*noiseburst_responseFR*: The response noiseburst firing rate. Response period
+* *noiseburst_responseFR*: The response noiseburst firing rate. Response period
 was [0 ms, 100 ms] 
 
-*tuningTest_pVal*: The p-value found from comparing the baseline firing rate of
+* *tuningTest_pVal*: The p-value found from comparing the baseline firing rate of
 all frequencies at the maximum intensity to the response using a Mann-Whitney U
 test. Baseline period was [-100 ms, 0 ms] and repsonse period was [0 ms, 100 ms]
 
-*tuningTest_ZStat*: The corresponding U-statistic for the above p-value
+* *tuningTest_ZStat*: The corresponding U-statistic for the above p-value
 
-*ttR2Fit*: The R^2 value of the Gaussian fit to the tuning test paradigm.
+* *ttR2Fit*: The R^2 value of the Gaussian fit to the tuning test paradigm.
 
-### Is there a difference in the basic responses of the cells to different sounds?
-*AMBaseFROnset*: The corresponding baseline firing rate for the best onset
+### Is there a difference in the basic responses of the cells to different sounds? (Figure 2)
+* *AMBaseFROnset*: The corresponding baseline firing rate for the best onset
 response firing rate for a cell. Baseline period was [-100 ms, 0 ms]
 
-*AMRespFROnset*: The highest onset response firing rate of all the rates 
+* *AMRespFROnset*: The highest onset response firing rate of all the rates 
 presented. Onset period was [0 ms, 100 ms]
 
-*AMBestRateOnset*: The amplitude modulation rate that yielded the best onset
+* *AMBestRateOnset*: The amplitude modulation rate that yielded the best onset
 response
 
-*AMBaseFRSustained*: The corresponding baseline firing rate for the best 
+* *AMBaseFRSustained*: The corresponding baseline firing rate for the best 
 sustained response. Baseline period was [-500 ms, -100 ms]
 
-*AMRespFRSustained*: The highest sustained firing rate of all the rates 
+* *AMRespFRSustained*: The highest sustained firing rate of all the rates 
 presented. Sustained period was [100 ms, 500 ms]
 
-*AMBestRateSustained*: The amplitude modulation rate that produced the highest
+* *AMBestRateSustained*: The amplitude modulation rate that produced the highest
 sustained response
 
-*tuning_pVal*: The p-value from comparing the baseline firing rate vs response 
+* *tuning_pVal*: The p-value from comparing the baseline firing rate vs response 
 firing rate of all frequencies at the highest intensity for the tuningCurve
 paradigm with a Mann-Whitney U test
 
-*tuning_ZStat*: Corresponding U-statistic for the p-value
+* *tuning_ZStat*: Corresponding U-statistic for the p-value
 
-*tuningBaseFRBestFreqMaxInt*: The corresponding baseline firing rate for the
+* *tuningBaseFRBestFreqMaxInt*: The corresponding baseline firing rate for the
 frequency that had the largest response firing rate. Baseline period was
 [-100 ms, 0 ms]
 
-*tuningRespFRBestFreqMaxInt*: The firing rate for the best frequency at maximum
+* *tuningRespFRBestFreqMaxInt*: The firing rate for the best frequency at maximum
 intensity. Response period was [0 ms, 100 ms]
 
-*tuningBestFreqMaxInt*: The frequency that had the highest response firing rate
+* *tuningBestFreqMaxInt*: The frequency that had the highest response firing rate
 at the maximum intensity presented
 
-### Do the cells prefer different properties of pure tone sounds?
+### Do the cells prefer different properties of pure tone sounds? (Figure 3)
 * *upperFreq*: The highest frequency with a response 10 dB SPL above the sound 
 intensity threshold. Calculated by database_generation_funcs.calculate_BW10_params.
 
@@ -152,32 +152,32 @@ with intensity after being normalized by the baseline firing rate. Calculated by
 taking the mean number of spikes at the largest intensity and dividing by the mean 
 number of spikes at whichever intensity produced the greatest response.
 
-### Do the cell populations prefer different properties of amplitude modulated sounds?
-*highestSync*: The highest AM rate that was significantly synchronized (p<0.05)
+### Do the cell populations prefer different properties of amplitude modulated sounds? (Figure 4)
+* *highestSync*: The highest AM rate that was significantly synchronized (p<0.05)
 
-*highestUSync*: The highest AM rate that is unsynchonized, used if the cell
+* *highestUSync*: The highest AM rate that is unsynchonized, used if the cell
 becomes synchonized at higher rates, but is not synchronized at lower rates
 
-*highestSyncCorrected*: The highest AM rate that was significantly synchronized
+* *highestSyncCorrected*: The highest AM rate that was significantly synchronized
 after a Bonferroni correction
 
-*rateDiscrimAccuracy*: The accuracy of a cell determining the amplitude
+* *rateDiscrimAccuracy*: The accuracy of a cell determining the amplitude
 modulation rate for a trial
 
-*phaseDiscrimAccuracy_{}Hz*: The accuracy of a cell determining the phase of
+* *phaseDiscrimAccuracy_{}Hz*: The accuracy of a cell determining the phase of
 the amplitude modulation at a specific rate. There is one value for every rate
 used
 
-*am_synchronization_pVal*: The best p-value calculated for synchronization of a
+* *am_synchronization_pVal*: The best p-value calculated for synchronization of a
 cell from Rayleigh's Test
 
-*am_synchronization_ZStat*: The corresponding statistic for the p-value from
+* *am_synchronization_ZStat*: The corresponding statistic for the p-value from
 Rayleigh's test
 
-*am_response_pVal*: The best p-value calculated for a cell's response compared
+* *am_response_pVal*: The best p-value calculated for a cell's response compared
 to the baseline firing rate using a Mann-Whitney U test
 
-*am_response_ZStat*: Corresponding U-statistic for the above p-value
+* *am_response_ZStat*: Corresponding U-statistic for the above p-value
 
 # Figure Pure tone characterization
 ## Figure script: `figure_frequency_characterization.py`

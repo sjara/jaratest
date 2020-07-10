@@ -34,7 +34,8 @@ FIRST_FLTRD_CELLS = 'isiViolations<{} and spikeShapeQuality>{}'.format(ISI_THRES
 
 # Striatal cell filters
 LABELLED_Z = "{0} <= {1}".format('z_coord', z_slice_cutoff)
-BRAIN_REGION_QUERY = "recordingSiteName == 'Caudoputamen' or recordingSiteName == ''"
+# BRAIN_REGION_QUERY = "recordingSiteName == 'Caudoputamen' or recordingSiteName == ''"
+BRAIN_REGION_QUERY = "recordingSiteName == 'Caudoputamen'"
 # D1 cells
 D1_CELLS = 'laserpulse_pVal<{} and laserpulse_dFR>0'.format(laserpulse_pVal_threshold)  # Respond to laser, thus D1-expressing cells
 nD1_CELLS = 'not (laserpulse_pVal<{} and laserpulse_dFR>0)'.format(laserpulse_pVal_threshold)
