@@ -1,5 +1,10 @@
+"""
+Using hand-picked cells, this script will find the cells' ephys data and save
+what is needed to plot a raster plot in the figure_am.py file
+"""
 import os
 import numpy as np
+import pandas as pd
 from jaratoolbox import spikesanalysis
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
@@ -10,65 +15,24 @@ FIGNAME = 'figure_am'
 outputDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 
 # Example cells we want to show am rasters for
-# AC
 examples = {}
-# Format: {name}_{date}_{}
-# examples.update({'AC1' : 'pinp017_2017-03-22_1143_4_5'})
-# examples.update({'AC2' : 'pinp017_2017-03-23_1281_7_2'})
-
-examples.update({'Direct1': 'd1pi036_2019-05-29_2800.0_TT2c4'})
-examples.update({'Direct2': 'd1pi036_2019-05-29_2800.0_TT6c2'})
-
-# Thalamus
-# examples.update({'Thal1' : 'pinp015_2017-02-15_3110_7_3'})
-# examples.update({'Thal2' : 'pinp026_2017-11-16_3046_4_3'})
-
-examples.update({'nDirect1': 'd1pi036_2019-05-29_2900.0_TT5c5'})
-examples.update({'nDirect2': 'd1pi041_2019-08-25_3000.0_TT7c3'})
-# examples.update({'Thal2' : 'pinp026_2017-11-15_3252.0_TT2c2'})
-# examples.update({'Thal3' : 'pinp026_2017-11-16_3046.0_TT4c3'})
-
-
-# Striatum
-# examples.update({'Str1' : 'pinp029_2017-11-08_2052_2_3'})
-# examples.update({'Str1' : 'pinp020_2017-05-09_2702_8_2'})
-# examples.update({'Str2' : 'pinp020_2017-05-09_2802_7_2'})
-# examples.update({'Str3' : 'pinp029_2017-11-08_2052_2_3'})
+examples.update({'Direct1': 'd1pi042_2019-09-11_3200.0_TT3c4'})
+examples.update({'nDirect1': 'd1pi042_2019-09-11_3100.0_TT3c4'})
 
 exampleList = [val for key, val in examples.items()]
 exampleKeys = [key for key, val in examples.items()]
 exampleSpikeData = {}
 
-# THE METHOD
-# Calculate response range spikes for each combo
-# Calculate baseline rate
-# Calculate intensity threshold for cell by using response threshold
-# Fit gaussian to spike data 10db above intensity threshold
-# Determine upper and lower bounds of tc
-
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '_'.join(d1mice) + '.h5'
-# pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
-pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, '{}.h5'.format("['d1pi026', 'd1pi032', 'd1pi033', 'd1pi036', 'd1pi039', 'd1pi040', 'd1pi041', 'd1pi042', 'd1pi043', 'd1pi044']"))
-# os.path.join(studyparams.PATH_TO_TEST,nameDB)
+nameDB = studyparams.DATABASE_NAME + '.h5'
+pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
-
-#Only process the examples
-# dataframe = db.query('cellLabel in @exampleList')
-
-#Make labels for all the cells
-# db['cellLabel'] = db.apply(lambda row:'{}_{}_{}_{}_{}'.format(row['subject'], row['date'], int(row['depth']), int(row['tetrode']), int(row['cluster'])), axis=1)
-
-# examplesDB = db.query('cellLabel in @exampleList')
-
-# dataframe = examplesDB
 
 exampleSpikeTimes = {}
 exampleTrialIndexForEachSpike = {}
 exampleIndexLimitsEachTrial = {}
 exampleFreqEachTrial = {}
 
-# for indIter, (indRow, dbRow) in enumerate(dataframe.iterrows()):
 for exampleInd, cellName in enumerate(exampleList):
 
     (subject, date, depth, tetrodeCluster) = cellName.split('_')
@@ -80,30 +44,114 @@ for exampleInd, cellName in enumerate(exampleList):
     cell = ephyscore.Cell(dbRow)
     try:
         ephysData, bdata = cell.load('am')
-    except (IndexError, ValueError):  # The cell does not have a tc or the tc session has no spikes
+    except (IndexError, ValueError):
         failed = True
         print("No am for cell {}".format(indRow))
     spikeTimes = ephysData['spikeTimes']
-    eventOnsetTimes = ephysData['events']['stimOn']
+    eventOnsetTimes = ephysData['events']['soundDetectorOn']
+    eventOnsetTimes = spikesanalysis.minimum_event_onset_diff(eventOnsetTimes, minEventOnsetDiff=0.2)
+
     freqEachTrial = bdata['currentFreq']
-    alignmentRange = [-0.2, 0.7]
+    alignmentRange = [-0.2, 0.7]  # Time chosen to include spikes visually for pre- and post-response period
+
+    # Finding spike times that are relative to the event onset for the raster plot
     (spikeTimesFromEventOnset,
         trialIndexForEachSpike,
         indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes,
                                                                       eventOnsetTimes,
                                                                       alignmentRange)
+    # Saving all the data into a dictionary which will become the npz file
     exampleFreqEachTrial.update({exampleKeys[exampleInd]: freqEachTrial})
     exampleSpikeTimes.update({exampleKeys[exampleInd]: spikeTimesFromEventOnset})
     exampleTrialIndexForEachSpike.update({exampleKeys[exampleInd]: trialIndexForEachSpike})
     exampleIndexLimitsEachTrial.update({exampleKeys[exampleInd]: indexLimitsEachTrial})
 
+# Filtering DB for AM cells
+zDB = db.query(studyparams.LABELLED_Z)
+zDB2 = db[db['z_coord'].isnull()]
+zDBt = pd.concat([zDB, zDB2], axis=0, ignore_index=True, sort=False)
+db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
+
+D1 = db.query(studyparams.D1_CELLS)
+nD1 = db.query(studyparams.nD1_CELLS)
+D1 = D1.query(studyparams.AM_FILTER)
+nD1 = nD1.query(studyparams.AM_FILTER)
+
+plotting_data = {}
+
+popStatCol = 'highestSyncCorrected'
+nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+nD1PopStat = nD1PopStat[nD1PopStat > 0]
+D1PopStat = D1PopStat[D1PopStat > 0]
+nD1PopStat = np.log(nD1PopStat)
+D1PopStat = np.log(D1PopStat)
+plotting_data.update({"D1_highestSyncCorrected": D1PopStat, "nD1_highestSyncCorrected": nD1PopStat})
+
+popStatCol = 'highestSyncCorrected'
+nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+nD1PopStat = nD1PopStat[pd.notnull(nD1PopStat)]
+D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+D1PopStat = D1PopStat[pd.notnull(D1PopStat)]
+nD1SyncN = len(nD1PopStat[nD1PopStat > 0])
+nD1NonSyncN = len(nD1PopStat[nD1PopStat == 0])
+nD1SyncFrac = nD1SyncN / float(nD1SyncN + nD1NonSyncN)
+nD1NonSyncFrac = nD1NonSyncN / float(nD1SyncN + nD1NonSyncN)
+D1SyncN = len(D1PopStat[D1PopStat > 0])
+D1NonSyncN = len(D1PopStat[D1PopStat == 0])
+D1SyncFrac = D1SyncN / float(D1SyncN + D1NonSyncN)
+D1NonSyncFrac = D1NonSyncN / float(D1SyncN + D1NonSyncN)
+plotting_data.update({"D1_pieSync": D1SyncFrac, "nD1_pieSync": nD1SyncFrac,
+                      "D1_pieNonSync": D1NonSyncFrac, "nD1_pieNonSync": nD1NonSyncFrac})
+plotting_data.update({"D1_pieSyncN": D1SyncN, "nD1_pieSyncN": nD1SyncN,
+                      "D1_pieNonSyncN": D1NonSyncN, "nD1_pieNonSyncN": nD1NonSyncN})
+
+popStatCol = 'rateDiscrimAccuracy'
+nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+plotting_data.update({"D1_rateDiscrimAccuracy": D1PopStat, "nD1_rateDiscrimAccuracy": nD1PopStat})
+
+possibleRateKeys = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
+ratesToUse = possibleRateKeys
+keys = ['phaseDiscrimAccuracy_{}Hz'.format(rate) for rate in ratesToUse]
+
+nD1Data = np.full((len(nD1), len(ratesToUse)), np.nan)
+D1Data = np.full((len(D1), len(ratesToUse)), np.nan)
+
+for externalInd, (indRow, row) in enumerate(nD1.iterrows()):
+    for indKey, key in enumerate(keys):
+        nD1Data[externalInd, indKey] = row[key]
+
+for externalInd, (indRow, row) in enumerate(D1.iterrows()):
+    for indKey, key in enumerate(keys):
+        D1Data[externalInd, indKey] = row[key]
+
+nD1MeanPerCell = np.nanmean(nD1Data, axis=1)
+nD1MeanPerCell = nD1MeanPerCell[~np.isnan(nD1MeanPerCell)]
+D1MeanPerCell = np.nanmean(D1Data, axis=1)
+D1MeanPerCell = D1MeanPerCell[~np.isnan(D1MeanPerCell)]
+plotting_data.update({"D1_phaseDiscrimAccuracy": D1MeanPerCell,
+                      "nD1_phaseDiscrimAccuracy": nD1MeanPerCell})
+
+
+# possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
+ytickLabels = [4, 8, 16, 32, 64, 128]
+yticks = np.log(ytickLabels)
+
+nD1PopStat = np.log(nD1PopStat)
+D1PopStat = np.log(D1PopStat)
+
+# Set path/filename for data output
 exampleDataPath = os.path.join(outputDataDir, 'data_am_examples.npz')
+
+# Saving the dictionary as an npz
 np.savez(exampleDataPath,
          exampleIDs=exampleList,
          exampleNames=exampleKeys,
          exampleFreqEachTrial=exampleFreqEachTrial,
          exampleSpikeTimes=exampleSpikeTimes,
          exampleTrialIndexForEachSpike=exampleTrialIndexForEachSpike,
-         exampleIndexLimitsEachTrial=exampleIndexLimitsEachTrial)
+         exampleIndexLimitsEachTrial=exampleIndexLimitsEachTrial,
+         **plotting_data)
 
 print('Saved data to {}'.format(exampleDataPath))

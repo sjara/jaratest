@@ -1,12 +1,15 @@
 """
-Calulcate number of clusters by D1 vs nD1, by brain region filters, by tuning filters, etc
+Calulcate number of clusters by D1 vs nD1, by brain region filters, by
+tuning filters, etc. Needs a database that has calculations for tuningTest
+paradigms stored (from extras/tuning_test_comparisons.py)
 """
+import sys
+sys.path.append('..')  # Added to allow import of studyparams using a relative import
 import pandas as pd
 import numpy as np
 from jaratoolbox import celldatabase
 import studyparams
 
-# db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/direct_and_indirect_cells_with_R2_change.h5")
 db = celldatabase.load_hdf('/var/tmp/figuresdata/2019astrpi/ttDBR2.h5')
 db = db.query(studyparams.FIRST_FLTRD_CELLS)
 
@@ -31,14 +34,14 @@ print("D1 clusters = {0}\nnD1 clusters = {1}".format(D1Clusters, nD1Clusters))
 
 #%% Tuning seperation
 # Removing the NaNs
-D1DBTuned = D1DB[D1DB.rsquaredFit.notnull()]
-nD1DBTuned = nD1DB[nD1DB.rsquaredFit.notnull()]
-D1ClustersTuned = D1DBTuned.__len__()
-nD1ClustersTuned = nD1DBTuned.__len__()
-print("D1 total R2 = {0}\nnD1 total R2 = {1}".format(D1ClustersTuned, nD1ClustersTuned))
+D1DBPure = D1DB[D1DB.rsquaredFit.notnull()]
+nD1DBPure = nD1DB[nD1DB.rsquaredFit.notnull()]
+D1ClustersResponsive = D1DBPure.__len__()
+nD1ClustersResponsive = nD1DBPure.__len__()
+print("D1 total R2 = {0}\nnD1 total R2 = {1}".format(D1ClustersResponsive, nD1ClustersResponsive))
 # Now filtering to R2 > 0.03
-D1DBTuned = D1DBTuned.query(studyparams.TUNING_FILTER)
-nD1DBTuned = nD1DBTuned.query(studyparams.TUNING_FILTER)
+D1DBTuned = D1DBPure.query(studyparams.TUNING_FILTER)
+nD1DBTuned = nD1DBPure.query(studyparams.TUNING_FILTER)
 D1ClustersTuned = D1DBTuned.__len__()
 nD1ClustersTuned = nD1DBTuned.__len__()
 print("D1 filtered R2 = {0}\nnD1 filtered R2 = {1}".format(D1ClustersTuned, nD1ClustersTuned))

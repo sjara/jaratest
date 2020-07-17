@@ -1,9 +1,12 @@
 """
-1.) Load in existing database
-2.) calculate the firing rate differences for tuningTest paradigm
-3.) Add signficance to values and ID if there are a greater % of D1 cells tuned rather than non-D1
+Calculates some statistics and sound response properties for tuningTest paradigm.
+The database generated from here is needed by:
+extras/cluster_counts.py
+extras/generate_allCell_reports.py
 """
 import os
+import sys
+sys.path.append('..')
 import numpy as np
 import studyparams
 from jaratoolbox import behavioranalysis
@@ -68,7 +71,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             ttZStat, ttPVal = \
                 funcs.sound_response_any_stimulus(ttEventOnsetTimes, ttSpikeTimes, tuningTrialsEachCond[:, :, -1],
                                                   timeRange=[0.0, 0.05], baseRange=baseRange)
-
+            #TODO: Add a correction term for this p-value as we are just taking it from 16 possible comparisons
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])
                 freqs = np.array([])
@@ -88,12 +91,19 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
 
                     # ------------------- Significance and fit calculations for tuning ----------------
                 # TODO: Do we really need to calculate this for each frequency at each intensity?
-                Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
+                if np.mean(spks) == 0:
+                    Rsquared = np.NaN
+                    print("Spike matrix was 0")
+                    # If there are no spikes than the rsquared value will be infinity from dividing by zero.
+                    # Upon further investigation, it's division by a np.float64 0 that causes infinity. A normal 0 just
+                    # causes a ZeroDivisionError
+                else:
+                    Rsquared, popt = funcs.calculate_fit(uniqFreq, allIntenBase, freqs, spks)
 
                 Rsquareds.append(Rsquared)
 
             db.at[indRow, 'tuningTest_pVal'] = ttPVal
-            db.at[indRow, 'tuningTest_zStat'] = ttZStat
+            db.at[indRow, 'tuningTest_ZStat'] = ttZStat
             db.at[indRow, 'ttR2Fit'] = Rsquared  # Using the highest (only) intensity
 
 celldatabase.save_hdf(db, '/var/tmp/figuresdata/2019astrpi/ttDBR2.h5')

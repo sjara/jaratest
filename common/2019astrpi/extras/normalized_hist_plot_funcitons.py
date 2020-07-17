@@ -1,10 +1,15 @@
+"""
+Contains functions used for plotting normalized histograms for comparisons.
+One function needs a datafrome, the other can use raw data fed to it.
+"""
 import matplotlib.pyplot as plt
 import numpy as np
 import importlib
 import os
 from jaratoolbox import celldatabase
 from jaratoolbox import extraplots
-studyparams = importlib.import_module('jaratest.common.2019astrpi.studyparams')
+import sys
+import studyparams
 
 
 def normalized_hist_dataframe(data_column, bin_number=50, output_dir='/var/tmp/'):

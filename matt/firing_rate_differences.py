@@ -2,6 +2,8 @@
 Look at the baseline and evoked firing rates compared between D1 and nD1 cells for laserpulse, noiseburst, tuningTest, tuningCurve, and AM. Graphically, then
 numerically.
 """
+import sys
+sys.path.append('..')
 import copy
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,7 +18,7 @@ from jaratoolbox import extraplots
 from jaratoolbox import spikesanalysis
 import database_generation_funcs as funcs
 import figparams
-from extras import figure_R2_comparison as histDraw
+from extras import normalized_hist_plot_funcitons as histDraw
 
 #%% Calculations of various data to plot
 db = celldatabase.load_hdf("/var/tmp/figuresdata/2019astrpi/ttDBR2.h5")
