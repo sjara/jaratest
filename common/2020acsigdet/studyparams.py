@@ -10,7 +10,7 @@ CAMKII_ARCH_MICE = ['band011', 'band012']
 # mice used for inactivating specific inhibitory cell types in AC
 PV_ARCHT_MICE = ['band081', 'band087', 'band091', 'band093']
 PV_ARCHT_WT_MICE = []
-SOM_ARCHT_MICE = ['band065', 'band069', 'band070', 'band108']#, 'band110', 'band111']
+SOM_ARCHT_MICE = ['band065', 'band069', 'band070', 'band108', 'band110', 'band111']
 SOM_ARCHT_WT_MICE = ['band066', 'band105', 'band112']
 
 # lists of sessions of one type for each mouse
@@ -80,14 +80,16 @@ band105_15mW_control = ['20200322a', '20200324a']
 band108_10mW_laser = ['20200305a', '20200306a', '20200308a']
 band108_10mW_control = ['20200307a']
 
-band110_10mW_laser = ['20200321a', '20200322a']
-band110_10mW_control = ['20200323a']
+band110_10mW_laser = ['20200615a', '20200616a', '20200618a', '20200619a', '20200621a', '20200622a', '20200625a', '20200626a']
+band110_10mW_control = ['20200617a', '20200620a', '20200624a', '20200627a']
 
-band111_10mW_laser = ['20200321a', '20200322a']
-band111_10mW_control = ['20200323a']
+band111_10mW_laser = ['20200613a', '20200614a', '20200616a', '20200617a', '20200619a', '20200620a', '20200622a', '20200623a']
+band111_10mW_control = ['20200615a', '20200618a', '20200621a', '20200624a']
 
-band112_10mW_laser = ['20200321a', '20200322a']
-band112_10mW_control = ['20200323a']
+band112_10mW_laser = ['20200608a', '20200609a', '20200611a', '20200612a', '20200614a', '20200615a', '20200617a', '20200618a']
+band112_10mW_control = ['20200610a', '20200613a', '20200616a', '20200619a']
+band112_15mW_laser = ['20200620a', '20200621a', '20200623a', '20200624a', '20200626a', '20200627a', '20200629a', '20200630a']
+band112_15mW_control = ['20200622a', '20200625a', '20200628a', '20200701a']
 
 # dictionaries for assigning sessions to mice
 miceDict = {'band006': {'muscimol': band006_muscimol, 'saline': band006_saline},

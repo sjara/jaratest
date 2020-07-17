@@ -33,6 +33,7 @@ for miceThisType in mouseDicts:
 
         valid = behavData['valid'].astype(bool)
         correct = behavData['outcome'] == behavData.labels['outcome']['correct']
+        incorrect = behavData['outcome'] == behavData.labels['outcome']['error']
         rightChoice = behavData['choice'] == behavData.labels['choice']['right']
         leftChoice = behavData['choice'] == behavData.labels['choice']['left']
 
@@ -62,9 +63,9 @@ for miceThisType in mouseDicts:
 
         for SNR in range(len(possibleSNRs)):
             trialsThisSNR = trialsEachSNR[:, SNR]
-            validThisSNR = valid[trialsThisSNR]
             toneChoiceThisSNR = toneChoice[trialsThisSNR]
-            percentToneDetectEachSNRThisType[indMouse, SNR] = 100.0 * np.sum(toneChoiceThisSNR) / np.sum(validThisSNR)
+            noiseChoiceThisSNR = noiseChoice[trialsThisSNR]
+            percentToneDetectEachSNRThisType[indMouse, SNR] = 100.0 * np.sum(toneChoiceThisSNR) / (np.sum(toneChoiceThisSNR) + np.sum(noiseChoiceThisSNR))
 
         # --- comparisons by bandwidth ---
         possibleBands = np.unique(bandEachTrial)
@@ -77,12 +78,12 @@ for miceThisType in mouseDicts:
 
         for band in range(len(possibleBands)):
             trialsThisBand = trialsEachBand[:, band]
-            validThisBand = valid[trialsThisBand]
             correctThisBand = correct[trialsThisBand]
+            incorrectThisBand = incorrect[trialsThisBand]
             toneChoiceThisBand = toneChoice[trialsThisBand]
             noiseChoiceThisBand = noiseChoice[trialsThisBand]
 
-            percentCorrectEachBandThisType[indMouse, band] = 100.0 * np.sum(correctThisBand) / np.sum(validThisBand)
+            percentCorrectEachBandThisType[indMouse, band] = 100.0 * np.sum(correctThisBand) / (np.sum(correctThisBand) + np.sum(incorrectThisBand))
             biasEachBandThisType[indMouse, band] = (np.sum(toneChoiceThisBand) - np.sum(noiseChoiceThisBand)) / (
                         np.sum(toneChoiceThisBand) + np.sum(noiseChoiceThisBand))
 
@@ -132,18 +133,18 @@ numBands = np.unique(behavData['currentBand'])
 numSNRs = np.unique(behavData['currentSNR'])
 trialsEachSNR = behavioranalysis.find_trials_each_type(behavData['currentSNR'], numSNRs)
 
-valid = behavData['valid'].astype(bool)
 toneChoice = behavData['choice'] == behavData.labels['choice']['right']
+noiseChoice = behavData['choice'] == behavData.labels['choice']['left']
 
 thisPsyCurve = np.zeros(len(numSNRs))
 upperErrorBar = np.zeros(len(numSNRs))
 lowerErrorBar = np.zeros(len(numSNRs))
 for snr in range(len(numSNRs)):
-    validThisCond = valid[trialsEachSNR[:, snr]]
     toneChoiceThisCond = toneChoice[trialsEachSNR[:, snr]]
-    thisPsyCurve[snr] = 100.0 * np.sum(toneChoiceThisCond) / np.sum(validThisCond)
+    noiseChoiceThisCond = noiseChoice[trialsEachSNR[:, snr]]
+    thisPsyCurve[snr] = 100.0 * np.sum(toneChoiceThisCond) / (np.sum(toneChoiceThisCond) + np.sum(noiseChoiceThisCond))
 
-    CIthisSNR = np.array(proportion_confint(np.sum(toneChoiceThisCond), np.sum(validThisCond), method='wilson'))
+    CIthisSNR = np.array(proportion_confint(np.sum(toneChoiceThisCond), (np.sum(toneChoiceThisCond) + np.sum(noiseChoiceThisCond)), method='wilson'))
     upperErrorBar[snr] = 100.0 * CIthisSNR[1] - thisPsyCurve[snr]
     lowerErrorBar[snr] = thisPsyCurve[snr] - 100.0 * CIthisSNR[0]
 

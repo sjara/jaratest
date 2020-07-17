@@ -47,20 +47,23 @@ for indType, mice in enumerate(mouseType):
             # -- sort trials by laser presentation, compute accuracy as percent correct trials out of all valid trials --
             valid = laserBehavData['valid'].astype(bool)
             correct = laserBehavData['outcome'] == laserBehavData.labels['outcome']['correct']
+            incorrect = laserBehavData['outcome'] == laserBehavData.labels['outcome']['error']
 
             laserValid = valid[trialsEachLaser[:, 1]]
             laserCorrect = correct[trialsEachLaser[:, 1]]
+            laserIncorrect = incorrect[trialsEachLaser[:, 1]]
 
             if thisLaserAccuracy is None:
                 thisLaserAccuracy = np.zeros((len(mice), len(numBands)))
-            thisLaserAccuracy[indMouse, indBand] = 100.0 * np.sum(laserCorrect) / np.sum(laserValid)
+            thisLaserAccuracy[indMouse, indBand] = 100.0 * np.sum(laserCorrect) / (np.sum(laserCorrect) + np.sum(laserIncorrect))
 
             controlValid = valid[trialsEachLaser[:, 0]]
             controlCorrect = correct[trialsEachLaser[:, 0]]
+            controlIncorrect = incorrect[trialsEachLaser[:, 0]]
 
             if thisControlAccuracy is None:
                 thisControlAccuracy = np.zeros((len(mice), len(numBands)))
-            thisControlAccuracy[indMouse, indBand] = 100.0 * np.sum(controlCorrect) / np.sum(controlValid)
+            thisControlAccuracy[indMouse, indBand] = 100.0 * np.sum(controlCorrect) / (np.sum(controlCorrect) + np.sum(controlIncorrect))
 
             # -- compute bias to a side as difference/sum --
             leftChoice = laserBehavData['choice'] == laserBehavData.labels['choice']['left']

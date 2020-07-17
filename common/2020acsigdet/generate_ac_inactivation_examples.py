@@ -58,11 +58,11 @@ for example in examples:
         upperErrorBar = np.zeros(len(numSNRs))
         lowerErrorBar = np.zeros(len(numSNRs))
         for snr in range(len(numSNRs)):
-            validThisCond = valid[trialsEachCond3Params[:, laser, band, snr]]
             toneChoiceThisCond = toneChoice[trialsEachCond3Params[:, laser, band, snr]]
-            thisPsyCurve[snr] = 100.0 * np.sum(toneChoiceThisCond) / np.sum(validThisCond)
+            noiseChoiceThisCond = noiseChoice[trialsEachCond3Params[:, laser, band, snr]]
+            thisPsyCurve[snr] = 100.0 * np.sum(toneChoiceThisCond) / (np.sum(toneChoiceThisCond) + np.sum(noiseChoiceThisCond))
 
-            CIthisSNR = np.array(proportion_confint(np.sum(toneChoiceThisCond), np.sum(validThisCond), method='wilson'))
+            CIthisSNR = np.array(proportion_confint(np.sum(toneChoiceThisCond), (np.sum(toneChoiceThisCond) + np.sum(noiseChoiceThisCond)), method='wilson'))
             upperErrorBar[snr] = 100.0 * CIthisSNR[1] - thisPsyCurve[snr]
             lowerErrorBar[snr] = thisPsyCurve[snr] - 100.0 * CIthisSNR[0]
 

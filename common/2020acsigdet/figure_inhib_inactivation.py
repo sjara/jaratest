@@ -23,8 +23,8 @@ PANELS = [1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'Fig3_inhib_inactivation'  # Do not include extension
-#figFormat = 'pdf'  # 'pdf' or 'svg'
-figFormat = 'svg'
+figFormat = 'pdf'  # 'pdf' or 'svg'
+#figFormat = 'svg'
 figSize = [9,9]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
@@ -39,9 +39,9 @@ PVInactExample = 'band081_psycurve.npz'
 SOMInactExample = 'band065_psycurve.npz'
 summaryFileName = 'all_behaviour_inhib_inactivation.npz'
 
-ExcColour = figparams.colp['excitatoryCell']
-PVColour = figparams.colp['PVcell']
-SOMColour = figparams.colp['SOMcell']
+baseColour = figparams.colp['baseline']
+PVColour = figparams.colp['PVmanip']
+SOMColour = figparams.colp['SOMmanip']
 
 fig = plt.gcf()
 fig.clf()
@@ -77,15 +77,20 @@ if PANELS[0]:
         lowerErrorControl = data['lowerErrorControl']
         possibleSNRs = data['possibleSNRs']
 
-        l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=ExcColour, lw=3, ms=8)
+        xVals = range(len(possibleSNRs))
+        plt.plot(xVals[:2], psyCurveControl[:2], 'o--', color=baseColour, lw=3, ms=8, zorder=10)
+        l1, = plt.plot(xVals[1:], psyCurveControl[1:], 'o-', color=baseColour, lw=3, ms=8, zorder=10)
+        #l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=ExcColour, lw=3, ms=8)
         plt.errorbar(range(len(possibleSNRs)), psyCurveControl, yerr=[lowerErrorControl, upperErrorControl], fmt='none',
-                     color=ExcColour, lw=2, capsize=5, capthick=1)
+                     color=baseColour, lw=2, capsize=5, capthick=1)
 
         psyCurveLaser = data['psyCurveLaser']
         upperErrorLaser = data['upperErrorLaser']
         lowerErrorLaser = data['lowerErrorLaser']
 
-        l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8)
+        plt.plot(xVals[:2], psyCurveLaser[:2], 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8, zorder=10)
+        l2, = plt.plot(xVals[1:], psyCurveLaser[1:], 'o-', color=cellTypeColours[indType], mfc='white', lw=3, ms=8, zorder=10)
+        #l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8)
         plt.errorbar(range(len(possibleSNRs)), psyCurveLaser, yerr=[lowerErrorLaser, upperErrorLaser], fmt='none',
                      color=cellTypeColours[indType], lw=2, capsize=5, capthick=1, zorder=-10)
 
@@ -93,7 +98,9 @@ if PANELS[0]:
 
         axCurve.set_xlim(-0.2, len(possibleSNRs) - 0.8)
         axCurve.set_xticks(range(len(possibleSNRs)))
-        axCurve.set_xticklabels(possibleSNRs)
+        xTickLabels = ['-inf']
+        xTickLabels.extend([int(x) for x in possibleSNRs.tolist()[1:]])
+        axCurve.set_xticklabels(xTickLabels)
         axCurve.set_xlabel('SNR (dB)', fontsize=fontSizeLabels)
 
         axCurve.set_ylim(0, 100)
@@ -134,9 +141,9 @@ if PANELS[1]:
             thisxLocs = barLoc + xLocs[indBand]
 
             for indMouse in range(accuracies[0].shape[0]):
-                plt.plot(thisxLocs, [accuracies[0][indMouse, indBand], accuracies[1][indMouse, indBand]], '-', color=ExcColour)
+                plt.plot(thisxLocs, [accuracies[0][indMouse, indBand], accuracies[1][indMouse, indBand]], '-', color=baseColour)
 
-            plt.plot(np.tile(thisxLocs[0],accuracies[0].shape[0]), accuracies[0][:,indBand], 'o', color=ExcColour)
+            plt.plot(np.tile(thisxLocs[0],accuracies[0].shape[0]), accuracies[0][:,indBand], 'o', color=baseColour)
             plt.plot(np.tile(thisxLocs[1],accuracies[1].shape[0]), accuracies[1][:,indBand], 'o', mec=colours[indType], mfc='white')
 
             #median = np.median(accuracyData, axis=0)
@@ -144,8 +151,11 @@ if PANELS[1]:
 
         axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
         axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (octaves)', fontsize=fontSizeLabels)
+        xTickLabels = possibleBands.tolist()
+        xTickLabels[-1] = 'WN'
+        axScatter.set_xticks(xLocs)
+        axScatter.set_xticklabels(xTickLabels)
+        axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
         axScatter.set_ylim(50, 80)
         axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
@@ -203,8 +213,11 @@ if PANELS[2]:
 
     axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
     axBar.set_xticks(xLocs)
-    axBar.set_xticklabels(possibleBands)
-    axBar.set_xlabel('Masker bandwidth (octaves)', fontsize=fontSizeLabels)
+    xTickLabels = possibleBands.tolist()
+    xTickLabels[-1] = 'WN'
+    axBar.set_xticks(xLocs)
+    axBar.set_xticklabels(xTickLabels)
+    axBar.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
     yLims = (-12, 2)
     axBar.set_ylim(yLims)
@@ -240,6 +253,7 @@ if PANELS[3]:
 
     colours = [PVColour, SOMColour]
     biasData = [[PVcontrolBias, PVlaserBias], [SOMcontrolBias, SOMlaserBias]]
+    yLims = [(-0.55,0.4),(-0.75,0.75)]
 
     for indType, biases in enumerate(biasData):
         axScatter = plt.subplot(gs[indType, 2])
@@ -253,9 +267,9 @@ if PANELS[3]:
 
             for indMouse in range(biases[0].shape[0]):
                 plt.plot(thisxLocs, [biases[0][indMouse, indBand], biases[1][indMouse, indBand]], '-',
-                         color=ExcColour)
+                         color=baseColour)
 
-            plt.plot(np.tile(thisxLocs[0], biases[0].shape[0]), biases[0][:, indBand], 'o', color=ExcColour)
+            plt.plot(np.tile(thisxLocs[0], biases[0].shape[0]), biases[0][:, indBand], 'o', color=baseColour)
             plt.plot(np.tile(thisxLocs[1], biases[1].shape[0]), biases[1][:, indBand], 'o',
                      mec=colours[indType], mfc='white')
 
@@ -264,11 +278,14 @@ if PANELS[3]:
 
         axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
         axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (octaves)', fontsize=fontSizeLabels)
+        xTickLabels = possibleBands.tolist()
+        xTickLabels[-1] = 'WN'
+        axScatter.set_xticks(xLocs)
+        axScatter.set_xticklabels(xTickLabels)
+        axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-        axScatter.set_ylim(-0.75,0.4)
-        axScatter.set_ylabel('Bias', fontsize=fontSizeLabels)
+        axScatter.set_ylim(yLims[indType])
+        axScatter.set_ylabel('Bias Index', fontsize=fontSizeLabels)
 
         extraplots.boxoff(axScatter)
         extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
@@ -299,7 +316,6 @@ if PANELS[4]:
     width = 0.3
     barLoc = np.array([-0.18, 0.18])
     xLocs = np.arange(2)
-    xTickLabels = possibleBands
 
     changeBias = [PVchange, SOMchange]
     medianChangeBias = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
@@ -321,12 +337,15 @@ if PANELS[4]:
 
     axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
     axBar.set_xticks(xLocs)
-    axBar.set_xticklabels(possibleBands)
-    axBar.set_xlabel('Masker bandwidth (octaves)', fontsize=fontSizeLabels)
+    xTickLabels = possibleBands.tolist()
+    xTickLabels[-1] = 'WN'
+    axBar.set_xticks(xLocs)
+    axBar.set_xticklabels(xTickLabels)
+    axBar.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
     yLims = (-0.5, 0.3)
     axBar.set_ylim(yLims)
-    axBar.set_ylabel('Change in bias', fontsize=fontSizeLabels)
+    axBar.set_ylabel('Change in Bias Index', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axBar)
     extraplots.set_ticks_fontsize(axBar, fontSizeTicks)

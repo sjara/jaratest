@@ -25,7 +25,7 @@ outputDir = '/tmp/'
 figFilename = 'Fig2_ac_inactivation'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
-figSize = [10,6]  # In inches
+figSize = [11,6]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -48,7 +48,7 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 4, wspace=0.3, hspace=0.4, width_ratios=[1.0,1.0,0.7,0.7])
+gs = gridspec.GridSpec(2, 4, wspace=0.3, hspace=0.4, width_ratios=[1.1,1.0,0.7,0.7])
 gs.update(top=0.97, bottom=0.08, left=0.03, right=0.98, wspace=0.5, hspace=0.3)
 
 axCartoons = gs[0, :2]
@@ -68,7 +68,10 @@ if PANELS[0]:
     xTickLabels = ['-inf']
     xTickLabels.extend([int(x) for x in possibleSNRs.tolist()[1:]])
 
-    l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=baseColour, lw=3, ms=8)
+    xVals = range(len(possibleSNRs))
+    plt.plot(xVals[:2], psyCurveControl[:2], 'o--', color=baseColour, lw=3, ms=8, zorder=10)
+    l1, = plt.plot(xVals[1:], psyCurveControl[1:], 'o-', color=baseColour, lw=3, ms=8, zorder=10)
+    #l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=baseColour, lw=3, ms=8)
     plt.errorbar(range(len(possibleSNRs)), psyCurveControl, yerr=[lowerErrorControl, upperErrorControl], fmt='none',
                  color=baseColour, lw=2, capsize=5, capthick=1)
 
@@ -76,8 +79,9 @@ if PANELS[0]:
     upperErrorLaser = data['upperErrorLaser']
     lowerErrorLaser = data['lowerErrorLaser']
 
-    l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o-', color=PVColour, lw=3,
-                   ms=8)
+    plt.plot(xVals[:2], psyCurveLaser[:2], 'o--', color=PVColour, lw=3, ms=8, zorder=10)
+    l2, = plt.plot(xVals[1:], psyCurveLaser[1:], 'o-', color=PVColour, lw=3, ms=8, zorder=10)
+    #l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o-', color=PVColour, lw=3, ms=8)
     plt.errorbar(range(len(possibleSNRs)), psyCurveLaser, yerr=[lowerErrorLaser, upperErrorLaser], fmt='none',
                  color=PVColour, lw=2, capsize=5, capthick=1, zorder=-10)
 
@@ -131,8 +135,11 @@ if PANELS[1]:
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
-    axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-    axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+    xTickLabels = possibleBands.tolist()
+    xTickLabels[-1] = 'WN'
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(xTickLabels)
+    axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
     axScatter.set_ylim(50, 95)
     axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
@@ -181,11 +188,14 @@ if PANELS[2]:
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
-    axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-    axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+    xTickLabels = possibleBands.tolist()
+    xTickLabels[-1] = 'WN'
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(xTickLabels)
+    axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
     axScatter.set_ylim(-0.75,0.4)
-    axScatter.set_ylabel('Bias', fontsize=fontSizeLabels)
+    axScatter.set_ylabel('Bias Index', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
@@ -265,8 +275,11 @@ if PANELS[4]:
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
-    axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-    axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+    xTickLabels = possibleBands.tolist()
+    xTickLabels[-1] = 'WN'
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(xTickLabels)
+    axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
     axScatter.set_ylim(yLims)
     axScatter.set_ylabel('Sampling time (s)', fontsize=fontSizeLabels)
@@ -349,8 +362,11 @@ if PANELS[6]:
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
-    axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-    axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+    xTickLabels = possibleBands.tolist()
+    xTickLabels[-1] = 'WN'
+    axScatter.set_xticks(xLocs)
+    axScatter.set_xticklabels(xTickLabels)
+    axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
     axScatter.set_ylim(yLims)
     axScatter.set_ylabel('Time to decision (s)', fontsize=fontSizeLabels)

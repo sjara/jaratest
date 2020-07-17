@@ -133,8 +133,11 @@ if PANELS[1]:
 
         axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
         axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+        xTickLabels = possibleBands.tolist()
+        xTickLabels[-1] = 'WN'
+        axScatter.set_xticks(xLocs)
+        axScatter.set_xticklabels(xTickLabels)
+        axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
         axScatter.set_ylim(yLims[type])
         axScatter.set_ylabel('Sampling time (s)', fontsize=fontSizeLabels)
@@ -237,8 +240,11 @@ if PANELS[3]:
 
         axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
         axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+        xTickLabels = possibleBands.tolist()
+        xTickLabels[-1] = 'WN'
+        axScatter.set_xticks(xLocs)
+        axScatter.set_xticklabels(xTickLabels)
+        axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
         axScatter.set_ylim(yLims[type])
         axScatter.set_ylabel('Time to decision (s)', fontsize=fontSizeLabels)

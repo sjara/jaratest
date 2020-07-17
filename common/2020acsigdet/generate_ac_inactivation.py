@@ -41,24 +41,26 @@ for indMouse, mouse in enumerate(PV_CHR2_MICE):
         # -- sort trials by laser presentation, compute accuracy as percent correct trials out of all valid trials --
         valid = laserBehavData['valid'].astype(bool)
         correct = laserBehavData['outcome'] == laserBehavData.labels['outcome']['correct']
+        incorrect = laserBehavData['outcome'] == laserBehavData.labels['outcome']['error']
 
         laserValid = valid[trialsEachLaser[:, 1]]
+        laserIncorrect = incorrect[trialsEachLaser[:, 1]]
         laserCorrect = correct[trialsEachLaser[:, 1]]
 
         if laserAccuracy is None:
             laserAccuracy = np.zeros((len(PV_CHR2_MICE), len(numBands)))
-        laserAccuracy[indMouse, indBand] = 100.0 * np.sum(laserCorrect) / np.sum(laserValid)
+        laserAccuracy[indMouse, indBand] = 100.0 * np.sum(laserCorrect) / (np.sum(laserCorrect) + np.sum(laserIncorrect))
 
         controlValid = valid[trialsEachLaser[:, 0]]
+        controlIncorrect = incorrect[trialsEachLaser[:, 0]]
         controlCorrect = correct[trialsEachLaser[:, 0]]
 
         if controlAccuracy is None:
             controlAccuracy = np.zeros((len(PV_CHR2_MICE), len(numBands)))
-        controlAccuracy[indMouse, indBand] = 100.0 * np.sum(controlCorrect) / np.sum(controlValid)
+        controlAccuracy[indMouse, indBand] = 100.0 * np.sum(controlCorrect) / (np.sum(controlCorrect) + np.sum(controlIncorrect))
 
         if rewardPVals is None:
             rewardPVals = np.zeros((len(PV_CHR2_MICE), len(numBands)))
-        rewardPVals[indMouse, indBand] = stats.ranksums(laserCorrect[laserValid], controlCorrect[controlValid])[1]
 
         # -- compute bias to a side as difference/sum --
         leftChoice = laserBehavData['choice'] == laserBehavData.labels['choice']['left']

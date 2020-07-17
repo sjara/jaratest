@@ -130,7 +130,7 @@ if PANELS[1]:
 
     barLoc = np.array([-0.24, 0.24])
     xLocs = np.arange(len(possibleBands))
-    yLims = [(-0.55, 0.2), (-0.8, 0.4)]
+    yLims = [(-0.55, 0.2), (-0.8, 0.8)]
     xTickLabels = possibleBands
     legendLabels = ['no laser', 'laser']
     colours = [PVColour, SOMColour]
@@ -189,7 +189,7 @@ if PANELS[2]:
     colours = [PVColour, SOMColour]
     legendLabels = ['no PV', 'no SOM']
     xLocs = range(2)
-    yLims = [(-8, 1), (-10, 1)]
+    yLims = [(-8, 1), (-10, 5)]
 
     for type in range(len(controlChangesAccuracy)):
         axScatter = plt.subplot(gs[type, 1])

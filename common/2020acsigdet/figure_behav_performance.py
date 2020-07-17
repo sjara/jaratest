@@ -22,8 +22,8 @@ PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'Fig1_behaviour_characterisation'  # Do not include extension
-#figFormat = 'pdf'  # 'pdf' or 'svg'
-figFormat = 'svg'
+figFormat = 'pdf'  # 'pdf' or 'svg'
+#figFormat = 'svg'
 figSize = [8,6]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
@@ -37,7 +37,7 @@ labelPosY = [0.96, 0.53]  # Vert position for panel labels
 fileName = 'unimplanted_behaviour.npz'
 exampleFileName = 'band068_unimplanted_psycurve.npz'
 
-wtColour = figparams.colp['excitatoryCell']
+wtColour = figparams.colp['baseline']
 
 fig = plt.gcf()
 fig.clf()
@@ -64,7 +64,9 @@ if PANELS[0]:
     xTickLabels = ['-inf']
     xTickLabels.extend([int(x) for x in possibleSNRs.tolist()[1:]])
 
-    plt.plot(range(len(possibleSNRs)), psyCurve, 'o-', color=wtColour, lw=2, ms=5)
+    xVals = range(len(possibleSNRs))
+    plt.plot(xVals[:2], psyCurve[:2], 'o--', color=wtColour, lw=2, ms=5)
+    plt.plot(xVals[1:], psyCurve[1:], 'o-', color=wtColour, lw=2, ms=5)
     plt.errorbar(range(len(possibleSNRs)), psyCurve, yerr=[lowerError, upperError], fmt='none',
                  color=wtColour, lw=2, capsize=5, capthick=1)
 
@@ -108,8 +110,10 @@ if PANELS[1]:
             indsToIgnore.append(indCurve)
 
     curves = np.delete(psyCurves, indsToIgnore, axis=0)
-    plt.plot(range(len(possibleSNRs)), np.median(curves, axis=0), 'o-', color=wtColour, lw=3, ms=9, zorder=10)
-    # plt.plot(range(len(possibleSNRs)), np.mean(curves, axis=0), 'o-', color=curveColours[indType], lw=3, zorder=10)
+    medianCurve = np.median(curves, axis=0)
+    xVals = range(len(possibleSNRs))
+    plt.plot(xVals[:2], medianCurve[:2], 'o--', color=wtColour, lw=3, ms=9, zorder=10)
+    plt.plot(xVals[1:], medianCurve[1:], 'o-', color=wtColour, lw=3, ms=9, zorder=10)
 
     axCurves.set_xlim(-0.2, len(possibleSNRs) - 0.8)
     axCurves.set_xticks(range(len(possibleSNRs)))
@@ -158,9 +162,11 @@ if PANELS[2]:
     plt.ylim(yLims)
     plt.xlim(xLocs[0] - 0.3, xLocs[-1] + 0.3)
     plt.ylabel('Accuracy (%)', fontsize=fontSizeLabels)
-    plt.xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+    plt.xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
+    xTickLabels = possibleBands.tolist()
+    xTickLabels[-1] = 'WN'
     axScatter.set_xticks(xLocs)
-    axScatter.set_xticklabels(np.tile(possibleBands,len(xLocs)//2))
+    axScatter.set_xticklabels(xTickLabels)
 
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
@@ -204,10 +210,12 @@ if PANELS[3]:
     yLims = [-0.8, 0.8]
     plt.ylim(yLims)
     plt.xlim(xLocs[0] - 0.3, xLocs[-1] + 0.3)
-    plt.ylabel('Bias', fontsize=fontSizeLabels)
-    plt.xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+    plt.ylabel('Bias Index', fontsize=fontSizeLabels)
+    plt.xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
+    xTickLabels = possibleBands.tolist()
+    xTickLabels[-1] = 'WN'
     axScatter.set_xticks(xLocs)
-    axScatter.set_xticklabels(np.tile(possibleBands,len(xLocs)//2))
+    axScatter.set_xticklabels(xTickLabels)
 
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
