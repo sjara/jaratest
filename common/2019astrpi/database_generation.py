@@ -172,7 +172,7 @@ def append_base_stats(cellDB, filename=''):
                     print("Index error for cell {}".format(indRow))  # If there are no spikes in the timeRangeForLatency
                     respLatency = np.nan
 
-                if tuningPVal > 0.05:
+                if tuningPVal > 0.05/len(uniqFreq):
                     toCalculate = False  # Excludes doing calculations/fitting a Gaussian for non-responsive cells
                 tuningTimeRange = [-0.1, 0.1]  # Includes baseline and response range
                 (tuningSpikeTimesFromEventOnset, tuningTrialIndexForEachSpike,
@@ -186,6 +186,8 @@ def append_base_stats(cellDB, filename=''):
                 tuningZStat = np.nan
 
             highestFR = 0
+            highestOnsetFR = 0
+            highestSustainedFR = 0
             for indInten, intensity in enumerate(uniqueIntensity):
                 spks = np.array([])  # Collection of all response spikes
                 freqs = np.array([])  # Collection of all frequencies matched with the spikes above
@@ -194,14 +196,26 @@ def append_base_stats(cellDB, filename=''):
                     # Finding the indices for the spikes that have a set frequency and intensity from the above loops
                     selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity))
 
-                    # Firing rate calculation at a specific frequency and intensity
+                    # Firing rate calculation over whole base/response period at a specific frequency and intensity
                     nspkBaseTuning, nspkRespTuning = funcs.calculate_firing_rate(tuningEventOnsetTimes,
                                                                                  tuningSpikeTimes, baseRange,
                                                                                  selectinds=selectinds)
+                    if respLatency > 0:
+                        # Firing rate just for base/onset
+                        nspkBaseTuningOnset, nspkRespTuningOnset = funcs.calculate_firing_rate(tuningEventOnsetTimes,
+                                                                                               tuningSpikeTimes,
+                                                                                               [-(respLatency + 0.05), -respLatency],
+                                                                                               selectinds=selectinds)
+                        # Firing rate just for base/sustained
+                        nspkBaseTuningSustained, nspkRespTuningSustained = funcs.calculate_firing_rate(tuningEventOnsetTimes,
+                                                                                                       tuningSpikeTimes,
+                                                                                                       [-(respLatency + 0.1), -(respLatency + 0.05)],
+                                                                                                       selectinds=selectinds)
                     spks = np.concatenate([spks, nspkRespTuning.ravel()])
                     freqs = np.concatenate([freqs, np.ones(len(nspkRespTuning.ravel())) * freq])
                     respSpikeMeanTuning[indInten, indFreq] = np.mean(nspkRespTuning)
                     allIntenBase = np.concatenate([allIntenBase, nspkBaseTuning.ravel()])
+
                     if intensity == uniqueIntensity[-1]:
                         meanRespFRTuning = np.mean(nspkRespTuning)
                         if meanRespFRTuning > highestFR:
@@ -211,6 +225,23 @@ def append_base_stats(cellDB, filename=''):
                             bestFreqMaxInt = freq
                             baseSpksTuning = nspkBaseTuning
                             respSpksTuning = nspkRespTuning
+                        if respLatency > 0:
+                            meanOnsetFRTuning = np.mean(nspkRespTuningOnset)
+                            meanSustainedFRTuning = np.mean(nspkRespTuningSustained)
+                            if meanOnsetFRTuning > highestOnsetFR:
+                                highestOnsetFR = meanOnsetFRTuning
+
+                                # Storing the highest response spikes as well as the frequency to save in the database later
+                                bestFreqOnsetMaxInt = freq
+                                baseOnsetSpksTuning = nspkBaseTuningOnset
+                                respOnsetSpksTuning = nspkRespTuningOnset
+                            if meanSustainedFRTuning > highestSustainedFR:
+                                highestSustainedFR = meanSustainedFRTuning
+
+                                # Storing the highest response spikes as well as the frequency to save in the database later
+                                bestFreqSustainedMaxInt = freq
+                                baseSustainedSpksTuning = nspkBaseTuningSustained
+                                respSustainedSpksTuning = nspkRespTuningSustained
 
                     # ------------------- Significance and fit calculations for tuning ----------------
                 # TODO: Do we really need to calculate this for each frequency at each intensity?
@@ -287,8 +318,15 @@ def append_base_stats(cellDB, filename=''):
                 cellDB.at[indRow, 'tuningBaseFRBestFreqMaxInt'] = np.mean(baseSpksTuning)  # Highest baseline FR at max intensity
                 cellDB.at[indRow, 'tuningRespFRBestFreqMaxInt'] = np.mean(respSpksTuning)  # Highest response FR at max intensity
                 cellDB.at[indRow, 'tuningBestFreqMaxInt'] = bestFreqMaxInt  # The frequency used for the two above variables
+                if respLatency > 0:
+                    cellDB.at[indRow, 'tuningBaseOnsetFRBestFreqMaxInt'] = np.mean(baseOnsetSpksTuning)  # Highest baseline FR at max intensity for Onset period [-0.05 s, 0.0 s]
+                    cellDB.at[indRow, 'tuningRespOnsetFRBestFreqMaxInt'] = np.mean(respOnsetSpksTuning)  # Highest response FR at max intensity for Onset period [0.0 s, 0.05 s]
+                    cellDB.at[indRow, 'tuningBestOnsetFreqMaxInt'] = bestFreqOnsetMaxInt  # The frequency used for the two above variables
+                    cellDB.at[indRow, 'tuningBaseSustainedFRBestFreqMaxInt'] = np.mean(baseSustainedSpksTuning)  # Highest baseline FR at max intensity for Sustained period [-0.1 s, 0.05 s]
+                    cellDB.at[indRow, 'tuningRespSustainedFRBestFreqMaxInt'] = np.mean(respSustainedSpksTuning)  # Highest response FR at max intensity for Sustained period [0.05 s, 0.1 s]
+                    cellDB.at[indRow, 'tuningBestSustainedFreqMaxInt'] = bestFreqSustainedMaxInt  # The frequency used for the two above variables
                 # Onset-to-sustained ratio is calculated right before the database is returned since it is calculated
-                # purely from columns in the database, so look near line 430
+                # purely from columns in the database, so look near line 461
 
         # -------------------- am calculations ---------------------------
         session = 'am'

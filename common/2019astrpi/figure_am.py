@@ -38,7 +38,7 @@ PANELS = [1, 1, 1, 1, 1, 1, 1]
 
 SAVE_FIGURE = 1
 # outputDir = '/tmp/'
-figFilename = 'plots_am_tuning' # Do not include extension
+figFilename = 'figure_am_tuning'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 
 fullPanelWidthInches = 6.9

@@ -11,6 +11,7 @@ from jaratoolbox import ephyscore
 from jaratoolbox import settings
 import studyparams
 
+STRIATUM_ONLY = True
 FIGNAME = 'figure_am'
 outputDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
 
@@ -67,15 +68,31 @@ for exampleInd, cellName in enumerate(exampleList):
     exampleIndexLimitsEachTrial.update({exampleKeys[exampleInd]: indexLimitsEachTrial})
 
 # Filtering DB for AM cells
+db = db.query(studyparams.FIRST_FLTRD_CELLS)
 zDB = db.query(studyparams.LABELLED_Z)
 zDB2 = db[db['z_coord'].isnull()]
 zDBt = pd.concat([zDB, zDB2], axis=0, ignore_index=True, sort=False)
-db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
+if STRIATUM_ONLY:
+    db = zDBt.query(studyparams.BRAIN_REGION_QUERY_STRIATUM_ONLY)
+elif not STRIATUM_ONLY:
+    db = zDBt
 
 D1 = db.query(studyparams.D1_CELLS)
 nD1 = db.query(studyparams.nD1_CELLS)
 D1 = D1.query(studyparams.AM_FILTER)
 nD1 = nD1.query(studyparams.AM_FILTER)
+
+# Check if example cells are in plotting database
+for exampleInd, cellName in enumerate(exampleList):
+
+    (subject, date, depth, tetrodeCluster) = cellName.split('_')
+    depth = float(depth)
+    tetrode = int(tetrodeCluster[2])
+    cluster = int(tetrodeCluster[4:])
+    try:
+        indRow, dbRow = celldatabase.find_cell(db, subject, date, depth, tetrode, cluster)
+    except AssertionError:
+        print("Cell {} not in db".format(cellName))
 
 plotting_data = {}
 

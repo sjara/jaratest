@@ -25,6 +25,8 @@ responseRange = [0, 0.1]
 alignmentRange = [baseRange[0], responseRange[1]]
 msRaster = 2
 
+STRIATUM_ONLY = True
+
 FIGNAME = 'figure_frequency_tuning'
 titleExampleBW = True
 
@@ -95,14 +97,35 @@ for ind, cellInfo in enumerate(exampleCell):
     exampleSpikeData.update({exampleKeys[ind]: allIntenResp})
 
 # Filtering DB for appropraite cells to plot
-db = db.query(studyparams.TUNING_FILTER)
+db = db.query(studyparams.FIRST_FLTRD_CELLS)
 zDB = db.query(studyparams.LABELLED_Z)
 zDB2 = db[db['z_coord'].isnull()]
 zDBt = pd.concat([zDB, zDB2], axis=0, ignore_index=True, sort=False)
-db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
-D1 = db.query(studyparams.D1_CELLS)  # laser activation response
-nD1 = db.query(studyparams.nD1_CELLS)  # no laser repsonse or laser inactivation response
+if STRIATUM_ONLY:
+    db = zDBt.query(studyparams.BRAIN_REGION_QUERY_STRIATUM_ONLY)
+elif not STRIATUM_ONLY:
+    # db = zDBt.query(studyparams.BRAIN_REGION_QUERY)
+    db = zDBt
+dbTuned = db.query(studyparams.TUNING_FILTER)  # Cells are pure tone responsive and tuned
+dbResponsive = db.query(studyparams.PURE_TONE_FILTER)  # Cells are just pure tone responsive
+D1 = dbTuned.query(studyparams.D1_CELLS)  # laser activation response
+nD1 = dbTuned.query(studyparams.nD1_CELLS)  # no laser repsonse or laser inactivation response
+D1Responsive = dbResponsive.query(studyparams.D1_CELLS)
+nD1Responsive = dbResponsive.query(studyparams.nD1_CELLS)
 
+# Check for example cells being in the plots as well
+for ind, cellInfo in enumerate(exampleCell):
+
+    (subject, date, depth, tetrodeCluster) = cellInfo.split('_')
+    depth = float(depth)
+    tetrode = int(tetrodeCluster[2])
+    cluster = int(tetrodeCluster[4:])
+    try:
+        indRow, dbRow = celldatabase.find_cell(db, subject, date, depth, tetrode, cluster)
+    except AssertionError:
+        print("Cell {} not in db".format(cellInfo))
+
+# --------- Data for plots ---------
 popStatCol = 'bw10'
 D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
 nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
@@ -114,15 +137,15 @@ nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
 exampleSpikeData.update({"D1_thresholdFRA": D1PopStat, "nD1_thresholdFRA": nD1PopStat})
 
 popStatCol = 'latency'
-D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1Responsive[popStatCol][pd.notnull(D1[popStatCol])]
+nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1[popStatCol])]
 D1PopStat = D1PopStat[D1PopStat > 0]
 nD1PopStat = nD1PopStat[nD1PopStat > 0]
 exampleSpikeData.update({"D1_latency": D1PopStat, "nD1_latency": nD1PopStat})
 
 popStatCol = 'cfOnsetivityIndex'
-D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1Responsive[popStatCol][pd.notnull(D1[popStatCol])]
+nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1[popStatCol])]
 exampleSpikeData.update({"D1_cfOnsetivityIndex": D1PopStat, "nD1_cfOnsetivityIndex": nD1PopStat})
 
 popStatCol = 'monotonicityIndex'
