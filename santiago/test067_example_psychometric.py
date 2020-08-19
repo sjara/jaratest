@@ -8,8 +8,15 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 from jaratoolbox import extraplots
 
-subject = 'adap012'
-session = '20160219a'
+#subject = 'adap012'
+#session = '20160219a'
+
+#subject = 'adap012'
+#session = '20160214a'
+
+subject = 'adap013'
+#session = '20160404a' # 0331
+session = '20160331a'
 paradigm = '2afc'
 
 behavFile = loadbehavior.path_to_behavior_data(subject,paradigm,session)
@@ -23,6 +30,7 @@ valid = bdata['valid'] & (choice!=bdata.labels['choice']['none'])
 
 (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(choiceRight,targetFrequency,valid)
 
+plt.clf()
 (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(possibleValues,fractionHitsEachValue,ciHitsEachValue)
 
 plt.ylabel('Rightward trials (%)')
