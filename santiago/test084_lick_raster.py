@@ -54,6 +54,9 @@ plt.xlim(timeRange)
 plt.ylabel('Trial')
 plt.xlabel('Time from sound onset (s)')
 plt.title('Licks RIGHT')
+plt.gcf().suptitle('{} - {}'.format(subject,session), fontweight='bold')
+
+#plt.savefig('/tmp/example_lick_raster.png', format='png')
 
 sys.exit()
 
