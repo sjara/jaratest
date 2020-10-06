@@ -35,11 +35,6 @@ from jaratoolbox import settings
 from jaratoolbox import histologyanalysis
 import database_generation_funcs as funcs
 
-# Identifying what version of input to use based on python version
-if sys.version_info.major < 3:
-    input_func = raw_input
-elif sys.version_info.major >= 3:
-    input_func = input
 
 SAVE = 1
 
@@ -614,7 +609,7 @@ if __name__ == "__main__":
             print("SAVED DATAFRAME to {}".format(dbpath))
             print(u"\U0001F4A9" * 10)
         elif not os.path.isdir(dbLocation):
-            answer = input_func("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
+            answer = input("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
             if answer.upper() in ['Y', 'YES']:
                 os.mkdir(dbLocation)
                 celldatabase.save_hdf(histDB, dbpath)
