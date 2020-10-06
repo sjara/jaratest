@@ -9,68 +9,33 @@ import matplotlib
 from matplotlib import pyplot as plt
 import studyparams
 
+# Font settings 
 # plt.rcParams['svg.image_noscale'] = False
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 
-#STUDY_NAME = '2019astrpi'# depracated! now we have studyparams.py
-FIGURE_OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'output') #moving to studyparams
+FIGURE_OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'output') # Where figures are saved 
 
-
+# Font size settings 
 fontSizeLabels = 7
 fontSizeTicks = 6
 fontSizePanel = 9
 fontSizeTitles = 12
 fontSizeNS = 10
 fontSizeStars = 9
+
+# Significance star placement  
 starHeightFactor = 0.2
 starGapFactor = 0.3
 starYfactor = 0.1
 
-dotEdgeColor = '0.5'
-rasterMS = 1
+dotEdgeColor = '0.5' 
 
-colp = {}
-#
-colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
-# colp['frontStrColor'] = cp.TangoPalette['Chameleon3']
-# colp['backStrColor'] = cp.TangoPalette['Plum2']
-#
-# # colp['sound'] = cp.TangoPalette['Butter2']
-# colp['sound'] = cp.TangoPalette['Orange1']
-#
-# colp['MidFreqR'] = cp.TangoPalette['ScarletRed1']
-# colp['MidFreqL'] = cp.TangoPalette['Chameleon3']
-#
-# #colp['muscimol'] = cp.TangoPalette['Orange2']
-# colp['muscimol'] = cp.TangoPalette['Chocolate2']
+rasterMS = 1 # Raster plot transparency
 
-#colp['stimLeft'] = cp.TangoPalette['ScarletRed1']
-#colp['stimRight'] = cp.TangoPalette['Chameleon3']
-# colp['stimLeft'] = cp.TangoPalette['Orange2']
-# colp['stimRight'] = '#829910'
-#
-# colp['thalColor'] = cp.TangoPalette['SkyBlue2']
-# colp['acColor'] = cp.TangoPalette['ScarletRed2']
+colors = {} # Color library used in figures 
 
+colors['blueLaser'] = cp.TangoPalette['SkyBlue1']
+colors['D1'] = cp.TangoPalette['SkyBlue2']
+colors['nD1'] = cp.TangoPalette['ScarletRed1']
 
-#7570B3 - blupurp
-#E7298A  - pink
-#C51A8A  - pink
-#D95F02  - orange
-#BCBD22  - olive
-#829910  - olive/citron
-
-'''
-# To avoid converting text to paths
-matplotlib.rcParams['svg.fonttype'] = 'none'
-
-matplotlib.rcParams['axes.color_cycle'] = ???
-
-colp = {}
-colp['LowFreq'] = cp.TangoPalette['Orange2']
-
-colp['HighFreq'] = cp.TangoPalette['SkyBlue2']
-
-
-'''
