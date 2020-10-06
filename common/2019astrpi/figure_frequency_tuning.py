@@ -13,74 +13,75 @@ from scipy import stats
 import figparams
 import studyparams
 
+# ========================== Utility Functions ==========================
 
-if sys.version_info[0] < 3:
-    inputFunc = raw_input
-elif sys.version_info[0] >= 3:
-    inputFunc = input
+np.random.seed(8) # Seed for jitter function
 
-
+# Creates variation in point spacing
 def jitter(arr, frac):
     jitter_value = (np.random.random(len(arr))-0.5)*2*frac
     jitteredArr = arr + jitter_value
     return jitteredArr
 
-
+# Sizes median lines 
 def medline(ax, yval, midline, width, color='k', linewidth=3):
     start = midline-(width/2)
     end = midline+(width/2)
     ax.plot([start, end], [yval, yval], color=color, lw=linewidth)
-# ==========================parameters==========================================
-
+    
+# ========================== Parameters ==========================
 
 FIGNAME = 'figure_frequency_tuning'
-
-exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
-
-# =======================================================================
+ 
+exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz') # Where data is retrieved 
 
 exData = np.load(exampleDataPath)  # npz data generated from generate_example_freq_tuning
-np.random.seed(8)
 
-PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 1, 1, 1, 1, 1] # Which panels to plot (Plots panel i if PANELS[i]==1)
 
+# Saving the figure 
 SAVE_FIGURE = 1
-outputDir = figparams.FIGURE_OUTPUT_DIR
+outputDir = figparams.FIGURE_OUTPUT_DIR # Where figure is saved 
 figFilename = 'figure_frequency_tuning'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 figSize = [17.25, 5.75]  # In inches (originally [13, 6.5]. Matt changed to current values based off Nick's paper)
 
+# Font size
 fontSizeLabels = figparams.fontSizeLabels*2
-# fontSizeTicks = figparams.fontSizeTicks*2
 fontSizeTicks = fontSizeLabels
 fontSizePanel = figparams.fontSizePanel*2
 fontSizeTitles = figparams.fontSizeTitles*2
 
-# Params for extraplots significance stars
+# Significance stars
 fontSizeNS = figparams.fontSizeNS
 fontSizeStars = figparams.fontSizeStars
 starHeightFactor = figparams.starHeightFactor
 starGapFactor = figparams.starGapFactor
 starYfactor = figparams.starYfactor
 
-dotEdgeColor = figparams.dotEdgeColor
+# Panel label positioning 
+labelPosX = [0.02, 0.24, 0.45, 0.64, 0.835]
+labelPosY = [0.92, 0.42]
+
+# Colors
+colornD1 = figparams.colors['nD1']
+colorD1 = figparams.colors['D1']
+laserColor = figparams.colors['blueLaser']
+
+# Colors for heatmaps
 nd1ColorMap = 'Reds'
 d1ColorMap = 'Blues'
 
-colornD1 = figparams.cp.TangoPalette['ScarletRed1']
-colorD1 = figparams.cp.TangoPalette['SkyBlue2']
-markerAlpha = 1
+markerAlpha = 1 # Transparency of markers 
 
-labelPosX = [0.02, 0.24, 0.45, 0.64, 0.835]   # Horiz position for panel labels
-labelPosY = [0.92, 0.42]    # Vert position for panel labels
+messages = [] # List of messages to print
 
-# Define colors, use figparams
-laserColor = figparams.colp['blueLaser']
+# ========================== Figure Layout ==========================
+
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-# Define the layout
 gs = gridspec.GridSpec(2, 7)
 gs.update(left=0.04, right=0.98, top=0.95, bottom=0.175, wspace=1.1, hspace=0.5)
 
@@ -99,6 +100,7 @@ axMonotonicity = plt.subplot(gs[0:2, 6])
 #     for side in axis.spines.keys():
 #         axis.spines[side].linewidth = 200
 
+# Panel labels 
 plt.text(-0.3, 1.03, 'A', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=dOne.transAxes)
@@ -121,8 +123,7 @@ plt.text(-0.3, 1.01, 'G', ha='center', va='center',
          fontsize=fontSizePanel, fontweight='bold',
          transform=axMonotonicity.transAxes)
 
-messages = []
-# ============================================================================
+# Heatmap axis ticks 
 lowFreq = 2
 highFreq = 40
 nFreqLabels = 3
@@ -135,8 +136,8 @@ nIntenLabels = 3
 intensities = np.linspace(15, 70, nIntenLabels)
 intenTickLocations = np.linspace(0, 11, nIntenLabels)
 
-# ===========================Create and save figures=============================
-# ---- TC Heatmap example 1 ----
+# ========================== TC Heatmap Example 1 ==========================
+
 if PANELS[0]:
     exampleKey = 'D1'
     exDataFR = exData[exampleKey]/0.1
@@ -157,7 +158,8 @@ if PANELS[0]:
     dOne.set_ylabel('Intensity (dB SPL)', fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(dOne, fontSizeTicks)
 
-# ---- TC Heatmap example 2 ----
+# ========================== TC Heatmap Example 2 ==========================
+    
 if PANELS[1]:
     exampleKey = 'nD1'
     exDataFR = exData[exampleKey]/0.1
@@ -178,10 +180,11 @@ if PANELS[1]:
     ndOne.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
     ndOne.set_ylabel('Intensity (dB SPL)', fontsize=fontSizeLabels)
     extraplots.set_ticks_fontsize(ndOne, fontSizeTicks)
-
+    
 # plt.hold(True)
-
-# ======================= Beginning of plotting for BW10 ================================
+    
+# ========================== BW10 ==========================  
+    
 if PANELS[2]:
 
     popStatCol = 'bw10'
@@ -210,7 +213,6 @@ if PANELS[2]:
     messages.append("{} p={}".format(popStatCol, pVal))
 
     yDataMax = max([max(D1PopStat), max(nD1PopStat)])
-    # yStars = yDataMax + yDataMax*starYfactor
     yStars = max(ylim) * 1.05
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
     plt.sca(axBW)
@@ -218,9 +220,11 @@ if PANELS[2]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars+2, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
+    
+# plt.hold(1)
+    
+# ========================== Threshold ==========================
 
-# ======================= Beginning of plotting for threshold ================================
 if PANELS[3]:
 
     popStatCol = 'thresholdFRA'
@@ -260,9 +264,11 @@ if PANELS[3]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
-    #plt.hold(1)
 
-# ======================= Beginning of plotting for latency ================================
+# plt.hold(1)
+
+# ========================== Latency ==========================
+    
 if PANELS[4]:
 
     popStatCol = 'latency'
@@ -276,7 +282,6 @@ if PANELS[4]:
     axLatency.plot(pos, D1PopStat*1000, 'o', mec=colorD1, mfc='None', alpha=markerAlpha)
     medline(axLatency, np.median(D1PopStat)*1000, 0, 0.5)
     axLatency.set_ylabel('Latency (ms)', fontsize=fontSizeTicks)
-    # tickLabels = ['ATh:Str', 'AC:Str']
     tickLabels = ['D1\nn={}'.format(len(D1PopStat)), 'nD1\nn={}'.format(len(nD1PopStat))]
     axLatency.set_xticks(range(2))
     axLatency.set_xlim([-0.5, 1.5])
@@ -291,7 +296,6 @@ if PANELS[4]:
     messages.append("{} p={}".format(popStatCol, pVal))
 
     yDataMax = max([max(D1PopStat*700), max(nD1PopStat*700)])
-    # yStars = yDataMax + yDataMax*starYfactor
     yStars = yDataMax * 1.05
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
     starString = None if pVal < 0.05 else 'n.s.'
@@ -300,8 +304,7 @@ if PANELS[4]:
                                   starSize=fontSizeStars, starString=starString,
                                   gapFactor=starGapFactor)
 
-# ======================= Beginning of plotting for Onset to sustained ratio ================================
-
+# ========================== Onset to Sustained Ratio ==========================
 if PANELS[5]:
 
     popStatCol = 'cfOnsetivityIndex'
@@ -331,7 +334,6 @@ if PANELS[5]:
     yDataMax = max([max(D1PopStat), max(nD1PopStat)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    # starString = None if pVal<0.05 else 'n.s.'
     plt.sca(axOnsetivity)
     if pVal < 0.05:
         starString = None
@@ -343,8 +345,9 @@ if PANELS[5]:
     extraplots.significance_stars([0, 1], yStars, yStarHeight, starMarker='*',
                                   starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
+    
+# ========================== Monotonicity Index ==========================
 
-# ======================= Beginning of plotting for monotonicity index ================================
 if PANELS[6]:
 
     popStatCol = 'monotonicityIndex'
@@ -374,7 +377,6 @@ if PANELS[6]:
     yDataMax = max([max(D1PopStat), max(nD1PopStat)])
     yStars = yDataMax + yDataMax*starYfactor
     yStarHeight = (yDataMax*starYfactor)*starHeightFactor
-    # starString = None if pVal<0.05 else 'n.s.'
     plt.sca(axMonotonicity)
     if pVal < 0.05:
         starString = None
@@ -387,6 +389,8 @@ if PANELS[6]:
                                   starSize=starSize, starString=starString,
                                   gapFactor=starGapFactor)
 
+# ========================== Messages and Saving ==========================
+    
 print("\nSTATISTICS:\n")
 for message in messages:
     print(message)
@@ -397,7 +401,7 @@ if SAVE_FIGURE:
         extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
         print('{} saved to {}'.format(figFilename, figparams.FIGURE_OUTPUT_DIR))
     elif not os.path.isdir(os.path.join(figparams.FIGURE_OUTPUT_DIR)):
-        answer = inputFunc("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
+        answer = input("Save folder is not present. Would you like to make the desired directory now? (y/n) ")
         if answer in ['y', 'Y', 'Yes', 'YES']:
             os.mkdir(os.path.join(figparams.FIGURE_OUTPUT_DIR))
             extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
