@@ -107,9 +107,9 @@ def append_base_stats(cellDB, filename=''):
             # Adding laserpulse calculations to the dataframe
             cellDB.at[indRow, '{}_pVal'.format(session)] = pVals  # p-value from Mann-Whitney U test
             cellDB.at[indRow, '{}_ZStat'.format(session)] = zStats  # U-statistic from Mann-Whitney U test
-            cellDB.at[indRow, '{}_dFR'.format(session)] = changeFiring  # Difference between base and response firing rate
-            cellDB.at[indRow, '{}_baselineFR'.format(session)] = baseSpikeMeanLaser  # Mean of baseline firing rate
-            cellDB.at[indRow, '{}_responseFR'.format(session)] = respSpikeMeanLaser  # Mean of response firing rate
+            cellDB.at[indRow, '{}_SpikeCountChange'.format(session)] = changeFiring  # Difference between base and response firing rate
+            cellDB.at[indRow, '{}_baselineSpikeCount'.format(session)] = baseSpikeMeanLaser  # Mean of baseline firing rate
+            cellDB.at[indRow, '{}_responseSpikeCount'.format(session)] = respSpikeMeanLaser  # Mean of response firing rate
 
         # -------------- Tuning curve calculations ----------------------------
         session = 'tuningCurve'
