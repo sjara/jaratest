@@ -151,7 +151,6 @@ plotting_data.update({"D1_phaseDiscrimAccuracy": D1MeanPerCell,
                       "nD1_phaseDiscrimAccuracy": nD1MeanPerCell})
 
 
-# possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
 ytickLabels = [4, 8, 16, 32, 64, 128]
 yticks = np.log(ytickLabels)
 
