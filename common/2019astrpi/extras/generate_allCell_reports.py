@@ -1,7 +1,7 @@
 """
 [For all cells in DB] create cell reports include the following plots for
 four sessions:
-noiseburst: raster, PSTH, ISI, waverform, sparks over time
+noiseburst: raster, PSTH, ISI, waveform, sparks over time
 laserpulse: raster, PSTH, ISI, waveform, sparks over time
 TuningCurve: raster plot(averaged across all intensities), waveform, heatmap
 Amplitude modulation: raster plot
@@ -205,13 +205,6 @@ def first_trial_index_of_condition(spikeTimesFromEventOnset, indexLimitsEachTria
     firstTrialEachCond = np.r_[0, lastTrialEachCond[:-1]]
     return firstTrialEachCond, lastTrialEachCond
 
-
-
-if sys.version_info[0] < 3:
-    inputFunc = raw_input
-elif sys.version_info[0] >= 3:
-    inputFunc = input
-
 # -----------parameters----------------
 timeRange = [-0.5, 0.5]
 binWidth = 0.010
@@ -248,16 +241,16 @@ if sys.argv[1:] != []:
     if arguements[0] == 'tuning':
         celldb = db.query(studyparams.TUNING_FILTER)
         print("Generating reports for possibly tuned cells")
-        outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_freq_tuned_cells_in_db/')
+        outputDir = os.path.join(settings.CELL_REPORTS_PATH, studyname, 'reports_freq_tuned_cells_in_db/')
 
     elif arguements[0] == 'am':
         celldb = db.query(studyparams.AM_FILTER)
         print("Generating reports for possible synced am cells")
-        outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_am_cells_in_db/')
+        outputDir = os.path.join(settings.CELL_REPORTS_PATH, studyname, 'reports_am_cells_in_db/')
 else:
     celldb = db
     print("Generating reports for all cells")
-    outputDir = os.path.join(settings.FIGURES_DATA_PATH, studyname, 'reports_all_cells_in_db/')
+    outputDir = os.path.join(settings.CELL_REPORTS_PATH, studyname, 'reports_all_cells_in_db/')
 
 # -------------------------------------------------------------------------------
 for indRow, dbRow in celldb.iterrows():
@@ -298,7 +291,10 @@ for indRow, dbRow in celldb.iterrows():
     # ----------------Noiseburst----------------
     if "noiseburst" in sessions:
         # Loading data for session
-        noiseEphysData, noBehav = oneCell.load('noiseburst')
+        try:
+            noiseEphysData, noBehav = oneCell.load('noiseburst')
+        except FileNotFoundError:
+            print("noiseburst data for {} not found".format(oneCell))
 
         # Variables needed for plotting
         noiseSpikeTimes = noiseEphysData['spikeTimes']
@@ -748,7 +744,7 @@ for indRow, dbRow in celldb.iterrows():
     plt.suptitle(title, fontsize=15, fontname="Times New Roman Bold")
     fig.set_size_inches([20, 10])
     # pathtoPng = os.path.join(outputDir, 'cellreport/')
-    fig.savefig(outputDir + '[c#{0}]_{5}_{1}_{2}_tetrode{3}_cluster{4}.png'.format(
+    fig.savefig(outputDir + 'cell{0}_{5}_{1}_{2}_tetrode{3}_cluster{4}.png'.format(
         dbRow.name, dbRow['subject'], dbRow['depth'], tetnum, chanum, dbRow.date))
     plt.clf()
     countreport += 1
