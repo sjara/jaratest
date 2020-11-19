@@ -19,6 +19,12 @@ mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE, PV_CHR2_MICE]
 mouseLabel = ['PV-ArchT', 'SOM-ArchT', 'PV-ChR2']
 legendLabel = ['no PV', 'no SOM', 'PV activated']
 
+# SOM_ARCHT_WT_MICE = studyparams.SOM_ARCHT_WT_MICE
+# PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
+# mouseType = [SOM_ARCHT_WT_MICE]
+# mouseLabel = ['SOM-Cre']
+# legendLabel = ['laser on']
+
 # 'control' or 'laser'
 sessionType = 'control'
 #sessionType = 'laser'
