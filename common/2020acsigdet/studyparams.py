@@ -2,15 +2,18 @@
 
 STUDY_NAME = '2020acsigdet'
 
+# parameters for data analysis
+REACTION_TIME_CUTOFF = 0.0 # in seconds
+
 # mice used for inactivating entire AC
 MUSC_MICE = ['band006', 'band008', 'band010']
-PV_CHR2_MICE = ['band046', 'band051', 'band052']
+PV_CHR2_MICE = ['band046', 'band051', 'band052', 'band133', 'band134', 'band135']
 CAMKII_ARCH_MICE = ['band011', 'band012']
 
 # mice used for inactivating specific inhibitory cell types in AC
-PV_ARCHT_MICE = ['band081', 'band087', 'band091', 'band093']
+PV_ARCHT_MICE = ['band081', 'band087', 'band091', 'band093', 'band113', 'band116', 'band117', 'band119', 'band120']
 PV_ARCHT_WT_MICE = []
-SOM_ARCHT_MICE = ['band065', 'band069', 'band070', 'band108', 'band110', 'band111']
+SOM_ARCHT_MICE = ['band065', 'band069', 'band070', 'band108', 'band110', 'band111', 'band121', 'band124', 'band125']
 SOM_ARCHT_WT_MICE = ['band066', 'band105', 'band112']
 
 # lists of sessions of one type for each mouse
@@ -82,14 +85,74 @@ band108_10mW_control = ['20200307a']
 
 band110_10mW_laser = ['20200615a', '20200616a', '20200618a', '20200619a', '20200621a', '20200622a', '20200625a', '20200626a']
 band110_10mW_control = ['20200617a', '20200620a', '20200624a', '20200627a']
+band110_15mW_laser = ['20200628a', '20200629a', '20200701a', '20200717a', '20200719a', '20200720a', '20200722a', '20200723a']
+band110_15mW_control = ['20200630a', '20200718a', '20200721a', '20200724a']
 
 band111_10mW_laser = ['20200613a', '20200614a', '20200616a', '20200617a', '20200619a', '20200620a', '20200622a', '20200623a']
 band111_10mW_control = ['20200615a', '20200618a', '20200621a', '20200624a']
+band111_15mW_laser = ['20200625a', '20200626a', '20200628a', '20200629a', '20200701a', '20200713a', '20200715a', '20200716a']
+band111_15mW_control = ['20200627a', '20200630a', '20200714a', '20200717a']
+band111_5mW_laser = ['20200718a', '20200719a', '20200721a', '20200722a', '20200724a', '20200725a', '20200727a', '20200728a']
+band111_5mW_control = ['20200720a', '20200723a', '20200726a', '20200729a']
 
 band112_10mW_laser = ['20200608a', '20200609a', '20200611a', '20200612a', '20200614a', '20200615a', '20200617a', '20200618a']
 band112_10mW_control = ['20200610a', '20200613a', '20200616a', '20200619a']
 band112_15mW_laser = ['20200620a', '20200621a', '20200623a', '20200624a', '20200626a', '20200627a', '20200629a', '20200630a']
 band112_15mW_control = ['20200622a', '20200625a', '20200628a', '20200701a']
+band112_5mW_laser = ['20200713a', '20200714a', '20200716a', '20200717a', '20200719a', '20200720a', '20200722a', '20200723a']
+band112_5mW_control = ['20200715a', '20200718a', '20200721a', '20200724a']
+
+band113_10mW_laser = ['20200923a', '20200924a', '20200926a', '20200927a', '20200929a', '20200930a', '20201002a', '20201003a']
+band113_10mW_control = ['20200922a', '20200925a', '20200928a', '20201001a']
+band113_5mW_laser = ['20200823a','20200824a','20200826a','20200827a','20200829a','20200830a','20200906a','20200907a']
+band113_5mW_control = ['20200822a','20200825a','20200828a','20200831a']
+
+band116_10mW_laser = ['20200923a', '20200924a', '20200926a', '20200927a', '20200929a', '20200930a', '20201002a', '20201003a']
+band116_10mW_control = ['20200922a', '20200925a', '20200928a', '20201001a']
+band116_5mW_laser = ['20200823a','20200824a','20200826a','20200827a','20200829a','20200830a','20200906a','20200907a']
+band116_5mW_control = ['20200822a','20200825a','20200828a','20200831a']
+
+band117_10mW_laser = ['20201023a', '20201024a', '20201026a', '20201027a', '20201029a', '20201030a', '20201101a', '20201102a']
+band117_10mW_control = ['20201025a', '20201028a', '20201031a', '20201103a']
+
+band119_10mW_laser = ['20201023a', '20201024a', '20201026a', '20201027a', '20201029a', '20201030a', '20201101a', '20201102a']
+band119_10mW_control = ['20201025a', '20201028a', '20201031a', '20201103a']
+
+band120_10mW_laser = ['20201023a', '20201024a', '20201026a', '20201027a', '20201029a', '20201030a', '20201101a', '20201102a']
+band120_10mW_control = ['20201025a', '20201028a', '20201031a', '20201103a']
+
+band121_10mW_laser = ['20200729a', '20200730a', '20200801a', '20200802a', '20200804a', '20200805a', '20200807a', '20200808a']
+band121_10mW_control = ['20200731a', '20200803a', '20200806a', '20200809a']
+band121_15mW_laser = ['20200810a', '20200811a', '20200813a', '20200814a', '20200816a', '20200817a', '20200819a', '20200820a']
+band121_15mW_control = ['20200812a', '20200815a', '20200818a', '20200821a']
+band121_5mW_laser = ['20200717a', '20200718a', '20200720a', '20200721a', '20200723a', '20200724a', '20200726a', '20200727a']
+band121_5mW_control = ['20200719a', '20200722a', '20200725a', '20200728a']
+
+band124_10mW_laser = ['20200729a', '20200730a', '20200801a', '20200802a', '20200804a', '20200805a', '20200807a', '20200808a']
+band124_10mW_control = ['20200731a', '20200803a', '20200806a', '20200809a']
+band124_15mW_laser = ['20200810a', '20200811a', '20200813a', '20200814a', '20200816a', '20200817a', '20200819a', '20200820a', '20200821a']
+band124_15mW_control = ['20200812a', '20200815a', '20200818a', '20200822a']
+band124_5mW_laser = ['20200717a', '20200718a', '20200720a', '20200721a', '20200723a', '20200724a', '20200726a', '20200727a']
+band124_5mW_control = ['20200719a', '20200722a', '20200725a', '20200728a']
+
+band125_10mW_laser = ['20200729a', '20200730a', '20200801a', '20200802a', '20200804a', '20200805a', '20200807a', '20200808a']
+band125_10mW_control = ['20200731a', '20200803a', '20200806a', '20200809a']
+band125_15mW_laser = ['20200810a', '20200811a', '20200813a', '20200814a', '20200816a', '20200817a', '20200819a', '20200820a']
+band125_15mW_control = ['20200812a', '20200815a', '20200818a', '20200821a']
+band125_5mW_laser = ['20200717a', '20200718a', '20200720a', '20200721a', '20200723a', '20200724a', '20200726a', '20200727a']
+band125_5mW_control = ['20200719a', '20200722a', '20200725a', '20200728a']
+
+band126_10mW_laser = ['20201020a', '20201023a', '20201025a', '20201028a', '20201030a', '20201101a', '20201102a', '20201104a']
+band126_10mW_control = ['20201024a', '20201029a', '20201031a', '20201103a']
+
+band133_3mW_laser = ['20201002a', '20201003a', '20201005a', '20201006a', '20201008a', '20201009a', '20201018a', '20201019a']
+band133_3mW_control = ['20201001a', '20201004a', '20201007a', '20201017a']
+
+band134_3mW_laser = ['20201003a', '20201004a', '20201006a', '20201007a', '20201009a', '20201017a', '20201019a', '20201020a']
+band134_3mW_control = ['20201002a', '20201005a', '20201008a', '20201018a']
+
+band135_3mW_laser = ['20201025a', '20201028a', '20201029a', '20201031a', '20201101a', '20201103a', '20201104a', '20201112a']
+band135_3mW_control = ['20201027a', '20201030a', '20201102a', '20201105a']
 
 # dictionaries for assigning sessions to mice
 miceDict = {'band006': {'muscimol': band006_muscimol, 'saline': band006_saline},
@@ -134,9 +197,45 @@ miceDict = {'band006': {'muscimol': band006_muscimol, 'saline': band006_saline},
 
             'band110': {'10mW laser': band110_10mW_laser, '10mW control': band110_10mW_control},
 
-            'band111': {'10mW laser': band111_10mW_laser, '10mW control': band111_10mW_control},
+            'band111': {'5mW laser': band111_5mW_laser, '5mW control': band111_5mW_control,
+                        '10mW laser': band111_10mW_laser, '10mW control': band111_10mW_control,
+                        '15mW laser': band111_15mW_laser, '15mW control': band111_15mW_control},
 
-            'band112': {'10mW laser': band112_10mW_laser, '10mW control': band112_10mW_control}}
+            'band112': {'5mW laser': band112_5mW_laser, '5mW control': band112_5mW_control,
+                        '10mW laser': band112_10mW_laser, '10mW control': band112_10mW_control,
+                        '15mW laser': band112_15mW_laser, '15mW control': band112_15mW_control},
+
+            'band113': {'5mW laser': band113_5mW_laser, '5mW control': band113_5mW_control,
+                        '10mW laser': band113_10mW_laser, '10mW control': band113_10mW_control},
+
+            'band116': {'5mW laser': band116_5mW_laser, '5mW control': band116_5mW_control,
+                        '10mW laser': band116_10mW_laser, '10mW control': band116_10mW_control},
+
+            'band117': {'10mW laser': band117_10mW_laser, '10mW control': band117_10mW_control},
+
+            'band119': {'10mW laser': band119_10mW_laser, '10mW control': band119_10mW_control},
+
+            'band120': {'10mW laser': band120_10mW_laser, '10mW control': band120_10mW_control},
+
+            'band121': {'5mW laser': band121_5mW_laser, '5mW control': band121_5mW_control,
+                        '10mW laser': band121_10mW_laser, '10mW control': band121_10mW_control,
+                        '15mW laser': band121_15mW_laser, '15mW control': band121_15mW_control},
+
+            'band124': {'5mW laser': band124_5mW_laser, '5mW control': band124_5mW_control,
+                        '10mW laser': band124_10mW_laser, '10mW control': band124_10mW_control,
+                        '15mW laser': band124_15mW_laser, '15mW control': band124_15mW_control},
+
+            'band125': {'5mW laser': band125_5mW_laser, '5mW control': band125_5mW_control,
+                        '10mW laser': band125_10mW_laser, '10mW control': band125_10mW_control,
+                        '15mW laser': band125_15mW_laser, '15mW control': band125_15mW_control},
+
+            'band126': {'10mW laser': band126_10mW_laser, '10mW control': band126_10mW_control},
+
+            'band133': {'3mW laser': band133_3mW_laser, '3mW control': band133_3mW_control},
+
+            'band134': {'3mW laser': band134_3mW_laser, '3mW control': band134_3mW_control},
+
+            'band135': {'3mW laser': band135_3mW_laser, '3mW control': band135_3mW_control}}
 
 # lists of sessions before implantation for characterising behaviour
 band046_unimplanted = ['20180'+str(day)+'a' for day in range(402,427)]

@@ -21,11 +21,15 @@ inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
+CORRECTED = 1
 outputDir = '/tmp/'
-figFilename = 'Fig2_ac_inactivation'  # Do not include extension
+if CORRECTED:
+    figFilename = 'Fig2_ac_inactivation_corrected'  # Do not include extension
+else:
+    figFilename = 'Fig2_ac_inactivation'
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
-figSize = [11,6]  # In inches
+figSize = [9,6]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -38,6 +42,7 @@ labelPosY = [0.97, 0.47]  # Vert position for panel labels
 ACInactExample = 'band046_psycurve.npz'
 ACInactReactionExample = 'band046_reaction_times.npz'
 summaryFileName = 'all_behaviour_ac_inactivation.npz'
+controlFileName = 'all_behaviour_ac_inactivation_control.npz'
 reactionTimesFileName = 'all_reaction_times_ac_inactivation.npz'
 
 baseColour = figparams.colp['baseline']
@@ -48,7 +53,7 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 4, wspace=0.3, hspace=0.4, width_ratios=[1.1,1.0,0.7,0.7])
+gs = gridspec.GridSpec(2, 4, wspace=0.3, hspace=0.4, width_ratios=[1.1,1.0,0.6,0.6])
 gs.update(top=0.97, bottom=0.08, left=0.03, right=0.98, wspace=0.5, hspace=0.3)
 
 axCartoons = gs[0, :2]
@@ -111,22 +116,35 @@ if PANELS[1]:
     laserAccuracy = summaryData['laserAccuracy']
     controlAccuracy = summaryData['controlAccuracy']
     possibleBands = summaryData['possibleBands']
+    indsBand = [0,-1] #only use smallest and largest bw
+
+    if CORRECTED:
+        summaryControlDataFullPath = os.path.join(inactDataDir, controlFileName)
+        summaryControlData = np.load(summaryControlDataFullPath)
+
+        laserAccuracyControl = summaryControlData['laserAccuracy']
+        controlAccuracyControl = summaryControlData['controlAccuracy']
+
+        laserAccuracyCorrected = laserAccuracy - (laserAccuracyControl - controlAccuracyControl)
+
+    else:
+        laserAccuracyCorrected = laserAccuracy
 
     axScatter = plt.subplot(gs[0,2])
     panelLabel = 'C'
 
     barLoc = np.array([-0.24, 0.24])
-    xLocs = np.arange(len(possibleBands))
-    xTickLabels = possibleBands
+    xLocs = np.arange(len(indsBand))
+    yLim = [50, 95]
     legendLabels = ['control', 'PV activated']
 
-    for indBand in range(len(possibleBands)):
+    for indBand in indsBand:
         thisxLocs = barLoc + xLocs[indBand]
 
-        for indMouse in range(laserAccuracy.shape[0]):
-            plt.plot(thisxLocs, [controlAccuracy[indMouse, indBand], laserAccuracy[indMouse, indBand]], '-', color=connectLineColour)
+        for indMouse in range(laserAccuracyCorrected.shape[0]):
+            plt.plot(thisxLocs, [controlAccuracy[indMouse, indBand], laserAccuracyCorrected[indMouse, indBand]], '-', color=connectLineColour)
 
-        l1, = plt.plot(np.tile(thisxLocs[1],laserAccuracy.shape[0]), laserAccuracy[:,indBand], 'o', color=PVColour)
+        l1, = plt.plot(np.tile(thisxLocs[1],laserAccuracyCorrected.shape[0]), laserAccuracyCorrected[:,indBand], 'o', color=PVColour)
         l2, = plt.plot(np.tile(thisxLocs[0],controlAccuracy.shape[0]), controlAccuracy[:,indBand], 'o', color=baseColour)
 
         #median = np.median(accuracyData, axis=0)
@@ -135,13 +153,13 @@ if PANELS[1]:
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
-    xTickLabels = possibleBands.tolist()
+    xTickLabels = possibleBands[indsBand].tolist()
     xTickLabels[-1] = 'WN'
     axScatter.set_xticks(xLocs)
     axScatter.set_xticklabels(xTickLabels)
     axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-    axScatter.set_ylim(50, 95)
+    axScatter.set_ylim(yLim)
     axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axScatter)
@@ -152,8 +170,11 @@ if PANELS[1]:
 
     # -- stats!! --
     for band in range(len(possibleBands)):
-        pVal = stats.wilcoxon(laserAccuracy[:,band], controlAccuracy[:,band])[1]
+        pVal = stats.wilcoxon(laserAccuracyCorrected[:,band], controlAccuracy[:,band])[1]
         print(f"Change in accuracy at {possibleBands[band]} oct pVal: {pVal}")
+
+        if pVal < 0.05:
+            extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
 
 # --- comparison in change in bias with AC inactivation ---
 if PANELS[2]:
@@ -163,23 +184,36 @@ if PANELS[2]:
     laserBias = summaryData['laserBias']
     controlBias = summaryData['controlBias']
     possibleBands = summaryData['possibleBands']
+    indsBand = [0, -1]  # only use smallest and largest bw
+
+    if CORRECTED:
+        summaryControlDataFullPath = os.path.join(inactDataDir, controlFileName)
+        summaryControlData = np.load(summaryControlDataFullPath)
+
+        laserBiasControl = summaryControlData['laserBias']
+        controlBiasControl = summaryControlData['controlBias']
+
+        laserBiasCorrected = laserBias - (laserBiasControl - controlBiasControl)
+
+    else:
+        laserBiasCorrected = laserBias
 
     axScatter = plt.subplot(gs[0, 3])
     panelLabel = 'D'
 
     barLoc = np.array([-0.24, 0.24])
-    xLocs = np.arange(len(possibleBands))
-    xTickLabels = possibleBands
+    xLocs = np.arange(len(indsBand))
+    yLim = [-0.85,0.7]
     legendLabels = ['control', 'PV activated']
 
-    for indBand in range(len(possibleBands)):
+    for indBand in indsBand:
         thisxLocs = barLoc + xLocs[indBand]
 
-        for indMouse in range(laserBias.shape[0]):
-            plt.plot(thisxLocs, [controlBias[indMouse, indBand], laserBias[indMouse, indBand]], '-',
+        for indMouse in range(laserBiasCorrected.shape[0]):
+            plt.plot(thisxLocs, [controlBias[indMouse, indBand], laserBiasCorrected[indMouse, indBand]], '-',
                      color=connectLineColour)
 
-        l1, = plt.plot(np.tile(thisxLocs[1], laserBias.shape[0]), laserBias[:, indBand], 'o', color=PVColour)
+        l1, = plt.plot(np.tile(thisxLocs[1], laserBiasCorrected.shape[0]), laserBiasCorrected[:, indBand], 'o', color=PVColour)
         l2, = plt.plot(np.tile(thisxLocs[0], controlBias.shape[0]), controlBias[:, indBand], 'o', color=baseColour)
 
         # median = np.median(accuracyData, axis=0)
@@ -188,13 +222,13 @@ if PANELS[2]:
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
-    xTickLabels = possibleBands.tolist()
+    xTickLabels = possibleBands[indsBand].tolist()
     xTickLabels[-1] = 'WN'
     axScatter.set_xticks(xLocs)
     axScatter.set_xticklabels(xTickLabels)
     axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-    axScatter.set_ylim(-0.75,0.4)
+    axScatter.set_ylim(yLim)
     axScatter.set_ylabel('Bias Index', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axScatter)
@@ -205,11 +239,14 @@ if PANELS[2]:
 
     # -- stats!! --
     for band in range(len(possibleBands)):
-        pVal = stats.wilcoxon(laserBias[:,band], controlBias[:,band])[1]
+        pVal = stats.wilcoxon(laserBiasCorrected[:,band], controlBias[:,band])[1]
         print(f"Change in bias at {possibleBands[band]} oct pVal: {pVal}")
 
+        if pVal < 0.05:
+            extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
+
 axReactions = gs[1,:]
-gs3 = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=axReactions, wspace=0.4, hspace=0.4, width_ratios=[1.0,0.65,1.0,0.65])
+gs3 = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=axReactions, wspace=0.4, hspace=0.4, width_ratios=[1.0,0.6,1.0,0.6])
 # --- histograms of reaction times with and without laser ---
 if PANELS[3]:
     panelLabel = 'E'
@@ -245,26 +282,35 @@ if PANELS[4]:
     reactionTimesDataFullPath = os.path.join(inactDataDir, reactionTimesFileName)
     reactionTimesData = np.load(reactionTimesDataFullPath)
 
-    laserReaction = reactionTimesData['laserReaction']
-    controlReaction = reactionTimesData['controlReaction']
+    laserReaction = reactionTimesData['expLaserReaction']
+    controlReaction = reactionTimesData['expNoLaserReaction']
     possibleBands = reactionTimesData['possibleBands']
+    indsBand = [0, -1]  # only use smallest and largest bw
+
+    if CORRECTED:
+        laserReactionControl = reactionTimesData['controlLaserReaction']
+        controlReactionControl = reactionTimesData['controlNoLaserReaction']
+
+        laserReactionCorrected = laserReaction - (laserReactionControl - controlReactionControl)
+
+    else:
+        laserReactionCorrected = laserReaction
 
     panelLabel = 'F'
 
     barLoc = np.array([-0.24, 0.24])
-    xLocs = np.arange(len(possibleBands))
+    xLocs = np.arange(len(indsBand))
     yLims = (0, 0.15)
-    xTickLabels = possibleBands
 
     axScatter = plt.subplot(gs3[0, 1])
-    for indBand in range(len(possibleBands)):
+    for indBand in indsBand:
         thisxLocs = barLoc + xLocs[indBand]
 
-        for indMouse in range(laserReaction.shape[0]):
-            plt.plot(thisxLocs, [controlReaction[indMouse, indBand], laserReaction[indMouse, indBand]], '-',
+        for indMouse in range(laserReactionCorrected.shape[0]):
+            plt.plot(thisxLocs, [controlReaction[indMouse, indBand], laserReactionCorrected[indMouse, indBand]], '-',
                      color=connectLineColour)
 
-        l1, = plt.plot(np.tile(thisxLocs[1], laserReaction.shape[0]), laserReaction[:, indBand], 'o',
+        l1, = plt.plot(np.tile(thisxLocs[1], laserReactionCorrected.shape[0]), laserReactionCorrected[:, indBand], 'o',
                        color=PVColour)
         l2, = plt.plot(np.tile(thisxLocs[0], controlReaction.shape[0]), controlReaction[:, indBand], 'o',
                        color=baseColour)
@@ -275,13 +321,13 @@ if PANELS[4]:
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
-    xTickLabels = possibleBands.tolist()
+    xTickLabels = possibleBands[indsBand].tolist()
     xTickLabels[-1] = 'WN'
     axScatter.set_xticks(xLocs)
     axScatter.set_xticklabels(xTickLabels)
     axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-    axScatter.set_ylim(yLims)
+    #axScatter.set_ylim(yLims)
     axScatter.set_ylabel('Sampling time (s)', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axScatter)
@@ -292,7 +338,7 @@ if PANELS[4]:
 
     # -- stats!! --
     for band in range(len(possibleBands)):
-        pVal = stats.wilcoxon(laserReaction[:,band], controlReaction[:,band])[1]
+        pVal = stats.wilcoxon(laserReactionCorrected[:,band], controlReaction[:,band])[1]
         if pVal < 0.05:
             extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLims[1], 0.02 * np.diff(yLims), gapFactor=0.3)
         print(f"Change in reaction time at {possibleBands[band]} oct pVal: {pVal}")
@@ -332,26 +378,35 @@ if PANELS[6]:
     reactionTimesDataFullPath = os.path.join(inactDataDir, reactionTimesFileName)
     reactionTimesData = np.load(reactionTimesDataFullPath)
 
-    laserDecision = reactionTimesData['laserDecision']
-    controlDecision = reactionTimesData['controlDecision']
+    laserDecision = reactionTimesData['expLaserDecision']
+    controlDecision = reactionTimesData['expNoLaserDecision']
     possibleBands = reactionTimesData['possibleBands']
+    indsBand = [0, -1]  # only use smallest and largest bw
+
+    if CORRECTED:
+        laserDecisionControl = reactionTimesData['controlLaserDecision']
+        controlDecisionControl = reactionTimesData['controlNoLaserDecision']
+
+        laserDecisionCorrected = laserDecision - (laserDecisionControl - controlDecisionControl)
+
+    else:
+        laserDecisionCorrected = laserDecision
 
     panelLabel = 'H'
 
     barLoc = np.array([-0.24, 0.24])
-    xLocs = np.arange(len(possibleBands))
+    xLocs = np.arange(len(indsBand))
     yLims = (0.3, 0.55)
-    xTickLabels = possibleBands
 
     axScatter = plt.subplot(gs3[0, 3])
-    for indBand in range(len(possibleBands)):
+    for indBand in indsBand:
         thisxLocs = barLoc + xLocs[indBand]
 
-        for indMouse in range(laserDecision.shape[0]):
-            plt.plot(thisxLocs, [controlDecision[indMouse, indBand], laserDecision[indMouse, indBand]], '-',
+        for indMouse in range(laserDecisionCorrected.shape[0]):
+            plt.plot(thisxLocs, [controlDecision[indMouse, indBand], laserDecisionCorrected[indMouse, indBand]], '-',
                      color=connectLineColour)
 
-        l1, = plt.plot(np.tile(thisxLocs[1], laserDecision.shape[0]), laserDecision[:, indBand], 'o',
+        l1, = plt.plot(np.tile(thisxLocs[1], laserDecisionCorrected.shape[0]), laserDecisionCorrected[:, indBand], 'o',
                        color=PVColour)
         l2, = plt.plot(np.tile(thisxLocs[0], controlDecision.shape[0]), controlDecision[:, indBand], 'o',
                        color=baseColour)
@@ -362,13 +417,13 @@ if PANELS[6]:
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
-    xTickLabels = possibleBands.tolist()
+    xTickLabels = possibleBands[indsBand].tolist()
     xTickLabels[-1] = 'WN'
     axScatter.set_xticks(xLocs)
     axScatter.set_xticklabels(xTickLabels)
     axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-    axScatter.set_ylim(yLims)
+    #axScatter.set_ylim(yLims)
     axScatter.set_ylabel('Time to decision (s)', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axScatter)
@@ -379,10 +434,15 @@ if PANELS[6]:
 
     # -- stats!! --
     for band in range(len(possibleBands)):
-        pVal = stats.wilcoxon(laserDecision[:,band], controlDecision[:,band])[1]
+        pVal = stats.wilcoxon(laserDecisionCorrected[:,band], controlDecision[:,band])[1]
         if pVal < 0.05:
             extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLims[1], 0.02 * np.diff(yLims), gapFactor=0.3)
         print(f"Change in reaction time at {possibleBands[band]} oct pVal: {pVal}")
+
+if CORRECTED:
+    plt.suptitle('LASER CORRECTED')
+else:
+    plt.suptitle('NO CORRECTION')
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

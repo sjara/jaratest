@@ -4,6 +4,7 @@ import numpy as np
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
+import behaviour_analysis_funcs as funcs
 import studyparams
 
 figName = 'figure_inhibitory_inactivation'
@@ -13,6 +14,8 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
 mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE]
+
+REACTION_TIME_CUTOFF = studyparams.REACTION_TIME_CUTOFF
 
 laserAccuracy = []
 controlAccuracy = []
@@ -39,6 +42,9 @@ for indType, mice in enumerate(mouseType):
         trialsEachCond = behavioranalysis.find_trials_each_combination(laserBehavData['laserSide'], numLasers,
                                                                        laserBehavData['currentBand'], numBands)
 
+        reactionTimes, decisionTimes = funcs.get_reaction_times(mouse, laserSessions)
+        trialsToUse = reactionTimes>REACTION_TIME_CUTOFF
+
         # -- compute accuracies and bias for each bandwidth --
 
         for indBand in range(len(numBands)):
@@ -49,17 +55,17 @@ for indType, mice in enumerate(mouseType):
             correct = laserBehavData['outcome'] == laserBehavData.labels['outcome']['correct']
             incorrect = laserBehavData['outcome'] == laserBehavData.labels['outcome']['error']
 
-            laserValid = valid[trialsEachLaser[:, 1]]
-            laserCorrect = correct[trialsEachLaser[:, 1]]
-            laserIncorrect = incorrect[trialsEachLaser[:, 1]]
+            laserValid = valid[trialsEachLaser[:, 1] & trialsToUse]
+            laserCorrect = correct[trialsEachLaser[:, 1] & trialsToUse]
+            laserIncorrect = incorrect[trialsEachLaser[:, 1] & trialsToUse]
 
             if thisLaserAccuracy is None:
                 thisLaserAccuracy = np.zeros((len(mice), len(numBands)))
             thisLaserAccuracy[indMouse, indBand] = 100.0 * np.sum(laserCorrect) / (np.sum(laserCorrect) + np.sum(laserIncorrect))
 
-            controlValid = valid[trialsEachLaser[:, 0]]
-            controlCorrect = correct[trialsEachLaser[:, 0]]
-            controlIncorrect = incorrect[trialsEachLaser[:, 0]]
+            controlValid = valid[trialsEachLaser[:, 0] & trialsToUse]
+            controlCorrect = correct[trialsEachLaser[:, 0] & trialsToUse]
+            controlIncorrect = incorrect[trialsEachLaser[:, 0] & trialsToUse]
 
             if thisControlAccuracy is None:
                 thisControlAccuracy = np.zeros((len(mice), len(numBands)))
@@ -81,16 +87,16 @@ for indType, mice in enumerate(mouseType):
                 toneChoice = rightChoice
                 noiseChoice = leftChoice
 
-            laserToneChoice = toneChoice[trialsEachLaser[:, 1]]
-            laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1]]
+            laserToneChoice = toneChoice[trialsEachLaser[:, 1] & trialsToUse]
+            laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1] & trialsToUse]
 
             if thisLaserBias is None:
                 thisLaserBias = np.zeros((len(mice), len(numBands)))
             thisLaserBias[indMouse, indBand] = 1.0 * (np.sum(laserToneChoice) - np.sum(laserNoiseChoice)) / \
                                                (np.sum(laserToneChoice) + np.sum(laserNoiseChoice))
 
-            controlToneChoice = toneChoice[trialsEachLaser[:, 0]]
-            controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0]]
+            controlToneChoice = toneChoice[trialsEachLaser[:, 0] & trialsToUse]
+            controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0] & trialsToUse]
 
             if thisControlBias is None:
                 thisControlBias = np.zeros((len(mice), len(numBands)))

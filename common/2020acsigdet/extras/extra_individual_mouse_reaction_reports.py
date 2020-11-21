@@ -1,3 +1,5 @@
+import sys
+sys.path.append('..')
 import os
 import numpy as np
 from statsmodels.stats.proportion import proportion_confint

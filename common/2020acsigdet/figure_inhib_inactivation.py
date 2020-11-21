@@ -21,8 +21,12 @@ inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 PANELS = [1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
+CORRECTED = 0
 outputDir = '/tmp/'
-figFilename = 'Fig3_inhib_inactivation'  # Do not include extension
+if CORRECTED:
+    figFilename = 'Fig3_inhib_inactivation_corrected'
+else:
+    figFilename = 'Fig3_inhib_inactivation'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [9,9]  # In inches
@@ -38,10 +42,12 @@ labelPosY = [0.98, 0.64, 0.3]  # Vert position for panel labels
 PVInactExample = 'band081_psycurve.npz'
 SOMInactExample = 'band065_psycurve.npz'
 summaryFileName = 'all_behaviour_inhib_inactivation.npz'
+controlFileName = 'all_behaviour_inhib_inactivation_control.npz'
 
 baseColour = figparams.colp['baseline']
 PVColour = figparams.colp['PVmanip']
 SOMColour = figparams.colp['SOMmanip']
+controlColour = figparams.colp['control']
 
 fig = plt.gcf()
 fig.clf()
@@ -72,9 +78,9 @@ if PANELS[0]:
 
         axCurve = plt.subplot(gs[indType, 0])
 
-        psyCurveControl = data['psyCurveControl']
-        upperErrorControl = data['upperErrorControl']
-        lowerErrorControl = data['lowerErrorControl']
+        psyCurveControl = data['psyCurveLaserInControl']
+        upperErrorControl = data['upperErrorLaserInControl']
+        lowerErrorControl = data['lowerErrorLaserInControl']
         possibleSNRs = data['possibleSNRs']
 
         xVals = range(len(possibleSNRs))
@@ -84,9 +90,9 @@ if PANELS[0]:
         plt.errorbar(range(len(possibleSNRs)), psyCurveControl, yerr=[lowerErrorControl, upperErrorControl], fmt='none',
                      color=baseColour, lw=2, capsize=5, capthick=1)
 
-        psyCurveLaser = data['psyCurveLaser']
-        upperErrorLaser = data['upperErrorLaser']
-        lowerErrorLaser = data['lowerErrorLaser']
+        psyCurveLaser = data['psyCurveLaserIn']
+        upperErrorLaser = data['upperErrorLaserIn']
+        lowerErrorLaser = data['lowerErrorLaserIn']
 
         plt.plot(xVals[:2], psyCurveLaser[:2], 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8, zorder=10)
         l2, = plt.plot(xVals[1:], psyCurveLaser[1:], 'o-', color=cellTypeColours[indType], mfc='white', lw=3, ms=8, zorder=10)
@@ -94,7 +100,17 @@ if PANELS[0]:
         plt.errorbar(range(len(possibleSNRs)), psyCurveLaser, yerr=[lowerErrorLaser, upperErrorLaser], fmt='none',
                      color=cellTypeColours[indType], lw=2, capsize=5, capthick=1, zorder=-10)
 
-        axCurve.legend([l1, l2], ['control', labels[indType]])
+        psyCurveLaserOut = data['psyCurveLaserOut']
+        upperErrorLaserOut = data['upperErrorLaserOut']
+        lowerErrorLaserOut = data['lowerErrorLaserOut']
+
+        plt.plot(xVals[:2], psyCurveLaserOut[:2], 'o--', color=controlColour, mfc='white', lw=3, ms=8, zorder=10)
+        l3, = plt.plot(xVals[1:], psyCurveLaserOut[1:], 'o-', color=controlColour, mfc='white', lw=3, ms=8, zorder=10)
+        # l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8)
+        plt.errorbar(range(len(possibleSNRs)), psyCurveLaserOut, yerr=[lowerErrorLaserOut, upperErrorLaserOut], fmt='none',
+                     color=controlColour, lw=2, capsize=5, capthick=1, zorder=-10)
+
+        axCurve.legend([l1, l2, l3], ['no laser', labels[indType], 'laser out'])
 
         axCurve.set_xlim(-0.2, len(possibleSNRs) - 0.8)
         axCurve.set_xticks(range(len(possibleSNRs)))
@@ -119,16 +135,31 @@ if PANELS[1]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    panelLabels = ['B', 'E']
-
     PVlaserAccuracy = summaryData['PVlaserAccuracy']
     PVcontrolAccuracy = summaryData['PVcontrolAccuracy']
     SOMlaserAccuracy = summaryData['SOMlaserAccuracy']
     SOMcontrolAccuracy = summaryData['SOMcontrolAccuracy']
     possibleBands = summaryData['possibleBands']
 
+    if CORRECTED:
+        summaryControlDataFullPath = os.path.join(inactDataDir, controlFileName)
+        summaryControlData = np.load(summaryControlDataFullPath)
+
+        PVlaserAccuracyControl = summaryControlData['PVlaserAccuracy']
+        PVcontrolAccuracyControl = summaryControlData['PVcontrolAccuracy']
+        SOMlaserAccuracyControl = summaryControlData['SOMlaserAccuracy']
+        SOMcontrolAccuracyControl = summaryControlData['SOMcontrolAccuracy']
+
+        PVlaserAccuracyCorrected = PVlaserAccuracy - (PVlaserAccuracyControl - PVcontrolAccuracyControl)
+        SOMlaserAccuracyCorrected = SOMlaserAccuracy - (SOMlaserAccuracyControl - SOMcontrolAccuracyControl)
+
+        accuracyData = [[PVcontrolAccuracy, PVlaserAccuracyCorrected], [SOMcontrolAccuracy, SOMlaserAccuracyCorrected]]
+
+    else:
+        accuracyData = [[PVcontrolAccuracy, PVlaserAccuracy], [SOMcontrolAccuracy, SOMlaserAccuracy]]
+
+    panelLabels = ['B', 'E']
     colours = [PVColour, SOMColour]
-    accuracyData = [[PVcontrolAccuracy, PVlaserAccuracy], [SOMcontrolAccuracy, SOMlaserAccuracy]]
 
     for indType, accuracies in enumerate(accuracyData):
         axScatter = plt.subplot(gs[indType,1])
@@ -181,6 +212,27 @@ if PANELS[2]:
     PVchange = PVlaserAccuracy - PVcontrolAccuracy
     SOMchange = SOMlaserAccuracy - SOMcontrolAccuracy
 
+    if CORRECTED:
+        controlDataFullPath = os.path.join(inactDataDir, controlFileName)
+        controlData = np.load(controlDataFullPath)
+
+        controlPVlaserAccuracy = controlData['PVlaserAccuracy']
+        controlPVcontrolAccuracy = controlData['PVcontrolAccuracy']
+        controlSOMlaserAccuracy = controlData['SOMlaserAccuracy']
+        controlSOMcontrolAccuracy = controlData['SOMcontrolAccuracy']
+
+        controlPVchange = controlPVlaserAccuracy - controlPVcontrolAccuracy
+        controlSOMchange = controlSOMlaserAccuracy - controlSOMcontrolAccuracy
+
+        correctedPVchange = PVchange - controlPVchange
+        correctedSOMchange = SOMchange - controlSOMchange
+
+        changeAccuracy = [correctedPVchange, correctedSOMchange]
+        medianChangeAccuracy = [np.median(correctedPVchange, axis=0), np.median(correctedSOMchange, axis=0)]
+    else:
+        changeAccuracy = [PVchange, SOMchange]
+        medianChangeAccuracy = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
+
     axBar = plt.subplot(gs[2,1])
     cartoonLabel = 'G'
     panelLabel = 'H'
@@ -192,24 +244,26 @@ if PANELS[2]:
     xLocs = np.arange(2)
     xTickLabels = possibleBands
 
-    changeAccuracy = [PVchange, SOMchange]
-    medianChangeAccuracy = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
     #changeCIs = [bootstrap_median_CI(PVchange), bootstrap_median_CI(SOMchange)]
     for indBand in range(len(possibleBands)):
         for indType in range(len(medianChangeAccuracy)):
+            jitter = 0.8 * width * (np.random.random(len(changeAccuracy[indType])) - 0.5)
+            plt.plot(np.tile(xLocs[indBand] + barLoc[indType], len(changeAccuracy[indType])) + jitter,
+                     changeAccuracy[indType][:, indBand], 'o', mec=cellTypeColours[indType], mfc='white')
+
             plt.plot([xLocs[indBand] + barLoc[indType] - width / 2, xLocs[indBand] + barLoc[indType] + width / 2],
                      [medianChangeAccuracy[indType][indBand], medianChangeAccuracy[indType][indBand]],
-                     color=cellTypeColours[indType], linewidth=3)  # medians
+                     color='k', linewidth=3, zorder=10)  # medians
 
             accuracyCI = bootstrap_median_CI(changeAccuracy[indType][:,indBand])
             # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
             plt.plot([xLocs[indBand] + barLoc[indType], xLocs[indBand] + barLoc[indType]], accuracyCI,
-                     color=cellTypeColours[indType], linewidth=1.5)  # error bars
+                     color='k', linewidth=1.5)  # error bars
             plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
-                     [accuracyCI[0], accuracyCI[0]], color=cellTypeColours[indType], linewidth=1.5)  # bottom caps
+                     [accuracyCI[0], accuracyCI[0]], color='k', linewidth=1.5)  # bottom caps
             plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
-                     [accuracyCI[1], accuracyCI[1]], color=cellTypeColours[indType], linewidth=1.5)  # top caps
-    plt.plot([-10, 10], [0, 0], '--', color='0.5')  # line at 0 indicating direction of change
+                     [accuracyCI[1], accuracyCI[1]], color='k', linewidth=1.5)  # top caps
+    plt.plot([-10, 10], [0, 0], '--', color='0.5', zorder=0)  # line at 0 indicating direction of change
 
     axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
     axBar.set_xticks(xLocs)
@@ -219,7 +273,7 @@ if PANELS[2]:
     axBar.set_xticklabels(xTickLabels)
     axBar.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-    yLims = (-12, 2)
+    yLims = (-8, 7)
     axBar.set_ylim(yLims)
     axBar.set_ylabel('Change in accuracy (%)', fontsize=fontSizeLabels)
 
@@ -243,17 +297,33 @@ if PANELS[3]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    panelLabels = ['C', 'F']
-
     PVlaserBias = summaryData['PVlaserBias']
     PVcontrolBias = summaryData['PVcontrolBias']
     SOMlaserBias = summaryData['SOMlaserBias']
     SOMcontrolBias = summaryData['SOMcontrolBias']
     possibleBands = summaryData['possibleBands']
 
+    if CORRECTED:
+        summaryControlDataFullPath = os.path.join(inactDataDir, controlFileName)
+        summaryControlData = np.load(summaryControlDataFullPath)
+
+        PVlaserBiasControl = summaryControlData['PVlaserBias']
+        PVcontrolBiasControl = summaryControlData['PVcontrolBias']
+        SOMlaserBiasControl = summaryControlData['SOMlaserBias']
+        SOMcontrolBiasControl = summaryControlData['SOMcontrolBias']
+
+        PVlaserBiasCorrected = PVlaserBias - (PVlaserBiasControl - PVcontrolBiasControl)
+        SOMlaserBiasCorrected = SOMlaserBias - (SOMlaserBiasControl - SOMcontrolBiasControl)
+
+        biasData = [[PVcontrolBias, PVlaserBiasCorrected], [SOMcontrolBias, SOMlaserBiasCorrected]]
+
+    else:
+        biasData = [[PVcontrolBias, PVlaserBias], [SOMcontrolBias, SOMlaserBias]]
+
+    panelLabels = ['C', 'F']
     colours = [PVColour, SOMColour]
-    biasData = [[PVcontrolBias, PVlaserBias], [SOMcontrolBias, SOMlaserBias]]
     yLims = [(-0.55,0.4),(-0.75,0.75)]
+    legendLabels = ['no PV', 'no SOM']
 
     for indType, biases in enumerate(biasData):
         axScatter = plt.subplot(gs[indType, 2])
@@ -275,6 +345,13 @@ if PANELS[3]:
 
             # median = np.median(accuracyData, axis=0)
             # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+
+            # calculate those stats!
+            pVal = stats.wilcoxon(biases[0][:, indBand], biases[1][:, indBand])
+            print(f'{legendLabels[indType]} bias change for bw {possibleBands[indBand]} p val: {pVal}')
+
+            if pVal[1] < 0.05:
+                extraplots.significance_stars(thisxLocs, yLims[indType][1] * 1.03, yLims[indType][1] * 0.02, gapFactor=0.25)
 
         axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
         axScatter.set_xticks(xLocs)
@@ -299,8 +376,6 @@ if PANELS[4]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    panelLabel = 'I'
-
     PVlaserBias = summaryData['PVlaserBias']
     PVcontrolBias = summaryData['PVcontrolBias']
     SOMlaserBias = summaryData['SOMlaserBias']
@@ -309,31 +384,54 @@ if PANELS[4]:
     PVchange = PVlaserBias - PVcontrolBias
     SOMchange = SOMlaserBias - SOMcontrolBias
 
+    if CORRECTED:
+        controlDataFullPath = os.path.join(inactDataDir, controlFileName)
+        controlData = np.load(controlDataFullPath)
+
+        controlPVlaserBias = controlData['PVlaserBias']
+        controlPVcontrolBias = controlData['PVcontrolBias']
+        controlSOMlaserBias = controlData['SOMlaserBias']
+        controlSOMcontrolBias = controlData['SOMcontrolBias']
+
+        controlPVchange = controlPVlaserBias - controlPVcontrolBias
+        controlSOMchange = controlSOMlaserBias - controlSOMcontrolBias
+
+        correctedPVchange = PVchange - controlPVchange
+        correctedSOMchange = SOMchange - controlSOMchange
+
+        changeBias = [correctedPVchange, correctedSOMchange]
+        medianChangeBias = [np.median(correctedPVchange, axis=0), np.median(correctedSOMchange, axis=0)]
+
+    else:
+        changeBias = [PVchange, SOMchange]
+        medianChangeBias = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
+
     axBar = plt.subplot(gs[2,2])
 
     cellTypeColours = [PVColour, SOMColour]
-
+    panelLabel = 'I'
     width = 0.3
     barLoc = np.array([-0.18, 0.18])
     xLocs = np.arange(2)
 
-    changeBias = [PVchange, SOMchange]
-    medianChangeBias = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
     for indBand in range(len(possibleBands)):
         for indType in range(len(medianChangeBias)):
+            jitter = 0.8*width*(np.random.random(len(changeBias[indType]))-0.5)
+            plt.plot(np.tile(xLocs[indBand]+barLoc[indType], len(changeBias[indType]))+jitter, changeBias[indType][:,indBand],
+                     'o', mec=cellTypeColours[indType], mfc='white')
             plt.plot([xLocs[indBand] + barLoc[indType] - width / 2, xLocs[indBand] + barLoc[indType] + width / 2],
                      [medianChangeBias[indType][indBand], medianChangeBias[indType][indBand]],
-                     color=cellTypeColours[indType], linewidth=3)  # medians
+                     color='k', linewidth=3, zorder=10)  # medians
 
             biasCI = bootstrap_median_CI(changeBias[indType][:, indBand])
             # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
             plt.plot([xLocs[indBand] + barLoc[indType], xLocs[indBand] + barLoc[indType]], biasCI,
-                     color=cellTypeColours[indType], linewidth=1.5)  # error bars
+                     color='k', linewidth=1.5)  # error bars
             plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
-                     [biasCI[0], biasCI[0]], color=cellTypeColours[indType], linewidth=1.5)  # bottom caps
+                     [biasCI[0], biasCI[0]], color='k', linewidth=1.5)  # bottom caps
             plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
-                     [biasCI[1], biasCI[1]], color=cellTypeColours[indType], linewidth=1.5)  # top caps
-    plt.plot([-10,10], [0,0], '--', color='0.5') # line at 0 indicating direction of change
+                     [biasCI[1], biasCI[1]], color='k', linewidth=1.5)  # top caps
+    plt.plot([-10,10], [0,0], '--', color='0.5', zorder=0) # line at 0 indicating direction of change
 
     axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
     axBar.set_xticks(xLocs)
@@ -343,7 +441,7 @@ if PANELS[4]:
     axBar.set_xticklabels(xTickLabels)
     axBar.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-    yLims = (-0.5, 0.3)
+    yLims = (-0.2, 0.4)
     axBar.set_ylim(yLims)
     axBar.set_ylabel('Change in Bias Index', fontsize=fontSizeLabels)
 
@@ -358,8 +456,13 @@ if PANELS[4]:
         pVal = stats.ranksums(PVchange[:,band], SOMchange[:,band])
         print(f'PV bias change vs SOM bias change for bw {possibleBands[band]} p val: {pVal}')
 
-    extraplots.significance_stars(barLoc + xLocs[0], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
-    extraplots.significance_stars(barLoc + xLocs[1], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
+        if pVal[1] < 0.05:
+            extraplots.significance_stars(barLoc + xLocs[band], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
+
+if CORRECTED:
+    plt.suptitle('LASER EFFECT CORRECTION')
+else:
+    plt.suptitle('NO CORRECTION')
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
