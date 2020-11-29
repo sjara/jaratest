@@ -13,8 +13,8 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_inhibitory_inactivation' # data for control figure in same folder
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1]  # Plot panel i if PANELS[i]==1
 
