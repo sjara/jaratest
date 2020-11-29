@@ -13,8 +13,8 @@ import figparams
 import studyparams
 
 figName = 'figure_inhibitory_inactivation_reaction_times'
-# dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
