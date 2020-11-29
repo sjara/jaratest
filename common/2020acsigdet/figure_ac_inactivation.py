@@ -15,8 +15,8 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_ac_inactivation'
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
