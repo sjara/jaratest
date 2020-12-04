@@ -21,7 +21,7 @@ inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 PANELS = [1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
-CORRECTED = 0
+CORRECTED = 1
 outputDir = '/tmp/'
 if CORRECTED:
     figFilename = 'Fig3_inhib_inactivation_corrected'

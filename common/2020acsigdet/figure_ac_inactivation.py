@@ -11,6 +11,7 @@ from scipy import stats
 from jaratoolbox import settings
 from jaratoolbox import extraplots
 
+import behaviour_analysis_funcs as bf
 import figparams
 import studyparams
 
@@ -149,7 +150,7 @@ if PANELS[1]:
 
         #median = np.median(accuracyData, axis=0)
         #plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-    axScatter.legend([l2, l1], legendLabels, loc='best')
+    #axScatter.legend([l2, l1], legendLabels, loc='best')
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
@@ -168,13 +169,53 @@ if PANELS[1]:
     axScatter.annotate(panelLabel, xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
 
-    # -- stats!! --
+    # -- stats for main panel --
     for band in range(len(possibleBands)):
         pVal = stats.wilcoxon(laserAccuracyCorrected[:,band], controlAccuracy[:,band])[1]
         print(f"Change in accuracy at {possibleBands[band]} oct pVal: {pVal}")
 
         if pVal < 0.05:
             extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
+
+    # inset showing difference in changes between bandwidths
+    axInset = inset_axes(axScatter, width="20%", height="35%", loc=1, bbox_to_anchor=(0.16, 0.02, 1, 1),
+                         bbox_transform=axScatter.transAxes)
+
+    width = 0.6
+    loc = np.arange(1, 3)
+
+    # changeMedians = [100.0 * np.median(noPVsupDiff), 100.0 * np.median(noSOMsupDiff)]
+    # SICIs = [bootstrap_median_CI(100.0 * noPVsupDiff), bootstrap_median_CI(100.0 * noSOMsupDiff)]
+    changeAccuracy = laserAccuracyCorrected - controlAccuracy
+    for indBand, band in enumerate(possibleBands):
+        median = np.median(changeAccuracy[:,indBand], axis=0)
+        plt.plot([loc[indBand] - width / 2, loc[indBand] + width / 2], [median, median], color=PVColour, linewidth=3)  # medians
+
+        # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
+        # loc2 = loc+width/2
+        CIs = bf.bootstrap_median_CI(changeAccuracy[:,indBand])
+        plt.plot([loc[indBand], loc[indBand]], CIs, color=PVColour, linewidth=1.5)  # error bars
+        plt.plot([loc[indBand] - width / 8, loc[indBand] + width / 8], [CIs[0], CIs[0]], color=PVColour, linewidth=1.5)  # bottom caps
+        plt.plot([loc[indBand] - width / 8, loc[indBand] + width / 8], [CIs[1], CIs[1]], color=PVColour, linewidth=1.5)  # top caps
+
+    yLim = [-20, 5]
+    plt.ylim(yLim)
+    axInset.yaxis.tick_right()
+    axInset.yaxis.set_ticks_position('right')
+    plt.locator_params(axis='y', nbins=5)
+    axInset.spines['left'].set_visible(False)
+    axInset.spines['top'].set_visible(False)
+    plt.ylabel(r'$\Delta$Accuracy (%)', fontsize=fontSizeLegend, rotation=-90, labelpad=15)
+    axInset.yaxis.set_label_position('right')
+    axInset.tick_params(axis='y', labelsize=fontSizeLegend)
+    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+
+    # -- stats for inset --
+    pVal = stats.ranksums(changeAccuracy[:,0], changeAccuracy[:,1])[1]
+    print(f"Change in accuracy between bandwidths pVal: {pVal}")
+
+    if pVal < 0.05:
+        extraplots.significance_stars(xLocs, 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
 
 # --- comparison in change in bias with AC inactivation ---
 if PANELS[2]:
@@ -218,7 +259,7 @@ if PANELS[2]:
 
         # median = np.median(accuracyData, axis=0)
         # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-    axScatter.legend([l2, l1], legendLabels, loc='best')
+    #axScatter.legend([l2, l1], legendLabels, loc='best')
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
@@ -244,6 +285,46 @@ if PANELS[2]:
 
         if pVal < 0.05:
             extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
+
+    # inset showing difference in changes between bandwidths
+    axInset = inset_axes(axScatter, width="20%", height="35%", loc=1, bbox_to_anchor=(0.16, 0.02, 1, 1),
+                         bbox_transform=axScatter.transAxes)
+
+    width = 0.6
+    loc = np.arange(1, 3)
+
+    # changeMedians = [100.0 * np.median(noPVsupDiff), 100.0 * np.median(noSOMsupDiff)]
+    # SICIs = [bootstrap_median_CI(100.0 * noPVsupDiff), bootstrap_median_CI(100.0 * noSOMsupDiff)]
+    changeBias = laserBiasCorrected - controlBias
+    for indBand, band in enumerate(possibleBands):
+        median = np.median(changeBias[:,indBand], axis=0)
+        plt.plot([loc[indBand] - width / 2, loc[indBand] + width / 2], [median, median], color=PVColour, linewidth=3)  # medians
+
+        # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
+        # loc2 = loc+width/2
+        CIs = bf.bootstrap_median_CI(changeBias[:,indBand])
+        plt.plot([loc[indBand], loc[indBand]], CIs, color=PVColour, linewidth=1.5)  # error bars
+        plt.plot([loc[indBand] - width / 8, loc[indBand] + width / 8], [CIs[0], CIs[0]], color=PVColour, linewidth=1.5)  # bottom caps
+        plt.plot([loc[indBand] - width / 8, loc[indBand] + width / 8], [CIs[1], CIs[1]], color=PVColour, linewidth=1.5)  # top caps
+
+    yLim = [-1, 0]
+    plt.ylim(yLim)
+    axInset.yaxis.tick_right()
+    axInset.yaxis.set_ticks_position('right')
+    plt.locator_params(axis='y', nbins=5)
+    axInset.spines['left'].set_visible(False)
+    axInset.spines['top'].set_visible(False)
+    plt.ylabel(r'$\Delta$Bias', fontsize=fontSizeLegend, rotation=-90, labelpad=15)
+    axInset.yaxis.set_label_position('right')
+    axInset.tick_params(axis='y', labelsize=fontSizeLegend)
+    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+
+    # -- stats for inset --
+    pVal = stats.ranksums(changeBias[:,0], changeBias[:,1])[1]
+    print(f"Change in bias between bandwidths pVal: {pVal}")
+
+    if pVal < 0.05:
+        extraplots.significance_stars(xLocs, 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
 
 axReactions = gs[1,:]
 gs3 = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=axReactions, wspace=0.4, hspace=0.4, width_ratios=[1.0,0.6,1.0,0.6])
@@ -317,7 +398,7 @@ if PANELS[4]:
 
         # median = np.median(accuracyData, axis=0)
         # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-    axScatter.legend([l2, l1], ['control', 'PV activated'], loc='best')
+    #axScatter.legend([l2, l1], ['control', 'PV activated'], loc='best')
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
@@ -413,7 +494,7 @@ if PANELS[6]:
 
         # median = np.median(accuracyData, axis=0)
         # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-    axScatter.legend([l2, l1], ['control', 'PV activated'], loc='best')
+    #axScatter.legend([l2, l1], ['control', 'PV activated'], loc='best')
 
     axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
     axScatter.set_xticks(xLocs)
