@@ -13,8 +13,8 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_inhibitory_inactivation' # data for control figure in same folder
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
@@ -239,7 +239,7 @@ if PANELS[3]:
     colours = [PVColour, SOMColour]
     legendLabels = ['no PV', 'no SOM']
     xLocs = range(2)
-    yLims = [(-0.2, 0.15), (-0.3, 0.15)]
+    yLims = [(-0.2, 0.15), (-0.3, 0.2)]
 
     for type in range(len(controlChangesBias)):
         axScatter = plt.subplot(gs[type, 3])

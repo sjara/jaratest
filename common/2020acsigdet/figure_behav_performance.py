@@ -14,16 +14,16 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_characterise_behaviour'
-# dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+# dataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 outputDir = '/tmp/'
 figFilename = 'Fig1_behaviour_characterisation'  # Do not include extension
-figFormat = 'pdf'  # 'pdf' or 'svg'
-#figFormat = 'svg'
+#figFormat = 'pdf'  # 'pdf' or 'svg'
+figFormat = 'svg'
 figSize = [8,6]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels

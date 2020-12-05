@@ -1,3 +1,5 @@
+import sys
+sys.path.append('..')
 import os
 import numpy as np
 from statsmodels.stats.proportion import proportion_confint
@@ -23,8 +25,8 @@ colour = ['b', 'r', 'b']
 faceColour = ['white', 'white', 'b']
 
 # 'control' or 'laser'
-#sessionType = 'control'
-sessionType = 'laser'
+sessionType = 'control'
+#sessionType = 'laser'
 
 for indType, mice in enumerate(mouseType):
     for mouse in mice:
@@ -158,7 +160,7 @@ for indType, mice in enumerate(mouseType):
         axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
         axScatter.set_xlabel('Masker bandwidth (oct)')
 
-        axScatter.set_ylim(0.05,0.15)
+        axScatter.set_ylim(0.05,0.2)
         axScatter.set_ylabel('Sampling time (s)')
 
         extraplots.boxoff(axScatter)

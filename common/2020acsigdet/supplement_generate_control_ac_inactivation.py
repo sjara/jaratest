@@ -11,6 +11,7 @@ figName = 'figure_ac_inactivation'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 PV_CHR2_MICE = studyparams.PV_CHR2_MICE
+BANDS_TO_USE = [0,-1] # ignore intermediate bandwidth for the mice it was done
 
 laserAccuracy = None
 controlAccuracy = None
@@ -60,7 +61,7 @@ for indMouse, mouse in enumerate(PV_CHR2_MICE):
     trialsEachCond, trialsEachLaser, valid, correct, toneChoice, noiseChoice, numBands = load_data_for_this_stuff(mouse, '3mW control')
 
     # -- compute accuracies and bias for each bandwidth in control condition --
-    for indBand in range(len(numBands)):
+    for indBand in BANDS_TO_USE:
         trialsEachLaser = trialsEachCond[:, :, indBand]
 
         # -- sort trials by laser presentation, compute accuracy as percent correct trials out of all valid trials --
@@ -68,14 +69,14 @@ for indMouse, mouse in enumerate(PV_CHR2_MICE):
         laserCorrect = correct[trialsEachLaser[:, 1]]
 
         if laserAccuracy is None:
-            laserAccuracy = np.zeros((len(PV_CHR2_MICE), len(numBands)))
+            laserAccuracy = np.zeros((len(PV_CHR2_MICE), len(BANDS_TO_USE)))
         laserAccuracy[indMouse, indBand] = 100.0 * np.sum(laserCorrect) / np.sum(laserValid)
 
         controlValid = valid[trialsEachLaser[:, 0]]
         controlCorrect = correct[trialsEachLaser[:, 0]]
 
         if controlAccuracy is None:
-            controlAccuracy = np.zeros((len(PV_CHR2_MICE), len(numBands)))
+            controlAccuracy = np.zeros((len(PV_CHR2_MICE), len(BANDS_TO_USE)))
         controlAccuracy[indMouse, indBand] = 100.0 * np.sum(controlCorrect) / np.sum(controlValid)
 
         # -- compute bias to a side as difference/sum --
@@ -83,7 +84,7 @@ for indMouse, mouse in enumerate(PV_CHR2_MICE):
         laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1]]
 
         if laserBias is None:
-            laserBias = np.zeros((len(PV_CHR2_MICE), len(numBands)))
+            laserBias = np.zeros((len(PV_CHR2_MICE), len(BANDS_TO_USE)))
         laserBias[indMouse, indBand] = 1.0 * (np.sum(laserToneChoice) - np.sum(laserNoiseChoice)) / \
                                            (np.sum(laserToneChoice) + np.sum(laserNoiseChoice))
 
@@ -91,7 +92,7 @@ for indMouse, mouse in enumerate(PV_CHR2_MICE):
         controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0]]
 
         if controlBias is None:
-            controlBias = np.zeros((len(PV_CHR2_MICE), len(numBands)))
+            controlBias = np.zeros((len(PV_CHR2_MICE), len(BANDS_TO_USE)))
         controlBias[indMouse, indBand] = 1.0 * (np.sum(controlToneChoice) - np.sum(controlNoiseChoice)) / \
                                     (np.sum(controlToneChoice) + np.sum(controlNoiseChoice))
 
@@ -134,5 +135,5 @@ np.savez(outputFullPath,
          laserBias=laserBias, controlBias=controlBias,
          controlChangeAccuracy=controlChangeAccuracy, expChangeAccuracy=expChangeAccuracy,
          controlChangeBias=controlChangeBias, expChangeBias=expChangeBias,
-         possibleBands=numBands)
+         possibleBands=numBands[BANDS_TO_USE])
 print(outputFile + " saved")

@@ -15,107 +15,113 @@ SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
 mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE]
 
+sessionTypes = ['10mW laser', '10mW control']
+
 laserReaction = []
 controlReaction = []
 
 laserDecision = []
 controlDecision = []
 
-for indType, mice in enumerate(mouseType):
+for sessionType in sessionTypes:
+    for indType, mice in enumerate(mouseType):
 
-    thisLaserReaction = None
-    thisControlReaction = None
+        thisLaserReaction = None
+        thisControlReaction = None
+        thisLaserDecision = None
+        thisControlDecision = None
 
-    thisLaserDecision = None
-    thisControlDecision = None
+        for indMouse, mouse in enumerate(mice):
 
-    for indMouse, mouse in enumerate(mice):
+            laserSessions = studyparams.miceDict[mouse][sessionType]
+            laserBehavData = behavioranalysis.load_many_sessions(mouse, laserSessions)
 
-        laserSessions = studyparams.miceDict[mouse]['10mW laser']
-        laserBehavData = behavioranalysis.load_many_sessions(mouse, laserSessions)
+            if all(~np.isnan(laserBehavData['timeCenterOut'])):
+                reactionTimes = laserBehavData['timeCenterOut'] - laserBehavData['timeTarget']
+                decisionTimes = laserBehavData['timeSideIn'] - laserBehavData['timeCenterOut']
+            else:
+                reactionTimes = []
+                decisionTimes = []
+                for session in laserSessions:
+                    thisBehavFile = os.path.join(settings.BEHAVIOR_PATH, mouse, mouse + '_2afc_' + session + '.h5')
+                    if os.path.exists(thisBehavFile):
+                        thisBehavData = loadbehavior.BehaviorData(thisBehavFile, readmode='full')
+                    timeSound = thisBehavData['timeTarget']
+                    timeCenterOut = np.zeros(len(timeSound))
+                    timeSideIn = thisBehavData['timeSideIn']
 
-        if all(~np.isnan(laserBehavData['timeCenterOut'])):
-            reactionTimes = laserBehavData['timeCenterOut'] - laserBehavData['timeTarget']
-            decisionTimes = laserBehavData['timeSideIn'] - laserBehavData['timeCenterOut']
-        else:
-            reactionTimes = []
-            decisionTimes = []
-            for session in laserSessions:
-                thisBehavFile = os.path.join(settings.BEHAVIOR_PATH, mouse, mouse + '_2afc_' + session + '.h5')
-                if os.path.exists(thisBehavFile):
-                    thisBehavData = loadbehavior.BehaviorData(thisBehavFile, readmode='full')
-                timeSound = thisBehavData['timeTarget']
-                timeCenterOut = np.zeros(len(timeSound))
-                timeSideIn = thisBehavData['timeSideIn']
+                    eventCode = np.array(thisBehavData.events['eventCode'])
+                    eventTime = thisBehavData.events['eventTime']
+                    CoutInds = np.where(eventCode == laserBehavData.stateMatrix['eventsNames']['Cout'])[0]
 
-                eventCode = np.array(thisBehavData.events['eventCode'])
-                eventTime = thisBehavData.events['eventTime']
-                CoutInds = np.where(eventCode == laserBehavData.stateMatrix['eventsNames']['Cout'])[0]
+                    for trial in range(len(timeSound)):
+                        soundEventInd = np.where(eventTime == timeSound[trial])[0][0]
+                        CoutInd = CoutInds[np.argmax(CoutInds > soundEventInd)]
+                        timeCenterOut[trial] = eventTime[CoutInd]
 
-                for trial in range(len(timeSound)):
-                    soundEventInd = np.where(eventTime == timeSound[trial])[0][0]
-                    CoutInd = CoutInds[np.argmax(CoutInds > soundEventInd)]
-                    timeCenterOut[trial] = eventTime[CoutInd]
+                    thisReactionTimes = timeCenterOut - timeSound
+                    thisDecisionTimes = timeSideIn - timeCenterOut
 
-                thisReactionTimes = timeCenterOut - timeSound
-                thisDecisionTimes = timeSideIn - timeCenterOut
+                    reactionTimes.extend(thisReactionTimes)
+                    decisionTimes.extend(thisDecisionTimes)
 
-                reactionTimes.extend(thisReactionTimes)
-                decisionTimes.extend(thisDecisionTimes)
+                reactionTimes = np.array(reactionTimes)
+                decisionTimes = np.array(decisionTimes)
 
-            reactionTimes = np.array(reactionTimes)
-            decisionTimes = np.array(decisionTimes)
+            numLasers = np.unique(laserBehavData['laserSide'])
+            numBands = np.unique(laserBehavData['currentBand'])
 
-        numLasers = np.unique(laserBehavData['laserSide'])
-        numBands = np.unique(laserBehavData['currentBand'])
+            trialsEachCond = behavioranalysis.find_trials_each_combination(laserBehavData['laserSide'], numLasers,
+                                                                           laserBehavData['currentBand'], numBands)
 
-        trialsEachCond = behavioranalysis.find_trials_each_combination(laserBehavData['laserSide'], numLasers,
-                                                                       laserBehavData['currentBand'], numBands)
+            # -- compute reaction and decision times for each bandwidth --
 
-        # -- compute reaction and decision times for each bandwidth --
+            for indBand in range(len(numBands)):
+                trialsEachLaser = trialsEachCond[:, :, indBand]
 
-        for indBand in range(len(numBands)):
-            trialsEachLaser = trialsEachCond[:, :, indBand]
+                # -- sort trials by laser presentation, compute reaction times as time diff between sound on and center out --
+                if thisLaserReaction is None:
+                    thisLaserReaction = np.zeros((len(mice), len(numBands)))
+                laserReactionTimes = reactionTimes[trialsEachLaser[:,1]]
+                laserReactionTimes = laserReactionTimes[np.isfinite(laserReactionTimes)]
+                thisLaserReaction[indMouse, indBand] = np.mean(laserReactionTimes)
 
-            # -- sort trials by laser presentation, compute reaction times as time diff between sound on and center out --
-            if thisLaserReaction is None:
-                thisLaserReaction = np.zeros((len(mice), len(numBands)))
-            laserReactionTimes = reactionTimes[trialsEachLaser[:,1]]
-            laserReactionTimes = laserReactionTimes[np.isfinite(laserReactionTimes)]
-            thisLaserReaction[indMouse, indBand] = np.mean(laserReactionTimes)
+                if thisControlReaction is None:
+                    thisControlReaction = np.zeros((len(mice), len(numBands)))
+                controlReactionTimes = reactionTimes[trialsEachLaser[:, 0]]
+                controlReactionTimes = controlReactionTimes[np.isfinite(controlReactionTimes)]
+                thisControlReaction[indMouse, indBand] = np.mean(controlReactionTimes)
 
-            if thisControlReaction is None:
-                thisControlReaction = np.zeros((len(mice), len(numBands)))
-            controlReactionTimes = reactionTimes[trialsEachLaser[:, 0]]
-            controlReactionTimes = controlReactionTimes[np.isfinite(controlReactionTimes)]
-            thisControlReaction[indMouse, indBand] = np.mean(controlReactionTimes)
+                # -- compute decision time as time diff between center out and side in --
+                if thisLaserDecision is None:
+                    thisLaserDecision = np.zeros((len(mice), len(numBands)))
+                laserDecisionTimes = decisionTimes[trialsEachLaser[:, 1]]
+                laserDecisionTimes = laserDecisionTimes[np.isfinite(laserDecisionTimes)]
+                thisLaserDecision[indMouse, indBand] = np.mean(laserDecisionTimes)
 
-            # -- compute decision time as time diff between center out and side in --
-            if thisLaserDecision is None:
-                thisLaserDecision = np.zeros((len(mice), len(numBands)))
-            laserDecisionTimes = decisionTimes[trialsEachLaser[:, 1]]
-            laserDecisionTimes = laserDecisionTimes[np.isfinite(laserDecisionTimes)]
-            thisLaserDecision[indMouse, indBand] = np.mean(laserDecisionTimes)
+                if thisControlDecision is None:
+                    thisControlDecision = np.zeros((len(mice), len(numBands)))
+                controlDecisionTimes = decisionTimes[trialsEachLaser[:,0]]
+                controlDecisionTimes = controlDecisionTimes[np.isfinite(controlDecisionTimes)]
+                thisControlDecision[indMouse, indBand] = np.mean(controlDecisionTimes)
 
-            if thisControlDecision is None:
-                thisControlDecision = np.zeros((len(mice), len(numBands)))
-            controlDecisionTimes = decisionTimes[trialsEachLaser[:,0]]
-            controlDecisionTimes = controlDecisionTimes[np.isfinite(controlDecisionTimes)]
-            thisControlDecision[indMouse, indBand] = np.mean(controlDecisionTimes)
+        laserReaction.append(thisLaserReaction)
+        controlReaction.append(thisControlReaction)
 
-    laserReaction.append(thisLaserReaction)
-    controlReaction.append(thisControlReaction)
-
-    laserDecision.append(thisLaserDecision)
-    controlDecision.append(thisControlDecision)
+        laserDecision.append(thisLaserDecision)
+        controlDecision.append(thisControlDecision)
 
 # -- save responses of all sound responsive cells to 0.25 bandwidth sounds --
 outputFile = 'all_reaction_times_inhib_inactivation.npz'
 outputFullPath = os.path.join(dataDir, outputFile)
 np.savez(outputFullPath,
-         PVlaserReaction=laserReaction[0], PVcontrolReaction=controlReaction[0],
-         PVlaserDecision=laserDecision[0], PVcontrolDecision=controlDecision[0],
-         SOMlaserReaction=laserReaction[1], SOMcontrolReaction=controlReaction[1],
-         SOMlaserDecision=laserDecision[1], SOMcontrolDecision=controlDecision[1],
+         PVexpLaserReaction=laserReaction[0], PVexpNoLaserReaction=controlReaction[0],
+         PVexpLaserDecision=laserDecision[0], PVexpNoLaserDecision=controlDecision[0],
+         SOMexpLaserReaction=laserReaction[1], SOMexpNoLaserReaction=controlReaction[1],
+         SOMexpLaserDecision=laserDecision[1], SOMexpNoLaserDecision=controlDecision[1],
+         PVcontrolLaserReaction=laserReaction[2], PVcontrolNoLaserReaction=controlReaction[2],
+         PVcontrolLaserDecision=laserDecision[2], PVcontrolNoLaserDecision=controlDecision[2],
+         SOMcontrolLaserReaction=laserReaction[3], SOMcontrolNoLaserReaction=controlReaction[3],
+         SOMcontrolLaserDecision=laserDecision[3], SOMcontrolNoLaserDecision=controlDecision[3],
          possibleBands=numBands)
 print(outputFile + " saved")

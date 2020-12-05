@@ -4,6 +4,7 @@ import numpy as np
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
+import behaviour_analysis_funcs as funcs
 import studyparams
 
 def load_data_for_this_stuff(mouse, sessionType):
@@ -45,6 +46,8 @@ inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
 SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 
+REACTION_TIME_CUTOFF = studyparams.REACTION_TIME_CUTOFF
+
 mouseTypes = [PV_ARCHT_MICE, SOM_ARCHT_MICE]
 
 laserAccuracy = []
@@ -73,36 +76,39 @@ for indType, mice in enumerate(mouseTypes):
 
         trialsEachCond, trialsEachLaser, valid, correct, incorrect, toneChoice, noiseChoice, numBands = load_data_for_this_stuff(mouse, '10mW control')
 
+        reactionTimes, decisionTimes = funcs.get_reaction_times(mouse, studyparams.miceDict[mouse]['10mW control'])
+        trialsToUse = reactionTimes > REACTION_TIME_CUTOFF
+
         # -- compute accuracies and bias for each bandwidth in control condition --
         for indBand in range(len(numBands)):
             trialsEachLaser = trialsEachCond[:, :, indBand]
 
             # -- sort trials by laser presentation, compute accuracy as percent correct trials out of all valid trials --
-            laserCorrect = correct[trialsEachLaser[:, 1]]
-            laserIncorrect = incorrect[trialsEachLaser[:, 1]]
+            laserCorrect = correct[trialsEachLaser[:, 1] & trialsToUse]
+            laserIncorrect = incorrect[trialsEachLaser[:, 1] & trialsToUse]
 
             if thisLaserAccuracy is None:
                 thisLaserAccuracy = np.zeros((len(mice), len(numBands)))
             thisLaserAccuracy[indMouse, indBand] = 100.0 * np.sum(laserCorrect) / (np.sum(laserCorrect) + np.sum(laserIncorrect))
 
-            controlCorrect = correct[trialsEachLaser[:, 0]]
-            controlIncorrect = incorrect[trialsEachLaser[:, 0]]
+            controlCorrect = correct[trialsEachLaser[:, 0] & trialsToUse]
+            controlIncorrect = incorrect[trialsEachLaser[:, 0] & trialsToUse]
 
             if thisControlAccuracy is None:
                 thisControlAccuracy = np.zeros((len(mice), len(numBands)))
             thisControlAccuracy[indMouse, indBand] = 100.0 * np.sum(controlCorrect) / (np.sum(controlCorrect) + np.sum(controlIncorrect))
 
             # -- compute bias to a side as difference/sum --
-            laserToneChoice = toneChoice[trialsEachLaser[:, 1]]
-            laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1]]
+            laserToneChoice = toneChoice[trialsEachLaser[:, 1] & trialsToUse]
+            laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1] & trialsToUse]
 
             if thisLaserBias is None:
                 thisLaserBias = np.zeros((len(mice), len(numBands)))
             thisLaserBias[indMouse, indBand] = 1.0 * (np.sum(laserToneChoice) - np.sum(laserNoiseChoice)) / \
                                                (np.sum(laserToneChoice) + np.sum(laserNoiseChoice))
 
-            controlToneChoice = toneChoice[trialsEachLaser[:, 0]]
-            controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0]]
+            controlToneChoice = toneChoice[trialsEachLaser[:, 0] & trialsToUse]
+            controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0] & trialsToUse]
 
             if thisControlBias is None:
                 thisControlBias = np.zeros((len(mice), len(numBands)))
@@ -110,31 +116,34 @@ for indType, mice in enumerate(mouseTypes):
                                         (np.sum(controlToneChoice) + np.sum(controlNoiseChoice))
 
         # -- compute overall change in accuracy and bias for control condition --
-        laserCorrect = correct[trialsEachLaser[:, 1]]
-        laserIncorrect = incorrect[trialsEachLaser[:, 1]]
-        controlCorrect = correct[trialsEachLaser[:, 0]]
-        controlIncorrect = incorrect[trialsEachLaser[:, 0]]
+        laserCorrect = correct[trialsEachLaser[:, 1] & trialsToUse]
+        laserIncorrect = incorrect[trialsEachLaser[:, 1] & trialsToUse]
+        controlCorrect = correct[trialsEachLaser[:, 0] & trialsToUse]
+        controlIncorrect = incorrect[trialsEachLaser[:, 0] & trialsToUse]
         controlChangeAccuracy[indMouse] = (100.0 * np.sum(laserCorrect) / (np.sum(laserCorrect) + np.sum(laserIncorrect))) - (100.0 * np.sum(controlCorrect) / (np.sum(controlCorrect) + np.sum(controlIncorrect)))
 
-        laserToneChoice = toneChoice[trialsEachLaser[:, 1]]
-        laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1]]
-        controlToneChoice = toneChoice[trialsEachLaser[:, 0]]
-        controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0]]
+        laserToneChoice = toneChoice[trialsEachLaser[:, 1] & trialsToUse]
+        laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1] & trialsToUse]
+        controlToneChoice = toneChoice[trialsEachLaser[:, 0] & trialsToUse]
+        controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0] & trialsToUse]
         controlChangeBias[indMouse] = 1.0 * ((np.sum(laserToneChoice) - np.sum(laserNoiseChoice)) / (np.sum(laserToneChoice) + np.sum(laserNoiseChoice)))-((np.sum(controlToneChoice) - np.sum(controlNoiseChoice)) / (np.sum(controlToneChoice) + np.sum(controlNoiseChoice)))
 
         # -- compute overall change in accuracy and bias for experimental condition --
         trialsEachCond, trialsEachLaser, valid, correct, incorrect, toneChoice, noiseChoice, numBands = load_data_for_this_stuff(mouse, '10mW laser')
-        laserCorrect = correct[trialsEachLaser[:, 1]]
-        laserIncorrect = incorrect[trialsEachLaser[:, 1]]
-        controlCorrect = correct[trialsEachLaser[:, 0]]
-        controlIncorrect = incorrect[trialsEachLaser[:, 0]]
+        reactionTimesLaser, decisionTimesLaser = funcs.get_reaction_times(mouse, studyparams.miceDict[mouse]['10mW laser'])
+        trialsToUseLaser = reactionTimesLaser > REACTION_TIME_CUTOFF
+
+        laserCorrect = correct[trialsEachLaser[:, 1] & trialsToUseLaser]
+        laserIncorrect = incorrect[trialsEachLaser[:, 1] & trialsToUseLaser]
+        controlCorrect = correct[trialsEachLaser[:, 0] & trialsToUseLaser]
+        controlIncorrect = incorrect[trialsEachLaser[:, 0] & trialsToUseLaser]
         expChangeAccuracy[indMouse] = (100.0 * np.sum(laserCorrect) / (np.sum(laserCorrect) + np.sum(laserIncorrect))) - (
                     100.0 * np.sum(controlCorrect) / (np.sum(controlCorrect) + np.sum(controlIncorrect)))
 
-        laserToneChoice = toneChoice[trialsEachLaser[:, 1]]
-        laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1]]
-        controlToneChoice = toneChoice[trialsEachLaser[:, 0]]
-        controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0]]
+        laserToneChoice = toneChoice[trialsEachLaser[:, 1] & trialsToUseLaser]
+        laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1] & trialsToUseLaser]
+        controlToneChoice = toneChoice[trialsEachLaser[:, 0] & trialsToUseLaser]
+        controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0] & trialsToUseLaser]
         expChangeBias[indMouse] = 1.0 * ((np.sum(laserToneChoice) - np.sum(laserNoiseChoice)) / (
                     np.sum(laserToneChoice) + np.sum(laserNoiseChoice))) - (
                                                   (np.sum(controlToneChoice) - np.sum(controlNoiseChoice)) / (
