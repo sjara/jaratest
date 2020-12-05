@@ -14,11 +14,6 @@ from jaratoolbox import spikesanalysis
 from jaratoolbox import celldatabase
 import studyparams
 
-if sys.version_info[0] < 3:
-    inputFunc = raw_input
-elif sys.version_info[0] >= 3:
-    inputFunc = input
-
 # ===================================parameters=================================
 baseRange = [-0.1, 0]
 responseRange = [0, 0.1]
@@ -137,15 +132,15 @@ nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
 exampleSpikeData.update({"D1_thresholdFRA": D1PopStat, "nD1_thresholdFRA": nD1PopStat})
 
 popStatCol = 'latency'
-D1PopStat = D1Responsive[popStatCol][pd.notnull(D1[popStatCol])]
-nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1Responsive[popStatCol][pd.notnull(D1Responsive[popStatCol])]
+nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1Responsive[popStatCol])]
 D1PopStat = D1PopStat[D1PopStat > 0]
 nD1PopStat = nD1PopStat[nD1PopStat > 0]
 exampleSpikeData.update({"D1_latency": D1PopStat, "nD1_latency": nD1PopStat})
 
 popStatCol = 'cfOnsetivityIndex'
-D1PopStat = D1Responsive[popStatCol][pd.notnull(D1[popStatCol])]
-nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1Responsive[popStatCol][pd.notnull(D1Responsive[popStatCol])]
+nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1Responsive[popStatCol])]
 exampleSpikeData.update({"D1_cfOnsetivityIndex": D1PopStat, "nD1_cfOnsetivityIndex": nD1PopStat})
 
 popStatCol = 'monotonicityIndex'
@@ -160,7 +155,7 @@ if os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME
     np.savez(exampleDataPath, **exampleSpikeData)
     print("{} data saved to {}".format(FIGNAME, exampleDataPath))
 elif not os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)):
-    answer = inputFunc(
+    answer = input(
         "Save folder is not present. Would you like to make the desired directory now? (y/n) ")
     if answer in ['y', 'Y', 'Yes', 'YES']:
         os.mkdir(
