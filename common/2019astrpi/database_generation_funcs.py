@@ -444,7 +444,7 @@ def calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes, currentFreq,
                                        cf, respLatency):
     """
     Find the ratio of onset firing rate of the cell to the sustained firing rate
-    of the cell. Selects subset of trials  with the CF and the top 5 intensities
+    of the cell. Selects subset of trials with the CF and the top 5 intensities
     Args:
         eventOnsetTimes (numpy.ndarray): Same size as the number of trials with each
             value being the time sound detector turned on
