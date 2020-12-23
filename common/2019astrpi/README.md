@@ -6,7 +6,7 @@ pathway
 The file `studyparams.py` contains a list of animals as well as statistical 
 parameters for the database calculations
 
-## databasename.h5
+## direct_and_indirect_cells2.h5
 
 ### database_generation.py
 This script will generate the database with all subjects defined
@@ -35,13 +35,13 @@ rates of the laserpulse paradigm using a Mann-Whitney U test.
 
 * *laserpulse_ZStat*: The corresponding U-statistic for the above p-value
 
-* *laserpulse_dFR*: The change in firing rate for the laserpulse as calculated by
+* *laserpulse_SpikeCountChange*: The change in spike count for the laserpulse as calculated by
 `response - baseline`
 
-* *laserpulse_baselineFR*: The baseline laserpulse firing rate. Baseline period
+* *laserpulse_baselineSpikeCount*: The baseline laserpulse mean spike count. Baseline period
 was [-100 ms, 0 ms]
 
-* *laserpulse_responseFR*: The response laserpulse firing rate. Response period
+* *laserpulse_responseSpikeCount*: The response laserpulse mean spike count. Response period
 was [0 ms, 100 ms]
 
 * *noiseburst_pVal*: The p-value for comparing the baseline and response firing
@@ -49,10 +49,10 @@ rates of the noiseburst paradigm using a Mann-Whitney U test.
 
 * *noiseburst_ZStat*: The corresponding U-statistic for the above p-value
 
-* *noiseburst_baselineFR*: The baseline noiseburst firing rate. Baseline period 
+* *noiseburst_baselineSpikeCount*: The baseline noiseburst mean spike count. Baseline period 
 was [-100 ms, 0 ms] 
 
-* *noiseburst_responseFR*: The response noiseburst firing rate. Response period
+* *noiseburst_responseSpikeCount*: The response noiseburst mean spike count. Response period
 was [0 ms, 100 ms] 
 
 * *tuningTest_pVal*: The p-value found from comparing the baseline firing rate of
@@ -118,7 +118,7 @@ equation: (*upperFreq* - *lowerFreq*) / *cf*
 * *fitMidpoint*: The midpoint of the gaussian fit for the tuning curve calculated
  using the square root of the *upperFreq* * *lowerFreq*
 
-* *thresholfFRA*: The characteristic intensity for peak firing rate. Found using 
+* *thresholdFRA*: The characteristic intensity for peak firing rate. Found using 
 the intensity index from 
 database_generation_funcs.calculate_intensity_threshold_and_CF_indices and 
 indexing the unique intensities (uniqueIntensity) for a session.
@@ -180,17 +180,16 @@ to the baseline firing rate using a Mann-Whitney U test
 * *am_response_ZStat*: Corresponding U-statistic for the above p-value
 
 # Figure Pure tone characterization
-## Figure script: `figure_frequency_characterization.py`
+## Figure script: `figure_frequency_tuning.py`
 **Requires**:
 `data_freq_tuning_examples.npz`
 Produced by:
 `generate_example_freq_tuning.py`
 
-`{celldatabase_name}.h5` Produced by: `database_generation.py`
- >> DB name to be determined
+`direct_and_indirect_cells2.h5` Produced by: `database_generation.py`
 
 ## Panels A, B
-These panels are produced by the figure script `figure_frequency_characterization.py`.
+These panels are produced by the figure script `figure_frequency_tuning.py`.
 To get tuning curve data, it requires `data_freq_tuning_examples.npz` which is 
 produced by `generate_example_freq_tuning.py`
 
@@ -222,8 +221,7 @@ It compares how the indices of the populations varies with the bar being the med
 `data_am_examples.npz`
 Produced by: `generate_example_am_rasters.py`
 
-`{celldatabase_name}.h5` Produced by: `database_generation.py`
- >> DB name to be determined
+`direct_and_indirect_cells2.h5` Produced by: `database_generation.py`
 
 ## Panels A, D
 These panels include example raster plots of a single D1 cell (A) and single nD1
@@ -251,12 +249,12 @@ Calculated in `base stats`
 # Exploring Data to produce stats and reports
 ## Files in Extras
 ### cluster_counts.py
-Calulcate number of clusters by D1 vs nD1, by brain region filters, by
+Calculate number of clusters by D1 vs nD1, by brain region filters, by
 tuning filters, etc. Needs a database that has calculations for tuningTest
 paradigms stored (from `extras/tuning_test_comparisons.py`)
 
 ### figure_cell_sound_responses.py
-Generates a figures used to explore all aspects of sound responses for the
+Generates a figure used to explore all aspects of sound responses for the
 various stimuli we presented to the mice. Panels from here may or may not make
 it into the final paper.
 
@@ -315,3 +313,172 @@ Calculates some statistics and sound response properties for tuningTest paradigm
 The database generated from here is needed by:
 extras/cluster_counts.py
 extras/generate_allCell_reports.py
+
+# Exploring Data to produce stats and reports
+## Files in test_scripts
+### database_generation_test.py
+This script will generate a simpler database with all subjects defined
+as d1pi mice in studyparams.py. This script is useful for testing changes in calculations when generating a database and does not include all the calculations of 'database_generation.py' This script can create a database for one example mouse or all mice. Output is an h5 file containing all the below information in `Database 2 contents`
+
+# Test database contents
+* *laserpulse_pVal*: The p-value for comparing the baseline and response firing
+rates of the laserpulse paradigm using a Mann-Whitney U test.
+
+* *laserpulse_ZStat*: The corresponding U-statistic for the above p-value
+
+* *laserpulse_SpikeCountChange*: The change in spike count for the laserpulse as calculated by
+`response - baseline`
+
+* *laserpulse_baselineSpikeCount*: The baseline laserpulse mean spike count. Baseline period
+was [-100 ms, 0 ms]
+
+* *laserpulse_responseSpikeCount*: The response laserpulse mean spike count. Response period
+was [0 ms, 100 ms]
+
+* *latency*: The time (in seconds) from when the stimulus is presented until the 
+cell shows a response. Calculated using database_generation_funcs.calculate_latency(). 
+This looks at the *cf* on the tuning curve. Using a time range of 100 ms before the 
+stimulus it establishes a baseline firing rate. The value is then pulled by looking 
+for where a PSTH of the curve crosses a specific fraction of the maximum fire rate 
+the cell reaches.
+
+* *tuningResponseRate*:
+
+* *tuningBaseRate*: The number of spikes over time the occur from 100 ms before the 
+stimulus to 50 ms before the stimulus is presented. Calculated by 
+database_generation_funcs.calculate_onset_to_sustained_ratio.
+
+* *tuningResponseRatio*:
+
+* *noiseburst_pVal*: The p-value for comparing the baseline and response firing
+rates of the noiseburst paradigm using a Mann-Whitney U test.
+
+* *noiseburst_ZStat*: The corresponding U-statistic for the above p-value
+
+* *noiseburst_baselineSpikeCount*: The baseline noiseburst mean spike count. Baseline period 
+was [-100 ms, 0 ms] 
+
+* *noiseburst_responseSpikeCount*: The response noiseburst mean spike count. Response period
+was [0 ms, 100 ms] 
+
+* *tuningTest_pVal*: The p-value found from comparing the baseline firing rate of
+all frequencies at the maximum intensity to the response using a Mann-Whitney U
+test. Baseline period was [-100 ms, 0 ms] and repsonse period was [0 ms, 100 ms]
+
+* *tuningTest_ZStat*: The corresponding U-statistic for the above p-value
+
+* *ttR2Fit*: The R^2 value of the Gaussian fit to the tuning test paradigm.
+
+### Is there a difference in the basic responses of the cells to different sounds? (Figure 2)
+* *AMBaseFROnset*: The corresponding baseline firing rate for the best onset
+response firing rate for a cell. Baseline period was [-100 ms, 0 ms]
+
+* *AMRespFROnset*: The highest onset response firing rate of all the rates 
+presented. Onset period was [0 ms, 100 ms]
+
+* *AMBestRateOnset*: The amplitude modulation rate that yielded the best onset
+response
+
+* *AMBaseFRSustained*: The corresponding baseline firing rate for the best 
+sustained response. Baseline period was [-500 ms, -100 ms]
+
+* *AMRespFRSustained*: The highest sustained firing rate of all the rates 
+presented. Sustained period was [100 ms, 500 ms]
+
+* *AMBestRateSustained*: The amplitude modulation rate that produced the highest
+sustained response
+
+* *tuning_pVal*: The p-value from comparing the baseline firing rate vs response 
+firing rate of all frequencies at the highest intensity for the tuningCurve
+paradigm with a Mann-Whitney U test
+
+* *tuning_ZStat*: Corresponding U-statistic for the p-value
+
+* *tuningBaseFRBestFreqMaxInt*: The corresponding baseline firing rate for the
+frequency that had the largest response firing rate. Baseline period was
+[-100 ms, 0 ms]
+
+* *tuningRespFRBestFreqMaxInt*: The firing rate for the best frequency at maximum
+intensity. Response period was [0 ms, 100 ms]
+
+* *tuningBestFreqMaxInt*: The frequency that had the highest response firing rate
+at the maximum intensity presented
+
+### Do the cells prefer different properties of pure tone sounds? (Figure 3)
+* *upperFreq*: The highest frequency with a response 10 dB SPL above the sound 
+intensity threshold. Calculated by database_generation_funcs.calculate_BW10_params.
+
+* *lowerFreq*: The lowest frequency with a response 10 dB SPL above the sound 
+intensity threshold. Calculated by 
+database_generation_funcs.calculate_BW10_params.
+
+* *RsquaredFit*: The mean of all of the r<sup>2</sup> values of the 10 dB SPL above 
+the sound intensity threshold. Calculated by database_generation_funcs.calculate_BW10_params.
+
+* *cf*: The characteristic frequency is the frequency that is most sensitive to
+sound.
+
+* *bw10*: The bandwidth 10 above the sound intenisty threshold. Calculated by the 
+equation: (*upperFreq* - *lowerFreq*) / *cf*
+
+* *fitMidpoint*: The midpoint of the gaussian fit for the tuning curve calculated
+ using the square root of the *upperFreq* * *lowerFreq*
+
+* *thresholdFRA*: The characteristic intensity for peak firing rate. Found using 
+the intensity index from 
+database_generation_funcs.calculate_intensity_threshold_and_CF_indices and 
+indexing the unique intensities (uniqueIntensity) for a session.
+
+* *tuningOnsetRate*: The firing rate within the first 50 ms of the response as based 
+on *latency*. Calculated by 
+database_generation_funcs.calculate_onset_to_sustained_ratio.
+
+* *tuningSustainedRate*: The number of spikes over time that occur 100 ms after the 
+response as based on *latency*. Calculated by 
+database_generation_funcs.calculate_onset_to_sustained_ratio.
+
+* *cfOnsetivityIndex*: The ratio of the difference between onset to sustained spike 
+rates calculated by: (*onsetRate* - *sustainedRate*) / (*sustainedRate* + *onsetRate*) 
+A positive number means there were more spikes at the onset of the response than 
+there were in the sustained.
+
+* *monotonicityIndex*: This value represents how the response firing rate changed 
+with intensity after being normalized by the baseline firing rate. Calculated by 
+taking the mean number of spikes at the largest intensity and dividing by the mean 
+number of spikes at whichever intensity produced the greatest response.
+
+### Do the cell populations prefer different properties of amplitude modulated sounds? (Figure 4)
+* *highestSync*: The highest AM rate that was significantly synchronized (p<0.05)
+
+* *highestUSync*: The highest AM rate that is unsynchonized, used if the cell
+becomes synchonized at higher rates, but is not synchronized at lower rates
+
+* *highestSyncCorrected*: The highest AM rate that was significantly synchronized
+after a Bonferroni correction
+
+* *rateDiscrimAccuracy*: The accuracy of a cell determining the amplitude
+modulation rate for a trial
+
+* *phaseDiscrimAccuracy_{}Hz*: The accuracy of a cell determining the phase of
+the amplitude modulation at a specific rate. There is one value for every rate
+used
+
+* *am_synchronization_pVal*: The best p-value calculated for synchronization of a
+cell from Rayleigh's Test
+
+* *am_synchronization_ZStat*: The corresponding statistic for the p-value from
+Rayleigh's test
+
+* *am_response_pVal*: The best p-value calculated for a cell's response compared
+to the baseline firing rate using a Mann-Whitney U test
+
+* *am_response_ZStat*: Corresponding U-statistic for the above p-value
+
+### database_generation_one_cell.py
+Generates a database for one cell. Useful for observing intermediate calculations 
+
+### figure_generation.py
+Generates a figure using laserpulse and tuning curve data. Useful for testing comparisons between data.
+
+### generate_allCell_reports_test.py
+generates simpler cell reports than that of 'generate_allCell_reports.py'. Useful for comparing cells for only some datasets
