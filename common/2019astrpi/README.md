@@ -188,6 +188,8 @@ Produced by:
 
 `direct_and_indirect_cells2.h5` Produced by: `database_generation.py`
 
+figure parameters from figparams.py
+
 ## Panels A, B
 These panels are produced by the figure script `figure_frequency_tuning.py`.
 To get tuning curve data, it requires `data_freq_tuning_examples.npz` which is 
@@ -223,6 +225,8 @@ Produced by: `generate_example_am_rasters.py`
 
 `direct_and_indirect_cells2.h5` Produced by: `database_generation.py`
 
+figure parameters from figparams.py
+
 ## Panels A, D
 These panels include example raster plots of a single D1 cell (A) and single nD1
 cell (D). Next to the rasters is a plot of the mean firing rate and standard
@@ -252,6 +256,9 @@ Calculated in `base stats`
 Calculate number of clusters by D1 vs nD1, by brain region filters, by
 tuning filters, etc. Needs a database that has calculations for tuningTest
 paradigms stored (from `extras/tuning_test_comparisons.py`)
+
+### database_cell_locations.py
+Takes as argument a pandas DataFrame and adds new columns. Computes the depths and cortical locations of all cells with suppression indices computed
 
 ### figure_cell_sound_responses.py
 Generates a figure used to explore all aspects of sound responses for the
@@ -314,7 +321,7 @@ The database generated from here is needed by:
 extras/cluster_counts.py
 extras/generate_allCell_reports.py
 
-# Exploring Data to produce stats and reports
+# Exploring Data to preform test calculations and comparisons 
 ## Files in test_scripts
 ### database_generation_test.py
 This script will generate a simpler database with all subjects defined
@@ -342,51 +349,17 @@ stimulus it establishes a baseline firing rate. The value is then pulled by look
 for where a PSTH of the curve crosses a specific fraction of the maximum fire rate 
 the cell reaches.
 
-* *tuningResponseRate*:
+* *tuningResponseRate*: The number of spikes over time that occur from 0 to 100 ms 
+after the stimulus is presented. Calculated by database_generation_funcs.calculate_onset_to_sustained_ratio.
 
-* *tuningBaseRate*: The number of spikes over time the occur from 100 ms before the 
-stimulus to 50 ms before the stimulus is presented. Calculated by 
+* *tuningBaseRate*: The number of spikes over time that occur from 100 ms before the 
+stimulus to 0 ms before the stimulus is presented. Calculated by 
 database_generation_funcs.calculate_onset_to_sustained_ratio.
 
-* *tuningResponseRatio*:
+* *tuningResponseRatio*: Index (between 0 and 1) for the ratio between response and base firing rates caculated with the expression (R - B) / (R + B) where R is response period firing rate and B is baseline period firing rate. 
 
-* *noiseburst_pVal*: The p-value for comparing the baseline and response firing
-rates of the noiseburst paradigm using a Mann-Whitney U test.
-
-* *noiseburst_ZStat*: The corresponding U-statistic for the above p-value
-
-* *noiseburst_baselineSpikeCount*: The baseline noiseburst mean spike count. Baseline period 
-was [-100 ms, 0 ms] 
-
-* *noiseburst_responseSpikeCount*: The response noiseburst mean spike count. Response period
-was [0 ms, 100 ms] 
-
-* *tuningTest_pVal*: The p-value found from comparing the baseline firing rate of
-all frequencies at the maximum intensity to the response using a Mann-Whitney U
-test. Baseline period was [-100 ms, 0 ms] and repsonse period was [0 ms, 100 ms]
-
-* *tuningTest_ZStat*: The corresponding U-statistic for the above p-value
-
-* *ttR2Fit*: The R^2 value of the Gaussian fit to the tuning test paradigm.
-
-### Is there a difference in the basic responses of the cells to different sounds? (Figure 2)
-* *AMBaseFROnset*: The corresponding baseline firing rate for the best onset
-response firing rate for a cell. Baseline period was [-100 ms, 0 ms]
-
-* *AMRespFROnset*: The highest onset response firing rate of all the rates 
-presented. Onset period was [0 ms, 100 ms]
-
-* *AMBestRateOnset*: The amplitude modulation rate that yielded the best onset
-response
-
-* *AMBaseFRSustained*: The corresponding baseline firing rate for the best 
-sustained response. Baseline period was [-500 ms, -100 ms]
-
-* *AMRespFRSustained*: The highest sustained firing rate of all the rates 
-presented. Sustained period was [100 ms, 500 ms]
-
-* *AMBestRateSustained*: The amplitude modulation rate that produced the highest
-sustained response
+* *bw10*: The bandwidth 10 above the sound intenisty threshold. Calculated by the 
+equation: (*upperFreq* - *lowerFreq*) / *cf*
 
 * *tuning_pVal*: The p-value from comparing the baseline firing rate vs response 
 firing rate of all frequencies at the highest intensity for the tuningCurve
@@ -394,40 +367,13 @@ paradigm with a Mann-Whitney U test
 
 * *tuning_ZStat*: Corresponding U-statistic for the p-value
 
-* *tuningBaseFRBestFreqMaxInt*: The corresponding baseline firing rate for the
-frequency that had the largest response firing rate. Baseline period was
-[-100 ms, 0 ms]
-
-* *tuningRespFRBestFreqMaxInt*: The firing rate for the best frequency at maximum
-intensity. Response period was [0 ms, 100 ms]
-
-* *tuningBestFreqMaxInt*: The frequency that had the highest response firing rate
-at the maximum intensity presented
-
-### Do the cells prefer different properties of pure tone sounds? (Figure 3)
-* *upperFreq*: The highest frequency with a response 10 dB SPL above the sound 
-intensity threshold. Calculated by database_generation_funcs.calculate_BW10_params.
-
-* *lowerFreq*: The lowest frequency with a response 10 dB SPL above the sound 
-intensity threshold. Calculated by 
-database_generation_funcs.calculate_BW10_params.
-
-* *RsquaredFit*: The mean of all of the r<sup>2</sup> values of the 10 dB SPL above 
-the sound intensity threshold. Calculated by database_generation_funcs.calculate_BW10_params.
-
-* *cf*: The characteristic frequency is the frequency that is most sensitive to
-sound.
-
-* *bw10*: The bandwidth 10 above the sound intenisty threshold. Calculated by the 
-equation: (*upperFreq* - *lowerFreq*) / *cf*
-
-* *fitMidpoint*: The midpoint of the gaussian fit for the tuning curve calculated
- using the square root of the *upperFreq* * *lowerFreq*
-
 * *thresholdFRA*: The characteristic intensity for peak firing rate. Found using 
 the intensity index from 
 database_generation_funcs.calculate_intensity_threshold_and_CF_indices and 
 indexing the unique intensities (uniqueIntensity) for a session.
+
+* *cf*: The characteristic frequency is the frequency that is most sensitive to
+sound.
 
 * *tuningOnsetRate*: The firing rate within the first 50 ms of the response as based 
 on *latency*. Calculated by 
@@ -437,42 +383,17 @@ database_generation_funcs.calculate_onset_to_sustained_ratio.
 response as based on *latency*. Calculated by 
 database_generation_funcs.calculate_onset_to_sustained_ratio.
 
+* *lowerFreq*: The lowest frequency with a response 10 dB SPL above the sound 
+intensity threshold. Calculated by 
+database_generation_funcs.calculate_BW10_params.
+
+* *upperFreq*: The highest frequency with a response 10 dB SPL above the sound 
+intensity threshold. Calculated by database_generation_funcs.calculate_BW10_params.
+
 * *cfOnsetivityIndex*: The ratio of the difference between onset to sustained spike 
 rates calculated by: (*onsetRate* - *sustainedRate*) / (*sustainedRate* + *onsetRate*) 
 A positive number means there were more spikes at the onset of the response than 
 there were in the sustained.
-
-* *monotonicityIndex*: This value represents how the response firing rate changed 
-with intensity after being normalized by the baseline firing rate. Calculated by 
-taking the mean number of spikes at the largest intensity and dividing by the mean 
-number of spikes at whichever intensity produced the greatest response.
-
-### Do the cell populations prefer different properties of amplitude modulated sounds? (Figure 4)
-* *highestSync*: The highest AM rate that was significantly synchronized (p<0.05)
-
-* *highestUSync*: The highest AM rate that is unsynchonized, used if the cell
-becomes synchonized at higher rates, but is not synchronized at lower rates
-
-* *highestSyncCorrected*: The highest AM rate that was significantly synchronized
-after a Bonferroni correction
-
-* *rateDiscrimAccuracy*: The accuracy of a cell determining the amplitude
-modulation rate for a trial
-
-* *phaseDiscrimAccuracy_{}Hz*: The accuracy of a cell determining the phase of
-the amplitude modulation at a specific rate. There is one value for every rate
-used
-
-* *am_synchronization_pVal*: The best p-value calculated for synchronization of a
-cell from Rayleigh's Test
-
-* *am_synchronization_ZStat*: The corresponding statistic for the p-value from
-Rayleigh's test
-
-* *am_response_pVal*: The best p-value calculated for a cell's response compared
-to the baseline firing rate using a Mann-Whitney U test
-
-* *am_response_ZStat*: Corresponding U-statistic for the above p-value
 
 ### database_generation_one_cell.py
 Generates a database for one cell. Useful for observing intermediate calculations 
@@ -482,3 +403,13 @@ Generates a figure using laserpulse and tuning curve data. Useful for testing co
 
 ### generate_allCell_reports_test.py
 generates simpler cell reports than that of 'generate_allCell_reports.py'. Useful for comparing cells for only some datasets
+
+## Files in old_scripts
+### database_generation_old.py
+An old version of database_generation.py. 
+
+### figure_am_old.py
+An old version of figure_am.py
+
+### studyparams_original.py
+An old version of studyparams.py
