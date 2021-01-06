@@ -12,7 +12,8 @@ This script plots:
 Created on Wed Oct 21 12:22:30 2020
 @author: Devin Henderling
 """
-
+import sys
+sys.path.append('..')
 import os
 import figparams
 import studyparams
@@ -39,7 +40,7 @@ dotSpread = 0.2 # Value for spread of points on figures (higher value equals gre
 # ========================== Run Mode ==========================
 
 # Set to 1 to run for one test animal, set to 0 to run for all animals in study 
-ONE_SUBJECT = 0
+ONE_SUBJECT = 1
 
 if ONE_SUBJECT:
     d1mice = studyparams.SINGLE_MOUSE
@@ -60,7 +61,6 @@ BW10 = 1 # bandwidth of response 10 decibels above threshold response
 THRESHOLD = 1 # Lowest amplitude of response at the characteristic frequency
 ONSET = 1 # Ratio of response after stimulus between onset (0-50ms) and sustained (50-100ms) periods
 
-latencyRatio = 0.9
 # examples = [27, 29, 51, 58, 682, 798, 1065]
 
 # Loads database for plotting 
@@ -99,6 +99,7 @@ axOnset = plt.subplot(gs[0, 8:10])
 # ========================== Latency ==========================
 
 if LATENCY:
+    latencyRatio = 0.5
     # Filters for cells with a sufficient response 
     latencyDB = cellDB.query('tuningResponseRatio > {}'.format(latencyRatio))
     # latencyDB = latencyDB.query('tuningResponseRate > 0.18')
