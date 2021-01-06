@@ -25,7 +25,7 @@ exampleKeys = [key for key, val in examples.items()]
 exampleSpikeData = {}
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = studyparams.DATABASE_NAME + '.h5'
+nameDB = studyparams.DATABASE_NAME + '_original.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 

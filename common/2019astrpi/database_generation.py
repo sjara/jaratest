@@ -44,16 +44,16 @@ def append_base_stats(cellDB, filename=''):
     Calculate parameters to be used to filter cells in calculate_indices
     """
 
-    # FILTERING DATAFRAME
-    firstCells = cellDB.query(studyparams.FIRST_FLTRD_CELLS)  # isiViolations < 0.02 and spikeShapeQuality > 2.5
+    # FILTERING DATAFRAME by isiViolations < 0.02 and spikeShapeQuality > 3.7
+    firstCells = cellDB.query(studyparams.FIRST_FLTRD_CELLS)
 
     for indIter, (indRow, dbRow) in enumerate(firstCells.iterrows()):
 
         sessions = dbRow['sessionType']
         oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
 
-        print("Now processing ", dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster'],
-              indRow)
+        print("Now processing ", dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], 
+              dbRow['cluster'], indRow)
         print("Sessions tested in this cell are(is) ", sessions)
 
         # -------------- Noiseburst data calculations -------------------------
@@ -66,22 +66,21 @@ def append_base_stats(cellDB, filename=''):
             baseRange = [-0.1, 0]  # Time range for baseline firing calculations
             noiseEventOnsetTimes = noiseEphysData['events']['soundDetectorOn']
             noiseSpikeTimes = noiseEphysData['spikeTimes']
-            nspkBaseNoise, nspkRespNoise = funcs.calculate_firing_rate(noiseEventOnsetTimes, noiseSpikeTimes, baseRange)
+            nspkBaseNoise, nspkRespNoise = funcs.calculate_spike_count(noiseEventOnsetTimes, 
+                                                                       noiseSpikeTimes, baseRange)
 
             # Significance calculations for the noiseburst
             try:
                 zStats, pVals = stats.mannwhitneyu(nspkRespNoise, nspkBaseNoise, alternative='two-sided')
-            except ValueError:  # All numbers identical will cause mann-whitney to fail, therefore p-value should be 1 as there is no difference
+            except ValueError:  # All numbers identical will cause mann-whitney to fail, 
+                                # therefore p-value should be 1 as there is no difference
                 zStats, pVals = [0, 1]
 
             # Adding noiseburst values to the dataframe
-            cellDB.at[indRow, '{}_pVal'.format(session)] = pVals  # p-value from Mann-Whitney U test
-            cellDB.at[indRow, '{}_ZStat'.format(session)] = zStats  # U-statistic from Mann-Whitney U test
-            # If we want to save the spikes themselves, we must convert the 'nspkBase' variables to a pandas series to
-            # store it in the DF. We must then use Series.to_list() after to use the data normally again. Instead I just
-            # saved the mean of spikes below as it was good enough for what I needed
-            cellDB.at[indRow, '{}_baselineFR'.format(session)] = np.mean(nspkBaseNoise) # mean firing rate (formally called noiseburst_FR)
-            cellDB.at[indRow, '{}_responseFR'.format(session)] = np.mean(nspkRespNoise)  # mean response firing rate
+            cellDB.at[indRow, '{}_pVal'.format(session)] = pVals # p-value from Mann-Whitney U test
+            cellDB.at[indRow, '{}_ZStat'.format(session)] = zStats # U-statistic from Mann-Whitney U test
+            cellDB.at[indRow, '{}_baselineSpikeCount'.format(session)] = np.mean(nspkBaseNoise) # mean baseline spike count (formally called noiseburst_FR)
+            cellDB.at[indRow, '{}_responseSpikeCount'.format(session)] = np.mean(nspkRespNoise) # mean response spike count
 
         # ------------ Laserpulse calculations --------------------------------
         session = 'laserpulse'
@@ -93,7 +92,8 @@ def append_base_stats(cellDB, filename=''):
             baseRange = [-0.1, 0]  # Originally this used [-0.05, -0.04]
             laserEventOnsetTimes = pulseEphysData['events']['laserOn']
             laserSpikeTimes = pulseEphysData['spikeTimes']
-            nspkBaseLaser, nspkRespLaser = funcs.calculate_firing_rate(laserEventOnsetTimes, laserSpikeTimes, baseRange)
+            nspkBaseLaser, nspkRespLaser = funcs.calculate_spike_count(laserEventOnsetTimes, 
+                                                                       laserSpikeTimes, baseRange)
             respSpikeMeanLaser = np.mean(nspkRespLaser)
             baseSpikeMeanLaser = np.mean(nspkBaseLaser)
             changeFiring = respSpikeMeanLaser - baseSpikeMeanLaser  # Used to ID if cell inc or dec FR from laser
@@ -192,17 +192,17 @@ def append_base_stats(cellDB, filename=''):
                     selectinds = np.flatnonzero((currentFreq == freq) & (currentIntensity == intensity))
 
                     # Firing rate calculation over whole base/response period at a specific frequency and intensity
-                    nspkBaseTuning, nspkRespTuning = funcs.calculate_firing_rate(tuningEventOnsetTimes,
+                    nspkBaseTuning, nspkRespTuning = funcs.calculate_spike_count(tuningEventOnsetTimes,
                                                                                  tuningSpikeTimes, baseRange,
                                                                                  selectinds=selectinds)
                     if respLatency > 0:
                         # Firing rate just for base/onset
-                        nspkBaseTuningOnset, nspkRespTuningOnset = funcs.calculate_firing_rate(tuningEventOnsetTimes,
+                        nspkBaseTuningOnset, nspkRespTuningOnset = funcs.calculate_spike_count(tuningEventOnsetTimes,
                                                                                                tuningSpikeTimes,
                                                                                                [-(respLatency + 0.05), -respLatency],
                                                                                                selectinds=selectinds)
                         # Firing rate just for base/sustained
-                        nspkBaseTuningSustained, nspkRespTuningSustained = funcs.calculate_firing_rate(tuningEventOnsetTimes,
+                        nspkBaseTuningSustained, nspkRespTuningSustained = funcs.calculate_spike_count(tuningEventOnsetTimes,
                                                                                                        tuningSpikeTimes,
                                                                                                        [-(respLatency + 0.1), -(respLatency + 0.05)],
                                                                                                        selectinds=selectinds)
@@ -366,11 +366,11 @@ def append_base_stats(cellDB, filename=''):
                     AMSelectInds = np.flatnonzero(amCurrentRate == rate)  # Selecting rate indices that match the specific rate
 
                     # Calculating FR using the indexes of the specific rate from above
-                    nspkBaseOnset, nspkRespOnset = funcs.calculate_firing_rate(amEventOnsetTimes,
+                    nspkBaseOnset, nspkRespOnset = funcs.calculate_spike_count(amEventOnsetTimes,
                                                                                amSpikeTimes,
                                                                                amBaseTimeOnset,
                                                                                selectinds=AMSelectInds)
-                    nspkBaseSustained, nspkRespSustained = funcs.calculate_firing_rate(amEventOnsetTimes,
+                    nspkBaseSustained, nspkRespSustained = funcs.calculate_spike_count(amEventOnsetTimes,
                                                                                        amSpikeTimes,
                                                                                        amBaseTimeSustained,
                                                                                        selectinds=AMSelectInds)
@@ -495,7 +495,7 @@ def merge_dataframes(listOfMice, firstMouse, dataframe_location='/var/tmp/figure
         new_df (pandas.DataFrame): Two given dataframes appended through index value
 
     """
-    df = celldatabase.load_hdf(os.path.join(dataframe_location, "{}.h5".format(firstMouse)))
+    df = celldatabase.load_hdf(os.path.join(dataframe_location, "{}_original.h5".format(firstMouse)))
     for mouse in listOfMice:
         try:
             appendedFrame = celldatabase.load_hdf(mouse)
@@ -526,10 +526,10 @@ if __name__ == "__main__":
         else:
             if arguments[1] == 'all':
                 d1mice = studyparams.ASTR_D1_CHR2_MICE
-                dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
+                dbpath = os.path.join(dbLocation, '{}_original.h5'.format(studyparams.DATABASE_NAME))
             elif isinstance(arguments[1], str):
                 d1mice = arguments[1]
-                dbpath = os.path.join(dbLocation, '{}.h5'.format(d1mice))
+                dbpath = os.path.join(dbLocation, '{}_original.h5'.format(d1mice))
 
                 #FIXME: Storing the string as a list since the database generation tries to loop through the mice. A
                 # single mouse string would instead cause it to loop through letters. A list of one fixes this
@@ -537,7 +537,7 @@ if __name__ == "__main__":
             else:
                 # If no mice are specified, default to using all mice in the studyparams
                 d1mice = studyparams.ASTR_D1_CHR2_MICE
-                dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
+                dbpath = os.path.join(dbLocation, '{}_original.h5'.format(studyparams.DATABASE_NAME))
             print('d1mice = {}'.format(d1mice))  # Printing mice so user can see what is being used
             # Run behavior can either be 'all', 'hist', or 'stats' if not concatenating
             runBehavior = arguments[0]
@@ -567,7 +567,7 @@ if __name__ == "__main__":
         basic_generation = 1
         concat_mice = 0
         d1mice = studyparams.ASTR_D1_CHR2_MICE
-        dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
+        dbpath = os.path.join(dbLocation, '{}_original.h5'.format(studyparams.DATABASE_NAME))
 
     if CLUSTER_DATA:  # SPIKE SORTING
         # TODO: Need to loop through d1mice as it is a list
@@ -582,7 +582,7 @@ if __name__ == "__main__":
         # Fetches individual mice dataframes and merges into one dataframe
         first_mouse, *list_of_mice = studyparams.ASTR_D1_CHR2_MICE
         histDB = merge_dataframes(list_of_mice, first_mouse)
-        dbpath = os.path.join(dbLocation, '{}.h5'.format(studyparams.DATABASE_NAME))
+        dbpath = os.path.join(dbLocation, '{}_original.h5'.format(studyparams.DATABASE_NAME))
     if basic_generation:
         basicDB = celldatabase.generate_cell_database_from_subjects(d1mice)
 
@@ -599,7 +599,7 @@ if __name__ == "__main__":
         firstDB = append_base_stats(basicDB, filename=d1DBFilename)
         # bestCells = calculate_indices(firstDB, filename = d1DBFilename)
         histDB = firstDB
-        celldatabase.save_hdf(histDB, os.path.join(dbLocation, '{}.h5'.format('temp_rescue_db')))
+        celldatabase.save_hdf(histDB, os.path.join(dbLocation, '{}_original.h5'.format('temp_rescue_db')))
     if calc_locations:
         histDB = histologyanalysis.cell_locations(firstDB, brainAreaDict=studyparams.BRAIN_AREA_DICT)
 

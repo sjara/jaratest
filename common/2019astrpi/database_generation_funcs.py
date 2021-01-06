@@ -60,9 +60,9 @@ def retrofit_gaussian_log2(y, a, x0, sigma, y0):
         return [lower, upper]
 
 
-def calculate_firing_rate(eventOnsetTimes, spikeTimes, baseRange, selectinds=[]):
+def calculate_spike_count(eventOnsetTimes, spikeTimes, baseRange, selectinds=[]):
     """
-    Creates functions for calculating spike rates
+    Creates functions for calculating spike counts
     Within the function, the module calculates response range(responseRange),
     and entire range(alignmentRange). Response range mirrors baseRange but on the
     post-stimulus time. It has the equal time distance from the stimulus
