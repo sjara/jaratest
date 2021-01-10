@@ -325,7 +325,7 @@ extras/generate_allCell_reports.py
 This script will generate a simpler database with all subjects defined
 as d1pi mice in studyparams.py. This script is useful for testing changes in calculations when generating a database and does not include all the calculations of 'database_generation.py' This script can create a database for one example mouse or all mice. Output is an h5 file containing all the below information in `Database 2 contents`
 
-### Test database contents
+#### Test database contents
 * *laserpulse_pVal*: The p-value for comparing the baseline and response firing
 rates of the laserpulse paradigm using a Mann-Whitney U test.
 
