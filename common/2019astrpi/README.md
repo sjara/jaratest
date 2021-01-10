@@ -2,30 +2,28 @@
 This project looks into characterizing MSN's on the direct and indirect striatal
 pathway
 
-# Producing a database
+## Producing a database
 The file `studyparams.py` contains a list of animals as well as statistical 
 parameters for the database calculations
 
-## direct_and_indirect_cells2.h5
-
-### database_generation.py
-This script will generate the database with all subjects defined
-as d1pi mice in studyparams.py. This script can create databases for individual
-mice or concatenate previously made databases together. Output is an h5 file 
-containing all the below information in `Database contents` Check the docstring
-for info on how to run the script. 
+#### database_generation.py
+This script will generate the database direct_and_indirect_cells2.h5 with all 
+subjects defined as d1pi mice in studyparams.py. This script can create databases 
+for individual mice or concatenate previously made databases together. Output is
+an h5 file containing all the below information in `Database contents` Check the 
+docstring for info on how to run the script. 
 
 This script uses following module:
-### database_generation_funcs.py
+#### database_generation_funcs.py
 Contains functions called during database generation.
 
-# Database contents
-## Generic database
+## Database contents
+### Generic database
 This is the database initially produced by 
 celldatabase.generate_cell_database_from_subjects(). The columns produced by 
 this database can be found in the documentation for celldatabase.
 
-## Base stats
+### Base stats
 These are the columns added to the generic database after calculation of base stats. 
 They are grouped by questions they were used to answer:
 
@@ -179,8 +177,8 @@ to the baseline firing rate using a Mann-Whitney U test
 
 * *am_response_ZStat*: Corresponding U-statistic for the above p-value
 
-# Figure Pure tone characterization
-## Figure script: `figure_frequency_tuning.py`
+## Figure Pure tone characterization
+### Figure script: `figure_frequency_tuning.py`
 **Requires**:
 `data_freq_tuning_examples.npz`
 Produced by:
@@ -190,35 +188,35 @@ Produced by:
 
 figure parameters from figparams.py
 
-## Panels A, B
+### Panels A, B
 These panels are produced by the figure script `figure_frequency_tuning.py`.
 To get tuning curve data, it requires `data_freq_tuning_examples.npz` which is 
 produced by `generate_example_freq_tuning.py`
 
-## Panel C
+### Panel C
 This panel uses *bw10* column of the database calculated in `base stats`. Shows 
 how the bandwidth varies between cell types and the bar representing the median.
 
-## Panel D
+### Panel D
 This panel uses the *threshold* column of the database calulated in `base stats`. 
 Displays different threshold values between cell populations with the bar representing
 the median threshold for each population
 
-## Panel E
+### Panel E
 This panel uses the *latency* column of the database calculated in `base stats`.
 It compares cell latency between populations with the bar representing the median
 latency time for each population.
 
-## Panel F
+### Panel F
 This panel uses the  *cfOnsetivityIndex* column of the database calulated in `base stats`.
 It compares how the indices of the populations varies with the bar being the median.
 
-## Panel G
+### Panel G
 This panel uses the *monotonicityIndex* column of the database calculated in `base stats`.
 It compares how the indices of the populations varies with the bar being the median.
 
-# Figure AM
-## Figure script: `figure_am.py`
+## Figure AM
+### Figure script: `figure_am.py`
 **Requires**:
 `data_am_examples.npz`
 Produced by: `generate_example_am_rasters.py`
@@ -227,50 +225,50 @@ Produced by: `generate_example_am_rasters.py`
 
 figure parameters from figparams.py
 
-## Panels A, D
+### Panels A, D
 These panels include example raster plots of a single D1 cell (A) and single nD1
 cell (D). Next to the rasters is a plot of the mean firing rate and standard
 deviations at each modulation rate. Uses data stores in `data_am_examples.npz`.
 
-## Panel B
+### Panel B
 Pie charts that show percentages of D1 and nD1 cells that are synchronized to at
 least one modulation rate. Uses the *highestSyncCorrected* column of the database
 calculated in `base stats`.
 
-## Panel C
+### Panel C
 Plot comparing the highest synchonization rate of D1 cells and nD1 cells. Uses
 the *highestSyncCorrected* column of the database calculated in `base stats`.
 
-## Panel E
+### Panel E
 Plot of the accuracy of cells in discriminating the rate of amplitude modulation.
 Uses the *rateDiscrimAccuracy* column of the database calculated in `base stats`
 
-## Panel F
+### Panel F
 Plot of the accuracy of cells in discriminating the phase of amplitude modulation.
 Use the *phaseDiscrimAccuracy_{}Hz* where the {} is replaced by the specific rate.
 Calculated in `base stats`
 
-# Exploring Data to produce stats and reports
-## Files in Extras
-### cluster_counts.py
+## Exploring Data to produce stats and reports
+### Files in Extras
+#### cluster_counts.py
 Calculate number of clusters by D1 vs nD1, by brain region filters, by
 tuning filters, etc. Needs a database that has calculations for tuningTest
 paradigms stored (from `extras/tuning_test_comparisons.py`)
 
-### database_cell_locations.py
+#### database_cell_locations.py
 Takes as argument a pandas DataFrame and adds new columns. Computes the depths and cortical locations of all cells with suppression indices computed
 
-### figure_cell_sound_responses.py
+#### figure_cell_sound_responses.py
 Generates a figure used to explore all aspects of sound responses for the
 various stimuli we presented to the mice. Panels from here may or may not make
 it into the final paper.
 
-### fix_inforec.py
+#### fix_inforec.py
 Fix inforec by moving recording track info from 'info' to 'recordingTrack'.
 Currently, it only works for files in the format that Matt has where
 the info argument is in a different line from the Experiment definition.
 
-### generate_allCell_reports.py
+#### generate_allCell_reports.py
 This is used to give the researcher the high level overview of the cell
 responses and the characteristic of the neuronal signal on stimulus
 
@@ -297,37 +295,37 @@ Requires a dataframe with tuningTest calculations stored as it uses the R2 of th
 Gaussian from the tuning test in a title as a reported value (line 741). This
 can be generated by `extras/tuning_test_comparisons.py`
 
-### normalized_hist_plot_functions.py
+#### normalized_hist_plot_functions.py
 Contains functions used for plotting normalized histograms for comparisons.
 One function needs a datafrome, the other can use raw data fed to it.
 
-### power_analysis.py
+#### power_analysis.py
 A collection of functions for power analysis of data
 
-### sorted_reports.py
+#### sorted_reports.py
 Using the list of quality spikes (manually picked by Matt Nardoci), this
 program goes through the folder of reports and seperates the reports into
 two new folders of 'Quality_tuning' and 'NonQuality_tuning'. It also saves
 an h5 file that contains all the cell information for each cell for later
 use incase cluster numbers in the database change.
 
-### sound_responses_outside_striatum.py
+#### sound_responses_outside_striatum.py
 Calculating total number of cells that respond to sound while outside of
 the striatum across all subjects histology data is known for.
 
-### tuning_test_comparisons.py
+#### tuning_test_comparisons.py
 Calculates some statistics and sound response properties for tuningTest paradigm.
 The database generated from here is needed by:
 extras/cluster_counts.py
 extras/generate_allCell_reports.py
 
-# Exploring Data to preform test calculations and comparisons 
-## Files in test_scripts
-### database_generation_test.py
+## Exploring Data to preform test calculations and comparisons 
+### Files in test_scripts
+#### database_generation_test.py
 This script will generate a simpler database with all subjects defined
 as d1pi mice in studyparams.py. This script is useful for testing changes in calculations when generating a database and does not include all the calculations of 'database_generation.py' This script can create a database for one example mouse or all mice. Output is an h5 file containing all the below information in `Database 2 contents`
 
-# Test database contents
+### Test database contents
 * *laserpulse_pVal*: The p-value for comparing the baseline and response firing
 rates of the laserpulse paradigm using a Mann-Whitney U test.
 
@@ -395,21 +393,21 @@ rates calculated by: (*onsetRate* - *sustainedRate*) / (*sustainedRate* + *onset
 A positive number means there were more spikes at the onset of the response than 
 there were in the sustained.
 
-### database_generation_one_cell.py
+#### database_generation_one_cell.py
 Generates a database for one cell. Useful for observing intermediate calculations 
 
-### figure_generation.py
+#### figure_generation.py
 Generates a figure using laserpulse and tuning curve data. Useful for testing comparisons between data.
 
-### generate_allCell_reports_test.py
+#### generate_allCell_reports_test.py
 generates simpler cell reports than that of 'generate_allCell_reports.py'. Useful for comparing cells for only some datasets
 
-## Files in old_scripts
-### database_generation_old.py
+### Files in old_scripts
+#### database_generation_old.py
 An old version of database_generation.py. 
 
-### figure_am_old.py
+#### figure_am_old.py
 An old version of figure_am.py
 
-### studyparams_original.py
+#### studyparams_original.py
 An old version of studyparams.py
