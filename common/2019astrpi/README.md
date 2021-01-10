@@ -319,7 +319,7 @@ The database generated from here is needed by:
 extras/cluster_counts.py
 extras/generate_allCell_reports.py
 
-## Exploring Data to preform test calculations and comparisons 
+## Exploring Data to perform test calculations and comparisons 
 ### Files in test_scripts
 #### database_generation_test.py
 This script will generate a simpler database with all subjects defined
