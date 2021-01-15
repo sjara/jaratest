@@ -419,5 +419,4 @@ else:
 # ========================== Saving ==========================
 
 celldatabase.save_hdf(db, outputDirectory)
-print("SAVED DATAFRAME to {}".format(outputDirectory))
-print(u"\U0001F4A9" * 10)
+print("SAVED DATAFRAME to {}".format(outputDirectory))     

@@ -233,7 +233,7 @@ d1mice = studyparams.ASTR_D1_CHR2_MICE
 # nameDB = '{}.h5'.format("direct_and_indirect_cells")
 nameDB = "ttDBR2.h5"
 
-TEST = 0
+TEST = 1
 
 if TEST:
     d1mice = studyparams.SINGLE_MOUSE
@@ -250,9 +250,7 @@ else:
 
 # Loads database for plotting 
 db = celldatabase.load_hdf(pathtoDB)
-db = db.query('tuningResponseRatio > 0.75')
-db = db.query('latency < 0')
-# db = db.query('bw10 >= 0')
+
 # Checks to see if there are parameters passed with the script to only generate reports for specific cells. Otherwise does all
 if sys.argv[1:] != []:
     arguements = sys.argv[1:]
