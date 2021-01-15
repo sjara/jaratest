@@ -350,7 +350,7 @@ def calculate_latency(eventOnsetTimes, currentFreq,  uniqFreq, currentIntensity,
     timeRangeForLatency = [-0.1, 0.1]
     (respLatency, interim) = spikesanalysis.response_latency(spikeTimesFromEventOnset,
                                                              indexLimitsSelectedTrials,
-                                                             timeRangeForLatency, threshold=0.5,
+                                                             timeRangeForLatency, threshold=0.75,
                                                              win=signal.hanning(11))
 
     print('Response latency: {:0.1f} ms'.format(1e3 * respLatency))
