@@ -5,7 +5,7 @@ statistics for D1 vs. nD1 determination, and calculates statistics used for tuni
 response comparison. This database is filtered according to the parameters listed in 
 cell_database_generation.py
 
-This script calculates statistics useful for:
+This script calculates statistics used for:
 1. D1 vs. nD1 selection
 4. response latency comparison
 5. BW10 comparison
@@ -27,7 +27,7 @@ import database_generation_funcs as funcs
 
 # ========================== Run Mode ==========================
 
-TEST = 1 # Set to 1 to generate database for one animal for faster testing
+TEST = 0 # Set to 1 to generate database for one animal for faster testing
 
 if TEST:
     d1mice = studyparams.SINGLE_MOUSE 
@@ -41,9 +41,7 @@ else:
                                    'all_cells_tuning_only.h5')
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
                                    'all_cells.h5')
- 
-# ========================== Basic Database Creation ==========================
-        
+     
 # Loads cell database
 db = celldatabase.load_hdf(inputDirectory)  
 
@@ -55,7 +53,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     print("Processing cell {} \n {}, {}, depth = {} tetrode {}, cluster {}".format(indRow, 
           dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster']))
     
-# ========================== Laserpulse ==========================
+    # ========================== Laserpulse Statistics Calculation ==========================
     
     # Checks for a laserpulse session
     session = 'laserpulse'
@@ -97,7 +95,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         db.at[indRow, 'laserpulseBaselineSpikeCount'] = nspkBaseLaserMean  # Mean of baseline FR
         db.at[indRow, 'laserpulseResponseSpikeCount'] = nspkRespLaserMean  # Mean of response FR
 
-    # ========================== Tuning Curve ==========================
+    # ========================== Tuning Curve Statistics Calculation ==========================
     
     # Checks for a tuning curve session
     session = 'tuningCurve'
