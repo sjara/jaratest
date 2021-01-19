@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the cell database created with cell_database_generation.py, calculates laserpulse
-statistics for D1 vs. nD1 determination, and calculates statistics used for tuning curve sound 
-response comparison. This database is filtered according to the parameters listed in 
-cell_database_generation.py
+This script loads the cell database created with cell_database_generation.py or 
+am_database_generation.py, calculates laserpulse statistics for D1 vs. nD1 determination, and 
+calculates statistics used for tuning curve sound response comparison. This database is filtered 
+according to the parameters listed in cell_database_generation.py
 
 This script calculates statistics used for:
 1. D1 vs. nD1 selection
@@ -27,20 +27,20 @@ import database_generation_funcs as funcs
 
 # ========================== Run Mode ==========================
 
-TEST = 0 # Set to 1 to generate database for one animal for faster testing
+TEST = 1 # Set to 1 to generate database for one animal for faster testing
 
 if TEST:
     d1mice = studyparams.SINGLE_MOUSE 
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   '{}_tuning_only.h5'.format(d1mice[0]))
+                                   'astrpi_{}_tuning.h5'.format(d1mice[0]))
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   '{}_cells.h5'.format(d1mice[0]))
+                                   'astrpi_{}_cells.h5'.format(d1mice[0]))
 else:
     d1mice = studyparams.ASTR_D1_CHR2_MICE
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'all_cells_tuning_only.h5')
+                                   'astrpi_all_cells_tuning.h5')
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'all_cells.h5')
+                                   'astrpi_all_cells.h5')
      
 # Loads cell database
 db = celldatabase.load_hdf(inputDirectory)  

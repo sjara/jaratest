@@ -18,16 +18,16 @@ from jaratoolbox import settings
 
 # ========================== Run Mode ==========================
 
-ONE_SUBJECT = 1 # Set to 1 to generate database for one animal for faster testing
+ONE_SUBJECT = 0 # Set to 1 to generate database for one animal for faster testing
 
 if ONE_SUBJECT:
     d1mice = studyparams.SINGLE_MOUSE
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   '{}_clusters.h5'.format(d1mice[0]))
+                                   'astrpi_{}_clusters.h5'.format(d1mice[0]))
 else:
     d1mice = studyparams.ASTR_D1_CHR2_MICE 
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'all_clusters.h5')
+                                   'astrpi_all_clusters.h5')
  
 # ========================== Basic Database Creation ==========================
         

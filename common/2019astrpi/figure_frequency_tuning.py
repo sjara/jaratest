@@ -43,13 +43,13 @@ if ONE_SUBJECT:
     d1mice = studyparams.SINGLE_MOUSE
     outputDirectory = figparams.FIGURE_OUTPUT_DIR 
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   '{}_tuning_only.h5'.format(d1mice[0]))
+                                   'astrpi_{}_tuning.h5'.format(d1mice[0]))
     figFilename = 'figure_{}'.format(d1mice[0])
 else:
     d1mice = studyparams.ASTR_D1_CHR2_MICE
     outputDirectory = figparams.FIGURE_OUTPUT_DIR 
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'all_cells_tuning_only.h5')
+                                   'astrpi_all_cells_tuning.h5')
     figFilename = 'figure_{}'.format(studyparams.DATABASE_NAME)
 
 # A value of 1 plots the given comparison, 0 does not 

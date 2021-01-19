@@ -25,15 +25,15 @@ TEST = 0 # Set to 1 to generate database for one animal for faster testing
 if TEST:
     d1mice = studyparams.SINGLE_MOUSE 
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   '{}_cells.h5'.format(d1mice[0]))
+                                   'astrpi_{}_cells.h5'.format(d1mice[0]))
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   '{}_clusters.h5'.format(d1mice[0]))
+                                   'astrpi_{}_clusters.h5'.format(d1mice[0]))
 else:
     d1mice = studyparams.ASTR_D1_CHR2_MICE
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'all_cells.h5')
+                                   'astrpi_all_cells.h5')
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'all_clusters.h5')
+                                   'astrpi_all_clusters.h5')
  
 # ========================== Database Filtering ==========================
 

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the cell database created with tuning_only_database_generation.py and calculates 
-statistics used for amplitude modulated sound response comparison. This database is filtered 
-according to the parameters listed in cell_database_generation.py
+This script loads the cell database created with cell_database_generation.py or 
+tuning_database_generation.py and calculates statistics used for amplitude modulated sound response 
+comparison. This database is filtered according to the parameters listed in 
+cell_database_generation.py
 
 This script calculates statistics used for:
 1. 
@@ -28,15 +29,15 @@ TEST = 1 # Set to 1 to generate database for one animal for faster testing
 if TEST:
     d1mice = studyparams.SINGLE_MOUSE 
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   '{}_final.h5'.format(d1mice[0]))
+                                   'astrpi_{}_am.h5'.format(d1mice[0]))
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   '{}_tuning_only.h5'.format(d1mice[0]))
+                                   'astrpi_{}_cells.h5'.format(d1mice[0]))
 else:
     d1mice = studyparams.ASTR_D1_CHR2_MICE
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'all_cells_final.h5')
+                                   'astrpi_all_cells_am.h5')
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'all_cells_tuning_only.h5')
+                                   'astrpi_all_cells.h5')
  
 # ========================== Basic Database Creation ==========================
 
