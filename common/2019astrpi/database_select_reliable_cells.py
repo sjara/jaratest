@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the basic database created with basic_database_generation.py and selects reliable 
+This script loads the basic database created with database_basic_generation.py and selects reliable 
 cells that have data for sound reponse comparison. 
 
 The database generated with this script is filtered by:
 1. Laserpulse session ran for cell
 2. Either tuning curve or AM session ran for cell
 3. Manual verification (Unreasonable cells removed)
-4. Parameters specified in basic_database_generation.py
+4. Parameters specified in database_basic_generation.py
 
 Created on Jan 17, 2021
 Author: Devin Henderling

@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the cell database created with cell_database_generation.py or 
-tuning_database_generation.py and calculates statistics used for amplitude modulated sound response 
-comparison. This database is filtered according to the parameters listed in 
-cell_database_generation.py
+This script loads the cell database produced by database_select_reliable_cells.py and calculates 
+statistics used for amplitude modulated sound response comparison. This database is filtered 
+according to the parameters listed in database_select_reliable_cells.py.
 
 This script calculates statistics used for:
-1. 
+1. TODO: ADD THIS SECTION
 
 
 Created on Jan 17, 2021

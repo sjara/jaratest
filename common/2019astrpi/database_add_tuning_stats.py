@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the cell database created with cell_database_generation.py or 
-am_database_generation.py, calculates laserpulse statistics for D1 vs. nD1 determination, and 
-calculates statistics used for tuning curve sound response comparison. This database is filtered 
-according to the parameters listed in cell_database_generation.py
+This script loads the cell database produced by database_select_reliable_cells.py calculates 
+laserpulse statistics for D1 vs. nD1 determination, and calculates statistics used for tuning curve 
+sound response comparison. This database is filtered according to the parameters listed in 
+database_select_reliable_cells.py.
 
 This script calculates statistics used for:
 1. D1 vs. nD1 selection
-4. response latency comparison
+4. Response latency comparison
 5. BW10 comparison
-5. onset to sustained ratio comparison
+5. Onset to sustained ratio comparison
 
 Created on Jan 17, 2021
 Author: Devin Henderling
