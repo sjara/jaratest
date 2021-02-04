@@ -15,6 +15,7 @@ Created on Jan 17, 2021
 Author: Devin Henderling
 """
 import os
+import sys
 import numpy as np
 import studyparams
 from scipy import stats
@@ -27,22 +28,98 @@ import database_generation_funcs as funcs
 
 # ========================== Run Mode ==========================
 
-TEST = 1 # Set to 1 to generate database for one animal for faster testing
+NO_TAG = 0 # Set to 1 if no tag
+CLUSTERS = 0 # Set to 1 if database not filtered to find reliable cells 
 
-if TEST:
-    d1mice = studyparams.SINGLE_MOUSE 
-    outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'astrpi_{}_tuning.h5'.format(d1mice[0]))
-    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'astrpi_{}_cells.h5'.format(d1mice[0]))
+# Determing run mode by arguments
+if __name__ == "__main__":
+    if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
+        arguments = sys.argv[1:] # Script parameters 
+        if arguments[0] == "all":
+            d1mice = studyparams.ASTR_D1_CHR2_MICE
+            subjects = 'all'
+        if isinstance(arguments[0], str):
+            d1mice = []
+            subjects = str(arguments[0]) 
+            d1mice.append(subjects)
+            if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
+                print('\n SUBJECT ERROR, DATAFRAME COULD NOT BE SAVED \n')
+                sys.exit()
+            else:
+                print('Subject found in database')
+        else:
+            # If no mice are specified, default to using all mice in the studyparams
+            d1mice = studyparams.ASTR_D1_CHR2_MICE
+            subjects = 'all'
+        if len(arguments) == 2:
+            tag = arguments[1]
+        else:
+            NO_TAG = 1 
+            tag = ''
+    else:
+        d1mice = studyparams.ASTR_D1_CHR2_MICE
+        subjects = 'all'
+        NO_TAG = 1
+        tag = ''
+
+if NO_TAG == 1:
+    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                  'astrpi_{}_cells.h5'.format(subjects)) 
+    outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                   'astrpi_{}_cells_tuning.h5'.format(subjects)) 
 else:
-    d1mice = studyparams.ASTR_D1_CHR2_MICE
-    outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'astrpi_all_cells_tuning.h5')
-    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'astrpi_all_cells.h5')
-     
-# Loads cell database
+    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                  'astrpi_{}_cells_{}.h5'.format(subjects, tag))
+    if not os.path.isfile(inputDirectory):
+        inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                      'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
+        CLUSTERS = 1
+
+    if 'tuning' not in tag:
+        if 'AM' in tag:
+            tagTemp = tag.split('_')
+            tagTemp.insert(2, 'am')
+            tag = ''
+            for i in tag:
+                tag += str(i) + '_'
+                tag = tag[:-1]
+        else:
+            tag = tag + '_tuning'
+        
+    if CLUSTERS:
+        outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                       'astrpi_{}_clusters_{}.h5'.format(subjects, tag)) 
+    else:
+        outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                       'astrpi_{}_cells_{}.h5'.format(subjects, tag)) 
+
+dir = os.path.dirname(outputDirectory)
+
+if os.path.isdir(dir):
+    print('Directory Exists')
+else:
+    print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
+    sys.exit()
+
+    
+# dbName = inputDirectory.split('\\')[-1]
+# dbName = dbName.split('_')
+# dbName.insert(2, 'am')
+# databaseName = ''
+# for i in dbName:
+#     databaseName += str(i) + '_'
+#     databaseName = databaseName[:-1]
+    
+# root = inputDirectory.split('\\')[:-1]
+# databaseRoot = ''
+# for i in root:
+#     databaseRoot += str(i) + '\\'
+
+    
+# databaseRoot = inputDirectory.split('\\')[:-1]
+# outputDirectory = os.path.join(databaseRoot, databaseName)
+# # Loads cell database
+    
 db = celldatabase.load_hdf(inputDirectory)  
 
 # Iterates through each cell in the database       
