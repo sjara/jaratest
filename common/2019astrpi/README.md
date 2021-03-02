@@ -74,7 +74,7 @@ response
 * *AMBaseFRSustained*: The corresponding baseline firing rate for the best 
 sustained response. Baseline period was [-500 ms, -100 ms]
 
-* *AMRespFRSustained*: The highest sustained firing rate of all the rates 
+* (1) *AMRespFRSustained*: The highest sustained firing rate of all the rates 
 presented. Sustained period was [100 ms, 500 ms]
 
 * *AMBestRateSustained*: The amplitude modulation rate that produced the highest
