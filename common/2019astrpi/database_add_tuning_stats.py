@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the cell database produced by database_select_reliable_cells.py calculates 
-laserpulse statistics for D1 vs. nD1 determination, and calculates statistics used for tuning curve 
-sound response comparison. This database is filtered according to the parameters listed in 
-database_select_reliable_cells.py.
+This script takes an existing database and calculates statistics using data from tuning curve 
+sessions. These statistics are used for pure tone sound response comparison. 
 
 This script calculates statistics used for:
-1. D1 vs. nD1 selection
-4. Response latency comparison
-5. BW10 comparison
-5. Onset to sustained ratio comparison
+1. Response latency comparison
+2. BW10 comparison
+3. Onset to sustained ratio comparison
 
-Created on Jan 17, 2021
-Author: Devin Henderling
+Run as:
+database_.py SUBJECT TAG 
+
+A database must exist with these parameters or script will fail. If the tuning statistics have not 
+previously calculated and 'tuning' not in filename,'tuning' will be added to the filename.  
 """
 import os
 import sys
@@ -374,8 +374,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             db.at[indRow, 'tuningOnsetRate'] = onsetRate  # The FR of the onset of the cell response (first 50 ms)
             db.at[indRow, 'tuningSustainedRate'] = sustainedRate  # The FR of the sustained cell response (last 50 ms)    
             db.at[indRow, 'rSquaredFit'] = Rsquared10AboveSIT  # The fit of the Gaussian to the actual FR 10 dB above SIT
-            db.at[indRow, 'lowerFreq'] = lowerFreq  # Lower frequency bound of the Gaussian
-            db.at[indRow, 'upperFreq'] = upperFreq  # Upper frequency bound of the Gaussian
+            db.at[indRow, 'lowerFrequency'] = lowerFreq  # Lower frequency bound of the Gaussian
+            db.at[indRow, 'upperFrequency'] = upperFreq  # Upper frequency bound of the Gaussian
             
             # ========================== Onset to Sustained Ratio ==========================
             

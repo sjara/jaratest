@@ -1,28 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the basic database of clusters created with database_basic_generation.py and selects reliable 
-cells that have data for sound reponse comparison. 
+This script loads the basic database of clusters created with database_basic_generation.py and 
+selects reliable cells that have data for sound reponse comparison. 
 
 The database generated with this script is filtered by:
-1. Laserpulse session ran for cell
-2. Either tuning curve or AM session ran for cell
-3. Manual verification (Bad clusters removed)
-4. Parameters specified in database_basic_generation.py
+1. Presence of laserpulse session
+2. Presense of either tuning curve or AM session
+3. Mnual selection
+4. Further parameters specified in database_basic_generation.py
+
+This script calculates statistics used for:
+1. D1 vs. nD1 selection
 
 Run as:
 python3 database_select_reliable_cells.py SUBJECT TAG
 
-A database must exist with these parameters or no database will be generated
-
-SUBJECT can be either a singular mouse or the word 'all', which will use the mouse list in 
-studyparams.py. If nothing is specified, all subject will be ran.
-
-Optionally you can set a TAG on the database (filename acceptable characters). If there is not 
-exactly two parameters after the filename, the tag will not be applied. You must enter a subject
-parameter to place a tag. 
-
-Created on Jan 17, 2021
-Author: Devin Henderling
+A database must exist with these parameters or script will fail. If the database has not been 
+previously filtered, 'clusters' will change to 'cells' in the filename. 
 """
 import os
 import sys
@@ -110,7 +104,7 @@ db = db[hasTC_AM]
 indicesRemovedCells = []
 
 # Generates list of cells from a text document to be removed by manual selection
-with open('manually_withheld_cells.txt', 'r') as manualSelection:
+with open('extras\cell_indices_manually_removed.txt', 'r') as manualSelection:
     for line in manualSelection:
         line = line.rstrip()
         try:

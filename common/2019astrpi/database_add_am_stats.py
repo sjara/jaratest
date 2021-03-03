@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the cell database produced by database_select_reliable_cells.py and calculates 
-statistics used for amplitude modulated sound response comparison. This database is filtered 
-according to the parameters listed in database_select_reliable_cells.py.
+This script takes an existing database and calculates statistics using data from AM sessions. These 
+statistics are used for amplitude modulated sound response comparison. 
 
 This script calculates statistics used for:
-1. TODO: ADD THIS SECTION
+1. 
 
+Run as:
+database_.py SUBJECT TAG 
 
-Created on Jan 17, 2021
-Author: Devin Henderling
+A database must exist with these parameters or script will fail. If the tuning statistics have not 
+previously calculated and 'tuning' not in filename,'tuning' will be added to the filename.  
 """
 import os
 import sys
@@ -23,6 +24,8 @@ from jaratoolbox import behavioranalysis
 import database_generation_funcs as funcs
 
 # ========================== Run Mode ==========================
+
+# TODO: Create statistic calculation for comparisons 
 
 NO_TAG = 0 # Set to 1 if no tag
 CLUSTERS = 0 # Set to 1 if database not filtered to find reliable cells 

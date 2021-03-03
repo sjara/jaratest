@@ -434,11 +434,13 @@ for indRow, dbRow in db.iterrows():
         plt.setp(hLaserCond, zorder=3)
         plt.ylabel('Trial')
         axLaserpulseRaster.set_xlim(-0.3, 0.5)
-        if dbRow.laserpulsePval < 0.05 and dbRow.laserpulseSpikeCountChange > 0:
+        if dbRow.laserpulsePval < 0.05 and dbRow.laserpulseSpikeCountChange > 0 and laserpulseResponseSpikeCount > 0.5:
             plt.title("Laserpulse D1\n{}".format(dbRow.laserpulsePval), fontweight='bold')
-        else:
+        elif dbRow.laserpulsePval >= 0.05 and dbRow.laserpulseSpikeCountChange <= 0:
             plt.title("Laserpulse nD1\n{}".format(dbRow.laserpulsePval))
-
+        else:
+            plt.title("Laserpulse Unidentified Cell \n{}".format(dbRow.laserpulsePval))
+            
         # PSTH plotting
         plt.sca(axLaserpulsePSTH)
         pLaserPSTH = extraplots.plot_psth(laserSpikeCountMat / binWidth,

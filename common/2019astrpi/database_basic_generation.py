@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-This script creates a basic database from an inforec file using the 
-"generate_cell_database_from_subjects" method found in the "celldatabase" module.
+This script creates a basic database from an inforec file using 
+celldatabase.generate_cell_database_from_subjects()
 
 The database generated with this script is filtered by:
 1. ISI violations less than 0.05
 2. Spike shape quality greater than 2
 
-Run as:
-python3 database_generation.py SUBJECT TAG
+If run normally, it will use all animals and store in a default database. The two arguements 
+'SUBJECT' and 'TAG' can also be used. 
 
 SUBJECT can be a singular subject, 'all', or 'test'. 'all' will use all of the subjects listed in 
 studyparams.py. 'test' will use the test subject listed in studyparams.py. If nothing is 
 specified, all subjects will be ran. 
 
-Optionally you can set a TAG on the database (filename acceptable characters). You must enter a 
-subject parameter before entering a tag. Aditionally, If there is not exactly two parameters after 
-the filename, the tag will not be applied. You must enter a subject parameter to place a tag. If 
-'AM' or 'TC' are in the tag, they will not be added when each respective statistics script is run. 
+Optionally you can set a TAG on the database (using file name acceptable characters). You must enter 
+a subject parameter before entering a tag. Aditionally, these two must be the first two parameters 
+entered, any subsequent will not be used. If 'AM' or 'TC' are in the tag, 'AM' or 'TC' will not be 
+added when each respective statistics script is run.
 
-Created on Jan 17, 2021
-Author: Devin Henderling
+Run as:
+database_.py SUBJECT TAG 
 """
 import sys
 import os

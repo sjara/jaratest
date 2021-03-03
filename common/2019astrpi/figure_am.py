@@ -13,9 +13,6 @@ response
 between 0 and 1, where 1 represents perfect descrimination)
 6. Phase Descrimination Accuracy: Ability of a cell to determine the phase of different amplitude 
 modulation rates (value between 0 and 1, where 1 represents perfect determination)
-
-Created on Jan 12, 2021
-Author: Devin Henderling
 """
 import os
 import figparams
@@ -27,6 +24,9 @@ from jaratoolbox import extraplots
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy import stats
+
+# TODO: Update to work with database naming changes
+# TODO: Update to work with database_add_am_stats.py columns
 
 # ========================== Utility Functions ==========================
 
