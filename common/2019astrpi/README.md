@@ -221,12 +221,8 @@ response
 * (2) *AMBaseFRSustained*: The corresponding baseline firing rate for the best 
 sustained response. Baseline period was [-500 ms, -100 ms]
 
-<<<<<<< HEAD
-* (2) *AMRespFRSustained*: The highest sustained firing rate of all the rates 
-=======
-* (1) *AMRespFRSustained*: The highest sustained firing rate of all the rates 
->>>>>>> 25dc3c3c8a355089fb6c8af621bff68dec42acac
-presented. Sustained period was [100 ms, 500 ms]
+* (2) *AMRespFRSustained*: The highest sustained firing rate of all the rates presented. Sustained 
+period was [100 ms, 500 ms]
 
 * (2) *AMBestRateSustained*: The amplitude modulation rate that produced the highest
 sustained response
@@ -360,10 +356,10 @@ Calculated in `base stats`
 List of all indices for the database of all animals. Each index is formatted as: index,X
 
 X is a value between 1 and 4 that corresponds to type of manual selection, or nothing if none apply:
-1 = Noise or no cell character
-2 = Some cell character, but unreliable or noisy
-3 = No laserpulse or sound response (may be nD1 with no sound response)
-4 = Laserpulse response, no sound response (may be D1 with no sound response)
+1. Noise or no cell character
+2. Some cell character, but unreliable or noisy
+3. No laserpulse or sound response (may be nD1 with no sound response)
+4. Laserpulse response, no sound response (may be D1 with no sound response)
 
 #### cell_indices_manually_removed.txt
 List of indices for cells that should be removed by manual selection. Cell indices come from
