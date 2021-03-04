@@ -38,14 +38,15 @@ extras folder.
 
 Calculates statistics using laserpulse session data. Used for D1 vs. nD1 cell type characterization. 
 
-Output is an h5 file containing only rows that passed cell selection.
+Output is an h5 file with the information under the `Laserpulse stats` section in 
+`Database contents` below added. contains only rows that passed cell selection. 
 
 #### database_add_tuning_stats.py
 Using an existing database, calculates statistics using tuning curve session data. These statistics 
 are used for pure tone sound response comparison. 
 
-Output is an h5 file with the information under the `Laserpulse stats` and `Tuning stats` sections 
-in `Database contents` below added.
+Output is an h5 file with the information under the `Tuning stats` section in `Database contents` 
+below added.
 
 #### database_am_am_stats.py
 Using an existing database, calculates statistics using amplitude modulated (AM) session data. Used 
@@ -111,7 +112,7 @@ TODO: create column descriptions for base stats
 * *tetrode*:
 
 #### Laserpulse stats
-Columns added with `database_add_tuning_stats.py`
+Columns added with `database_select_reliable_cells.py`
 
 * (1) *laserpulseBaselineSpikeCount*: The baseline laserpulse mean spike count. Baseline period was 
 [-100 ms, 0 ms]

@@ -9,7 +9,7 @@ This script calculates statistics used for:
 3. Onset to sustained ratio comparison
 
 Run as:
-database_.py SUBJECT TAG 
+database_add_tuning_stats.py SUBJECT TAG 
 
 A database must exist with these parameters or script will fail. If the tuning statistics have not 
 previously calculated and 'tuning' not in filename,'tuning' will be added to the filename.  
@@ -38,13 +38,19 @@ if __name__ == "__main__":
         if arguments[0] == "all":
             d1mice = studyparams.ASTR_D1_CHR2_MICE
             subjects = 'all'
-        if isinstance(arguments[0], str):
+        elif arguments[0].upper() == 'TEST':
+            d1mice = studyparams.SINGLE_MOUSE
+            subjects = studyparams.SINGLE_MOUSE[0]
+        elif isinstance(arguments[0], str):
             d1mice = []
-            subjects = str(arguments[0]) 
+            subjects = arguments[0]
             d1mice.append(subjects)
             if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
-                print('\n SUBJECT ERROR, DATAFRAME COULD NOT BE SAVED \n')
-                sys.exit()
+                answer = input('Subject could not be found, Would you like to run for all animals?')
+                if answer.upper() in ['YES', 'Y', '1']:
+                    d1mice = studyparams.ASTR_D1_CHR2_MICE
+                else:
+                    sys.exit()
             else:
                 print('Subject found in database')
         else:
@@ -73,16 +79,19 @@ else:
     if not os.path.isfile(inputDirectory):
         inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                       'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
+        if not os.path.isfile(inputDirectory):
+            sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE FOUND: \n {}'.format(inputDirectory)) 
         CLUSTERS = 1
-
+    
+    # Adds 'tuning' to tag if not there already 
     if 'tuning' not in tag:
         if 'AM' in tag:
             tagTemp = tag.split('_')
             tagTemp.insert(2, 'am')
             tag = ''
-            for i in tag:
-                tag += str(i) + '_'
-                tag = tag[:-1]
+            for part in tag:
+                tag += str(part) + '_'
+                tag.rstrip('_')
         else:
             tag = tag + '_tuning'
         
@@ -93,34 +102,16 @@ else:
         outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                        'astrpi_{}_cells_{}.h5'.format(subjects, tag)) 
 
+# Checks if output directory exists 
 dir = os.path.dirname(outputDirectory)
-
 if os.path.isdir(dir):
     print('Directory Exists')
 else:
-    print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
-    sys.exit()
+    sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
 
-    
-# dbName = inputDirectory.split('\\')[-1]
-# dbName = dbName.split('_')
-# dbName.insert(2, 'am')
-# databaseName = ''
-# for i in dbName:
-#     databaseName += str(i) + '_'
-#     databaseName = databaseName[:-1]
-    
-# root = inputDirectory.split('\\')[:-1]
-# databaseRoot = ''
-# for i in root:
-#     databaseRoot += str(i) + '\\'
+db = celldatabase.load_hdf(inputDirectory) # Loads cell database 
 
-    
-# databaseRoot = inputDirectory.split('\\')[:-1]
-# outputDirectory = os.path.join(databaseRoot, databaseName)
-# # Loads cell database
-    
-db = celldatabase.load_hdf(inputDirectory)  
+# ========================== Tuning Curve Statistics Calculation ==========================
 
 # Iterates through each cell in the database       
 for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
@@ -129,50 +120,6 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     # Progress message 
     print("Processing cell {} \n {}, {}, depth = {} tetrode {}, cluster {}".format(indRow, 
           dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster']))
-    
-    # ========================== Laserpulse Statistics Calculation ==========================
-    
-    # Checks for a laserpulse session
-    session = 'laserpulse'
-    try:
-        pulseEphysData, noBData = oneCell.load(session)
-    except IndexError:
-        print('This cell does not contain a {} session'.format(session))
-    else:
-        baseRange = [-0.1, 0] # Time used for baseline spike counts.
-        
-        # Creates arrays of times stimulus presented
-        laserEventOnsetTimes = pulseEphysData['events']['laserOn']
-        laserSpikeTimes = pulseEphysData['spikeTimes']
-        
-        # Calculates firing rate during baseline and response periods 
-        nspkBaseLaser, nspkRespLaser = funcs.calculate_spike_count(laserEventOnsetTimes, 
-                                                                   laserSpikeTimes, baseRange)
-        
-        # Calculates mean firing rate for baseline and response periods 
-        nspkRespLaserMean = np.mean(nspkRespLaser)
-        nspkBaseLaserMean = np.mean(nspkBaseLaser)
-        
-        # Calculates change in firing rate during laserpulse
-        spikeCountChange = nspkRespLaserMean - nspkBaseLaserMean
-            
-        # Significance calculations for the laserpulse
-        try:
-            zStats, pVals = stats.mannwhitneyu(nspkRespLaser, nspkBaseLaser, 
-                                               alternative='two-sided')
-        except ValueError:  # All numbers identical will cause mann-whitney to fail
-            print("laserpulse mann-whitney fail for {}".format(oneCell))
-            zStats, pVals = [0, 1]
-        
-        # Adds laserpulse information to database
-        db.at[indRow, 'laserpulsePval'] = pVals  # p-value from Mann-Whitney U test
-        db.at[indRow, 'laserpulseZstat'] = zStats  # U-statistic from Mann-Whitney U test
-        # Difference between base and response firing rate
-        db.at[indRow, 'laserpulseSpikeCountChange'] = spikeCountChange
-        db.at[indRow, 'laserpulseBaselineSpikeCount'] = nspkBaseLaserMean  # Mean of baseline FR
-        db.at[indRow, 'laserpulseResponseSpikeCount'] = nspkRespLaserMean  # Mean of response FR
-
-    # ========================== Tuning Curve Statistics Calculation ==========================
     
     # Checks for a tuning curve session
     session = 'tuningCurve'

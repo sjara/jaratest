@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-This script loads the basic database of clusters created with database_basic_generation.py and 
-selects reliable cells that have data for sound reponse comparison. 
+Loads the basic database of clusters created with database_basic_generation.py, selects reliable 
+cells that have data for sound reponse comparison, and calculated statistics using laserpulse
+session data for D1 vs. nD1 determination.  
 
 The database generated with this script is filtered by:
 1. Presence of laserpulse session
 2. Presense of either tuning curve or AM session
-3. Mnual selection
+3. Manual selection
 4. Further parameters specified in database_basic_generation.py
 
 This script calculates statistics used for:
@@ -16,32 +17,43 @@ Run as:
 python3 database_select_reliable_cells.py SUBJECT TAG
 
 A database must exist with these parameters or script will fail. If the database has not been 
-previously filtered, 'clusters' will change to 'cells' in the filename. 
+previously filtered, 'clusters' will change to 'cells' in the filename.
 """
 import os
 import sys
+import numpy as np
+from scipy import stats
 import studyparams
 from jaratoolbox import celldatabase
 from jaratoolbox import settings
+from jaratoolbox import ephyscore
+import database_generation_funcs as funcs
 
 # ========================== Run Mode ==========================
 
-NO_TAG = 0 # Set to 1 if no tag 
+MANUAL_ERROR = 0 # Automatically set to 1 if error in manual selection text document
+NO_TAG = 0 # Automatically set to 1 if no tag given
 
-# Determing run mode by arguments
+# Determining animals used and file name by arguements given
 if __name__ == "__main__":
     if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
         arguments = sys.argv[1:] # Script parameters 
         if arguments[0] == "all":
             d1mice = studyparams.ASTR_D1_CHR2_MICE
             subjects = 'all'
-        if isinstance(arguments[0], str):
+        elif arguments[0].upper() == 'TEST':
+            d1mice = studyparams.SINGLE_MOUSE
+            subjects = studyparams.SINGLE_MOUSE[0]
+        elif isinstance(arguments[0], str):
             d1mice = []
-            subjects = str(arguments[0]) 
+            subjects = arguments[0]
             d1mice.append(subjects)
             if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
-                print('\n SUBJECT ERROR, DATAFRAME COULD NOT BE SAVED \n')
-                sys.exit()
+                answer = input('Subject could not be found, Would you like to run for all animals?')
+                if answer.upper() in ['YES', 'Y', '1']:
+                    d1mice = studyparams.ASTR_D1_CHR2_MICE
+                else:
+                    sys.exit()
             else:
                 print('Subject found in database')
         else:
@@ -71,39 +83,30 @@ else:
 dir = os.path.dirname(outputDirectory)
 
 if os.path.isdir(dir):
-    print('Directory Exists')
+    print('Directory exists')
 else:
-    print('\n TAG ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
-    sys.exit()
+    sys.exit('\n TAG ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
     
 # ========================== Database Filtering ==========================
 
 print('Loading basic database...')
 
 # Loads basic database
-if not NO_TAG:
-    try:
-        db = celldatabase.load_hdf(inputDirectory) 
-    except OSError:
-        sys.exit('\n DATABASE ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory)) 
-else:
-    try:
-        db = celldatabase.load_hdf(inputDirectory) 
-    except OSError:
-        sys.exit('\n DATABASE ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory)) 
+try:
+    db = celldatabase.load_hdf(inputDirectory) 
+except OSError:
+    sys.exit('\n DATABASE ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
 
 # Selects cells with a laserpulse session for D1 vs. nD1 determination
-hasLP = db['sessionType'].apply(lambda s: 'laserpulse' in s)
-db = db[hasLP]
-    
+db = db[db['sessionType'].apply(lambda s: 'laserpulse' in s)]    
+
 # Selects cells with either tuning curve or AM session for sound comparison
-hasTC_AM = db['sessionType'].apply(lambda s: ('tuningCurve' in s) or ('am' in s))
-db = db[hasTC_AM]
+db = db[db['sessionType'].apply(lambda s: ('tuningCurve' in s) or ('am' in s))]
 
 # Empty list to fill with manually-removed cells
 indicesRemovedCells = []
 
-# Generates list of cells from a text document to be removed by manual selection
+# Generates list of clusters from a text document to be removed by manual selection
 with open('extras\cell_indices_manually_removed.txt', 'r') as manualSelection:
     for line in manualSelection:
         line = line.rstrip()
@@ -111,11 +114,60 @@ with open('extras\cell_indices_manually_removed.txt', 'r') as manualSelection:
             indicesRemovedCells.append(int(line))
         except ValueError:
             print('\'{}\' not valid cell index'.format(line))
+            MANUAL_ERROR = 1
 
 # Removes clusters that were not manually-verfied
 db = db.drop(indicesRemovedCells, errors='ignore')
 
+# ========================== Laserpulse Statistics Calculation ==========================
+
+# Iterates through each cell in the database       
+for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
+    oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
+    
+    # Progress message 
+    print("Processing cell {} \n {}, {}, depth = {} tetrode {}, cluster {}".format(indRow, 
+          dbRow['subject'], dbRow['date'], dbRow['depth'], dbRow['tetrode'], dbRow['cluster']))
+    
+    # Loads laserpulse session data for cell
+    pulseEphysData, noBData = oneCell.load('laserpulse')
+    
+    baseRange = [-0.1, 0] # Time used for baseline spike counts.
+    
+    # Creates arrays of times stimulus presented
+    laserEventOnsetTimes = pulseEphysData['events']['laserOn']
+    laserSpikeTimes = pulseEphysData['spikeTimes']
+    
+    # Calculates firing rate during baseline and response periods 
+    nspkBaseLaser, nspkRespLaser = funcs.calculate_spike_count(laserEventOnsetTimes, 
+                                                               laserSpikeTimes, baseRange)
+    
+    # Calculates mean firing rate for baseline and response periods 
+    nspkRespLaserMean = np.mean(nspkRespLaser)
+    nspkBaseLaserMean = np.mean(nspkBaseLaser)
+    
+    # Calculates change in firing rate during laserpulse
+    spikeCountChange = nspkRespLaserMean - nspkBaseLaserMean
+        
+    # Significance calculations for the laserpulse
+    try:
+        zStats, pVals = stats.mannwhitneyu(nspkRespLaser, nspkBaseLaser, 
+                                           alternative='two-sided')
+    except ValueError:  # All numbers identical will cause mann-whitney to fail
+        print("laserpulse mann-whitney fail for {}".format(oneCell))
+        zStats, pVals = [0, 1]
+    
+    # Adds laserpulse information to database
+    db.at[indRow, 'laserpulsePval'] = pVals  # p-value from Mann-Whitney U test
+    db.at[indRow, 'laserpulseZstat'] = zStats  # U-statistic from Mann-Whitney U test
+    # Difference between base and response firing rate
+    db.at[indRow, 'laserpulseSpikeCountChange'] = spikeCountChange
+    db.at[indRow, 'laserpulseBaselineSpikeCount'] = nspkBaseLaserMean  # Mean of baseline FR
+    db.at[indRow, 'laserpulseResponseSpikeCount'] = nspkRespLaserMean  # Mean of response FR
+        
 # ========================== Saving ==========================
 
 celldatabase.save_hdf(db, outputDirectory)
-print("\n SAVED DATAFRAME TO: \n {}".format(outputDirectory))     
+print("\n SAVED DATAFRAME TO: \n {}".format(outputDirectory))  
+if MANUAL_ERROR:
+    print('An error occured, database may be incomplete or have erroneous data')   

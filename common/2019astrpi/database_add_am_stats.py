@@ -7,7 +7,7 @@ This script calculates statistics used for:
 1. 
 
 Run as:
-database_.py SUBJECT TAG 
+database_add_am_stats.py SUBJECT TAG 
 
 A database must exist with these parameters or script will fail. If the tuning statistics have not 
 previously calculated and 'tuning' not in filename,'tuning' will be added to the filename.  
@@ -37,13 +37,19 @@ if __name__ == "__main__":
         if arguments[0] == "all":
             d1mice = studyparams.ASTR_D1_CHR2_MICE
             subjects = 'all'
-        if isinstance(arguments[0], str):
+        elif arguments[0].upper() == 'TEST':
+            d1mice = studyparams.SINGLE_MOUSE
+            subjects = studyparams.SINGLE_MOUSE[0]
+        elif isinstance(arguments[0], str):
             d1mice = []
-            subjects = str(arguments[0]) 
+            subjects = arguments[0]
             d1mice.append(subjects)
             if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
-                print('\n SUBJECT ERROR, DATAFRAME COULD NOT BE SAVED \n')
-                sys.exit()
+                answer = input('Subject could not be found, Would you like to run for all animals?')
+                if answer.upper() in ['YES', 'Y', '1']:
+                    d1mice = studyparams.ASTR_D1_CHR2_MICE
+                else:
+                    sys.exit()
             else:
                 print('Subject found in database')
         else:
@@ -94,8 +100,7 @@ else:
  
 # ========================== Basic Database Creation ==========================
 
-# Loads cell database
-db = celldatabase.load_hdf(inputDirectory)  
+db = celldatabase.load_hdf(inputDirectory) # Loads cell database 
 
 # Iterates through each cell in the basic database       
 for indIter, (indRow, dbRow) in enumerate(db.iterrows()):

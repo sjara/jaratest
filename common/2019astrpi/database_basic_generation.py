@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 This script creates a basic database from an inforec file using 
-celldatabase.generate_cell_database_from_subjects()
+celldatabase.generate_cell_database_from_subjects(). Further analysis can be done with other 
+database_.py scripts. 
 
 The database generated with this script is filtered by:
 1. ISI violations less than 0.05
@@ -20,8 +21,8 @@ entered, any subsequent will not be used. If 'AM' or 'TC' are in the tag, 'AM' o
 added when each respective statistics script is run.
 
 Run as:
-database_.py SUBJECT TAG 
-"""
+database_basic_generation.py SUBJECT TAG 
+'''
 import sys
 import os
 import studyparams
@@ -30,18 +31,21 @@ from jaratoolbox import settings
 
 # ========================== Run Mode ==========================
 
-NO_TAG = 0 # Set to 1 if no tag 
+NO_TAG = 0 # Automatically set to 1 if no tag given
 
-# Determing run mode by arguments
-if __name__ == "__main__":
+# Determining animals used and file name by arguements given
+if __name__ == '__main__':
     if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
         arguments = sys.argv[1:] # Script parameters 
-        if arguments[0] == "all":
+        if arguments[0].upper() in 'ALL':
             d1mice = studyparams.ASTR_D1_CHR2_MICE
             subjects = 'all'
-        if isinstance(arguments[0], str):
+        elif arguments[0].upper() == 'TEST':
+            d1mice = studyparams.SINGLE_MOUSE
+            subjects = studyparams.SINGLE_MOUSE[0]
+        elif isinstance(arguments[0], str):
             d1mice = []
-            subjects = str(arguments[0]) 
+            subjects = arguments[0]
             d1mice.append(subjects)
             if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
                 answer = input('Subject could not be found, Would you like to run for all animals?')
@@ -73,6 +77,7 @@ else:
 
 dir = os.path.dirname(outputDirectory)
 
+# Checks if file path exists
 if os.path.isdir(dir):
     print('Directory Exists')
 else:
@@ -89,6 +94,6 @@ db = celldatabase.generate_cell_database_from_subjects(d1mice)
 try:
     celldatabase.save_hdf(db, outputDirectory)
 except OSError:
-    print("\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}".format(outputDirectory))
+    print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
 else:
     print('\n SAVED DATAFRAME TO: \n {}'.format(outputDirectory))  

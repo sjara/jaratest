@@ -10,6 +10,12 @@ This script plots:
 4. Threshold (The intensity with the maximum firing rate)
 5. onset to sustianed ratio (Ratio of firing rate between onset (0-50ms after stimulus presentation)
 and sustained (50-100ms after stimulus presentation) periods)
+
+Run as:
+figure_frequency_tuning.py SUBJECT TAG 
+
+A database must exist with these parameters or script will fail. If the tuning statistics have not 
+previously calculated and 'tuning' not in filename,'tuning' will be added to the filename. 
 """
 import os
 import figparams
@@ -21,6 +27,7 @@ from jaratoolbox import extraplots
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy import stats
+import sys 
 
 # TODO: Update to work with database naming changes
 
@@ -36,20 +43,52 @@ dotSpread = 0.2 # Value for spread of points on figures (higher value equals gre
 
 # ========================== Run Mode ==========================
 
-ONE_SUBJECT = 1 # Set to 1 to run for one test animal, set to 0 to run for all animals in study 
+NO_TAG = 0 # Set to 1 if no tag 
 
-if ONE_SUBJECT:
-    d1mice = studyparams.SINGLE_MOUSE
-    outputDirectory = figparams.FIGURE_OUTPUT_DIR 
-    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'astrpi_{}_tuning.h5'.format(d1mice[0]))
-    figFilename = 'figure_{}'.format(d1mice[0])
-else:
-    d1mice = studyparams.ASTR_D1_CHR2_MICE
-    outputDirectory = figparams.FIGURE_OUTPUT_DIR 
-    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME,
-                                   'astrpi_all_cells_tuning.h5')
+# Determing run mode by arguments
+if __name__ == "__main__":
+    if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
+        arguments = sys.argv[1:] # Script parameters 
+        if arguments[0] == "all":
+            d1mice = studyparams.ASTR_D1_CHR2_MICE
+            subjects = 'all'
+        elif arguments[0].upper() == 'TEST':
+            d1mice = studyparams.SINGLE_MOUSE
+            subjects = studyparams.SINGLE_MOUSE[0]
+        elif isinstance(arguments[0], str):
+            d1mice = []
+            subjects = arguments[0]
+            d1mice.append(subjects)
+            if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
+                answer = input('Subject could not be found, Would you like to run for all animals?')
+                if answer.upper() in ['YES', 'Y', '1']:
+                    d1mice = studyparams.ASTR_D1_CHR2_MICE
+                else:
+                    sys.exit()
+            else:
+                print('Subject found in database')
+        else:
+            # If no mice are specified, default to using all mice in the studyparams
+            d1mice = studyparams.ASTR_D1_CHR2_MICE
+            subjects = 'all'
+        if len(arguments) == 2:
+            tag = arguments[1]
+        else:
+            NO_TAG = 1 
+    else:
+        d1mice = studyparams.ASTR_D1_CHR2_MICE
+        subjects = 'all'
+        NO_TAG = 1 
+        
+if NO_TAG == 1:
+    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                               'astrpi_{}_cells_tuning_am.h5'.format(subjects)) 
     figFilename = 'figure_{}'.format(studyparams.DATABASE_NAME)
+    outputDirectory = figparams.FIGURE_OUTPUT_DIR 
+else:
+    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                               'astrpi_{}_cells__tuning_am_{}.h5'.format(subjects, tag))
+    outputDirectory = figparams.FIGURE_OUTPUT_DIR 
 
 # A value of 1 plots the given comparison, 0 does not 
 LATENCY = 1 # Time of response relative to stimulus
