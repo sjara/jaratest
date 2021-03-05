@@ -18,19 +18,18 @@ Run as:
 `database_.py SUBJECT TAG` or `figure_.py SUBJECT TAG`
 
 More specific instructions can be found on each script's docstring.
-## Database
+
+## Producing a database
 The file `studyparams.py` contains a list of animals as well as statistical parameters for the 
 database calculations. Database scripts use functions from the moddule 
 `database_generation_funcs.py`.
 
-### Producing a database
 #### database_basic_generation.py
 Generates a minimally filtered basic database. 
 
 Output is an h5 file containing the statistics under the `Base stats` section in `Database contents` 
 below. 
 
-### Manipulating a database
 #### database_select_reliable_cells.py
 Using an existing database, selects for reliable cells that have data for cell comparison. Includes 
 the removal of manually selected cells, listed in `cell_indices_manually_removed.txt`, found in the 
@@ -48,7 +47,7 @@ are used for pure tone sound response comparison.
 Output is an h5 file with the information under the `Tuning stats` section in `Database contents` 
 below added.
 
-#### database_am_am_stats.py
+#### database_am_am_stats.py (Unfinished)
 Using an existing database, calculates statistics using amplitude modulated (AM) session data. Used 
 for AM sound response comparison. 
 
@@ -64,7 +63,7 @@ number corresponding to what question it addresses.
 3. Do the cells prefer different properties of pure tone sounds? (Figure 3)
 4. Do the cell populations prefer different properties of amplitude modulated sounds? (Figure 4)
 
-#### Base stats
+#### Base stats (Unfinished)
 Columns added when the basic database is created with `database_basic_generation.py`
 
 TODO: create column descriptions for base stats  
@@ -183,7 +182,7 @@ intensity threshold. Calculated by `database_generation_funcs.calculate_BW10_par
 index from `database_generation_funcs.calculate_intensity_threshold_and_CF_indices()` and indexing the 
 unique intensities (uniqueIntensity) for a session.
 
-#### AM stats
+#### AM stats (Unfinished)
 Columns added with `database_add_am_stats.py`
 
 TODO: Add stats to this section after `database_add_am_stats.py` finished
@@ -274,7 +273,7 @@ to the baseline firing rate using a Mann-Whitney U test
 
 * (4) *am_response_ZStat*: Corresponding U-statistic for the above p-value
 
-## Figures
+## Figures (Unfinished)
 The file `figparams.py` contains common parameters for figures and data related to these figures.
 
 TODO: Update this section
