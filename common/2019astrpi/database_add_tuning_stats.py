@@ -257,9 +257,9 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         except ZeroDivisionError:
             respBaseTuningRatio = 0 
         
-        db.at[indRow,'tuningResponseRate'] = respTuningMean  # The FR of the cell onset response (0 to 50 ms) 
-        db.at[indRow,'tuningBaseRate'] = baseTuningMean  # The FR of the cell baseline (-100 to -50 ms) 
-        db.at[indRow,'tuningResponseRatio'] = respBaseTuningRatio  # Index for ratio between response and base firing rates (between 0 and 1)
+        db.at[indRow,'tuningResponseFR'] = respTuningMean  # The FR of the cell onset response (0 to 50 ms) 
+        db.at[indRow,'tuningBaselineFR'] = baseTuningMean  # The FR of the cell baseline (-100 to -50 ms) 
+        db.at[indRow,'tuningResponseFRIndex'] = respBaseTuningRatio  # Index for ratio between response and base firing rates (between 0 and 1)
     
         if intensityInd is None:  # None of the intensities had anything
             bw10 = None
@@ -318,8 +318,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             db.at[indRow, 'tuningZstat'] = tuningZStat  # U-statistic from Mann-Whitney U test of Onset spikes
             db.at[indRow, 'thresholdFRA'] = intensityThreshold  # Threshold intensity for the FRA
             db.at[indRow, 'cf'] = cf  # Characteristic frequency of the cell
-            db.at[indRow, 'tuningOnsetRate'] = onsetRate  # The FR of the onset of the cell response (first 50 ms)
-            db.at[indRow, 'tuningSustainedRate'] = sustainedRate  # The FR of the sustained cell response (last 50 ms)    
+            db.at[indRow, 'tuningOnsetFR'] = onsetRate  # The FR of the onset of the cell response (first 50 ms)
+            db.at[indRow, 'tuningSustainedFR'] = sustainedRate  # The FR of the sustained cell response (last 50 ms)    
             db.at[indRow, 'rSquaredFit'] = Rsquared10AboveSIT  # The fit of the Gaussian to the actual FR 10 dB above SIT
             db.at[indRow, 'lowerFrequency'] = lowerFreq  # Lower frequency bound of the Gaussian
             db.at[indRow, 'upperFrequency'] = upperFreq  # Upper frequency bound of the Gaussian
@@ -328,8 +328,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             
             try:
                 db.at[indRow, 'cfOnsetivityIndex'] = \
-                    (db.at[indRow, 'tuningOnsetRate'] - db.at[indRow, 'tuningSustainedRate']) / \
-                    (db.at[indRow, 'tuningSustainedRate'] + db.at[indRow, 'tuningOnsetRate'])
+                    (db.at[indRow, 'tuningOnsetFR'] - db.at[indRow, 'tuningSustainedFR']) / \
+                    (db.at[indRow, 'tuningSustainedFR'] + db.at[indRow, 'tuningOnsetFR'])
             except ZeroDivisionError:
                 db.at[indRow, 'cfOnsetivityIndex'] = np.nan
      

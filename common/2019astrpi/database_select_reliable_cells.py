@@ -161,9 +161,9 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     db.at[indRow, 'laserpulsePval'] = pVals  # p-value from Mann-Whitney U test
     db.at[indRow, 'laserpulseZstat'] = zStats  # U-statistic from Mann-Whitney U test
     # Difference between base and response firing rate
-    db.at[indRow, 'laserpulseSpikeCountChange'] = spikeCountChange
-    db.at[indRow, 'laserpulseBaselineSpikeCount'] = nspkBaseLaserMean  # Mean of baseline FR
-    db.at[indRow, 'laserpulseResponseSpikeCount'] = nspkRespLaserMean  # Mean of response FR
+    db.at[indRow, 'laserpulseFRChange'] = spikeCountChange
+    db.at[indRow, 'laserpulseBaselineFR'] = nspkBaseLaserMean  # Mean of baseline FR
+    db.at[indRow, 'laserpulseResponseFR'] = nspkRespLaserMean  # Mean of response FR
         
 # ========================== Saving ==========================
 

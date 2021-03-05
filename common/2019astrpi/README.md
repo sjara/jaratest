@@ -75,7 +75,7 @@ TODO: create column descriptions for base stats
 
 * *cluster*:
 
-* *date*:
+* *date*: The data that the data was collected
 
 * *depth*:
 
@@ -107,20 +107,20 @@ TODO: create column descriptions for base stats
 
 * *spikeShapeSD*:
 
-* *subject*:
+* *subject*: The mouse that the data was recorded from
 
-* *tetrode*:
+* *tetrode*: The tetrode that recorded the data.
 
 #### Laserpulse stats
 Columns added with `database_select_reliable_cells.py`
 
-* (1) *laserpulseBaselineSpikeCount*: The baseline laserpulse mean spike count. Baseline period was 
+* (1) *laserpulseBaselineFR*: The baseline laserpulse mean firing rate. Baseline period was 
 [-100 ms, 0 ms]
 
-* (1) *laserpulseResponseSpikeCount*: The response laserpulse mean spike count. Response period was 
+* (1) *laserpulseResponseFR*: The response laserpulse mean firing rate. Response period was 
 [0 ms, 100 ms]
 
-* (1) *laserpulseSpikeCountChange*: The change in spike count for the laserpulse as calculated by
+* (1) *laserpulseFRChange*: The change in firing rate for the laserpulse as calculated by
 `response - baseline`
 
 * (1) *laserpulsePval*: The p-value for comparing the baseline and response firing rates of the 
@@ -130,6 +130,27 @@ laserpulse paradigm using a Mann-Whitney U test.
 
 #### Tuning stats
 Columns added with `database_add_tuning_stats.py`
+
+* (3) *tuningBaseFR*: The number of spikes over time the occur from 100 ms before the stimulus to 
+50 ms before the stimulus is presented. Calculated by 
+`database_generation_funcs.calculate_onset_to_sustained_ratio()`.
+
+* (2) *tuningResponseFR*: The firing rate within the 100 ms response period as based on *latency*. 
+Calculated by `database_generation_funcs.calculate_onset_to_sustained_ratio()`.
+
+* (3) *tuningOnsetFR*: The firing rate within the first 50 ms of the response as based on 
+*latency*. Calculated by `database_generation_funcs.calculate_onset_to_sustained_ratio()`.
+
+* (3) *tuningSustainedFR*: The firing rate within the period of 50 ms to 100 ms of the response as 
+based on *latency*. Calculated by database_generation_funcs.calculate_onset_to_sustained_ratio.
+
+* (2) *tuningResponseFRIndex*: Index (between 0 and 1) for the ratio between response and base firing 
+rates caculated with the expression (response - baseline) / (response + baseline).
+
+* (2) *tuningPval*: The p-value from comparing the baseline firing rate vs response firing rate of 
+all frequencies at the highest intensity for the tuningCurve paradigm with a Mann-Whitney U test
+
+* (2) *tuningZstat*: Corresponding U-statistic for the p-value
 
 * (3) *latency*: The time (in seconds) from when the stimulus is presented until the cell shows a 
 response. Calculated using `database_generation_funcs.calculate_latency()`. This looks at the *cf* 
@@ -158,27 +179,6 @@ intensity threshold. Calculated by `database_generation_funcs.calculate_BW10_par
 * (3) *thresholdFRA*: The characteristic intensity for peak firing rate. Found using the intensity 
 index from `database_generation_funcs.calculate_intensity_threshold_and_CF_indices()` and indexing the 
 unique intensities (uniqueIntensity) for a session.
-
-* (3) *tuningBaseRate*: The number of spikes over time the occur from 100 ms before the stimulus to 
-50 ms before the stimulus is presented. Calculated by 
-`database_generation_funcs.calculate_onset_to_sustained_ratio()`.
-
-* (2) *tuningResponseRate*: The firing rate within the 100 ms response period as based on *latency*. 
-Calculated by `database_generation_funcs.calculate_onset_to_sustained_ratio()`.
-
-* (3) *tuningOnsetRate*: The firing rate within the first 50 ms of the response as based on 
-*latency*. Calculated by `database_generation_funcs.calculate_onset_to_sustained_ratio()`.
-
-* (3) *tuningSustainedRate*: The firing rate within the period of 50 ms to 100 ms of the response as 
-based on *latency*. Calculated by database_generation_funcs.calculate_onset_to_sustained_ratio.
-
-* (2) *tuningResponseRatio*: Index (between 0 and 1) for the ratio between response and base firing 
-rates caculated with the expression (response - baseline) / (response + baseline).
-
-* (2) *tuningPval*: The p-value from comparing the baseline firing rate vs response firing rate of 
-all frequencies at the highest intensity for the tuningCurve paradigm with a Mann-Whitney U test
-
-* (2) *tuningZstat*: Corresponding U-statistic for the p-value
 
 #### AM stats
 Columns added with `database_add_am_stats.py`
