@@ -112,7 +112,10 @@ TODO: create column descriptions for base stats
 * *tetrode*: The tetrode that recorded the data.
 
 #### Laserpulse stats
-Columns added with `database_select_reliable_cells.py`
+Columns added with `database_select_reliable_cells.py`, using a baseline period of [-100 ms, 0 ms].
+This corresponds to a response period of [0 ms, 100 ms]. There are two additional sets of statistics
+generated using baseline periods of [-50 ms, 0 ms] and [-200 ms, 0 ms] respectively. These sets
+are named identical to those below, but with '50' or '200' following each column name. 
 
 * (1) *laserpulseBaselineFR*: The baseline laserpulse mean firing rate. Baseline period was 
 [-100 ms, 0 ms]
