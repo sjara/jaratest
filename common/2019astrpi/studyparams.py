@@ -33,8 +33,8 @@ CELL_FILTER = 'isiViolations<{} and spikeShapeQuality>{}'.format(ISI_THRESHOLD, 
 laserpulse_pVal_threshold = 0.05  # 0.001 if want to be extra sure not to include false positives
 laserpulse_responseCount_threshold = 0.5
 
-D1_CELLS = 'laserpulsePval<{} and laserpulseSpikeCountChange>0 and laserpulseResponseSpikeCount>{}'.format(laserpulse_pVal_threshold, laserpulse_responseCount_threshold)  # Respond to laser, thus D1-expressing cells
-nD1_CELLS = 'not (laserpulsePval<{} and laserpulseSpikeCountChange>0)'.format(laserpulse_pVal_threshold) # Did not respond to laser, thus non-D1-expressing cells
+D1_CELLS = 'laserpulsePval<{} and laserpulseFRChange>0 and laserpulseResponseFR>{}'.format(laserpulse_pVal_threshold, laserpulse_responseCount_threshold)  # Respond to laser, thus D1-expressing cells
+nD1_CELLS = 'not (laserpulsePval<{} and laserpulseFRChange>0)'.format(laserpulse_pVal_threshold) # Did not respond to laser, thus non-D1-expressing cells
 
 # ========================== Additional Filters to get Specific Cell Populations ==========================
 # TODO: Organize this section
