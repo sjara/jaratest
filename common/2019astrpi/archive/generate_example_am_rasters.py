@@ -25,7 +25,7 @@ exampleKeys = [key for key, val in examples.items()]
 exampleSpikeData = {}
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = studyparams.DATABASE_NAME + '_original.h5'
+nameDB = studyparams.DATABASE_NAME + '.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
@@ -151,6 +151,7 @@ plotting_data.update({"D1_phaseDiscrimAccuracy": D1MeanPerCell,
                       "nD1_phaseDiscrimAccuracy": nD1MeanPerCell})
 
 
+# possibleFreqLabels = ["{0:.1f}".format(freq) for freq in np.unique(thalPopStat)]
 ytickLabels = [4, 8, 16, 32, 64, 128]
 yticks = np.log(ytickLabels)
 
