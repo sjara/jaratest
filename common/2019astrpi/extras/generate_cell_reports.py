@@ -314,7 +314,7 @@ db = celldatabase.load_hdf(inputDirectory)
 indicesRemovedCells = []
 
 # Generates list of cells from a text document to be removed by manual selection
-with open('manually_withheld_cells.txt', 'r') as manualSelection:
+with open('cell_indices_manually_removed.txt', 'r') as manualSelection:
     for line in manualSelection:
         line = line.rstrip()
         try:
@@ -434,9 +434,9 @@ for indRow, dbRow in db.iterrows():
         plt.setp(hLaserCond, zorder=3)
         plt.ylabel('Trial')
         axLaserpulseRaster.set_xlim(-0.3, 0.5)
-        if dbRow.laserpulsePval < 0.05 and dbRow.laserpulseSpikeCountChange > 0 and laserpulseResponseSpikeCount > 0.5:
+        if dbRow.laserpulsePval < 0.05 and dbRow.laserpulseFRChange > 0 and dbRow.laserpulseResponseFR > 0.5:
             plt.title("Laserpulse D1\n{}".format(dbRow.laserpulsePval), fontweight='bold')
-        elif dbRow.laserpulsePval >= 0.05 and dbRow.laserpulseSpikeCountChange <= 0:
+        elif dbRow.laserpulsePval >= 0.05 and dbRow.laserpulseFRChange <= 0:
             plt.title("Laserpulse nD1\n{}".format(dbRow.laserpulsePval))
         else:
             plt.title("Laserpulse Unidentified Cell \n{}".format(dbRow.laserpulsePval))
@@ -703,8 +703,8 @@ for indRow, dbRow in db.iterrows():
             logLowPresentedFreq = np.log2(lowestPresentedFreq)
             logHighPresentedFreq = np.log2(highestPresentedFreq)
             logCF = np.log2(dbRow.cf)
-            logUpperBoundFreq = np.log2(dbRow.upperFreq)
-            logLowerBoundFreq = np.log2(dbRow.lowerFreq)
+            logUpperBoundFreq = np.log2(dbRow.upperFrequency)
+            logLowerBoundFreq = np.log2(dbRow.lowerFrequency)
             axLineCF = ((logCF - logLowPresentedFreq)/(logHighPresentedFreq - logLowPresentedFreq))*numberFreqs
             axLineUpperBound = ((logUpperBoundFreq - logLowPresentedFreq)/(logHighPresentedFreq - logLowPresentedFreq))*numberFreqs
             axLineLowerBound = ((logLowerBoundFreq - logLowPresentedFreq)/(logHighPresentedFreq - logLowPresentedFreq))*numberFreqs
