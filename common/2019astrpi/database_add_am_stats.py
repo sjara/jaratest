@@ -4,7 +4,10 @@ This script takes an existing database and calculates statistics using data from
 statistics are used for amplitude modulated sound response comparison. 
 
 This script calculates statistics used for:
-1. 
+1. Highest Synchronization Sustained UNFINISHED
+2. Percent Synchronization UNFINISHED
+3. Rate Descrimination Accuracy UNFINISHED
+4. Phase Descrimination Accuracy UNFINISHED
 
 Run as:
 database_add_am_stats.py SUBJECT TAG 
@@ -68,39 +71,36 @@ if __name__ == "__main__":
         tag = ''
 
 if NO_TAG == 1:
-    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells_tuning.h5'.format(subjects)) 
-    outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                   'astrpi_{}_cells_tuning_AM.h5'.format(subjects)) 
+    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                  'astrpi_{}_cells.h5'.format(subjects)) 
+    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                   'astrpi_{}_cells.h5'.format(subjects)) 
 else:
-    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                   'astrpi_{}_cells_{}.h5'.format(subjects, tag))
-    if not os.path.isfile(inputDirectory):
-        inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+    if not os.path.isfile(directory):
+        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                       'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
         CLUSTERS = 1
-
-    if 'AM' not in tag:
-        tag = tag + '_AM'   
         
     if CLUSTERS:
-        outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                        'astrpi_{}_clusters_{}.h5'.format(subjects, tag)) 
     else:
-        outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                        'astrpi_{}_cells_{}.h5'.format(subjects, tag)) 
 
-dir = os.path.dirname(outputDirectory)
+dir = os.path.dirname(directory)
 
 if os.path.isdir(dir):
     print('Directory Exists')
 else:
-    print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
+    print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(directory))
     sys.exit()
  
 # ========================== Basic Database Creation ==========================
 
-db = celldatabase.load_hdf(inputDirectory) # Loads cell database 
+db = celldatabase.load_hdf(directory) # Loads cell database 
 
 # Iterates through each cell in the basic database       
 for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
@@ -127,6 +127,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     
         if len(amCurrentRate) != len(amEventOnsetTimes):
             amEventOnsetTimes = amEventOnsetTimes[:-1]
+            
         if len(amCurrentRate) != len(amEventOnsetTimes):
             print('Removing one does not align events and behavior. Skipping AM for cell')
         else:
@@ -168,6 +169,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                     amRespSustainedSpikes = nspkRespSustained
                     amBaseSustainedSpikes = nspkBaseSustained
                     amRateBestSustained = rate
+                    
             # db.at[indRow, 'AMBaseFROnset'] = np.mean(amBaseOnsetSpikes)  # Mean baseline FR matched for the onset period (-100 ms to 0 ms)
             # db.at[indRow, 'AMRespFROnset'] = np.mean(amRespOnsetSpikes)  # Mean response FR for the onset period (0 ms to 100 ms)
             db.at[indRow, 'AMBestRateOnset'] = amRateBestOnset  # Rate that gave the highest onset response
@@ -198,6 +200,11 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                     funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset,
                                                                     amSyncTrialIndexForEachSpike, amCurrentRate,
                                                                     amUniqRate)
+                    
+                allFreqSyncPVal, allFreqSyncZScore, allFreqVectorStrength, allFreqRal = \
+                    funcs.calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset,
+                                                                    amSyncTrialIndexForEachSpike, amCurrentRate,
+                                                                    amUniqRate)
                 amSyncPValue = np.min(allFreqSyncPVal)
                 amSyncZStat = np.max(allFreqSyncZScore)
                 db.at[indRow, 'AMsynchronizationPval'] = amSyncPValue  # p-value from Rayleigh's test for periodicity
@@ -205,7 +212,9 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     
                 phaseDiscrimAccuracyDict = funcs.calculate_phase_discrim_accuracy(amSpikeTimes, amEventOnsetTimes,
                                                                                   amCurrentRate, amUniqRate)
-    
+                
+                # ========================== Phase Descrimination Accuracy ==========================
+
                 for rate in amUniqRate:
                     db.at[indRow, 'phaseDiscrimAccuracy{}Hz'.format(int(rate))] = \
                         phaseDiscrimAccuracyDict[int(rate)]
@@ -213,7 +222,13 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                 rateDiscrimAccuracy = funcs.calculate_rate_discrimination_accuracy(amSpikeTimes, amEventOnsetTimes,
                                                                                     amBaseTime, amResponseTime,
                                                                                     amCurrentRate)
+                
+                # ========================== Rate Descrimination Accuracy ==========================
+                
                 db.at[indRow, 'rateDiscrimAccuracy'] = rateDiscrimAccuracy
+                
+                # ========================== Highest Synchronization  ==========================
+
                 if any(allFreqSyncPVal < 0.05):
                     sigPvals = np.array(allFreqSyncPVal) < 0.05
                     highestSyncInd = funcs.index_all_true_before(sigPvals)
@@ -231,5 +246,5 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
 
 # ========================== Saving ==========================
 
-celldatabase.save_hdf(db, outputDirectory)
-print("SAVED DATAFRAME to {}".format(outputDirectory))
+celldatabase.save_hdf(db, directory)
+print("SAVED DATAFRAME to {}".format(directory))

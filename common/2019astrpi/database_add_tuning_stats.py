@@ -69,18 +69,16 @@ if __name__ == "__main__":
         tag = ''
 
 if NO_TAG == 1:
-    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells.h5'.format(subjects)) 
-    outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                   'astrpi_{}_cells_tuning.h5'.format(subjects)) 
+    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                  'astrpi_{}_cells.h5'.format(subjects))  
 else:
-    inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                   'astrpi_{}_cells_{}.h5'.format(subjects, tag))
-    if not os.path.isfile(inputDirectory):
-        inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                      'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
-        if not os.path.isfile(inputDirectory):
-            sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE FOUND: \n {}'.format(inputDirectory)) 
+    if not os.path.isfile(directory):
+        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+                                 'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
+        if not os.path.isfile(directory):
+            sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE FOUND: \n {}'.format(directory)) 
         CLUSTERS = 1
     
     # Adds 'tuning' to tag if not there already 
@@ -96,20 +94,20 @@ else:
             tag = tag + '_tuning'
         
     if CLUSTERS:
-        outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                        'astrpi_{}_clusters_{}.h5'.format(subjects, tag)) 
     else:
-        outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                        'astrpi_{}_cells_{}.h5'.format(subjects, tag)) 
 
 # Checks if output directory exists 
-dir = os.path.dirname(outputDirectory)
+dir = os.path.dirname(directory)
 if os.path.isdir(dir):
     print('Directory Exists')
 else:
-    sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
+    sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(directory))
 
-db = celldatabase.load_hdf(inputDirectory) # Loads cell database 
+db = celldatabase.load_hdf(directory) # Loads cell database 
 
 # ========================== Tuning Curve Statistics Calculation ==========================
 
@@ -335,5 +333,5 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
      
 # ========================== Saving ==========================
 
-celldatabase.save_hdf(db, outputDirectory)
-print("SAVED DATAFRAME to {}".format(outputDirectory))
+celldatabase.save_hdf(db, directory)
+print("SAVED DATAFRAME to {}".format(directory))
