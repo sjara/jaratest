@@ -230,10 +230,6 @@ fig = plt.gcf()
 fig.clf()
 
 studyname = studyparams.STUDY_NAME
-d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = '{}.h5'.format("direct_and_indirect_cells")
-# nameDB = "ttDBR2.h5"
-
 
 # Checks to see if there are parameters passed with the script to only generate reports for specific cells. Otherwise does all
 NO_TAG = 0 # Set to 1 if no tag
@@ -246,7 +242,7 @@ if __name__ == "__main__":
         if arguments[0] == "all":
             d1mice = studyparams.ASTR_D1_CHR2_MICE
             subjects = 'all'
-        if isinstance(arguments[0], str):
+        elif isinstance(arguments[0], str):
             d1mice = []
             subjects = str(arguments[0]) 
             d1mice.append(subjects)
@@ -309,21 +305,6 @@ else:
 
 # Loads database for plotting 
 db = celldatabase.load_hdf(inputDirectory)
-
-# Empty list to fill with manually-removed cells
-indicesRemovedCells = []
-
-# Generates list of cells from a text document to be removed by manual selection
-with open('cell_indices_manually_removed.txt', 'r') as manualSelection:
-    for line in manualSelection:
-        line = line.rstrip()
-        try:
-            indicesRemovedCells.append(int(line))
-        except ValueError:
-            print('\'{}\' not valid cell index'.format(line))
-                
-# Removes clusters that were not manually-verfied
-db = db.drop(indicesRemovedCells, errors='ignore')
 
 # -------------------------------------------------------------------------------
 for indRow, dbRow in db.iterrows():
