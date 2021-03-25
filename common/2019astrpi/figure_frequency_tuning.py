@@ -29,8 +29,6 @@ import matplotlib.gridspec as gridspec
 from scipy import stats
 import sys 
 
-# TODO: Update to work with database naming changes
-
 np.random.seed(7) # Seed for jitter function
 
 # Creates variation in point spacing
@@ -140,8 +138,8 @@ if LATENCY:
     latencydb = db.query('latency * 0 == 0')
     
     # Filters for cells with a sufficient response 
-    latencydb = latencydb.query('tuningResponseRatio > {}'.format(latencyRatio))
-    latencydb = latencydb.query('tuningResponseRate > {}'.format(latencyRate))
+    latencydb = latencydb.query('tuningResponseFRIndex > {}'.format(latencyRatio))
+    latencydb = latencydb.query('tuningResponseFR > {}'.format(latencyRate))
     latencydb = latencydb.query('bw10 > 0')
 
     # Seperates database into D1 and nD1 cells
@@ -307,8 +305,8 @@ if THRESHOLD:
 
 if ONSET:
     
-    onsetdb = db.query('tuningResponseRatio > {}'.format(latencyRatio))
-    onsetdb = onsetdb.query('tuningResponseRate > {}'.format(latencyRate))   
+    onsetdb = db.query('tuningResponseFRIndex > {}'.format(latencyRatio))
+    onsetdb = onsetdb.query('tuningResponseFR > {}'.format(latencyRate))   
     onsetdb = onsetdb.query('bw10 > 0')
     # onsetdb = db
     

@@ -15,6 +15,7 @@ between 0 and 1, where 1 represents perfect descrimination)
 modulation rates (value between 0 and 1, where 1 represents perfect determination)
 """
 import os
+import sys
 import figparams
 import studyparams
 import numpy as np
@@ -81,20 +82,20 @@ if __name__ == "__main__":
         
 if NO_TAG == 1:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_cells_tuning_am.h5'.format(subjects)) 
+                               'astrpi_{}_cells.h5'.format(subjects)) 
     figFilename = 'figure_{}'.format(studyparams.DATABASE_NAME)
     outputDirectory = figparams.FIGURE_OUTPUT_DIR 
 else:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_cells__tuning_am_{}.h5'.format(subjects, tag))
+                               'astrpi_{}_cells_{}.h5'.format(subjects, tag))
     outputDirectory = figparams.FIGURE_OUTPUT_DIR 
 
 # A value of 1 plots the given comparison, 0 does not 
 HIGHESTONSET = 0 # 
-HIGHESTSUSTAINED = 1 # 
-HIGHESTSYNC = 1 # 
-PERCENTSYNC = 1 # 
-RATEDESCRIM= 1 # 
+HIGHESTSUSTAINED = 0 # 
+HIGHESTSYNC = 0 # 
+PERCENTSYNC = 0 # 
+RATEDESCRIM= 0 # 
 PHASEDECRIM = 1 # 
 
 # Loads database for plotting 
@@ -327,7 +328,7 @@ if PERCENTSYNC:
 
 if RATEDESCRIM:
     
-    onsetdb = db.query('tuningResponseRatio > {}'.format(latencyRatio))
+    onsetdb = db.query('tuningResponseFRIndex > {}'.format(latencyRatio))
     onsetdb = onsetdb.query('tuningResponseRate > {}'.format(latencyRate))   
     # onsetdb = db
     

@@ -12,8 +12,7 @@ This script calculates statistics used for:
 Run as:
 database_add_am_stats.py SUBJECT TAG 
 
-A database must exist with these parameters or script will fail. If the tuning statistics have not 
-previously calculated and 'tuning' not in filename,'tuning' will be added to the filename.  
+A database must exist with these parameters or script will fail.
 """
 import os
 import sys

@@ -17,8 +17,7 @@ specified, all subjects will be ran.
 
 Optionally you can set a TAG on the database (using file name acceptable characters). You must enter 
 a subject parameter before entering a tag. Aditionally, these two must be the first two parameters 
-entered, any subsequent will not be used. If 'AM' or 'TC' are in the tag, 'AM' or 'TC' will not be 
-added when each respective statistics script is run.
+entered, any subsequent will not be used.
 
 Run as:
 database_basic_generation.py SUBJECT TAG 
