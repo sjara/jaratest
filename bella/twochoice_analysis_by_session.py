@@ -160,7 +160,7 @@ for subject in subjects:
     print(subject)
     print(mouse_perf[subject])
     #Saves the specified dataframe to an excel document 
-    #mouse_perf[subject].to_excel("{}.xlsx".format(subject))  #Overwrites the previouse xlsx file of same name. 
+    #mouse_perf[subject].to_excel(r'C:\Users\isabe\data\{}.xlsx'.format(subject),  sheet_name='{}'.format(subject), index = False) 
 
     
     #print(df_id_reward_mode.groupby(['sessionID', 'reward_side_mode', 'sound_type']).size())
