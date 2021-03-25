@@ -8,6 +8,8 @@ Created on Mon Dec  7 08:39:25 2020
 
 import numpy as np
 import pandas as pd
+import seaborn 
+seaborn.set()
 #from jaratoolbox import extraplots
 import matplotlib.pyplot as plt 
 #from statsmodels.stats.proportion import proportion_confint
@@ -23,19 +25,20 @@ subjects =  ['pals001',
              'pals005', 
              #'pals004',
              #'chad059',
-             #'chad056'
+             #'chad055'
              ]
 
 
 paradigm = 'twochoice'
 
-sessions = ['20210223a','20210224a', 
-            '20210225a', 
+sessions = ['20210224a', 
+            '20210225a',
             '20210226a', '20210227a', '20210228a',
             '20210301a',
-            '20210302a', '20210303a', '20210304a', '20210306a', '20210307a', 
-            '20210308a',
-            '20210309a'
+            '20210302a', '20210303a', '20210304a', '20210306a', '20210307a',
+            '20210308a', 
+            '20210309a',
+            '20210310a'
             ]
 
 mouse_perf = {}
@@ -166,7 +169,7 @@ for subject in subjects:
     #print(df_session_information[['left_hits', 'right_hits','left_errors', 'right_errors']])
     #print(stage_one_information[['false_alarms_left', 'false_alarms_right', 'misses_left', 'misses_right']])
 
-'''    
+    
     #plots the correct performance and how the animal performed with each side. Reminder that stage 1 will not be printed.
     plt.scatter(unique_sessionID, left_performance, color = 'blue', label = 'Left')
     plt.plot(unique_sessionID, left_performance, color = 'blue')
@@ -175,10 +178,34 @@ for subject in subjects:
     plt.scatter(unique_sessionID, percent_correct, color = 'black', label = 'Percent Correct')
     plt.title(subject + 'Performance')
     plt.xlabel('session')
-    plt.ylabel('Percent animal correctly chose left/Right (%)')
-    plt.legend(loc = 3)
+    plt.ylabel('Percent animal chose the correct side (%)')
+    plt.legend(loc = 1)
     plt.xticks(ticks=unique_sessionID)
     plt.ylim(0, 100)
     plt.show() 
-'''        
     
+pals001 = mouse_perf['pals001']
+pals003 = mouse_perf['pals003']
+#pals004 = mouse_perf['pals004']
+pals005 = mouse_perf['pals005']
+
+
+#I need to change the names of dataframes. 
+df_concat = pd.concat((pals001, pals003, pals005))
+session_groupby = df_concat.groupby(level=0).mean()
+
+result = df_concat.groupby(level=0, as_index=False).agg(
+                      {'percent_correct':['mean','std','sem']})
+
+
+#plots the average between the mice. Need to add each mouse individually. Will change in future
+plt.scatter(unique_sessionID, result.percent_correct['mean'], color = 'red')
+plt.plot(unique_sessionID, result.percent_correct['mean'], color = 'red')
+plt.errorbar(unique_sessionID, result.percent_correct['mean'], yerr=result.percent_correct['sem'])
+plt.title('Average performance of mice')
+plt.xlabel('Days in stage 3')
+plt.ylabel('Average Percent Correct (%)')
+plt.xticks(ticks=unique_sessionID)
+plt.ylim(0,100)
+plt.show    
+
