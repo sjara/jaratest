@@ -27,48 +27,51 @@ This project looks into characterizing MSN's on the direct and indirect striatal
 3. Files in `archive`
 
 # A - Generating and Using a Database
-This section details steps to go from a basic database, to summary figures for data comparison.
+This section details steps from building a basic database, to plotting summary figures for data 
+comparison.
 
 ## 1. General Instructions for Running Scripts
-When run without arguements, each script will use all animals and store in a default database. Each 
-script can also be run using arguments. The two arguements are 'SUBJECT' and 'TAG'. Specific 
+When run without arguments, each script will use all animals and store in a default database. Each 
+script can also be run using arguments. The two arguments are 'SUBJECT' and 'TAG'. Specific 
 instructions can be found in the subsequent sections below, or in each script's docstring.
 
-SUBJECT can be a single animal (example - d1pi043), 'all', or 'test'. 'all' will use all of the 
-subjects listed in studyparams.py. 'test' will use the test subject listed in studyparams.py. If 
+SUBJECT can be a single animal (example - `d1pi043`), `all`, or `test`. `all` will use all of the 
+subjects listed in studyparams.py. `test` will use the test subject listed in studyparams.py. If 
 nothing is specified, all subjects will be used. 
 
 Optionally you can set a TAG on the database (using filename acceptable characters). You must enter 
-a subject parameter before entering a tag. Aditionally, these two must be the first two parameters 
-entered, any subsequent will not be used.
+a subject parameter before entering a tag. The tag will appear at the end of the database filename.
 
-Run as:
+Run as (if not using tag)
+`database_.py SUBJECT` or `figure_.py SUBJECT`
+
+Run as (if using tag)
 `database_.py SUBJECT TAG` or `figure_.py SUBJECT TAG`
 
 The file `studyparams.py` contains a list of animals as well as statistical parameters for the 
 database calculations. Database scripts use functions from the moddule 
 `database_generation_funcs.py`.
+
 ## 2. Creating a Basic Database
 The first step is to create a minimally filtered, basic database. This is done by running the file 
 `database_basic_generation.py` 
 
 Output is an file named `astrpi_all_clusters.h5` (modified if subjects or tag specified), 
-containing the statistics under the `Base statistics` section in section B, `Database contents` 
+containing the statistics under `Base statistics` in section `B - Database contents` 
 below. 
 
 ## 3. Selecting Reliable Cells and Adding Laserpulse Session Statistics
 After the creation of a basic database, run `database_select_reliable_cells.py` in order to filter
-the database and calculate laserpulse session statistics. A list of manually-removed cells can be
-found in the 
+the database and calculate laserpulse session statistics. `cell_indices_manually_removed.txt` 
+contains a list of manually-removed cells, found in `extras`. Other selection parameters can be
+found in `studyparams.py`.
+ 
+Output is an file named `astrpi_all_cells.h5` (modified if subjects or tag specified), 
+containing the statistics under `Base statistics` and `Laserpulse statistics` in section 
+`B - Database contents` below. Contains only rows that passed cell selection. Note, if this script 
+is ran with a database that has had frequency tuning or amplitude modulated (AM) statistics added, 
+they will be removed. 
 
-Using an existing database, selects for reliable cells that have data for cell comparison. Includes 
-the removal of manually selected cells, listed in `cell_indices_manually_removed.txt`, found in the 
-extras folder. 
-
-Calculates statistics using laserpulse session data. Used for D1 vs. nD1 cell type characterization. 
-
-Output is an h5 file with the information under the `Laserpulse stats` section in 
-`Database contents` below added. contains only rows that passed cell selection. 
 ## 4. Adding Frequency Tuning Session Statistics
 
 ## 5. Adding Amplitude Modulated (AM) Session Statistics
