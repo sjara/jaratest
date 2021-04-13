@@ -1,7 +1,31 @@
 # 2019astrpi
 This project looks into characterizing MSN's on the direct and indirect striatal pathway
 
-## How to run a database_ or figure_ script
+## Navigation
+A. Generating and Using a Database 
+    1. Creating a Basic Database
+    2. Selecting Reliable Cells and Adding Laserpulse Session Statistics
+    3. Adding Frequency Tuning Session Statistics
+    4. Adding Amplitude Modulated (AM) Session Statistics
+    5. Plotting Frequency Tuning Comparisons 
+    6. Plotting Amplitude Modulated (AM) Comparisons 
+B. Database Contents 
+    1. Base Statistics
+    2. Laserpulse Statistics
+    3. Frequency Tuning Statistics
+    4. Amplitude Modulated (AM) Statistics 
+    
+C. Figure Contents 
+    1. Frequency Tuning Figure Panels
+    2. Amplitude Modulated (AM) Figure Panels 
+
+D. Other Files
+    1. Files in 'Extras'
+    2. Files in 'Archive'
+
+# Section A - Generating and Using a Database
+
+###
 When run normally, each script will use all animals and store in a default database. Each 
 script can also be run using arguments. The two arguements are 'SUBJECT' and 'TAG'.  
 
@@ -47,7 +71,7 @@ are used for pure tone sound response comparison.
 Output is an h5 file with the information under the `Tuning stats` section in `Database contents` 
 below added.
 
-#### database_am_am_stats.py (Unfinished)
+#### database_add_am_stats.py (Unfinished)
 Using an existing database, calculates statistics using amplitude modulated (AM) session data. Used 
 for AM sound response comparison. 
 
