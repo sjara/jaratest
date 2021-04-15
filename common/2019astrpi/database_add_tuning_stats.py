@@ -79,24 +79,12 @@ else:
         if not os.path.isfile(directory):
             sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE FOUND: \n {}'.format(directory)) 
         CLUSTERS = 1
-    
-    # Adds 'tuning' to tag if not there already 
-    if 'tuning' not in tag:
-        if 'AM' in tag:
-            tagTemp = tag.split('_')
-            tagTemp.insert(2, 'am')
-            tag = ''
-            for part in tag:
-                tag += str(part) + '_'
-                tag.rstrip('_')
-        else:
-            tag = tag + '_tuning'
         
-    if CLUSTERS:
-        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+if CLUSTERS:
+    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                        'astrpi_{}_clusters_{}.h5'.format(subjects, tag)) 
-    else:
-        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
+else:
+    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                        'astrpi_{}_cells_{}.h5'.format(subjects, tag)) 
 
 # Checks if output directory exists 

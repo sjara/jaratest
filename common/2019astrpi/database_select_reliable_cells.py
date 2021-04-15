@@ -96,7 +96,7 @@ try:
     db = celldatabase.load_hdf(inputDirectory) 
 except OSError:
     sys.exit('\n DATABASE ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
-
+test1 = db
 # Selects cells with a laserpulse session for D1 vs. nD1 determination
 db = db[db['sessionType'].apply(lambda s: 'laserpulse' in s)]    
 
@@ -118,8 +118,9 @@ with open('extras\cell_indices_manually_removed.txt', 'r') as manualSelection:
 
 # Removes clusters that were not manually-verfied
 db = db.drop(indicesRemovedCells, errors='ignore')
-
+test2 = db
 db = db.query(studyparams.CELL_FILTER)
+test3 = db
 # ========================== Laserpulse Statistics Calculation ==========================
 
 # Iterates through each cell in the database       
@@ -133,7 +134,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     # Loads laserpulse session data for cell
     pulseEphysData, noBData = oneCell.load('laserpulse')
     
-    baseRange = [-0.1, 0] # Time used for baseline spike counts.
+    baseRange100 = [-0.1, 0] # Time used for baseline spike counts.
     baseRange50 = [-0.05, 0]
     baseRange200 = [-0.2,0]
     
@@ -142,8 +143,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     laserSpikeTimes = pulseEphysData['spikeTimes']
     
     # Calculates firing rate during baseline and response periods of various periods, specified above
-    nspkBaseLaser, nspkRespLaser = funcs.calculate_spike_count(laserEventOnsetTimes, 
-                                                               laserSpikeTimes, baseRange)
+    nspkBaseLaser100, nspkRespLaser100 = funcs.calculate_spike_count(laserEventOnsetTimes, 
+                                                               laserSpikeTimes, baseRange100)
        
     nspkBaseLaser50, nspkRespLaser50 = funcs.calculate_spike_count(laserEventOnsetTimes, 
                                                                laserSpikeTimes, baseRange50)
@@ -152,8 +153,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                                                                laserSpikeTimes, baseRange200)
     
     # Calculates mean firing rate for baseline and response periods 
-    nspkRespLaserMean = np.mean(nspkRespLaser)
-    nspkBaseLaserMean = np.mean(nspkBaseLaser)
+    nspkRespLaserMean100 = np.mean(nspkRespLaser100)
+    nspkBaseLaserMean100 = np.mean(nspkBaseLaser100)
     
     nspkRespLaserMean50 = np.mean(nspkRespLaser50)
     nspkBaseLaserMean50 = np.mean(nspkBaseLaser50)
@@ -162,7 +163,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     nspkBaseLaserMean200 = np.mean(nspkBaseLaser200)
     
     # Calculates change in firing rate during laserpulse
-    frChange = nspkRespLaserMean - nspkBaseLaserMean
+    frChange100 = nspkRespLaserMean100 - nspkBaseLaserMean100
     
     frChange50 = nspkRespLaserMean50 - nspkBaseLaserMean50
     
@@ -170,11 +171,11 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         
     # Significance calculations for the laserpulse
     try:
-        zStats, pVals = stats.mannwhitneyu(nspkRespLaser, nspkBaseLaser, 
+        zStats100, pVals100 = stats.mannwhitneyu(nspkRespLaser100, nspkBaseLaser100, 
                                            alternative='two-sided')
     except ValueError:  # All numbers identical will cause mann-whitney to fail
         print("laserpulse mann-whitney fail for {}".format(oneCell))
-        zStats, pVals = [0, 1]
+        zStats100, pVals100 = [0, 1]
     
     try:
         zStats50, pVals50 = stats.mannwhitneyu(nspkRespLaser50, nspkBaseLaser50, 
@@ -191,11 +192,11 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         zStats200, pVals200 = [0, 1]
     
     # Adds laserpulse columns to database
-    db.at[indRow, 'laserpulseBaselineFR'] = nspkBaseLaserMean
-    db.at[indRow, 'laserpulseResponseFR'] = nspkRespLaserMean  
-    db.at[indRow, 'laserpulseFRChange'] = frChange
-    db.at[indRow, 'laserpulsePval'] = pVals  # p-value from Mann-Whitney U test
-    db.at[indRow, 'laserpulseZstat'] = zStats  # U-statistic from Mann-Whitney U test
+    db.at[indRow, 'laserpulseBaselineFR100'] = nspkBaseLaserMean100
+    db.at[indRow, 'laserpulseResponseFR100'] = nspkRespLaserMean100 
+    db.at[indRow, 'laserpulseFRChange100'] = frChange100
+    db.at[indRow, 'laserpulsePval100'] = pVals100  # p-value from Mann-Whitney U test
+    db.at[indRow, 'laserpulseZstat100'] = zStats100  # U-statistic from Mann-Whitney U test
     
     db.at[indRow, 'laserpulseBaselineFR50'] = nspkBaseLaserMean50  
     db.at[indRow, 'laserpulseResponseFR50'] = nspkRespLaserMean50
