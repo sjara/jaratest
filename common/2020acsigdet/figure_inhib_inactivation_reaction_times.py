@@ -13,14 +13,18 @@ import figparams
 import studyparams
 
 figName = 'figure_inhibitory_inactivation_reaction_times'
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
+CORRECTED = 1
 outputDir = '/tmp/'
-figFilename = 'Fig4_inhib_inactivation_reaction_times'  # Do not include extension
+if CORRECTED:
+    figFilename = 'Fig4_inhib_inactivation_reaction_times_corrected'  # Do not include extension
+else:
+    figFilename = 'Fig4_inhib_inactivation_reaction_times'
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
 figSize = [10,6]  # In inches
@@ -49,86 +53,67 @@ fig.set_facecolor('w')
 gs = gridspec.GridSpec(2, 4, width_ratios=[1.0, 0.8, 1.0, 0.8])
 gs.update(top=0.98, bottom=0.08, left=0.04, right=0.98, wspace=0.6, hspace=0.3)
 
-# --- comparison in change in reaction times with laser control ---
+# --- example histograms of sampling time ---
 if PANELS[0]:
-    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
-    summaryData = np.load(summaryDataFullPath)
-
-    PVlaserReaction = summaryData['PVlaserReaction']
-    PVcontrolReaction = summaryData['PVcontrolReaction']
-    SOMlaserReaction = summaryData['SOMlaserReaction']
-    SOMcontrolReaction = summaryData['SOMcontrolReaction']
-    possibleBands = summaryData['possibleBands']
-
-    laserReactions = [PVlaserReaction, SOMlaserReaction]
-    controlReactions = [PVcontrolReaction, SOMcontrolReaction]
+    fileNames = [PVExampleFileName, SOMExampleFileName]
 
     panelLabels = ['A', 'E']
-
-    barLoc = np.array([-0.24, 0.24])
-    xLocs = np.arange(len(possibleBands))
-    yLims = [(0, 0.2), (-0.05, 0.3)]
-    xTickLabels = possibleBands
-    legendLabels = ['no PV', 'no SOM']
     colours = [PVColour, SOMColour]
 
-    for type in range(len(laserReactions)):
-        axScatter = plt.subplot(gs[type, 1])
-        laserReaction = laserReactions[type]
-        controlReaction = controlReactions[type]
-        for indBand in range(len(possibleBands)):
-            thisxLocs = barLoc + xLocs[indBand]
+    for indType, exampleFileName in enumerate(fileNames):
+        exampleDataFullPath = os.path.join(inactDataDir, exampleFileName)
+        exampleData = np.load(exampleDataFullPath)
 
-            for indMouse in range(laserReaction.shape[0]):
-                plt.plot(thisxLocs, [controlReaction[indMouse, indBand], laserReaction[indMouse, indBand]], '-',
-                         color=baseColour)
+        axHist = plt.subplot(gs[indType, 0])
 
-            l1, = plt.plot(np.tile(thisxLocs[1], laserReaction.shape[0]), laserReaction[:, indBand], 'o',
-                           mec=colours[type], mfc='white')
-            l2, = plt.plot(np.tile(thisxLocs[0], controlReaction.shape[0]), controlReaction[:, indBand], 'o',
-                           mec=baseColour, mfc=baseColour)
+        controlDecisionTimes = exampleData['controlReactionTimes']
+        laserDecisionTimes = exampleData['laserReactionTimes']
 
-            # median = np.median(accuracyData, axis=0)
-            # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-        axScatter.legend([l2, l1], ['control', legendLabels[type]], loc='best')
+        bins = np.linspace(0.0, 0.6, 10)
+        n, bins, patches = plt.hist([controlDecisionTimes, laserDecisionTimes], bins=bins, color=[baseColour, 'none'],
+                                    density=True)
+        plt.setp(patches[0], edgecolor=baseColour)
+        plt.setp(patches[1], edgecolor=colours[indType], lw=1.5)
 
-        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
-        axScatter.set_xticks(xLocs)
-        xTickLabels = possibleBands.tolist()
-        xTickLabels[-1] = 'WN'
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(xTickLabels)
-        axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
+        # axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
+        # axScatter.set_xticks(xLocs)
+        # axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
+        axHist.set_xlabel('Sampling time (s)', fontsize=fontSizeLabels)
 
-        axScatter.set_ylim(yLims[type])
-        axScatter.set_ylabel('Sampling time (s)', fontsize=fontSizeLabels)
+        # axScatter.set_ylim(50, 95)
+        # axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
 
-        extraplots.boxoff(axScatter)
-        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+        extraplots.boxoff(axHist)
+        extraplots.set_ticks_fontsize(axHist, fontSizeTicks)
 
-        axScatter.annotate(panelLabels[type], xy=(labelPosX[1], labelPosY[type]), xycoords='figure fraction',
-                           fontsize=fontSizePanel, fontweight='bold')
+        axHist.annotate(panelLabels[indType], xy=(labelPosX[0], labelPosY[indType]), xycoords='figure fraction',
+                        fontsize=fontSizePanel, fontweight='bold')
 
-        # -- stats!! --
-        for band in range(len(possibleBands)):
-            pVal = stats.wilcoxon(laserReaction[:, band], controlReaction[:, band])[1]
-            if pVal < 0.05:
-                extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLims[type][1], 0.02 * np.diff(yLims[type]),
-                                              gapFactor=0.3)
-            print(f"Change in reaction time at {possibleBands[band]} oct pVal: {pVal}")
-
-# --- comparison in change in reaction times with inactivation ---
+# --- comparison in change in sampling times with inactivation ---
 if PANELS[1]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserReaction = summaryData['PVlaserReaction']
-    PVcontrolReaction = summaryData['PVcontrolReaction']
-    SOMlaserReaction = summaryData['SOMlaserReaction']
-    SOMcontrolReaction = summaryData['SOMcontrolReaction']
+    PVlaserReaction = summaryData['PVexpLaserReaction']
+    PVcontrolReaction = summaryData['PVexpNoLaserReaction']
+    SOMlaserReaction = summaryData['SOMexpLaserReaction']
+    SOMcontrolReaction = summaryData['SOMexpNoLaserReaction']
     possibleBands = summaryData['possibleBands']
 
-    laserReactions = [PVlaserReaction, SOMlaserReaction]
+    if CORRECTED:
+        PVlaserReactionControl = summaryData['PVcontrolLaserReaction']
+        PVcontrolReactionControl = summaryData['PVcontrolNoLaserReaction']
+        SOMlaserReactionControl = summaryData['SOMcontrolLaserReaction']
+        SOMcontrolReactionControl = summaryData['SOMcontrolNoLaserReaction']
+
+        PVlaserReactionCorrected = PVlaserReaction - (PVlaserReactionControl - PVcontrolReactionControl)
+        SOMlaserReactionCorrected = SOMlaserReaction - (SOMlaserReactionControl - SOMcontrolReactionControl)
+
+    else:
+        PVlaserReactionCorrected = PVlaserReaction
+        SOMlaserReactionCorrected = SOMlaserReaction
+
+    laserReactions = [PVlaserReactionCorrected, SOMlaserReactionCorrected]
     controlReactions = [PVcontrolReaction, SOMcontrolReaction]
 
     panelLabels = ['B', 'F']
@@ -182,7 +167,7 @@ if PANELS[1]:
             pVal = stats.wilcoxon(laserReaction[:,band], controlReaction[:,band])[1]
             if pVal < 0.05:
                 extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLims[type][1], 0.02 * np.diff(yLims[type]), gapFactor=0.3)
-            print(f"Change in reaction time at {possibleBands[band]} oct pVal: {pVal}")
+            print(f"Change in reaction time at {possibleBands[band]} oct with {legendLabels[type]} pVal: {pVal}")
 
 # -- example histograms of decision times with inactivation --
 if PANELS[2]:
@@ -220,29 +205,38 @@ if PANELS[2]:
         axHist.annotate(panelLabels[indType], xy=(labelPosX[2], labelPosY[indType]), xycoords='figure fraction',
                         fontsize=fontSizePanel, fontweight='bold')
 
-        # -- stats!! --
-        pVal = stats.ranksums(controlReactionTimes, laserReactionTimes)[1]
-        print(f"Change in decision times pVal: {pVal}")
-
-    # --- comparison in change in reaction times with inactivation ---
+    # --- comparison in change in decision times with inactivation ---
 if PANELS[3]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserDecision = summaryData['PVlaserDecision']
-    PVcontrolDecision = summaryData['PVcontrolDecision']
-    SOMlaserDecision = summaryData['SOMlaserDecision']
-    SOMcontrolDecision = summaryData['SOMcontrolDecision']
+    PVlaserDecision = summaryData['PVexpLaserDecision']
+    PVcontrolDecision = summaryData['PVexpNoLaserDecision']
+    SOMlaserDecision = summaryData['SOMexpLaserDecision']
+    SOMcontrolDecision = summaryData['SOMexpNoLaserDecision']
     possibleBands = summaryData['possibleBands']
 
-    laserDecisions = [PVlaserDecision, SOMlaserDecision]
+    if CORRECTED:
+        PVlaserDecisionControl = summaryData['PVcontrolLaserDecision']
+        PVcontrolDecisionControl = summaryData['PVcontrolNoLaserDecision']
+        SOMlaserDecisionControl = summaryData['SOMcontrolLaserDecision']
+        SOMcontrolDecisionControl = summaryData['SOMcontrolNoLaserDecision']
+
+        PVlaserDecisionCorrected = PVlaserDecision - (PVlaserDecisionControl - PVcontrolDecisionControl)
+        SOMlaserDecisionCorrected = SOMlaserDecision - (SOMlaserDecisionControl - SOMcontrolDecisionControl)
+
+    else:
+        PVlaserDecisionCorrected = PVlaserDecision
+        SOMlaserDecisionCorrected = SOMlaserDecision
+
+    laserDecisions = [PVlaserDecisionCorrected, SOMlaserDecisionCorrected]
     controlDecisions = [PVcontrolDecision, SOMcontrolDecision]
 
     panelLabels = ['D', 'H']
 
     barLoc = np.array([-0.24, 0.24])
     xLocs = np.arange(len(possibleBands))
-    yLims = [(0.2, 0.5), (0.25, 0.55)]
+    yLims = [(0.3, 0.6), (0.25, 0.55)]
     xTickLabels = possibleBands
     legendLabels = ['no PV', 'no SOM']
     colours = [PVColour, SOMColour]
@@ -290,7 +284,7 @@ if PANELS[3]:
             if pVal < 0.05:
                 extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLims[type][1], 0.02 * np.diff(yLims[type]),
                                               gapFactor=0.3)
-            print(f"Change in decision time at {possibleBands[band]} oct pVal: {pVal}")
+            print(f"Change in decision time at {possibleBands[band]} oct with {legendLabels[type]} pVal: {pVal}")
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

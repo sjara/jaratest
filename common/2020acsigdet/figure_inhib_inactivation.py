@@ -15,13 +15,14 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_inhibitory_inactivation'
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
-CORRECTED = 1
+CORRECTED = 0
+SIG_CONTROL_REMOVED = 1
 outputDir = '/tmp/'
 if CORRECTED:
     figFilename = 'Fig3_inhib_inactivation_corrected'

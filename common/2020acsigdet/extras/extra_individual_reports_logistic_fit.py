@@ -12,6 +12,7 @@ from jaratoolbox import settings
 from jaratoolbox import extraplots
 
 import studyparams
+import behaviour_analysis_funcs as funcs
 
 
 def logistic(x, L, x0, k, b):
@@ -67,8 +68,10 @@ for indType, mice in enumerate(mouseType):
     for mouse in mice:
         if indType == 2:
             laserSessions = studyparams.miceDict[mouse]['3mW laser']
+            controlSessions = studyparams.miceDict[mouse]['3mW control']
         else:
             laserSessions = studyparams.miceDict[mouse]['10mW laser']
+            controlSessions = studyparams.miceDict[mouse]['10mW control']
         laserBehavData = behavioranalysis.load_many_sessions(mouse, laserSessions)
 
         numLasers = np.unique(laserBehavData['laserSide'])

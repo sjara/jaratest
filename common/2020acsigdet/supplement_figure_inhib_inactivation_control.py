@@ -13,27 +13,23 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_inhibitory_inactivation' # data for control figure in same folder
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
-PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
+BY_BAND = 1 # split data by bandwidth or no?
 outputDir = '/tmp/'
-figFilename = 'SuppFig3_inhib_inactivation_controls'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
-figSize = [9,6]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.04, 0.33, 0.51, 0.79]  # Horiz position for panel labels
-labelPosY = [0.97, 0.49]  # Vert position for panel labels
-
-summaryFileName = 'all_behaviour_inhib_inactivation_control.npz'
+summaryFileName = 'all_behaviour_inhib_inactivation_v2.npz'
 
 baseColour = figparams.colp['baseline']
 controlColour = figparams.colp['control']
@@ -45,231 +41,357 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 4, width_ratios=[1.0, 0.5, 1.0, 0.5])
-gs.update(top=0.99, bottom=0.10, left=0.10, right=0.99, wspace=0.6, hspace=0.3)
+if BY_BAND:
+    figFilename = 'SuppFigX_inhib_inactivation_controls_bands_separated'  # Do not include extension
+    figSize = [13, 6]  # In inches
 
-# --- summary of change in accuracy with laser but without inactivation ---
+    labelPosX = [0.06, 0.21, 0.37, 0.53, 0.69, 0.83]  # Horiz position for panel labels
+    labelPosY = [0.97, 0.49]  # Vert position for panel labels
+
+    gs = gridspec.GridSpec(2, 6)
+    gs.update(top=0.99, bottom=0.10, left=0.10, right=0.99, wspace=0.6, hspace=0.3)
+else:
+    figFilename = 'SuppFigX_inhib_inactivation_controls'  # Do not include extension
+    figSize = [10, 6]  # In inches
+
+    labelPosX = [0.04, 0.2, 0.36, 0.51, 0.68, 0.81]  # Horiz position for panel labels
+    labelPosY = [0.97, 0.49]  # Vert position for panel labels
+
+    gs = gridspec.GridSpec(2, 6)
+    gs.update(top=0.99, bottom=0.10, left=0.10, right=0.99, wspace=0.6, hspace=0.2)
+
+def plot_paired_data(axis, laserData, controlData, yLim, ylabel, legendLabels, colours, possibleBands=None, plot_medians=False):
+    barLoc = np.array([-0.24, 0.24])
+    if possibleBands is not None:
+        xLocs = np.arange(len(possibleBands))
+        for indBand in range(len(possibleBands)):
+            thisxLocs = barLoc + xLocs[indBand]
+
+            for indMouse in range(laserData.shape[0]):
+                plt.plot(thisxLocs, [controlData[indMouse, indBand], laserData[indMouse, indBand]], '-',
+                         color=connectColour)
+
+            l1, = plt.plot(np.tile(thisxLocs[1], laserData.shape[0]), laserData[:, indBand], 'o', color=colours[1])
+            l2, = plt.plot(np.tile(thisxLocs[0], controlData.shape[0]), controlData[:, indBand], 'o', color=colours[0])
+
+            # -- stats!! --
+            pVal = stats.wilcoxon(laserData[:, indBand], controlData[:, indBand])[1]
+            print(f"Change in {ylabel} at {possibleBands[indBand]} oct pVal: {pVal}")
+            if pVal<0.05:
+                extraplots.significance_stars(thisxLocs, 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
+
+            if plot_medians:
+                laserMedian = np.median(laserData[:, indBand], axis=0)
+                controlMedian = np.median(controlData[:, indBand], axis=0)
+
+                plt.plot(thisxLocs, [controlMedian, laserMedian], 'o-', color='k')
+
+        axis.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
+        axis.set_xticks(xLocs)
+        axis.set_xticklabels(np.tile(possibleBands, len(xLocs)))
+        axis.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
+
+    else:
+        for indMouse in range(laserData.shape[0]):
+            plt.plot(barLoc, [controlData[indMouse], laserData[indMouse]], '-', color=connectColour)
+
+        l1, = plt.plot(np.tile(barLoc[1], laserData.shape[0]), laserData, 'o', color=colours[1])
+        l2, = plt.plot(np.tile(barLoc[0], controlData.shape[0]), controlData, 'o', color=colours[0])
+
+        if plot_medians:
+            laserMedian = np.median(laserData, axis=0)
+            controlMedian = np.median(controlData, axis=0)
+
+            plt.plot(barLoc, [controlMedian, laserMedian], 'o-', color='k')
+
+        # -- stats!! --
+        pVal = stats.wilcoxon(laserData, controlData)[1]
+        print(f"Change in {ylabel} pVal: {pVal}")
+        if pVal < 0.05:
+            extraplots.significance_stars(barLoc, 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
+
+        axis.set_xlim(barLoc[0] - 0.3, barLoc[1] + 0.3)
+        axis.set_xticks([])
+
+    axis.legend([l2, l1], legendLabels, loc='best')
+
+    axis.set_ylim(yLim)
+    axis.set_ylabel(ylabel, fontsize=fontSizeLabels)
+
+    extraplots.boxoff(axis)
+    extraplots.set_ticks_fontsize(axis, fontSizeTicks)
+
+# --- summary of change in d' with laser during laser-out sessions ---
 if PANELS[0]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserAccuracy = summaryData['PVlaserAccuracy']
-    PVcontrolAccuracy = summaryData['PVcontrolAccuracy']
-    SOMlaserAccuracy = summaryData['SOMlaserAccuracy']
-    SOMcontrolAccuracy = summaryData['SOMcontrolAccuracy']
-    possibleBands = summaryData['possibleBands']
+    if BY_BAND:
+        PVlaserdprime = summaryData['PVcontrolLaserdprime']
+        PVcontroldprime = summaryData['PVcontrolNoLaserdprime']
+        SOMlaserdprime = summaryData['SOMcontrolLaserdprime']
+        SOMcontroldprime = summaryData['SOMcontrolNoLaserdprime']
+        possibleBands = summaryData['possibleBands']
+    else:
+        PVlaserdprime = summaryData['PVcontrolLaserdprimeAllBands']
+        PVcontroldprime = summaryData['PVcontrolNoLaserdprimeAllBands']
+        SOMlaserdprime = summaryData['SOMcontrolLaserdprimeAllBands']
+        SOMcontroldprime = summaryData['SOMcontrolNoLaserdprimeAllBands']
+        possibleBands = None
 
-    laserAccuracies = [PVlaserAccuracy, SOMlaserAccuracy]
-    controlAccuracies = [PVcontrolAccuracy, SOMcontrolAccuracy]
+    laserdprimes = [PVlaserdprime, SOMlaserdprime]
+    controldprimes = [PVcontroldprime, SOMcontroldprime]
 
-    panelLabels = ['A', 'E']
+    panelLabels = ['A', 'G']
 
-    barLoc = np.array([-0.24, 0.24])
-    xLocs = np.arange(len(possibleBands))
-    xTickLabels = possibleBands
-    legendLabels = ['no laser', 'laser']
-    colours = [PVColour, SOMColour]
+    labelColours = [PVColour, SOMColour]
     rowTitles = ['PV-ArchT mice', 'SOM-ArchT mice']
     rowTitleX = 0.01
-    rowTitleY = [0.9, 0.4]
+    rowTitleY = [0.7, 0.2]
+    yLims = [(0,2.5),(0,2)]
 
-    for type in range(len(laserAccuracies)):
+    legendLabels = ['no laser', 'laser']
+    colours = [baseColour, controlColour]
+
+    for type in range(len(laserdprimes)):
         axScatter = plt.subplot(gs[type, 0])
 
-        laserAccuracy = laserAccuracies[type]
-        controlAccuracy = controlAccuracies[type]
-        for indBand in range(len(possibleBands)):
-            thisxLocs = barLoc + xLocs[indBand]
+        laserdprime = laserdprimes[type]
+        controldprime = controldprimes[type]
 
-            for indMouse in range(laserAccuracy.shape[0]):
-                plt.plot(thisxLocs, [controlAccuracy[indMouse, indBand], laserAccuracy[indMouse, indBand]], '-', color=connectColour)
-
-            l1, = plt.plot(np.tile(thisxLocs[1],laserAccuracy.shape[0]), laserAccuracy[:,indBand], 'o', color=controlColour)
-            l2, = plt.plot(np.tile(thisxLocs[0],controlAccuracy.shape[0]), controlAccuracy[:,indBand], 'o', color=baseColour)
-
-            #median = np.median(accuracyData, axis=0)
-            #plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-        axScatter.legend([l2, l1], legendLabels, loc='best')
-
-        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
-
-        axScatter.set_ylim(50, 95)
-        axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
-
-        extraplots.boxoff(axScatter)
-        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+        plot_paired_data(axScatter, laserdprime, controldprime, yLims[type], 'd\'', legendLabels, colours, possibleBands)
 
         axScatter.annotate(panelLabels[type], xy=(labelPosX[0], labelPosY[type]), xycoords='figure fraction',
                          fontsize=fontSizePanel, fontweight='bold')
         axScatter.annotate(rowTitles[type], xy=(rowTitleX, rowTitleY[type]), xycoords='figure fraction',
-                          fontsize=fontSizePanel, fontweight='bold', color=colours[type], rotation=90)
+                          fontsize=fontSizePanel, fontweight='bold', color=labelColours[type], rotation=90)
 
-        # -- stats!! --
-        for band in range(len(possibleBands)):
-            pVal = stats.wilcoxon(laserAccuracy[:,band], controlAccuracy[:,band])[1]
-            print(f"Change in accuracy at {possibleBands[band]} oct pVal: {pVal}")
 
-# --- comparison in change in bias with laser but not inactivation ---
+# --- comparison in change in hit rate with laser but laser outside ---
 if PANELS[1]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserBias = summaryData['PVlaserBias']
-    PVcontrolBias = summaryData['PVcontrolBias']
-    SOMlaserBias = summaryData['SOMlaserBias']
-    SOMcontrolBias = summaryData['SOMcontrolBias']
-    possibleBands = summaryData['possibleBands']
+    if BY_BAND:
+        PVlaserHitRate = summaryData['PVcontrolLaserHits']
+        PVcontrolHitRate = summaryData['PVcontrolNoLaserHits']
+        SOMlaserHitRate = summaryData['SOMcontrolLaserHits']
+        SOMcontrolHitRate = summaryData['SOMcontrolNoLaserHits']
+        possibleBands = summaryData['possibleBands']
+    else:
+        PVlaserHitRate = summaryData['PVcontrolLaserHitsAllBands']
+        PVcontrolHitRate = summaryData['PVcontrolNoLaserHitsAllBands']
+        SOMlaserHitRate = summaryData['SOMcontrolLaserHitsAllBands']
+        SOMcontrolHitRate = summaryData['SOMcontrolNoLaserHitsAllBands']
+        possibleBands = None
 
-    laserBiases = [PVlaserBias, SOMlaserBias]
-    controlBiases = [PVcontrolBias, SOMcontrolBias]
+    laserHitRates = [PVlaserHitRate, SOMlaserHitRate]
+    controlHitRates = [PVcontrolHitRate, SOMcontrolHitRate]
 
-    panelLabels = ['C', 'G']
-
-    barLoc = np.array([-0.24, 0.24])
-    xLocs = np.arange(len(possibleBands))
-    yLims = [(-0.55, 0.2), (-0.8, 0.8)]
-    xTickLabels = possibleBands
+    panelLabels = ['C', 'I']
+    yLims = [(0,100),(0,100)]
     legendLabels = ['no laser', 'laser']
-    colours = [PVColour, SOMColour]
+    colours = [baseColour, controlColour]
 
-    for type in range(len(laserBiases)):
+    for type in range(len(laserHitRates)):
         axScatter = plt.subplot(gs[type, 2])
-        laserBias = laserBiases[type]
-        controlBias = controlBiases[type]
-        for indBand in range(len(possibleBands)):
-            thisxLocs = barLoc + xLocs[indBand]
 
-            for indMouse in range(laserBias.shape[0]):
-                plt.plot(thisxLocs, [controlBias[indMouse, indBand], laserBias[indMouse, indBand]], '-',
-                         color=connectColour)
+        laserHitRate = laserHitRates[type]
+        controlHitRate = controlHitRates[type]
 
-            l1, = plt.plot(np.tile(thisxLocs[1], laserBias.shape[0]), laserBias[:, indBand], 'o', color=controlColour)
-            l2, = plt.plot(np.tile(thisxLocs[0], controlBias.shape[0]), controlBias[:, indBand], 'o', color=baseColour)
-
-            # median = np.median(accuracyData, axis=0)
-            # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-        axScatter.legend([l2, l1], legendLabels, loc='best')
-
-        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(np.tile(xTickLabels, len(xLocs)))
-        axScatter.set_xlabel('Masker bandwidth (oct)', fontsize=fontSizeLabels)
-
-        axScatter.set_ylim(yLims[type])
-        axScatter.set_ylabel('Bias', fontsize=fontSizeLabels)
-
-        extraplots.boxoff(axScatter)
-        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+        plot_paired_data(axScatter, laserHitRate, controlHitRate, yLims[type], 'Hit Rate (%)', legendLabels, colours, possibleBands)
 
         axScatter.annotate(panelLabels[type], xy=(labelPosX[2], labelPosY[type]), xycoords='figure fraction',
                            fontsize=fontSizePanel, fontweight='bold')
 
-        # -- stats!! --
-        for band in range(len(possibleBands)):
-            pVal = stats.wilcoxon(laserBias[:,band], controlBias[:,band])[1]
-            print(f"Change in bias at {possibleBands[band]} oct pVal: {pVal}")
-
-# -- comparison of change in accuracy between inactivation and no inactivation conditions --
+# --- comparison in change in FA rate with laser but laser outside ---
 if PANELS[2]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVcontrolChangeAccuracy = summaryData['PVcontrolChangeAccuracy']
-    PVinactChangeAccuracy = summaryData['PVexpChangeAccuracy']
-    SOMcontrolChangeAccuracy = summaryData['SOMcontrolChangeAccuracy']
-    SOMinactChangeAccuracy = summaryData['SOMexpChangeAccuracy']
+    if BY_BAND:
+        PVlaserFARate = summaryData['PVcontrolLaserFA']
+        PVcontrolFARate = summaryData['PVcontrolNoLaserFA']
+        SOMlaserFARate = summaryData['SOMcontrolLaserFA']
+        SOMcontrolFARate = summaryData['SOMcontrolNoLaserFA']
+        possibleBands = summaryData['possibleBands']
+    else:
+        PVlaserFARate = summaryData['PVcontrolLaserFAallBands']
+        PVcontrolFARate = summaryData['PVcontrolNoLaserFAallBands']
+        SOMlaserFARate = summaryData['SOMcontrolLaserFAallBands']
+        SOMcontrolFARate = summaryData['SOMcontrolNoLaserFAallBands']
+        possibleBands = None
 
-    controlChangesAccuracy = [PVcontrolChangeAccuracy, SOMcontrolChangeAccuracy]
-    inactChangesAccuracy = [PVinactChangeAccuracy, SOMinactChangeAccuracy]
+    laserFARates = [PVlaserFARate, SOMlaserFARate]
+    controlFARates = [PVcontrolFARate, SOMcontrolFARate]
 
-    panelLabels = ['B', 'F']
-    colours = [PVColour, SOMColour]
-    legendLabels = ['no PV', 'no SOM']
-    xLocs = range(2)
-    yLims = [(-8, 1), (-10, 5)]
+    panelLabels = ['E', 'K']
 
-    for type in range(len(controlChangesAccuracy)):
-        axScatter = plt.subplot(gs[type, 1])
-        controlChangeAccuracy = controlChangesAccuracy[type]
-        inactChangeAccuracy = inactChangesAccuracy[type]
+    yLims = [(0,40),(0,90)]
+    legendLabels = ['no laser', 'laser']
+    colours = [baseColour, controlColour]
 
-        for indMouse in range(len(controlChangeAccuracy)):
-            plt.plot(xLocs, [controlChangeAccuracy[indMouse], inactChangeAccuracy[indMouse]], '-', color=connectColour)
-        plt.plot(np.tile(xLocs[0], len(controlChangeAccuracy)), controlChangeAccuracy, 'o', color=controlColour)
-        plt.plot(np.tile(xLocs[1], len(inactChangeAccuracy)), inactChangeAccuracy, 'o', mec=colours[type], mfc='white')
+    for type in range(len(laserFARates)):
+        axScatter = plt.subplot(gs[type, 4])
 
-        plt.plot([xLocs[0]-0.2, xLocs[0]+0.2], np.tile(np.median(controlChangeAccuracy),2), '-', color='k', lw=3)
-        plt.plot([xLocs[1] - 0.2, xLocs[1] + 0.2], np.tile(np.median(inactChangeAccuracy), 2), '-', color='k', lw=3)
+        laserFARate = laserFARates[type]
+        controlFARate = controlFARates[type]
 
-        axScatter.set_xlim(-0.5, 1.5)
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(['control', legendLabels[type]], rotation=-45)
+        plot_paired_data(axScatter, laserFARate, controlFARate, yLims[type], 'False Alarm Rate (%)', legendLabels, colours, possibleBands)
 
-        axScatter.set_ylim(yLims[type])
-        axScatter.set_ylabel('Change in accuracy (%)', fontsize=fontSizeLabels)
-
-        extraplots.boxoff(axScatter)
-        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
-
-        pVal = stats.ranksums(controlChangeAccuracy, inactChangeAccuracy)[1]
-        print(f"Control vs inactivation change in accuracy p val = {pVal}")
-        if pVal < 0.05:
-            extraplots.significance_stars(xLocs, 0.98 * yLims[type][1], 0.03 * np.diff(yLims[type]), gapFactor=0.2)
-
-        axScatter.annotate(panelLabels[type], xy=(labelPosX[1], labelPosY[type]), xycoords='figure fraction',
+        axScatter.annotate(panelLabels[type], xy=(labelPosX[4], labelPosY[type]), xycoords='figure fraction',
                            fontsize=fontSizePanel, fontweight='bold')
 
-# -- comparison of change in bias between inactivation and no inactivation conditions --
+# -- comparison of change in d' between inactivation and no inactivation conditions --
 if PANELS[3]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVcontrolChangeBias = summaryData['PVcontrolChangeBias']
-    PVinactChangeBias = summaryData['PVexpChangeBias']
-    SOMcontrolChangeBias = summaryData['SOMcontrolChangeBias']
-    SOMinactChangeBias = summaryData['SOMexpChangeBias']
+    if BY_BAND:
+        PVlaserdprime = summaryData['PVexpLaserdprime']
+        PVcontroldprime = summaryData['PVexpNoLaserdprime']
+        SOMlaserdprime = summaryData['SOMexpLaserdprime']
+        SOMcontroldprime = summaryData['SOMexpNoLaserdprime']
 
-    controlChangesBias = [PVcontrolChangeBias, SOMcontrolChangeBias]
-    inactChangesBias = [PVinactChangeBias, SOMinactChangeBias]
+        controlPVlaserdprime = summaryData['PVcontrolLaserdprime']
+        controlPVcontroldprime = summaryData['PVcontrolNoLaserdprime']
+        controlSOMlaserdprime = summaryData['SOMcontrolLaserdprime']
+        controlSOMcontroldprime = summaryData['SOMcontrolNoLaserdprime']
+        possibleBands = summaryData['possibleBands']
+    else:
+        PVlaserdprime = summaryData['PVexpLaserdprimeAllBands']
+        PVcontroldprime = summaryData['PVexpNoLaserdprimeAllBands']
+        SOMlaserdprime = summaryData['SOMexpLaserdprimeAllBands']
+        SOMcontroldprime = summaryData['SOMexpNoLaserdprimeAllBands']
 
-    panelLabels = ['D', 'H']
+        controlPVlaserdprime = summaryData['PVcontrolLaserdprimeAllBands']
+        controlPVcontroldprime = summaryData['PVcontrolNoLaserdprimeAllBands']
+        controlSOMlaserdprime = summaryData['SOMcontrolLaserdprimeAllBands']
+        controlSOMcontroldprime = summaryData['SOMcontrolNoLaserdprimeAllBands']
+        possibleBands = None
+
+    inactChangesdprime = [PVlaserdprime-PVcontroldprime, SOMlaserdprime-SOMcontroldprime]
+    controlChangesdprime = [controlPVlaserdprime-controlPVcontroldprime, controlSOMlaserdprime-controlSOMcontroldprime]
+
+    panelLabels = ['B', 'H']
     colours = [PVColour, SOMColour]
     legendLabels = ['no PV', 'no SOM']
-    xLocs = range(2)
-    yLims = [(-0.2, 0.15), (-0.3, 0.2)]
+    yLims = [(-0.75, 0.5), (-0.5, 0.5)]
 
-    for type in range(len(controlChangesBias)):
-        axScatter = plt.subplot(gs[type, 3])
-        controlChangeBias = controlChangesBias[type]
-        inactChangeBias = inactChangesBias[type]
+    for type in range(len(inactChangesdprime)):
+        axCompare = plt.subplot(gs[type, 1])
 
-        for indMouse in range(len(controlChangeBias)):
-            plt.plot(xLocs, [controlChangeBias[indMouse], inactChangeBias[indMouse]], '-', color=connectColour)
-        plt.plot(np.tile(xLocs[0], len(controlChangeBias)), controlChangeBias, 'o', color=controlColour)
-        plt.plot(np.tile(xLocs[1], len(inactChangeBias)), inactChangeBias, 'o', mec=colours[type], mfc='white')
+        inactChange = inactChangesdprime[type]
+        controlChange = controlChangesdprime[type]
 
-        plt.plot([xLocs[0]-0.2, xLocs[0]+0.2], np.tile(np.median(controlChangeBias),2), '-', color='k', lw=3)
-        plt.plot([xLocs[1] - 0.2, xLocs[1] + 0.2], np.tile(np.median(inactChangeBias), 2), '-', color='k', lw=3)
+        thisLabels = ['laser out', legendLabels[type]]
+        thisColours = [controlColour, colours[type]]
 
-        axScatter.set_xlim(-0.5, 1.5)
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(['control', legendLabels[type]], rotation=-45)
+        plot_paired_data(axCompare, inactChange, controlChange, yLims[type], 'Change in d\'', thisLabels, thisColours, possibleBands)
 
-        axScatter.set_ylim(yLims[type])
-        axScatter.set_ylabel('Change in bias', fontsize=fontSizeLabels)
+        axCompare.annotate(panelLabels[type], xy=(labelPosX[1], labelPosY[type]), xycoords='figure fraction',
+                           fontsize=fontSizePanel, fontweight='bold')
 
-        extraplots.boxoff(axScatter)
-        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+# -- comparison of change in hit rate between inactivation and no inactivation conditions --
+if PANELS[4]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
 
-        pVal = stats.ranksums(controlChangeBias, inactChangeBias)[1]
-        print(f"Control vs inactivation change in bias p val = {pVal}")
-        if pVal<0.05:
-            extraplots.significance_stars(xLocs, 0.98*yLims[type][1], 0.03*np.diff(yLims[type]), gapFactor=0.2)
+    if BY_BAND:
+        PVlaserHitRate = summaryData['PVexpLaserHits']
+        PVcontrolHitRate = summaryData['PVexpNoLaserHits']
+        SOMlaserHitRate = summaryData['SOMexpLaserHits']
+        SOMcontrolHitRate = summaryData['SOMexpNoLaserHits']
 
-        axScatter.annotate(panelLabels[type], xy=(labelPosX[3], labelPosY[type]), xycoords='figure fraction',
+        controlPVlaserHitRate = summaryData['PVcontrolLaserHits']
+        controlPVcontrolHitRate = summaryData['PVcontrolNoLaserHits']
+        controlSOMlaserHitRate = summaryData['SOMcontrolLaserHits']
+        controlSOMcontrolHitRate = summaryData['SOMcontrolNoLaserHits']
+        possibleBands = summaryData['possibleBands']
+    else:
+        PVlaserHitRate = summaryData['PVexpLaserHitsAllBands']
+        PVcontrolHitRate = summaryData['PVexpNoLaserHitsAllBands']
+        SOMlaserHitRate = summaryData['SOMexpLaserHitsAllBands']
+        SOMcontrolHitRate = summaryData['SOMexpNoLaserHitsAllBands']
+
+        controlPVlaserHitRate = summaryData['PVcontrolLaserHitsAllBands']
+        controlPVcontrolHitRate = summaryData['PVcontrolNoLaserHitsAllBands']
+        controlSOMlaserHitRate = summaryData['SOMcontrolLaserHitsAllBands']
+        controlSOMcontrolHitRate = summaryData['SOMcontrolNoLaserHitsAllBands']
+        possibleBands = None
+
+    inactChangesHitRate = [PVlaserHitRate-PVcontrolHitRate, SOMlaserHitRate-SOMcontrolHitRate]
+    controlChangesdHitRate = [controlPVlaserHitRate-controlPVcontrolHitRate, controlSOMlaserHitRate-controlSOMcontrolHitRate]
+
+    panelLabels = ['D', 'J']
+    colours = [PVColour, SOMColour]
+    legendLabels = ['no PV', 'no SOM']
+    yLims = [(-30, 10), (-30, 10)]
+
+    for type in range(len(inactChangesdprime)):
+        axCompare = plt.subplot(gs[type, 3])
+
+        inactChange = inactChangesHitRate[type]
+        controlChange = controlChangesdHitRate[type]
+
+        thisLabels = ['laser out', legendLabels[type]]
+        thisColours = [controlColour, colours[type]]
+
+        plot_paired_data(axCompare, inactChange, controlChange, yLims[type], 'Change in Hit Rate (%)', thisLabels, thisColours,
+                         possibleBands)
+
+        axCompare.annotate(panelLabels[type], xy=(labelPosX[3], labelPosY[type]), xycoords='figure fraction',
+                           fontsize=fontSizePanel, fontweight='bold')
+
+# -- comparison of change in FA rate between inactivation and no inactivation conditions --
+if PANELS[5]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
+
+    if BY_BAND:
+        PVlaserFARate = summaryData['PVexpLaserFA']
+        PVcontrolFARate = summaryData['PVexpNoLaserFA']
+        SOMlaserFARate = summaryData['SOMexpLaserFA']
+        SOMcontrolFARate = summaryData['SOMexpNoLaserFA']
+
+        controlPVlaserFARate = summaryData['PVcontrolLaserFA']
+        controlPVcontrolFARate = summaryData['PVcontrolNoLaserFA']
+        controlSOMlaserFARate = summaryData['SOMcontrolLaserFA']
+        controlSOMcontrolFARate = summaryData['SOMcontrolNoLaserFA']
+        possibleBands = summaryData['possibleBands']
+    else:
+        PVlaserFARate = summaryData['PVexpLaserFAallBands']
+        PVcontrolFARate = summaryData['PVexpNoLaserFAallBands']
+        SOMlaserFARate = summaryData['SOMexpLaserFAallBands']
+        SOMcontrolFARate = summaryData['SOMexpNoLaserFAallBands']
+
+        controlPVlaserFARate = summaryData['PVcontrolLaserFAallBands']
+        controlPVcontrolFARate = summaryData['PVcontrolNoLaserFAallBands']
+        controlSOMlaserFARate = summaryData['SOMcontrolLaserFAallBands']
+        controlSOMcontrolFARate = summaryData['SOMcontrolNoLaserFAallBands']
+        possibleBands = None
+
+    inactChangesFARate = [PVlaserFARate-PVcontrolFARate, SOMlaserFARate-SOMcontrolFARate]
+    controlChangesFARate = [controlPVlaserFARate-controlPVcontrolFARate, controlSOMlaserFARate-controlSOMcontrolFARate]
+
+    panelLabels = ['F', 'L']
+    colours = [PVColour, SOMColour]
+    legendLabels = ['no PV', 'no SOM']
+    yLims = [(-20, 20), (-20, 20)]
+
+    for type in range(len(inactChangesdprime)):
+        axCompare = plt.subplot(gs[type, 5])
+
+        inactChange = inactChangesFARate[type]
+        controlChange = controlChangesFARate[type]
+
+        thisLabels = ['laser out', legendLabels[type]]
+        thisColours = [controlColour, colours[type]]
+
+        plot_paired_data(axCompare, inactChange, controlChange, yLims[type], 'Change in False Alarm Rate (%)', thisLabels, thisColours,
+                         possibleBands)
+
+        axCompare.annotate(panelLabels[type], xy=(labelPosX[5], labelPosY[type]), xycoords='figure fraction',
                            fontsize=fontSizePanel, fontweight='bold')
 
 if SAVE_FIGURE:

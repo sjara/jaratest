@@ -16,14 +16,14 @@ import studyparams
 import behaviour_analysis_funcs as bf
 
 FIGNAME = 'figure_inhibitory_inactivation'
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 #PANELS = [0, 1, 0, 1]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
-CORRECTED = 1
+CORRECTED = 0
 CIS = 1
 outputDir = '/tmp/'
 if CORRECTED:
@@ -329,7 +329,7 @@ if PANELS[3]:
     SOMpsyCurves2 = np.zeros((SOMshape[0], 2, len(possibleBands), 2))
 
     PVpsyCurves2[:, :, :, 0] = 100.0 * PVtrialCounts[:, :, :, 0, 1] / (PVtrialCounts[:, :, :, 0, 1] + PVtrialCounts[:, :, :, 0, 0])
-    PVpsyCurves2[:, :, :, 1] = 100.0 * np.sum(PVtrialCounts[:, :, :, 1:, 0], axis=3) / (np.sum(PVtrialCounts[:, :, :, 1:, 1], axis=3) + np.sum(SOMtrialCounts[:, :, :, 1:, 0], axis=3))
+    PVpsyCurves2[:, :, :, 1] = 100.0 * np.sum(PVtrialCounts[:, :, :, 1:, 0], axis=3) / (np.sum(PVtrialCounts[:, :, :, 1:, 1], axis=3) + np.sum(PVtrialCounts[:, :, :, 1:, 0], axis=3))
 
     SOMpsyCurves2[:, :, :, 0] = 100.0 * SOMtrialCounts[:, :, :, 0, 1] / (SOMtrialCounts[:, :, :, 0, 1] + SOMtrialCounts[:, :, :, 0, 0])
     SOMpsyCurves2[:, :, :, 1] = 100.0 * np.sum(SOMtrialCounts[:, :, :, 1:, 0], axis=3) / (np.sum(SOMtrialCounts[:, :, :, 1:, 1], axis=3) + np.sum(SOMtrialCounts[:, :, :, 1:, 0], axis=3))

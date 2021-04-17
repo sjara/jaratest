@@ -1,118 +1,151 @@
 import os
 import numpy as np
+import pandas as pd
 from scipy import stats
 
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
+import behaviour_analysis_funcs as funcs
 import studyparams
 
 figName = 'figure_ac_inactivation'
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-# dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
+# dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
-PV_CHR2_MICE = studyparams.PV_CHR2_MICE
+dbName = 'good_sessions.csv'
+# dataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
+sessionDB = pd.read_csv(dbPath)
+
+dbName = 'good_mice.csv'
+# dataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
+dataPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
+mouseDB = pd.read_csv(dataPath)
+
+mouseRow = mouseDB.query('strain=="PVChR2"')
+PV_CHR2_MICE = mouseRow['mice'].apply(eval).iloc[-1]
+
 BANDS_TO_USE = [0,-1] #ignore intermetiate bandwidth for the mice it was done for
+arrayDims = (2, len(PV_CHR2_MICE), len(BANDS_TO_USE), 2) # sort by: laser in/out, mouse, bandwidth, laser off/on
+arayDimsAllBands = (2, len(PV_CHR2_MICE), 2)
 
-laserCorrectSum = None
-laserIncorrectSum = None
-controlCorrectSum = None
-controlIncorrectSum = None
+sessionType = ['laser', 'control']
 
-laserToneSum = None
-laserNoiseSum = None
-controlToneSum = None
-controlNoiseSum = None
+accuracy = np.zeros(arrayDims)
+bias = np.zeros(arrayDims)
+hits = np.zeros(arrayDims)
+FAs = np.zeros(arrayDims)
+dprime = np.zeros(arrayDims)
+
+accuracyAllBand = np.zeros(arayDimsAllBands)
+biasAllBand = np.zeros(arayDimsAllBands)
+hitsAllBand = np.zeros(arayDimsAllBands)
+FAallBand = np.zeros(arayDimsAllBands)
+dprimeAllBand = np.zeros(arayDimsAllBands)
 
 for indMouse, mouse in enumerate(PV_CHR2_MICE):
+    for indSesType, sesType in enumerate(sessionType):
+        sessionTypeName = f'3mW {sesType}'
+        print(mouse, sessionTypeName)
 
-    laserSessions = studyparams.miceDict[mouse]['3mW laser']
-    laserBehavData = behavioranalysis.load_many_sessions(mouse, laserSessions)
+        dbRow = sessionDB.query('mouse==@mouse and sessionType==@sessionTypeName')
+        laserSessions = dbRow['goodSessions'].apply(eval).iloc[-1]
+        print(laserSessions)
 
-    numLasers = np.unique(laserBehavData['laserSide'])
-    numBands = np.unique(laserBehavData['currentBand'])
+        laserBehavData = behavioranalysis.load_many_sessions(mouse, laserSessions)
 
-    trialsEachCond = behavioranalysis.find_trials_each_combination(laserBehavData['laserSide'], numLasers,
-                                                                   laserBehavData['currentBand'], numBands)
+        correct, incorrect, toneChoice, noiseChoice, trialsEachCond3Params, labels = funcs.get_trials(laserBehavData)
 
-    # -- compute accuracies and bias for each bandwidth --
+        numLasers = np.unique(laserBehavData['laserSide'])
+        numBands = np.unique(laserBehavData['currentBand'])
 
-    for indBand in BANDS_TO_USE:
-        trialsEachLaser = trialsEachCond[:, :, indBand]
+        trialsEachLaser = behavioranalysis.find_trials_each_type(laserBehavData['laserSide'], numLasers)
+        trialsEachCond = behavioranalysis.find_trials_each_combination(laserBehavData['laserSide'], numLasers,
+                                                                       laserBehavData['currentBand'], numBands)
 
-        # -- sort trials by laser presentation, compute accuracy as percent correct trials out of all valid trials --
-        correct = laserBehavData['outcome'] == laserBehavData.labels['outcome']['correct']
-        incorrect = laserBehavData['outcome'] == laserBehavData.labels['outcome']['error']
+        # -- compute accuracies and bias for each bandwidth --
+        for indBand in BANDS_TO_USE:
+            for indLaser in range(len(numLasers)):
+                trialsThisCond = trialsEachCond[:, indLaser, indBand]
 
-        laserIncorrect = incorrect[trialsEachLaser[:, 1]]
-        laserCorrect = correct[trialsEachLaser[:, 1]]
+                # -- compute accuracy as percent correct trials out of all valid trials --
+                thisIncorrect = incorrect[trialsThisCond]
+                thisCorrect = correct[trialsThisCond]
 
-        controlIncorrect = incorrect[trialsEachLaser[:, 0]]
-        controlCorrect = correct[trialsEachLaser[:, 0]]
+                accuracy[indSesType, indMouse, indBand, indLaser] = 100.0 * np.sum(thisCorrect) / (np.sum(thisCorrect) + np.sum(thisIncorrect))
 
-        if laserCorrectSum is None:
-            laserCorrectSum = np.zeros((len(PV_CHR2_MICE), len(BANDS_TO_USE)))
-            laserIncorrectSum = np.zeros_like(laserCorrectSum)
-            controlCorrectSum = np.zeros_like(laserCorrectSum)
-            controlIncorrectSum = np.zeros_like(laserCorrectSum)
+                # -- compute bias to a side as difference/sum --
+                thisToneChoice = toneChoice[trialsThisCond]
+                thisNoiseChoice = noiseChoice[trialsThisCond]
 
-        laserCorrectSum[indMouse, indBand] = np.sum(laserCorrect)
-        laserIncorrectSum[indMouse, indBand] = np.sum(laserIncorrect)
-        controlCorrectSum[indMouse, indBand] = np.sum(controlCorrect)
-        controlIncorrectSum[indMouse, indBand] = np.sum(controlIncorrect)
+                bias[indSesType, indMouse, indBand, indLaser] = 1.0 * (np.sum(thisToneChoice) - np.sum(thisNoiseChoice)) / (np.sum(thisToneChoice) + np.sum(thisNoiseChoice))
 
-        # -- compute bias to a side as difference/sum --
-        leftChoice = laserBehavData['choice'] == laserBehavData.labels['choice']['left']
-        rightChoice = laserBehavData['choice'] == laserBehavData.labels['choice']['right']
+                # -- compute hits, FAs, and d prime --
+                toneTrials = np.sum(thisCorrect & thisToneChoice) + np.sum(thisIncorrect & thisNoiseChoice)
+                noiseTrials = np.sum(thisCorrect & thisNoiseChoice) + np.sum(thisIncorrect & thisToneChoice)
 
-        if 'toneSide' in laserBehavData.keys():
-            if laserBehavData['toneSide'][-1] == laserBehavData.labels['toneSide']['right']:
-                toneChoice = rightChoice
-                noiseChoice = leftChoice
-            elif laserBehavData['toneSide'][-1] == laserBehavData.labels['toneSide']['left']:
-                toneChoice = leftChoice
-                noiseChoice = rightChoice
-        else:
-            # all tones meant go to right before introduction of 'toneSide' key
-            toneChoice = rightChoice
-            noiseChoice = leftChoice
+                thisHitRate = np.sum(thisCorrect & thisToneChoice) / toneTrials
+                thisFARate = np.sum(thisIncorrect & thisToneChoice) / noiseTrials
 
-        laserToneChoice = toneChoice[trialsEachLaser[:, 1]]
-        laserNoiseChoice = noiseChoice[trialsEachLaser[:, 1]]
+                hits[indSesType, indMouse, indBand, indLaser] = 100.0 * thisHitRate
+                FAs[indSesType, indMouse, indBand, indLaser] = 100.0 * thisFARate
+                dprime[indSesType, indMouse, indBand, indLaser] = (stats.norm.ppf(thisHitRate) - stats.norm.ppf(thisFARate))
 
-        controlToneChoice = toneChoice[trialsEachLaser[:, 0]]
-        controlNoiseChoice = noiseChoice[trialsEachLaser[:, 0]]
+        # -- also compute this stuff without splitting by band --
+        for indLaser in range(len(numLasers)):
+            trialsThisCond = trialsEachLaser[:, indLaser]
 
-        if laserToneSum is None:
-            laserToneSum = np.zeros((len(PV_CHR2_MICE), len(BANDS_TO_USE)))
-            laserNoiseSum = np.zeros_like(laserCorrectSum)
-            controlToneSum = np.zeros_like(laserCorrectSum)
-            controlNoiseSum = np.zeros_like(laserCorrectSum)
+            # -- compute accuracy as percent correct trials out of all valid trials --
+            thisIncorrect = incorrect[trialsThisCond]
+            thisCorrect = correct[trialsThisCond]
 
-        laserToneSum[indMouse, indBand] = np.sum(laserToneChoice)
-        laserNoiseSum[indMouse, indBand] = np.sum(laserNoiseChoice)
-        controlToneSum[indMouse, indBand] = np.sum(controlToneChoice)
-        controlNoiseSum[indMouse, indBand] = np.sum(controlNoiseChoice)
+            accuracyAllBand[indSesType, indMouse, indLaser] = 100.0 * np.sum(thisCorrect) / (np.sum(thisCorrect) + np.sum(thisIncorrect))
 
-laserAccuracy = 100.0 * laserCorrectSum / (laserCorrectSum + laserIncorrectSum)
-controlAccuracy = 100.0 * controlCorrectSum / (controlCorrectSum + controlIncorrectSum)
+            # -- compute bias to a side as difference/sum --
+            thisToneChoice = toneChoice[trialsThisCond]
+            thisNoiseChoice = noiseChoice[trialsThisCond]
 
-laserBias = 1.0 * (laserToneSum - laserNoiseSum) / (laserToneSum + laserNoiseSum)
-controlBias = 1.0 * (controlToneSum - controlNoiseSum) / (controlToneSum + controlNoiseSum)
+            biasAllBand[indSesType, indMouse, indLaser] = 1.0 * (np.sum(thisToneChoice) - np.sum(thisNoiseChoice)) / (
+                        np.sum(thisToneChoice) + np.sum(thisNoiseChoice))
 
-laserAccuracyAllBands = 100.0 * np.sum(laserCorrectSum, axis=1) / (np.sum(laserCorrectSum, axis=1) + np.sum(laserIncorrectSum, axis=1))
-controlAccuracyAllBands = 100.0 * np.sum(controlCorrectSum, axis=1) / (np.sum(controlCorrectSum, axis=1) + np.sum(controlIncorrectSum, axis=1))
+            # -- compute hits, FAs, and d prime --
+            toneTrials = np.sum(thisCorrect & thisToneChoice) + np.sum(thisIncorrect & thisNoiseChoice)
+            noiseTrials = np.sum(thisCorrect & thisNoiseChoice) + np.sum(thisIncorrect & thisToneChoice)
 
-laserBiasAllBands = 1.0 * (np.sum(laserToneSum, axis=1) - np.sum(laserNoiseSum, axis=1)) / (np.sum(laserToneSum, axis=1) + np.sum(laserNoiseSum, axis=1))
-controlBiasAllBands = 1.0 * (np.sum(controlToneSum, axis=1) - np.sum(controlNoiseSum, axis=1)) / (np.sum(controlToneSum, axis=1) + np.sum(controlNoiseSum, axis=1))
+            thisHitRate = np.sum(thisCorrect & thisToneChoice) / toneTrials
+            thisFARate = np.sum(thisIncorrect & thisToneChoice) / noiseTrials
 
-# -- save responses of all sound responsive cells to 0.25 bandwidth sounds --
-outputFile = 'all_behaviour_ac_inactivation.npz'
+            hitsAllBand[indSesType, indMouse, indLaser] = 100.0 * thisHitRate
+            FAallBand[indSesType, indMouse, indLaser] = 100.0 * thisFARate
+            dprimeAllBand[indSesType, indMouse, indLaser] = (stats.norm.ppf(thisHitRate) - stats.norm.ppf(thisFARate))
+
+# -- save data --
+outputFile = 'all_behaviour_ac_inactivation_v2.npz'
 outputFullPath = os.path.join(dataDir, outputFile)
 np.savez(outputFullPath,
-         laserAccuracy=laserAccuracy, controlAccuracy=controlAccuracy,
-         laserAccuracyAllBands=laserAccuracyAllBands, controlAccuracyAllBands=controlAccuracyAllBands,
-         laserBias=laserBias, controlBias=controlBias,
-         laserBiasAllBands=laserBiasAllBands, controlBiasAllBands=controlBiasAllBands,
+         expLaserAccuracy=accuracy[0,:,:,1], expNoLaserAccuracy=accuracy[0,:,:,0],
+         controlLaserAccuracy=accuracy[1,:,:,1], controlNoLaserAccuracy=accuracy[1,:,:,0],
+         expLaserBias=bias[0,:,:,1], expNoLaserBias=bias[0,:,:,0],
+         controlLaserBias=bias[1,:,:,1], controlNoLaserBias=bias[1,:,:,0],
+
+         expLaserHits=hits[0,:,:,1], expNoLaserHits=hits[0,:,:,0],
+         controlLaserHits=hits[1,:,:,1], controlNoLaserHits=hits[1,:,:,0],
+         expLaserFA=FAs[0,:,:,1], expNoLaserFA=FAs[0,:,:,0],
+         controlLaserFA=FAs[1,:,:,1], controlNoLaserFA=FAs[1,:,:,0],
+         expLaserdprime=dprime[0,:,:,1], expNoLaserdprime=dprime[0,:,:,0],
+         controlLaserdprime=dprime[1,:,:,1], controlNoLaserdprime=dprime[1,:,:,0],
+
+         expLaserAccuracyAllBands=accuracyAllBand[0, :, 1], expNoLaserAccuracyAllBands=accuracyAllBand[0, :, 0],
+         controlLaserAccuracyAllBands=accuracyAllBand[1, :, 1], controlNoLaserAccuracyAllBands=accuracyAllBand[1, :, 0],
+         expLaserBiasAllBands=biasAllBand[0, :, 1], expNoLaserBiasAllBands=biasAllBand[0, :, 0],
+         controlLaserBiasAllBands=biasAllBand[1, :, 1], controlNoLaserBiasAllBands=biasAllBand[1, :, 0],
+
+         expLaserHitsAllBands=hitsAllBand[0, :, 1], expNoLaserHitsAllBands=hitsAllBand[0, :, 0],
+         controlLaserHitsAllBands=hitsAllBand[1, :, 1], controlNoLaserHitsAllBands=hitsAllBand[1, :, 0],
+         expLaserFAallBands=FAallBand[0, :, 1], expNoLaserFAallBands=FAallBand[0, :, 0],
+         controlLaserFAallBands=FAallBand[1, :, 1], controlNoLaserFAallBands=FAallBand[1, :, 0],
+         expLaserdprimeAllBands=dprimeAllBand[0, :, 1], expNoLaserdprimeAllBandsAllBand=dprimeAllBand[0, :, 0],
+         controlLaserdprimeAllBands=dprimeAllBand[1, :, 1], controlNoLaserdprimeAllBands=dprimeAllBand[1, :, 0],
          possibleBands=numBands[BANDS_TO_USE])
 print(outputFile + " saved")

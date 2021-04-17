@@ -66,7 +66,7 @@ waveformsFileName = 'photoidentified_cells_waveforms.npz'
 laserResponsesFileName = 'all_cells_laser_responses.npz'
 
 #histFileName = 'band055_outlines.jpg'
-histFileName = 'band015_dyes.png'
+histFileName = 'band015_dyes3.png'
 
 ExcColor = figparams.colp['excitatoryCell']
 excludedExcColor = figparams.colp['excludedExcitatory']

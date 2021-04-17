@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
@@ -10,8 +11,20 @@ figName = 'figure_inhibitory_inactivation'
 # dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
-SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
-PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
+dbName = 'good_sessions.csv'
+# dataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
+sessionDB = pd.read_csv(dbPath)
+
+dbName = 'good_mice.csv'
+# dataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
+mouseDB = pd.read_csv(dbPath)
+
+mouseRow = mouseDB.query('strain=="PVArchT"')
+PV_ARCHT_MICE = mouseRow['mice'].apply(eval).iloc[-1]
+mouseRow = mouseDB.query('strain=="SOMArchT"')
+SOM_ARCHT_MICE = mouseRow['mice'].apply(eval).iloc[-1]
 mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE]
 
 def calculate_tone_diff(behavData):
@@ -84,12 +97,14 @@ for indType, mice in enumerate(mouseType):
 
     for indMouse, mouse in enumerate(mice):
 
-        laserSessions = studyparams.miceDict[mouse]['10mW laser']
+        dbRow = sessionDB.query('mouse==@mouse and sessionType=="10mW laser"')
+        laserSessions = dbRow['goodSessions'].apply(eval).iloc[-1]
         laserBehavData = behavioranalysis.load_many_sessions(mouse, laserSessions)
 
         toneDetectDiff, accuraciesByCond, trialsByCond = calculate_tone_diff(laserBehavData)
 
-        controlSessions = studyparams.miceDict[mouse]['10mW control']
+        dbRow = sessionDB.query('mouse==@mouse and sessionType=="10mW control"')
+        controlSessions = dbRow['goodSessions'].apply(eval).iloc[-1]
         controlBehavData = behavioranalysis.load_many_sessions(mouse, controlSessions)
 
         controlToneDetectDiff, controlAccuraciesByCond, trialsByCondControl = calculate_tone_diff(controlBehavData)

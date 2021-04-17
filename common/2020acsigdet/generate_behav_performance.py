@@ -1,37 +1,44 @@
 import os
 import numpy as np
 from statsmodels.stats.proportion import proportion_confint
+from scipy import stats
 
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
+import behaviour_analysis_funcs as funcs
 import studyparams
 
 figName = 'figure_characterise_behaviour'
 #dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
-mouseDicts = [studyparams.unimplanted_PVCHR2, studyparams.unimplanted_PVARCHT, studyparams.unimplanted_SOMARCHT, studyparams.unimplanted_wt]
+mouseDicts = [studyparams.unimplanted_PVCHR2, studyparams.unimplanted_PVARCHT, studyparams.unimplanted_SOMARCHT,
+              studyparams.unimplanted_PVCRE, studyparams.unimplanted_SOMCRE]
+
+BAND_TO_USE = [0,-1] # only use the extreme bandwidths for mice that had more than 2
 
 percentToneDetectEachSNR = []
 percentCorrectEachBand = []
-biasEachBand = []
+dprimeEachBand = []
+hitRateEachBand = []
+FArateEachBand = []
 
 for miceThisType in mouseDicts:
 
     percentToneDetectEachSNRThisType = None
     percentCorrectEachBandThisType = None
-    biasEachBandThisType = None
+    dprimeEachBandThisType = None
+    hitRateEachBandThisType = None
+    FArateEachBandThisType = None
 
     for indMouse, mouse in enumerate(miceThisType.keys()):
         behavData = behavioranalysis.load_many_sessions(mouse, miceThisType[mouse])
         numMice = len(miceThisType.keys())
 
         bandEachTrial = behavData['currentBand']
-        noiseAmpEachTrial = behavData['currentNoiseAmp']
         SNReachTrial = behavData['currentSNR']
 
-        valid = behavData['valid'].astype(bool)
         correct = behavData['outcome'] == behavData.labels['outcome']['correct']
         incorrect = behavData['outcome'] == behavData.labels['outcome']['error']
         rightChoice = behavData['choice'] == behavData.labels['choice']['right']
@@ -48,12 +55,6 @@ for miceThisType in mouseDicts:
             # all tones meant go to right before introduction of 'toneSide' key
             toneChoice = rightChoice
             noiseChoice = leftChoice
-
-        # trialsEachComb = np.zeros((len(firstSort),len(possibleFirstSort),len(possibleSecondSort),len(possibleThirdSort)),dtype=bool)
-        # trialsEachComb12 = behavioranalysis.find_trials_each_combination(firstSort, possibleFirstSort, secondSort, possibleSecondSort)
-        # trialsEachType3 = behavioranalysis.find_trials_each_type(thirdSort,possibleThirdSort)
-        # for ind3 in range(len(possibleThirdSort)):
-        #     trialsEachComb[:,:,:,ind3] = trialsEachComb12 & trialsEachType3[:,ind3][:,np.newaxis,np.newaxis]
 
         # --- inputs to psychometric curve ---
         possibleSNRs = np.unique(SNReachTrial)
@@ -72,55 +73,64 @@ for miceThisType in mouseDicts:
         trialsEachBand = behavioranalysis.find_trials_each_type(bandEachTrial, possibleBands)
 
         if percentCorrectEachBandThisType is None:
-            percentCorrectEachBandThisType = np.zeros((numMice, len(possibleBands)))
-        if biasEachBandThisType is None:
-            biasEachBandThisType = np.zeros((numMice, len(possibleBands)))
+            percentCorrectEachBandThisType = np.zeros((numMice, len(BAND_TO_USE)))
+            dprimeEachBandThisType = np.zeros_like(percentCorrectEachBandThisType)
+            hitRateEachBandThisType = np.zeros_like(percentCorrectEachBandThisType)
+            FArateEachBandThisType = np.zeros_like(percentCorrectEachBandThisType)
 
-        for band in range(len(possibleBands)):
+        for band in BAND_TO_USE:
             trialsThisBand = trialsEachBand[:, band]
             correctThisBand = correct[trialsThisBand]
             incorrectThisBand = incorrect[trialsThisBand]
             toneChoiceThisBand = toneChoice[trialsThisBand]
             noiseChoiceThisBand = noiseChoice[trialsThisBand]
 
+            toneTrialsThisBand = np.sum(correctThisBand & toneChoiceThisBand) + np.sum(incorrectThisBand & noiseChoiceThisBand)
+            noiseTrialsThisBand = np.sum(correctThisBand & noiseChoiceThisBand) + np.sum(incorrectThisBand & toneChoiceThisBand)
+
+            thisHitRate = np.sum(correctThisBand & toneChoiceThisBand) / toneTrialsThisBand
+            thisFARate = np.sum(incorrectThisBand & toneChoiceThisBand) / noiseTrialsThisBand
+
+            hitRateEachBandThisType[indMouse, band] = 100.0 * thisHitRate
+            FArateEachBandThisType[indMouse, band] = 100.0 * thisFARate
+            dprimeEachBandThisType[indMouse, band] = (stats.norm.ppf(thisHitRate) - stats.norm.ppf(thisFARate))
+
             percentCorrectEachBandThisType[indMouse, band] = 100.0 * np.sum(correctThisBand) / (np.sum(correctThisBand) + np.sum(incorrectThisBand))
-            biasEachBandThisType[indMouse, band] = (np.sum(toneChoiceThisBand) - np.sum(noiseChoiceThisBand)) / (
-                        np.sum(toneChoiceThisBand) + np.sum(noiseChoiceThisBand))
 
     percentToneDetectEachSNR.append(percentToneDetectEachSNRThisType)
     percentCorrectEachBand.append(percentCorrectEachBandThisType)
-    biasEachBand.append(biasEachBandThisType)
+    hitRateEachBand.append(hitRateEachBandThisType)
+    FArateEachBand.append(FArateEachBandThisType)
+    dprimeEachBand.append(dprimeEachBandThisType)
 
 allToneDetect = np.concatenate(tuple(percentToneDetectEachSNR), axis=0)
-allPercentCorrect = np.concatenate(tuple(percentCorrect[:,(0,-1)] for percentCorrect in percentCorrectEachBand), axis=0)
-allBias = np.concatenate(tuple(bias[:,(0,-1)] for bias in biasEachBand), axis=0)
-
-# # --- comparisons by noise amp ---
-# possibleNoiseAmps = np.unique(noiseAmpEachTrial)
-# trialsEachNoiseAmp = behavioranalysis.find_trials_each_type(noiseAmpEachTrial, possibleNoiseAmps)
-# percentCorrectEachNoiseAmp = np.zeros(len(possibleNoiseAmps))
-# biasEachNoiseAmp = np.zeros(len(possibleNoiseAmps))
-#
-# for amp in range(len(possibleNoiseAmps)):
-#     trialsThisAmp = trialsEachBand[:, amp]
-#     validThisAmp = valid[trialsThisAmp]
-#     correctThisAmp = correct[trialsThisAmp]
-#     toneChoiceThisAmp = toneChoice[trialsThisAmp]
-#     noiseChoiceThisAmp = noiseChoice[trialsThisAmp]
-#
-#     percentCorrectEachNoiseAmp[amp] = 100.0 * np.sum(correctThisAmp) / np.sum(validThisAmp)
-#     biasEachNoiseAmp[amp] = (np.sum(toneChoiceThisAmp) - np.sum(noiseChoiceThisAmp)) / (
-#                 np.sum(toneChoiceThisAmp) + np.sum(noiseChoiceThisAmp))
+allPercentCorrect = np.concatenate(tuple(percentCorrectEachBand), axis=0)
+allHitRate = np.concatenate(tuple(hitRateEachBand), axis=0)
+allFArate = np.concatenate(tuple(FArateEachBand), axis=0)
+alldprime = np.concatenate(tuple(dprimeEachBand), axis=0)
 
 # -- save data --
-outputFile = 'unimplanted_behaviour.npz'
+outputFile = 'unimplanted_behaviour_v2.npz'
 outputFullPath = os.path.join(dataDir, outputFile)
 np.savez(outputFullPath,
-         PVCHR2toneDetect = percentToneDetectEachSNR[0], PVCHR2correctByBand = percentCorrectEachBand[0], PVCHR2biasByBand = biasEachBand[0],
-         PVARCHTtoneDetect = percentToneDetectEachSNR[1], PVARCHTcorrectByBand = percentCorrectEachBand[1], PVARCHTbiasByBand = biasEachBand[1],
-         SOMARCHTtoneDetect = percentToneDetectEachSNR[2], SOMARCHTcorrectByBand = percentCorrectEachBand[2], SOMARCHTbiasByBand = biasEachBand[2],
-         wtToneDetect = percentToneDetectEachSNR[3], wtCorrectByBand = percentCorrectEachBand[3], wtBiasByBand = biasEachBand[3],
-         allToneDetect = allToneDetect, allPercentCorrect = allPercentCorrect, allBias = allBias,
+         PVCHR2toneDetect = percentToneDetectEachSNR[0], PVCHR2correctByBand = percentCorrectEachBand[0],
+         PVCHR2dprimeByBand = dprimeEachBand[0], PVCHR2hitRateByBand = hitRateEachBand[0], PVCHR2FArateByBand = FArateEachBand[0],
+
+         PVArchTtoneDetect = percentToneDetectEachSNR[1], PVArchTcorrectByBand = percentCorrectEachBand[1],
+         PVArchTdprimeByBand = dprimeEachBand[1], PVArchThitRateByBand = hitRateEachBand[1], PVArchTFArateByBand = FArateEachBand[1],
+
+         SOMArchTtoneDetect = percentToneDetectEachSNR[2], SOMArchTcorrectByBand = percentCorrectEachBand[2],
+         SOMArchTdprimeByBand = dprimeEachBand[2], SOMArchThitRateByBand = hitRateEachBand[2], SOMArchTFArateByBand = FArateEachBand[2],
+
+         PVCretoneDetect = percentToneDetectEachSNR[3], PVCrecorrectByBand = percentCorrectEachBand[3],
+         PVCredprimeByBand = dprimeEachBand[3], PVCrehitRateByBand = hitRateEachBand[3], PVCreFArateByBand = FArateEachBand[3],
+
+         SOMCretoneDetect = percentToneDetectEachSNR[4], SOMCrecorrectByBand = percentCorrectEachBand[4],
+         SOMCredprimeByBand = dprimeEachBand[4], SOMCrehitRateByBand = hitRateEachBand[4], SOMCreFArateByBand = FArateEachBand[4],
+
+         allToneDetect = allToneDetect, allPercentCorrect = allPercentCorrect, alldprimes = alldprime,
+         allHitRate = allHitRate, allFArate = allFArate,
+
          possibleSNRs = possibleSNRs, possibleBands = possibleBands)
 print(outputFile + " saved")
 
@@ -129,7 +139,6 @@ mouse = 'band068'
 sessions = [studyparams.band068_unimplanted[-1]]
 behavData = behavioranalysis.load_many_sessions(mouse, sessions)
 
-numBands = np.unique(behavData['currentBand'])
 numSNRs = np.unique(behavData['currentSNR'])
 trialsEachSNR = behavioranalysis.find_trials_each_type(behavData['currentSNR'], numSNRs)
 
@@ -153,5 +162,5 @@ outputFile = 'band068_unimplanted_psycurve.npz'
 outputFullPath = os.path.join(dataDir, outputFile)
 np.savez(outputFullPath,
          psyCurve = thisPsyCurve, upperError = upperErrorBar, lowerError = lowerErrorBar,
-         possibleSNRs = possibleSNRs, numTrials = np.sum(valid))
+         possibleSNRs = possibleSNRs, numTrials = (np.sum(toneChoiceThisCond) + np.sum(noiseChoiceThisCond)))
 print(outputFile + " saved")
