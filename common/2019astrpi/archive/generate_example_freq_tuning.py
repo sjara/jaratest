@@ -14,11 +14,6 @@ from jaratoolbox import spikesanalysis
 from jaratoolbox import celldatabase
 import studyparams
 
-if sys.version_info[0] < 3:
-    inputFunc = raw_input
-elif sys.version_info[0] >= 3:
-    inputFunc = input
-
 # ===================================parameters=================================
 baseRange = [-0.1, 0]
 responseRange = [0, 0.1]
@@ -31,13 +26,14 @@ FIGNAME = 'figure_frequency_tuning'
 titleExampleBW = True
 
 d1mice = studyparams.ASTR_D1_CHR2_MICE
-nameDB = studyparams.DATABASE_NAME + '.h5'
+nameDB = studyparams.DATABASE_NAME + '_original.h5'
 pathtoDB = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, nameDB)
 db = celldatabase.load_hdf(pathtoDB)
 
 examples = {}
-examples.update({'D1': 'd1pi036_2019-05-29_2900.0_TT5c3'})
-examples.update({'nD1': 'd1pi036_2019-05-29_2800.0_TT2c4'})
+# examples.update({'D1': 'd1pi046_2020-02-15_2800.0_TT2c2'})
+examples.update({'D1': 'd1pi041_2019-08-25_3100.0_TT6c1'})
+examples.update({'nD1': 'd1pi049_2020-03-13_3200.0_TT7c3'})
 
 exampleCell = [val for key, val in examples.items()]
 exampleKeys = [key for key, val in examples.items()]
@@ -131,36 +127,36 @@ D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
 nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
 exampleSpikeData.update({"D1_bw10": D1PopStat, "nD1_bw10": nD1PopStat})
 
-popStatCol = 'thresholdFRA'
-D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
-exampleSpikeData.update({"D1_thresholdFRA": D1PopStat, "nD1_thresholdFRA": nD1PopStat})
+# popStatCol = 'thresholdFRA'
+# D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+# nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+# exampleSpikeData.update({"D1_thresholdFRA": D1PopStat, "nD1_thresholdFRA": nD1PopStat})
 
 popStatCol = 'latency'
-D1PopStat = D1Responsive[popStatCol][pd.notnull(D1[popStatCol])]
-nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1[popStatCol])]
+D1PopStat = D1Responsive[popStatCol][pd.notnull(D1Responsive[popStatCol])]
+nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1Responsive[popStatCol])]
 D1PopStat = D1PopStat[D1PopStat > 0]
 nD1PopStat = nD1PopStat[nD1PopStat > 0]
 exampleSpikeData.update({"D1_latency": D1PopStat, "nD1_latency": nD1PopStat})
 
-popStatCol = 'cfOnsetivityIndex'
-D1PopStat = D1Responsive[popStatCol][pd.notnull(D1[popStatCol])]
-nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1[popStatCol])]
-exampleSpikeData.update({"D1_cfOnsetivityIndex": D1PopStat, "nD1_cfOnsetivityIndex": nD1PopStat})
+# popStatCol = 'cfOnsetivityIndex'
+# D1PopStat = D1Responsive[popStatCol][pd.notnull(D1Responsive[popStatCol])]
+# nD1PopStat = nD1Responsive[popStatCol][pd.notnull(nD1Responsive[popStatCol])]
+# exampleSpikeData.update({"D1_cfOnsetivityIndex": D1PopStat, "nD1_cfOnsetivityIndex": nD1PopStat})
 
-popStatCol = 'monotonicityIndex'
-D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
-nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
-exampleSpikeData.update({"D1_monotonicityIndex": D1PopStat, "nD1_monotonicityIndex": nD1PopStat})
+# popStatCol = 'monotonicityIndex'
+# D1PopStat = D1[popStatCol][pd.notnull(D1[popStatCol])]
+# nD1PopStat = nD1[popStatCol][pd.notnull(nD1[popStatCol])]
+# exampleSpikeData.update({"D1_monotonicityIndex": D1PopStat, "nD1_monotonicityIndex": nD1PopStat})
 
-exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples.npz')
+exampleDataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME, 'data_freq_tuning_examples_test.npz')
 
 # Check for if the directory to save to exists, and if not prompt the user to make it
 if os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)):
     np.savez(exampleDataPath, **exampleSpikeData)
     print("{} data saved to {}".format(FIGNAME, exampleDataPath))
 elif not os.path.isdir(os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)):
-    answer = inputFunc(
+    answer = input(
         "Save folder is not present. Would you like to make the desired directory now? (y/n) ")
     if answer in ['y', 'Y', 'Yes', 'YES']:
         os.mkdir(

@@ -60,9 +60,9 @@ def retrofit_gaussian_log2(y, a, x0, sigma, y0):
         return [lower, upper]
 
 
-def calculate_firing_rate(eventOnsetTimes, spikeTimes, baseRange, selectinds=[]):
+def calculate_spike_count(eventOnsetTimes, spikeTimes, baseRange, selectinds=[]):
     """
-    Creates functions for calculating spike rates
+    Creates functions for calculating spike counts
     Within the function, the module calculates response range(responseRange),
     and entire range(alignmentRange). Response range mirrors baseRange but on the
     post-stimulus time. It has the equal time distance from the stimulus
@@ -350,7 +350,7 @@ def calculate_latency(eventOnsetTimes, currentFreq,  uniqFreq, currentIntensity,
     timeRangeForLatency = [-0.1, 0.1]
     (respLatency, interim) = spikesanalysis.response_latency(spikeTimesFromEventOnset,
                                                              indexLimitsSelectedTrials,
-                                                             timeRangeForLatency, threshold=0.5,
+                                                             timeRangeForLatency, threshold=0.75,
                                                              win=signal.hanning(11))
 
     print('Response latency: {:0.1f} ms'.format(1e3 * respLatency))
@@ -444,7 +444,7 @@ def calculate_onset_to_sustained_ratio(eventOnsetTimes, spikeTimes, currentFreq,
                                        cf, respLatency):
     """
     Find the ratio of onset firing rate of the cell to the sustained firing rate
-    of the cell.
+    of the cell. Selects subset of trials with the CF and the top 5 intensities
     Args:
         eventOnsetTimes (numpy.ndarray): Same size as the number of trials with each
             value being the time sound detector turned on
