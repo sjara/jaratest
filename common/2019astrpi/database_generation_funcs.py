@@ -619,7 +619,7 @@ def calculate_am_significance_synchronization(amSyncSpikeTimesFromEventOnset, am
         amSpikeTimes (numpy.ndarray): Each value is a time when a spike occurred.
             Obatained from Ephys Data
         amOnsetTimes (numpy.ndarray): Contains as many values as there were trials
-            with each value being the tme a trial started.
+            with each value being the time a trial started.
         amBaseTime (list): Contains two values that represent the time range
             for the base firing rate
         amOnsetTime (list): Contains two values that represent the time range
