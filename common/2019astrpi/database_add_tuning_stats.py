@@ -8,10 +8,19 @@ This script calculates statistics used for:
 2. BW10 comparison
 3. Onset to sustained ratio comparison
 
-Run as:
-database_add_tuning_stats.py SUBJECT TAG 
+When run without arguments, this script will use all animals and store in a default database. This 
+script can also be run using arguments to specify a specfic basic database that has been generated. 
+The two arguments are "SUBJECT" and "TAG".
 
-A database must exist with these parameters or script will fail.  
+Run as (if not using tag)
+`database_add_tuning_stats.py` or `database_add_tuning_stats.py SUBJECT`
+
+Run as (if using tag)
+`database_add_tuning_stats.py SUBJECT TAG`
+
+The file `studyparams.py` contains a list of animals as well as statistical parameters for the 
+database calculations. Database scripts use functions from the moddule 
+`database_generation_funcs.py`. 
 """
 import os
 import sys
@@ -27,76 +36,48 @@ import database_generation_funcs as funcs
 
 # ========================== Run Mode ==========================
 
-NO_TAG = 0 # Set to 1 if no tag
-CLUSTERS = 0 # Set to 1 if database not filtered to find reliable cells 
+TAG = 0 # Automatically set to 1 if tag given
 
-# Determing run mode by arguments
-if __name__ == "__main__":
+# Determining animals used and file name by arguments given
+if __name__ == '__main__':
     if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
         arguments = sys.argv[1:] # Script parameters 
-        if arguments[0] == "all":
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
+        if len(arguments) == 2:
+                tag = arguments[1]
+                TAG = 1
+        if arguments[0].upper() in 'ALL':
             subjects = 'all'
         elif arguments[0].upper() == 'TEST':
-            d1mice = studyparams.SINGLE_MOUSE
             subjects = studyparams.SINGLE_MOUSE[0]
         elif isinstance(arguments[0], str):
-            d1mice = []
             subjects = arguments[0]
-            d1mice.append(subjects)
-            if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
-                answer = input('Subject could not be found, Would you like to run for all animals?')
-                if answer.upper() in ['YES', 'Y', '1']:
-                    d1mice = studyparams.ASTR_D1_CHR2_MICE
-                else:
-                    sys.exit()
-            else:
-                print('Subject found in database')
-        else:
-            # If no mice are specified, default to using all mice in the studyparams
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
-            subjects = 'all'
-        if len(arguments) == 2:
-            tag = arguments[1]
-        else:
-            NO_TAG = 1 
-            tag = ''
+            if subjects not in studyparams.ASTR_D1_CHR2_MICE:
+                sys.exit('\n SUBJECT ERROR, DATAFRAME COULD NOT BE LOADED')
     else:
-        d1mice = studyparams.ASTR_D1_CHR2_MICE
         subjects = 'all'
-        NO_TAG = 1
-        tag = ''
+        print('No arguments given, default database with all animals will be used')
+else:
+    subjects = 'all'
+    print("database_add_tuning_stats.py being ran as module, default database with all animals will be used")
 
-if NO_TAG == 1:
+if TAG == 1:
     directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells.h5'.format(subjects))  
+                                   'astrpi_{}_cells_{}.h5'.format(subjects, tag))
 else:
     directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells_{}.h5'.format(subjects, tag))
-    if not os.path.isfile(directory):
-        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                 'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
-        if not os.path.isfile(directory):
-            sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE FOUND: \n {}'.format(directory)) 
-        CLUSTERS = 1
-        
-if CLUSTERS:
-    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                       'astrpi_{}_clusters_{}.h5'.format(subjects, tag)) 
-else:
-    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                       'astrpi_{}_cells_{}.h5'.format(subjects, tag)) 
-
-# Checks if output directory exists 
+                                   'astrpi_{}_cells.h5'.format(subjects)) 
+    
 dir = os.path.dirname(directory)
+
+# Checks if file path exists
 if os.path.isdir(dir):
     print('Directory Exists')
 else:
-    sys.exit('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(directory))
-
-db = celldatabase.load_hdf(directory) # Loads cell database 
+    sys.exit('\n DIRECTORY ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(directory)) 
 
 # ========================== Tuning Curve Statistics Calculation ==========================
+
+db = celldatabase.load_hdf(directory) # Loads cell database 
 
 # Iterates through each cell in the database       
 for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
@@ -178,7 +159,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                         
             try:
                 respLatency = funcs.calculate_latency(tuningEventOnsetTimes, currentFreq, uniqFreq, 
-                                                      currentIntensity, uniqueIntensity, tuningSpikeTimes)
+                                                      currentIntensity, uniqueIntensity, 
+                                                      tuningSpikeTimes)
             except IndexError:
                  # If there are no spikes in the timeRangeForLatency
                 print("No spikes during the period for latency: cell {}".format(indRow)) 
@@ -215,8 +197,9 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                 # Calculations for response to baseline ratio for onset period (0 to 50ms)
                 onsetBaseRange = [-0.05, 0]  # Time used for onset response and baseline spike counts.
                 onsetnspkBaseTuning, onsetnspkRespTuning = funcs.calculate_spike_count(tuningEventOnsetTimes,
-                                                                                         tuningSpikeTimes, onsetBaseRange,
-                                                                                         selectinds=selectinds)
+                                                                                       tuningSpikeTimes, 
+                                                                                       onsetBaseRange,
+                                                                                       selectinds=selectinds)
                 onsetspks = np.concatenate([onsetspks, nspkRespTuning.ravel()])
                 onsetfreqs = np.concatenate([onsetfreqs, np.ones(len(nspkRespTuning.ravel())) * freq])
                 onsetRespSpikeMeanTuning[indInten, indFreq] = np.mean(onsetnspkRespTuning)
@@ -244,7 +227,9 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         
         db.at[indRow,'tuningResponseFR'] = respTuningMean  # The FR of the cell onset response (0 to 50 ms) 
         db.at[indRow,'tuningBaselineFR'] = baseTuningMean  # The FR of the cell baseline (-100 to -50 ms) 
-        db.at[indRow,'tuningResponseFRIndex'] = respBaseTuningRatio  # Index for ratio between response and base firing rates (between 0 and 1)
+        
+        # Index for ratio between response and base firing rates (between 0 and 1)
+        db.at[indRow,'tuningResponseFRIndex'] = respBaseTuningRatio
     
         if intensityInd is None:  # None of the intensities had anything
             bw10 = None
@@ -265,9 +250,11 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             cf = uniqFreq[freqInd]
                     
             if calculate:
-                monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(tuningEventOnsetTimes, currentFreq,
+                monoIndex, overallMaxSpikes = funcs.calculate_monotonicity_index(tuningEventOnsetTimes, 
+                                                                                 currentFreq,
                                                                                  currentIntensity,
-                                                                                 uniqueIntensity, tuningSpikeTimes,
+                                                                                 uniqueIntensity, 
+                                                                                 tuningSpikeTimes,
                                                                                  cf)
                 
                 onsetRate, sustainedRate, baseRate = funcs.calculate_onset_to_sustained_ratio(tuningEventOnsetTimes,
@@ -288,7 +275,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                 
             ind10Above = intensityInd + int(
                 10 / np.diff(uniqueIntensity)[0])  # How many inds to go above the threshold intensity ind
-            lowerFreq, upperFreq, Rsquared10AboveSIT = funcs.calculate_BW10_params(ind10Above, popts, Rsquareds,
+            lowerFreq, upperFreq, Rsquared10AboveSIT = funcs.calculate_BW10_params(ind10Above, 
+                                                                                   popts, Rsquareds,
                                                                                    responseThreshold,
                                                                                    intensityThreshold)
             # Checking that neither bound of BW10 is none
