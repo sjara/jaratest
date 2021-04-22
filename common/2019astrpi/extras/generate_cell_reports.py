@@ -1,17 +1,20 @@
 """
-[For all cells in DB] create cell reports include the following plots for
-four sessions:
+creates cell reports that include the following plots for four sessions:
+    
 noiseburst: raster, PSTH, ISI, waveform, sparks over time
 laserpulse: raster, PSTH, ISI, waveform, sparks over time
 TuningCurve: raster plot(averaged across all intensities), waveform, heatmap
 Amplitude modulation: raster plot
 
-By default, it generates for all animals in the dataframe. The user can pass an
-optional parameter to specify either just pure tone responsive cells or AM
-responsive cells.
-Ex: python3 generate_allCell_reports.py tuning (generates reports for tuned cells)
-    python3 generate_allCell_reports.py (generates reports for all cells)
-    python3 generate_allCell_reports.py am (generates reports for AM cells)
+When run without arguments, this script will use the default database generated for all animals. 
+This script can also be run using arguments to specify a specfic basic database that has been 
+generated. The two arguments are "SUBJECT" and "TAG".
+
+Run as (if not using tag)
+`generate_cell_reports.py` or `generate_cell_reports.py SUBJECT`
+
+Run as (if using tag)
+`generate_cell_reports.py SUBJECT TAG`
 
 Requires a dataframe with tuningTest calculations stored as it uses the R2 of the
 Gaussian from the tuning test in a title as a reported value (line 741). This
@@ -231,57 +234,46 @@ fig.clf()
 
 studyname = studyparams.STUDY_NAME
 
-# Checks to see if there are parameters passed with the script to only generate reports for specific cells. Otherwise does all
-NO_TAG = 0 # Set to 1 if no tag
-CLUSTERS = 0 # Set to 1 if database not filtered to find reliable cells 
+TAG = 0 # Automatically set to 1 if tag given
 
-# Determing run mode by arguments
-if __name__ == "__main__":
+# Determining animals used and file name by arguments given
+if __name__ == '__main__':
     if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
         arguments = sys.argv[1:] # Script parameters 
-        if arguments[0] == "all":
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
-            subjects = 'all'
-        elif isinstance(arguments[0], str):
-            d1mice = []
-            subjects = str(arguments[0]) 
-            d1mice.append(subjects)
-            if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
-                print('\n SUBJECT ERROR, DATAFRAME COULD NOT BE SAVED \n')
-                sys.exit()
-            else:
-                print('Subject found in database')
-        else:
-            # If no mice are specified, default to using all mice in the studyparams
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
-            subjects = 'all'
         if len(arguments) == 2:
-            tag = arguments[1]
-        else:
-            NO_TAG = 1 
-            tag = ''
+                tag = arguments[1]
+                TAG = 1
+        if arguments[0].upper() in 'ALL':
+            subjects = 'all'
+        elif arguments[0].upper() == 'TEST':
+            subjects = studyparams.SINGLE_MOUSE[0]
+        elif isinstance(arguments[0], str):
+            subjects = arguments[0]
+            if subjects not in studyparams.ASTR_D1_CHR2_MICE:
+                sys.exit('\n SUBJECT ERROR, DATAFRAME COULD NOT BE LOADED')
     else:
-        d1mice = studyparams.ASTR_D1_CHR2_MICE
         subjects = 'all'
-        NO_TAG = 1
-        tag = ''
+        print('No arguments given, default database with all animals will be used')
+else:
+    subjects = 'all'
+    print("generate_cell_reports.py being ran as module, default database with all animals will be used")
 
-if NO_TAG == 1:
+if TAG == 1:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells_tuning_AM.h5'.format(subjects)) 
-    outputDirectory = os.path.join(settings.CELL_REPORTS_PATH, studyname, '{}_cells\\'.format(subjects))
+                                   'astrpi_{}_cells_{}.h5'.format(subjects, tag))
+    outputDirectory = os.path.join(settings.CELL_REPORTS_PATH, studyname, '{}_cells_{}\\'.format(subjects, tag))
 else:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells_{}.h5'.format(subjects, tag))
-    if not os.path.isfile(inputDirectory):
-        inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                      'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
-        CLUSTERS = 1
-        
-    if CLUSTERS:
-        outputDirectory = os.path.join(settings.CELL_REPORTS_PATH, studyname, '{}_clusters_{}\\'.format(subjects, tag)) 
-    else:
-        outputDirectory = os.path.join(settings.CELL_REPORTS_PATH, studyname, '{}_cells_{}\\'.format(subjects, tag))
+                                   'astrpi_{}_cells.h5'.format(subjects)) 
+    outputDirectory = os.path.join(settings.CELL_REPORTS_PATH, studyname, '{}_cells\\'.format(subjects))
+
+dir = os.path.dirname(inputDirectory)
+
+# Checks if file path exists
+if os.path.isdir(dir):
+    print('Directory Exists')
+else:
+    sys.exit('\n DIRECTORY ERROR, DATAFRAME COULD NOT LOADED') 
 
 dir = os.path.dirname(outputDirectory)
 
@@ -290,17 +282,18 @@ if not os.path.isdir(dir):
     try:
         os.mkdir(dir)
     except OSError:
-        print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
+        print('\n FILENAME ERROR, CELL REPORTS COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
         sys.exit()
 elif os.path.isdir(dir):
     answer = input('A cell report folder for this database already exists. If you would like to ' 
                    'delete the existing cell reports type \'Delete\' If you would like to keep '
                    'these reports enter any other character \n'.format(dir))
     if answer.upper() == 'DELETE':
+        print('Deleting exisiting cell reports...')
         shutil.rmtree(outputDirectory)
         os.makedirs(outputDirectory)
 else:
-    print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
+    print('\n FILENAME ERROR, CELL REPORTS COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
     sys.exit() 
 
 # Loads database for plotting 
@@ -415,12 +408,12 @@ for indRow, dbRow in db.iterrows():
         plt.setp(hLaserCond, zorder=3)
         plt.ylabel('Trial')
         axLaserpulseRaster.set_xlim(-0.3, 0.5)
-        if dbRow.laserpulsePval < 0.05 and dbRow.laserpulseFRChange > 0 and dbRow.laserpulseResponseFR > 0.5:
-            plt.title("Laserpulse D1\n{}".format(dbRow.laserpulsePval), fontweight='bold')
-        elif dbRow.laserpulsePval >= 0.05 and dbRow.laserpulseFRChange <= 0:
-            plt.title("Laserpulse nD1\n{}".format(dbRow.laserpulsePval))
+        if dbRow.laserpulsePval100 < 0.05 and dbRow.laserpulseFRChange100 > 0 and dbRow.laserpulseResponseFR100 > 0.5:
+            plt.title("Laserpulse D1\n{}".format(dbRow.laserpulsePval100), fontweight='bold')
+        elif dbRow.laserpulsePval100 >= 0.05 and dbRow.laserpulseFRChange100 <= 0:
+            plt.title("Laserpulse nD1\n{}".format(dbRow.laserpulsePval100))
         else:
-            plt.title("Laserpulse Unidentified Cell \n{}".format(dbRow.laserpulsePval))
+            plt.title("Laserpulse Unidentified Cell \n{}".format(dbRow.laserpulsePval100))
             
         # PSTH plotting
         plt.sca(axLaserpulsePSTH)
