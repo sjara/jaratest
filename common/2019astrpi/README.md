@@ -292,7 +292,7 @@ threshold. Calculated by `database_generation_funcs.calculate_BW10_params()`.
 ## 4. Amplitude Modulated (AM) Statistics 
 Columns added with `database_add_am_stats.py`
 
-* *AMHighestRateSustained*: The amplitude modulation rate that produced the highest
+* *AMBestRateSustained*: The amplitude modulation rate that produced the highest
 sustained response
 
 * *AMPval*: The best p-value calculated for a cell's response compared to the baseline firing rate 
@@ -401,33 +401,28 @@ cell populations with the bar representing the median threshold for each populat
 This panel uses the *cfOnsetivityIndex* column of the database. It compares how the indices of the 
 populations varies with the bar being the median.
 
-## 2. Amplitude Modulated (AM) Figure Panels (Update once script finished)
+## 2. Amplitude Modulated (AM) Figure Panels
 The following panels are generated in the figure created by `figure_am.py`.
 
-TODO: Add this section once script finished 
+### Best Sustained Rate (Hz)
+Plot comparing the rate at which the cell has the highest sustained firing rate of D1 cells and nD1 
+cells. Uses *AMBestRateSustained* column.
 
-### Panels A, D
-These panels include example raster plots of a single D1 cell (A) and single nD1
-cell (D). Next to the rasters is a plot of the mean firing rate and standard
-deviations at each modulation rate. Uses data stores in `data_am_examples.npz`.
+### Highest Synchronization (Hz)
+Plot comparing the highest synchonization rate of D1 cells and nD1 cells. Uses the 
+*highestSyncCorrected* column.
 
-### Panel B
-Pie charts that show percentages of D1 and nD1 cells that are synchronized to at
-least one modulation rate. Uses the *highestSyncCorrected* column of the database
-calculated in `base stats`.
+### Percent Synchronization
+A bar chart that show percentages of D1 and nD1 cells that are synchronized to at least one 
+modulation rate. Uses the *highestSyncCorrected* column..
 
-### Panel C
-Plot comparing the highest synchonization rate of D1 cells and nD1 cells. Uses
-the *highestSyncCorrected* column of the database calculated in `base stats`.
+### Rate Descrimination Accuracy
+Plot of the accuracy of cells in discriminating the rate of amplitude modulation. Uses the 
+*rateDiscrimAccuracy* column.
 
-### Panel E
-Plot of the accuracy of cells in discriminating the rate of amplitude modulation.
-Uses the *rateDiscrimAccuracy* column of the database calculated in `base stats`
-
-### Panel F
-Plot of the accuracy of cells in discriminating the phase of amplitude modulation.
-Use the *phaseDiscrimAccuracy_{}Hz* where the {} is replaced by the specific rate.
-Calculated in `base stats`
+### Phase Descrimination Accuracy
+Plot of the accuracy of cells in discriminating the phase of amplitude modulation. Use the 
+*phaseDiscrimAccuracy_{}Hz* where the {} is replaced by the specific rate.
 
 # D - Other Files
 The following files are used for various supplementary functions. Archived versions of various files
@@ -453,8 +448,6 @@ X is a value between 1 and 4 that corresponds to type of manual selection, or no
 ### cell_indices_manually_removed.txt
 List of indices for cells that should be removed by manual selection. Cell indices come from
 any indices with a number code in `cell_indices_coded.txt`.
-
-TODO: Check the following scripts, may not work with updates to database 
 
 ### cluster_counts.py (Check Functionality)
 Calculate number of clusters by D1 vs nD1, by brain region filters, by tuning filters, etc. Needs a 
