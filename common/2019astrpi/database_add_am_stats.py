@@ -155,7 +155,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
             # db.at[indRow, 'AMHigestRateOnset'] = amRateBestOnset  # Rate that gave the highest onset response
             # db.at[indRow, 'AMBaseFRSustained'] = np.mean(amBaseSustainedSpikes)  # Mean baseline FR paired with sustained period (-500 ms to -100 ms)
             # db.at[indRow, 'AMRespFRSustained'] = np.mean(amRespSustainedSpikes)  # Mean response FR for sustained period (100 ms to 500 ms)
-            db.at[indRow, 'AMHighestRateSustained'] = amRateBestSustained  # Rate that gave the highest sustained response
+            db.at[indRow, 'AMBestRateSustained'] = amRateBestSustained  # Rate that gave the highest sustained response
     
             zStat, pVal = \
                 funcs.sound_response_any_stimulus(amEventOnsetTimes, amSpikeTimes, amTrialsEachCond, amResponseTime,
