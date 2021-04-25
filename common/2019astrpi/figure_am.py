@@ -4,7 +4,7 @@ This script creates a summary plot for amplitude modulated session data comparis
 that has had statistics added with `database_add_am_stats.py`. 
 
 This script plots:
-1. Highest Sustained Rate: Rate that gave the highest sustained (50-100ms after stimulus 
+1. Best Sustained Rate: Rate that gave the highest sustained (50-100ms after stimulus 
 presentation) response
 2. highest synchronization: Highest rate that cell synchronizes to by Rayleigh test
 3. Percent Synchronization: Percentage of cells that synchronize in each cell type group
@@ -93,14 +93,19 @@ else:
 outputDirectory = figparams.FIGURE_OUTPUT_DIR 
 
 # A value of 1 plots the given comparison, 0 does not 
-HIGHESTSUSTAINED = 1 #
+BESTSUSTAINED = 1 #
 HIGHESTSYNC = 1 #
-PERCENTSYNC = 0 #
+PERCENTSYNC = 1 #
 RATEDISCRIM = 1 #
-PHASEDISCRIM = 0 #
+PHASEDISCRIM = 1 #
 
 # Loads database for plotting 
 db = celldatabase.load_hdf(inputDirectory)
+db = db.query('AMBestRateSustained > 0') # Filter for cells that have AM response
+
+# Seperates database into D1 and nD1 cells
+D1db = db.query(studyparams.D1_CELLS)
+nD1db = db.query(studyparams.nD1_CELLS)
 
 # ========================== Figure Parameters ========================== 
 
@@ -126,7 +131,7 @@ gs = gridspec.GridSpec(1, 10)
 gs.update(left=0.04, right=0.98, top=0.95, bottom=0.175, wspace=1.1, hspace=0.5)
 
 # Creates axes objects for each plot
-axHighestSustained = plt.subplot(gs[0, 0:2])
+axBestSustained = plt.subplot(gs[0, 0:2])
 axHighestSync = plt.subplot(gs[0, 2:4])
 axPercentSync = plt.subplot(gs[0, 4:6])
 axRateDiscrim = plt.subplot(gs[0, 6:8])
@@ -134,71 +139,61 @@ axPhaseDiscrim = plt.subplot(gs[0, 8:10])
 
 freqs = [4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128]
 
-# ========================== Highest Rate Sustained ==========================
+# ========================== Best Rate Sustained ==========================
 
-if HIGHESTSUSTAINED:    
-    # Selects only cells with highest rate sustained values 
-    highestSustaineddb = db.query('AMHighestRateSustained * 0 == 0')
-
-    # Seperates database into D1 and nD1 cells
-    highestSustainedD1db = highestSustaineddb.query(studyparams.D1_CELLS)
-    highestSustainednD1db = highestSustaineddb.query(studyparams.nD1_CELLS)
-    
+if BESTSUSTAINED:      
     # Creates array of highest rate sustained 
-    highestSustainedD1 = highestSustainedD1db['AMHighestRateSustained'] 
-    highestSustainednD1 = highestSustainednD1db['AMHighestRateSustained']
+    bestSustainedD1 = D1db['AMBestRateSustained'] 
+    bestSustainednD1 = nD1db['AMBestRateSustained']
     
     # Calculates the median of the D1 and nD1 latencies 
-    highestSustainedMedD1 = highestSustainedD1.median() # Median of D1 cell latency
-    highestSustainedMednD1 = highestSustainednD1.median() # Median of nD1 cell latency
+    bestSustainedMedD1 = bestSustainedD1.median() # Median of D1 cell latency
+    bestSustainedMednD1 = bestSustainednD1.median() # Median of nD1 cell latency
     
     # Calculates the median of the D1 and nD1 latencies 
-    highestSustainedMeanD1 = highestSustainedD1.mean() # Median of D1 cell latency
-    highestSustainedMeannD1 = highestSustainednD1.mean() # Median of nD1 cell latency
+    bestSustainedMeanD1 = bestSustainedD1.mean() # Median of D1 cell latency
+    bestSustainedMeannD1 = bestSustainednD1.mean() # Median of nD1 cell latency
     
     # Calculates statistics for latency between cell type
-    zStat, pVal = stats.mannwhitneyu(highestSustainednD1, highestSustainedD1, alternative='two-sided')
+    zStat, pVal = stats.mannwhitneyu(bestSustainednD1, bestSustainedD1, alternative='two-sided')
 
     # Places Pval on plot 
-    plt.text(-5.1, 1, 'pVal = {:.4f}'.format(pVal))
+    plt.text(-10.9, 0.81, 'pVal = {:.4f}'.format(pVal))
     
     # Plot label
-    axHighestSustained.set_ylabel('Highest Sustained Period Rate (Hz)', fontsize=fontSizeLabels)
+    axBestSustained.set_ylabel('Best Sustained Rate (Hz)', fontsize=fontSizeLabels)
         
     # Axis spacing and labels 
-    axHighestSustained.set_xticks(range(2))
-    axHighestSustained.set_xticklabels(['D1\n Median={:.2f} \n n={}'.format(highestSustainedMedD1, len(highestSustainedD1)), 
-                               'nD1\n Median={:.2f} \n n={}'.format(highestSustainedMednD1,
-                                                                    len(highestSustainednD1))])
-    axHighestSustained.set_xlim([-0.5, 1.5])
-    axHighestSustained.set_yticks(freqs)
-    axHighestSustained.set_ylim([0, 130])
-    extraplots.set_ticks_fontsize(axHighestSustained, fontSizeTicks) # Axis tick fontsize
+    axBestSustained.set_xticks(range(2))
+    axBestSustained.set_xticklabels(['D1\n Median={:.2f} \n n={}'.format(bestSustainedMedD1, len(bestSustainedD1)), 
+                               'nD1\n Median={:.2f} \n n={}'.format(bestSustainedMednD1,
+                                                                    len(bestSustainednD1))])
+    axBestSustained.set_xlim([-0.5, 1.5])
+    axBestSustained.set_yticks(freqs)
+    axBestSustained.set_ylim([0, 130])
+    extraplots.set_ticks_fontsize(axBestSustained, fontSizeTicks) # Axis tick fontsize
     
     # plots latency of nD1 cells with a median line
-    pos = jitter(np.ones(len(highestSustainednD1))*1, dotSpread)
-    axHighestSustained.plot(pos, highestSustainednD1, '.', color=colornD1)
-    axHighestSustained.plot([.85,1.15], [highestSustainedMednD1, highestSustainedMednD1], color='black', lw=4, alpha=0.6) 
-    axHighestSustained.plot([.85,1.15], [highestSustainedMeannD1, highestSustainedMeannD1], color='grey', lw=4, alpha=0.6)
+    pos = jitter(np.ones(len(bestSustainednD1))*1, dotSpread)
+    axBestSustained.plot(pos, bestSustainednD1, '.', color=colornD1)
+    axBestSustained.plot([.85,1.15], [bestSustainedMednD1, bestSustainedMednD1], color='black', lw=4, alpha=0.6) 
+    axBestSustained.plot([.85,1.15], [bestSustainedMeannD1, bestSustainedMeannD1], color='grey', lw=4, alpha=0.6)
     
     # Plots latency of D1 cells with a median line
-    pos = jitter(np.ones(len(highestSustainedD1))*0, dotSpread)
-    axHighestSustained.plot(pos, highestSustainedD1, '.', color=colorD1)
-    axHighestSustained.plot([-.15,.15], [highestSustainedMedD1, highestSustainedMedD1], color='black', lw=4, alpha=0.6)
-    axHighestSustained.plot([-.15,.15], [highestSustainedMeanD1, highestSustainedMeanD1], color='grey', lw=4, alpha=0.6)
+    pos = jitter(np.ones(len(bestSustainedD1))*0, dotSpread)
+    axBestSustained.plot(pos, bestSustainedD1, '.', color=colorD1)
+    axBestSustained.plot([-.15,.15], [bestSustainedMedD1, bestSustainedMedD1], color='black', lw=4, alpha=0.6)
+    axBestSustained.plot([-.15,.15], [bestSustainedMeanD1, bestSustainedMeanD1], color='grey', lw=4, alpha=0.6)
     
     # Removes box around entire plot 
-    extraplots.boxoff(axHighestSustained)  
+    extraplots.boxoff(axBestSustained)  
 
 # ========================== Highest Synchronization ==========================
 
 if HIGHESTSYNC: 
     # Selects cells that have a highestSync value
-    highestSyncdb = db.query("highestSyncCorrected * 0 == 0")
-    
-    # Seperates database into D1 and nD1 cells
-    highestSyncD1db = highestSyncdb.query(studyparams.D1_CELLS)
-    highestSyncnD1db = highestSyncdb.query(studyparams.nD1_CELLS)
+    highestSyncD1db = D1db.query("highestSyncCorrected > 0")
+    highestSyncnD1db = nD1db.query("highestSyncCorrected > 0")
     
     # Creates array of highest rate Sync 
     highestSyncD1 = highestSyncD1db['highestSyncCorrected'] 
@@ -216,7 +211,7 @@ if HIGHESTSYNC:
     zStat, pVal = stats.mannwhitneyu(highestSyncnD1, highestSyncD1, alternative='two-sided')
 
     # Places Pval on plot 
-    plt.text(-3.8, 1, 'pVal = {:.4f}'.format(pVal))
+    plt.text(-8.2, 0.81, 'pVal = {:.4f}'.format(pVal))
     
     # Plot label
     axHighestSync.set_ylabel('Highest Synchronization (Hz)', fontsize=fontSizeLabels)
@@ -249,29 +244,32 @@ if HIGHESTSYNC:
 # ========================== Percent Synchronization ==========================
     
 if PERCENTSYNC:
+    percentSyncD1db = D1db.query("highestSyncCorrected > 0")
+    percentSyncnD1db = nD1db.query("highestSyncCorrected > 0")
+    
+    percentSyncD1 = len(percentSyncD1db) / len(D1db)
+    percentSyncnD1 = len(percentSyncnD1db) / len(nD1db)
+    
     # Plot label
-    axPercentSync.set_ylabel('BW10 Zoomed-in', fontsize=fontSizeLabels)
+    axPercentSync.set_ylabel('Percent Sychronization', fontsize=fontSizeLabels)
+        
+    # Axis spacing and labels 
+    axPercentSync.set_xticks(range(2))
+    axPercentSync.set_xticklabels(['D1\n n={}'.format(len(percentSyncD1db)), 'nD1\n n={}'.format(len(percentSyncnD1db))])
+       
+                        
+    axPercentSync.set_xlim([-0.5, 1.5])
+    axPercentSync.set_yticks([0, 0.025, 0.05, 0.075, 0.1])
+    axPercentSync.set_yticklabels(['0%', '2.5%', '5%', '7.5%', '10%'])
+    axPercentSync.set_ylim([0, 0.1])
+    extraplots.set_ticks_fontsize(axPercentSync, fontSizeTicks) # Axis tick fontsize
     
-    # Axis spacing and labels  
-    axPercentSync.set_xticks(range(2)) # x-axis tick positioning 
-    axPercentSync.set_xticklabels(['D1\n Median={:.2f}'.format(BW10MedD1), 
-                                  'nD1\n Median={:.2f}'.format(BW10MednD1)])
-    axPercentSync.set_xlim([-0.5, 1.5]) # x-axis tick limits 
-    axPercentSync.set_ylim([0, 1.5]) # y-axis tick limits 
-    extraplots.set_ticks_fontsize(axPercentSync, fontSizeTicks) # Sets tick fontsize
+    axPercentSync.bar(1, percentSyncnD1, width = 0.3, color=colornD1)
+    axPercentSync.bar(0, percentSyncD1, width = 0.3, color=colorD1)
     
-    # Plots BW10 zoomed for nD1 cells with a median line
-    pos = jitter(np.ones(len(BW10nD1))*1, dotSpread*2)
-    axPercentSync.plot(pos, BW10nD1, '.', color=colornD1)
-    axPercentSync.plot([.80,1.20], [BW10MednD1, BW10MednD1], color='black', lw=4, alpha=0.6)
-    
-    # Plots BW10 zoomed for D1 cells with a median line
-    pos = jitter(np.ones(len(BW10D1))*0, dotSpread*2)
-    axPercentSync.plot(pos, BW10D1, '.', color=colorD1)
-    axPercentSync.plot([-.20,.20], [BW10MedD1, BW10MedD1], color='black', lw=4, alpha=0.6)
-    
-    extraplots.boxoff(axPercentSync) # Removes box around plot
-   
+    # Removes box around entire plot 
+    extraplots.boxoff(axPercentSync)
+
 # ========================== Rate Discrimination Accuracy  ==========================
 
 if RATEDISCRIM:  
@@ -285,8 +283,7 @@ if RATEDISCRIM:
     # Creates array of highest rate sustained 
     rateDiscrimD1 = rateDiscrimD1db['rateDiscrimAccuracy'] 
     rateDiscrimnD1 = rateDiscrimnD1db['rateDiscrimAccuracy']
-    max1 = rateDiscrimD1.max()
-    max2 = rateDiscrimnD1.max()
+
     # Calculates the median of the D1 and nD1 latencies 
     rateDiscrimMedD1 = rateDiscrimD1.median() # Median of D1 cell latency
     rateDiscrimMednD1 = rateDiscrimnD1.median() # Median of nD1 cell latency
@@ -299,7 +296,7 @@ if RATEDISCRIM:
     zStat, pVal = stats.mannwhitneyu(rateDiscrimnD1, rateDiscrimD1, alternative='two-sided')
 
     # Places Pval on plot 
-    plt.text(-1.1, 1, 'pVal = {:.4f}'.format(pVal))
+    plt.text(-2.8, 0.81, 'pVal = {:.4f}'.format(pVal))
     
     # Plot label
     axRateDiscrim.set_ylabel('Rate Discrimination accuracy', fontsize=fontSizeLabels)
@@ -311,6 +308,7 @@ if RATEDISCRIM:
                                                                     len(rateDiscrimnD1))])
     axRateDiscrim.set_xlim([-0.5, 1.5])
     axRateDiscrim.set_yticks([0.5, 0.6, 0.7, 0.8, 0.9, 1])
+    axRateDiscrim.set_yticklabels(['50%', '60%', '70%', '80%', '90%', '100%'])
     axRateDiscrim.set_ylim([0.5, 1])
     extraplots.set_ticks_fontsize(axRateDiscrim, fontSizeTicks) # Axis tick fontsize
     
@@ -332,53 +330,72 @@ if RATEDISCRIM:
 # ========================== Phase Discrimination Accuracy ==========================
 
 if PHASEDISCRIM: 
-    onsetdb = db.query('tuningResponseFRIndex > {}'.format(latencyRatio))
-    onsetdb = onsetdb.query('tuningResponseFR > {}'.format(latencyRate))   
-    onsetdb = onsetdb.query('bw10 > 0')
-    # onsetdb = db
+    phaseDiscrimD1db = D1db.query("phaseDiscrimAccuracy4Hz* 0 == 0")
+    phaseDiscrimnD1db = nD1db.query("phaseDiscrimAccuracy4Hz* 0 == 0")
     
-    # Seperates database into D1 and nD1 cells
-    onsetD1db = onsetdb.query(studyparams.D1_CELLS) # D1 cells
-    onsetnD1db = onsetdb.query(studyparams.nD1_CELLS) # nD1 cells
+    ratesToUse = np.array([4, 5, 8, 11, 16, 22, 32, 45, 64, 90, 128])
+    keys = ['phaseDiscrimAccuracy{}Hz'.format(rate) for rate in ratesToUse]
+
+    phaseDiscrimD1Data = np.full((len(phaseDiscrimD1db), len(ratesToUse)), np.nan)
+    phaseDiscrimnD1Data = np.full((len(phaseDiscrimD1db), len(ratesToUse)), np.nan)
+
+    for externalInd, (indRow, row) in enumerate(phaseDiscrimD1db.iterrows()):
+        for indKey, key in enumerate(keys):
+            phaseDiscrimD1Data[externalInd, indKey] = row[key]
+
+    for externalInd, (indRow, row) in enumerate(phaseDiscrimnD1db.iterrows()):
+        for indKey, key in enumerate(keys):
+            phaseDiscrimnD1Data[externalInd, indKey] = row[key]
+
+    phaseDiscrimD1 = np.nanmean(phaseDiscrimD1Data, axis=1)
+    phaseDiscrimD1 = phaseDiscrimD1[phaseDiscrimD1 *  0 == 0]
+    # acMeanPerCell = acMeanPerCell[~np.isnan(acMeanPerCell)]
+    phaseDiscrimnD1 = np.nanmean(phaseDiscrimnD1Data, axis=1)
+    phaseDiscrimnD1 = phaseDiscrimnD1[phaseDiscrimnD1 *  0 == 0]
+    # thalMeanPerCell = thalMeanPerCell[~np.isnan(thalMeanPerCell)]
     
-    # Creates array of onset to sustained ratio values for each cell group
-    onsetD1 = onsetD1db['cfOnsetivityIndex']
-    onsetnD1 = onsetnD1db['cfOnsetivityIndex']
+    # Calculates the median of the D1 and nD1 latencies 
+    phaseDiscrimMedD1 = np.median(phaseDiscrimD1) # Median of D1 cell latency
+    phaseDiscrimMednD1 = np.median(phaseDiscrimnD1) # Median of nD1 cell latency
     
-    zstat, pVal = stats.mannwhitneyu(onsetnD1, onsetD1, alternative='two-sided')
+    # Calculates the median of the D1 and nD1 latencies 
+    phaseDiscrimMeanD1 = np.mean(phaseDiscrimD1) # Median of D1 cell latency
+    phaseDiscrimMeannD1 = np.mean(phaseDiscrimnD1) # Median of nD1 cell latency
     
-    plt.text(2.8, 8, 'pVal = {:.2f}'.format(pVal))
-    
-    # Filters out any non-number values
-    onsetD1 = onsetD1[onsetD1*0 == 0]
-    onsetnD1 = onsetnD1[onsetnD1*0 == 0]
-    
-    # Takes median of D1 and nD1 onset to sustained ratios
-    onsetMedD1 = np.median(onsetD1)
-    onsetMednD1 = np.median(onsetnD1)
+    # Calculates statistics for latency between cell type
+    zStat, pVal = stats.mannwhitneyu(phaseDiscrimnD1, phaseDiscrimD1, alternative='two-sided')
+
+    # Places Pval on plot 
+    plt.text(0, 0.81, 'pVal = {:.4f}'.format(pVal))
     
     # Plot label
-    axPhaseDiscrim.set_ylabel('Onset to sustained ratio', fontsize=fontSizeLabels)
-    
-    # X-axis scaling and labels 
+    axPhaseDiscrim.set_ylabel('Phase Discrimination accuracy', fontsize=fontSizeLabels)
+        
+    # Axis spacing and labels 
     axPhaseDiscrim.set_xticks(range(2))
+    axPhaseDiscrim.set_xticklabels(['D1\n Median={:.2f} \n n={}'.format(phaseDiscrimMedD1, len(phaseDiscrimD1)), 
+                               'nD1\n Median={:.2f} \n n={}'.format(phaseDiscrimMednD1,
+                                                                    len(phaseDiscrimnD1))])
     axPhaseDiscrim.set_xlim([-0.5, 1.5])
-    axPhaseDiscrim.set_ylim([-0.51, 1.1])
-    extraplots.set_ticks_fontsize(axPhaseDiscrim, fontSizeTicks)
-    axPhaseDiscrim.set_xticklabels(['D1\n Median={:.2f}'.format(onsetMedD1), 
-                             'nD1\n Median={:.2f}'.format(onsetMednD1)])
+    axPhaseDiscrim.set_yticks([0.5, 0.6, 0.7, 0.8])
+    axPhaseDiscrim.set_yticklabels(['50%', '60%', '70%', '80%'])
+    axPhaseDiscrim.set_ylim([0.5, 0.8])
+    extraplots.set_ticks_fontsize(axPhaseDiscrim, fontSizeTicks) # Axis tick fontsize
     
-    # Plots onset to sustained ratio for nD1 cells with a median line
-    pos = jitter(np.ones(len(onsetnD1))*1, dotSpread)
-    axPhaseDiscrim.plot(pos, onsetnD1, '.', color=colornD1)
-    axPhaseDiscrim.plot([.8,1.2], [onsetMednD1, onsetMednD1], color='black', lw=4, alpha=0.6)
+    # plots latency of nD1 cells with a median line
+    pos = jitter(np.ones(len(phaseDiscrimnD1))*1, dotSpread)
+    axPhaseDiscrim.plot(pos, phaseDiscrimnD1, '.', color=colornD1)
+    axPhaseDiscrim.plot([.85,1.15], [phaseDiscrimMednD1, phaseDiscrimMednD1], color='black', lw=4, alpha=0.6) 
+    axPhaseDiscrim.plot([.85,1.15], [phaseDiscrimMeannD1, phaseDiscrimMeannD1], color='grey', lw=4, alpha=0.6)
     
-    # Plots onset to sustained ratio for D1 cells with a median line
-    pos = jitter(np.ones(len(onsetD1))*0, dotSpread)
-    axPhaseDiscrim.plot(pos, onsetD1, '.', color=colorD1)
-    axPhaseDiscrim.plot([-.2,.2], [onsetMedD1, onsetMedD1], color='black', lw=4, alpha=0.6)
+    # Plots latency of D1 cells with a median line
+    pos = jitter(np.ones(len(phaseDiscrimD1))*0, dotSpread)
+    axPhaseDiscrim.plot(pos, phaseDiscrimD1, '.', color=colorD1)
+    axPhaseDiscrim.plot([-.15,.15], [phaseDiscrimMedD1, phaseDiscrimMedD1], color='black', lw=4, alpha=0.6)
+    axPhaseDiscrim.plot([-.15,.15], [phaseDiscrimMeanD1, phaseDiscrimMeanD1], color='grey', lw=4, alpha=0.6)
     
-    extraplots.boxoff(axPhaseDiscrim) # Removes box around plot 
+    # Removes box around entire plot 
+    extraplots.boxoff(axPhaseDiscrim)
 
 # ========================== Saving ==========================
 
