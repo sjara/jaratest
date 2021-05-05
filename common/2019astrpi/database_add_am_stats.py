@@ -4,15 +4,25 @@ This script takes an existing database and calculates statistics using data from
 statistics are used for amplitude modulated sound response comparison. 
 
 This script calculates statistics used for:
-1. Highest Synchronization Sustained UNFINISHED
-2. Percent Synchronization UNFINISHED
-3. Rate Descrimination Accuracy UNFINISHED
-4. Phase Descrimination Accuracy UNFINISHED
+1. Highest Rate Sustained Comparison
+2. Highest Synchronization Comparison
+2. Percent Synchronization Comparison
+3. Rate Descrimination Accuracy Comparison
+4. Phase Descrimination Accuracy Comparison
 
-Run as:
-database_add_am_stats.py SUBJECT TAG 
+When run without arguments, this script will use all animals and store in a default database. This 
+script can also be run using arguments to specify a specfic basic database that has been generated. 
+The two arguments are "SUBJECT" and "TAG".
 
-A database must exist with these parameters or script will fail.
+Run as (if not using tag)
+`database_add_am_stats.py` or `database_add_am_stats.py SUBJECT`
+
+Run as (if using tag)
+`database_add_am_stats.py SUBJECT TAG`
+
+The file `studyparams.py` contains a list of animals as well as statistical parameters for the 
+database calculations. Database scripts use functions from the moddule 
+`database_generation_funcs.py`. 
 """
 import os
 import sys
@@ -27,81 +37,50 @@ import database_generation_funcs as funcs
 
 # ========================== Run Mode ==========================
 
-# TODO: Create statistic calculation for comparisons 
+TAG = 0 # Automatically set to 1 if tag given
 
-NO_TAG = 0 # Set to 1 if no tag
-CLUSTERS = 0 # Set to 1 if database not filtered to find reliable cells 
-
-# Determing run mode by arguments
-if __name__ == "__main__":
+# Determining animals used and file name by arguments given
+if __name__ == '__main__':
     if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
         arguments = sys.argv[1:] # Script parameters 
-        if arguments[0] == "all":
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
+        if len(arguments) == 2:
+                tag = arguments[1]
+                TAG = 1
+        if arguments[0].upper() in 'ALL':
             subjects = 'all'
         elif arguments[0].upper() == 'TEST':
-            d1mice = studyparams.SINGLE_MOUSE
             subjects = studyparams.SINGLE_MOUSE[0]
         elif isinstance(arguments[0], str):
-            d1mice = []
             subjects = arguments[0]
-            d1mice.append(subjects)
-            if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
-                answer = input('Subject could not be found, Would you like to run for all animals?')
-                if answer.upper() in ['YES', 'Y', '1']:
-                    d1mice = studyparams.ASTR_D1_CHR2_MICE
-                else:
-                    sys.exit()
-            else:
-                print('Subject found in database')
-        else:
-            # If no mice are specified, default to using all mice in the studyparams
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
-            subjects = 'all'
-        if len(arguments) == 2:
-            tag = arguments[1]
-        else:
-            NO_TAG = 1 
-            tag = ''
+            if subjects not in studyparams.ASTR_D1_CHR2_MICE:
+                sys.exit('\n SUBJECT ERROR, DATAFRAME COULD NOT BE LOADED')
     else:
-        d1mice = studyparams.ASTR_D1_CHR2_MICE
         subjects = 'all'
-        NO_TAG = 1
-        tag = ''
+        print('No arguments given, default database with all animals will be used')
+else:
+    subjects = 'all'
+    print("database_add_am_stats.py being ran as module, default database with all animals will be used")
 
-if NO_TAG == 1:
+if TAG == 1:
     directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells.h5'.format(subjects)) 
-    directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                   'astrpi_{}_cells.h5'.format(subjects)) 
+                                   'astrpi_{}_cells_{}.h5'.format(subjects, tag))
 else:
     directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells_{}.h5'.format(subjects, tag))
-    if not os.path.isfile(directory):
-        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                      'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
-        CLUSTERS = 1
-        
-    if CLUSTERS:
-        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                       'astrpi_{}_clusters_{}.h5'.format(subjects, tag)) 
-    else:
-        directory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                       'astrpi_{}_cells_{}.h5'.format(subjects, tag)) 
-
+                                   'astrpi_{}_cells.h5'.format(subjects)) 
+    
 dir = os.path.dirname(directory)
 
+# Checks if file path exists
 if os.path.isdir(dir):
     print('Directory Exists')
 else:
-    print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(directory))
-    sys.exit()
+    sys.exit('\n DIRECTORY ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(directory)) 
  
-# ========================== Basic Database Creation ==========================
-
+# ========================== Amplitude Modulated Statistics Calculation ==========================
+    
 db = celldatabase.load_hdf(directory) # Loads cell database 
 
-# Iterates through each cell in the basic database       
+# Iterates through each cell in the database       
 for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
     
@@ -118,7 +97,8 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         # General variables for am calculations/plotting from ephys and behavior data
         amSpikeTimes = amEphysData['spikeTimes']
         amEventOnsetTimes = amEphysData['events']['soundDetectorOn']
-        amEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(amEventOnsetTimes, minEventOnsetDiff=0.2)
+        amEventOnsetTimes = spikesanalysis.minimum_event_onset_diff(amEventOnsetTimes, 
+                                                                    minEventOnsetDiff=0.2)
         amCurrentRate = amBehavData['currentFreq']
         amUniqRate = np.unique(amCurrentRate)
         amTimeRange = [-0.2, 0.7]
@@ -141,6 +121,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     
             amBaseTimeOnset = [-0.1, 0]
             amBaseTimeSustained = [-0.5, -0.1]
+            
             # Initializing lowest possible firing rate to compare to later
             amSusFR = 0
             amOnsetFR = 0
@@ -171,7 +152,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                     
             # db.at[indRow, 'AMBaseFROnset'] = np.mean(amBaseOnsetSpikes)  # Mean baseline FR matched for the onset period (-100 ms to 0 ms)
             # db.at[indRow, 'AMRespFROnset'] = np.mean(amRespOnsetSpikes)  # Mean response FR for the onset period (0 ms to 100 ms)
-            db.at[indRow, 'AMBestRateOnset'] = amRateBestOnset  # Rate that gave the highest onset response
+            # db.at[indRow, 'AMHigestRateOnset'] = amRateBestOnset  # Rate that gave the highest onset response
             # db.at[indRow, 'AMBaseFRSustained'] = np.mean(amBaseSustainedSpikes)  # Mean baseline FR paired with sustained period (-500 ms to -100 ms)
             # db.at[indRow, 'AMRespFRSustained'] = np.mean(amRespSustainedSpikes)  # Mean response FR for sustained period (100 ms to 500 ms)
             db.at[indRow, 'AMBestRateSustained'] = amRateBestSustained  # Rate that gave the highest sustained response
@@ -209,20 +190,20 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
                 db.at[indRow, 'AMsynchronizationPval'] = amSyncPValue  # p-value from Rayleigh's test for periodicity
                 db.at[indRow, 'AMsynchronizationZstat'] = amSyncZStat  # Statistic from Rayleigh's test for periodicity
     
+                # ========================== Phase Descrimination Accuracy ==========================
+                
                 phaseDiscrimAccuracyDict = funcs.calculate_phase_discrim_accuracy(amSpikeTimes, amEventOnsetTimes,
                                                                                   amCurrentRate, amUniqRate)
-                
-                # ========================== Phase Descrimination Accuracy ==========================
 
                 for rate in amUniqRate:
                     db.at[indRow, 'phaseDiscrimAccuracy{}Hz'.format(int(rate))] = \
                         phaseDiscrimAccuracyDict[int(rate)]
     
+                # ========================== Rate Descrimination Accuracy ==========================
+                        
                 rateDiscrimAccuracy = funcs.calculate_rate_discrimination_accuracy(amSpikeTimes, amEventOnsetTimes,
                                                                                     amBaseTime, amResponseTime,
                                                                                     amCurrentRate)
-                
-                # ========================== Rate Descrimination Accuracy ==========================
                 
                 db.at[indRow, 'rateDiscrimAccuracy'] = rateDiscrimAccuracy
                 

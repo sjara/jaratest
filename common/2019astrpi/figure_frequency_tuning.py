@@ -1,21 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-This script creates a summary plot for tuning curve data comparison using a database that has had
-statistics added with `database_add_tuning_stats.py`. 
+This script creates a summary plot for tuning curve session data comparison using a database that 
+has had statistics added with `database_add_tuning_stats.py`. 
 
 This script plots:
-1. Latency (Delay in cell response)
+1. Latency in ms (Delay in cell response)
 2. BW10 (Bandwidth of cell response 10 dB above intensity threshold)
-3. BW10 zoomed- (A zoomed-in version of BW10 to show more detail)
+3. BW10 zoomed-in (A zoomed-in version of BW10 to show more detail)
 4. Threshold (The intensity with the maximum firing rate)
 5. onset to sustianed ratio (Ratio of firing rate between onset (0-50ms after stimulus presentation)
 and sustained (50-100ms after stimulus presentation) periods)
 
-Run as:
-figure_frequency_tuning.py SUBJECT TAG 
+When run without arguments, this script will use the default database generated for all animals. 
+This script can also be run using arguments to specify a specfic basic database that has been 
+generated. The two arguments are "SUBJECT" and "TAG".
 
-A database must exist with these parameters or script will fail. If the tuning statistics have not 
-previously calculated and 'tuning' not in filename,'tuning' will be added to the filename. 
+Run as (if not using tag)
+`database_add_tuning_stats.py` or `database_add_tuning_stats.py SUBJECT`
+
+Run as (if using tag)
+`database_add_tuning_stats.py SUBJECT TAG`
+
+The file `figparams.py` contains common parameters for figures and data related to these figures. 
 """
 import os
 import figparams
@@ -41,53 +47,48 @@ dotSpread = 0.2 # Value for spread of points on figures (higher value equals gre
 
 # ========================== Run Mode ==========================
 
-NO_TAG = 0 # Set to 1 if no tag 
+TAG = 0 # Automatically set to 1 if tag given
 
-# Determing run mode by arguments
-if __name__ == "__main__":
+# Determining animals used and file name by arguments given
+if __name__ == '__main__':
     if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
         arguments = sys.argv[1:] # Script parameters 
-        if arguments[0] == "all":
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
+        if len(arguments) == 2:
+                tag = arguments[1]
+                TAG = 1
+        if arguments[0].upper() in 'ALL':
             subjects = 'all'
         elif arguments[0].upper() == 'TEST':
-            d1mice = studyparams.SINGLE_MOUSE
             subjects = studyparams.SINGLE_MOUSE[0]
         elif isinstance(arguments[0], str):
-            d1mice = []
             subjects = arguments[0]
-            d1mice.append(subjects)
-            if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
-                answer = input('Subject could not be found, Would you like to run for all animals?')
-                if answer.upper() in ['YES', 'Y', '1']:
-                    d1mice = studyparams.ASTR_D1_CHR2_MICE
-                else:
-                    sys.exit()
-            else:
-                print('Subject found in database')
-        else:
-            # If no mice are specified, default to using all mice in the studyparams
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
-            subjects = 'all'
-        if len(arguments) == 2:
-            tag = arguments[1]
-        else:
-            NO_TAG = 1 
+            if subjects not in studyparams.ASTR_D1_CHR2_MICE:
+                sys.exit('\n SUBJECT ERROR, DATAFRAME COULD NOT BE LOADED')
     else:
-        d1mice = studyparams.ASTR_D1_CHR2_MICE
         subjects = 'all'
-        NO_TAG = 1 
-        
-if NO_TAG == 1:
+        print('No arguments given, default database with all animals will be used')
+else:
+    subjects = 'all'
+    print("figure_frequency_tuning.py being ran as module, default database with all animals will be used")
+
+if TAG == 1:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_cells.h5'.format(subjects)) 
-    outputDirectory = figparams.FIGURE_OUTPUT_DIR 
+                                   'astrpi_{}_cells_{}.h5'.format(subjects, tag))
+    figFilename = 'astrpi_{}_cells_figure_frequency_tuning_{}'.format(subjects, tag)
 else:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_cells_{}.h5'.format(subjects, tag))
-    outputDirectory = figparams.FIGURE_OUTPUT_DIR 
+                                   'astrpi_{}_cells.h5'.format(subjects)) 
+    figFilename = 'astrpi_{}_cells_figure_frequency_tuning'.format(subjects)
 
-figFilename = 'figure_{}'.format(studyparams.DATABASE_NAME)
+dir = os.path.dirname(inputDirectory)
+
+# Checks if file path exists
+if os.path.isdir(dir):
+    print('Directory Exists')
+else:
+    sys.exit('\n DIRECTORY ERROR, DATAFRAME COULD NOT LOADED') 
+
+outputDirectory = figparams.FIGURE_OUTPUT_DIR 
 
 # A value of 1 plots the given comparison, 0 does not 
 LATENCY = 1 # Time of response relative to stimulus

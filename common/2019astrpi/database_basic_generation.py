@@ -5,22 +5,28 @@ celldatabase.generate_cell_database_from_subjects(). Further analysis can be don
 database_.py scripts. 
 
 The database generated with this script is filtered by:
-1. ISI violations less than 0.05
-2. Spike shape quality greater than 2
+1. ISI violations (threshold specified in celldatabase.generate_cell_database_from_subjects)
+2. Spike shape quality (threshold specified in celldatabase.generate_cell_database_from_subjects)
 
-If run normally, it will use all animals and store in a default database. The two arguements 
-'SUBJECT' and 'TAG' can also be used. 
+When run without arguments, this script will use all animals and store in a default database. This 
+script can also be run using arguments. The two arguments are "SUBJECT" and "TAG".
 
-SUBJECT can be a singular subject, 'all', or 'test'. 'all' will use all of the subjects listed in 
-studyparams.py. 'test' will use the test subject listed in studyparams.py. If nothing is 
-specified, all subjects will be ran. 
+SUBJECT can be a single animal (example - `d1pi043`), `all`, or `test`. `all` will use all of the 
+subjects listed in studyparams.py. `test` will use the test subject listed in studyparams.py. If 
+nothing is specified, all subjects will be used. 
 
-Optionally you can set a TAG on the database (using file name acceptable characters). You must enter 
-a subject parameter before entering a tag. Aditionally, these two must be the first two parameters 
-entered, any subsequent will not be used.
+Optionally you can set a TAG on the database (using filename acceptable characters). You must enter 
+a subject parameter before entering a tag. The tag will appear at the end of the database filename.
 
-Run as:
-database_basic_generation.py SUBJECT TAG 
+Run as (if not using tag)
+`database_basic_generation.py` or `database_basic_generation.py SUBJECT`
+
+Run as (if using tag)
+`database_basic_generation.py SUBJECT TAG`
+
+The file `studyparams.py` contains a list of animals as well as statistical parameters for the 
+database calculations. Database scripts use functions from the moddule 
+`database_generation_funcs.py`.
 '''
 import sys
 import os
@@ -30,58 +36,59 @@ from jaratoolbox import settings
 
 # ========================== Run Mode ==========================
 
-NO_TAG = 0 # Automatically set to 1 if no tag given
+TAG = 0 # Automatically set to 1 if tag given
 
-# Determining animals used and file name by arguements given
+# Determining animals used and file name by arguments given
 if __name__ == '__main__':
     if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
         arguments = sys.argv[1:] # Script parameters 
+        if len(arguments) == 2:
+                tag = arguments[1]
+                TAG = 1
         if arguments[0].upper() in 'ALL':
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
             subjects = 'all'
+            d1mice = studyparams.ASTR_D1_CHR2_MICE
         elif arguments[0].upper() == 'TEST':
-            d1mice = studyparams.SINGLE_MOUSE
             subjects = studyparams.SINGLE_MOUSE[0]
+            d1mice = studyparams.SINGLE_MOUSE
         elif isinstance(arguments[0], str):
-            d1mice = []
             subjects = arguments[0]
+            d1mice = []
             d1mice.append(subjects)
             if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
                 answer = input('Subject could not be found, Would you like to run for all animals?')
                 if answer.upper() in ['YES', 'Y', '1']:
+                    subjects = 'all'
                     d1mice = studyparams.ASTR_D1_CHR2_MICE
                 else:
-                    sys.exit()
+                    sys.exit('\n No database will be saved')
             else:
                 print('Subject found in database')
         else:
-            # If no mice are specified, default to using all mice in the studyparams
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
-            subjects = 'all'
-        if len(arguments) == 2:
-            tag = arguments[1]
-        else:
-            NO_TAG = 1
+            sys.exit('\n SUBJECT ERROR, DATAFRAME COULD NOT BE SAVED')
     else:
-        d1mice = studyparams.ASTR_D1_CHR2_MICE
         subjects = 'all'
-        NO_TAG = 1
+        d1mice = studyparams.ASTR_D1_CHR2_MICE
+        print('No arguments given, all animals will be used')
+else:
+    subjects = 'all'
+    d1mice = studyparams.ASTR_D1_CHR2_MICE
+    print("database_basic_generation.py being ran as module, all animals will be used")
 
-if NO_TAG == 1:
+if TAG == 1:
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_clusters.h5'.format(subjects)) 
+                           'astrpi_{}_clusters_{}.h5'.format(subjects, tag)) 
 else:
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_clusters_{}.h5'.format(subjects, tag)) 
-
+                               'astrpi_{}_clusters.h5'.format(subjects)) 
+    
 dir = os.path.dirname(outputDirectory)
 
 # Checks if file path exists
 if os.path.isdir(dir):
     print('Directory Exists')
 else:
-    print('\n FILENAME ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
-    sys.exit()
+    sys.exit('\n DIRECTORY ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
                               
 # ========================== Basic Database Creation ==========================
         

@@ -29,11 +29,12 @@ This project looks into characterizing MSN's on the direct and indirect striatal
 # A - Generating and Using a Database
 This section details steps from building a basic database, to plotting summary figures for data 
 comparison. `database_add_tuning_stats.py` and `database_add_am_stats.py` can be run in any order,
-the following is simply an example route of database creation. 
+the following is simply an example route of database creation. The output section for each step
+assumes that the scripts are ran in this order. 
 
 ## 1. General Instructions for Running Scripts
 When run without arguments, each script will use all animals and store in a default database. Each 
-script can also be run using arguments. The two arguments are 'SUBJECT' and 'TAG'. Specific 
+script can also be run using arguments. The two arguments are "SUBJECT" and "TAG". Specific 
 instructions can be found in the subsequent sections below, or in each script's docstring.
 
 SUBJECT can be a single animal (example - `d1pi043`), `all`, or `test`. `all` will use all of the 
@@ -58,8 +59,11 @@ The first step is to create a minimally filtered, basic database. This is done b
 `database_basic_generation.py` 
 
 Output is a file named `astrpi_all_clusters.h5` (modified if subjects or tag specified), 
-containing the statistics under `Base statistics` in section `B - Database contents` 
+containing the statistics under `Base Statistics` in section `B - Database Contents` 
 below. 
+
+### Example Commands:
+`run database_basic_generation.py` or `run database_basic_generation.py d1pi043 test1` 
 
 ## 3. Selecting Reliable Cells and Adding Laserpulse Session Statistics
 After the creation of a basic database, run `database_select_reliable_cells.py` in order to filter
@@ -68,48 +72,65 @@ contains a list of manually-removed cells, found in `extras`. Other selection pa
 found in `studyparams.py`.
  
 Output is a file named `astrpi_all_cells.h5` (modified if subjects or tag specified), 
-containing the statistics under `Base statistics` and `Laserpulse statistics` in section 
-`B - Database contents` below. Contains only rows that passed cell selection. Note, if this script 
+containing the statistics under `Base Statistics` and `Laserpulse Statistics` in section 
+`B - Database Contents` below. Contains only rows that passed cell selection. Note, if this script 
 is ran with a database that has had frequency tuning or amplitude modulated (AM) statistics added, 
 they will be removed. 
+
+### Example Commands:
+`run database_select_reliable_cells.py` or `run database_select_reliable_cells.py d1pi043 test1` 
 
 ## 4. Adding Frequency Tuning Session Statistics
 In order to add frequency tuning session statistics, run `database_add_tuning_stats.py`. 
 
 Output is a file named `astrpi_all_cells.h5` (modified if subjects or tag specified), 
-containing the statistics under `Base statistics`, `Laserpulse statistics`, and 
-`Frequency Tuning statistics`in section `B - Database contents` below. Note, if this script 
+containing the statistics under `Base Statistics`, `Laserpulse Statistics`, and 
+`Frequency Tuning statistics` in section `B - Database Contents` below. Note, if this script 
 is ran with a database that has had frequency tuning previously added, these statistics will be
 recalculated and replaced. 
+
+### Example Commands:
+`run database_add_tuning_stats.py` or `run database_add_tuning_stats.py d1pi043 test1` 
 
 ## 5. Adding Amplitude Modulated (AM) Session Statistics
 In order to add amplitude modulated (AM) session statistics, run `database_add_am_stats.py`. 
 
 Output is a file named `astrpi_all_cells.h5` (modified if subjects or tag specified), 
-containing the statistics under `Base statistics`, `Laserpulse statistics`, 
-`Frequency Tuning statistics`, and `Amplitude Modulated (AM) statistics` in section 
-`B - Database contents` below. Note, if this script is ran with a database that has had amplitude 
+containing the statistics under `Base statistics`, `Laserpulse Statistics`, 
+`Frequency Tuning Statistics`, and `Amplitude Modulated (AM) Statistics` in section 
+`B - Database Contents` below. Note, if this script is ran with a database that has had amplitude 
 modulated (AM) previously added, these statistics will be recalculated and replaced. 
+
+### Example Commands:
+`run database_add_am_stats.py` or `run database_add_am_stats.py d1pi043 test1` 
 
 ## 6. Plotting Frequency Tuning Comparisons 
 Once a database has been created that contains frequency tuning session statistics, the file 
-`figure_frequency_tuning` can be ran to generate a comparison figure.
+`figure_frequency_tuning.py` can be ran to generate a comparison figure.
 
 Output is a figure containing the panels under `Frequency Tuning Figure Panels` in the section 
 `C - Figure Contents` below. 
 
+### Example Commands:
+`run figure_frequency_tuning.py` or `run figure_frequency_tuning.py d1pi043 test1`
+
 ## 7. Plotting Amplitude Modulated (AM) Comparisons 
 Once a database has been created that contains amplitude modulated (AM) session statistics, the file 
-`figure_am` can be ran to generate a comparison figure.
+`figure_am.py` can be ran to generate a comparison figure.
 
 Output is a figure containing the panels under `Amplitude Modulated (AM) Figure Panels` in the 
 section `C - Figure Contents` below. 
 
+### Example Commands:
+`run figure_am.py` or `run figure_am.py d1pi043 test1`
+
 # B - Database Contents 
 Each following section details statistics generated and added to a database when the corresponding
-database file is ran. These statistics are used to address the following questions. 
+database file is ran. Statistics ;within each section are listed in alphabetical order as they will 
+most likely apppear when viewed, the order does not necessarily indicate statistic relatedness. 
+These statistics are used to address the following questions. 
 
-TODO: Update these questions once comparions have been plotted 
+TODO: Update these questions once comparions have reviewed  
 
 1. Are cells identifiable *in vivo* and do they respond differently to basic sounds? (Figure 1)
 2. Is there a difference in the basic responses of the cells to different sounds? (Figure 2)
@@ -119,53 +140,57 @@ TODO: Update these questions once comparions have been plotted
 ## 1. Base Statistics
 Columns added when the basic database is created with `database_basic_generation.py`
 
-* *behavSuffix*:
+* *behavSuffix*: Suffix used to identify type of data recording for days with multiple sessions. 
 
-* *brainArea*:
+* *brainArea*: Brain region of data collection. 
 
-* *cluster*:
+* *cluster*: Cluster associated with cell, from spike sorting. 
 
-* *date*: The date that the data was collected
+* *date*: The date that the data was collected.
 
-* *depth*:
+* *depth*: Depth (in um) of electrode during data collection.
 
-* *ephysTime*:
+* *ephysTime*: Time of the day of data recording.
 
-* *index*:
+* *index*: Unique numerical index for dataframe.
 
-* *info*:
+* *info*: Information about location and orientation of electrode during data collection. 
 
-* *isiViolations*:
+* *isiViolations*: Value reflecting rate of abnormally short interspike intervals, used during cell
+selection. 
 
-* *maxDepth*:
+* *maxDepth*: Maximum depth reached by electrode during recording session.
 
-* *nSpikes*:
+* *nSpikes*: Number of spikes recorded for the cell.
 
-* *paradigm*:
+* *paradigm*: Behavior/stimulus program used during data collection.
 
-* *recordingTrack*:
+* *recordingTrack*: Recording track location identified by dye in the animal. 
 
-* *sessionType*:
+* *sessionType*: List of types of recording sessions ran for cell. Examples include "noiseburst" and
+"laserpulse".
 
-* *spikePeakAmplitudes*:
+* *spikePeakAmplitudes*: Amplitude of each peak of the average spike shape.
 
-* *spikePeakTimes*:
+* *spikePeakTimes*: Time of each peak of the average spike shape.
 
-* *spikeShape*:
+* *spikeShape*: Array with the average spike shape (across spikes) for the largest channel.
 
-* *spikeShapeQuality*:
+* *spikeShapeQuality*: Measure of consistency in spike shapes during data collection, used during 
+cell selection.
 
-* *spikeShapeSD*:
+* *spikeShapeSD*: Array with the standard deviation of spike shape (across spikes) for the largest 
+channel.
 
-* *subject*: The mouse that the data was recorded from
+* *subject*: The animal in which data recorded, formated as "d1pi###".
 
-* *tetrode*: The tetrode that recorded the data.
+* *tetrode*: The tetrode of data collection.
 
 ## 2. Laserpulse Statistics
 Columns added with `database_select_reliable_cells.py`, using a baseline period of [-100 ms, 0 ms].
 This corresponds to a response period of [0 ms, 100 ms]. There are two additional sets of statistics
 generated using baseline periods of [-50 ms, 0 ms] and [-200 ms, 0 ms] respectively. These sets
-are named identical to those below, but with '50' or '200' following each column name. 
+are identified with "100", "50", or "200" following each column name. 
 
 * *laserpulseBaselineFR100*: The baseline laserpulse mean firing rate. Baseline period was 
 [-100 ms, 0 ms]
@@ -267,9 +292,6 @@ threshold. Calculated by `database_generation_funcs.calculate_BW10_params()`.
 ## 4. Amplitude Modulated (AM) Statistics 
 Columns added with `database_add_am_stats.py`
 
-* *AMBestRateOnset*: The amplitude modulation rate that yielded the best onset
-response
-
 * *AMBestRateSustained*: The amplitude modulation rate that produced the highest
 sustained response
 
@@ -338,6 +360,9 @@ with intensity after being normalized by the baseline firing rate. Calculated by
 taking the mean number of spikes at the largest intensity and dividing by the mean 
 number of spikes at whichever intensity produced the greatest response.
 
+* *AMHighestRateOnset*: The amplitude modulation rate that yielded the best onset
+response
+
 * *AMBaseFROnset*: The corresponding baseline firing rate for the best onset
 response firing rate for a cell. Baseline period was [-100 ms, 0 ms]
 
@@ -356,60 +381,48 @@ The file `figparams.py` contains common parameters for figures and data related 
 ## 1. Frequency Tuning Figure Panels
 The following panels are generated in the figure created by `figure_frequency_tuning.py`.
 
-### Panels A, B
-These panels are produced by the figure script `figure_frequency_tuning.py`.
-To get tuning curve data, it requires `data_freq_tuning_examples.npz` which is 
-produced by `generate_example_freq_tuning.py`
+### Latency
+This panel uses the *latency* column of the database. It compares cell latency between populations 
+with the bar representing the median latency time for each population.
 
-### Panel C
-This panel uses *bw10* column of the database calculated in `base stats`. Shows 
-how the bandwidth varies between cell types and the bar representing the median.
+### BW10
+This panel uses *bw10* column of the database above. Shows how the bandwidth varies between cell 
+types and the bar representing the median.
 
-### Panel D
-This panel uses the *threshold* column of the database calulated in `base stats`. 
-Displays different threshold values between cell populations with the bar representing
-the median threshold for each population
+### BW10 Zoomed-in
+This is a zoom-in version of the data represented in the BW10 panel, in order to show more detail 
+between cell populations.
 
-### Panel E
-This panel uses the *latency* column of the database calculated in `base stats`.
-It compares cell latency between populations with the bar representing the median
-latency time for each population.
+### Threshold
+This panel uses the *threshold* column of the database. Displays different threshold values between 
+cell populations with the bar representing the median threshold for each population
 
-### Panel F
-This panel uses the  *cfOnsetivityIndex* column of the database calulated in `base stats`.
-It compares how the indices of the populations varies with the bar being the median.
+### Onset to sustained ratio
+This panel uses the *cfOnsetivityIndex* column of the database. It compares how the indices of the 
+populations varies with the bar being the median.
 
-### Panel G
-This panel uses the *monotonicityIndex* column of the database calculated in `base stats`.
-It compares how the indices of the populations varies with the bar being the median.
-
-## 2. Amplitude Modulated (AM) Figure Panels (Update once script finished)
+## 2. Amplitude Modulated (AM) Figure Panels
 The following panels are generated in the figure created by `figure_am.py`.
 
-TODO: Add this section once script finished 
+### Best Sustained Rate (Hz)
+Plot comparing the rate at which the cell has the highest sustained firing rate of D1 cells and nD1 
+cells. Uses *AMBestRateSustained* column.
 
-### Panels A, D
-These panels include example raster plots of a single D1 cell (A) and single nD1
-cell (D). Next to the rasters is a plot of the mean firing rate and standard
-deviations at each modulation rate. Uses data stores in `data_am_examples.npz`.
+### Highest Synchronization (Hz)
+Plot comparing the highest synchonization rate of D1 cells and nD1 cells. Uses the 
+*highestSyncCorrected* column.
 
-### Panel B
-Pie charts that show percentages of D1 and nD1 cells that are synchronized to at
-least one modulation rate. Uses the *highestSyncCorrected* column of the database
-calculated in `base stats`.
+### Percent Synchronization
+A bar chart that show percentages of D1 and nD1 cells that are synchronized to at least one 
+modulation rate. Uses the *highestSyncCorrected* column..
 
-### Panel C
-Plot comparing the highest synchonization rate of D1 cells and nD1 cells. Uses
-the *highestSyncCorrected* column of the database calculated in `base stats`.
+### Rate Descrimination Accuracy
+Plot of the accuracy of cells in discriminating the rate of amplitude modulation. Uses the 
+*rateDiscrimAccuracy* column.
 
-### Panel E
-Plot of the accuracy of cells in discriminating the rate of amplitude modulation.
-Uses the *rateDiscrimAccuracy* column of the database calculated in `base stats`
-
-### Panel F
-Plot of the accuracy of cells in discriminating the phase of amplitude modulation.
-Use the *phaseDiscrimAccuracy_{}Hz* where the {} is replaced by the specific rate.
-Calculated in `base stats`
+### Phase Descrimination Accuracy
+Plot of the accuracy of cells in discriminating the phase of amplitude modulation. Use the 
+*phaseDiscrimAccuracy_{}Hz* where the {} is replaced by the specific rate.
 
 # D - Other Files
 The following files are used for various supplementary functions. Archived versions of various files
@@ -436,11 +449,10 @@ X is a value between 1 and 4 that corresponds to type of manual selection, or no
 List of indices for cells that should be removed by manual selection. Cell indices come from
 any indices with a number code in `cell_indices_coded.txt`.
 
-TODO: Check the following scripts, may not work with updates to database 
-
 ### cluster_counts.py (Check Functionality)
 Calculate number of clusters by D1 vs nD1, by brain region filters, by tuning filters, etc. Needs a 
-database that has calculations for tuningTest paradigms stored (from `extras/tuning_test_comparisons.py`)
+database that has calculations for tuningTest paradigms stored (from 
+`extras/tuning_test_comparisons.py`)
 
 ### database_cell_locations.py (Check Functionality)
 Takes as argument a pandas DataFrame and adds new columns. Computes the depths and cortical 
@@ -451,7 +463,7 @@ Generates a figure used to explore all aspects of sound responses for the variou
 presented to the mice. Panels from here may or may not make it into the final paper.
 
 ### fix_inforec.py (Check Functionality)
-Fix inforec by moving recording track info from 'info' to 'recordingTrack'.
+Fix inforec by moving recording track info from "info" to "recordingTrack".
 Currently, it only works for files in the format that Matt has where
 the info argument is in a different line from the Experiment definition.
 
@@ -466,7 +478,7 @@ Cell reports include the following plots for four sessions:
 4. Amplitude modulation: raster plot
 
 If run normally, it will use all animals and store the reports in 
-`data/cellreports/2019astrpi/all_cells`. It can also be run using the 'SUBJECT' and 'TAG' arguments 
+`data/cellreports/2019astrpi/all_cells`. It can also be run using the "SUBJECT" and "TAG" arguments 
 similarly to database_.py scripts.
 
 Requires a dataframe with tuningTest calculations stored as it uses the R2 of the Gaussian from the 
@@ -485,8 +497,8 @@ A collection of functions for power analysis of data
 
 ### sorted_reports.py (Check Functionality)
 Using the list of quality spikes (manually picked by Matt Nardoci), this program goes through the 
-folder of reports and seperates the reports into two new folders of 'Quality_tuning' and 
-'NonQuality_tuning'. It also saves an h5 file that contains all the cell information for each cell 
+folder of reports and seperates the reports into two new folders of "Quality_tuning" and 
+"NonQuality_tuning". It also saves an h5 file that contains all the cell information for each cell 
 for later use incase cluster numbers in the database change.
 
 ### sound_responses_outside_striatum.py (Check Functionality)

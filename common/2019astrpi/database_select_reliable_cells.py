@@ -1,23 +1,32 @@
 # -*- coding: utf-8 -*-
 """
 Loads the basic database of clusters created with database_basic_generation.py, selects reliable 
-cells that have data for sound reponse comparison, and calculated statistics using laserpulse
+cells that have data for sound reponse comparison, and calculates statistics using laserpulse
 session data for D1 vs. nD1 determination.  
 
 The database generated with this script is filtered by:
-1. Presence of laserpulse session
-2. Presense of either tuning curve or AM session
-3. Manual selection
-4. Further parameters specified in database_basic_generation.py
+1. Presence of a laserpulse session
+2. Presense of either a tuning curve or AM session
+3. Manual selection (specified in `cell_indices_manually_removed.txt`, found in `extras`.)
+4. ISI violations (threshold specified in studyparams.py)
+5. Spike shape quality (threshold specified in studyparams.py)
 
 This script calculates statistics used for:
 1. D1 vs. nD1 selection
 
-Run as:
-python3 database_select_reliable_cells.py SUBJECT TAG
+When run without arguments, this script will use all animals and store in a default database. This 
+script can also be run using arguments to specify a specfic basic database that has been generated. 
+The two arguments are "SUBJECT" and "TAG".
 
-A database must exist with these parameters or script will fail. If the database has not been 
-previously filtered, 'clusters' will change to 'cells' in the filename.
+Run as (if not using tag)
+`database_select_reliable_cells.py` or `database_select_reliable_cells.py SUBJECT`
+
+Run as (if using tag)
+`database_select_reliable_cells.py SUBJECT TAG`
+
+The file `studyparams.py` contains a list of animals as well as statistical parameters for the 
+database calculations. Database scripts use functions from the moddule 
+`database_generation_funcs.py`.
 """
 import os
 import sys
@@ -31,61 +40,48 @@ import database_generation_funcs as funcs
 
 # ========================== Run Mode ==========================
 
-MANUAL_ERROR = 0 # Automatically set to 1 if error in manual selection text document
-NO_TAG = 0 # Automatically set to 1 if no tag given
+TAG = 0 # Automatically set to 1 if tag given
 
-# Determining animals used and file name by arguements given
-if __name__ == "__main__":
+# Determining animals used and file name by arguments given
+if __name__ == '__main__':
     if sys.argv[1:] != []: # Checks if there are any arguments after the script name 
         arguments = sys.argv[1:] # Script parameters 
-        if arguments[0] == "all":
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
+        if len(arguments) == 2:
+                tag = arguments[1]
+                TAG = 1
+        if arguments[0].upper() in 'ALL':
             subjects = 'all'
         elif arguments[0].upper() == 'TEST':
-            d1mice = studyparams.SINGLE_MOUSE
             subjects = studyparams.SINGLE_MOUSE[0]
         elif isinstance(arguments[0], str):
-            d1mice = []
             subjects = arguments[0]
-            d1mice.append(subjects)
-            if d1mice[0] not in studyparams.ASTR_D1_CHR2_MICE:
-                answer = input('Subject could not be found, Would you like to run for all animals?')
-                if answer.upper() in ['YES', 'Y', '1']:
-                    d1mice = studyparams.ASTR_D1_CHR2_MICE
-                else:
-                    sys.exit()
-            else:
-                print('Subject found in database')
-        else:
-            # If no mice are specified, default to using all mice in the studyparams
-            d1mice = studyparams.ASTR_D1_CHR2_MICE
-            subjects = 'all'
-        if len(arguments) == 2:
-            tag = arguments[1]
-        else:
-            NO_TAG = 1 
+            if subjects not in studyparams.ASTR_D1_CHR2_MICE:
+                sys.exit('\n SUBJECT ERROR, DATAFRAME COULD NOT BE LOADED')
     else:
-        d1mice = studyparams.ASTR_D1_CHR2_MICE
         subjects = 'all'
-        NO_TAG = 1 
-        
-if NO_TAG == 1:
+        print('No arguments given, default database with all animals will be used')
+else:
+    subjects = 'all'
+    print("database_select_reliable_cells.py being ran as module, default database with all animals will be used")
+
+if TAG == 1:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_clusters.h5'.format(subjects)) 
+                                  'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_cells.h5'.format(subjects)) 
+                                   'astrpi_{}_cells_{}.h5'.format(subjects, tag))
 else:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_clusters_{}.h5'.format(subjects, tag))
+                                  'astrpi_{}_clusters.h5'.format(subjects)) 
     outputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                               'astrpi_{}_cells_{}.h5'.format(subjects, tag)) 
-
+                                   'astrpi_{}_cells.h5'.format(subjects)) 
+    
 dir = os.path.dirname(outputDirectory)
 
+# Checks if file path exists
 if os.path.isdir(dir):
-    print('Directory exists')
+    print('Directory Exists')
 else:
-    sys.exit('\n TAG ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
+    sys.exit('\n DIRECTORY ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory)) 
     
 # ========================== Database Filtering ==========================
 
@@ -96,7 +92,7 @@ try:
     db = celldatabase.load_hdf(inputDirectory) 
 except OSError:
     sys.exit('\n DATABASE ERROR, DATAFRAME COULD NOT BE SAVED TO: \n {}'.format(outputDirectory))
-test1 = db
+    
 # Selects cells with a laserpulse session for D1 vs. nD1 determination
 db = db[db['sessionType'].apply(lambda s: 'laserpulse' in s)]    
 
@@ -105,6 +101,8 @@ db = db[db['sessionType'].apply(lambda s: ('tuningCurve' in s) or ('am' in s))]
 
 # Empty list to fill with manually-removed cells
 indicesRemovedCells = []
+
+MANUAL_ERROR = 0 # Automatically set to 1 if error in manual selection text document
 
 # Generates list of clusters from a text document to be removed by manual selection
 with open('extras\cell_indices_manually_removed.txt', 'r') as manualSelection:
@@ -118,9 +116,9 @@ with open('extras\cell_indices_manually_removed.txt', 'r') as manualSelection:
 
 # Removes clusters that were not manually-verfied
 db = db.drop(indicesRemovedCells, errors='ignore')
-test2 = db
+
 db = db.query(studyparams.CELL_FILTER)
-test3 = db
+
 # ========================== Laserpulse Statistics Calculation ==========================
 
 # Iterates through each cell in the database       
@@ -142,7 +140,7 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     laserEventOnsetTimes = pulseEphysData['events']['laserOn']
     laserSpikeTimes = pulseEphysData['spikeTimes']
     
-    # Calculates firing rate during baseline and response periods of various periods, specified above
+    # Calculates firing rate during baseline and response periods of various periods
     nspkBaseLaser100, nspkRespLaser100 = funcs.calculate_spike_count(laserEventOnsetTimes, 
                                                                laserSpikeTimes, baseRange100)
        
