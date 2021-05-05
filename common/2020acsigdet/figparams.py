@@ -9,11 +9,14 @@ import matplotlib
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 
-fontSizeLabels = 12
-fontSizeTicks = 10
-fontSizePanel = 16
-fontSizeTitles = 12
-fontSizeLegend = 10
+fontSizeLabels = 10
+fontSizeTicks = 8
+fontSizePanel = 14
+fontSizeTitles = 10
+fontSizeLegend = 8
+
+markerSize = 5
+lineWidth = 2
 
 colp = {}
 colp['baseline'] = 'k'

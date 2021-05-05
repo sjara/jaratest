@@ -16,10 +16,12 @@ dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
 PV_CHR2_MICE = studyparams.PV_CHR2_MICE
-mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE, PV_CHR2_MICE]
-mouseTypeLabels = ['PVArchT', 'SOMArchT', 'PVChR2']
+PV_CRE_MICE = studyparams.PV_ARCHT_WT_MICE
+SOM_CRE_MICE = studyparams.SOM_ARCHT_WT_MICE
+mouseType = [PV_ARCHT_MICE, SOM_ARCHT_MICE, PV_CHR2_MICE, PV_CRE_MICE, SOM_CRE_MICE]
+mouseTypeLabels = ['PVArchT', 'SOMArchT', 'PVChR2', 'PVCre', 'SOMCre']
 trialType = ['laser', 'control']
-laserPower = ['10mW', '10mW', '3mW']
+laserPower = ['10mW', '10mW', '3mW', '10mW', '10mW']
 
 sessiondb = pd.DataFrame(dtype=object)
 mousedb = pd.DataFrame(dtype=object)

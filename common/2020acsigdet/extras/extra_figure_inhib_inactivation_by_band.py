@@ -15,8 +15,8 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_inhibitory_inactivation'
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1, 1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
@@ -29,14 +29,14 @@ else:
     figFilename = 'Fig3_inhib_inactivation_new'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
-figSize = [11,9]  # In inches
+figSize = [9,8]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.003, 0.39, 0.675]  # Horiz position for panel labels
+labelPosX = [0.003, 0.31, 0.53, 0.74]  # Horiz position for panel labels
 labelPosY = [0.98, 0.64, 0.3]  # Vert position for panel labels
 
 PVInactExample = 'band081_psycurve.npz'
@@ -69,7 +69,7 @@ if PANELS[0]:
     examples = [PVInactExample, SOMInactExample]
     cellTypeColours = [PVColour, SOMColour]
     labels = ['no PV', 'no SOM']
-    panelLabels = ['A', 'D']
+    panelLabels = ['A', 'E']
 
     for indType, exampleFileName in enumerate(examples):
         dataFullPath = os.path.join(inactDataDir, exampleFileName)
@@ -154,9 +154,9 @@ if PANELS[1]:
     else:
         dprimeData = [[PVnoLaserdprime, PVlaserdprime], [SOMnoLaserdprime, SOMlaserdprime]]
 
-    panelLabels = ['B', 'E']
+    panelLabels = ['B', 'F']
     colours = [PVColour, SOMColour]
-    yLim = [0,2]
+    yLim = [0,2.3]
 
     for indType, dprimes in enumerate(dprimeData):
         axScatter = plt.subplot(gs[indType,1])
@@ -234,8 +234,8 @@ if PANELS[2]:
         medianChangedprime = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
 
     axBar = plt.subplot(gs[2,1])
-    cartoonLabel = 'G'
-    panelLabel = 'H'
+    cartoonLabel = 'I'
+    panelLabel = 'J'
 
     cellTypeColours = [PVColour, SOMColour]
 
@@ -243,7 +243,7 @@ if PANELS[2]:
     barLoc = np.array([-0.18, 0.18])
     xLocs = np.arange(2)
     xTickLabels = possibleBands
-    yLims = (-0.6, 0.2)
+    yLims = (-0.8, 0.2)
 
     #changeCIs = [bootstrap_median_CI(PVchange), bootstrap_median_CI(SOMchange)]
     for indBand in range(len(possibleBands)):
@@ -317,9 +317,9 @@ if PANELS[3]:
     else:
         hitsData = [[PVnoLaserHits, PVlaserHits], [SOMnoLaserHits, SOMlaserHits]]
 
-    panelLabels = ['C', 'F']
+    panelLabels = ['C', 'G']
     colours = [PVColour, SOMColour]
-    yLims = [(0,1.0),(0,1.0)]
+    yLims = [(0,100.0),(0,100.0)]
     legendLabels = ['no PV', 'no SOM']
 
     for indType, hits in enumerate(hitsData):
@@ -404,7 +404,7 @@ if PANELS[4]:
     axBar = plt.subplot(gs[2,2])
 
     cellTypeColours = [PVColour, SOMColour]
-    panelLabel = 'I'
+    panelLabel = 'K'
     width = 0.3
     barLoc = np.array([-0.18, 0.18])
     xLocs = np.arange(2)
@@ -436,7 +436,7 @@ if PANELS[4]:
     axBar.set_xticklabels(xTickLabels)
     axBar.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-    yLims = (-0.5, 0.1)
+    yLims = (-40, 10)
     axBar.set_ylim(yLims)
     axBar.set_ylabel('Change in Hit Rate', fontsize=fontSizeLabels)
 
@@ -479,9 +479,9 @@ if PANELS[5]:
     else:
         FAdata = [[PVnoLaserFAs, PVlaserFAs], [SOMnoLaserFAs, SOMlaserFAs]]
 
-    panelLabels = ['C', 'F']
+    panelLabels = ['D', 'H']
     colours = [PVColour, SOMColour]
-    yLims = [(0,1.0),(0,1.0)]
+    yLims = [(0,100.0),(0,100.0)]
     legendLabels = ['no PV', 'no SOM']
 
     for indType, FAs in enumerate(FAdata):
@@ -527,7 +527,7 @@ if PANELS[5]:
         extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
 
     for indLabel, label in enumerate(panelLabels):
-        axScatter.annotate(label, xy=(labelPosX[2], labelPosY[indLabel]), xycoords='figure fraction',
+        axScatter.annotate(label, xy=(labelPosX[3], labelPosY[indLabel]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
 
 # --- summary of change in false alarms during PV or SOM inactivation ---
@@ -566,7 +566,7 @@ if PANELS[6]:
     axBar = plt.subplot(gs[2,3])
 
     cellTypeColours = [PVColour, SOMColour]
-    panelLabel = 'I'
+    panelLabel = 'L'
     width = 0.3
     barLoc = np.array([-0.18, 0.18])
     xLocs = np.arange(2)
@@ -598,14 +598,14 @@ if PANELS[6]:
     axBar.set_xticklabels(xTickLabels)
     axBar.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
-    yLims = (-0.5, 0.1)
+    yLims = (-25, 15)
     axBar.set_ylim(yLims)
     axBar.set_ylabel('Change in False Alarm Rate', fontsize=fontSizeLabels)
 
     extraplots.boxoff(axBar)
     extraplots.set_ticks_fontsize(axBar, fontSizeTicks)
 
-    axBar.annotate(panelLabel, xy=(labelPosX[2], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
+    axBar.annotate(panelLabel, xy=(labelPosX[3], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
                    fontweight='bold')
 
     # calculate those stats!
@@ -616,10 +616,10 @@ if PANELS[6]:
         if pVal[1] < 0.05:
             extraplots.significance_stars(barLoc + xLocs[band], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
 
-if CORRECTED:
-    plt.suptitle('LASER EFFECT CORRECTION')
-else:
-    plt.suptitle('NO CORRECTION')
+# if CORRECTED:
+#     plt.suptitle('LASER EFFECT CORRECTION')
+# else:
+#     plt.suptitle('NO CORRECTION')
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

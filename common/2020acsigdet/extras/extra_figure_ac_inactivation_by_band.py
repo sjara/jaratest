@@ -16,8 +16,8 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_ac_inactivation'
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1, 1, 0, 0, 0, 0]  # Plot panel i if PANELS[i]==1
 
@@ -31,15 +31,15 @@ else:
     figFilename = 'Fig2_ac_inactivation_new'
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
-figSize = [11,4]  # In inches
+figSize = [6,3]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.005, 0.2, 0.55, 0.77, 0.25, 0.5, 0.77]  # Horiz position for panel labels
-labelPosY = [0.97, 0.47]  # Vert position for panel labels
+labelPosX = [0.005, 0.33, 0.54, 0.77, 0.25, 0.5, 0.77]  # Horiz position for panel labels
+labelPosY = [0.95, 0.47]  # Vert position for panel labels
 
 ACInactExample = 'band046_psycurve.npz'
 ACInactReactionExample = 'band046_reaction_times.npz'
@@ -54,11 +54,9 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(1, 5, wspace=0.3, hspace=0.4, width_ratios=[1.1,1.0,0.6,0.6, 0.6])
-gs.update(top=0.97, bottom=0.08, left=0.03, right=0.98, wspace=0.5, hspace=0.3)
+gs = gridspec.GridSpec(1, 4, wspace=0.3, hspace=0.4, width_ratios=[1.0,0.6,0.6, 0.6])
+gs.update(top=0.97, bottom=0.15, left=0.08, right=0.98, wspace=0.5, hspace=0.3)
 
-axCartoons = gs[0, :2]
-gs2 = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=axCartoons, wspace=0.3, hspace=0.4, width_ratios=[0.7,1.0])
 # --- example psychometric curves ---
 if PANELS[0]:
     dataFullPath = os.path.join(inactDataDir, ACInactExample)
@@ -69,8 +67,8 @@ if PANELS[0]:
     lowerErrorControl = data['lowerErrorControl']
     possibleSNRs = data['possibleSNRs']
 
-    axCurve = plt.subplot(gs2[0, 1])
-    panelLabels = ['A', 'B']  # labels for psy curve and cartoons
+    axCurve = plt.subplot(gs[0, 0])
+    panelLabel = 'A'
     xTickLabels = ['-inf']
     xTickLabels.extend([int(x) for x in possibleSNRs.tolist()[1:]])
 
@@ -105,9 +103,7 @@ if PANELS[0]:
     extraplots.breakaxis(0.5, 0, 0.15, 5, gap=0.5)
     extraplots.set_ticks_fontsize(axCurve, fontSizeTicks)
 
-    for indLabel, label in enumerate(panelLabels):
-        axCurve.annotate(label, xy=(labelPosX[indLabel], labelPosY[0]), xycoords='figure fraction',
-                           fontsize=fontSizePanel, fontweight='bold')
+    axCurve.annotate(panelLabel, xy=(labelPosX[0], labelPosY[0]), xycoords='figure fraction', fontsize=fontSizePanel, fontweight='bold')
 
 # --- summary of change in accuracy during AC inactivation ---
 if PANELS[1]:
@@ -127,12 +123,12 @@ if PANELS[1]:
     else:
         laserdprimeCorrected = laserdprime
 
-    axScatter = plt.subplot(gs[0,2])
-    panelLabel = 'C'
+    axScatter = plt.subplot(gs[0,1])
+    panelLabel = 'B'
 
     barLoc = np.array([-0.24, 0.24])
     xLocs = np.arange(len(possibleBands))
-    yLim = [0, 2]
+    yLim = [0, 2.5]
     legendLabels = ['control', 'PV activated']
 
     for indBand in xLocs:
@@ -154,7 +150,7 @@ if PANELS[1]:
     xTickLabels[-1] = 'WN'
     axScatter.set_xticks(xLocs)
     axScatter.set_xticklabels(xTickLabels)
-    axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
+    #axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
     axScatter.set_ylim(yLim)
     axScatter.set_ylabel('d\'', fontsize=fontSizeLabels)
@@ -162,7 +158,7 @@ if PANELS[1]:
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
 
-    axScatter.annotate(panelLabel, xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
+    axScatter.annotate(panelLabel, xy=(labelPosX[1], labelPosY[0]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
 
     # -- stats for main panel --
@@ -231,12 +227,12 @@ if PANELS[2]:
     else:
         laserHitsCorrected = laserHits
 
-    axScatter = plt.subplot(gs[0, 3])
-    panelLabel = 'D'
+    axScatter = plt.subplot(gs[0, 2])
+    panelLabel = 'C'
 
     barLoc = np.array([-0.24, 0.24])
     xLocs = np.arange(len(possibleBands))
-    yLim = [0.0,1.0]
+    yLim = [0.0,100.0]
     legendLabels = ['control', 'PV activated']
 
     for indBand in xLocs:
@@ -267,7 +263,7 @@ if PANELS[2]:
     extraplots.boxoff(axScatter)
     extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
 
-    axScatter.annotate(panelLabel, xy=(labelPosX[3], labelPosY[0]), xycoords='figure fraction',
+    axScatter.annotate(panelLabel, xy=(labelPosX[2], labelPosY[0]), xycoords='figure fraction',
                        fontsize=fontSizePanel, fontweight='bold')
 
     # -- stats!! --
@@ -296,12 +292,12 @@ if PANELS[2]:
     else:
         laserFACorrected = laserFA
 
-    axScatter = plt.subplot(gs[0, 4])
+    axScatter = plt.subplot(gs[0, 3])
     panelLabel = 'D'
 
     barLoc = np.array([-0.24, 0.24])
     xLocs = np.arange(len(possibleBands))
-    yLim = [0.0, 0.8]
+    yLim = [0.0, 80.0]
     legendLabels = ['control', 'PV activated']
 
     for indBand in xLocs:
@@ -325,7 +321,7 @@ if PANELS[2]:
     xTickLabels[-1] = 'WN'
     axScatter.set_xticks(xLocs)
     axScatter.set_xticklabels(xTickLabels)
-    axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
+    #axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
 
     axScatter.set_ylim(yLim)
     axScatter.set_ylabel('False Alarm Rate', fontsize=fontSizeLabels)
@@ -344,10 +340,10 @@ if PANELS[2]:
         if pVal < 0.05:
             extraplots.significance_stars(barLoc + xLocs[band], 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
 
-if CORRECTED:
-    plt.suptitle('LASER CORRECTED')
-else:
-    plt.suptitle('NO CORRECTION')
+# if CORRECTED:
+#     plt.suptitle('LASER CORRECTED')
+# else:
+#     plt.suptitle('NO CORRECTION')
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

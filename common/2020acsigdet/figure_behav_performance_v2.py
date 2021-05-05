@@ -31,7 +31,10 @@ fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.005, 0.27, 0.45, 0.72]  # Horiz position for panel labels
+markerSize = figparams.markerSize
+lineWidth = figparams.lineWidth
+
+labelPosX = [0.005, 0.27, 0.455, 0.735]  # Horiz position for panel labels
 labelPosY = [0.92]  # Vert position for panel labels
 
 fileName = 'unimplanted_behaviour_v2.npz'
@@ -44,7 +47,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(1, 3, width_ratios=[1.2,0.5,0.5])
-gs.update(top=0.86, bottom=0.2, left=0.08, right=0.97, wspace=0.6, hspace=0.2)
+gs.update(top=0.86, bottom=0.18, left=0.03, right=0.99, wspace=0.5, hspace=0.2)
 
 # --- individual psychometric curve ---
 if PANELS[0]:
@@ -62,8 +65,8 @@ if PANELS[0]:
     xTickLabels.extend([int(x) for x in possibleSNRs.tolist()[1:]])
 
     xVals = range(len(possibleSNRs))
-    plt.plot(xVals[:2], psyCurve[:2], 'o--', color=wtColour, lw=2, ms=5)
-    plt.plot(xVals[1:], psyCurve[1:], 'o-', color=wtColour, lw=2, ms=5)
+    plt.plot(xVals[:2], psyCurve[:2], 'o--', color=wtColour, lw=lineWidth, ms=markerSize)
+    plt.plot(xVals[1:], psyCurve[1:], 'o-', color=wtColour, lw=lineWidth, ms=markerSize)
     plt.errorbar(range(len(possibleSNRs)), psyCurve, yerr=[lowerError, upperError], fmt='none',
                  color=wtColour, lw=2, capsize=5, capthick=1)
 
@@ -82,6 +85,8 @@ if PANELS[0]:
     for indLabel, label in enumerate(panelLabels):
         axCurve.annotate(label, xy=(labelPosX[indLabel], labelPosY[0]), xycoords='figure fraction',
                            fontsize=fontSizePanel, fontweight='bold')
+
+    axCurve.annotate('N = 1 mouse', xy=(0.9, 10), xycoords='data', fontsize=fontSizeLegend)
 
 
 # -- all psychometric curves --
@@ -109,8 +114,8 @@ if PANELS[1]:
     curves = np.delete(psyCurves, indsToIgnore, axis=0)
     medianCurve = np.median(curves, axis=0)
     xVals = range(len(possibleSNRs))
-    plt.plot(xVals[:2], medianCurve[:2], 'o--', color=wtColour, lw=3, ms=9, zorder=10)
-    plt.plot(xVals[1:], medianCurve[1:], 'o-', color=wtColour, lw=3, ms=9, zorder=10)
+    plt.plot(xVals[:2], medianCurve[:2], 'o--', color=wtColour, lw=lineWidth, ms=markerSize, zorder=10)
+    plt.plot(xVals[1:], medianCurve[1:], 'o-', color=wtColour, lw=lineWidth, ms=markerSize, zorder=10)
 
     axCurves.set_xlim(-0.2, len(possibleSNRs) - 0.8)
     axCurves.set_xticks(range(len(possibleSNRs)))
@@ -142,6 +147,10 @@ if PANELS[1]:
     print(f'd\' by band pVal: {stats.wilcoxon(dprimes[:,0], dprimes[:,1])}')
     print(f'Hit rate by band pVal: {stats.wilcoxon(hitRates[:, 0], hitRates[:, 1])}')
     print(f'FA rate by band pVal: {stats.wilcoxon(FARates[:, 0], FARates[:, 1])}')
+
+    print(f'Successful mice: {len(curves)}\n Failed mice: {len(indsToIgnore)}')
+
+    axCurves.annotate(f'N = {len(curves)} mice', xy=(0.9, 10), xycoords='data', fontsize=fontSizeLegend)
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

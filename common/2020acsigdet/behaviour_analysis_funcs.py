@@ -1,10 +1,15 @@
 import os
 import numpy as np
 import matplotlib.colors
+import matplotlib.pyplot as plt
+from scipy import stats
 
 from jaratoolbox import behavioranalysis
 from jaratoolbox import loadbehavior
 from jaratoolbox import settings
+from jaratoolbox import extraplots
+
+import figparams
 
 #REALLY DUMB WORKAROUND FOR THE FACT THAT COLOR LISTS ONLY TAKES RGBA INPUTS
 def list_colours_to_rgba(colours):
@@ -102,6 +107,82 @@ def get_trials(behavData):
         noiseChoice = leftChoice
 
     return correct, incorrect, toneChoice, noiseChoice, trialsEachCond3Params, [numLasers, numBands, numSNRs]
+
+# -- functions for plotting common panels across figures --
+# make the plots showing paired comparison of laser vs no laser averages
+def plot_laser_comparison(axes, data, laserColour, laserFaceColour, yLim, xticklabels):
+    barLoc = np.array([-0.24, 0.24])
+
+    for indMouse in range(data[0].shape[0]):
+        plt.plot(barLoc, [data[0][indMouse], data[1][indMouse]], '-', color=figparams.colp['connectLine'])
+
+    plt.plot(np.tile(barLoc[0], data[0].shape[0]), data[0], 'o', color=figparams.colp['baseline'], ms=figparams.markerSize)
+    plt.plot(np.tile(barLoc[1], data[1].shape[0]), data[1], 'o', mec=laserColour, mfc=laserFaceColour, ms=figparams.markerSize)
+
+    # median = np.median(accuracyData, axis=0)
+    # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
+
+    axes.set_xlim(barLoc[0] - 0.2, barLoc[1] + 0.2)
+    axes.set_xticks(barLoc)
+    axes.set_xticklabels(xticklabels)
+    axes.set_ylim(yLim)
+
+    extraplots.boxoff(axes)
+    extraplots.set_ticks_fontsize(axes, figparams.fontSizeTicks)
+
+    pVal = stats.wilcoxon(data[1], data[0])[1]
+    print(f"Change in pVal: {pVal}")
+
+    if pVal < 0.05:
+        extraplots.significance_stars(barLoc, 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
+
+def plot_cell_type_comparison(axes, data, colours, yLim, facecolours=None):
+    width = 0.3
+    barLoc = np.array([-0.18, 0.18])
+
+    for indType in range(len(data)):
+        if facecolours is None:
+            facecolours = np.tile('white', len(data))
+        jitter = 0.8 * width * (np.random.random(len(data[indType])) - 0.5)
+        plt.scatter(np.tile(barLoc[indType], len(data[indType])) + jitter, data[indType], edgecolors=colours[indType], facecolors=facecolours[indType])
+
+        plt.plot([barLoc[indType] - width / 2, barLoc[indType] + width / 2], [np.median(data[indType]), np.median(data[indType])],
+                 color='k', linewidth=4, zorder=10)  # medians
+
+        CI = bootstrap_median_CI(data[indType])
+        # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
+        plt.plot([barLoc[indType], barLoc[indType]], CI, color='k', linewidth=2)  # error bars
+        plt.plot([barLoc[indType] - width / 8, barLoc[indType] + width / 8], [CI[0], CI[0]], color='k', linewidth=2)  # bottom caps
+        plt.plot([barLoc[indType] - width / 8, barLoc[indType] + width / 8], [CI[1], CI[1]], color='k', linewidth=2)  # top caps
+
+    pVal = stats.ranksums(data[0], data[1])[1]
+    print(f'PV change vs SOM change p val: {pVal}')
+
+    if pVal < 0.05:
+        extraplots.significance_stars(xLocs[indBand], 0.98 * np.diff(yLim), 0.02 * np.diff(yLim), gapFactor=0.3)
+
+    plt.plot([-10, 10], [0, 0], '--', color='0.5', zorder=0)  # line at 0 indicating direction of change
+
+    axes.set_xlim(barLoc[0] - 0.3, barLoc[1] + 0.3)
+    axes.set_xticks(barLoc)
+    axes.set_ylim(yLim)
+
+    extraplots.boxoff(axes)
+
+# scatter plot comparing laser in and laser out data
+def plot_exp_vs_control_scatter(axes, xData, yData, colours, xLim, yLim, facecolours='none'):
+    plt.scatter(xData, yData, edgecolors=colours, facecolors=facecolours, s=(figparams.markerSize)**2)
+
+    plt.plot([-100, 100], [0, 0], ':', c='0.5', zorder=-10)
+    plt.plot([0, 0], [-100, 100], ':', c='0.5', zorder=-10)
+    plt.plot([-100, 100], [-100, 100], ':', c='0.5', zorder=-10)
+
+    axes.set_xlim(xLim)
+    axes.set_ylim(yLim)
+    axes.set(adjustable='box', aspect='equal')
+    extraplots.boxoff(axes)
+    extraplots.set_ticks_fontsize(axes, figparams.fontSizeTicks)
+
 
 if __name__ == "__main__":
     mouse = 'band091'

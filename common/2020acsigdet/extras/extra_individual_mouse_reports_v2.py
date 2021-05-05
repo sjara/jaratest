@@ -355,12 +355,11 @@ def plot_report(mouse, laserPower, indType):
     extraplots.save_figure(figFilename, 'png', [7, 8], '/tmp/', facecolor='w')
     #plt.show()
 
-for indType, mice in enumerate(mouseType):
-    for mouse in mice:
-        if indType == 2:
-            plot_report(mouse, ChR2LaserPower, indType)
-        else:
-            plot_report(mouse, ArchTlaserPower, indType)
+# for indType, mice in enumerate(mouseType):
+#     for mouse in mice:
+#         if indType == 2:
+#             plot_report(mouse, ChR2LaserPower, indType)
+#         else:
+#             plot_report(mouse, ArchTlaserPower, indType)
 
-    #     break
-    # break
+plot_report('band150', 10, 1)
