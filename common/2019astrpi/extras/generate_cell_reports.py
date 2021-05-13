@@ -298,6 +298,7 @@ else:
 
 # Loads database for plotting 
 db = celldatabase.load_hdf(inputDirectory)
+db = db.query('AMBestRateSustained > 0')
 
 # -------------------------------------------------------------------------------
 for indRow, dbRow in db.iterrows():

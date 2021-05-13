@@ -272,8 +272,8 @@ if __name__ == "__main__":
 
 if NO_TAG == 1:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
-                                  'astrpi_{}_cells_tuning_AM.h5'.format(subjects)) 
-    outputDirectory = os.path.join(settings.CELL_REPORTS_PATH, studyname, '{}_cells_SSQBelow3\\'.format(subjects))
+                                  'astrpi_{}_cells.h5'.format(subjects)) 
+    outputDirectory = os.path.join(settings.CELL_REPORTS_PATH, studyname, '{}_cells_isiTest\\'.format(subjects))
 else:
     inputDirectory = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME, 
                                   'astrpi_{}_cells_{}.h5'.format(subjects, tag))
@@ -310,7 +310,8 @@ else:
 # Loads database for plotting 
 db = celldatabase.load_hdf(inputDirectory)
 
-db = db.query('spikeShapeQuality<3')
+db = db.query('isiViolations>0.02')
+# db = db.query('isiViolations>=0.02')
 # Empty list to fill with manually-removed cells
 indicesRemovedCells = []
 
@@ -435,12 +436,12 @@ for indRow, dbRow in db.iterrows():
         plt.setp(hLaserCond, zorder=3)
         plt.ylabel('Trial')
         axLaserpulseRaster.set_xlim(-0.3, 0.5)
-        if dbRow.laserpulsePval < 0.05 and dbRow.laserpulseFRChange > 0 and dbRow.laserpulseResponseFR > 0.5:
-            plt.title("Laserpulse D1\n{}".format(dbRow.laserpulsePval), fontweight='bold')
-        elif dbRow.laserpulsePval >= 0.05 and dbRow.laserpulseFRChange <= 0:
-            plt.title("Laserpulse nD1\n{}".format(dbRow.laserpulsePval))
+        if dbRow.laserpulsePval100 < 0.05 and dbRow.laserpulseFRChange100 > 0 and dbRow.laserpulseResponseFR100 > 0.5:
+            plt.title("Laserpulse D1\n{}".format(dbRow.laserpulsePval100), fontweight='bold')
+        elif dbRow.laserpulsePval100 >= 0.05 and dbRow.laserpulseFRChange100 <= 0:
+            plt.title("Laserpulse nD1\n{}".format(dbRow.laserpulsePval100))
         else:
-            plt.title("Laserpulse Unidentified Cell \n{}".format(dbRow.laserpulsePval))
+            plt.title("Laserpulse Unidentified Cell \n{}".format(dbRow.laserpulsePval100))
             
         # PSTH plotting
         plt.sca(axLaserpulsePSTH)
