@@ -171,21 +171,21 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     try:
         zStats100, pVals100 = stats.mannwhitneyu(nspkRespLaser100, nspkBaseLaser100, 
                                            alternative='two-sided')
-    except ValueError:  # All numbers identical will cause mann-whitney to fail
+    except ValueError:  # If all numbers are identical, mann-whitney test will fail
         print("laserpulse mann-whitney fail for {}".format(oneCell))
         zStats100, pVals100 = [0, 1]
     
     try:
         zStats50, pVals50 = stats.mannwhitneyu(nspkRespLaser50, nspkBaseLaser50, 
                                            alternative='two-sided')
-    except ValueError:  # All numbers identical will cause mann-whitney to fail
+    except ValueError:
         print("laserpulse mann-whitney fail for {}".format(oneCell))
         zStats50, pVals50 = [0, 1]
         
     try:
         zStats200, pVals200 = stats.mannwhitneyu(nspkRespLaser200, nspkBaseLaser200, 
                                            alternative='two-sided')
-    except ValueError:  # All numbers identical will cause mann-whitney to fail
+    except ValueError:
         print("laserpulse mann-whitney fail for {}".format(oneCell))
         zStats200, pVals200 = [0, 1]
     
@@ -199,14 +199,14 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
     db.at[indRow, 'laserpulseBaselineFR50'] = nspkBaseLaserMean50  
     db.at[indRow, 'laserpulseResponseFR50'] = nspkRespLaserMean50
     db.at[indRow, 'laserpulseFRChange50'] = frChange50
-    db.at[indRow, 'laserpulsePval50'] = pVals50  # p-value from Mann-Whitney U test
-    db.at[indRow, 'laserpulseZstat50'] = zStats50  # U-statistic from Mann-Whitney U test
+    db.at[indRow, 'laserpulsePval50'] = pVals50
+    db.at[indRow, 'laserpulseZstat50'] = zStats50
     
     db.at[indRow, 'laserpulseBaselineFR200'] = nspkBaseLaserMean200
     db.at[indRow, 'laserpulseResponseFR200'] = nspkRespLaserMean200
     db.at[indRow, 'laserpulseFRChange200'] = frChange200
-    db.at[indRow, 'laserpulsePval200'] = pVals200  # p-value from Mann-Whitney U test
-    db.at[indRow, 'laserpulseZstat200'] = zStats200  # U-statistic from Mann-Whitney U test
+    db.at[indRow, 'laserpulsePval200'] = pVals200
+    db.at[indRow, 'laserpulseZstat200'] = zStats200
           
 # ========================== Saving ==========================
 
