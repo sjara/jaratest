@@ -437,17 +437,22 @@ Contains common parameters for figures and data related to these figures.
 
 ## 2. Files in `extras`
 ### cell_indices_coded.txt
-List of all indices for the database of all animals. Each index is formatted as: index,X
+List of all cell indices. Cells that were manually removed from the database have a number code. 
+Each index is formatted as: index,number code
 
-X is a value between 1 and 4 that corresponds to type of manual selection, or nothing if none apply:
+The reason for manual selection is given with the number code, corresponding to:
 1. Noise or no cell character
 2. Some cell character, but unreliable or noisy
-3. No laserpulse or sound response (may be nD1 with no sound response)
-4. Laserpulse response, no sound response (may be D1 with no sound response)
+3. No laserpulse or sound response
+4. Laserpulse response, no sound response 
 
 ### cell_indices_manually_removed.txt
 List of indices for cells that should be removed by manual selection. Cell indices come from
 any indices with a number code in `cell_indices_coded.txt`.
+
+### cell_merge_info.txt
+Contains information about cells that were merged. A list of lists, each entry with the format 
+[subject,date,depth,tetrode,cluster1,cluster2].
 
 ### cluster_counts.py (Check Functionality)
 Calculate number of clusters by D1 vs nD1, by brain region filters, by tuning filters, etc. Needs a 
