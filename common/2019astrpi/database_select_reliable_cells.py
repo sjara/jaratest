@@ -190,21 +190,21 @@ for indIter, (indRow, dbRow) in enumerate(db.iterrows()):
         zStats200, pVals200 = [0, 1]
     
     # Adds laserpulse columns to database
-    db.at[indRow, 'laserpulseBaselineFR100'] = nspkBaseLaserMean100
-    db.at[indRow, 'laserpulseResponseFR100'] = nspkRespLaserMean100 
-    db.at[indRow, 'laserpulseFRChange100'] = frChange100
+    db.at[indRow, 'laserpulseBaselineSpikeCount100'] = nspkBaseLaserMean100
+    db.at[indRow, 'laserpulseResponseSpikeCount100'] = nspkRespLaserMean100 
+    db.at[indRow, 'laserpulseSpikeCountChange100'] = frChange100
     db.at[indRow, 'laserpulsePval100'] = pVals100  # p-value from Mann-Whitney U test
     db.at[indRow, 'laserpulseZstat100'] = zStats100  # U-statistic from Mann-Whitney U test
     
-    db.at[indRow, 'laserpulseBaselineFR50'] = nspkBaseLaserMean50  
-    db.at[indRow, 'laserpulseResponseFR50'] = nspkRespLaserMean50
-    db.at[indRow, 'laserpulseFRChange50'] = frChange50
+    db.at[indRow, 'laserpulseBaselineSpikeCount50'] = nspkBaseLaserMean50  
+    db.at[indRow, 'laserpulseResponseSpikeCount50'] = nspkRespLaserMean50
+    db.at[indRow, 'laserpulseSpikeCountChange50'] = frChange50
     db.at[indRow, 'laserpulsePval50'] = pVals50
     db.at[indRow, 'laserpulseZstat50'] = zStats50
     
-    db.at[indRow, 'laserpulseBaselineFR200'] = nspkBaseLaserMean200
-    db.at[indRow, 'laserpulseResponseFR200'] = nspkRespLaserMean200
-    db.at[indRow, 'laserpulseFRChange200'] = frChange200
+    db.at[indRow, 'laserpulseBaselineSpikeCount200'] = nspkBaseLaserMean200
+    db.at[indRow, 'laserpulseResponseSpikeCount200'] = nspkRespLaserMean200
+    db.at[indRow, 'laserpulseSpikeCountChange200'] = frChange200
     db.at[indRow, 'laserpulsePval200'] = pVals200
     db.at[indRow, 'laserpulseZstat200'] = zStats200
           

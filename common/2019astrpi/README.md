@@ -192,40 +192,40 @@ This corresponds to a response period of [0 ms, 100 ms]. There are two additiona
 generated using baseline periods of [-50 ms, 0 ms] and [-200 ms, 0 ms] respectively. These sets
 are identified with "100", "50", or "200" following each column name. 
 
-* *laserpulseBaselineFR100*: The baseline laserpulse mean firing rate. Baseline period was 
+* *laserpulseBaselineSpikeCount100*: The baseline laserpulse mean spike count. Baseline period was 
 [-100 ms, 0 ms]
 
-* *laserpulseBaselineFR200*: The baseline laserpulse mean firing rate. Baseline period was 
+* *laserpulseBaselineSpikeCount200*: The baseline laserpulse mean spike count. Baseline period was 
 [-200 ms, 0 ms]
 
-* *laserpulseBaselineFR50*: The baseline laserpulse mean firing rate. Baseline period was 
+* *laserpulseBaselineSpikeCount50*: The baseline laserpulse mean spike count. Baseline period was 
 [-50 ms, 0 ms]
 
-* *laserpulseFRChange100*: The change in firing rate for the laserpulse as calculated by
+* *laserpulseSpikeCountChange100*: The change in spike count for the laserpulse as calculated by
 `response - baseline`, using 100 ms baseline and response periods 
 
-* *laserpulseFRChange200*: The change in firing rate for the laserpulse as calculated by
+* *laserpulseSpikeCountChange200*: The change in spike count for the laserpulse as calculated by
 `response - baseline`, using 200 ms baseline and response periods 
 
-* *laserpulseFRChange50*: The change in firing rate for the laserpulse as calculated by
+* *laserpulseSpikeCountChange50*: The change in spike count for the laserpulse as calculated by
 `response - baseline`, using 50 ms baseline and response periods 
 
-* *laserpulsePval100*: The p-value for comparing the baseline and response firing rates of the 
+* *laserpulsePval100*: The p-value for comparing the baseline and response spike count of the 
 laserpulse paradigm using a Mann-Whitney U test, using 100 ms baseline and response periods 
 
-* *laserpulsePval200*: The p-value for comparing the baseline and response firing rates of the 
+* *laserpulsePval200*: The p-value for comparing the baseline and response spike count of the 
 laserpulse paradigm using a Mann-Whitney U test, using 200 ms baseline and response periods 
 
-* *laserpulsePval50*: The p-value for comparing the baseline and response firing rates of the 
+* *laserpulsePval50*: The p-value for comparing the baseline and response spike count of the 
 laserpulse paradigm using a Mann-Whitney U test, using 50 ms baseline and response periods 
 
-* *laserpulseResponseFR100*: The response laserpulse mean firing rate. Response period was 
+* *laserpulseResponseSpikeCount100*: The response laserpulse mean spike count. Response period was 
 [0 ms, 100 ms]
 
-* *laserpulseResponseFR200*: The response laserpulse mean firing rate. Response period was 
+* *laserpulseResponseSpikeCount200*: The response laserpulse mean spike count. Response period was 
 [0 ms, 200 ms]
 
-* *laserpulseResponseFR50*: The response laserpulse mean firing rate. Response period was 
+* *laserpulseResponseSpikeCount50*: The response laserpulse mean spike count. Response period was 
 [0 ms, 50 ms]
 
 * *laserpulseZstat100*: The corresponding U-statistic for the above p-value, using 100 ms baseline 
@@ -448,7 +448,8 @@ The reason for manual selection is given with the number code, corresponding to:
 
 ### cell_indices_manually_removed.txt
 List of indices for cells that should be removed by manual selection. Cell indices come from
-any indices with a number code in `cell_indices_coded.txt`.
+any indices with a number code (representing a reason for manual selection) in 
+`cell_indices_coded.txt`.
 
 ### cell_merge_info.txt
 Contains information about cells that were merged. A list of lists, each entry with the format 
