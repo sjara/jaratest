@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 Created on Sun May  9 12:06:37 2021
 @author: isabe
@@ -135,22 +135,29 @@ class Paradigm(QtWidgets.QMainWindow):
                                                                units='[0-1]', enabled=False,
                                                                decimals=4, group='Sound parameters')
         
-        self.params['punishmentIntensity'] = paramgui.NumericParam('Punish intensity',value=50,
+        self.params['punishmentIntensity'] = paramgui.NumericParam('Punish intensity',value=70,
                                                               units='dB-SPL',enabled=True,
                                                               group='Sound parameters')
-        self.params['punishmentFrequency'] =paramgui.NumericParam('High frequency', value=13000, units='Hz',
+        self.params['punishmentFrequency'] =paramgui.NumericParam('Punishment frequency', value=13000, units='Hz',
                                                              group='Sound parameters')                    
-        self.params['punishmentAmplitude'] = paramgui.NumericParam('Punish amplitude',value=0.0,
-                                                               decimals=0, units='', enabled=False,
-                                                              group='Sound parameters')
-        self.params['punishmentDuration'] = paramgui.NumericParam('Punishment duration',value=0.4,
-                                                        units='s', group='Timing parameters')
-        
+        #self.params['punishmentAmplitude'] = paramgui.NumericParam('Punishment amplitude',value=0.0,
+         #                                                      units='[0-1]', enabled=False,
+          #                                                     decimals=4, group='Sound parameters')
+        self.params['punishmentAMdepth'] = paramgui.NumericParam('Punishment AM depth', value=0,
+                                                              decimals=0, units='', enabled=False,
+                                                              group='Sound parameters') 
+        self.params['punishmentDuration'] = paramgui.NumericParam('Punishment duration',value=0.1,
+                                                        units='s', group='Sound parameters')
+
+
         soundParams = self.params.layout_group('Sound parameters')
 
         self.params['lickBeforeStimOffset'] = paramgui.MenuParam('Lick before stim offset',
                                                            ['reward','ignore','abort','punish'], value=0,
                                                            group='Choice parameters')
+        self.params['punishmentSound'] = paramgui.MenuParam('Punishment Sound Type',
+        						     [ 'chords', 'AM','none',], value = 0,
+        						     group = 'Choice parameters')
         self.params['rewardSideMode'] = paramgui.MenuParam('Reward side mode',
                                                            ['random','toggle','onlyL','onlyR',
                                                             'repeat_mistake'], value=0,
@@ -264,7 +271,8 @@ class Paradigm(QtWidgets.QMainWindow):
         time.sleep(0.2)
         self.soundClient = soundclient.SoundClient()
         self.targetSoundID = 1
-        self.punishSoundID = 127 #128 and 0 stops the sound but 127 works when punishment is chords, not am.    
+        self.punishSoundID = 3 #128 and 0 stops the sound but 127 works when punishment is chords, not am.    
+        #self.AMpunishSoundID = 127
         self.soundClient.start()
       
         # -- Connect signals from dispatcher --
@@ -295,26 +303,25 @@ class Paradigm(QtWidgets.QMainWindow):
                               subject=self.params['subject'].get_value(),
                               paradigm=self.name)
         
-    def prepare_punish_sound(self, soundType, soundParam):
+    def prepare_punish_sound(self, punishmentSound, soundParam):
         punishmentIntensity = self.params['punishmentIntensity'].get_value()
         punishmentDuration = self.params['punishmentDuration'].get_value()
-        if soundType =='chords':
-            punishmentIntensity = self.params['punishmentIntensity'].get_value()
-
-            #punishmentAmplitude =  self.noiseCal.find_amplitude(punishmentIntensity).mean()
-
-            punishmentAmplitude = self.spkNoiseCal.find_amplitude(punishmentIntensity).mean()
-            self.params['punishmentAmplitude'].set_value(punishmentAmplitude)
-            sNoise = {'type':'noise', 'duration':0.5, 'amplitude':punishmentAmplitude}
-            self.soundClient.set_sound(self.punishSoundID,sNoise) 
-        
-        elif soundType == 'AM_depth': 
+        if punishmentSound =='chords':
             punishmentFrequency = soundParam
-            punishmentAmplitude = self.spkNoiseCal.find_amplitude(punishmentIntensity).mean()
-            s1 = { 'type':'chord', 'frequency':punishmentFrequency, 'duration':punishmentDuration,
-                  'amplitude':punishmentAmplitude, 'ntones':12, 'factor':1.2}
-                  
-                  
+            punishmentAmp = self.chordCal.find_amplitude(punishmentFrequency,punishmentIntensity).mean()
+            s2 = {'type':'chord', 'frequency':punishmentFrequency, 'duration':punishmentDuration,
+                  'amplitude':punishmentAmp, 'ntones':12, 'factor':1.2}
+
+        elif punishmentSound == 'AM_depth':
+            modDepth = soundParam        
+            punishmentAmp = self.noiseCal.find_amplitude(punishmentIntensity).mean()
+            modFrequency = 10
+            s2 = {'type':'AM', 'modFrequency':modFrequency, 'duration':punishmentDuration,
+                  'modDepth':modDepth, 'amplitude':punishmentAmp} 
+        self.params['punishmentAMdepth'].set_value(punishmentAmp)  
+        self.soundClient.set_sound(self.punishSoundID,s2)         
+
+ 	          
     def prepare_target_sound(self, soundType, soundParam):
         """
         The meaning of soundParam depends on the soundType. For example:
@@ -375,8 +382,8 @@ class Paradigm(QtWidgets.QMainWindow):
         taskMode = self.params['taskMode'].get_string()
         rewardAvailability = self.params['rewardAvailability'].get_value()
         punishmentDuration = self.params['punishmentDuration'].get_value()  
-        #punishmentFrequency = self.params['punishmentFrequency'].get_value()
-        punishmentAmplitude = self.params['punishmentAmplitude'].get_value()      
+        punishmentFrequency = self.params['punishmentFrequency'].get_value()
+        punishmentAMdepth = self.params['punishmentAMdepth'].get_value()
         targetDuration = self.params['targetDuration'].get_value()
         timeWaterValve = self.params['timeWaterValve'].get_value()
         interTrialIntervalMean = self.params['interTrialIntervalMean'].get_value()
@@ -407,7 +414,7 @@ class Paradigm(QtWidgets.QMainWindow):
                 nextRewardSide = 'left'
         elif rewardSideMode=='onlyR':
                 nextRewardSide = 'right'
-
+                
         psycurveMode = self.params['psycurveMode'].get_string()
         lowFreq = self.params['lowFreq'].get_value()
         highFreq = self.params['highFreq'].get_value()
@@ -453,17 +460,14 @@ class Paradigm(QtWidgets.QMainWindow):
 
         targetFrequency = possibleFreqs[freqIndex]
         targetCloudStrength = possibleStrengths[strengthIndex]
+        
         soundType = self.params['soundType'].get_string()
         if soundType == 'chords':
             self.params['targetFrequency'].set_value(targetFrequency)
             self.prepare_target_sound(soundType, targetFrequency)
-            self.params['punishmentAmplitude'].set_value(punishmentAmplitude)
-            self.prepare_punish_sound(soundType, punishmentAmplitude)
         elif soundType == 'AM_depth':
             self.params['targetAMdepth'].set_value(targetAMdepth)
-            self.prepare_target_sound(soundType, targetAMdepth)
-            self.params['punishmentFrequency'].set_value(highFreq)
-            self.prepare_punish_sound(soundType, highFreq)
+            self.prepare_target_sound(soundType, targetAMdepth) 
         elif soundType == 'AM_vs_chord':
             if nextRewardSide=='left':
                 targetAMdepth = self.params['lowAMdepth'].get_value()
@@ -476,10 +480,21 @@ class Paradigm(QtWidgets.QMainWindow):
             self.params['targetCloudStrength'].set_value(targetCloudStrength)
             self.prepare_target_sound(soundType, targetCloudStrength)
             
-        
+        punishmentSound = self.params['punishmentSound'].get_string()           
+        if punishmentSound == 'chords':
+            self.params['punishmentFrequency'].set_value(punishmentFrequency)
+            self.prepare_punish_sound(punishmentSound, punishmentFrequency)
+            punishsoundOutput = self.punishSoundID
+        elif punishmentSound == 'AM':
+            self.params['punishmentAMdepth'].set_value(punishmentAMdepth)
+            self.prepare_punish_sound(punishmentSound, punishmentAMdepth)
+            punishsoundOutput = self.punishSoundID
+
+
         stimType = self.params['stimType'].get_string()
         if (stimType=='sound_and_light') | (stimType=='sound_only'):
-            soundOutput = self.targetSoundID
+            soundOutput = self.targetSoundID 
+
         else:
             soundOutput = soundclient.STOP_ALL_SOUNDS
         if (stimType=='sound_and_light') | (stimType=='light_only'):
@@ -490,6 +505,7 @@ class Paradigm(QtWidgets.QMainWindow):
         stimType = self.params['stimType'].get_string()
         if (stimType=='sound_and_light') | (stimType=='sound_only'):
             soundOutput = self.targetSoundID
+
             stimOutput = stimSync
             serialOutput = 0
         else:
@@ -497,6 +513,7 @@ class Paradigm(QtWidgets.QMainWindow):
             stimOutput = stimSync
             serialOutput = 1
             self.soundClient.set_sound(self.targetSoundID,s1)
+
             
         if (stimType=='sound_and_light') | (stimType=='light_only'):
             lightOutput = [targetLED]
@@ -549,8 +566,7 @@ class Paradigm(QtWidgets.QMainWindow):
             self.sm.add_state(name='miss')            
             self.sm.add_state(name='falseAlarmL')            
             self.sm.add_state(name='falseAlarmR')            
-            self.sm.add_state(name='punishedEventL')
-            self.sm.add_state(name='punishedEventR')
+
         elif taskMode == 'lick_on_stim':
             self.sm.add_state(name='startTrial', statetimer=0,
                               transitions={'Tup':'delayPeriod'},
@@ -595,15 +611,18 @@ class Paradigm(QtWidgets.QMainWindow):
             self.sm.add_state(name='falseAlarmR', statetimer=0,
                               transitions={'Tup':'readyForNextTrial'},
                               serialOut=soundclient.STOP_ALL_SOUNDS) 
-            
+                              
             self.sm.add_state(name='punishedFalseAlarm', statetimer=0, 
-            		       transitions={'Tup': 'punishedEvent'},
-            		       serialOut=soundclient.STOP_ALL_SOUNDS)
-            self.sm.add_state(name='punishedEvent', statetimer=punishmentDuration,
+            		       transitions={'Tup': 'punishedEvent1'},
+                              serialOut=soundclient.STOP_ALL_SOUNDS,            		       
+            		       )
+            		       
+	       
+            self.sm.add_state(name='punishedEvent1', statetimer=punishmentDuration,
                               transitions={'Tup': 'readyForNextTrial'},
-                              outputsOn=lightOutput+stimOutput, serialOut=self.punishSoundID)
+            		       serialOut= punishsoundOutput
+            		       )
 
-            
             self.sm.add_state(name='reward', statetimer=timeWaterValve,
                               transitions={'Tup':'stopReward'},
                               outputsOn=[rewardOutput])
@@ -658,15 +677,18 @@ class Paradigm(QtWidgets.QMainWindow):
             self.sm.add_state(name='falseAlarmR', statetimer=0,
                               transitions={'Tup':'readyForNextTrial'},
                               serialOut=soundclient.STOP_ALL_SOUNDS) 
-                                         
+                       
             self.sm.add_state(name='punishedFalseAlarm', statetimer=0, 
-            		       transitions={'Tup': 'punishedEvent'},
-            		       serialOut=soundclient.STOP_ALL_SOUNDS)
-            self.sm.add_state(name='punishedEvent', statetimer=punishmentDuration,
+            		       transitions={'Tup': 'punishedEvent1'},
+                              serialOut=soundclient.STOP_ALL_SOUNDS            
+            		       )
+            		       
+	       
+            self.sm.add_state(name='punishedEvent1', statetimer=punishmentDuration,
                               transitions={'Tup': 'readyForNextTrial'},
-                              outputsOn=lightOutput+stimOutput, serialOut=self.punishSoundID)
-                            
-            
+            		       serialOut= punishsoundOutput
+            		       )
+
                             
             self.sm.add_state(name='reward', statetimer=timeWaterValve,
                               transitions={'Tup':'stopReward'},
@@ -715,7 +737,7 @@ class Paradigm(QtWidgets.QMainWindow):
                     self.results['outcome'][trialIndex] = self.results.labels['outcome']['error']
                     self.results['choice'][trialIndex] = self.results.labels['choice']['left']
             elif self.sm.statesNameToIndex['falseAlarmL'] in statesThisTrial:
-                self.params['addedITI'].set_value(self.params['lickingPeriod'].get_value())
+                self.params['addedITI'].set_value(0)
                 self.params['nFalseAlarmsLeft'].add(1)
                 self.results['outcome'][trialIndex] = self.results.labels['outcome']['falseAlarm']
                 self.results['choice'][trialIndex] = self.results.labels['choice']['none']
@@ -725,8 +747,8 @@ class Paradigm(QtWidgets.QMainWindow):
                 self.results['outcome'][trialIndex] = self.results.labels['outcome']['falseAlarm']
                 self.results['choice'][trialIndex] = self.results.labels['choice']['none']
                 
-            elif self.sm.statesNameToIndex['punishedEvent'] in statesThisTrial:
-                self.params['addedITI'].set_value(self.params['lickingPeriod'].get_value())
+            elif self.sm.statesNameToIndex['punishedEvent1'] in statesThisTrial:
+                self.params['addedITI'].set_value(0)
                 if lastRewardSide=='left':
                     self.params['nFalseAlarmsLeft'].add(1)
                     self.results['outcome'][trialIndex] = self.results.labels['outcome']['falseAlarm']
@@ -735,10 +757,6 @@ class Paradigm(QtWidgets.QMainWindow):
                     self.params['nFalseAlarmsRight'].add(1)
                     self.results['outcome'][trialIndex] = self.results.labels['outcome']['falseAlarm']
                     self.results['choice'][trialIndex] = self.results.labels['choice']['none']
-                  
-                  
-                        #self.results['outcome'][trialIndex] = \
-                         #   self.results.labels['outcome']['error']
                             
                             
             elif self.sm.statesNameToIndex['miss'] in statesThisTrial:
