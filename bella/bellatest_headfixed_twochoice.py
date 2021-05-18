@@ -156,7 +156,7 @@ class Paradigm(QtWidgets.QMainWindow):
                                                            ['reward','ignore','abort','punish'], value=0,
                                                            group='Choice parameters')
         self.params['punishmentSound'] = paramgui.MenuParam('Punishment Sound Type',
-        						     [ 'chords', 'AM','none',], value = 0,
+        						     [ 'chords', 'AM'], value = 0,
         						     group = 'Choice parameters')
         self.params['rewardSideMode'] = paramgui.MenuParam('Reward side mode',
                                                            ['random','toggle','onlyL','onlyR',
@@ -312,7 +312,7 @@ class Paradigm(QtWidgets.QMainWindow):
             s2 = {'type':'chord', 'frequency':punishmentFrequency, 'duration':punishmentDuration,
                   'amplitude':punishmentAmp, 'ntones':12, 'factor':1.2}
 
-        elif punishmentSound == 'AM_depth':
+        elif punishmentSound == 'AM':
             modDepth = soundParam        
             punishmentAmp = self.noiseCal.find_amplitude(punishmentIntensity).mean()
             modFrequency = 10
@@ -748,7 +748,7 @@ class Paradigm(QtWidgets.QMainWindow):
                 self.results['choice'][trialIndex] = self.results.labels['choice']['none']
                 
             elif self.sm.statesNameToIndex['punishedEvent1'] in statesThisTrial:
-                self.params['addedITI'].set_value(0)
+                self.params['addedITI'].set_value((self.params['lickingPeriod'].get_value()))
                 if lastRewardSide=='left':
                     self.params['nFalseAlarmsLeft'].add(1)
                     self.results['outcome'][trialIndex] = self.results.labels['outcome']['falseAlarm']
