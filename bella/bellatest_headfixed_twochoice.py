@@ -156,7 +156,7 @@ class Paradigm(QtWidgets.QMainWindow):
                                                            ['reward','ignore','abort','punish'], value=0,
                                                            group='Choice parameters')
         self.params['punishmentSound'] = paramgui.MenuParam('Punishment Sound Type',
-        						     [ 'chords', 'AM'], value = 0,
+        						     [ 'chords', 'white_noise'], value = 0,
         						     group = 'Choice parameters')
         self.params['rewardSideMode'] = paramgui.MenuParam('Reward side mode',
                                                            ['random','toggle','onlyL','onlyR',
@@ -312,7 +312,7 @@ class Paradigm(QtWidgets.QMainWindow):
             s2 = {'type':'chord', 'frequency':punishmentFrequency, 'duration':punishmentDuration,
                   'amplitude':punishmentAmp, 'ntones':12, 'factor':1.2}
 
-        elif punishmentSound == 'AM':
+        elif punishmentSound == 'white_noise':
             modDepth = soundParam        
             punishmentAmp = self.noiseCal.find_amplitude(punishmentIntensity).mean()
             modFrequency = 10
@@ -485,7 +485,7 @@ class Paradigm(QtWidgets.QMainWindow):
             self.params['punishmentFrequency'].set_value(punishmentFrequency)
             self.prepare_punish_sound(punishmentSound, punishmentFrequency)
             punishsoundOutput = self.punishSoundID
-        elif punishmentSound == 'AM':
+        elif punishmentSound == 'white_noise':
             self.params['punishmentAMdepth'].set_value(punishmentAMdepth)
             self.prepare_punish_sound(punishmentSound, punishmentAMdepth)
             punishsoundOutput = self.punishSoundID
