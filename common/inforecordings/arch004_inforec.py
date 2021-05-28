@@ -123,4 +123,4 @@ exp1.add_session('12-51-22', 'm', 'laserAM', 'am_tuning_curve')
 exp1.add_session('13-07-26', 'n', 'laserTuningCurve', 'am_tuning_curve')
 
 # Animal out at: 1:48
-exp0.maxDepth = 3700
+exp1.maxDepth = 3700
