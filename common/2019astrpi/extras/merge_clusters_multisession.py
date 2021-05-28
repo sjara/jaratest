@@ -10,11 +10,11 @@ from jaratoolbox import celldatabase
 from jaratoolbox import spikesorting
 
 # -- Clusters to merge --
-subject = 'd1pi036'
-sessionDate = '2019-05-29'
-depth = 2900
-tetrode = 6
-clustersToMerge = [4,5]
+subject = 'd1pi049'
+sessionDate = '2020-03-08'
+depth = 3300
+tetrode = 3
+clustersToMerge = [2,5]
 
 # databaseFile = '/data/figuresdata/2019astrpi/astrpi_all_cells_tuning_20200304.h5'
 databaseFile = 'C:\\Users\\devin\\data\\figuresdata\\2019astrpi\\astrpi_all_cells.h5'
@@ -28,10 +28,10 @@ print('Done loading')
 
 indRow, dbRow = celldatabase.find_cell(cellDB, subject, sessionDate, depth, tetrode, clustersToMerge[0])
 
-# for inds, oneSessionTime in enumerate(dbRow['ephysTime']):
-#     ephysSession = f'{sessionDate}_{oneSessionTime}'
-#     sessionType = dbRow['sessionType'][inds]
-#     print(f'Processing: {ephysSession} ({sessionType})')
-#     spikesorting.merge_kk_clusters(subject, ephysSession, tetrode, clustersToMerge, reportDir='/tmp/')
-
+for inds, oneSessionTime in enumerate(dbRow['ephysTime']):
+    ephysSession = f'{sessionDate}_{oneSessionTime}'
+    sessionType = dbRow['sessionType'][inds]
+    print(f'Processing: {ephysSession} ({sessionType})')
+    # spikesorting.merge_kk_clusters(subject, ephysSession, tetrode, clustersToMerge, reportDir='/tmp/')
+    spikesorting.merge_kk_clusters(subject, ephysSession, tetrode, clustersToMerge)
 
