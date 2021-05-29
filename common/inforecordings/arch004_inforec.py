@@ -206,3 +206,5 @@ exp3.add_session('14-41-02', 'p', 'tuningTest', 'am_tuning_curve')
 exp3.add_session('14-45-07', 'q', 'laserAM', 'am_tuning_curve')
 exp3.add_session('15-01-18', 'r', 'laser', 'am_tuning_curve')
 exp3.add_session('15-10-33', 's', 'laserTuningCurve', 'am_tuning_curve')
+
+exp3.maxDepth = 3800
