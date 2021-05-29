@@ -123,4 +123,85 @@ exp1.add_session('12-51-22', 'm', 'laserAM', 'am_tuning_curve')
 exp1.add_session('13-07-26', 'n', 'laserTuningCurve', 'am_tuning_curve')
 
 # Animal out at: 1:48
-exp0.maxDepth = 3700
+exp1.maxDepth = 3700
+
+
+exp2 = celldatabase.Experiment(subject, '2021-05-29', 'left_AudStr', info=['TT1ant', 'soundRight', 'A4x2-tet'])
+experiments.append(exp2)
+
+# Used right speaker; laser (520 nm) at 5mW; Probe DD02, no dye; Rig 2
+
+"""
+Laser Calibration
+Power: Value on laser dial, value in output level
+1.0: 4.1, 23.0
+2.0: 5.25, 40.6
+3.0: 6.4, 58.9
+4.0: 7.55, 77.1
+5.0: 8.75, 96.1
+"""
+
+# Animal in rig at: 9:29
+# Probe in at: 9:46
+
+# probe oriented along AP axis, inserted on medial side of craniotomy
+# doing 160 trials of test tuning curve (10 trials per cond) to speed it up
+# adding 'laser' sessions consisting of 200 trials, 50/50 with 500 ms laser
+
+exp2.add_site(3000, tetrodes=[4,5,6]) # TT1 ref
+exp2.add_session('09-50-34', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('09-53-10', 'a', 'tuningTest', 'am_tuning_curve')
+# no sound responses
+
+exp2.add_site(3400, tetrodes=[3,4,5,6]) # TT1 ref
+exp2.add_session('10-08-27', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('10-11-01', 'b', 'tuningTest', 'am_tuning_curve')
+exp2.add_session('10-15-05', 'c', 'laserAM', 'am_tuning_curve')
+exp2.add_session('10-30-52', 'd', 'laserTuningCurve', 'am_tuning_curve')
+
+exp2.add_site(3600, tetrodes=[2,3,4,5,6]) # TT1 ref
+exp2.add_session('11-11-50', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('11-14-18', 'e', 'tuningTest', 'am_tuning_curve')
+exp2.add_session('11-18-18', 'f', 'laserAM_bad', 'am_tuning_curve') # cut short, ephys computer ran out of space
+exp2.add_session('11-55-26', 'g', 'laserAM', 'am_tuning_curve')
+exp2.add_session('12-11-22', 'h', 'laser', 'am_tuning_curve')
+
+exp2.add_site(3700, tetrodes=[1,2,3,4,6]) # TT5 ref
+exp2.add_session('12-27-05', None, 'noisebursts', 'am_tuning_curve')
+exp2.add_session('12-32-24', 'i', 'tuningTest', 'am_tuning_curve')
+exp2.add_session('12-36-28', 'j', 'laserAM', 'am_tuning_curve')
+exp2.add_session('12-52-28', 'k', 'laser', 'am_tuning_curve')
+exp2.add_session('13-01-26', 'l', 'laserTuningCurve', 'am_tuning_curve')
+
+exp2.maxDepth = 3700
+
+# --- exp3 is a control penetration (laser not plugged in, tether taped to headbar) ---
+exp3 = celldatabase.Experiment(subject, '2021-05-29', 'left_AudStr', info=['TT1ant', 'soundRight', 'A4x2-tet'])
+experiments.append(exp3)
+
+# Used right speaker; laser (520 nm) at 5mW; Probe DD02, no dye; Rig 2
+# same laser calibration as exp2
+
+# Probe in at: 13:52
+# tried to go in same general area as exp2 (probe AP, medial edge of craniotomy)
+
+exp3.add_site(3200, tetrodes=[1,2,5,6]) # TT3 ref
+exp3.add_session('13-56-43', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('13-59-17', 'm', 'tuningTest', 'am_tuning_curve')
+# no sound response
+
+exp3.add_site(3400, tetrodes=[1,2,4,5,6]) # TT3 ref
+exp3.add_session('14-11-39', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('14-14-20', 'n', 'tuningTest', 'am_tuning_curve')
+# no sound response
+
+exp3.add_site(3600, tetrodes=[1,2,3,4,6]) # TT5 reference
+exp3.add_session('14-25-51', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('14-28-23', 'o', 'tuningTest', 'am_tuning_curve')
+
+exp3.add_site(3800, tetrodes=[1,2,3,4,6]) # TT5 reference
+exp3.add_session('14-38-32', None, 'noisebursts', 'am_tuning_curve')
+exp3.add_session('14-41-02', 'p', 'tuningTest', 'am_tuning_curve')
+exp3.add_session('14-45-07', 'q', 'laserAM', 'am_tuning_curve')
+exp3.add_session('15-01-18', 'r', 'laser', 'am_tuning_curve')
+exp3.add_session('15-10-33', 's', 'laserTuningCurve', 'am_tuning_curve')
