@@ -24,7 +24,7 @@ tuningcurve = ['tuningCurve', 'tuningCurve(tc)']
 # ========================== General Cell Filter ==========================
 
 # General cell filter
-ISI_THRESHOLD = 0.02  # maximum allowed % ISI violations per cluster
+ISI_THRESHOLD = 0.04  # maximum allowed % ISI violations per cluster
 SPIKE_QUALITY_THRESHOLD = 2.5
 # SPIKE_QUALITY_THRESHOLD = 3.7 Previous threshold used 
 

@@ -198,6 +198,7 @@ exp3.add_session('14-14-20', 'n', 'tuningTest', 'am_tuning_curve')
 exp3.add_site(3600, tetrodes=[1,2,3,4,6]) # TT5 reference
 exp3.add_session('14-25-51', None, 'noisebursts', 'am_tuning_curve')
 exp3.add_session('14-28-23', 'o', 'tuningTest', 'am_tuning_curve')
+# no sound response
 
 exp3.add_site(3800, tetrodes=[1,2,3,4,6]) # TT5 reference
 exp3.add_session('14-38-32', None, 'noisebursts', 'am_tuning_curve')

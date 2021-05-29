@@ -116,7 +116,6 @@ with open('extras\cell_indices_manually_removed.txt', 'r') as manualSelection:
 
 # Removes clusters that were not manually-verfied
 db = db.drop(indicesRemovedCells, errors='ignore')
-
 db = db.query(studyparams.CELL_FILTER)
 
 # ========================== Laserpulse Statistics Calculation ==========================
