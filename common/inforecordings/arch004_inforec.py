@@ -208,3 +208,68 @@ exp3.add_session('15-01-18', 'r', 'laser', 'am_tuning_curve')
 exp3.add_session('15-10-33', 's', 'laserTuningCurve', 'am_tuning_curve')
 
 exp3.maxDepth = 3800
+
+
+exp4 = celldatabase.Experiment(subject, '2021-05-30', 'left_AudStr', info=['medialDiI', 'TT1ant', 'soundRight', 'A4x2-tet'])
+experiments.append(exp4)
+
+# Used right speaker; laser (520 nm) at 5mW; Probe DD02, DiI used; Rig 2
+
+"""
+Laser Calibration
+Power: Value on laser dial, value in output level
+1.0: 4.05, 22.5
+2.0: 5.3, 41.5
+3.0: 6.55, 61.2
+4.0: 7.75, 80.1
+5.0: 9.0, 100.2
+"""
+
+# Animal in rig at: 9:16
+# Probe in at: 9:33
+
+# probe oriented along AP axis, inserted on medial side of craniotomy
+# doing 160 trials of test tuning curve (10 trials per cond) to speed it up
+# adding 'laser' sessions consisting of 200 trials, 50/50 with 500 ms laser
+
+exp4.add_site(3000, tetrodes=[2,4]) # TT3 ref
+exp4.add_session('09-35-25', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('09-38-02', 'a', 'tuningTest', 'am_tuning_curve')
+# no sound response
+
+exp4.add_site(3200, tetrodes=[2,4,5,6]) # TT3 ref
+exp4.add_session('09-46-05', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('09-48-36', 'b', 'tuningTest', 'am_tuning_curve')
+exp4.add_session('09-52-35', 'c', 'laserAM', 'am_tuning_curve')
+exp4.add_session('10-08-29', 'd', 'laser', 'am_tuning_curve')
+
+exp4.add_site(3400, tetrodes=[1,2,4,6]) # TT5 ref
+exp4.add_session('10-28-39', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('10-31-16', 'e', 'tuningTest', 'am_tuning_curve')
+exp4.add_session('10-36-53', 'f', 'laserAM', 'am_tuning_curve')
+exp4.add_session('10-52-45', 'g', 'laser', 'am_tuning_curve')
+
+exp4.add_site(3600, tetrodes=[1,2,4,5,6]) # TT3 reference
+exp4.add_session('11-07-34', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('11-10-06', 'h', 'tuningTest', 'am_tuning_curve')
+exp4.add_session('11-15-03', 'i', 'laserAM', 'am_tuning_curve')
+exp4.add_session('11-31-05', 'j', 'laser', 'am_tuning_curve')
+exp4.add_session('11-40-07', 'k', 'laserTuningCurve', 'am_tuning_curve')
+
+exp4.add_site(3700, tetrodes=[1,2,4,5,6])
+exp4.add_session('12-14-36', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('12-17-11', 'l', 'tuningTest', 'am_tuning_curve')
+# no sound response
+
+exp4.add_site(3800, tetrodes=[1,2,3,4])
+exp4.add_session('12-26-55', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('12-29-26', 'm', 'tuningTest', 'am_tuning_curve')
+# no sound response
+
+# doing a site on the way out
+exp4.add_site(3500, tetrodes=[1,2,3,4,6]) # TT5 reference
+exp4.add_session('12-39-40', None, 'noisebursts', 'am_tuning_curve')
+exp4.add_session('12-42-21', 'n', 'tuningTest', 'am_tuning_curve')
+# no sound response
+
+exp4.maxDepth = 3800
