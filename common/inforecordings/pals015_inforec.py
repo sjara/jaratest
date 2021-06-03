@@ -67,3 +67,29 @@ exp1.add_session('14-09-29', 'g', 'stage 1; high & low frequency', 'twochoice')
 exp1.add_session('14-21-04', 'h', 'stage 1; high & low frequency', 'twochoice')
 
 exp1.maxDepth = 1246
+
+exp2 = celldatabase.Experiment(subject, '2021-06-03', 'right_AC', info=[['TT1ant','soundLeft','A4x2-tet']])
+experiments.append(exp2)
+
+# Animal in rig at:2:00
+# Probe in at: 2:11
+# trained water restricted animal with water_on_sound (stage 2)
+
+exp2.add_site(982, tetrodes =[4, 8, 6, 7]) #TT3 Reference. Mouse grooming and moving a lot.
+exp2.add_session('14-20-32', 'a', 'stage 2; high & low frequency', 'twochoice')
+exp2.add_session('14-32-30', 'b', 'stage 2; high & low frequency', 'twochoice')
+
+exp2.add_site(1150, tetrodes =[2, 6, 8, 7]) #TT1 Reference. had to change probe, last one broke.
+exp2.add_session('14-59-02', 'c', 'stage 2; high & low frequency', 'twochoice')
+exp2.add_session('15-06-07', 'd', 'stage 2; high & low frequency', 'twochoice')
+
+exp2.add_site(1250, tetrodes =[2, 3, 8, 7]) #TT6
+exp2.add_session('15-18-55', 'e', 'stage 2; high & low frequency', 'twochoice')
+exp2.add_session('15-28-15', 'f', 'stage 2; high & low frequency', 'twochoice')
+
+exp2.add_site(1353, tetrodes =[2,6]) #TT5 Reference. had to change probe, last one broke.
+exp2.add_session('15-41-54', 'g', 'stage 2; high & low frequency', 'twochoice')
+exp2.add_session('15-51-00', 'h', 'stage 2; high & low frequency', 'twochoice')
+
+
+exp1.maxDepth = 1353
