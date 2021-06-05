@@ -35,7 +35,7 @@ exp0.add_site(1259, tetrodes =[4, 6, 8])
 exp0.add_session('13-23-00', 'e', 'stage 1; high & low frequency', 'twochoice')
 exp0.add_session('13-37-24', 'f', 'stage 1; high & low frequency', 'twochoice')
 
-exp0.add_site(1357, tetrodes =[1,4, 6, 7])
+exp0.add_site(1357, tetrodes =[1, 4, 6, 7])
 exp0.add_session('13-52-17', 'g', 'stage 1; high & low frequency', 'twochoice')
 exp0.add_session('13-59-39', 'h', 'stage 1; high & low frequency', 'twochoice')
 
@@ -92,4 +92,33 @@ exp2.add_session('15-41-54', 'g', 'stage 2; high & low frequency', 'twochoice')
 exp2.add_session('15-51-00', 'h', 'stage 2; high & low frequency', 'twochoice')
 
 
-exp1.maxDepth = 1353
+exp2.maxDepth = 1353
+
+
+exp3 = celldatabase.Experiment(subject, '2021-06-05', 'right_AC', info=[['TT1ant','soundLeft','A4x2-tet']])
+experiments.append(exp3)
+
+# Animal in rig at:
+# Probe in at:
+# trained water restricted animal with water_on_sound (stage 2)
+
+exp3.add_site(1370, tetrodes =[4, 5, 7, 8]) #TT2 Reference
+exp3.add_session('13-44-17', 'a', 'stage 1; high & low frequency', 'twochoice') #done using stage 1. after, all is in stage 2
+exp3.add_session('13-54-26', 'b', 'stage 1; high & low frequency', 'twochoice')
+
+exp3.add_site(1470, tetrodes =[3, 4, 5, 7, 8]) #TT1 Reference
+exp3.add_session('14-08-03', 'c', 'stage 2; high & low frequency', 'twochoice')
+exp3.add_session('14-17-04', 'd', 'stage 2; high & low frequency', 'twochoice')
+exp3.add_session('14-25-22', 'e', 'stage 2; high & low frequency', 'twochoice') #short trial. edited the behavior code.
+exp3.add_session('14-34-26', 'f', 'stage 2; high & low frequency', 'twochoice') #short trial. edited the behavior code.
+
+exp3.add_site(1570, tetrodes =[4, 5, 6, 7, 8]) #TT1 Reference
+exp3.add_session('14-49-51', 'g', 'stage 2; high & low frequency', 'twochoice')
+exp3.add_session('14-59-59', 'h', 'stage 2; high & low frequency', 'twochoice')
+
+exp3.add_site(1670, tetrodes =[2, 3, 4, 6, 7, 8]) #TT1 Reference
+exp3.add_session('15-13-28', 'i', 'stage 2; high & low frequency', 'twochoice')
+exp3.add_session('15-21-57', 'j', 'stage 2; high & low frequency', 'twochoice')
+exp3.add_session('15-29-56', 'k', 'stage 1; high & low frequency', 'twochoice')#stage1
+
+exp3.maxDepth = 1670
