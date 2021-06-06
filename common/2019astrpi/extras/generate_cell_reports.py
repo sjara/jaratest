@@ -298,7 +298,8 @@ else:
 
 # Loads database for plotting 
 db = celldatabase.load_hdf(inputDirectory)
-
+db = db.query('isiViolations < 0.04')
+db = db.query('isiViolations > 0.02')
 # -------------------------------------------------------------------------------
 for indRow, dbRow in db.iterrows():
     oneCell = ephyscore.Cell(dbRow, useModifiedClusters=False)
@@ -408,9 +409,9 @@ for indRow, dbRow in db.iterrows():
         plt.setp(hLaserCond, zorder=3)
         plt.ylabel('Trial')
         axLaserpulseRaster.set_xlim(-0.3, 0.5)
-        if dbRow.laserpulsePval100 < 0.05 and dbRow.laserpulseFRChange100 > 0 and dbRow.laserpulseResponseFR100 > 0.5:
+        if dbRow.laserpulsePval100 < 0.05 and dbRow.laserpulseSpikeCountChange100 > 0 and dbRow.laserpulseResponseSpikeCount100 > 0.5:
             plt.title("Laserpulse D1\n{}".format(dbRow.laserpulsePval100), fontweight='bold')
-        elif dbRow.laserpulsePval100 >= 0.05 and dbRow.laserpulseFRChange100 <= 0:
+        elif dbRow.laserpulsePval100 >= 0.05 and dbRow.laserpulseSpikeCountChange100 <= 0:
             plt.title("Laserpulse nD1\n{}".format(dbRow.laserpulsePval100))
         else:
             plt.title("Laserpulse Unidentified Cell \n{}".format(dbRow.laserpulsePval100))
