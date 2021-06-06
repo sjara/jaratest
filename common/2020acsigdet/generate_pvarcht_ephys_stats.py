@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 from scipy import stats
+import matplotlib.pyplot as plt
 
 from jaratoolbox import celldatabase
 from jaratoolbox import ephyscore
@@ -14,8 +15,8 @@ from jaratest.anna.analysis import band_plots
 import studyparams
 import figparams
 
-#dbFilename = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, 'band075_cells.h5')
-dbFilename = os.path.join(settings.FIGURES_DATA_PATH, 'band075_cells.h5')
+dbFilename = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'band075_cells.h5')
+# dbFilename = os.path.join(settings.FIGURES_DATA_PATH, 'band075_cells.h5')
 db = celldatabase.load_hdf(dbFilename)
 
 bestCells = db.query('isiViolations<0.02 and spikeShapeQuality>2.5 and soundFR>1')
@@ -33,6 +34,12 @@ soundFR = bestCells['soundFR']
 soundLaserFR = bestCells['soundLaserFR']
 pVal = stats.wilcoxon(soundFR, soundLaserFR)[1]
 print(f'Laser on vs off sound-evoked FR pVal: {pVal}')
+
+changeFR = soundLaserFR - soundFR
+bins = np.linspace(-1, 4, 25)
+plt.hist(changeFR, bins)
+plt.xlabel('Change in firing rate (spks/sec)')
+plt.show()
 
 # for indCell, cell in bestCells.iterrows():
 #     band_plots.plot_laser_bandwidth_summary(cell, 5)

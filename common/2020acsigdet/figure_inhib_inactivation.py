@@ -11,73 +11,71 @@ from scipy import stats
 from jaratoolbox import settings
 from jaratoolbox import extraplots
 
+import behaviour_analysis_funcs as bf
 import figparams
 import studyparams
 
 FIGNAME = 'figure_inhibitory_inactivation'
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
-PANELS = [1, 1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
+PANELS = [1, 1, 1, 0, 1, 1, 0, 1, 1, 0]  # Plot panel i if PANELS[i]==1
 
 SAVE_FIGURE = 1
 CORRECTED = 0
-SIG_CONTROL_REMOVED = 1
+SIG_CONTROL_REMOVED = 0
 outputDir = '/tmp/'
-if CORRECTED:
-    figFilename = 'Fig3_inhib_inactivation_corrected'
-else:
-    figFilename = 'Fig3_inhib_inactivation'  # Do not include extension
+figFilename = 'Fig4_inhib_inactivation'  # Do not include extension
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
-figSize = [9,9]  # In inches
+figSize = [6.82,6.5]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.003, 0.39, 0.675]  # Horiz position for panel labels
-labelPosY = [0.98, 0.64, 0.3]  # Vert position for panel labels
+labelPosX = [0.003, 0.32, 0.525, 0.74]  # Horiz position for panel labels
+labelPosY = [0.97, 0.84, 0.49, 0.36,
+             0.705, 0.47, 0.21]  # Vert position for panel labels
 
-PVInactExample = 'band081_psycurve.npz'
+PVInactExample = 'band137_psycurve.npz'
 SOMInactExample = 'band065_psycurve.npz'
-summaryFileName = 'all_behaviour_inhib_inactivation.npz'
-controlFileName = 'all_behaviour_inhib_inactivation_control.npz'
+summaryFileName = 'all_behaviour_inhib_inactivation_v2.npz'
 
 baseColour = figparams.colp['baseline']
 PVColour = figparams.colp['PVmanip']
 SOMColour = figparams.colp['SOMmanip']
 controlColour = figparams.colp['control']
+connectLineColour = figparams.colp['connectLine']
+
+lineWidth = figparams.lineWidth
+markerSize = figparams.markerSize
 
 fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(3, 3, width_ratios=[1.5, 1, 1])
-gs.update(top=0.98, bottom=0.05, left=0.07, right=0.94, wspace=0.5, hspace=0.4)
+gs = gridspec.GridSpec(5, 4, width_ratios=[1.7, 1, 1, 1], height_ratios=[1,0.5,0.001,1,0.5])
+gs.update(top=0.98, bottom=0.08, left=0.08, right=0.94, wspace=0.6, hspace=0.4)
 
-def bootstrap_median_CI(data, reps=1000, interval=95):
-    medians = np.zeros(reps)
-    for ind in range(reps):
-        samples = np.random.choice(data, len(data), replace=True)
-        medians[ind] = np.median(samples)
-    low = np.percentile(medians,(100-interval)/2.0)
-    high = np.percentile(medians,interval+(100-interval)/2.0)
-    return [low, high]
 
 # --- example psychometric curves ---
 if PANELS[0]:
     examples = [PVInactExample, SOMInactExample]
     cellTypeColours = [PVColour, SOMColour]
     labels = ['no PV', 'no SOM']
-    panelLabels = ['A', 'D']
+    cartoonLabels = ['A', 'I']
+    panelLabels = ['B', 'J']
+
+    axPsyCurves = gs[:, 0]
+    gs2 = gridspec.GridSpecFromSubplotSpec(4, 1, subplot_spec=axPsyCurves, wspace=0.3, hspace=0.4, height_ratios=[0.3,1.0,0.3,1.0])
 
     for indType, exampleFileName in enumerate(examples):
         dataFullPath = os.path.join(inactDataDir, exampleFileName)
         data = np.load(dataFullPath)
 
-        axCurve = plt.subplot(gs[indType, 0])
+        axCurve = plt.subplot(gs2[indType*2+1, 0])
 
         psyCurveControl = data['psyCurveLaserInControl']
         upperErrorControl = data['upperErrorLaserInControl']
@@ -85,33 +83,33 @@ if PANELS[0]:
         possibleSNRs = data['possibleSNRs']
 
         xVals = range(len(possibleSNRs))
-        plt.plot(xVals[:2], psyCurveControl[:2], 'o--', color=baseColour, lw=3, ms=8, zorder=10)
-        l1, = plt.plot(xVals[1:], psyCurveControl[1:], 'o-', color=baseColour, lw=3, ms=8, zorder=10)
+        plt.plot(xVals[:2], psyCurveControl[:2], 'o--', color=baseColour, lw=lineWidth, ms=markerSize, zorder=10)
+        l1, = plt.plot(xVals[1:], psyCurveControl[1:], 'o-', color=baseColour, lw=lineWidth, ms=markerSize, zorder=10)
         #l1, = plt.plot(range(len(possibleSNRs)), psyCurveControl, 'o-', color=ExcColour, lw=3, ms=8)
         plt.errorbar(range(len(possibleSNRs)), psyCurveControl, yerr=[lowerErrorControl, upperErrorControl], fmt='none',
-                     color=baseColour, lw=2, capsize=5, capthick=1)
+                     color=baseColour, lw=lineWidth, capsize=5, capthick=1)
 
         psyCurveLaser = data['psyCurveLaserIn']
         upperErrorLaser = data['upperErrorLaserIn']
         lowerErrorLaser = data['lowerErrorLaserIn']
 
-        plt.plot(xVals[:2], psyCurveLaser[:2], 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8, zorder=10)
-        l2, = plt.plot(xVals[1:], psyCurveLaser[1:], 'o-', color=cellTypeColours[indType], mfc='white', lw=3, ms=8, zorder=10)
+        plt.plot(xVals[:2], psyCurveLaser[:2], 'o--', color=cellTypeColours[indType], mfc='white', lw=lineWidth, ms=markerSize, zorder=10)
+        l2, = plt.plot(xVals[1:], psyCurveLaser[1:], 'o-', color=cellTypeColours[indType], mfc='white', lw=lineWidth, ms=markerSize, zorder=10)
         #l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8)
         plt.errorbar(range(len(possibleSNRs)), psyCurveLaser, yerr=[lowerErrorLaser, upperErrorLaser], fmt='none',
-                     color=cellTypeColours[indType], lw=2, capsize=5, capthick=1, zorder=-10)
+                     color=cellTypeColours[indType], lw=lineWidth, capsize=5, capthick=1, zorder=-10)
 
         psyCurveLaserOut = data['psyCurveLaserOut']
         upperErrorLaserOut = data['upperErrorLaserOut']
         lowerErrorLaserOut = data['lowerErrorLaserOut']
 
-        plt.plot(xVals[:2], psyCurveLaserOut[:2], 'o--', color=controlColour, mfc='white', lw=3, ms=8, zorder=10)
-        l3, = plt.plot(xVals[1:], psyCurveLaserOut[1:], 'o-', color=controlColour, mfc='white', lw=3, ms=8, zorder=10)
-        # l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8)
-        plt.errorbar(range(len(possibleSNRs)), psyCurveLaserOut, yerr=[lowerErrorLaserOut, upperErrorLaserOut], fmt='none',
-                     color=controlColour, lw=2, capsize=5, capthick=1, zorder=-10)
+        # plt.plot(xVals[:2], psyCurveLaserOut[:2], 'o--', color=controlColour, mfc='white', lw=3, ms=8, zorder=10)
+        # l3, = plt.plot(xVals[1:], psyCurveLaserOut[1:], 'o-', color=controlColour, mfc='white', lw=3, ms=8, zorder=10)
+        # # l2, = plt.plot(range(len(possibleSNRs)), psyCurveLaser, 'o--', color=cellTypeColours[indType], mfc='white', lw=3, ms=8)
+        # plt.errorbar(range(len(possibleSNRs)), psyCurveLaserOut, yerr=[lowerErrorLaserOut, upperErrorLaserOut], fmt='none',
+        #              color=controlColour, lw=2, capsize=5, capthick=1, zorder=-10)
 
-        axCurve.legend([l1, l2, l3], ['no laser', labels[indType], 'laser out'])
+        axCurve.legend([l1, l2], ['baseline', labels[indType]], fontsize=fontSizeLegend, frameon=False, handlelength=1.0)
 
         axCurve.set_xlim(-0.2, len(possibleSNRs) - 0.8)
         axCurve.set_xticks(range(len(possibleSNRs)))
@@ -128,342 +126,579 @@ if PANELS[0]:
         extraplots.set_ticks_fontsize(axCurve, fontSizeTicks)
 
     for indLabel, label in enumerate(panelLabels):
-        axCurve.annotate(label, xy=(labelPosX[0], labelPosY[indLabel]), xycoords='figure fraction',
+        axCurve.annotate(label, xy=(labelPosX[0], labelPosY[indLabel*2+1]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
+        axCurve.annotate(cartoonLabels[indLabel], xy=(labelPosX[0], labelPosY[indLabel*2]), xycoords='figure fraction',
+                         fontsize=fontSizePanel, fontweight='bold')
 
-# --- summary of change in accuracy during PV or SOM inactivation ---
+# --- summary of change in d prime during PV or SOM inactivation ---
 if PANELS[1]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserAccuracy = summaryData['PVlaserAccuracy']
-    PVcontrolAccuracy = summaryData['PVcontrolAccuracy']
-    SOMlaserAccuracy = summaryData['SOMlaserAccuracy']
-    SOMcontrolAccuracy = summaryData['SOMcontrolAccuracy']
+    PVlaserdprime = summaryData['PVexpLaserdprimeAllBands']
+    PVnoLaserdprime = summaryData['PVexpNoLaserdprimeAllBands']
+    SOMlaserdprime = summaryData['SOMexpLaserdprimeAllBands']
+    SOMnoLaserdprime = summaryData['SOMexpNoLaserdprimeAllBands']
     possibleBands = summaryData['possibleBands']
 
     if CORRECTED:
-        summaryControlDataFullPath = os.path.join(inactDataDir, controlFileName)
-        summaryControlData = np.load(summaryControlDataFullPath)
+        PVlaserdprimeControl = summaryData['PVcontrolLaserdprimeAllBands']
+        PVnoLaserdprimeControl = summaryData['PVcontrolNoLaserdprimeAllBands']
+        SOMlaserdprimeControl = summaryData['SOMcontrolLaserdprimeAllBands']
+        SOMnoLaserdprimeControl = summaryData['SOMcontrolNoLaserdprimeAllBands']
 
-        PVlaserAccuracyControl = summaryControlData['PVlaserAccuracy']
-        PVcontrolAccuracyControl = summaryControlData['PVcontrolAccuracy']
-        SOMlaserAccuracyControl = summaryControlData['SOMlaserAccuracy']
-        SOMcontrolAccuracyControl = summaryControlData['SOMcontrolAccuracy']
+        PVcontrolLaserdprimeCorrected = PVlaserdprime - (PVlaserdprimeControl - PVnoLaserdprimeControl)
+        SOMlaserdprimeCorrected = SOMlaserdprime - (SOMlaserdprimeControl - SOMnoLaserdprimeControl)
 
-        PVlaserAccuracyCorrected = PVlaserAccuracy - (PVlaserAccuracyControl - PVcontrolAccuracyControl)
-        SOMlaserAccuracyCorrected = SOMlaserAccuracy - (SOMlaserAccuracyControl - SOMcontrolAccuracyControl)
-
-        accuracyData = [[PVcontrolAccuracy, PVlaserAccuracyCorrected], [SOMcontrolAccuracy, SOMlaserAccuracyCorrected]]
+        dprimeData = [[PVnoLaserdprime, PVcontrolLaserdprimeCorrected], [SOMnoLaserdprime, SOMlaserdprimeCorrected]]
 
     else:
-        accuracyData = [[PVcontrolAccuracy, PVlaserAccuracy], [SOMcontrolAccuracy, SOMlaserAccuracy]]
+        dprimeData = [[PVnoLaserdprime, PVlaserdprime], [SOMnoLaserdprime, SOMlaserdprime]]
 
-    panelLabels = ['B', 'E']
+    if SIG_CONTROL_REMOVED:
+        PVcontrolpVal = summaryData['PVcontrolpValAllBand']
+        SOMcontrolpVal = summaryData['SOMcontrolpValAllBand']
+
+        dprimeData[0][0] = dprimeData[0][0][PVcontrolpVal > 0.05]
+        dprimeData[0][1] = dprimeData[0][1][PVcontrolpVal > 0.05]
+        dprimeData[1][0] = dprimeData[1][0][SOMcontrolpVal > 0.05]
+        dprimeData[1][1] = dprimeData[1][1][SOMcontrolpVal > 0.05]
+
+    panelLabels = ['C', 'K']
     colours = [PVColour, SOMColour]
+    xTickLabels = ['no PV', 'no SOM']
+    yLim = [0,2.3]
 
-    for indType, accuracies in enumerate(accuracyData):
-        axScatter = plt.subplot(gs[indType,1])
-
-        barLoc = np.array([-0.24, 0.24])
-        xLocs = np.arange(2)
-        xTickLabels = possibleBands
-
-        for indBand in range(len(possibleBands)):
-            thisxLocs = barLoc + xLocs[indBand]
-
-            for indMouse in range(accuracies[0].shape[0]):
-                plt.plot(thisxLocs, [accuracies[0][indMouse, indBand], accuracies[1][indMouse, indBand]], '-', color=baseColour)
-
-            plt.plot(np.tile(thisxLocs[0],accuracies[0].shape[0]), accuracies[0][:,indBand], 'o', color=baseColour)
-            plt.plot(np.tile(thisxLocs[1],accuracies[1].shape[0]), accuracies[1][:,indBand], 'o', mec=colours[indType], mfc='white')
-
-            #median = np.median(accuracyData, axis=0)
-            #plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-
-        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
-        axScatter.set_xticks(xLocs)
-        xTickLabels = possibleBands.tolist()
-        xTickLabels[-1] = 'WN'
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(xTickLabels)
-        axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
-
-        axScatter.set_ylim(50, 80)
-        axScatter.set_ylabel('Accuracy (%)', fontsize=fontSizeLabels)
-
-        extraplots.boxoff(axScatter)
-        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
+    for indType in range(2):
+        axScatter = plt.subplot(gs[indType*3,1])
+        thisxticklabels = ['baseline', xTickLabels[indType]]
+        bf.plot_laser_comparison(axScatter, dprimeData[indType], colours[indType], 'white', yLim, thisxticklabels)
+        axScatter.set_ylabel('d\'', fontsize=fontSizeLabels)
 
     for indLabel, label in enumerate(panelLabels):
-        axScatter.annotate(label, xy=(labelPosX[1], labelPosY[indLabel]), xycoords='figure fraction',
+        axScatter.annotate(label, xy=(labelPosX[1], labelPosY[indLabel*5]), xycoords='figure fraction',
                              fontsize=fontSizePanel, fontweight='bold')
 
-# --- comparison in change in accuracy with PV and SOM inactivation ---
+# --- comparison in change in d prime with laser in vs laser out
 if PANELS[2]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserAccuracy = summaryData['PVlaserAccuracy']
-    PVcontrolAccuracy = summaryData['PVcontrolAccuracy']
-    SOMlaserAccuracy = summaryData['SOMlaserAccuracy']
-    SOMcontrolAccuracy = summaryData['SOMcontrolAccuracy']
+    PVlaserdprime = summaryData['PVexpLaserdprimeAllBands']
+    PVnoLaserdprime = summaryData['PVexpNoLaserdprimeAllBands']
+    SOMlaserdprime = summaryData['SOMexpLaserdprimeAllBands']
+    SOMnoLaserdprime = summaryData['SOMexpNoLaserdprimeAllBands']
+
+    PVchange = PVlaserdprime - PVnoLaserdprime
+    SOMchange = SOMlaserdprime - SOMnoLaserdprime
+
+    PVlaserdprimeControl = summaryData['PVcontrolLaserdprimeAllBands']
+    PVnoLaserdprimeControl = summaryData['PVcontrolNoLaserdprimeAllBands']
+    SOMlaserdprimeControl = summaryData['SOMcontrolLaserdprimeAllBands']
+    SOMnoLaserdprimeControl = summaryData['SOMcontrolNoLaserdprimeAllBands']
+
+    controlPVchange = PVlaserdprimeControl - PVnoLaserdprimeControl
+    controlSOMchange = SOMlaserdprimeControl - SOMnoLaserdprimeControl
+
+    # PVeffectpVals = summaryData['PVcontrolvsexppValAllBands']
+    # PVlaserpVals = summaryData['PVexppValAllBand']
+    # PVsigMice = (PVeffectpVals<0.05) & (PVlaserpVals<0.05)
+    #
+    # SOMeffectpVals = summaryData['SOMcontrolvsexppValAllBands']
+    # SOMlaserpVals = summaryData['SOMexppValAllBand']
+    # SOMsigMice = (SOMeffectpVals < 0.05) & (SOMlaserpVals < 0.05)
+    #
+    # PVfacecolours = [PVColour if val else 'none' for val in PVsigMice]
+    # PVfacecolours = funcs.list_colours_to_rgba(PVfacecolours)
+    # SOMfacecolours = [SOMColour if val else 'none' for val in SOMsigMice]
+    # SOMfacecolours = funcs.list_colours_to_rgba(SOMfacecolours)
+
+    panelLabels = ['F', 'N']
+    colours = [PVColour, SOMColour]
+    # facecolours = [PVfacecolours, SOMfacecolours]
+    xTickLabels = ['No PV', 'No SOM']
+    xLims = [[-0.5, 0.5], [-0.5, 0.3]]
+    yLims = [[-0.7, 0.3], [-0.7, 0.1]]
+
+    expChange = [PVchange, SOMchange]
+    controlChange = [controlPVchange, controlSOMchange]
+
+    for indType in range(2):
+        axScatter = plt.subplot(gs[indType*3+1, 1])
+        bf.plot_exp_vs_control_scatter(axScatter, controlChange[indType], expChange[indType], colours[indType], xLims[indType], yLims[indType], 'none')
+
+        axScatter.set_xlabel(r'Control $\Delta$ d$^\prime$', fontsize=fontSizeLabels)
+        axScatter.set_ylabel(f'{xTickLabels[indType]} ' r'$\Delta$ d$^\prime$', fontsize=fontSizeLabels, labelpad=0)
+
+        # -- linear regression --
+        slope, intercept, rVal, pVal, stdErr = stats.linregress(controlChange[indType], expChange[indType])
+
+        print(f'Laser in vs. out d\' change for {xTickLabels[indType]}: \ncorrelation coefficient: {rVal} \np Val: {pVal}')
+
+        # -- compare change in d' between laser in and out --
+        pVal = stats.wilcoxon(controlChange[indType], expChange[indType])[1]
+        print(f'Laser in vs. out direction of effect d\' pVal {xTickLabels[indType]}: {pVal}')
+
+        percentBiggerLaserIn = 100.0*np.sum((controlChange[indType]-expChange[indType])>0)/len(controlChange[indType])
+        print(f'Percent of {xTickLabels[indType]} mice with bigger laser in effect: {percentBiggerLaserIn}')
+
+
+    for indLabel, label in enumerate(panelLabels):
+        axScatter.annotate(label, xy=(labelPosX[1], labelPosY[indLabel*2+4]), xycoords='figure fraction',
+                           fontsize=fontSizePanel, fontweight='bold')
+
+# --- comparison in change in d prime with PV and SOM inactivation ---
+if PANELS[3]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
+
+    PVlaserdprime = summaryData['PVexpLaserdprimeAllBands']
+    PVnoLaserdprime = summaryData['PVexpNoLaserdprimeAllBands']
+    SOMlaserdprime = summaryData['SOMexpLaserdprimeAllBands']
+    SOMnoLaserdprime = summaryData['SOMexpNoLaserdprimeAllBands']
     possibleBands = summaryData['possibleBands']
 
-    PVchange = PVlaserAccuracy - PVcontrolAccuracy
-    SOMchange = SOMlaserAccuracy - SOMcontrolAccuracy
+    PVeffectpVals = summaryData['PVcontrolvsexppValAllBands']
+    PVlaserpVals = summaryData['PVexppValAllBand']
+    PVsigMice = (PVeffectpVals < 0.05) & (PVlaserpVals < 0.05)
+
+    SOMeffectpVals = summaryData['SOMcontrolvsexppValAllBands']
+    SOMlaserpVals = summaryData['SOMexppValAllBand']
+    SOMsigMice = (SOMeffectpVals < 0.05) & (SOMlaserpVals < 0.05)
+
+    PVchange = PVlaserdprime - PVnoLaserdprime
+    SOMchange = SOMlaserdprime - SOMnoLaserdprime
 
     if CORRECTED:
-        controlDataFullPath = os.path.join(inactDataDir, controlFileName)
-        controlData = np.load(controlDataFullPath)
+        PVlaserdprimeControl = summaryData['PVcontrolLaserdprimeAllBands']
+        PVnoLaserdprimeControl = summaryData['PVcontrolNoLaserdprimeAllBands']
+        SOMlaserdprimeControl = summaryData['SOMcontrolLaserdprimeAllBands']
+        SOMnoLaserdprimeControl = summaryData['SOMcontrolNoLaserdprimeAllBands']
 
-        controlPVlaserAccuracy = controlData['PVlaserAccuracy']
-        controlPVcontrolAccuracy = controlData['PVcontrolAccuracy']
-        controlSOMlaserAccuracy = controlData['SOMlaserAccuracy']
-        controlSOMcontrolAccuracy = controlData['SOMcontrolAccuracy']
-
-        controlPVchange = controlPVlaserAccuracy - controlPVcontrolAccuracy
-        controlSOMchange = controlSOMlaserAccuracy - controlSOMcontrolAccuracy
+        controlPVchange = PVlaserdprimeControl - PVnoLaserdprimeControl
+        controlSOMchange = SOMlaserdprimeControl - SOMnoLaserdprimeControl
 
         correctedPVchange = PVchange - controlPVchange
         correctedSOMchange = SOMchange - controlSOMchange
 
-        changeAccuracy = [correctedPVchange, correctedSOMchange]
-        medianChangeAccuracy = [np.median(correctedPVchange, axis=0), np.median(correctedSOMchange, axis=0)]
+        changedprime = [correctedPVchange, correctedSOMchange]
     else:
-        changeAccuracy = [PVchange, SOMchange]
-        medianChangeAccuracy = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
+        changedprime = [PVchange, SOMchange]
 
-    axBar = plt.subplot(gs[2,1])
-    cartoonLabel = 'G'
-    panelLabel = 'H'
+    if SIG_CONTROL_REMOVED:
+        PVcontrolpVal = summaryData['PVcontrolpValAllBand']
+        SOMcontrolpVal = summaryData['SOMcontrolpValAllBand']
+
+        changedprime[0] = changedprime[0][PVcontrolpVal > 0.05]
+        changedprime[1] = changedprime[1][SOMcontrolpVal > 0.05]
+
+    axBar = plt.subplot(gs[4,1])
+    cartoonLabel = 'I'
+    panelLabel = 'J'
 
     cellTypeColours = [PVColour, SOMColour]
+    xTickLabels = ['no PV', 'no SOM']
+    yLims = (-0.6, 0.2)
 
-    width = 0.3
-    barLoc = np.array([-0.18, 0.18])
-    xLocs = np.arange(2)
-    xTickLabels = possibleBands
+    # PVfacecolours = [PVColour if val else 'white' for val in PVsigMice]
+    # PVfacecolours = funcs.list_colours_to_rgba(PVfacecolours)
+    # SOMfacecolours = [SOMColour if val else 'white' for val in SOMsigMice]
+    # SOMfacecolours = funcs.list_colours_to_rgba(SOMfacecolours)
+    # facecolours = [PVfacecolours, SOMfacecolours]
 
-    #changeCIs = [bootstrap_median_CI(PVchange), bootstrap_median_CI(SOMchange)]
-    for indBand in range(len(possibleBands)):
-        for indType in range(len(medianChangeAccuracy)):
-            jitter = 0.8 * width * (np.random.random(len(changeAccuracy[indType])) - 0.5)
-            plt.plot(np.tile(xLocs[indBand] + barLoc[indType], len(changeAccuracy[indType])) + jitter,
-                     changeAccuracy[indType][:, indBand], 'o', mec=cellTypeColours[indType], mfc='white')
+    facecolours = [PVColour, SOMColour]
 
-            plt.plot([xLocs[indBand] + barLoc[indType] - width / 2, xLocs[indBand] + barLoc[indType] + width / 2],
-                     [medianChangeAccuracy[indType][indBand], medianChangeAccuracy[indType][indBand]],
-                     color='k', linewidth=3, zorder=10)  # medians
+    bf.plot_cell_type_comparison(axBar, changedprime, cellTypeColours, yLims, facecolours)
 
-            accuracyCI = bootstrap_median_CI(changeAccuracy[indType][:,indBand])
-            # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
-            plt.plot([xLocs[indBand] + barLoc[indType], xLocs[indBand] + barLoc[indType]], accuracyCI,
-                     color='k', linewidth=1.5)  # error bars
-            plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
-                     [accuracyCI[0], accuracyCI[0]], color='k', linewidth=1.5)  # bottom caps
-            plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
-                     [accuracyCI[1], accuracyCI[1]], color='k', linewidth=1.5)  # top caps
-    plt.plot([-10, 10], [0, 0], '--', color='0.5', zorder=0)  # line at 0 indicating direction of change
-
-    axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
-    axBar.set_xticks(xLocs)
-    xTickLabels = possibleBands.tolist()
-    xTickLabels[-1] = 'WN'
-    axBar.set_xticks(xLocs)
     axBar.set_xticklabels(xTickLabels)
-    axBar.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
-
-    yLims = (-8, 7)
-    axBar.set_ylim(yLims)
-    axBar.set_ylabel('Change in accuracy (%)', fontsize=fontSizeLabels)
-
-    extraplots.boxoff(axBar)
-    extraplots.set_ticks_fontsize(axBar, fontSizeTicks)
-
-    for band in range(len(possibleBands)):
-        pVal = stats.ranksums(PVchange[:, band], SOMchange[:, band])
-        print(f'PV accuracy change vs SOM accuracy change for bw {possibleBands[band]} p val: {pVal}')
-
-    # extraplots.significance_stars(barLoc + xLocs[0], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
-    # extraplots.significance_stars(barLoc + xLocs[1], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
+    axBar.set_ylabel(r'$\Delta$ d$^\prime$', fontsize=fontSizeLabels)
 
     axBar.annotate(panelLabel, xy=(labelPosX[1], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
                      fontweight='bold')
     axBar.annotate(cartoonLabel, xy=(labelPosX[0], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
                    fontweight='bold')
 
-# --- comparison in change in bias with PV and SOM inactivation ---
-if PANELS[3]:
-    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
-    summaryData = np.load(summaryDataFullPath)
-
-    PVlaserBias = summaryData['PVlaserBias']
-    PVcontrolBias = summaryData['PVcontrolBias']
-    SOMlaserBias = summaryData['SOMlaserBias']
-    SOMcontrolBias = summaryData['SOMcontrolBias']
-    possibleBands = summaryData['possibleBands']
-
-    if CORRECTED:
-        summaryControlDataFullPath = os.path.join(inactDataDir, controlFileName)
-        summaryControlData = np.load(summaryControlDataFullPath)
-
-        PVlaserBiasControl = summaryControlData['PVlaserBias']
-        PVcontrolBiasControl = summaryControlData['PVcontrolBias']
-        SOMlaserBiasControl = summaryControlData['SOMlaserBias']
-        SOMcontrolBiasControl = summaryControlData['SOMcontrolBias']
-
-        PVlaserBiasCorrected = PVlaserBias - (PVlaserBiasControl - PVcontrolBiasControl)
-        SOMlaserBiasCorrected = SOMlaserBias - (SOMlaserBiasControl - SOMcontrolBiasControl)
-
-        biasData = [[PVcontrolBias, PVlaserBiasCorrected], [SOMcontrolBias, SOMlaserBiasCorrected]]
-
-    else:
-        biasData = [[PVcontrolBias, PVlaserBias], [SOMcontrolBias, SOMlaserBias]]
-
-    panelLabels = ['C', 'F']
-    colours = [PVColour, SOMColour]
-    yLims = [(-0.55,0.4),(-0.75,0.75)]
-    legendLabels = ['no PV', 'no SOM']
-
-    for indType, biases in enumerate(biasData):
-        axScatter = plt.subplot(gs[indType, 2])
-
-        barLoc = np.array([-0.24, 0.24])
-        xLocs = np.arange(2)
-        xTickLabels = possibleBands
-
-        for indBand in range(len(possibleBands)):
-            thisxLocs = barLoc + xLocs[indBand]
-
-            for indMouse in range(biases[0].shape[0]):
-                plt.plot(thisxLocs, [biases[0][indMouse, indBand], biases[1][indMouse, indBand]], '-',
-                         color=baseColour)
-
-            plt.plot(np.tile(thisxLocs[0], biases[0].shape[0]), biases[0][:, indBand], 'o', color=baseColour)
-            plt.plot(np.tile(thisxLocs[1], biases[1].shape[0]), biases[1][:, indBand], 'o',
-                     mec=colours[indType], mfc='white')
-
-            # median = np.median(accuracyData, axis=0)
-            # plt.plot(thisxLocs, median[bandsToUse], 'o-', color='k')
-
-            # calculate those stats!
-            pVal = stats.wilcoxon(biases[0][:, indBand], biases[1][:, indBand])
-            print(f'{legendLabels[indType]} bias change for bw {possibleBands[indBand]} p val: {pVal}')
-
-            if pVal[1] < 0.05:
-                extraplots.significance_stars(thisxLocs, yLims[indType][1] * 1.03, yLims[indType][1] * 0.02, gapFactor=0.25)
-
-        axScatter.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[-1] + barLoc[1] + 0.3)
-        axScatter.set_xticks(xLocs)
-        xTickLabels = possibleBands.tolist()
-        xTickLabels[-1] = 'WN'
-        axScatter.set_xticks(xLocs)
-        axScatter.set_xticklabels(xTickLabels)
-        axScatter.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
-
-        axScatter.set_ylim(yLims[indType])
-        axScatter.set_ylabel('Bias Index', fontsize=fontSizeLabels)
-
-        extraplots.boxoff(axScatter)
-        extraplots.set_ticks_fontsize(axScatter, fontSizeTicks)
-
-    for indLabel, label in enumerate(panelLabels):
-        axScatter.annotate(label, xy=(labelPosX[2], labelPosY[indLabel]), xycoords='figure fraction',
-                             fontsize=fontSizePanel, fontweight='bold')
-
-# --- summary of change in bias towards one side during PV or SOM inactivation ---
+# --- comparison in change in hits with PV and SOM inactivation ---
 if PANELS[4]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
     summaryData = np.load(summaryDataFullPath)
 
-    PVlaserBias = summaryData['PVlaserBias']
-    PVcontrolBias = summaryData['PVcontrolBias']
-    SOMlaserBias = summaryData['SOMlaserBias']
-    SOMcontrolBias = summaryData['SOMcontrolBias']
-
-    PVchange = PVlaserBias - PVcontrolBias
-    SOMchange = SOMlaserBias - SOMcontrolBias
+    PVlaserHits = summaryData['PVexpLaserHitsAllBands']
+    PVnoLaserHits = summaryData['PVexpNoLaserHitsAllBands']
+    SOMlaserHits = summaryData['SOMexpLaserHitsAllBands']
+    SOMnoLaserHits = summaryData['SOMexpNoLaserHitsAllBands']
+    possibleBands = summaryData['possibleBands']
 
     if CORRECTED:
-        controlDataFullPath = os.path.join(inactDataDir, controlFileName)
-        controlData = np.load(controlDataFullPath)
+        PVlaserHitsControl = summaryData['PVcontrolLaserHitsAllBands']
+        PVnoLaserHitsControl = summaryData['PVcontrolNoLaserHitsAllBands']
+        SOMlaserHitsControl = summaryData['SOMcontrolLaserHitsAllBands']
+        SOMnoLaserHitsControl = summaryData['SOMcontrolNoLaserHitsAllBands']
 
-        controlPVlaserBias = controlData['PVlaserBias']
-        controlPVcontrolBias = controlData['PVcontrolBias']
-        controlSOMlaserBias = controlData['SOMlaserBias']
-        controlSOMcontrolBias = controlData['SOMcontrolBias']
+        PVlaserHitsCorrected = PVlaserHits - (PVlaserHitsControl - PVnoLaserHitsControl)
+        SOMlaserHitsCorrected = SOMlaserHits - (SOMlaserHitsControl - SOMnoLaserHitsControl)
 
-        controlPVchange = controlPVlaserBias - controlPVcontrolBias
-        controlSOMchange = controlSOMlaserBias - controlSOMcontrolBias
+        hitsData = [[PVnoLaserHits, PVlaserHitsCorrected], [SOMnoLaserHits, SOMlaserHitsCorrected]]
+
+    else:
+        hitsData = [[PVnoLaserHits, PVlaserHits], [SOMnoLaserHits, SOMlaserHits]]
+
+    if SIG_CONTROL_REMOVED:
+        PVcontrolpVal = summaryData['PVcontrolpValAllBand']
+        SOMcontrolpVal = summaryData['SOMcontrolpValAllBand']
+
+        hitsData[0][0] = hitsData[0][0][PVcontrolpVal > 0.05]
+        hitsData[0][1] = hitsData[0][1][PVcontrolpVal > 0.05]
+        hitsData[1][0] = hitsData[1][0][SOMcontrolpVal > 0.05]
+        hitsData[1][1] = hitsData[1][1][SOMcontrolpVal > 0.05]
+
+    panelLabels = ['D', 'L']
+    colours = [PVColour, SOMColour]
+    yLim = (0,100)
+    xTickLabels = ['no PV', 'no SOM']
+
+    for indType in range(2):
+        axScatter = plt.subplot(gs[indType*3, 2])
+        thisxticklabels = ['baseline', xTickLabels[indType]]
+        bf.plot_laser_comparison(axScatter, hitsData[indType], colours[indType], 'white', yLim, thisxticklabels)
+
+        axScatter.set_ylabel('Hit Rate (%)', fontsize=fontSizeLabels, labelpad=0)
+
+    for indLabel, label in enumerate(panelLabels):
+        axScatter.annotate(label, xy=(labelPosX[2], labelPosY[indLabel*5]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
+
+# --- comparison in change in hit rate with laser in vs laser out
+if PANELS[5]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
+
+    PVlaserHits = summaryData['PVexpLaserHitsAllBands']
+    PVnoLaserHits = summaryData['PVexpNoLaserHitsAllBands']
+    SOMlaserHits = summaryData['SOMexpLaserHitsAllBands']
+    SOMnoLaserHits = summaryData['SOMexpNoLaserHitsAllBands']
+
+    PVchange = PVlaserHits - PVnoLaserHits
+    SOMchange = SOMlaserHits - SOMnoLaserHits
+
+    PVlaserHitsControl = summaryData['PVcontrolLaserHitsAllBands']
+    PVnoLaserHitsControl = summaryData['PVcontrolNoLaserHitsAllBands']
+    SOMlaserHitsControl = summaryData['SOMcontrolLaserHitsAllBands']
+    SOMnoLaserHitsControl = summaryData['SOMcontrolNoLaserHitsAllBands']
+
+    controlPVchange = PVlaserHitsControl - PVnoLaserHitsControl
+    controlSOMchange = SOMlaserHitsControl - SOMnoLaserHitsControl
+
+    # PVeffectpVals = summaryData['PVcontrolvsexppValAllBands']
+    # PVlaserpVals = summaryData['PVexppValAllBand']
+    # PVsigMice = (PVeffectpVals<0.05) & (PVlaserpVals<0.05)
+    #
+    # SOMeffectpVals = summaryData['SOMcontrolvsexppValAllBands']
+    # SOMlaserpVals = summaryData['SOMexppValAllBand']
+    # SOMsigMice = (SOMeffectpVals < 0.05) & (SOMlaserpVals < 0.05)
+    #
+    # PVfacecolours = [PVColour if val else 'none' for val in PVsigMice]
+    # PVfacecolours = funcs.list_colours_to_rgba(PVfacecolours)
+    # SOMfacecolours = [SOMColour if val else 'none' for val in SOMsigMice]
+    # SOMfacecolours = funcs.list_colours_to_rgba(SOMfacecolours)
+
+    panelLabels = ['G', 'O']
+    colours = [PVColour, SOMColour]
+    # facecolours = [PVfacecolours, SOMfacecolours]
+    xTickLabels = ['No PV', 'No SOM']
+    xLims = [[-25, 10], [-25, 15]]
+    yLims = [[-30, 5], [-30, 10]]
+
+    expChange = [PVchange, SOMchange]
+    controlChange = [controlPVchange, controlSOMchange]
+
+    for indType in range(2):
+        axScatter = plt.subplot(gs[indType*3+1, 2])
+        bf.plot_exp_vs_control_scatter(axScatter, controlChange[indType], expChange[indType], colours[indType], xLims[indType], yLims[indType], 'none')
+
+        axScatter.set_xlabel(r'Control $\Delta$ HR', fontsize=fontSizeLabels)
+        axScatter.set_ylabel(f'{xTickLabels[indType]} ' r'$\Delta$ HR', fontsize=fontSizeLabels, labelpad=0)
+
+        # -- linear regression --
+        slope, intercept, rVal, pVal, stdErr = stats.linregress(controlChange[indType], expChange[indType])
+
+        print(f'Laser in vs. out hit rate change for {xTickLabels[indType]}: \ncorrelation coefficient: {rVal} \np Val: {pVal}')
+
+        # -- compare change in hit rate between laser in and out --
+        pVal = stats.wilcoxon(controlChange[indType], expChange[indType])[1]
+        print(f'Laser in vs. out direction of effect hit rate pVal {xTickLabels[indType]}: {pVal}')
+
+        percentBiggerLaserIn = 100.0 * np.sum((controlChange[indType] - expChange[indType]) > 0) / len(controlChange[indType])
+        print(f'Percent of {xTickLabels[indType]} mice with bigger laser in effect: {percentBiggerLaserIn}')
+
+    for indLabel, label in enumerate(panelLabels):
+        axScatter.annotate(label, xy=(labelPosX[2], labelPosY[indLabel*2+4]), xycoords='figure fraction',
+                           fontsize=fontSizePanel, fontweight='bold')
+
+# --- summary of change in hit rate during PV or SOM inactivation ---
+if PANELS[6]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
+
+    PVlaserHits = summaryData['PVexpLaserHitsAllBands']
+    PVnoLaserHits = summaryData['PVexpNoLaserHitsAllBands']
+    SOMlaserHits = summaryData['SOMexpLaserHitsAllBands']
+    SOMnoLaserHits = summaryData['SOMexpNoLaserHitsAllBands']
+    possibleBands = summaryData['possibleBands']
+
+    PVeffectpVals = summaryData['PVcontrolvsexppValAllBands']
+    PVlaserpVals = summaryData['PVexppValAllBand']
+    PVsigMice = (PVeffectpVals<0.05) & (PVlaserpVals<0.05)
+
+    SOMeffectpVals = summaryData['SOMcontrolvsexppValAllBands']
+    SOMlaserpVals = summaryData['SOMexppValAllBand']
+    SOMsigMice = (SOMeffectpVals < 0.05) & (SOMlaserpVals < 0.05)
+
+    PVchange = PVlaserHits - PVnoLaserHits
+    SOMchange = SOMlaserHits - SOMnoLaserHits
+
+    if CORRECTED:
+        PVlaserHitsControl = summaryData['PVcontrolLaserHitsAllBands']
+        PVnoLaserHitsControl = summaryData['PVcontrolNoLaserHitsAllBands']
+        SOMlaserHitsControl = summaryData['SOMcontrolLaserHitsAllBands']
+        SOMnoLaserHitsControl = summaryData['SOMcontrolNoLaserHitsAllBands']
+
+        controlPVchange = PVlaserHitsControl - PVnoLaserHitsControl
+        controlSOMchange = SOMlaserHitsControl - SOMnoLaserHitsControl
 
         correctedPVchange = PVchange - controlPVchange
         correctedSOMchange = SOMchange - controlSOMchange
 
-        changeBias = [correctedPVchange, correctedSOMchange]
-        medianChangeBias = [np.median(correctedPVchange, axis=0), np.median(correctedSOMchange, axis=0)]
+        changeHits = [correctedPVchange, correctedSOMchange]
 
     else:
-        changeBias = [PVchange, SOMchange]
-        medianChangeBias = [np.median(PVchange, axis=0), np.median(SOMchange, axis=0)]
+        changeHits = [PVchange, SOMchange]
 
-    axBar = plt.subplot(gs[2,2])
+    if SIG_CONTROL_REMOVED:
+        PVcontrolpVal = summaryData['PVcontrolpValAllBand']
+        SOMcontrolpVal = summaryData['SOMcontrolpValAllBand']
+
+        changeHits[0] = changeHits[0][PVcontrolpVal > 0.05]
+        changeHits[1] = changeHits[1][SOMcontrolpVal > 0.05]
+
+    axBar = plt.subplot(gs[4,2])
 
     cellTypeColours = [PVColour, SOMColour]
-    panelLabel = 'I'
-    width = 0.3
-    barLoc = np.array([-0.18, 0.18])
-    xLocs = np.arange(2)
+    panelLabel = 'K'
 
-    for indBand in range(len(possibleBands)):
-        for indType in range(len(medianChangeBias)):
-            jitter = 0.8*width*(np.random.random(len(changeBias[indType]))-0.5)
-            plt.plot(np.tile(xLocs[indBand]+barLoc[indType], len(changeBias[indType]))+jitter, changeBias[indType][:,indBand],
-                     'o', mec=cellTypeColours[indType], mfc='white')
-            plt.plot([xLocs[indBand] + barLoc[indType] - width / 2, xLocs[indBand] + barLoc[indType] + width / 2],
-                     [medianChangeBias[indType][indBand], medianChangeBias[indType][indBand]],
-                     color='k', linewidth=3, zorder=10)  # medians
+    xTickLabels = ['no PV', 'no SOM']
+    yLims = (-30, 10)
 
-            biasCI = bootstrap_median_CI(changeBias[indType][:, indBand])
-            # MAKING THE ERROR BARS MANUALLY BECAUSE plt.errorbars WAS TOO MUCH A PAIN IN THE ASS
-            plt.plot([xLocs[indBand] + barLoc[indType], xLocs[indBand] + barLoc[indType]], biasCI,
-                     color='k', linewidth=1.5)  # error bars
-            plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
-                     [biasCI[0], biasCI[0]], color='k', linewidth=1.5)  # bottom caps
-            plt.plot([xLocs[indBand] + barLoc[indType] - width / 8, xLocs[indBand] + barLoc[indType] + width / 8],
-                     [biasCI[1], biasCI[1]], color='k', linewidth=1.5)  # top caps
-    plt.plot([-10,10], [0,0], '--', color='0.5', zorder=0) # line at 0 indicating direction of change
+    # PVfacecolours = [PVColour if val else 'white' for val in PVsigMice]
+    # PVfacecolours = funcs.list_colours_to_rgba(PVfacecolours)
+    # SOMfacecolours = [SOMColour if val else 'white' for val in SOMsigMice]
+    # SOMfacecolours = funcs.list_colours_to_rgba(SOMfacecolours)
+    # facecolours = [PVfacecolours, SOMfacecolours]
 
-    axBar.set_xlim(xLocs[0] + barLoc[0] - 0.3, xLocs[1] + barLoc[1] + 0.3)
-    axBar.set_xticks(xLocs)
-    xTickLabels = possibleBands.tolist()
-    xTickLabels[-1] = 'WN'
-    axBar.set_xticks(xLocs)
+    facecolours = [PVColour, SOMColour]
+
+    bf.plot_cell_type_comparison(axBar, changeHits, cellTypeColours, yLims, facecolours)
+
     axBar.set_xticklabels(xTickLabels)
-    axBar.set_xlabel('Masker bandwidth (oct.)', fontsize=fontSizeLabels)
-
-    yLims = (-0.2, 0.4)
-    axBar.set_ylim(yLims)
-    axBar.set_ylabel('Change in Bias Index', fontsize=fontSizeLabels)
-
-    extraplots.boxoff(axBar)
-    extraplots.set_ticks_fontsize(axBar, fontSizeTicks)
+    axBar.set_ylabel(r'$\Delta$ Hit Rate (%)', fontsize=fontSizeLabels)
 
     axBar.annotate(panelLabel, xy=(labelPosX[2], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
                    fontweight='bold')
 
-    # calculate those stats!
-    for band in range(len(possibleBands)):
-        pVal = stats.ranksums(PVchange[:,band], SOMchange[:,band])
-        print(f'PV bias change vs SOM bias change for bw {possibleBands[band]} p val: {pVal}')
+# --- comparison in change in false alarms with PV and SOM inactivation ---
+if PANELS[7]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
 
-        if pVal[1] < 0.05:
-            extraplots.significance_stars(barLoc + xLocs[band], yLims[1] * 1.03, yLims[1] * 0.02, gapFactor=0.25)
+    PVlaserFAs = summaryData['PVexpLaserFAallBands']
+    PVnoLaserFAs = summaryData['PVexpNoLaserFAallBands']
+    SOMlaserFAs = summaryData['SOMexpLaserFAallBands']
+    SOMnoLaserFAs = summaryData['SOMexpNoLaserFAallBands']
+    possibleBands = summaryData['possibleBands']
 
-if CORRECTED:
-    plt.suptitle('LASER EFFECT CORRECTION')
-else:
-    plt.suptitle('NO CORRECTION')
+    if CORRECTED:
+        controlPVlaserFAs = summaryData['PVcontrolLaserFAallBands']
+        controlPVnoLaserFAs = summaryData['PVcontrolNoLaserFAallBands']
+        controlSOMlaserFAs = summaryData['SOMcontrolLaserFAallBands']
+        controlSOMnoLaserFAs = summaryData['SOMcontrolNoLaserFAallBands']
+
+        PVlaserFAsCorrected = PVlaserFAs - (controlPVlaserFAs - controlPVnoLaserFAs)
+        SOMlaserFAsCorrected = SOMlaserFAs - (controlSOMlaserFAs - controlSOMnoLaserFAs)
+
+        FAdata = [[PVnoLaserFAs, PVlaserFAsCorrected], [SOMnoLaserFAs, SOMlaserFAsCorrected]]
+
+    else:
+        FAdata = [[PVnoLaserFAs, PVlaserFAs], [SOMnoLaserFAs, SOMlaserFAs]]
+
+    if SIG_CONTROL_REMOVED:
+        PVcontrolpVal = summaryData['PVcontrolpValAllBand']
+        SOMcontrolpVal = summaryData['SOMcontrolpValAllBand']
+
+        FAdata[0][0] = FAdata[0][0][PVcontrolpVal > 0.05]
+        FAdata[0][1] = FAdata[0][1][PVcontrolpVal > 0.05]
+        FAdata[1][0] = FAdata[1][0][SOMcontrolpVal > 0.05]
+        FAdata[1][1] = FAdata[1][1][SOMcontrolpVal > 0.05]
+
+    panelLabels = ['E', 'M']
+    colours = [PVColour, SOMColour]
+    yLim = (0,70)
+    xTickLabels = ['no PV', 'no SOM']
+
+    for indType in range(2):
+        axScatter = plt.subplot(gs[indType*3, 3])
+        thisxticklabels = ['baseline', xTickLabels[indType]]
+        bf.plot_laser_comparison(axScatter, FAdata[indType], colours[indType], 'white', yLim, thisxticklabels)
+
+        axScatter.set_ylabel('False Alarm Rate (%)', fontsize=fontSizeLabels, labelpad=3)
+
+    for indLabel, label in enumerate(panelLabels):
+        axScatter.annotate(label, xy=(labelPosX[3], labelPosY[indLabel*5]), xycoords='figure fraction',
+                             fontsize=fontSizePanel, fontweight='bold')
+
+# --- comparison in change in false alarm rate with laser in vs laser out
+if PANELS[8]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
+
+    PVlaserFAs = summaryData['PVexpLaserFAallBands']
+    PVnoLaserFAs = summaryData['PVexpNoLaserFAallBands']
+    SOMlaserFAs = summaryData['SOMexpLaserFAallBands']
+    SOMnoLaserFAs = summaryData['SOMexpNoLaserFAallBands']
+
+    PVchange = PVlaserFAs - PVnoLaserFAs
+    SOMchange = SOMlaserFAs - SOMnoLaserFAs
+
+    controlPVlaserFAs = summaryData['PVcontrolLaserFAallBands']
+    controlPVnoLaserFAs = summaryData['PVcontrolNoLaserFAallBands']
+    controlSOMlaserFAs = summaryData['SOMcontrolLaserFAallBands']
+    controlSOMnoLaserFAs = summaryData['SOMcontrolNoLaserFAallBands']
+
+    controlPVchange = controlPVlaserFAs - controlPVnoLaserFAs
+    controlSOMchange = controlSOMlaserFAs - controlSOMnoLaserFAs
+
+    # PVeffectpVals = summaryData['PVcontrolvsexppValAllBands']
+    # PVlaserpVals = summaryData['PVexppValAllBand']
+    # PVsigMice = (PVeffectpVals<0.05) & (PVlaserpVals<0.05)
+    #
+    # SOMeffectpVals = summaryData['SOMcontrolvsexppValAllBands']
+    # SOMlaserpVals = summaryData['SOMexppValAllBand']
+    # SOMsigMice = (SOMeffectpVals < 0.05) & (SOMlaserpVals < 0.05)
+    #
+    # PVfacecolours = [PVColour if val else 'none' for val in PVsigMice]
+    # PVfacecolours = funcs.list_colours_to_rgba(PVfacecolours)
+    # SOMfacecolours = [SOMColour if val else 'none' for val in SOMsigMice]
+    # SOMfacecolours = funcs.list_colours_to_rgba(SOMfacecolours)
+
+    panelLabels = ['H', 'P']
+    colours = [PVColour, SOMColour]
+    # facecolours = [PVfacecolours, SOMfacecolours]
+    xTickLabels = ['No PV', 'No SOM']
+    xLims = [[-20, 20], [-20, 15]]
+    yLims = [[-20, 20], [-20, 15]]
+
+    expChange = [PVchange, SOMchange]
+    controlChange = [controlPVchange, controlSOMchange]
+
+    for indType in range(2):
+        axScatter = plt.subplot(gs[indType*3+1, 3])
+        bf.plot_exp_vs_control_scatter(axScatter, controlChange[indType], expChange[indType], colours[indType], xLims[indType], yLims[indType], 'none')
+
+        axScatter.set_xlabel(r'Control $\Delta$ FAR', fontsize=fontSizeLabels)
+        axScatter.set_ylabel(f'{xTickLabels[indType]} ' r'$\Delta$ FAR', fontsize=fontSizeLabels, labelpad=0)
+
+        # -- linear regression --
+        slope, intercept, rVal, pVal, stdErr = stats.linregress(controlChange[indType], expChange[indType])
+
+        print(f'Laser in vs. out false alarm rate change for {xTickLabels[indType]}: \ncorrelation coefficient: {rVal} \np Val: {pVal}')
+
+        # -- compare change in FA rate between laser in and out --
+        pVal = stats.wilcoxon(controlChange[indType], expChange[indType])[1]
+        print(f'Laser in vs. out direction of effect FA pVal {xTickLabels[indType]}: {pVal}')
+
+        percentBiggerLaserIn = 100.0 * np.sum((controlChange[indType] - expChange[indType]) > 0) / len(
+            controlChange[indType])
+        print(f'Percent of {xTickLabels[indType]} mice with bigger laser in effect: {percentBiggerLaserIn}')
+
+    for indLabel, label in enumerate(panelLabels):
+        axScatter.annotate(label, xy=(labelPosX[3], labelPosY[indLabel*2+4]), xycoords='figure fraction',
+                           fontsize=fontSizePanel, fontweight='bold')
+
+    # print(f'Significant PV mice: {np.sum(PVsigMice)} out of {len(PVsigMice)}')
+    # print(f'Significant SOM mice: {np.sum(SOMsigMice)} out of {len(SOMsigMice)}')
+
+# --- summary of change in false alarms during PV or SOM inactivation ---
+if PANELS[9]:
+    summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
+    summaryData = np.load(summaryDataFullPath)
+
+    PVlaserFAs = summaryData['PVexpLaserFAallBands']
+    PVnoLaserFAs = summaryData['PVexpNoLaserFAallBands']
+    SOMlaserFAs = summaryData['SOMexpLaserFAallBands']
+    SOMnoLaserFAs = summaryData['SOMexpNoLaserFAallBands']
+    possibleBands = summaryData['possibleBands']
+
+    PVeffectpVals = summaryData['PVcontrolvsexppValAllBands']
+    PVlaserpVals = summaryData['PVexppValAllBand']
+    PVsigMice = (PVeffectpVals<0.05) & (PVlaserpVals<0.05)
+
+    SOMeffectpVals = summaryData['SOMcontrolvsexppValAllBands']
+    SOMlaserpVals = summaryData['SOMexppValAllBand']
+    SOMsigMice = (SOMeffectpVals < 0.05) & (SOMlaserpVals < 0.05)
+
+    PVchange = PVlaserFAs - PVnoLaserFAs
+    SOMchange = SOMlaserFAs - SOMnoLaserFAs
+
+    if CORRECTED:
+        controlPVlaserFAs = summaryData['PVcontrolLaserFAallBands']
+        controlPVnoLaserFAs = summaryData['PVcontrolNoLaserFAallBands']
+        controlSOMlaserFAs = summaryData['SOMcontrolLaserFAallBands']
+        controlSOMnoLaserFAs = summaryData['SOMcontrolNoLaserFAallBands']
+
+        controlPVchange = controlPVlaserFAs - controlPVnoLaserFAs
+        controlSOMchange = controlSOMlaserFAs - controlSOMnoLaserFAs
+
+        correctedPVchange = PVchange - controlPVchange
+        correctedSOMchange = SOMchange - controlSOMchange
+
+        changeFAs = [correctedPVchange, correctedSOMchange]
+
+    else:
+        changeFAs = [PVchange, SOMchange]
+
+    if SIG_CONTROL_REMOVED:
+        PVcontrolpVal = summaryData['PVcontrolpValAllBand']
+        SOMcontrolpVal = summaryData['SOMcontrolpValAllBand']
+
+        changeFAs[0] = changeFAs[0][PVcontrolpVal > 0.05]
+        changeFAs[1] = changeFAs[1][SOMcontrolpVal > 0.05]
+
+    axBar = plt.subplot(gs[4,3])
+
+    cellTypeColours = [PVColour, SOMColour]
+    panelLabel = 'K'
+
+    xTickLabels = ['no PV', 'no SOM']
+    yLims = (-20, 10)
+
+    # PVfacecolours = [PVColour if val else 'white' for val in PVsigMice]
+    # PVfacecolours = funcs.list_colours_to_rgba(PVfacecolours)
+    # SOMfacecolours = [SOMColour if val else 'white' for val in SOMsigMice]
+    # SOMfacecolours = funcs.list_colours_to_rgba(SOMfacecolours)
+    # facecolours = [PVfacecolours, SOMfacecolours]
+
+    facecolours = [PVColour, SOMColour]
+
+    plot_cell_type_comparison(axBar, changeFAs, cellTypeColours, yLims, facecolours)
+
+    axBar.set_xticklabels(xTickLabels)
+    axBar.set_ylabel(r'$\Delta$ False Alarm Rate (%)', fontsize=fontSizeLabels)
+
+    axBar.annotate(panelLabel, xy=(labelPosX[3], labelPosY[2]), xycoords='figure fraction', fontsize=fontSizePanel,
+                   fontweight='bold')
+
+    print(f'Significant PV mice: {np.sum(PVsigMice)} out of {len(PVsigMice)}')
+    print(f'Significant SOM mice: {np.sum(SOMsigMice)} out of {len(SOMsigMice)}')
 
 if SAVE_FIGURE:
     extraplots.save_figure(figFilename, figFormat, figSize, outputDir)

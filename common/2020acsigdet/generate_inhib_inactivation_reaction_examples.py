@@ -8,8 +8,8 @@ from jaratoolbox import settings
 import studyparams
 
 figName = 'figure_inhibitory_inactivation_reaction_times'
-# dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+# dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 examples = [{'subject': 'band108',
              'sessions': '10mW laser',

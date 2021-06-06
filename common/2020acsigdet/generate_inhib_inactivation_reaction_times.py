@@ -10,17 +10,17 @@ import behaviour_analysis_funcs as funcs
 import studyparams
 
 figName = 'figure_inhibitory_inactivation_reaction_times'
-# dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+# dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 dbName = 'good_sessions.csv'
-# dataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
 sessionDB = pd.read_csv(dbPath)
 
 dbName = 'good_mice.csv'
-# dataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
-dbPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
+dbPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
+# dbPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
 mouseDB = pd.read_csv(dbPath)
 
 mouseRow = mouseDB.query('strain=="PVArchT"')

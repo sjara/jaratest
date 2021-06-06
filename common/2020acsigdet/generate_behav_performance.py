@@ -10,8 +10,8 @@ import behaviour_analysis_funcs as funcs
 import studyparams
 
 figName = 'figure_characterise_behaviour'
-#dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
+dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+# dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 mouseDicts = [studyparams.unimplanted_PVCHR2, studyparams.unimplanted_PVARCHT, studyparams.unimplanted_SOMARCHT,
               studyparams.unimplanted_PVCRE, studyparams.unimplanted_SOMCRE]

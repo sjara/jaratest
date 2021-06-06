@@ -9,10 +9,6 @@ from jaratoolbox import settings
 import behaviour_analysis_funcs as funcs
 import studyparams
 
-figName = 'figure_inhibitory_inactivation'
-# dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-dataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
-
 SOM_ARCHT_MICE = studyparams.SOM_ARCHT_MICE
 PV_ARCHT_MICE = studyparams.PV_ARCHT_MICE
 PV_CHR2_MICE = studyparams.PV_CHR2_MICE

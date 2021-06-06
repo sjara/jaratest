@@ -1,19 +1,13 @@
 import os
-import numpy as np
-
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import matplotlib.colors
-import matplotlib.patches as patches
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-
-from scipy import stats
-
-from jaratoolbox import settings
-from jaratoolbox import extraplots
 
 import figparams
+import matplotlib.colors
+import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
+import numpy as np
 import studyparams
+from jaratoolbox import extraplots
+from jaratoolbox import settings
 
 FIGNAME = 'figure_characterise_behaviour'
 dataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
