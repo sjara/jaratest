@@ -514,10 +514,10 @@ class Paradigm(QtWidgets.QMainWindow):
                               serialOut=soundOutput)            
             self.sm.add_state(name='reward', statetimer=timeWaterValve,
                               transitions={'Tup':'stopReward'},
-                              outputsOn=[rewardOutput])
+                              outputsOn=[rewardOutput]+stimOutput)
             self.sm.add_state(name='stopReward', statetimer=interTrialInterval,
                               transitions={'Tup':'lickingPeriod'},
-                              outputsOff=[rewardOutput])
+                              outputsOff=[rewardOutput+stimOutput])
             self.sm.add_state(name='lickingPeriod', statetimer=lickingPeriod,
                               transitions={'Tup':'readyForNextTrial'})
             # -- A few empty states necessary to avoid errors when changing taskMode --
