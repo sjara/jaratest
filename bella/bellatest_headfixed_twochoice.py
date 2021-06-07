@@ -486,19 +486,13 @@ class Paradigm(QtWidgets.QMainWindow):
         stimType = self.params['stimType'].get_string()
         if (stimType=='sound_and_light') | (stimType=='sound_only'):
             soundOutput = self.targetSoundID
-
             stimOutput = stimSync
-
         else:
             soundOutput = soundclient.STOP_ALL_SOUNDS
             stimOutput = stimSync
-
-
-            self.soundClient.set_sound(self.targetSoundID,s1)  
         if (stimType=='sound_and_light') | (stimType=='light_only'):
             lightOutput = [targetLED]
             stimOutput = stimSync + ['leftLED','rightLED']
-
         else:
             lightOutput = []
 
@@ -517,7 +511,7 @@ class Paradigm(QtWidgets.QMainWindow):
                               outputsOn=[rewardOutput]+stimOutput)
             self.sm.add_state(name='stopReward', statetimer=interTrialInterval,
                               transitions={'Tup':'lickingPeriod'},
-                              outputsOff=[rewardOutput+stimOutput])
+                              outputsOff=[rewardOutput]+stimOutput)
             self.sm.add_state(name='lickingPeriod', statetimer=lickingPeriod,
                               transitions={'Tup':'readyForNextTrial'})
             # -- A few empty states necessary to avoid errors when changing taskMode --
