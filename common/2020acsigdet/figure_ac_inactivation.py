@@ -148,6 +148,17 @@ if PANELS[1]:
     axScatter.annotate(panelLabel, xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
                      fontsize=fontSizePanel, fontweight='bold')
 
+    # also print stats about comparison between bandwidths for paper
+    laserdprime = summaryData['expLaserdprime']
+    controldprime = summaryData['controlLaserdprime']
+
+    changedprime = laserdprime-controldprime
+    lowBandChange = np.median(changedprime[:,0])
+    highBandChange = np.median(changedprime[:,1])
+    pVal = stats.wilcoxon(changedprime[:,0], changedprime[:,1])[1]
+
+    print(f'Median low band change d\': {lowBandChange}\nMedian high band change d\':{highBandChange}\npVal: {pVal}')
+
 # --- comparison in change in hit rate with AC inactivation ---
 if PANELS[2]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
