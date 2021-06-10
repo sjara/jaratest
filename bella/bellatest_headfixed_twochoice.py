@@ -255,7 +255,7 @@ class Paradigm(QtWidgets.QMainWindow):
         self.sineCal = speakercalibration.Calibration(rigsettings.SPEAKER_CALIBRATION_SINE)
         self.chordCal = speakercalibration.Calibration(rigsettings.SPEAKER_CALIBRATION_CHORD)
         self.noiseCal = speakercalibration.NoiseCalibration(rigsettings.SPEAKER_CALIBRATION_NOISE)
-        self.spkNoiseCal = speakercalibration.NoiseCalibration(rigsettings.SPEAKER_CALIBRATION_NOISE)
+
 
         # -- Connect to sound server and define sounds --
         print('Conecting to soundserver...')
@@ -263,7 +263,7 @@ class Paradigm(QtWidgets.QMainWindow):
         time.sleep(0.2)
         self.soundClient = soundclient.SoundClient()
         self.targetSoundID = 1
-        self.punishSoundID = 3 #128 and 0 stops the sound but 127 works when punishment is chords, not am.    
+        self.punishSoundID = 3   
 
         self.soundClient.start()
       
@@ -406,7 +406,7 @@ class Paradigm(QtWidgets.QMainWindow):
                 nextRewardSide = 'left'
         elif rewardSideMode=='onlyR':
                 nextRewardSide = 'right'
-                
+
         psycurveMode = self.params['psycurveMode'].get_string()
         lowFreq = self.params['lowFreq'].get_value()
         highFreq = self.params['highFreq'].get_value()
@@ -486,20 +486,13 @@ class Paradigm(QtWidgets.QMainWindow):
         stimType = self.params['stimType'].get_string()
         if (stimType=='sound_and_light') | (stimType=='sound_only'):
             soundOutput = self.targetSoundID
-
             stimOutput = stimSync
-            serialOutput = 0
         else:
             soundOutput = soundclient.STOP_ALL_SOUNDS
             stimOutput = stimSync
-            serialOutput = 1
-            self.soundClient.set_sound(self.targetSoundID,s1)
-
-            
         if (stimType=='sound_and_light') | (stimType=='light_only'):
             lightOutput = [targetLED]
             stimOutput = stimSync + ['leftLED','rightLED']
-            serialOutput = 0
         else:
             lightOutput = []
 
@@ -515,10 +508,10 @@ class Paradigm(QtWidgets.QMainWindow):
                               serialOut=soundOutput)            
             self.sm.add_state(name='reward', statetimer=timeWaterValve,
                               transitions={'Tup':'stopReward'},
-                              outputsOn=[rewardOutput])
+                              outputsOn=[rewardOutput]+stimOutput)
             self.sm.add_state(name='stopReward', statetimer=interTrialInterval,
                               transitions={'Tup':'lickingPeriod'},
-                              outputsOff=[rewardOutput])
+                              outputsOff=[rewardOutput]+stimOutput)
             self.sm.add_state(name='lickingPeriod', statetimer=lickingPeriod,
                               transitions={'Tup':'readyForNextTrial'})
             # -- A few empty states necessary to avoid errors when changing taskMode --
@@ -625,7 +618,7 @@ class Paradigm(QtWidgets.QMainWindow):
                                   transitions={'Lin':'falseAlarmL', 'Rin':'falseAlarmR',
                                                'Tup':'waitForLick'},
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
-           
+
             elif lickBeforeStimOffset=='punish':
                 self.sm.add_state(name='playTarget', statetimer=targetDuration,
                                   transitions={'Lin':'punishedFalseAlarm', 'Rin': 'punishedFalseAlarm',
