@@ -188,7 +188,7 @@ class Paradigm(QtWidgets.QMainWindow):
                                                       units='trials',group='Report')
         self.params['nFalseAlarmsRight'] = paramgui.NumericParam('False alarms R',value=0, enabled=False,
                                                       units='trials',group='Report')
-         self.params['nPunishmentLeft'] = paramgui.NumericParam('Punishments Left L',value=0, enabled=False,
+        self.params['nPunishmentLeft'] = paramgui.NumericParam('Punishments Left L',value=0, enabled=False,
                                                       units='trials',group='Report')
         self.params['nPunishmentRight'] = paramgui.NumericParam('Punishments Right',value=0, enabled=False,
                                                       units='trials',group='Report')       
@@ -568,7 +568,7 @@ class Paradigm(QtWidgets.QMainWindow):
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             elif lickBeforeStimOffset=='punish':
                 self.sm.add_state(name='playTarget', statetimer=targetDuration,
-                                  transitions={'Lin':'punishedFalseAlarmL', 'Rin': 'punishedFalseAlarmR',
+                                  transitions={'Lin':'punishedFalseAlarm', 'Rin': 'punishedFalseAlarm',
                                                'Tup': 'waitForLick'},
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             else:
@@ -590,16 +590,9 @@ class Paradigm(QtWidgets.QMainWindow):
             self.sm.add_state(name='falseAlarmR', statetimer=0,
                               transitions={'Tup':'readyForNextTrial'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)    
-            
-            
-            self.sm.add_state(name='punishedFalseAlarmL', statetimer=0, 
+            self.sm.add_state(name='punishedFalseAlarm', statetimer=0, 
             		       transitions={'Tup': 'punishedEvent1'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)	
-            self.sm.add_state(name='punishedFalseAlarmR', statetimer=0, 
-            		       transitions={'Tup': 'punishedEvent1'},
-                              serialOut=soundclient.STOP_ALL_SOUNDS)
-
-            
             self.sm.add_state(name='punishedEvent1', statetimer=punishmentDuration,
                               transitions={'Tup': 'readyForNextTrial'},
             		       serialOut= punishsoundOutput)
