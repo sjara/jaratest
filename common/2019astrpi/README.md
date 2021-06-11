@@ -439,7 +439,7 @@ Contains common parameters for figures and data related to these figures.
 
 ## 2. Files in `extras`
 Files with (Incompatible) have not been updated to function with changes that have been made to 
-database generation.
+database generation as of May 2021. 
 
 ### cell_indices_coded.txt
 List of all cell indices. Cells that were manually removed from the database have a number code. 
