@@ -323,7 +323,7 @@ modulation at a specific rate. There is one value for every rate used
 trial
 
 ## 5. Other/Unused Statistics
-Columns not being added or used in database currently.
+These statistics were previously used, but are no longer calculated or used in any way. 
 
 * *noiseburst_pVal*: The p-value for comparing the baseline and response firing
 rates of the noiseburst paradigm using a Mann-Whitney U test.
