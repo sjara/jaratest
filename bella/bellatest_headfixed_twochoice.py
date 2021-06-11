@@ -188,6 +188,10 @@ class Paradigm(QtWidgets.QMainWindow):
                                                       units='trials',group='Report')
         self.params['nFalseAlarmsRight'] = paramgui.NumericParam('False alarms R',value=0, enabled=False,
                                                       units='trials',group='Report')
+         self.params['nPunishmentLeft'] = paramgui.NumericParam('Punishments Left L',value=0, enabled=False,
+                                                      units='trials',group='Report')
+        self.params['nPunishmentRight'] = paramgui.NumericParam('Punishments Right',value=0, enabled=False,
+                                                      units='trials',group='Report')       
         '''
         self.params['nFalseAlarms'] = paramgui.NumericParam('False alarms',value=0, enabled=False,
                                                       units='trials',group='Report')
@@ -243,7 +247,7 @@ class Paradigm(QtWidgets.QMainWindow):
         # -- Add variables for storing results --
         maxNtrials = MAX_N_TRIALS # Preallocating space for each vector makes things easier
         self.results = arraycontainer.Container()
-        self.results.labels['outcome'] = {'hit':1, 'error':0,'falseAlarm':3, 'miss':2, 'none':-1}
+        self.results.labels['outcome'] = {'hit':1, 'error':0,'falseAlarm':3, 'miss':2, 'none':-1, 'punishments': 4}
         self.results['outcome'] = np.empty(maxNtrials,dtype=int)
         self.results.labels['choice'] = {'left':0,'right':1,'none':2}
         self.results['choice'] = np.empty(maxNtrials,dtype=int)
@@ -519,7 +523,9 @@ class Paradigm(QtWidgets.QMainWindow):
             self.sm.add_state(name='error')            
             self.sm.add_state(name='miss')            
             self.sm.add_state(name='falseAlarmL')            
-            self.sm.add_state(name='falseAlarmR')            
+            self.sm.add_state(name='falseAlarmR')   
+            self.sm.add_state(name='punishedFalseAlarmL')
+            self.sm.add_state(name='punishedFalseAlarmR')
         elif taskMode == 'water_on_lick':
             self.sm.add_state(name='startTrial', statetimer=0,
                               transitions={'Tup':'waitForLick'},
@@ -562,7 +568,7 @@ class Paradigm(QtWidgets.QMainWindow):
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             elif lickBeforeStimOffset=='punish':
                 self.sm.add_state(name='playTarget', statetimer=targetDuration,
-                                  transitions={'Lin':'punishedFalseAlarm', 'Rin': 'punishedFalseAlarm',
+                                  transitions={'Lin':'punishedFalseAlarmL', 'Rin': 'punishedFalseAlarmR',
                                                'Tup': 'waitForLick'},
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             else:
@@ -583,10 +589,17 @@ class Paradigm(QtWidgets.QMainWindow):
                               serialOut=soundclient.STOP_ALL_SOUNDS)            
             self.sm.add_state(name='falseAlarmR', statetimer=0,
                               transitions={'Tup':'readyForNextTrial'},
-                              serialOut=soundclient.STOP_ALL_SOUNDS)        
-            self.sm.add_state(name='punishedFalseAlarm', statetimer=0, 
+                              serialOut=soundclient.STOP_ALL_SOUNDS)    
+            
+            
+            self.sm.add_state(name='punishedFalseAlarmL', statetimer=0, 
             		       transitions={'Tup': 'punishedEvent1'},
-                              serialOut=soundclient.STOP_ALL_SOUNDS)	      
+                              serialOut=soundclient.STOP_ALL_SOUNDS)	
+            self.sm.add_state(name='punishedFalseAlarmR', statetimer=0, 
+            		       transitions={'Tup': 'punishedEvent1'},
+                              serialOut=soundclient.STOP_ALL_SOUNDS)
+
+            
             self.sm.add_state(name='punishedEvent1', statetimer=punishmentDuration,
                               transitions={'Tup': 'readyForNextTrial'},
             		       serialOut= punishsoundOutput)
@@ -709,12 +722,12 @@ class Paradigm(QtWidgets.QMainWindow):
             elif self.sm.statesNameToIndex['punishedEvent1'] in statesThisTrial:
                 self.params['addedITI'].set_value((self.params['lickingPeriod'].get_value()))
                 if lastRewardSide=='left':
-                    self.params['nFalseAlarmsLeft'].add(1)
-                    self.results['outcome'][trialIndex] = self.results.labels['outcome']['falseAlarm']
+                    self.params['nPunishmentLeft'].add(1)
+                    self.results['outcome'][trialIndex] = self.results.labels['outcome']['punishments']
                     self.results['choice'][trialIndex] = self.results.labels['choice']['none']
                 else:
-                    self.params['nFalseAlarmsRight'].add(1)
-                    self.results['outcome'][trialIndex] = self.results.labels['outcome']['falseAlarm']
+                    self.params['nPunishmentRight'].add(1)
+                    self.results['outcome'][trialIndex] = self.results.labels['outcome']['punishments']
                     self.results['choice'][trialIndex] = self.results.labels['choice']['none']
             elif self.sm.statesNameToIndex['miss'] in statesThisTrial:
                 self.params['addedITI'].set_value(self.params['lickingPeriod'].get_value())
