@@ -503,7 +503,7 @@ class Paradigm(QtWidgets.QMainWindow):
                               transitions={'Tup':'delayPeriod'})
             self.sm.add_state(name='delayPeriod', statetimer=0,
                               transitions={'Tup':'playTarget'})
-            self.sm.add_state(name='playTarget', statetimer=0,
+            self.sm.add_state(name='playTarget', statetimer=targetDuration,
                               transitions={'Tup':'reward'},
                               serialOut=soundOutput)            
             self.sm.add_state(name='reward', statetimer=timeWaterValve,
