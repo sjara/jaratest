@@ -323,7 +323,7 @@ modulation at a specific rate. There is one value for every rate used
 trial
 
 ## 5. Other/Unused Statistics
-Columns not being added or used in database currently.
+These statistics were previously used, but are no longer calculated or used in any way. These are descriptions of the columns that Matt added to the README previously. 
 
 * *noiseburst_pVal*: The p-value for comparing the baseline and response firing
 rates of the noiseburst paradigm using a Mann-Whitney U test.
@@ -439,7 +439,7 @@ Contains common parameters for figures and data related to these figures.
 
 ## 2. Files in `extras`
 Files with (Incompatible) have not been updated to function with changes that have been made to 
-database generation.
+database generation as of May 2021. 
 
 ### cell_indices_coded.txt
 List of all cell indices. Cells that were manually removed from the database have a number code. 
