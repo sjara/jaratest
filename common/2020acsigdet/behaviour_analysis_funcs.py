@@ -130,10 +130,10 @@ def plot_laser_comparison(axes, data, laserColour, laserFaceColour, yLim, xtickl
     extraplots.boxoff(axes)
     extraplots.set_ticks_fontsize(axes, figparams.fontSizeTicks)
 
-    pVal = stats.wilcoxon(data[1], data[0])[1]
+    pVal = stats.wilcoxon(data[1], data[0])
     print(f"Change in pVal: {pVal}")
 
-    if pVal < 0.05:
+    if pVal[1] < 0.05:
         extraplots.significance_stars(barLoc, 0.98 * yLim[1], 0.02 * np.diff(yLim), gapFactor=0.3)
 
 def plot_cell_type_comparison(axes, data, colours, yLim, facecolours=None):

@@ -14,12 +14,12 @@ import figparams
 import studyparams
 
 figName = 'figure_inhibitory_inactivation_reaction_times'
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
+#inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 pValFigName = 'figure_inhibitory_inactivation' # get pVals from inactivation behaviour effect figure
-pValDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, pValFigName)
-# pValDataDir = os.path.join(settings.FIGURES_DATA_PATH, pValFigName)
+#pValDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, pValFigName)
+pValDataDir = os.path.join(settings.FIGURES_DATA_PATH, pValFigName)
 
 PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
@@ -55,7 +55,7 @@ fig.clf()
 fig.set_facecolor('w')
 
 gs = gridspec.GridSpec(2, 4, width_ratios=[0.77, 1.0, 0.77, 1.0])
-gs.update(top=0.98, bottom=0.05, left=0.07, right=0.97, wspace=0.7, hspace=0.3)
+gs.update(top=0.98, bottom=0.065, left=0.07, right=0.97, wspace=0.7, hspace=0.3)
 
 # --- comparison in change in sampling times with inactivation ---
 if PANELS[0]:
@@ -166,8 +166,8 @@ if PANELS[1]:
 
         bf.plot_exp_vs_control_scatter(axScatter, controlChange[type], expChange[type], colours[type], xLims[type], yLims[type], 'none')
 
-        axScatter.set_xlabel(r'Control $\Delta$ sampling time', fontsize=fontSizeLabels)
-        axScatter.set_ylabel(f'{axisLabels[type]} ' r'$\Delta$ sampling time', fontsize=fontSizeLabels)
+        axScatter.set_xlabel(f'Control\n' r'$\Delta$ sampling time (ms)', fontsize=fontSizeLabels, labelpad=2)
+        axScatter.set_ylabel(f'{axisLabels[type]}\n' r'$\Delta$ sampling time (ms)', fontsize=fontSizeLabels)
 
         axScatter.annotate(panelLabels[type], xy=(labelPosX[1], labelPosY[type]), xycoords='figure fraction',
                            fontsize=fontSizePanel, fontweight='bold')
@@ -287,8 +287,8 @@ if PANELS[3]:
 
         bf.plot_exp_vs_control_scatter(axScatter, controlChange[type], expChange[type], colours[type], xLims[type], yLims[type], 'none')
 
-        axScatter.set_xlabel(r'Control $\Delta$ time to reward', fontsize=fontSizeLabels)
-        axScatter.set_ylabel(f'{axisLabels[type]} ' r'$\Delta$ time to reward', fontsize=fontSizeLabels)
+        axScatter.set_xlabel(f'Control\n' r'$\Delta$ time to reward (ms)', fontsize=fontSizeLabels, labelpad=2)
+        axScatter.set_ylabel(f'{axisLabels[type]}\n' r'$\Delta$ time to reward (ms)', fontsize=fontSizeLabels)
 
         axScatter.annotate(panelLabels[type], xy=(labelPosX[3], labelPosY[type]), xycoords='figure fraction',
                            fontsize=fontSizePanel, fontweight='bold')

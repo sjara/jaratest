@@ -16,8 +16,8 @@ import figparams
 import studyparams
 
 FIGNAME = 'figure_ac_inactivation'
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
-# inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
+#inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, FIGNAME)
 
 PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
@@ -26,15 +26,15 @@ outputDir = '/tmp/'
 figFilename = 'Fig3_ac_inactivation_reaction_times'
 figFormat = 'pdf'  # 'pdf' or 'svg'
 #figFormat = 'svg'
-figSize = [3.3,4]  # In inches
+figSize = [3.34,4]  # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
 fontSizePanel = figparams.fontSizePanel
 fontSizeLegend = figparams.fontSizeLegend
 
-labelPosX = [0.005, 0.5]  # Horiz position for panel labels
-labelPosY = [0.96, 0.41]  # Vert position for panel labels
+labelPosX = [0.001, 0.5]  # Horiz position for panel labels
+labelPosY = [0.96, 0.42]  # Vert position for panel labels
 
 summaryFileName = 'all_reaction_times_ac_inactivation.npz'
 
@@ -90,8 +90,8 @@ if PANELS[1]:
 
     bf.plot_exp_vs_control_scatter(axScatter, controlChange, expChange, PVColour, xLim, yLim, PVColour)
 
-    axScatter.set_xlabel('Control \n' r'$\Delta$ sampling time', fontsize=fontSizeLabels, labelpad=0, linespacing=0.9)
-    axScatter.set_ylabel('No AC \n' r'$\Delta$ sampling time', fontsize=fontSizeLabels, labelpad=1, linespacing=0.9)
+    axScatter.set_xlabel('Control \n' r'$\Delta$ sampling time (ms)', fontsize=fontSizeLabels, labelpad=2, linespacing=0.9)
+    axScatter.set_ylabel('No AC \n' r'$\Delta$ sampling time (ms)', fontsize=fontSizeLabels, labelpad=1, linespacing=0.9)
 
     axScatter.annotate(panelLabel, xy=(labelPosX[0], labelPosY[1]), xycoords='figure fraction',
                        fontsize=fontSizePanel, fontweight='bold')
@@ -141,8 +141,8 @@ if PANELS[3]:
 
     bf.plot_exp_vs_control_scatter(axScatter, controlChange, expChange, PVColour, xLim, yLim, PVColour)
 
-    axScatter.set_xlabel('Control \n' r'$\Delta$ time to reward', fontsize=fontSizeLabels, labelpad=-1, linespacing=0.9)
-    axScatter.set_ylabel('No AC \n' r'$\Delta$ time to reward', fontsize=fontSizeLabels, labelpad=-3, linespacing=0.9)
+    axScatter.set_xlabel(r'Control $\Delta$' ' time\n to reward (ms)', fontsize=fontSizeLabels, labelpad=2, linespacing=0.9)
+    axScatter.set_ylabel(r'No AC $\Delta$' ' time\n to reward (ms)', fontsize=fontSizeLabels, labelpad=-3, linespacing=0.9)
 
     axScatter.annotate(panelLabel, xy=(labelPosX[1], labelPosY[1]), xycoords='figure fraction',
                        fontsize=fontSizePanel, fontweight='bold')
