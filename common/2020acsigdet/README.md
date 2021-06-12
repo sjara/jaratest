@@ -1,6 +1,8 @@
 # Figures
 All figures require access to the figures data and `studyparams.py`, which contains a list of all the mice and sessions associated with each experiment. Running the generate files associated with each figure requires access to the behaviour data and `good_sessions.csv` and `good_mice.csv`, which contain lists of good sessions and mice to use for data analysis.
 
+The generate files save data in a study folder located in the FIGURES_DATA_PATH found in `jaratoolbox/settings.py`. By default, this path is usually /mnt/jarahubdata/data/figuresdata/. Make sure jarahub is mounted on your computer so you can access this data.
+
 ## Figure 1 (Behaviour summary without manipulation)
 This figure is produced by running `figure_behav_performance.py`.
 
