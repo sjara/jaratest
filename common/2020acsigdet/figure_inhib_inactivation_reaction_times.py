@@ -14,12 +14,12 @@ import figparams
 import studyparams
 
 figName = 'figure_inhibitory_inactivation_reaction_times'
-#inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
-inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
+inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, figName)
+#inactDataDir = os.path.join(settings.FIGURES_DATA_PATH, figName)
 
 pValFigName = 'figure_inhibitory_inactivation' # get pVals from inactivation behaviour effect figure
-#pValDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, pValFigName)
-pValDataDir = os.path.join(settings.FIGURES_DATA_PATH, pValFigName)
+pValDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, pValFigName)
+#pValDataDir = os.path.join(settings.FIGURES_DATA_PATH, pValFigName)
 
 PANELS = [1, 1, 1, 1]  # Plot panel i if PANELS[i]==1
 
