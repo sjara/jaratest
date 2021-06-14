@@ -188,7 +188,7 @@ class Paradigm(QtWidgets.QMainWindow):
                                                       units='trials',group='Report')
         self.params['nFalseAlarmsRight'] = paramgui.NumericParam('False alarms R',value=0, enabled=False,
                                                       units='trials',group='Report')
-        self.params['nPunishmentLeft'] = paramgui.NumericParam('Punishments Left L',value=0, enabled=False,
+        self.params['nPunishmentLeft'] = paramgui.NumericParam('Punishments Left',value=0, enabled=False,
                                                       units='trials',group='Report')
         self.params['nPunishmentRight'] = paramgui.NumericParam('Punishments Right',value=0, enabled=False,
                                                       units='trials',group='Report')       
