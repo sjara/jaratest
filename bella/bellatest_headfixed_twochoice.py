@@ -171,7 +171,7 @@ class Paradigm(QtWidgets.QMainWindow):
         self.params['psycurveNsteps'] = paramgui.NumericParam('N steps',value=6,decimals=0,
                                                               group='General parameters')
         self.params['taskMode'] = paramgui.MenuParam('Task mode',
-                                                     ['water_on_sound','water_on_lick',
+                                                     ['water_after_sound','water_on_lick',
                                                       'lick_on_stim','discriminate_stim'],
                                                      value=0, group='General parameters')
         generalParams = self.params.layout_group('General parameters')
@@ -502,7 +502,7 @@ class Paradigm(QtWidgets.QMainWindow):
 
         self.sm.reset_transitions()
 
-        if taskMode == 'water_on_sound':
+        if taskMode == 'water_after_sound':
             self.sm.add_state(name='startTrial', statetimer=0,
                               transitions={'Tup':'delayPeriod'})
             self.sm.add_state(name='delayPeriod', statetimer=interTrialInterval,
@@ -510,7 +510,7 @@ class Paradigm(QtWidgets.QMainWindow):
 
             if lickBeforeStimOffset=='punish':
                 self.sm.add_state(name='playTarget', statetimer=targetDuration,
-                                  transitions={'Lin':'punishmentL', 'Rin': 'punishmentR',
+                                  transitions={'Lin':'earlyLickL', 'Rin': 'earlyLickR',
                                                'Tup': 'reward'},
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             elif lickBeforeStimOffset=='ignore' or 'abort' or 'reward':
@@ -519,10 +519,10 @@ class Paradigm(QtWidgets.QMainWindow):
                               serialOut=soundOutput)            
             else:
                 raise ValueError(f'Lick mode: "{lickBeforeStimOffset}" has not been implemented')
-            self.sm.add_state(name='punishmentL', statetimer=0, 
+            self.sm.add_state(name='earlyLickL', statetimer=0, 
             		       transitions={'Tup': 'punishment'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)
-            self.sm.add_state(name='punishmentR', statetimer=0, 
+            self.sm.add_state(name='earlyLickR', statetimer=0, 
             		       transitions={'Tup': 'punishment'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)            
             self.sm.add_state(name='punishment', statetimer=punishmentDuration,
@@ -586,7 +586,7 @@ class Paradigm(QtWidgets.QMainWindow):
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             elif lickBeforeStimOffset=='punish':
                 self.sm.add_state(name='playTarget', statetimer=targetDuration,
-                                  transitions={'Lin':'punishmentL', 'Rin': 'punishmentR',
+                                  transitions={'Lin':'earlyLickL', 'Rin': 'earlyLickR',
                                                'Tup': 'waitForLick'},
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             else:
@@ -608,10 +608,10 @@ class Paradigm(QtWidgets.QMainWindow):
             self.sm.add_state(name='falseAlarmR', statetimer=0,
                               transitions={'Tup':'readyForNextTrial'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)    
-            self.sm.add_state(name='punishmentL', statetimer=0, 
+            self.sm.add_state(name='earlyLickL', statetimer=0, 
             		       transitions={'Tup': 'punishment'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)
-            self.sm.add_state(name='punishmentR', statetimer=0, 
+            self.sm.add_state(name='earlyLickR', statetimer=0, 
             		       transitions={'Tup': 'punishment'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)            
             self.sm.add_state(name='punishment', statetimer=punishmentDuration,
@@ -648,7 +648,7 @@ class Paradigm(QtWidgets.QMainWindow):
 
             elif lickBeforeStimOffset=='punish':
                 self.sm.add_state(name='playTarget', statetimer=targetDuration,
-                                  transitions={'Lin':'punishmentL', 'Rin': 'punishmentR',
+                                  transitions={'Lin':'earlyLickL', 'Rin': 'earlyLickR',
                                                'Tup': 'waitForLick'},
                                   outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             else:
@@ -671,10 +671,10 @@ class Paradigm(QtWidgets.QMainWindow):
             self.sm.add_state(name='falseAlarmR', statetimer=0,
                               transitions={'Tup':'readyForNextTrial'},
                               serialOut=soundclient.STOP_ALL_SOUNDS) 
-            self.sm.add_state(name='punishmentL', statetimer=0, 
+            self.sm.add_state(name='earlyLickL', statetimer=0, 
             		       transitions={'Tup': 'punishment'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)
-            self.sm.add_state(name='punishmentR', statetimer=0, 
+            self.sm.add_state(name='earlyLickR', statetimer=0, 
             		       transitions={'Tup': 'punishment'},
                               serialOut=soundclient.STOP_ALL_SOUNDS)     
             self.sm.add_state(name='punishment', statetimer=punishmentDuration,
@@ -737,12 +737,12 @@ class Paradigm(QtWidgets.QMainWindow):
                 self.params['nFalseAlarmsRight'].add(1)
                 self.results['outcome'][trialIndex] = self.results.labels['outcome']['falseAlarm']
                 self.results['choice'][trialIndex] = self.results.labels['choice']['none']  
-            elif self.sm.statesNameToIndex['punishmentL'] in statesThisTrial:
+            elif self.sm.statesNameToIndex['earlyLickL'] in statesThisTrial:
                 self.params['addedITI'].set_value(self.params['lickingPeriod'].get_value())
                 self.params['nPunishmentLeft'].add(1)
                 self.results['outcome'][trialIndex] = self.results.labels['outcome']['punishments']
                 self.results['choice'][trialIndex] = self.results.labels['choice']['none']
-            elif self.sm.statesNameToIndex['punishmentR'] in statesThisTrial:
+            elif self.sm.statesNameToIndex['earlyLickR'] in statesThisTrial:
                 self.params['addedITI'].set_value(self.params['lickingPeriod'].get_value())
                 self.params['nPunishmentRight'].add(1)
                 self.results['outcome'][trialIndex] = self.results.labels['outcome']['punishments']
