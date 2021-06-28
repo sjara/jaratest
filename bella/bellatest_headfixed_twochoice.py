@@ -507,6 +507,11 @@ class Paradigm(QtWidgets.QMainWindow):
                               transitions={'Tup':'delayPeriod'})
             self.sm.add_state(name='delayPeriod', statetimer=0,
                               transitions={'Tup':'playTarget'})
+            if lickBeforeStimOffset=='punish':
+                self.sm.add_state(name='playTarget', statetimer=targetDuration,
+                                  transitions={'Lin':'punishmentL', 'Rin': 'punishmentR',
+                                               'Tup': 'waitForLick'},
+                                  outputsOn=lightOutput+stimOutput, serialOut=soundOutput)
             self.sm.add_state(name='playTarget', statetimer=targetDuration,
                               transitions={'Tup':'reward'},
                               serialOut=soundOutput)            
@@ -518,14 +523,22 @@ class Paradigm(QtWidgets.QMainWindow):
                               outputsOff=[rewardOutput]+stimOutput)
             self.sm.add_state(name='lickingPeriod', statetimer=lickingPeriod,
                               transitions={'Tup':'readyForNextTrial'})
+            self.sm.add_state(name='punishmentL', statetimer=0, 
+            		       transitions={'Tup': 'punishment'},
+                              serialOut=soundclient.STOP_ALL_SOUNDS)
+            self.sm.add_state(name='punishmentR', statetimer=0, 
+            		       transitions={'Tup': 'punishment'},
+                              serialOut=soundclient.STOP_ALL_SOUNDS)     
+            self.sm.add_state(name='punishment', statetimer=punishmentDuration,
+                              transitions={'Tup': 'readyForNextTrial'})
+            
             # -- A few empty states necessary to avoid errors when changing taskMode --
             self.sm.add_state(name='hit')            
-            self.sm.add_state(name='error')            
             self.sm.add_state(name='miss')            
             self.sm.add_state(name='falseAlarmL')            
             self.sm.add_state(name='falseAlarmR')   
-            self.sm.add_state(name='punishmentL')
-            self.sm.add_state(name='punishmentR')
+
+            
         elif taskMode == 'water_on_lick':
             self.sm.add_state(name='startTrial', statetimer=0,
                               transitions={'Tup':'waitForLick'},
