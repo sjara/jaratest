@@ -706,7 +706,7 @@ class Paradigm(QtWidgets.QMainWindow):
         lastRewardSide = self.params['rewardSide'].get_string()
         eventsThisTrial = self.dispatcherModel.events_one_trial(trialIndex)
         statesThisTrial = eventsThisTrial[:,2]
-        if self.params['taskMode'].get_string() in ['lick_on_stim', 'discriminate_stim']:
+        if self.params['taskMode'].get_string() in ['lick_on_stim', 'discriminate_stim', 'water_after_sound']:
             if self.sm.statesNameToIndex['hit'] in statesThisTrial:
                 self.params['addedITI'].set_value(0)
                 if lastRewardSide=='left':
