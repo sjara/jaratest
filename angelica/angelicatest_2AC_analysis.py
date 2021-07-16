@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul  6 10:05:53 2021
+Created on Wed Jul  7 15:01:50 2021
 
 @author: angelicamejia
 """
@@ -18,69 +18,93 @@ from jaratoolbox import extraplots
 
 
 #Add the subject/dates you want to look at. 
-subjects =  [ #'pals001',
-             # 'pals002',
-             # 'pals003',
-             # 'pals005',
-             # 'pals007',
-             # 'pals008', 
-             # 'pals010', 
-             # 'pals011', 
-             # 'pals012',
-             # 'pals013', 
-             # 'pals014',
-              'pals015', 
-              # 'pals016',
-               # 'pals017'
+subjects =  [ 
+                      'pals010', 
+                    'pals012',
+                    'pals013', 
+                      'pals014',
+                      'pals015', 
+                       'pals016',
+                    'pals017',
+                    'pals018'
              ]
 
+
+angelica_protocol = ['pals015', 'pals016', 'pals017']
+bella_protocol = ['pals010', 'pals012', 'pals013', 'pals014', 'pals018']
 
 paradigm = 'twochoice'
 
 #Add the specific dates you want to look at. The reason they are separated like this is for personal organization. You can come up with your own system!
 sessionsEachSubject = { 
-  
-    # 'pals011': ['20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
-    #             '20210610a', '20210611a', '20210612a', '20210613a' #, '20210614a', '20210615a', '20210616a', '20210617a', '20210618a'
-    #             ],
     
-     #'pals012': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
-                 # '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
-                 # '20210618a', '20210619a', '20210620a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
-                 # '20210626a', '20210627a', '20210628a', '20210629a', '20210630a', '20210701a'],
+     'pals010': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
+                  '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
+                  '20210618a', '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
+                  '20210626a', '20210627a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+                  '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a'
+                 ],
+
     
-    # 'pals013': ['20210601a', '20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
-    #             '20210610a', '20210611a', '20210612a', '20210613a' #, '20210614a', '20210615a', '20210616a', '20210617a', '20210618a'
-    #             ],
+     'pals012': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
+                  '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
+                  '20210618a', '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
+                  '20210626a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+                 '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210713a', '20210714a', '20210715a'],
     
-    # 'pals014': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
-    #             '20210610a', '20210611a', '20210612a', '20210613a'],
+     'pals013': ['20210601a', '20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
+                 '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a', '20210618a', 
+                 '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
+                 '20210626a', '20210627a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+                 '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a'],
+    
+     'pals014': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210608a', '20210609a', 
+                 '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a', '20210618a', 
+                 '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a', '20210626a', '20210627a', 
+                 '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', '20210707a', '20210708a',
+                 '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a'],
     
     'pals015': [
-                # '20210628a', 
-               #  '20210629a', '20210630a', 
-                # '20210701a', 
-                # '20210702a', 
-                 '20210703a',
-                '20210706a'
+                '20210628a', 
+                 '20210629a', '20210630a', 
+                '20210701a', 
+                '20210702a', 
+                  '20210703a',
+                '20210706a', 
+                '20210707a', 
+                '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a'
                 ],
     
-   # 'pals016': [
-               # '20210628a', '20210629a', '20210630a', 
-               # '20210701a', 
-               # '20210702a', 
-               # '20210703a' 
-               # '20210706a'
-               # ],
+    'pals016': [
+                # '20210628a', '20210629a', '20210630a', 
+                # '20210701a', 
+                # '20210702a', 
+                # '20210703a',
+                # '20210706a',
+                # '20210707a', 
+                # '20210708a', '20210709a', 
+                #stage 4.0
+                '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a'
+                ],
             
     
-   'pals017': [
-               # '20210628a', '20210629a', '20210630a',
-               # '20210701a',
-               # '20210702a', 
-                '20210703a',
-               '20210706a'
-               ]
+    'pals017': [
+                # '20210628a', '20210629a', '20210630a',
+                # '20210701a',
+                # '20210702a', 
+                #  '20210703a',
+                # '20210706a', 
+                # '20210707a', 
+                # '20210708a', 
+                # stage 4.0
+                '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a'
+                ],
+        
+    'pals018': ['20210701a', 
+                '20210702a', '20210703a', '20210706a', '20210707a', '20210708a', '20210709a', '20210710a', 
+                '20210711a', '20210712a', '20210713a', '20210714a', '20210715a'
+        
+        ]
    }
 
 
@@ -94,7 +118,7 @@ for subject in subjects:
     task_mode = bdata['taskMode']
     lick_offset = bdata['lickBeforeStimOffset']
     lick_on_stim = bdata['taskMode'] == bdata.labels['taskMode']['lick_on_stim']
-    water_after_sound = bdata['taskMode'] == bdata.labels['taskMode']['water_after_sound']
+    #water_after_sound = bdata['taskMode'] == bdata.labels['taskMode']['water_after_sound']
     discriminate_stim = bdata['taskMode'] == bdata.labels['taskMode']['discriminate_stim']
     sound_type = bdata['soundType']
     
@@ -126,12 +150,8 @@ for subject in subjects:
     total_licks_right = bdata['nLicksRight']
     total_licks = total_licks_left + total_licks_right
     
-
-    statesNames = bdata.stateMatrix['statesNames']
-    
-    #readyForNextTrial = bdata['statesNames'] == bdata.labels['statesNames']["readyForNextTrial"]
-    #rewarded_trials = (bdata['statesNames'] == bdata.labels['statesNames']['stopReward'])
-    
+    # rewarded_trials = bdata.events['nextState'] == bdata.stateMatrix['statesNames']['stopReward']
+    # #valid_rewarded_trial = rewarded_trials & choice
     # total_rewards = sum(rewarded_trials)
     # punishment_left = max(bdata['nPunishmentLeft'])
     # punishment_right = max(bdata['nPunishmentRight'])
@@ -144,7 +164,8 @@ for subject in subjects:
     misses_left = bdata['nMissesLeft']
     misses_right = bdata['nMissesRight']
     
-    reward = bdata['outcome'] == -1 
+    reward = bdata['outcome'] == (-1 or 1)
+
     
     # Dataframe below collects the information needed for each trial. 
     df_trial_information = pd.DataFrame({'sessionID': sessionID,
@@ -173,9 +194,7 @@ for subject in subjects:
                                          'lick_offset' : lick_offset,
                                          'targetAMdepth' : targetAMdepth,
                                          'reward': reward
-                                         # now we want to create an array of times the animal was rewarded
-                                         # i.e. total_rewards = array([False False True])
-                                         
+                                         #'rewarded_trials': rewarded_trials
                                          # 'punishment_left': punishment_left,
                                          # 'punishment_right': punishment_right
                                          
@@ -187,128 +206,135 @@ for subject in subjects:
     #Use this groupby to gather the information that should be maxed per session
     stage_information = df_trial_information.groupby(by =['sessionID']) .max()
     
-    # conditions that determine the stages. Note that this is true for Angelica's protocol but not for Bella's 
-    conditions = [
-    (stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 0),
-    (stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 3),
-    (stage_information['task_mode'] == 2) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
-    (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
-    (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 2), 
-    (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0)
-    ]
+    if subject in angelica_protocol: 
+        
+        conditions = [
+        ((stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 0)),
+        (stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 3),
+        (stage_information['task_mode'] == 2) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 2), 
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0)
+        ]
     
-    values = [1, 2, 3, 4, 4.5, 5]          
+        values = [1, 2, 3, 4, 4.5, 5]    
+        
+    else: 
+       conditions = [
+        (stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0),
+        (stage_information['task_mode'] == 2) & (stage_information['reward_side_mode'] == 4),
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 2), 
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0)
+        ]
+       
+       values = [1, 2, 3, 3.5, 4]
+       
     stage_information['stage'] = np.select(conditions, values)  
     stage_information.head() 
     
+    # Used to calculate performance
+    percent_correct = ((df_session_information['hit_outcome']) /df_session_information['valid_choice'] *100)
+    left_performance = ((df_session_information['left_hits'] / df_session_information['valid_left_trials']) *100)
+    right_performance = ((df_session_information['right_hits'] / df_session_information['valid_right_trials']) *100)
+    mean_side_performance = ((left_performance + right_performance)/ 2 )
+    # percent_rewarded = ((total_rewards/ len(choice)) *100)
     
-    #Used to calculate performance for Stage 2 (Angelica)
-    # percent_correct = ((df_session_information['hit_outcome']) /df_session_information['valid_choice'] *100)
-    # left_performance = ((df_session_information['left_hits'] / df_session_information['valid_left_trials']) *100)
-    # right_performance = ((df_session_information['right_hits'] / df_session_information['valid_right_trials']) *100)
-    # mean_side_performance = ((left_performance + right_performance)/ 2 )
-    # percent_rewarded = ((df_session_information['rewards']/ len(choice)) *100)
-    
-    
-    # df_overall_performance = pd.DataFrame({
-                                            # 'percent_correct': round(percent_correct, 2),
-    #                                        'left_performance': round(left_performance, 2),
-    #                                        'right_performance': round(right_performance, 2),
-    #                                        'mean_side_performance' : round(mean_side_performance, 2)
-                                             # 'total_trials': (df_session_information['total_left_trials']+df_session_information['total_right_trials']).astype(int),
-                                             # 'rewards': (df_session_information['reward']).astype(int)
-                                            # })
+    df_overall_performance = pd.DataFrame({'percent_correct': round(percent_correct, 2),
+                                            'left_performance': round(left_performance, 2),
+                                            'right_performance': round(right_performance, 2),
+                                            'mean_side_performance' : round(mean_side_performance, 2)
+                                            })
     
     #used to identify task mode per session
     df_id_reward_mode = pd.DataFrame({'sessionID': sessionID,
                                          'task_mode' : task_mode,
                                          'reward_side_mode': reward_side_mode,
                                          'lick_on_stim': lick_on_stim,
-                                         'water_after_sound': water_after_sound,
+                                         #'water_after_sound': water_after_sound,
                                          'discriminate_stim': discriminate_stim,
                                          'sound_type': sound_type
                                          })
-   
-    # rewards = (df_session_information['reward']).astype(int)
-    # total_trials = (df_session_information['total_left_trials']+df_session_information['total_right_trials']).astype(int)
-    # percent_rewarded = rewards / total_trials
+
+    rewards = (df_session_information['reward']).astype(int)
+    total_trials = (df_session_information['total_left_trials']+df_session_information['total_right_trials']).astype(int)
+    percent_rewarded = rewards / total_trials
     
-   #this dataframe consolodates all of the other information to one dataframe that gets saved to an xlsx sheet
+   # this dataframe consolidates all of the other information to one dataframe that gets saved to an xlsx sheet
+   # comment and uncomment certain pieces of information, depending on what you want to show up in the file
     mouse_perf[subject] = pd.DataFrame({'sessions':sessions,
                                'stage': (stage_information['stage']),
+                               'hit_outcome': df_session_information['hit_outcome'],
                                'left_hits': (df_session_information['left_hits']).astype(int),
                                'right_hits': (df_session_information['right_hits'].astype(int)),
                                'left_errors': (df_session_information['left_errors'].astype(int)),
                                'right_errors': (df_session_information['right_errors']).astype(int),         
-                               # 'left_perf': (df_overall_performance['left_performance']),
-                               # 'right_perf': (df_overall_performance['right_performance']),
-                               # 'percent_correct': (df_overall_performance['percent_correct']),
+                               'left_perf': (df_overall_performance['left_performance']),
+                               'right_perf': (df_overall_performance['right_performance']),
+                               'percent_correct': (df_overall_performance['percent_correct']),
                                'licks_left': (stage_information['total_licks_left'].astype(int)),
                                'licks_right': (stage_information['total_licks_right'].astype(int)),
-                               'left_trials': (df_session_information['total_left_trials'].astype(int)),
-                               'right_trials': (df_session_information['total_right_trials'].astype(int)),
-                               # 'total_trials': (df_session_information['total_left_trials']+df_session_information['total_right_trials']).astype(int),
-                               # 'rewards': (df_session_information['reward']).astype(int),
-                               # 'percent_rewarded': (mouse_perf[subject]['rewards'] / mouse_perf[subject]['total_trials'] * 100).astype(int)
+                               'misses': (df_session_information['total_misses'].astype(int)),
+                               # 'left_trials': (df_session_information['total_left_trials'].astype(int)),
+                               # 'right_trials': (df_session_information['total_right_trials'].astype(int)),
+                               'percent_rewarded': percent_rewarded
                                })
-   
-    df_test = pd.DataFrame({'total_trials': (df_session_information['total_left_trials']+df_session_information['total_right_trials']).astype(int),
-                            'rewards': (df_session_information['reward']).astype(int),
-                            'percent_rewarded': (df_test['rewards'] / df_test['total_trials'] * 100).astype(int)
-                               })
-
-     # We used to use this to make excel tables before we transfered to html
-     # prints the session ID, task mode, and number of trials. 
-print(subject)
-print(mouse_perf[subject])
-    #  Saves the specified dataframe to an excel document 
-mouse_perf[subject].to_excel('/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.xlsx'.format(subject),  sheet_name='{}'.format(subject), index = False)
     
-     #Use this one instead, the graphs are 'beautified' and more modern looking
-extraplots.dataframe_to_html(mouse_perf[subject].iloc[::-1], '/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.html' .format(subject, subject),) 
+
+    #We used to use this to make excel tables before we transfered to html
+    #prints the session ID, task mode, and number of trials. 
+    print(subject)
+    # print(mouse_perf[subject])
+    #Saves the specified dataframe to an excel document 
+    mouse_perf[subject].to_excel('/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.xlsx'.format(subject),  sheet_name='{}'.format(subject), index = False)
+    
+    #Use this one instead, the graphs are 'beautified' and more modern looking
+    extraplots.dataframe_to_html(mouse_perf[subject].iloc[::-1], '/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.html' .format(subject, subject),) 
 
 
 
 
 
+# # # #BELOW IS CODE USED FOR PLOTS OF PERFORMANCE AND THE PLOTS TYPICALLY USED IN STAGE 3 AND 3.5
 
+#     #plots the correct performance and how the animal performed with each side. Reminder that stage 1 will not be printed.
 
-
-# #BELOW IS CODE USED FOR PLOTS OF PERFORMANCE AND THE PLOTS TYPICALLY USED IN STAGE 3 AND 3.5
-
-    #plots the correct performance and how the animal performed with each side. Reminder that stage 1 will not be printed.
     # fig = plt.figure()
     # plt.scatter(unique_sessionID, left_performance, color = 'blue', label = 'Left')
     # plt.plot(unique_sessionID, left_performance, color = 'blue')
     # plt.scatter(unique_sessionID, right_performance, color = 'red' , label = 'Right')
     # plt.plot(unique_sessionID, right_performance, color = 'red')
     # plt.scatter(unique_sessionID, percent_correct, color = 'black', label = 'Percent Correct')
+    # plt.plot(unique_sessionID, percent_correct, color = 'black')
     # plt.title(subject + 'Performance')
-    # plt.xlabel('Sessions in stage 3-3.5')
+    # plt.xlabel('Sessions')
     # plt.ylabel('Percent animal chose the correct side (%)')
     # plt.legend(loc = 1)
     # plt.xticks(ticks=unique_sessionID)
     # plt.ylim(0, 100)
-    # plt.show() 
-    # # Take in  mind this is going to have to be specified depending on where you want your figures to save
-    # fig.savefig('/Users/angelicamejia/Desktop/research/data/behavior/{}/{}performance.png' .format(subject, subject), dpi=100)
+    # #plt.show() 
+    # # # Take in  mind this is going to have to be specified depending on where you want your figures to save
+    # fig.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/{}performance.png' .format(subject), dpi=100)    
     
-    # #plots the hits in each session. You can also uncomment out the errors and side hits if that is something you are interested in looking at. 
-    # fig0 = plt.figure() 
-    # plt.scatter(unique_sessionID, df_session_information['hit_outcome'])
-    # plt.plot(unique_sessionID, df_session_information['hit_outcome'])
-    # #plt.plot(unique_sessionID, df_session_information['total_errors'])
-    # #plt.scatter(unique_sessionID, df_session_information['total_errors'])
-    # #plt.scatter(unique_sessionID, df_session_information['left_hits'], color = 'blue')
-    # #plt.scatter(unique_sessionID, df_session_information['right_hits'], color = 'red')    
-    # plt.title(subject + ' Total hits in each session')
-    # plt.xlabel('Sessions in Stage 3-3.5')
-    # plt.ylabel('Number of hits')
-    # plt.ylim(0,400)
-    # plt.xticks(ticks=unique_sessionID)
-    # plt.show()
-    # # Take in  mind this is going to have to be specified depending on where you want your figures to save
-    # fig0.savefig(r'C:\Users\isabe\data\behavior_graphs\{}\{}num_hits.png' .format(subject, subject), dpi=100)
+#     # #plots the hits in each session. You can also uncomment out the errors and side hits if that is something you are interested in looking at. 
+#     fig0 = plt.figure() 
+#     plt.scatter(unique_sessionID, df_session_information['hit_outcome'], label = 'hits')
+#     plt.plot(unique_sessionID, df_session_information['hit_outcome'])
+#     plt.scatter(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']), label = 'choices')
+#     plt.plot(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']))
+#     #plt.plot(unique_sessionID, df_session_information['total_errors'])
+#     #plt.scatter(unique_sessionID, df_session_information['total_errors'])
+#     #plt.scatter(unique_sessionID, df_session_information['left_hits'], color = 'blue')
+#     #plt.scatter(unique_sessionID, df_session_information['right_hits'], color = 'red')    
+#     plt.title(subject + ' Total hits and choices in each session')
+#     plt.xlabel('Sessions in Stage 3-3.5')
+#     plt.ylabel('Number of hits or choices')
+#     plt.ylim(0,500)
+#     plt.xticks(ticks=unique_sessionID)
+#     plt.legend(loc = 1)
+#     plt.show()
+#     #Take in  mind this is going to have to be specified depending on where you want your figures to save
+#     fig0.savefig(r'C:\Users\isabe\data\behavior_graphs\{}\{}recent_num_hits.png' .format(subject, subject), dpi=100)
     
 #We will not use this until we get to stage 4 because it looks at the average performance across many mice and also includes different ways of combining many mice on one graph
 # pals001 = mouse_perf['pals001']
@@ -369,7 +395,7 @@ extraplots.dataframe_to_html(mouse_perf[subject].iloc[::-1], '/users/angelicamej
 # fig2.savefig(r'C:\Users\isabe\data\behavior_graphs\performance_cohort2.png', dpi=300)
 
 
-# # #FIG 3 & 4 PLOT THE DAYS THE ANIMAL WAS IN EACH STAGE . 
+# FIG 3 & 4 PLOT THE DAYS THE ANIMAL WAS IN EACH STAGE . 
 # fig3 = plt.figure()
 # ax3 = fig3.add_subplot(111)
 # ax3.plot(pals001['stage'], color = 'red', label = 'pals001')
