@@ -20,4 +20,5 @@ pupil.set(title = 'Animal name and session date', ylabel = 'Pupil Area', xlabel 
 pupil.plot(pArea)
 blink.set(title = 'Animal name and session date', ylabel = 'on/off', xlabel = 'Frames')
 blink.plot(blink2)
+print("The last 5 elements (which are the same number, repeated 5 times) of each array plotted are being ignored, by the fact that they were distorting the plot's ranges of values")
 plt.show()
