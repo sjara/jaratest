@@ -16,8 +16,8 @@ blink2_2 = blink2[:-5]  # Eliminates last 5 elements within arrays: fixes infite
 
 fig, (pupil, blink) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True) #Tried changing it to fig, (pArea, blink1). Didn't work
 
-pupil.set(title = 'Pupil Area Vs Time', ylabel = 'Area', xlabel = 'Time (s)')
+pupil.set(title = 'Animal name and session date', ylabel = 'Pupil Area', xlabel = 'Frames')
 pupil.plot(pArea)
-blink.set(title = 'Sync Vs Time', ylabel = 'on/off', xlabel = 'Time (s)')
+blink.set(title = 'Animal name and session date', ylabel = 'on/off', xlabel = 'Frames')
 blink.plot(blink2)
 plt.show()
