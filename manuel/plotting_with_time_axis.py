@@ -10,8 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
-proc = np.load('yourvideo_proc.npy', allow_pickle = True).item()
+proc = np.load('chad045_030_1_proc.npy', allow_pickle = True).item()
+#Note: the proc.npy is the output file generated from facemap
 
 pupil = proc['pupil'][0] # Dic                                                                                                                                                                             
 pArea = pupil['area']    # numpy.array
@@ -24,16 +24,16 @@ print(pAreaa.shape)
 print(blink2_a.shape)
 
 framerate = 30 # frame rate of video
-total_frames = 998 # from video
+total_frames = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAreaa & blink2_a).
 time = (total_frames * 1)/framerate # Time to reproduce 998 frames
 #print(time)
-step_number = time/993
-time_array = np.arange(0, time, step_number) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number = time/993 # Time required to reproduce each of those 993 frames.
+time_array = np.arange(0, time, step_number)
 #print(time_array)
 
 fig, (pupil, blink) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
 pupil.set(title = 'Animal name and session date', ylabel = 'Pupil Area', xlabel = 'Time(s)')
-plt.setp((pupil, blink), xticks = (np.arange(0, 35, 1))) #Set ups number of ticks in both plots
+plt.setp((pupil, blink), xticks = (np.arange(0, 35, 1))) #Sets up number of ticks in both plots
 pupil.plot(time_array, pAreaa)
 pupil.grid(b = True)
 blink.set(title = 'Animal name and session date', ylabel = 'on/off', xlabel = 'Time(s)')
