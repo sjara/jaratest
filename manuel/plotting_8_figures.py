@@ -25,11 +25,11 @@ print(pAreaa.shape)
 print(blink2_a.shape)
 
 framerate = 30 # frame rate of video
-total_frames = 998 # from video
-time = (total_frames * 1)/framerate # Time to reproduce 998 frames
+total_frames = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAreaa & blink2_a).
+time = (total_frames * 1)/framerate # Time to reproduce 993 frames
 #print(time)
-step_number = time/993
-time_array = np.arange(0, time, step_number) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number = time/993 # Time required to reproduce each of those 993 frames.
+time_array = np.arange(0, time, step_number)
 #print(time_array)
 
 fig, (pupil, blink) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
@@ -56,11 +56,11 @@ print(pAreab.shape)
 print(blink2_b.shape)
 
 framerate2 = 30 # frame rate of video
-total_frames2 = 998 # from video
-time2 = (total_frames2 * 1)/framerate # Time to reproduce 998 frames
+total_frames2 = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAreab & blink2_b).
+time2 = (total_frames2 * 1)/framerate # Time to reproduce 993 frames
 #print(time2)
-step_number2 = time2/993
-time_array2 = np.arange(0, time2, step_number2) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number2 = time2/993 # Time required to reproduce each of those 993 frames.
+time_array2 = np.arange(0, time2, step_number2)
 #print(time_array2)
 
 
@@ -88,11 +88,11 @@ print(pAreac.shape)
 print(blink2_c.shape)
 
 framerate3 = 30 # frame rate of video
-total_frames3 = 998 # from video
-time3 = (total_frames3 * 1)/framerate # Time to reproduce 998 frames
+total_frames3 = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAreac & blink2_c).
+time3 = (total_frames3 * 1)/framerate # Time to reproduce 993 frames
 #print(time3)
-step_number3 = time3/993
-time_array3 = np.arange(0, time3, step_number3) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number3 = time3/993 # Time required to reproduce each of those 993 frames.
+time_array3 = np.arange(0, time3, step_number3)
 #print(time_array3)
 
 fig3, (pupil, blink) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
@@ -119,11 +119,11 @@ print(pAread.shape)
 print(blink2_d.shape)
 
 framerate4 = 30 # frame rate of video
-total_frames4 = 998 # from video
-time4 = (total_frames4 * 1)/framerate4 # Time to reproduce 998 frames
+total_frames4 = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAread & blink2_d).
+time4 = (total_frames4 * 1)/framerate4 # Time to reproduce 993 frames
 #print(time4)
-step_number4 = time4/993
-time_array4 = np.arange(0, time4, step_number4) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number4 = time4/993 # Time required to reproduce each of those 993 frames.
+time_array4 = np.arange(0, time4, step_number4)
 #print(time_array4)
 
 
@@ -151,11 +151,11 @@ print(pAreae.shape)
 print(blink2_e.shape)
 
 framerate5 = 30 # frame rate of video
-total_frames5 = 998 # from video
-time5 = (total_frames5 * 1)/framerate5 # Time to reproduce 998 frames
+total_frames5 = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAreae & blink2_e).
+time5 = (total_frames5 * 1)/framerate5 # Time to reproduce 993 frames
 #print(time5)
-step_number5 = time5/993
-time_array5 = np.arange(0, time5, step_number5) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number5 = time5/993 # Time required to reproduce each of those 993 frames.
+time_array5 = np.arange(0, time5, step_number5) 
 #print(time_array5)
 
 
@@ -183,11 +183,11 @@ print(pAreaf.shape)
 print(blink2_f.shape)
 
 framerate6 = 30 # frame rate of video
-total_frames6 = 998 # from video
-time6 = (total_frames6 * 1)/framerate6 # Time to reproduce 998 frames
+total_frames6 = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAreaf & blink2_f).
+time6 = (total_frames6 * 1)/framerate6 # Time to reproduce 993 frames
 #print(time6)
-step_number6 = time6/993
-time_array6 = np.arange(0, time6, step_number6) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number6 = time6/993 # Time required to reproduce each of those 993 frames.
+time_array6 = np.arange(0, time6, step_number6) 
 #print(time_array6)
 
 
@@ -215,11 +215,11 @@ print(pAreag.shape)
 print(blink2_g.shape)
 
 framerate7 = 30 # frame rate of video
-total_frames7 = 998 # from video
-time7 = (total_frames7 * 1)/framerate7 # Time to reproduce 998 frames
+total_frames7 = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAreag & blink2_g).
+time7 = (total_frames7 * 1)/framerate7 # Time to reproduce 993 frames
 #print(time7)
-step_number7 = time7/993
-time_array7 = np.arange(0, time7, step_number7) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number7 = time7/993 # Time required to reproduce each of those 993 frames.
+time_array7 = np.arange(0, time7, step_number7)
 #print(time_array7)
 
 
@@ -247,11 +247,11 @@ print(pAreah.shape)
 print(blink2_h.shape)
 
 framerate8 = 30 # frame rate of video
-total_frames8 = 998 # from video
-time8 = (total_frames8 * 1)/framerate8 # Time to reproduce 998 frames
+total_frames8 = 993 # In this particular case, you can use the total frames of the video (998) or to be more precise, the number of frames contained within the plotting values (pAreah & blink2_h).
+time8 = (total_frames8 * 1)/framerate8 # Time to reproduce 993 frames
 #print(time8)
-step_number8 = time8/993
-time_array8 = np.arange(0, time8, step_number8) #step_number shows the required numbers regarding the time, to match the number of rows in the 1D array of pAreaa and blink2_a so it can be plotted.
+step_number8 = time8/993 # Time required to reproduce each of those 993 frames.
+time_array8 = np.arange(0, time8, step_number8) 
 #print(time_array8)
 
 fig8, (pupil, blink) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
