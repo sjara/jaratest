@@ -22,12 +22,13 @@ print(pAreaa.shape)
 
 framerate = 30 # frame rate of video
 total_frames = pAreaa # In this particular case, you can use the total frames to plot, or to be more precise, the number of frames contained within the plotting values (pAreaa & blink2_a)
-time = (total_frames * 1)/framerate # Time to reproduce the pAreaa & blink2_a frames. This apply only in this case, because they have the same number of frames.
+totalfr_time = pAreaa[0]
+time = (totalfr_time * 1)/framerate # Time to reproduce the pAreaa & blink2_a frames. This apply only in this case, because they have the same number of frames.
 #print(time)
 
 step_number_array = time/pAreaa # Time required to reproduce each of those 993 frames from pAreaa.
 step_number = step_number_array[0]
-time_array = np.arange(0, time, step_number) # Time used to plot in the x axis
+time_array = np.arange(0, time + 2.9, step_number) # Time used to plot in the x axis
 #print(time_array)
 #print(step_number)
 
