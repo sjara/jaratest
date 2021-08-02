@@ -2,9 +2,6 @@
 Calculating the time(s) for the x axis for FaceMap plots
 """
 
-#Checking the frame rate of video in the terminal/command line
-ffmpeg -i <your_video.mkv> # Look up for the number of "tbr". That's the frame rate
-
 #Python
 import numpy as np
 import matplotlib.pyplot as plt
