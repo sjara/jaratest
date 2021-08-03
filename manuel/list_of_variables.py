@@ -32,9 +32,9 @@ print('step_number_array:', step_number_array.shape) #Should contain 993 element
 print('step_number:', step_number.shape) #Should contain 1 element from the step_number_array array. Number that will be used to cover the frames from 0 seconds to 35 seconds, which is the length of the video
 print('time:', time.shape) #Should contain 993 elements. Provides how many time is required to cover 993 frames, or the time to cover the "total frames"
 print('total_frames:',total_frames.shape) #Should have 993 elements. It represents the total frames from the area of interest, which is the pArea (one should be able to do the same with blink2_a as well, but since it's a transposed matrix, results may very. Should try doing that)
-print('pArea:',pArea.shape) #Should contain 998 elements. Here we haven't trimmed the 5 last elements that affect the plot
-print('pAreaa:',pAreaa.shape) #Should contain 993 elements. Here we have the trimmed array from "pArea". We shouldn't have the last 5 elements from "pArea"
-print('blink:',blink.shape) #Should contain 998 elements. Here  we haven't trimmed the 5 last elements that affect the plot
+print('pArea:',pArea.shape) #Should contain 998 elements. Here we haven't trimmed the 5 last elements that affect the plot. Area to plot from pupil
+print('pAreaa:',pAreaa.shape) #Should contain 993 elements. Here we have the trimmed array from "pArea". We shouldn't have the last 5 elements from "pArea". Area to plot from pupil in the range of interest
+print('blink:',blink.shape) #Should contain 998 elements. Here  we haven't trimmed the 5 last elements that affect the plot. Area of interest to plot
 print('blink2:',blink2.shape) #Should contain same 998 elements as "blink" variable, it's just that is is transposed
-print('blink2_a:',blink2_a.shape) #Should contain 993 elements. here we have the trimmed array from "blink". We shouldn't have the last 5 elements from "blink"
+print('blink2_a:',blink2_a.shape) #Should contain 993 elements. here we have the trimmed array from "blink". We shouldn't have the last 5 elements from "blink". Area to plot from blink in the range of interest
 
