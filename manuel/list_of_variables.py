@@ -37,3 +37,6 @@ print('blink:',blink.shape) #Should contain 998 elements. Here  we haven't trimm
 print('blink2:',blink2.shape) #Should contain same 998 elements as "blink" variable, it's just that is is transposed
 print('blink2_a:',blink2_a.shape) #Should contain 993 elements. here we have the trimmed array from "blink". We shouldn't have the last 5 elements from "blink". Area to plot from blink in the range of interest
 
+
+# Calculation time: total_frames/framerate = pixels/(frames/seconds) = (pixels * seconds)/frames. How many pixels per seconds are there in a frame. Sounds weird
+# Calculation step_number_array: time/pAreaa = (pixels * seconds)/frames/pixels = seconds/frames. Seconds in between frames
