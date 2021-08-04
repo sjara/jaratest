@@ -13,18 +13,17 @@ blink = proc['blink'][0] # numpy.array
 blink1 = proc['blink']   # List
 blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for plotting
 blink2_a = blink[:-5] # Elimination of last 5 elements of array. Fixes infinite line length (Y axis)
-print(pAreaa.shape)
+#print(pAreaa.shape)
 #print(blink2_a.shape)
 
 framerate = 30 # frame rate of video
 total_frames = pAreaa # In this particular case, you can use the total frames to plot, or to be more precise, the number of frames contained within the plotting values (pAreaa & blink2_a)
-totalfr_time = pAreaa[0]
-time = (totalfr_time * 1)/framerate # Time to reproduce the pAreaa & blink2_a frames. This apply only in this case, because they have the same number of frames.
+time = (total_frames * 1)/framerate # Time to reproduce the pAreaa & blink2_a frames. This apply only in this case, because they have the same number of frames.
 #print(time)
 
 step_number_array = time/pAreaa # Time required to reproduce each of those 993 frames from pAreaa.
 step_number = step_number_array[0]
-# time_array = np.arange(0, time + 2.9, step_number) # Time used to plot in the x axis
+# time_array = np.arange(0, time, step_number) # Time used to plot in the x axis
 #print(time_array)
 #print(step_number)
 
