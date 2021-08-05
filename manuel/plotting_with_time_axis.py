@@ -40,3 +40,5 @@ blink.set(title = 'Animal name and session date', ylabel = 'on/off', xlabel = 'T
 blink.grid(b = True)
 blink.plot(time_array, blink2_a)
 plt.show()
+
+#This was the original code
