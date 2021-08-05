@@ -12,20 +12,24 @@ proc = np.load('./to_compare/chad045_030_1_proc.npy', allow_pickle = True).item(
 
 pupil = proc['pupil'][0] # Dic
 pArea = pupil['area']    # numpy.array
-nframes = len(pArea)     # Contains length of pArea variable. It has the calculation of the pupil area for each frame
-frameVec = np.arange(0, nframes, 1) #Vector of the total frames from the video
+nframes = len(pArea)     # Contains length of pArea variable. It has the calculation of the pupil area for each frame. Each number represents a frame and defines if pupil is large or small.
+frameVec = np.arange(0, nframes, 1) #Vector of the total frames from the video regarding pArea
 framerate = 30 # frame rate of video
 timeVec = (frameVec * 1)/framerate # Time Vector to calculate the length of the video 
+
+
 print(timeVec)
 print(frameVec)
+
 fig, (pupil_axis, blink_axis) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
-pupil_axis.plot(timeVec, pArea)
 pupil_axis.set_xlim([0, nframes])
 #pupil_axis.set_ylim([0, 1500])
 blink_axis.set_xlabel('Time (s)')
 plt.show()
 
 '''
+fig, (pupil_axis, blink_axis) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
+pupil_axis.plot(timeVec, pArea)
 pupil_axis.plot(frameVec, pArea)
 pupil_axis.set_xlim([0, nframes-20])
 pupil_axis.set_ylim([0, 1500])
