@@ -37,7 +37,7 @@ timeVec_blink2 = (frameVec_blink2 * 1)/framerate # Time Vector to calculate the 
 
 min_value_timeVec_pArea = np.amin(timeVec_pArea) # Minimum value of the variable timeVec_pArea. Added for precision
 max_value_timeVec_pArea = np.amax(timeVec_pArea) # Maximum value of the variable timeVec_pArea. Made to prevent the plotting of space without data in the plot
-min_value_timeVec_blink2 = np.amin(timeVec_blink2) # Minimum value of the variable timeVec_blink2. Added for precision
+min_value_timeVec_blink2 = np.amin(timeVec_blink2) # Minimum value of the variable timeVec_blink2. Added for precision for plotting and prevent using plot labels without data
 max_value_timeVec_blink2 = np.amax(timeVec_blink2) # Maximum value of the variable timeVec_blink2. Made to prevent the plotting of space without data in the plot
 inferior_limit_y_axis = np.amin(pArea) # Defines the min value for the y axis
 superior_limit_y_axis = pArea[nframes_pArea - 6] # Defines max value for the y axis. The 6 corresponds to the last 6 elements of the array. Still trying to find a way to not hard-code it.
