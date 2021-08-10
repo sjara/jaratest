@@ -25,12 +25,10 @@ blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for pl
 
 
 
-nframes_pArea = len(pArea) # Contains length of pArea variable.
-nframes_blink2 = len(blink) # Contains length of blink2_a variable.
-frameVec_pArea = np.arange(0, nframes_pArea, 1) # Vector of the total frames from the video.
-frameVec_blink2 = np.arange(0, nframes_blink2, 1) # Vector of the total frames from the video.
+nframes = len(pArea) # Contains length of pArea variable.
+frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
 framerate = 30 # frame rate of video
-timeVec = (frameVec_pArea * 1)/framerate # Time Vector to calculate the length of the video 
+timeVec = (frameVec * 1)/framerate # Time Vector to calculate the length of the video 
 
 
 
@@ -38,7 +36,7 @@ timeVec = (frameVec_pArea * 1)/framerate # Time Vector to calculate the length o
 min_value_timeVec = np.amin(timeVec) # Minimum value of the variable timeVec_pArea. Added for precision
 max_value_timeVec = np.amax(timeVec) # Maximum value of the variable timeVec_pArea. Made to prevent the plotting of space without data in the plot
 inferior_limit_y_axis = np.amin(pArea) # Defines the min value for the y axis
-superior_limit_y_axis = pArea[nframes_pArea - 6] # Defines max value for the y axis. The 6 corresponds to the last 6 elements of the array. Still trying to find a way to not hard-code it.
+superior_limit_y_axis = pArea[nframes - 6] # Defines max value for the y axis. The 6 corresponds to the last 6 elements of the array. Still trying to find a way to not hard-code it.
 
 # Note: the last 6 elements in pArea allowed for the plot to create an "infinite" line in the y axis. Thus, it doesn't allow the user to properly analyze the pupil data.  
 
