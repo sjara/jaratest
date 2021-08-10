@@ -30,15 +30,13 @@ nframes_blink2 = len(blink) # Contains length of blink2_a variable.
 frameVec_pArea = np.arange(0, nframes_pArea, 1) # Vector of the total frames from the video.
 frameVec_blink2 = np.arange(0, nframes_blink2, 1) # Vector of the total frames from the video.
 framerate = 30 # frame rate of video
-timeVec_pArea = (frameVec_pArea * 1)/framerate # Time Vector to calculate the length of the video 
-timeVec_blink2 = (frameVec_blink2 * 1)/framerate # Time Vector to calculate the length of the video 
+timeVec = (frameVec_pArea * 1)/framerate # Time Vector to calculate the length of the video 
 
 
 
-min_value_timeVec_pArea = np.amin(timeVec_pArea) # Minimum value of the variable timeVec_pArea. Added for precision
-max_value_timeVec_pArea = np.amax(timeVec_pArea) # Maximum value of the variable timeVec_pArea. Made to prevent the plotting of space without data in the plot
-min_value_timeVec_blink2 = np.amin(timeVec_blink2) # Minimum value of the variable timeVec_blink2. Added for precision for plotting and prevent using plot labels without data
-max_value_timeVec_blink2 = np.amax(timeVec_blink2) # Maximum value of the variable timeVec_blink2. Made to prevent the plotting of space without data in the plot
+
+min_value_timeVec = np.amin(timeVec) # Minimum value of the variable timeVec_pArea. Added for precision
+max_value_timeVec = np.amax(timeVec) # Maximum value of the variable timeVec_pArea. Made to prevent the plotting of space without data in the plot
 inferior_limit_y_axis = np.amin(pArea) # Defines the min value for the y axis
 superior_limit_y_axis = pArea[nframes_pArea - 6] # Defines max value for the y axis. The 6 corresponds to the last 6 elements of the array. Still trying to find a way to not hard-code it.
 
@@ -49,16 +47,16 @@ superior_limit_y_axis = pArea[nframes_pArea - 6] # Defines max value for the y a
 fig, (pupil_axis, blink_axis) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
 pupil_axis.set(title = 'Chad045, 2020-10-30', ylabel = 'Pupil Area')
 plt.setp((pupil_axis, blink_axis), xticks = (np.arange(0, 35, 1))) #Sets up number of ticks in both plots
-pupil_axis.plot(timeVec_pArea, pArea)
-pupil_axis.set_xlim([min_value_timeVec_pArea, max_value_timeVec_pArea])
+pupil_axis.plot(timeVec, pArea)
+pupil_axis.set_xlim([min_value_timeVec, max_value_timeVec])
 pupil_axis.set_ylim([inferior_limit_y_axis, superior_limit_y_axis])
 pupil_axis.grid(b = True)
 blink_axis.set(xlabel = 'Time (s)', ylabel = 'on/off')
-blink_axis.plot(timeVec_blink2, blink2)
-blink_axis.set_xlim([min_value_timeVec_blink2, max_value_timeVec_blink2])
+blink_axis.plot(timeVec, blink2)
+blink_axis.set_xlim([min_value_timeVec, max_value_timeVec])
 blink_axis.grid(b = True)
 plt.show()
 
 
 
-#Important for user: the frameVec_pArea and frameVec_blink2 are the same, as well as timeVec_pArea and timeVec_blink2 and so on with the other variables with the pArea and blink2 suffixes in this exercise, but it's good to keep in mind that the frames in the pupil area might not be the same as the ones in the sync signal in other videos, so play safe and create a variable for each one of them. In the particular case of the timeVec, one can use either the pArea or blink2 variables to calculate it (therefore, it can be called just "timeVec"). But again, it was done like this to raise awareness regarding the chance of the variables to have different values. Same logic applies to the rest of the variables with the pArea and blink2 suffixes.
+#Important for user: in case that you have different amount of frames or time or anything between the pupil and the sync signal, make sure to create a variable for each one of them
