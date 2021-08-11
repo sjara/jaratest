@@ -39,11 +39,11 @@ max_value_timeVec = np.amax(timeVec) # Maximum value of the variable timeVec_pAr
 #range_time = np.array([min_value_timeVec, max_value_timeVec]) # Shows starting and ending seconds of the video
 
 
-blink2_Bool = np.logical_and(blink2>1000, blink2<2000) # Boolean values from the blink2 variable where True values will be within the established range
+blink2_bool = np.logical_and(blink2>1000, blink2<2000) # Boolean values from the blink2 variable where True values will be within the established range
 blink2_range_values = np.diff(blink2_Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 start_value_syncSignal = np.flatnonzero(blink2_range_values) # Provides all the numbers as 'True' from the blink2_binary variable
 time_of_blink2_event = timeVec[start_value_syncSignal] # Provides the time windows in which the sync signal is on
-range_time = np.array([-1, 2]) # Time window of interest (still looking for a better name)
+range_time = np.array([-1, 2]) # Range of time window
 
 
 def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
@@ -72,6 +72,9 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     return (windowTimeVec, lockedSignal)
 
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, time_of_blink2_event, range_time)
+
+#plt.plot(timeVec, blink2)
+#plt.plot(windowed_signal)
 
 
 
