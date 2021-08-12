@@ -56,10 +56,10 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
         windowTimeRange (list or np.array): 2-element array defining range of window to extract.
     Returns: 
         windowTimeVec (np.array): time of each sample in the window w.r.t. the event.
-        lockedSignal (np.array): extracted windows of signal aligned to event. Size: (nSamples,nEvents)
+        lockedSignal (np.array): extracted windows of signal aligned to event. Size (nSamples,nEvents)
     '''
     samplingRate = 1/(timeVec[1]-timeVec[0])
-    windowSampleRange = samplingRate*np.array(windowTimeRange)
+    windowSampleRange = samplingRate*np.array(windowTimeRange) 
     windowSampleVec = np.arange(*windowSampleRange, dtype=int)
     windowTimeVec = windowSampleVec/samplingRate
     nSamples = len(windowTimeVec)
@@ -72,9 +72,3 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     return (windowTimeVec, lockedSignal)
 
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, time_of_blink2_event, range_time)
-
-#plt.plot(timeVec, blink2)
-#plt.plot(windowed_signal)
-
-
-
