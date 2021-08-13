@@ -44,7 +44,6 @@ time_of_blink2_event = timeVec[start_value_syncSignal] # Provides the time windo
 range_time = np.array([-1, 2]) # Range of time window
 
 
-
 def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     '''
     Make array of signal traces locked to an event.
@@ -71,13 +70,15 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     return (windowTimeVec, lockedSignal)
 
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, time_of_blink2_event, range_time)
-plt.plot(windowed_signal)
-plt.show()
 
-'''
-fig, (signal_window, compare_plot) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
-signal_window.plot(windowed_signal)
-compare_plot.plot(timeVec, blink2)
-plt.xticks(np.arange(0, 35, 1))
+
+
+fig, (signalWindow, comparePlot) = plt.subplots(2, 1, sharex = False, sharey = False, constrained_layout = True)
+plt.setp(signalWindow.get_xticklabels(), rotation=45, horizontalalignment='right', fontsize='x-small')
+signalWindow.plot(windowTimeVec, windowed_signal)
+signalWindow.set(title = 'Samples vs Trials' , xlabel = 'Time (s)', ylabel = 'Trial', xticks = np.arange(-1, 2 , 0.03333))
+signalWindow.grid(b = True)
+comparePlot.plot(timeVec, blink2)
+comparePlot.set(title = 'Sync signal', xlabel = 'Time (s)', ylabel = 'on/off')
+comparePlot.grid(b = True)
 plt.show()
-'''
