@@ -25,12 +25,10 @@ blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for pl
 
 
 
-nframes_pArea = len(pArea) # Contains length of pArea variable.
-nframes_blink2 = len(blink) # Contains length of blink2_a variable.
-frameVec_pArea = np.arange(0, nframes_pArea, 1) # Vector of the total frames from the video.
-frameVec_blink2 = np.arange(0, nframes_blink2, 1) # Vector of the total frames from the video.
+nframes = len(pArea) # Contains length of pArea variable (equivalent to the blink variable).
+frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
 framerate = 30 # frame rate of video
-timeVec = (frameVec_pArea * 1)/framerate # Time Vector to calculate the length of the video 
+timeVec = (frameVec * 1)/framerate # Time Vector to calculate the length of the video 
 
 
 
@@ -44,6 +42,7 @@ blink2_range_values = np.diff(blink2_bool) # Determines the start and ending val
 start_value_syncSignal = np.flatnonzero(blink2_range_values) # Provides all the numbers as 'True' from the blink2_binary variable
 time_of_blink2_event = timeVec[start_value_syncSignal] # Provides the time windows in which the sync signal is on
 range_time = np.array([-1, 2]) # Range of time window
+
 
 
 def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
@@ -72,3 +71,13 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     return (windowTimeVec, lockedSignal)
 
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, time_of_blink2_event, range_time)
+plt.plot(windowed_signal)
+plt.show()
+
+'''
+fig, (signal_window, compare_plot) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
+signal_window.plot(windowed_signal)
+compare_plot.plot(timeVec, blink2)
+plt.xticks(np.arange(0, 35, 1))
+plt.show()
+'''
