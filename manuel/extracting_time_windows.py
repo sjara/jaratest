@@ -32,16 +32,16 @@ timeVec = (frameVec * 1)/framerate # Time Vector to calculate the length of the 
 
 
 
-min_value_timeVec = np.amin(timeVec) # Minimum value of the variable timeVec_pArea. Added for precision
-max_value_timeVec = np.amax(timeVec) # Maximum value of the variable timeVec_pArea. Made to prevent the plotting of space without data in the plot
+minValueTimeVec = np.amin(timeVec) # Minimum value of the variable timeVec_pArea. Added for precision
+maxValueTimeVec = np.amax(timeVec) # Maximum value of the variable timeVec_pArea. Made to prevent the plotting of space without data in the plot
 #range_time = np.array([min_value_timeVec, max_value_timeVec]) # Shows starting and ending seconds of the video
 
 
-blink2_bool = np.logical_and(blink2>1000, blink2<2000) # Boolean values from the blink2 variable where True values will be within the established range
-blink2_range_values = np.diff(blink2_bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
-start_value_syncSignal = np.flatnonzero(blink2_range_values) # Provides all the numbers as 'True' from the blink2_binary variable
-time_of_blink2_event = timeVec[start_value_syncSignal] # Provides the time windows in which the sync signal is on
-range_time = np.array([-1, 2]) # Range of time window
+blink2Bool = np.logical_and(blink2>1000, blink2<2000) # Boolean values from the blink2 variable where True values will be within the established range
+blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
+startValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the numbers as 'True' from the blink2_binary variable
+timeOfBlink2Event = timeVec[startValueSyncSignal] # Provides the time windows in which the sync signal is on
+rangeTime = np.array([-1, 2]) # Range of time window
 
 
 def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
@@ -69,16 +69,20 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
         lockedSignal[:,inde] = signal[thiswin]
     return (windowTimeVec, lockedSignal)
 
-windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, time_of_blink2_event, range_time)
+windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, rangeTime)
 
+#samplingRate = 1/(timeVec[1]-timeVec[0])
+#windowSampleRange = samplingRate*np.array(range_time) 
+#windowSampleVec = np.arange(*windowSampleRange, dtype=int)
+#windowTimeVec = windowSampleVec/samplingRate
 
 
 fig, (signalWindow, comparePlot) = plt.subplots(2, 1, sharex = False, sharey = False, constrained_layout = True)
 plt.setp(signalWindow.get_xticklabels(), rotation=45, horizontalalignment='right', fontsize='x-small')
 signalWindow.plot(windowTimeVec, windowed_signal)
-signalWindow.set(title = 'Samples vs Trials' , xlabel = 'Time (s)', ylabel = 'Trial', xticks = np.arange(-1, 2 , 0.03333))
+signalWindow.set(title = 'Trials Vs Time window (s)' , xlabel = 'Time window (s)', ylabel = 'Trials')
 signalWindow.grid(b = True)
 comparePlot.plot(timeVec, blink2)
-comparePlot.set(title = 'Sync signal', xlabel = 'Time (s)', ylabel = 'on/off')
+comparePlot.set(title = 'Sync signal Vs Time (s)', xlabel = 'Time (s)', ylabel = 'on/off')
 comparePlot.grid(b = True)
 plt.show()
