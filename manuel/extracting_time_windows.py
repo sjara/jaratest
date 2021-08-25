@@ -40,10 +40,11 @@ maxValueTimeVec = np.amax(timeVec) # Maximum value of the variable timeVec_pArea
 blink2Bool = np.logical_and(blink2>1000, blink2<2000) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
-indicesSyncSignal = [0, 2, 4, 6, 8, 10] # Obtains all indices corresponding to the start values from the sync signal.
+indicesSyncSignal = [0, 2, 4, 6, 8, 10] # Obtains all indices corresponding to the start values from the sync signal. --> trying to define with a FUNCTIONN!!!
 startValuesSyncSignalVec = np.take(indicesValueSyncSignal, indicesSyncSignal) # Takes the established indices in indicesSyncSignal and looks for the corresponding numbers within the variable indicesValueSyncSignal
 timeOfBlink2Event = timeVec[startValuesSyncSignalVec] # Provides the time windows in which the sync signal is on.
 rangeTime = np.array([-1, 2]) # Range of time window, one second before the sync signal is on and two seconds after is on.
+
 
 
 def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
