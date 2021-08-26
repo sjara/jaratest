@@ -4,6 +4,7 @@
 - extracting_time_windows.py: shows how to obtain the corresponding pupil area data within an arbitrary defined time window (in seconds) and plot it in a pupil dilation study for rodents.
 
 ## testFiles directory
+*Here you will find test files*
 - check_facemap_rois_dtype.py: contains a function to find any given item from a dictionary within the output "proc" file generated from the Facemap videos.
 - facemap_shareaxis_plotting.py: shows how to share axis with matplotlib.pyplot. In this case, the data from the output "proc" file from Facemap was used.
 -  how_to_plot1.py: code to plot the following plot https://matplotlib.org/stable/_images/sphx_glr_simple_plot_001.png
