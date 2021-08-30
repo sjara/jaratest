@@ -1,7 +1,8 @@
 # Manuel's scripts
 *Here you will find the most used files*
-- pupil_change_onsetStimulus.py: shows how to obtain the onset values for a stimulus.
-- extracting_time_windows.py: shows how to obtain the corresponding pupil area data within an arbitrary defined time window (in seconds) and plot it in a pupil dilation study for rodents.
+- pupil_change_onsetStimulus.py: Code that shows how to obtain the onset values for a stimulus.
+- extracting_time_windows.py: Code that shows how to obtain the corresponding pupil area data within an arbitrary defined time window (in seconds) and plot it in a pupil dilation study for rodents.
+- pAreaAverage_BarPlots.py: Code that shows how to obtain avarage pupil size for a stimulus and create a bar plot 
 
 ## testFiles directory
 *Here you will find test files*
