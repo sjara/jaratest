@@ -129,9 +129,10 @@ pAreaMean = (meanValueBeforeOnset, meanValueAfterOnset)
 ax.bar(conditions, pAreaMean)
 plt.show()
 '''
-
+'''
 plt.bar(meanValueBeforeOnset, meanValueAfterOnset, width = 0.4)
 plt.title('pArea mean values Vs Conditions')
 plt.xlabel('Conditions')
 plt.ylabel('pArea mean')
 plt.show()
+'''
