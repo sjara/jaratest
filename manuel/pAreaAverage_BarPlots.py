@@ -111,7 +111,6 @@ meanSignalBeforeOnset = beforeOnsetTimeValues.mean(axis = 0) # Mean Values for e
 meanSignalAfterOnset = afterOnsetTimeValues.mean(axis = 0) # Mean Values for each column in the time window 0 to 2. Creates an avarage signal
 meanValueBeforeOnset = meanSignalBeforeOnset.mean() # Mean value before signal onset 
 meanValueAfterOnset = meanSignalAfterOnset.mean() # Mean value after signal onset 
-
 '''
 x = np.arange(0,114,1)
 xTicks = ['Sync signal off', 'Onset sync signal']
