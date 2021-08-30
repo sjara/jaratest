@@ -68,9 +68,18 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     lockedSignal = np.empty((nSamples,nTrials))
     for inde,eventTime in enumerate(eventOnsetTimes):
         eventSample = np.searchsorted(timeVec, eventTime)
+        print('Diese ist trial:',eventSample)
         thiswin = windowSampleVec + eventSample
+        print('Diese ist samples:',thiswin)
         lockedSignal[:,inde] = signal[thiswin]
     return (windowTimeVec, lockedSignal)
+
+samplingRate = 1/(timeVec[1]-timeVec[0])
+windowSampleRange = samplingRate*np.array(rangeTime) 
+windowSampleVec = np.arange(*windowSampleRange, dtype=int)
+windowTimeVec = windowSampleVec/samplingRate
+nSamples = len(windowTimeVec)
+nTrials = len(timeOfBlink2Event)
 
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, rangeTime)
 
