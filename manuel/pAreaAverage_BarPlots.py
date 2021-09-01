@@ -51,8 +51,8 @@ def onset_values(array, k):
      lastIndexValue = len(array)-1 
      stepNumber = k
      startIndicesValues = range(firstIndexValue, lastIndexValue, stepNumber)
-     startValuesVec = np.array(startIndicesValues)
-     onsetStartValues = np.take(array, startValuesVec)
+     startIndicesVec = np.array(startIndicesValues)
+     onsetStartValues = np.take(array, startIndicesVec)
      return (onsetStartValues)
 
 syncOnsetValues = onset_values(indicesValueSyncSignal, 2)
@@ -105,33 +105,35 @@ plt.ylabel('Trials')
 plt.show()
 '''
 
+'''
+def meanValue_Plot(slicedRange1, slicedRange2, title, labelsx, labelsy, dataPlot, c1, c2):
+
+     meanSignal1 = slicedRange1.mean(axis = 0) 
+     meanSignal2 = slicedRrange2.mean(axis = 0) 
+     meanValue1 = meanSignal1.mean() 
+     meanValue2 = meanSignal2.mean()
+     conditions = (c1, c2) 
+     plt.bar(conditions, dataPlot, width = 0.35, align = 'center') 
+     plt.title(title) 
+     plt.xlabel(labelsx) 
+     plt.ylabel(labelsy) 
+     return (plt.show()) 
+
+toPlot = meanValue_Plot(windowed_signal[0:30], windowed_signal[30:90], 'a', 'b', 'c', meanValueAfterOnset, 'alal', 'foo')   
+'''
+
+
 beforeOnsetTimeValues = windowed_signal[0:30] # Takes the values of the pArea between [-1s to 0s) within the time window
 afterOnsetTimeValues = windowed_signal[30:90] # Takes the values of the pArea between [0s to 2s] within the time window
 meanSignalBeforeOnset = beforeOnsetTimeValues.mean(axis = 0) # Mean Values for each column in the time window -1 to 0. Creates an an average signal
 meanSignalAfterOnset = afterOnsetTimeValues.mean(axis = 0) # Mean Values for each column in the time window 0 to 2. Creates an avarage signal
 meanValueBeforeOnset = meanSignalBeforeOnset.mean() # Mean value before signal onset 
-meanValueAfterOnset = meanSignalAfterOnset.mean() # Mean value after signal onset 
-'''
-x = np.arange(0,114,1)
-xTicks = ['Sync signal off', 'Onset sync signal']
-y = (meanValueBeforeOnset)
-plt.xticks(x, xTicks)
-plt.xticks(range(2), xTicks)
-plt.plot(x,y)
-plt.show()
-'''
-'''
-fig = plt.figure()
-ax = fig.add_axes([0,0,1,1])
-conditions = ['Sync signal off', 'Onset sync signal']
-pAreaMean = (meanValueBeforeOnset, meanValueAfterOnset)
-ax.bar(conditions, pAreaMean)
-plt.show()
-'''
-'''
-plt.bar(meanValueBeforeOnset, meanValueAfterOnset, width = 0.4)
-plt.title('pArea mean values Vs Conditions')
+meanValueAfterOnset = meanSignalAfterOnset.mean() # Mean value after signal onset
+xlabels = ('Signal off', 'Signal onset') 
+
+ 
+plt.bar(xlabels, meanValueAfterOnset, width = 0.35, align = 'center')
+plt.title('Mean pupil area Vs Conditions')
 plt.xlabel('Conditions')
-plt.ylabel('pArea mean')
+plt.ylabel('Pupil Area')
 plt.show()
-'''
