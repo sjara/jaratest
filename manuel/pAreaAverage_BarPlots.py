@@ -133,7 +133,7 @@ xlabels = ('Signal off', 'Signal onset')
 
  
 plt.bar(xlabels, meanValueAfterOnset, width = 0.35, align = 'center')
-plt.title('Mean pupil area Vs Conditions')
+plt.title('Average pupil area Vs Conditions')
 plt.xlabel('Conditions')
 plt.ylabel('Pupil Area')
 plt.show()
