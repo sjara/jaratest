@@ -25,11 +25,11 @@ subjects =  [
                     # 'pals014',
                     # 'pals015', 
                     # 'pals016',
-                    # 'pals017',
+                    'pals017',
                     # 'pals018', 
-                    'pals020', 
-                    'pals021', 
-                    'pals022'
+                    # 'pals020', 
+                    # 'pals021', 
+                    # 'pals022'
              ]
 
 
@@ -42,59 +42,62 @@ paradigm = 'twochoice'
 #Add the specific dates you want to look at. The reason they are separated like this is for personal organization. You can come up with your own system!
 sessionsEachSubject = { 
     
-     'pals010': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
-                  '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
-                  '20210618a', '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
-                  '20210626a', '20210627a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
-                  '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', 
-                  '20210716a', '20210717a'
-                 ],
+     # 'pals010': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
+     #              '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
+     #              '20210618a', '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
+     #              '20210626a', '20210627a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+     #              '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', 
+     #              '20210716a', '20210717a', '20210719a'
+     #             ],
 
     
-     'pals012': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
-                  '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
-                  '20210618a', '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
-                  '20210626a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
-                 '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210713a', '20210714a', '20210715a', 
-                 '20210716a', '20210717a', '20210718a'],
+     'pals012': [
+          # '20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
+          #          '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
+          #          '20210618a', '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
+          #          '20210626a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+          #         '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', 
+                 #Stage 3.5
+                  '20210713a', '20210714a', '20210715a', 
+                  '20210716a', '20210717a', '20210718a','20210719a', '20210720a', '20210721a', '20210722a', '20210723a',
+                  '20210724a', '20210725a', '20210726a', '20210727a', '20210728a', '20210729a', 
+                   # '20210730a', 
+                  '20210730b', '20210731a', '20210801a', ],
     
-     'pals013': ['20210601a', '20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
-                 '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a', '20210618a', 
-                 '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
-                 '20210626a', '20210627a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
-                 '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', 
-                 '20210716a', '20210717a', '20210718a'],
+     # 'pals013': ['20210601a', '20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
+     #             '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a', '20210618a', 
+     #             '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
+     #             '20210626a', '20210627a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+     #             '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', 
+     #             '20210716a', '20210717a', '20210718a', '20210719a'],
     
-     'pals014': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210608a', '20210609a', 
-                 '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a', '20210618a', 
-                 '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a', '20210626a', '20210627a', 
-                 '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', '20210707a', '20210708a',
-                 '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', 
-                 '20210718a'],
+     # 'pals014': ['20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210608a', '20210609a', 
+     #             '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a', '20210618a', 
+     #             '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a', '20210626a', '20210627a', 
+     #             '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', '20210707a', '20210708a',
+     #             '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', 
+     #             '20210718a', '20210719a'],
     
     'pals015': [
-                # '20210628a', 
-                #  '20210629a', '20210630a', 
-                # '20210701a', 
-                # '20210702a', 
-                #   '20210703a',
-                # '20210706a', 
-                # '20210707a', 
-                # '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', 
-                '20210714a', '20210715a', '20210716a', '20210718a'
-                ],
-    
-    'pals016': [
-                # '20210628a', '20210629a', '20210630a', 
-                # '20210701a', 
-                # '20210702a', 
-                # '20210703a',
-                # '20210706a',
-                # '20210707a', 
-                # '20210708a', '20210709a', 
+                # '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+                # '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', 
                 #stage 4.0
-                '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', '20210718a'
-                ],
+                '20210714a', '20210715a', '20210716a', '20210718a', '20210719a', '20210725a', '20210726a', 
+                '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a'
+            ],
+    
+    # 'pals016': [
+    #             # '20210628a', '20210629a', '20210630a', 
+    #             # '20210701a', 
+    #             # '20210702a', 
+    #             # '20210703a',
+    #             # '20210706a',
+    #             # '20210707a', 
+    #             # '20210708a', '20210709a', 
+    #             #stage 4.0
+    #             '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', '20210718a', 
+    #             '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', '20210727a',
+    #             '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a' ],
             
     
     'pals017': [
@@ -105,21 +108,25 @@ sessionsEachSubject = {
                 # '20210706a', 
                 # '20210707a', 
                 # '20210708a', 
-                # stage 4.0
+    #             # stage 4.0
                 '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', 
-                '20210718a'
+                '20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
+                '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a' 
                 ],
         
-    'pals018': [
-                # '20210701a', '20210702a', '20210703a', '20210706a', '20210707a', 
-                '20210708a', '20210709a', '20210710a', 
-                '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a'],
+    # 'pals018': [
+    #             '20210701a', '20210702a', '20210703a', '20210706a', '20210707a', 
+    #             '20210708a', '20210709a', '20210710a', 
+    #             '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a'],
     
-    'pals020': ['20210718a', '20210719a', '20210720a'], 
+    'pals020': ['20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
+                '20210727a', '20210729a', '20210730a', '20210731a', '20210801a', ], 
     
-    'pals021': ['20210718a', '20210719a', '20210720a'], 
+    'pals021': ['20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
+                '20210727a', '20210729a', '20210730a', '20210731a', '20210801a', ],
     
-    'pals022': ['20210718a', '20210719a', '20210720a']    
+    'pals022': ['20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
+                '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', ]    
    }
 
 
@@ -249,7 +256,7 @@ for subject in subjects:
           conditions = [
         (stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 1), 
         (stage_information['task_mode'] == 2) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
-        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 2),
         (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0)
         ]
           
@@ -315,7 +322,7 @@ for subject in subjects:
     mouse_perf[subject].to_excel('/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.xlsx'.format(subject),  sheet_name='{}'.format(subject), index = False)
     
     #Use this one instead, the graphs are 'beautified' and more modern looking
-    extraplots.dataframe_to_html(mouse_perf[subject].iloc[::-1], '/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.html' .format(subject, subject),) 
+    extraplots.dataframe_to_html(mouse_perf[subject].iloc[::-1], '/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.html' .format(subject),) 
 
 
 
@@ -325,42 +332,42 @@ for subject in subjects:
 
 #     #plots the correct performance and how the animal performed with each side. Reminder that stage 1 will not be printed.
 
-    # fig = plt.figure()
-    # plt.scatter(unique_sessionID, left_performance, color = 'blue', label = 'Left')
-    # plt.plot(unique_sessionID, left_performance, color = 'blue')
-    # plt.scatter(unique_sessionID, right_performance, color = 'red' , label = 'Right')
-    # plt.plot(unique_sessionID, right_performance, color = 'red')
-    # plt.scatter(unique_sessionID, percent_correct, color = 'black', label = 'Percent Correct')
-    # plt.plot(unique_sessionID, percent_correct, color = 'black')
-    # plt.title(subject + ' Performance')
-    # plt.xlabel('Sessions in Stage 3.0 - 3.5')
-    # plt.ylabel('Percent animal chose the correct side (%)')
-    # plt.legend(loc = 1)
-    # plt.xticks(ticks=unique_sessionID, fontsize = 7)
-    # plt.ylim(0, 100)
-    # plt.show() 
-    # # Take in  mind this is going to have to be specified depending on where you want your figures to save
-    # fig.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/{}performance.png' .format(subject), dpi=100)    
+    fig = plt.figure()
+    plt.scatter(unique_sessionID, left_performance, color = 'blue', label = 'Left')
+    plt.plot(unique_sessionID, left_performance, color = 'blue')
+    plt.scatter(unique_sessionID, right_performance, color = 'red' , label = 'Right')
+    plt.plot(unique_sessionID, right_performance, color = 'red')
+    plt.scatter(unique_sessionID, percent_correct, color = 'black', label = 'Percent Correct')
+    plt.plot(unique_sessionID, percent_correct, color = 'black')
+    plt.title(subject + ' Performance')
+    plt.xlabel('Sessions in Stage 4.0')
+    plt.ylabel('Percent animal chose the correct side (%)')
+    plt.legend(loc = 1)
+    plt.xticks(ticks=unique_sessionID, fontsize = 7)
+    plt.ylim(0, 100)
+    plt.show() 
+    # Take in  mind this is going to have to be specified depending on where you want your figures to save
+    fig.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/{}performance.png' .format(subject), dpi=100)    
     
-    # #plots the hits in each session. You can also uncomment out the errors and side hits if that is something you are interested in looking at. 
-#     fig0 = plt.figure() 
-#     plt.scatter(unique_sessionID, df_session_information['hit_outcome'], label = 'hits')
-#     plt.plot(unique_sessionID, df_session_information['hit_outcome'])
-#     plt.scatter(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']), label = 'choices')
-#     plt.plot(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']))
-#     #plt.plot(unique_sessionID, df_session_information['total_errors'])
-#     #plt.scatter(unique_sessionID, df_session_information['total_errors'])
-#     #plt.scatter(unique_sessionID, df_session_information['left_hits'], color = 'blue')
-#     #plt.scatter(unique_sessionID, df_session_information['right_hits'], color = 'red')    
-#     plt.title(subject + ' Total hits and choices in each session')
-#     plt.xlabel('Sessions in Stage 3.0 - 3.5')
-#     plt.ylabel('Number of hits or choices')
-#     plt.ylim(0,500)
-#     plt.xticks(ticks=unique_sessionID, fontsize = 7)
-#     plt.legend(loc = 1)
-#     plt.show()
-# #     #Take in  mind this is going to have to be specified depending on where you want your figures to save
-#     fig0.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/{}hits.png' .format(subject), dpi=100)
+    #plots the hits in each session. You can also uncomment out the errors and side hits if that is something you are interested in looking at. 
+    fig0 = plt.figure() 
+    plt.scatter(unique_sessionID, df_session_information['hit_outcome'], label = 'hits')
+    plt.plot(unique_sessionID, df_session_information['hit_outcome'])
+    plt.scatter(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']), label = 'choices')
+    plt.plot(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']))
+    #plt.plot(unique_sessionID, df_session_information['total_errors'])
+    #plt.scatter(unique_sessionID, df_session_information['total_errors'])
+    #plt.scatter(unique_sessionID, df_session_information['left_hits'], color = 'blue')
+    #plt.scatter(unique_sessionID, df_session_information['right_hits'], color = 'red')    
+    plt.title(subject + ' Total hits and choices in each session')
+    plt.xlabel('Sessions in Stage 4.0')
+    plt.ylabel('Number of hits or choices')
+    plt.ylim(0,350)
+    plt.xticks(ticks=unique_sessionID, fontsize = 7)
+    plt.legend(loc = 1)
+    plt.show()
+#     #Take in  mind this is going to have to be specified depending on where you want your figures to save
+    fig0.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/{}hits.png' .format(subject), dpi=100)
     
 #We will not use this until we get to stage 4 because it looks at the average performance across many mice and also includes different ways of combining many mice on one graph
 # pals001 = mouse_perf['pals001']
