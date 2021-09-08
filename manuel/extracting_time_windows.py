@@ -68,9 +68,9 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     lockedSignal = np.empty((nSamples,nTrials))
     for inde,eventTime in enumerate(eventOnsetTimes):
         eventSample = np.searchsorted(timeVec, eventTime)
-        print('Diese ist trial:',eventSample)
+        #print('Diese ist trial:',eventSample)
         thiswin = windowSampleVec + eventSample
-        print('Diese ist samples:',thiswin)
+        #print('Diese ist samples:',thiswin)
         lockedSignal[:,inde] = signal[thiswin]
     return (windowTimeVec, lockedSignal)
 
@@ -99,3 +99,16 @@ comparePlot.set(title = 'Sync signal Vs Time (s)', xlabel = 'Time (s)', ylabel =
 comparePlot.grid(b = True)
 plt.show()
 '''
+
+'''
+array = np.arange(0,550,1) #Creates indices for each element of the array
+NA = np.take(windowed_signal, array) #Flattens array and organizes it as provided in the array variable
+----need to iterate each 6 elements, bc I need the first signal, and there are 6 signals. Therefore, I need to count from 6 to 6
+
+def newsigns(signal, i): 
+    ...:     for i in signal: 
+    ...:         index = i + 6 
+    ...:         intArray = signal.astype(int) 
+    ...:         print(intArray[index]) 
+'''
+
