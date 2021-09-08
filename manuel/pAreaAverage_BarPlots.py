@@ -91,21 +91,27 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
         eventSample = np.searchsorted(timeVec, eventTime)
         thiswin = windowSampleVec + eventSample
         lockedSignal[:,inde] = signal[thiswin]
+        #print('this is eventsample:',eventSample)
+        #print('this is thiswin:;',thiswin)
+        #print(thiswin.shape)
     return (windowTimeVec, lockedSignal)
 
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRange)
 
-'''
-Plots the complete time window -1 to 2
-
-plt.plot(windowTimeVec, windowed_signal)
-plt.title('Trials Vs Time window (s)')
-plt.xlabel('Time window (s)')
-plt.ylabel('Trials')
-plt.show()
-'''
 
 '''
+#WORKS: function to plot in bars and the data used
+beforeOnsetTimeValues = windowed_signal[0:30] # Takes the values of the pArea between [-1s to 0s) within the time window
+afterOnsetTimeValues = windowed_signal[30:90] # Takes the values of the pArea between [0s to 2s] within the time window
+meanSignalBeforeOnset = beforeOnsetTimeValues.mean(axis = 0) # Mean Values for each column in the time window -1 to 0. Creates an an average signal
+meanSignalAfterOnset = afterOnsetTimeValues.mean(axis = 0) # Mean Values for each column in the time window 0 to 2. Creates an avarage signal
+meanValueBeforeOnset = meanSignalBeforeOnset.mean() # Mean value before signal onset 
+meanValueAfterOnset = meanSignalAfterOnset.mean() # Mean value after signal onset
+labelsName = ('Stimulus off', 'Stimulus onset')
+xlabels = np.arange(len(labelsName))
+width = 0.35
+
+
 def meanValue_Plot(slicedRange1, slicedRange2, title, labelsx, labelsy, dataPlot, c1, c2):
 
      meanSignal1 = slicedRange1.mean(axis = 0) 
@@ -123,17 +129,15 @@ toPlot = meanValue_Plot(windowed_signal[0:30], windowed_signal[30:90], 'a', 'b',
 '''
 
 
-beforeOnsetTimeValues = windowed_signal[0:30] # Takes the values of the pArea between [-1s to 0s) within the time window
-afterOnsetTimeValues = windowed_signal[30:90] # Takes the values of the pArea between [0s to 2s] within the time window
-meanSignalBeforeOnset = beforeOnsetTimeValues.mean(axis = 0) # Mean Values for each column in the time window -1 to 0. Creates an an average signal
-meanSignalAfterOnset = afterOnsetTimeValues.mean(axis = 0) # Mean Values for each column in the time window 0 to 2. Creates an avarage signal
-meanValueBeforeOnset = meanSignalBeforeOnset.mean() # Mean value before signal onset 
-meanValueAfterOnset = meanSignalAfterOnset.mean() # Mean value after signal onset
-xlabels = ('Signal off', 'Signal onset') 
+'''
+#WORKS: to plot in bars
+fig, ax = plt.subplots()
+plot1 = ax.bar(xlabels[0], meanValueBeforeOnset, width, align = 'center')
+plot2 = ax.bar(xlabels[1], meanValueAfterOnset, width, align = 'center')
+ax.set_title('Average Pupil Area Vs Conditions')
+ax.set_xticks(xlabels)
+ax.set_xticklabels(labelsName)
+ax.set_ylabel('Pupil Area')
 
- 
-plt.bar(xlabels, meanValueAfterOnset, width = 0.35, align = 'center')
-plt.title('Average pupil area Vs Conditions')
-plt.xlabel('Conditions')
-plt.ylabel('Pupil Area')
 plt.show()
+'''
