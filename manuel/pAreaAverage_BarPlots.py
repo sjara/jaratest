@@ -103,22 +103,51 @@ preSignal = windowed_signal[0:30] # Takes the values of the pArea between [-1s t
 postSignal = windowed_signal[30:90] # Takes the values of the pArea between [0s to 2s] within the time window
 averagePreSignal = preSignal.mean(axis = 0)
 averagePostSignal = postSignal.mean(axis = 0)
-dataToPlot = [averagePreSignal, averagePostSignal]
-xlabels = ['Pre Signal', 'Post Signal']
 
 
-def conditions_Plotting(preArray, postArray): 
-     xLabelsToPlot = ['Pre Signal', 'Post Signal'] 
+def conditions_plotting(preArray, postArray):
+     '''
+     Obtain the values in the pre and post-signal onset of a given stimulus
+     args:
+     preArray: contains the data to plot before signal onset
+     postArray: contains the data to plot at and after the signal onset
+     returns:
+     plt.show(): slope plot comparing each trial before and after signal onset
+     ''' 
+     xLabelsToPlot = ['Pre-onset', 'Post-onset'] 
      dataToPlot = [preArray, postArray] 
-     fig, trials = plt.subplots(1,1) 
-     trials.plot(xLabelsToPlot, dataToPlot, marker = 'o', linewidth=1) 
+     fig, trials = plt.subplots(1, 1) 
+     trials.plot(xLabelsToPlot, dataToPlot, marker = 'o', linewidth = 1) 
      trials.set(title = 'Average Pupil Area Vs Pre and Post-signal onset', ylabel = 'Mean Pupil Area') 
      plt.show() 
      return(plt.show())
 
-PrePostSignalpArea = conditions_Plotting(averagePreSignal, averagePostSignal)
+PrePostSignalpArea = conditions_plotting(averagePreSignal, averagePostSignal)
 
+         
+def bar_plots(meanValue1, meanValue2, xlabel1, xlabel2):
+     ''' 
+     Creates bar plots with mean values for the pupil area 
+     Args: 
+     meanValue1: pre-signal onset values  
+     meanValue2: post-signal onset values 
+     xlabel1: str type, first condition to compare 
+     xlabel: str type, second condition to compare 
+     returns: 
+     plt.show(): bar plot comparing the average pupil area before and af
+ ter signal onset 
+     ''' 
+     meanPreSignal = meanValue1.mean(axis = 0) 
+     meanPostSignal = meanValue2.mean(axis = 0) 
+     xlabels = xlabel1, xlabel2 
+     fig, meanParea = plt.subplots(1,1) 
+     preSignalBarPlot = meanParea.bar(xlabels[0], meanPreSignal, align = 'center') 
+     postSignalBarPlot = meanParea.bar(xlabels[1], meanPostSignal, align  = 'center') 
+     meanParea.set(title = 'Mean Pupil Area Vs Conditions', ylabel = 'Pupil Area') 
+     plt.show() 
+     return(plt.show())
 
+bar_plots(averagePreSignal, averagePostSignal, 'pre signal onset', 'post signal onset') 
 
 '''
 #WORKS: function to plot in bars and the data used
@@ -132,25 +161,6 @@ labelsName = ('Stimulus off', 'Stimulus onset')
 xlabels = np.arange(len(labelsName))
 width = 0.35
 
-
-def meanValue_Plot(slicedRange1, slicedRange2, title, labelsx, labelsy, dataPlot, c1, c2):
-
-     meanSignal1 = slicedRange1.mean(axis = 0) 
-     meanSignal2 = slicedRrange2.mean(axis = 0) 
-     meanValue1 = meanSignal1.mean() 
-     meanValue2 = meanSignal2.mean()
-     conditions = (c1, c2) 
-     plt.bar(conditions, dataPlot, width = 0.35, align = 'center') 
-     plt.title(title) 
-     plt.xlabel(labelsx) 
-     plt.ylabel(labelsy) 
-     return (plt.show()) 
-
-toPlot = meanValue_Plot(windowed_signal[0:30], windowed_signal[30:90], 'a', 'b', 'c', meanValueAfterOnset, 'alal', 'foo')   
-'''
-
-
-'''
 #WORKS: to plot in bars
 fig, ax = plt.subplots()
 plot1 = ax.bar(xlabels[0], meanValueBeforeOnset, width, align = 'center')
