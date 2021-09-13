@@ -118,7 +118,7 @@ def conditions_plotting(preArray, postArray):
      dataToPlot = [preArray, postArray] 
      fig, trials = plt.subplots(1, 1) 
      trials.plot(xLabelsToPlot, dataToPlot, marker = 'o', linewidth = 1) 
-     trials.set(title = 'Average Pupil Area Vs Pre and Post signal onset', ylabel = 'Mean Pupil Area') 
+     trials.set(title = 'Mean Pupil Area in trials Vs Pre and Post signal onset', ylabel = 'Mean Pupil Area in trials') 
      plt.show() 
      return(plt.show())
 
