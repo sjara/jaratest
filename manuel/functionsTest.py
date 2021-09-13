@@ -130,27 +130,6 @@ def conditions_Plotting(preArray, postArray, k):
     ...:             plt.show() 
     ...:     return(plt.show())
 '''    
-    
-    
-    
-    
-    
-'''    
-def conditions_Plotting(preArray, postArray, k): 
-    ...:     verts = [(preArray, postArray), (len(preArray), len(postArray))] 
-    ...:     print(len(verts)) 
-    ...:     print('this are the verts:',verts) 
-    ...:     for i,j in verts: 
-    ...:         codes = [Path.MOVETO, Path.LINETO] 
-    ...:         print('This are the codes:',codes) 
-    ...:         print(len(codes)) 
-    ...:         pathToPlot = Path(verts, codes) 
-    ...:         fig, ax = plt.subplots() 
-    ...:         patch = patches.PathPatch(path, facecolor='orange', lw=2) 
-    ...:         ax.add_patch(patch) 
-    ...:         plt.show() 
-    ...:     return(plt.show())    
-'''    
 
     
     
