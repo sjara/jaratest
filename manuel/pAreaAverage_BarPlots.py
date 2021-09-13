@@ -107,7 +107,7 @@ averagePostSignal = postSignal.mean(axis = 0)
 
 def conditions_plotting(preArray, postArray):
      '''
-     Obtain the values in the pre and post-signal onset of a given stimulus
+     Obtain the values in the pre and post onset of any given signal
      args:
      preArray: contains the data to plot before signal onset
      postArray: contains the data to plot at and after the signal onset
@@ -127,10 +127,10 @@ PrePostSignalpArea = conditions_plotting(averagePreSignal, averagePostSignal)
          
 def bar_plots(meanValue1, meanValue2, xlabel1, xlabel2):
      ''' 
-     Creates bar plots with mean values for the pupil area 
+     Creates bar plots for two mean values
      Args: 
-     meanValue1: pre-signal onset values  
-     meanValue2: post-signal onset values 
+     meanValue1: nump.array type, first data set to plot  
+     meanValue2: nump.array type, second data set to plot 
      xlabel1: str type, first condition to compare 
      xlabel: str type, second condition to compare 
      returns: 
