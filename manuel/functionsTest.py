@@ -98,8 +98,99 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRange)
 
 
+preSignal = windowed_signal[0:30] # Takes the values of the pArea between [-1s to 0s) within the time window
+postSignal = windowed_signal[30:90] # Takes the values of the pArea between [0s to 2s] within the time window
+averagePreSignal = preSignal.mean(axis = 0)
+averagePostSignal = postSignal.mean(axis = 0)
+dataToPlot = [averagePreSignal, averagePostSignal]
+xlabels = ['Pre Signal', 'Post Signal']
+
+
+def conditions_Plotting(preArray, postArray): 
+     xLabelsToPlot = ['Pre Signal', 'Post Signal'] 
+     dataToPlot = [preArray, postArray] 
+     fig, trials = plt.subplots(1,1) 
+     trials.plot(xLabelsToPlot, dataToPlot, marker = 'o', linewidth=1) 
+     trials.set(title = 'Average Pupil Area Vs Pre and Post-signal onset', ylabel = 'Mean Pupil Area') 
+     plt.show() 
+     return(plt.show())
+
+PrePostSignalpArea = conditions_Plotting(averagePreSignal, averagePostSignal)
+ 
+'''
+def conditions_Plotting(preArray, postArray, k): 
+    ...:     for i in range(k): 
+    ...:         verts = [(preArray[i], postArray[i])] 
+    ...:         for i in verts: 
+    ...:             codes = [Path.MOVETO, Path.LINETO,  Path.CLOSEPOLY] 
+    ...:             pathToPlot = Path(verts, codes) 
+    ...:             fig, ax = plt.subplots() 
+    ...:             patch = patches.PathPatch(path, facecolor='orange', lw=2) 
+    ...:             ax.add_patch(patch) 
+    ...:             plt.show() 
+    ...:     return(plt.show())
+'''    
+    
+    
+    
+    
+    
+'''    
+def conditions_Plotting(preArray, postArray, k): 
+    ...:     verts = [(preArray, postArray), (len(preArray), len(postArray))] 
+    ...:     print(len(verts)) 
+    ...:     print('this are the verts:',verts) 
+    ...:     for i,j in verts: 
+    ...:         codes = [Path.MOVETO, Path.LINETO] 
+    ...:         print('This are the codes:',codes) 
+    ...:         print(len(codes)) 
+    ...:         pathToPlot = Path(verts, codes) 
+    ...:         fig, ax = plt.subplots() 
+    ...:         patch = patches.PathPatch(path, facecolor='orange', lw=2) 
+    ...:         ax.add_patch(patch) 
+    ...:         plt.show() 
+    ...:     return(plt.show())    
+'''    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+'''
 def data_Trials(array, k, r): 
-     ''' 
+     
      Allows to obtain all values from a given trial/column 
      args: 
      array = array that contains the columns with the data of interest 
@@ -107,7 +198,7 @@ def data_Trials(array, k, r):
      r = number of rows of the given array 
      returns: 
      trialsArr = contains a list of each column with their values 
-     ''' 
+     
      trialsArr = [] 
      for j in range(k): 
          for i in range(r): 
@@ -118,22 +209,22 @@ def data_Trials(array, k, r):
 trialsValues = data_Trials(windowed_signal, 114, 90) # len(trialsValues) = ~10374 and 10374/90 = ~114. Each trial contains 90 values. The division above must be almost equal to the same amount of columns/trials because it must contain the value for each column/trial (in this case, is 114)
 
 def get_Trials(array, totalValues): 
-     ''' 
+      
      This will create a dic with each trial 
      args: 
      array = array with the data of the trials 
      totalValues = number provided by len(array) 
      returns: 
      locals = will contain a dic with the name of each trial containing their values 
-     ''' 
+      
      arrayIndices = np.arange(0, totalValues, 1) 
      for i in arrayIndices: 
          locals()['trial'+str(i)] = array[i:i+90] 
      return(locals())
 
-numberOfTrials = get_Trials(trialsValues, 114)
-
-
+numberOfTrials = get_Trials(trialsValues, 114) #pAreaEachTrial
+'''
+'''
 def prepos_Trials(dic): 
     ...:     arrTrials = dic 
     ...:     arrKeys = dic.keys() 
@@ -141,6 +232,16 @@ def prepos_Trials(dic):
     ...:         preTrials = dic[arrKeys][value:val+30] 
     ...:         postTrials = dic[arrKeys][30:90] 
     ...:     return(preTrials, postTrials)
+'''
+
+
+
+
+
+
+
+
+
 
 
 
