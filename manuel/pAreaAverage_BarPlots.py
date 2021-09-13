@@ -99,6 +99,27 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRange)
 
 
+preSignal = windowed_signal[0:30] # Takes the values of the pArea between [-1s to 0s) within the time window
+postSignal = windowed_signal[30:90] # Takes the values of the pArea between [0s to 2s] within the time window
+averagePreSignal = preSignal.mean(axis = 0)
+averagePostSignal = postSignal.mean(axis = 0)
+dataToPlot = [averagePreSignal, averagePostSignal]
+xlabels = ['Pre Signal', 'Post Signal']
+
+
+def conditions_Plotting(preArray, postArray): 
+     xLabelsToPlot = ['Pre Signal', 'Post Signal'] 
+     dataToPlot = [preArray, postArray] 
+     fig, trials = plt.subplots(1,1) 
+     trials.plot(xLabelsToPlot, dataToPlot, marker = 'o', linewidth=1) 
+     trials.set(title = 'Average Pupil Area Vs Pre and Post-signal onset', ylabel = 'Mean Pupil Area') 
+     plt.show() 
+     return(plt.show())
+
+PrePostSignalpArea = conditions_Plotting(averagePreSignal, averagePostSignal)
+
+
+
 '''
 #WORKS: function to plot in bars and the data used
 beforeOnsetTimeValues = windowed_signal[0:30] # Takes the values of the pArea between [-1s to 0s) within the time window
