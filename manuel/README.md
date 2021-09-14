@@ -1,8 +1,9 @@
 # Manuel's scripts
 *Here you will find the most used files*
 - extracting_time_windows.py: Code that shows how to obtain the corresponding pupil area data within an arbitrary defined time window (in seconds) and plot it in a pupil dilation study for rodents.
-- pAreaAverage_BarPlots.py: Code that shows how to obtain avarage pupil size for a stimulus and create a bar plot
-- functionsTest.py: file to test functions that will be used for the project 
+- pAreaAverage_BarPlots.py: Code that shows how to obtain avarage pupil size for a stimulus and create a bar plot.
+- pupilDilationPlots.py: code to obtain mean pupil area and plot it in slope and bar plots vs conditions of the stimulus.  
+- functionsTest.py: file to test functions that will be used for the project .
 
 ## testFiles directory
 *Here you will find test files*
