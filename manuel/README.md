@@ -1,6 +1,5 @@
 # Manuel's scripts
 *Here you will find the most used files*
-- pupil_change_onsetStimulus.py: Code that shows how to obtain the onset values for a stimulus.
 - extracting_time_windows.py: Code that shows how to obtain the corresponding pupil area data within an arbitrary defined time window (in seconds) and plot it in a pupil dilation study for rodents.
 - pAreaAverage_BarPlots.py: Code that shows how to obtain avarage pupil size for a stimulus and create a bar plot
 - functionsTest.py: file to test functions that will be used for the project 
@@ -17,3 +16,4 @@
 -  plotting_with_time_axis_2.py: this code shows how a plot about pupil dilation vs time should look like in a pupil dilation study with rodents.
 -  testingScripts.py: this code has nothing important. Its intended use is to try and play with commands related to plot creation, data slicing, indexing, or any other strategy to obtain desired results.
 -  test_plot_with_axis.py: this code contains a draft to play with plots creation, axis sharing, etc. Nothing important is contained in here.
+-  - pupil_change_onsetStimulus.py: Code that shows how to obtain the onset values for a stimulus.
