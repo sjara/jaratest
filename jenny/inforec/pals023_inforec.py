@@ -32,5 +32,5 @@ exp2 = celldatabase.Experiment(subject, '2021-09-24', brainarea = 'rightAC', inf
 experiments.append(exp2)
 exp2.add_site(1429.2)
 exp2.add_session('15-27-02','a','AM','am_tuning_curve')
-
-
+exp2.add_session('15-27-02','b','PureTones','am_tuning_curve') #accidentally didn't start a new session. Ephys is saved in "recording1" and "recording2" folders within this session
+exp2.add_session('15-44-34','c','PureTones','am_tuning_curve')
