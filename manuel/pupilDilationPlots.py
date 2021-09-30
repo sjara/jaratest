@@ -5,7 +5,7 @@ This script is for the project of pupil dilation. It is intended to obtain pupil
 import numpy as np
 import matplotlib.pyplot as plt
 
-#Lines to change for each video: 10, 34, 72, 119, 120, 140, and 165
+#Lines to change for each video: 10, 34, and 165
 
 proc = np.load('./project_videos/projectOutputs/pure001_20210928_syncVisibleNoSound_01_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
@@ -150,7 +150,19 @@ prePostSignalpArea = scatter_plotting(averagePreSignal, averagePostSignal)
 
 #---obtain mean pupil area and bar plot vs conditions---
 
-def bar_plotting(meanSignalsValues1, meanSignalsValues2, xlabel1, xlabel2, stdData1, stdData2): 
+def bar_plotting(meanSignalsValues1, meanSignalsValues2, xlabel1, xlabel2, stdData1, stdData2):
+     ''' 
+     Creates bar plots for two mean values
+     Args: 
+     meanSignalsValues1: nump.array type, first data set to plot  
+     meanSignalsValues2: nump.array type, second data set to plot 
+     xlabel1: str type, first condition to compare 
+     xlabel: str type, second condition to compare
+     stdData1: first dataset from which the standard deviation will be calculated from
+     stdaData1: second dataset from which the standard deviation will be calculated from
+     returns: 
+     plt.show(): bar plot comparing the average pupil area before and after signal onset 
+     ''' 
      
      meanPreSignal = meanSignalsValues1.mean(axis = 0) 
      meanPostSignal = meanSignalsValues2.mean(axis = 0)
@@ -186,7 +198,7 @@ def time_window(time,data):
  plt.show(): plot with all of the trials in the selected time window
  '''
  fig, signalsPlots = plt.subplots()
- signalsPlots.plot(x, y)
+ signalsPlots.plot(time, data)
  signalsPlots.set(title = 'Trials in time window', ylabel = 'Pupil area', xlabel = 'Time(s)')
  plt.show()
  return(plt.show())
