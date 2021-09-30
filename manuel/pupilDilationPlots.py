@@ -5,7 +5,7 @@ This script is for the project of pupil dilation. It is intended to obtain pupil
 import numpy as np
 import matplotlib.pyplot as plt
 
-#Lines to change for each video: 10, 34, and 165
+#Lines to change for each video: 10 and 34
 
 proc = np.load('./project_videos/projectOutputs/pure001_20210928_syncVisibleNoSound_01_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
@@ -182,18 +182,17 @@ def bar_plotting(meanSignalsValues1, meanSignalsValues2, xlabel1, xlabel2, stdDa
 barPlotting = bar_plotting(averagePreSignal, averagePostSignal, 'pre sync signal onset', 'post sync signal onset', preSignal, postSignal)
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-overlapTimeRange = np.array([0.01, 1.5])
-relaxingTimeWindowVec, pAreaOnset = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, overlapTimeRange)
+timeRangeForPupilDilation = np.array([0.01, 2])
+pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRangeForPupilDilation)
 
-signalsAveragedRange = pAreaOnset.mean(axis = 0)
-t = np.arange(len(signalsAveragedRange))
+pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 
-def time_window(time,data):
+def pupilDilation_time(time, data):
  '''
- Function used to create a plot with multiple trials for a time range
+ Create a time window to identify the pupil's dilation time range
  Args:
- time: time window to be used for the trials
- data: variable containing the trials information from FaceMap
+ time: time window to be used for the plot
+ data: mean value of the trials
  Returns:
  plt.show(): plot with all of the trials in the selected time window
  '''
@@ -203,21 +202,20 @@ def time_window(time,data):
  plt.show()
  return(plt.show())
 
-new_plot = time_window(relaxingTimeWindowVec, pAreaOnset)
+trialsWindow = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean)
 
 '''
-
 def compared_time_window(signalRange, signalToCompare, signalToCompareTime):
- signalValuesRange = signalRange[2:3]
- signalTimeValues = np.arange(0,1,1)
- sync,newWindow = plt.subplots()
- newWindow.plot(signalToCompare,signalToCompareTime)
- newWindow.set(title = 'sync signal of stimulus', ylabel = 'pupil area')
- sync.plot(signalValuesRange, signalTimeValues)
- sync.set(xlabel = 'Time(s)', ylabel = 'on/off')
+ signalValuesRange = signalRange[1:3]
+ signalTimeValues = np.arange(0,2,1)
+ fig, (sync,newWindow) = plt.subplots(2,1, constrained_layout = 'True')
+ newWindow.plot(signalToCompareTime, signalToCompare)
+ newWindow.set(xlabel = 'Time(s)', ylabel = 'pupil area')
+ sync.plot(signalTimeValues, signalValuesRange)
+ sync.set(title = 'sync signal of stimulus', ylabel = 'on/off')
  plt.show()
  return(plt.show())
 
-a = compared_time_window(indicesValueSyncSignal, pAreaOnset, relaxingTimeWindowVec)
+a = compared_time_window(indicesValueSyncSignal, signalsAveragedRange, relaxingTimeWindowVec)
 '''
  
