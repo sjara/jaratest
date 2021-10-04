@@ -4,10 +4,11 @@ This script is for the project of pupil dilation. It is intended to obtain pupil
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import stats
 
-#Lines to change for each video: 10 and 34
+#README: Lines to change for each video: 11, 35, 61, 111, and 112
 
-proc = np.load('./project_videos/projectOutputs/pure001_20210928_syncVisibleNoSound_01_proc.npy', allow_pickle = True).item()
+proc = np.load('./project_videos/projectOutputs/pure003_20210928_syncVisibleNoSound_01_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
 
 
@@ -31,23 +32,9 @@ with np.printoptions(threshold=np.inf): # Use the following code to show all the
 '''
 
 #---obtain values where sync signal is on---
-blink2Bool = np.logical_and(blink2>45000, blink2<55000) # Boolean values from the blink2 variable where True values will be within the established range.
+blink2Bool = np.logical_and(blink2>20000, blink2<55000) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
-
-#---plot to find out which time range can be used---
-'''
-fig, (pupil, blink) = plt.subplots(2, 1, sharex = True, sharey = False, constrained_layout = True)
-pupil.set(title = 'Animal name and session date', ylabel = 'Pupil Area', xlabel = 'Time(s)')
-plt.setp((pupil, blink), xticks = (np.arange(0, 75, 0.1))) #Set ups number of ticks in both plots
-pupil.plot(timeVec, pArea)
-pupil.grid(b = True)
-blink.set(title = 'Animal name and session date', ylabel = 'on/off', xlabel = 'Time(s)')
-blink.grid(b = True)
-blink.plot(timeVec, blink2)
-plt.show()
-'''
-
 
 def onset_values(array, k): 
 
@@ -70,8 +57,7 @@ def onset_values(array, k):
 syncOnsetValues = onset_values(indicesValueSyncSignal, 2)
 timeOfBlink2Event = timeVec[syncOnsetValues] # Provides the time values in which the sync signal is on.
 
-
-timeRange = np.array([-1, 1]) # Range of time window, one second before the sync signal is on and one second after is on.
+timeRange = np.array([-0.68, 0.68]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 
 samplingRate = 1/(timeVec[1]-timeVec[0])
 windowSampleRange = samplingRate*np.array(timeRange) 
@@ -113,15 +99,17 @@ windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2
 
 
 #--check if the number of samples and trials are correct---
+print()
 print('this are the total values on/off from signal:',len(indicesValueSyncSignal))
 print('you must obtain half of it, due you need only the onset values:',len(syncOnsetValues))
 print('to know what are the size of the slices, figure out which index is 0 in windowSampleVec variable:',windowSampleVec)
+print()
 
 
 
 #---obtain mean trial values pre and post signal, plot slope plot---
-preSignal = windowed_signal[0:30] # Takes the values of the pArea between [-3s to 0s) within the time window
-postSignal = windowed_signal[30:60] # Takes the values of the pArea between [0s to 3s] within the time window
+preSignal = windowed_signal[0:20] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
+postSignal = windowed_signal[20:41] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
 averagePreSignal = preSignal.mean(axis = 0)
 averagePostSignal = postSignal.mean(axis = 0)
 dataToPlot = [averagePreSignal, averagePostSignal]
@@ -139,8 +127,9 @@ def scatter_plotting(preArray, postArray):
      xLabelsToPlot = ['Pre sync ignal', 'Post sync signal'] 
      dataToPlot = [preArray, postArray] 
      fig, trials = plt.subplots(1,1) 
-     trials.plot(xLabelsToPlot, dataToPlot, marker = 'o', linewidth=1) 
-     trials.set(title = 'Pupil behavior along trials under the Condition: sync + Visible Light + NoSound', ylabel = 'Mean Pupil Area')
+     trials.plot(xLabelsToPlot, dataToPlot, marker = 'o', linewidth=1)
+     trials.set_xlabel('Conditions') 
+     trials.set(title = 'Average trials signals', ylabel = 'Mean Pupil Area')
      plt.ylim(100, 1500) 
      plt.show() 
      return(plt.show())
@@ -173,8 +162,9 @@ def bar_plotting(meanSignalsValues1, meanSignalsValues2, xlabel1, xlabel2, stdDa
      stdErrors = [preSignalStd, postSignalStd] 
      fig, barPlots = plt.subplots()
      barPlots.bar(xlabels, barMeanValues, yerr = stdErrors)
-     barPlots.errorbar(xlabels, barMeanValues, yerr = stdErrors, capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots.set(title = 'Mean Pupil Area Vs Condition: sync + Visible Light + NoSound', ylabel = 'Pupil Area')
+     barPlots.errorbar(xlabels, barMeanValues, yerr = stdErrors, capsize=5,  alpha=0.5, ecolor = 'black')
+     barPlots.set_xlabel('Conditions')
+     barPlots.set(title = 'Pupil Area before and after stimulus', ylabel = 'Mean Pupil Area')
      plt.ylim(40, 800) 
      plt.show() 
      return(plt.show())
@@ -182,7 +172,7 @@ def bar_plotting(meanSignalsValues1, meanSignalsValues2, xlabel1, xlabel2, stdDa
 barPlotting = bar_plotting(averagePreSignal, averagePostSignal, 'pre sync signal onset', 'post sync signal onset', preSignal, postSignal)
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation = np.array([0.01, 2])
+timeRangeForPupilDilation = np.array([-2, 2])
 pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRangeForPupilDilation)
 
 pAreaDilatedMean = pAreaDilated.mean(axis = 1)
@@ -198,24 +188,13 @@ def pupilDilation_time(time, data):
  '''
  fig, signalsPlots = plt.subplots()
  signalsPlots.plot(time, data)
- signalsPlots.set(title = 'Trials in time window', ylabel = 'Pupil area', xlabel = 'Time(s)')
+ signalsPlots.set(title = 'Averaged trials in time window', ylabel = 'Pupil area', xlabel = 'Time(s)')
+ #plt.ylim(150, 800)
  plt.show()
  return(plt.show())
 
 trialsWindow = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean)
 
-'''
-def compared_time_window(signalRange, signalToCompare, signalToCompareTime):
- signalValuesRange = signalRange[1:3]
- signalTimeValues = np.arange(0,2,1)
- fig, (sync,newWindow) = plt.subplots(2,1, constrained_layout = 'True')
- newWindow.plot(signalToCompareTime, signalToCompare)
- newWindow.set(xlabel = 'Time(s)', ylabel = 'pupil area')
- sync.plot(signalTimeValues, signalValuesRange)
- sync.set(title = 'sync signal of stimulus', ylabel = 'on/off')
- plt.show()
- return(plt.show())
-
-a = compared_time_window(indicesValueSyncSignal, signalsAveragedRange, relaxingTimeWindowVec)
-'''
- 
+#--- Wilcoxon test to obtain statistics ---
+wstat, pval = stats.wilcoxon(averagePreSignal, averagePostSignal)
+print('Wilcoxon value:', wstat,',',  'P-value:', pval )
