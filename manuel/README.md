@@ -3,7 +3,8 @@
 - extracting_time_windows.py: Code that shows how to obtain the corresponding pupil area data within an arbitrary defined time window (in seconds) and plot it in a pupil dilation study for rodents.
 - pAreaAverage_BarPlots.py: Code that shows how to obtain avarage pupil size for a stimulus and create a bar plot.
 - pupilDilationPlots.py: code to obtain mean pupil area and plot it in slope and bar plots vs conditions of the stimulus.  
-- functionsTest.py: file to test functions that will be used for the project .
+- functionsTest.py: file to test functions that will be used for the project.
+- comparisonPupilPlots.py: code to plot data from 2 videofiles at the same time (draft)
 
 ## testFiles directory
 *Here you will find test files*
