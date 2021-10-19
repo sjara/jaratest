@@ -16,12 +16,12 @@ blink1 = proc['blink']   # List.
 blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for plotting.
 
 
-LargeNumbersIndeces = np.where(blink2 == np.amax(blink2))
-newpArea = np.delete(pArea, LargeNumbersIndeces)
-newBlink = np.delete(blink2,LargeNumbersIndeces)
+#LargeNumbersIndeces = np.where(blink2 == np.amax(blink2))
+#newpArea = np.delete(pArea, LargeNumbersIndeces)
+#newBlink = np.delete(blink2,LargeNumbersIndeces)
 
 #---obtain values where sync signal is on---
-blink2Bool = np.logical_and(newBlink>20000, newBlink<60000) # Boolean values from the blink2 variable where True values will be within the established range.
+blink2Bool = np.logical_and(blink2>20000, blink2<60000) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -32,7 +32,7 @@ indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the in
 
 
 #---calculate number of frames, frame rate, and time vector---
-nframes = len(newpArea) # Contains length of pArea variable (equivalent to the blink variable).
+nframes = len(pArea) # Contains length of pArea variable (equivalent to the blink variable).
 frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
 #newFrame = frameVec[blink2Bool]
 #newFrame = frameVec[blink2 != np.amax(blink2)]
@@ -101,16 +101,31 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
 
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRange)
 
-def plot(a,b):
-    plt.plot(a,b)
+maxValuesIndices = np.where(windowed_signal == np.amax(windowed_signal)) #Finds the indices of the max value in the windowed_trials array
+correctedWindowedSignal = np.delete(windowed_signal, maxValuesIndices, axis = 1) #Eliminates the max value in each column(trial) in the array provided.
+
+
+def signalsPlot(xValues,yValues):
+    '''
+    Plots trials in a given time window
+    args:
+    xValues(numpy.array): values to be plotted in the x Axis of the plot
+    yValues(numpy.array): valus to be plotted in the y Axis of the plot
+    returns:
+    plt.show(): plot with the trials in a given time window
+    ''' 
+    plt.plot(xValues,yValues)
+    plt.title('Trials signals: Pure001, positive control')
+    plt.xlabel('Time Window')
+    plt.ylabel('Pupil Area') 
     plt.show()
     return(plt.show()) 
 
-alpha = plot(windowTimeVec, windowed_signal)
+windowedSignalPlot = signalsPlot(windowTimeVec, correctedWindowedSignal)
 
 #---obtain mean trial values pre and post signal, plot slope plot---
-preSignal = windowed_signal[0:15] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
-postSignal = windowed_signal[15:30] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
+preSignal = correctedWindowedSignal[0:15] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
+postSignal = correctedWindowedSignal[15:30] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
 averagePreSignal = preSignal.mean(axis = 0)
 averagePostSignal = postSignal.mean(axis = 0)
 dataToPlot = [averagePreSignal, averagePostSignal]
@@ -172,7 +187,10 @@ barPlotting = bar_plotting(averagePreSignal, averagePostSignal, 'pre stimulus on
 timeRangeForPupilDilation = np.array([-2, 2])
 pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRangeForPupilDilation)
 
-pAreaDilatedMean = pAreaDilated.mean(axis = 1)
+maxPupilValuesIndices = np.where(pAreaDilated == np.amax(pAreaDilated)) #Finds the indices of the max value in the windowed_trials array
+correctedPupilWindowedSignal = np.delete(pAreaDilated, maxPupilValuesIndices, axis = 1) #Eliminates the max value in each column(trial) in the array provided.
+
+pAreaDilatedMean = correctedPupilWindowedSignal.mean(axis = 1)
 
 def pupilDilation_time(time, data):
  '''
@@ -189,6 +207,7 @@ def pupilDilation_time(time, data):
  #plt.ylim(150, 800)
  plt.show()
  return(plt.show())
+ 
 
 trialsWindow = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean)
 
