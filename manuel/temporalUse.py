@@ -187,7 +187,10 @@ barPlotting = bar_plotting(averagePreSignal, averagePostSignal, 'pre stimulus on
 timeRangeForPupilDilation = np.array([-2, 2])
 pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRangeForPupilDilation)
 
-pAreaDilatedMean = pAreaDilated.mean(axis = 1)
+maxPupilValuesIndices = np.where(pAreaDilated == np.amax(pAreaDilated)) #Finds the indices of the max value in the windowed_trials array
+correctedPupilWindowedSignal = np.delete(pAreaDilated, maxPupilValuesIndices, axis = 1) #Eliminates the max value in each column(trial) in the array provided.
+
+pAreaDilatedMean = correctedPupilWindowedSignal.mean(axis = 1)
 
 def pupilDilation_time(time, data):
  '''
@@ -204,6 +207,7 @@ def pupilDilation_time(time, data):
  #plt.ylim(150, 800)
  plt.show()
  return(plt.show())
+ 
 
 trialsWindow = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean)
 
