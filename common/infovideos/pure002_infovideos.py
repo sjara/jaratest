@@ -21,5 +21,5 @@ videos.add_session('2021-09-28', 'negativeControl',
 
 videos.add_session('2021-09-28', 'experimental',
                    'pure002_20210928_syncSound_01.mkv',
-                   'pure002_detectsound_20210928_syncSound_01.mkv.h5',
+                   'pure002_detectsound_20210928_syncSound_01.h5',
                    cameraParams)
