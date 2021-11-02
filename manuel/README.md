@@ -6,7 +6,7 @@
 - functionsTest.py: file to test functions that will be used for the project.
 - comparisonPupilPlotsPureXXX.py: code to plot data from 2 videofiles at the same time (draft)
 - mp4ComparisonPlotsMp4PureXXX.py: works just as "comparisonPupilPlotsPureXXX.py" but with .mp4 files
-- 
+
 ## testFiles directory
 *Here you will find test files*
 - check_facemap_rois_dtype.py: contains a function to find any given item from a dictionary within the output "proc" file generated from the Facemap videos.
