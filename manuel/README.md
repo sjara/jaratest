@@ -4,7 +4,8 @@
 - pAreaAverage_BarPlots.py: Code that shows how to obtain avarage pupil size for a stimulus and create a bar plot.
 - pupilDilationPlots.py: code to obtain mean pupil area and plot it in slope and bar plots vs conditions of the stimulus.  
 - functionsTest.py: file to test functions that will be used for the project.
-- comparisonPupilPlots.py: code to plot data from 2 videofiles at the same time (draft)
+- comparisonPupilPlotsPureXXX.py: code to plot data from 2 videofiles at the same time (draft)
+- mp4ComparisonPlotsMp4PureXXX.py: works just as "comparisonPupilPlotsPureXXX.py" but with .mp4 files
 
 ## testFiles directory
 *Here you will find test files*
