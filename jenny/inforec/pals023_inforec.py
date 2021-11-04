@@ -34,3 +34,9 @@ exp2.add_site(1429.2)
 exp2.add_session('15-27-02','a','AM','am_tuning_curve')
 exp2.add_session('15-27-02','b','PureTones','am_tuning_curve') #accidentally didn't start a new session. Ephys is saved in "recording1" and "recording2" folders within this session
 exp2.add_session('15-44-34','c','PureTones','am_tuning_curve')
+
+exp3 = celldatabase.Experiment(subject, '2021-10-14', brainarea = 'rightAC', info = 'NP1')
+experiments.append(exp3)
+exp3.add_site(528.5)
+exp3.add_session('15-06-31','a','AM','am_tuning_curve')
+exp3.add_session('15-14-22','b','PureTones','am_tuning_curve') 
