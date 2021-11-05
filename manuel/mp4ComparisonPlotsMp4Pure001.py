@@ -62,15 +62,21 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3):
      returns: 
      plt.show() = 1 figure with 3 plots using the input data 
      ''' 
-     plt.plot(time, valuesData1, color = 'g', label = 'positive control')
-     plt.plot(time, valuesData2, color = 'r', label = 'negative control')
-     plt.plot(time, valuesData3, color = 'b', label = 'chordTrain data') 
-     plt.xlabel('Time (s)') 
-     plt.ylabel('Pupil Area') 
-     plt.title('Comparison of pupil behavior in different conditions: pure001_20210928_01')
+     labelsSize = 16
+     fig, subplt = plt.subplots(1,1)
+     fig.set_size_inches(9.5, 7.5, forward = True)
+     subplt.plot(time, valuesData1, color = 'g', label = 'positive control', linewidth = 4)
+     subplt.plot(time, valuesData2, color = 'r', label = 'negative control', linewidth = 4)
+     subplt.plot(time, valuesData3, color = 'b', label = 'chordTrain data', linewidth = 4)
+     subplt.set_xlabel('Time (s)', fontsize = labelsSize)
+     subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior in different conditions: pure001_20210928_01', fontsize = labelsSize)
      plt.grid(b = True)
-     plt.ylim([300, 800]) 
-     plt.legend()
+     plt.ylim([300, 800])
+     plt.xticks(fontsize = labelsSize)
+     plt.yticks(fontsize = labelsSize)
+     plt.legend(prop ={"size":10})
+     plt.savefig('comparisonPure001Plot', format = 'pdf', dpi = 50)
      plt.show() 
      return(plt.show())
 
@@ -83,23 +89,32 @@ def scatter_plots(preValues1, postValues1, preValues2, postValues2, preValues3, 
      Returns:
      plt.show(): one figure with 3 scatter plots.
      '''
-      
+     scatterLabelsSize = 14
+     scatterXlabels = 11.5
      xLabelling = ['Pre stimulus onset', 'Post stimulus onset'] 
      dataToPlot1 = [preValues1, postValues1] 
      dataToPlot2 = [preValues2, postValues2] 
      dataToPlot3 = [preValues3, postValues3]  
-     fig, scatterPlots = plt.subplots(1,3, constrained_layout = True, sharex = True, sharey = True) 
+     fig, scatterPlots = plt.subplots(1,3, constrained_layout = True, sharex = True, sharey = True)
+     fig.set_size_inches(10.5, 7.5)
      scatterPlots[0].plot(xLabelling, dataToPlot1, marker = 'o', linewidth = 1) 
-     scatterPlots[0].set(title = 'Condition: Positive Control', ylabel = 'Mean Pupil Area') 
+     scatterPlots[0].set_title('Condition: Positive Control', fontsize = scatterLabelsSize)
+     scatterPlots[0].set_ylabel('Mean Pupil Area', fontsize = scatterLabelsSize)
+     scatterPlots[0].tick_params(axis = 'x', labelsize = scatterXlabels)
      scatterPlots[1].plot(xLabelling, dataToPlot2, marker = 'o', linewidth = 1) 
-     scatterPlots[1].set(title = 'Condition: Negative Control') 
+     scatterPlots[1].set_title('Condition: Negative Control', fontsize = scatterLabelsSize)
+     scatterPlots[1].tick_params(axis = 'x', labelsize = scatterXlabels) 
      scatterPlots[2].plot(xLabelling, dataToPlot3, marker = 'o', linewidth = 1) 
-     scatterPlots[2].set(title = 'Condition: chordTrain')
-     plt.suptitle('Average trials signals behavior during session 01: pure001_20210928')
-     plt.show() 
+     scatterPlots[2].set_title('Condition: chordTrain', fontsize = scatterLabelsSize)
+     scatterPlots[2].tick_params(axis = 'x', labelsize = scatterXlabels)
+     plt.suptitle('Average trials signals behavior during session 01: pure001_20210928', fontsize = scatterLabelsSize)
+     plt.rc('xtick', labelsize = scatterXlabels)
+     plt.rc('ytick', labelsize = scatterLabelsSize)
+     plt.savefig('scatterPure001Plot', format = 'pdf', dpi = 50)
+     plt.show()
      return(plt.show())
 
-def bar_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, firstPlotStdData1, firstPlotStdData2, secondPlotMeanValues1, secondPlotMeanValues2, secondPlotStdData1, secondPlotStdData2, thirdPlotMeanValues1, thirdPlotMeanValues2, thirdPlotStdData1, thirdPlotStdData2):
+def bar_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, firstPlotStdData1, firstPlotStdData2, secondPlotMeanValues1, secondPlotMeanValues2, secondPlotStdData1, secondPlotStdData2, thirdPlotMeanValues1, thirdPlotMeanValues2, thirdPlotStdData1, thirdPlotStdData2, pVal1, pVal2, pVal3):
      '''
      Plot bar plots
      Args:
@@ -107,10 +122,11 @@ def bar_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, firs
      xlabel1 (string): name of the first condition to compare
      xlabel2 (string): name of the second condition to compare
      StdData (np.array): values to calculate the standard deviation from
+     pVal (float or int): p-value for each one of the animals
      Returns:
      plt.show(): three bar plots within one figure
      '''
-     
+     barLabelsFontSize = 14
      meanPreSignal1 = firstPlotMeanValues1.mean(axis = 0) 
      meanPostSignal1 = firstPlotMeanValues2.mean(axis = 0) 
      meanPreSignal2 = secondPlotMeanValues1.mean(axis = 0) 
@@ -128,20 +144,35 @@ def bar_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, firs
      barMeanValues3 = [meanPreSignal3, meanPostSignal3] 
      stdErrors1 = [preSignalStd1, postSignalStd1] 
      stdErrors2 = [preSignalStd2, postSignalStd2] 
-     stdErrors3 = [preSignalStd3, postSignalStd3] 
-     fig, barPlots = plt.subplots(1,3, constrained_layout = True, sharex = True, sharey = True) 
-     barPlots[0].bar(xlabels, barMeanValues1, yerr = stdErrors1) 
+     stdErrors3 = [preSignalStd3, postSignalStd3]
+     shortPval1 = np.round(pVal1, decimals=21)
+     shortPval2 = np.round(pVal2, decimals=3)
+     shortPval3 = np.round(pVal3, decimals=3)
+     pValue1 = 'P-value:', shortPval1
+     pValue2 = 'P-value:', shortPval2
+     pValue3 = 'P-value:', shortPval3
+     fig, barPlots = plt.subplots(1,3, constrained_layout = True, sharex = True, sharey = True)
+     fig.set_size_inches(9.5, 7.5) 
+     barPlots[0].bar(xlabels, barMeanValues1, yerr = stdErrors1, color = 'g', label = pValue1) 
      barPlots[0].errorbar(xlabels, barMeanValues1, yerr = stdErrors1, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[0].set(title = 'Positive control data', ylabel = 'Mean Pupil Area') 
-     barPlots[1].bar(xlabels, barMeanValues2, yerr = stdErrors2) 
+     barPlots[0].set_title('Positive control data', fontsize = barLabelsFontSize)
+     barPlots[0].set_ylabel('Mean Pupil Area', fontsize = barLabelsFontSize)
+     barPlots[0].tick_params(axis='x', labelsize=barLabelsFontSize)
+     barPlots[0].legend(prop ={"size":10})
+     barPlots[1].bar(xlabels, barMeanValues2, yerr = stdErrors2, color= 'r', label = pValue2) 
      barPlots[1].errorbar(xlabels, barMeanValues2, yerr = stdErrors2, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[1].set(title = 'Negative control data')
-     barPlots[1].set_xlabel('Conditions')
-     barPlots[2].bar(xlabels, barMeanValues3, yerr = stdErrors3) 
+     barPlots[1].set_title('Negative control data', fontsize = barLabelsFontSize)
+     barPlots[1].set_xlabel('Conditions', fontsize = barLabelsFontSize)
+     barPlots[1].tick_params(axis='x', labelsize=barLabelsFontSize)
+     barPlots[1].legend(prop ={"size":10})
+     barPlots[2].bar(xlabels, barMeanValues3, yerr = stdErrors3, color = 'b', label = pValue3) 
      barPlots[2].errorbar(xlabels, barMeanValues3, yerr = stdErrors3, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[2].set(title = 'chordTrain data')  
+     barPlots[2].set_title('chordTrain data', fontsize = barLabelsFontSize)
+     barPlots[2].tick_params(axis='x', labelsize=barLabelsFontSize)  
      plt.ylim(200, 900)
-     plt.suptitle('Pupil behavior before and after stimulus: pure001_20210928')
+     plt.suptitle('Pupil behavior before and after stimulus: pure001_20210928', fontsize = barLabelsFontSize)
+     barPlots[2].legend(prop ={"size":10})
+     plt.savefig('barPure001Plot', format = 'pdf', dpi =50)
      plt.show() 
      return(plt.show()) 
 
@@ -149,14 +180,17 @@ def bar_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, firs
 def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, plotData3): 
      fig, signalsPlots = plt.subplots(1,3, constrained_layout = True, sharey = True, sharex = True) 
      signalsPlots[0].plot(timeData1, plotData1) 
-     signalsPlots[0].set(title = 'Positive control', ylabel = 'Pupil Area',) 
+     signalsPlots[0].set(title = 'Positive control') 
+     signalsPlots[0].set_ylabel('Pupil Area', fontsize = 13)
      signalsPlots[1].plot(timeData2, plotData2) 
-     signalsPlots[1].set(title = 'Negative control', xlabel = 'Time(s)') 
+     signalsPlots[1].set(title = 'Negative control')
+     signalsPlots[1].set_xlabel('Time(s)', fontsize = 13)
      signalsPlots[2].plot(timeData3, plotData3) 
      signalsPlots[2].set(title = 'chordTrain')
      plt.suptitle('Average trials behavior in time window: pure001_20210928')
      plt.show() 
      return(plt.show())
+
 
 proc = np.load('./project_videos/mp4Files/mp4Outputs/pure001_20210928_syncVisibleNoSound_01_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
@@ -190,7 +224,7 @@ timeOfBlink2Event = timeVec[syncOnsetValues] # Provides the time values in which
 timeOfBlink2Event = timeOfBlink2Event[1:-1]
 
 #--- Align trials to the event ---
-timeRange = np.array([-0.5, 0.5]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange = np.array([0.0, 1.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRange)
 preSignal = windowed_signal[0:15] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
 postSignal = windowed_signal[15:30] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
@@ -256,10 +290,10 @@ timeOfBlink2Event1 = timeVec1[syncOnsetValues1] # Provides the time values in wh
 timeOfBlink2Event1 = timeOfBlink2Event1[1:-1]
 
 #--- Align trials to the event ---
-timeRange1 = np.array([-0.6, 0.6]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange1 = np.array([0.0, 1.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec1, windowed_signal1 = eventlocked_signal(timeVec1, pArea1, timeOfBlink2Event1, timeRange1)
-preSignal1 = windowed_signal1[0:18] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
-postSignal1 = windowed_signal1[18:36] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
+preSignal1 = windowed_signal1[0:15] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
+postSignal1 = windowed_signal1[15:30] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
 averagePreSignal1 = preSignal1.mean(axis = 0)
 averagePostSignal1 = postSignal1.mean(axis = 0)
 dataToPlot1 = [averagePreSignal1, averagePostSignal1]
@@ -321,10 +355,10 @@ timeOfBlink2Event2 = timeVec2[syncOnsetValues2] # Provides the time values in wh
 timeOfBlink2Event2 = timeOfBlink2Event2[1:-1]
 
 #--- Align trials to the event ---
-timeRange2 = np.array([-0.95, 0.95]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange2 = np.array([0.0, 1.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec2, windowed_signal2 = eventlocked_signal(timeVec2, pArea2, timeOfBlink2Event2, timeRange2)
-preSignal2 = windowed_signal2[0:28] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
-postSignal2 = windowed_signal2[28:57] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
+preSignal2 = windowed_signal2[0:15] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
+postSignal2 = windowed_signal2[15:30] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
 averagePreSignal2 = preSignal2.mean(axis = 0)
 averagePostSignal2 = postSignal2.mean(axis = 0)
 dataToPlot2 = [averagePreSignal2, averagePostSignal2]
@@ -350,7 +384,7 @@ OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pA
 scatterPlots = scatter_plots(averagePreSignal, averagePostSignal, averagePreSignal1, averagePostSignal1, averagePreSignal2, averagePostSignal2)
 
 #--- Figure with 3 bar plots ---
-barPlots = bar_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2)
+barPlots = bar_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
 
 #--- Pupil Dilation plots --- 
-pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
+#pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
