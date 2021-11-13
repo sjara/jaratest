@@ -3,17 +3,20 @@ from jaratoolbox import celldatabase
 subject = 'feat001'
 experiments = []
 
-# Experiment parameters: subject, date, brainArea, recordingTrack (which is penetrationLocationAndDye), info (which contains [probeOrientation, soundSource, probeConfiguration]).
+# Experiment parameters: subject, date, brainArea, recordingTrack (penetrationLocationAndDye),
+#    info (which contains [probeOrientation, soundSource, probeConfiguration]).
 # Session parameters: sessionTime, behaviorFileSuffix, sessionType paradigmName.
 
-
-exp0 = celldatabase.Experiment(subject, '2021-11-03', brainarea='rightAC', info = ['eRight', 'soundLeft','NPv1-']) #reference = tip
+exp0 = celldatabase.Experiment(subject, '2021-11-03', brainArea='right_AC',
+                               info=['facesRight', 'soundLeft', 'NPv1-']) #reference = tip
 experiments.append(exp0)
-exp0.add_site(3314.0)
+exp0.add_site(3314) # 3314.0
+exp0.maxDepth = 3314
 exp0.add_session('14-29-00','a','pureTones','am_tuning_curve') #not very PT responsive
 exp0.add_session('14-27-10','b','AM','am_tuning_curve') #AM responsive (and looks to be phaselocking up to ~60Hz)
 
-exp1 = celldatabase.Experiment(subject, '2021-11-09', brainarea = 'rightAC', info = ['FacesRight', 'soundLeft','NPv1-']) #reference = tip
+exp1 = celldatabase.Experiment(subject, '2021-11-09', brainArea='right_AC',
+                               info=['facesRight', 'soundLeft', 'NPv1-']) #reference = tip
 experiments.append(exp1)
 # In booth 12:00pm
 # Touch brain @ 12:15
@@ -34,7 +37,8 @@ exp1.add_session('14-32-18','b','VOT','2afc_speech')
 
 # Note: For sessions 0 and 1, animal had name of pals027. From here forward, named feat001.
 
-exp2 = celldatabase.Experiment(subject, '2021-11-11', brainarea = 'rightAC', info = ['lateralDiI','facesRight', 'soundLeft','NPv1-']) #reference = tip
+exp2 = celldatabase.Experiment(subject, '2021-11-11', brainArea='right_AC', recordingTrack='lateralDiI',
+                               info=['facesRight', 'soundLeft', 'NPv1-']) #reference = tip
 experiments.append(exp2)
 # In booth 12:15
 # Touch brain @ 12:30
