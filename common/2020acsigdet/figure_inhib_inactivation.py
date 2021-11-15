@@ -248,6 +248,11 @@ if PANELS[2]:
         axScatter.annotate(label, xy=(labelPosX[1], labelPosY[indLabel*2+4]), xycoords='figure fraction',
                            fontsize=fontSizePanel, fontweight='bold')
 
+
+    # Comparison between PV effect and SOM effect
+    [tstat, pVal] = stats.ranksums(PVchange, SOMchange)
+    print(f'Comparison No-PV change vs No-SOM change: pVal = {pVal}   tstat = {tstat}\n')
+    
 # --- comparison in change in d prime with PV and SOM inactivation ---
 if PANELS[3]:
     summaryDataFullPath = os.path.join(inactDataDir, summaryFileName)
