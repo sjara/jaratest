@@ -55,15 +55,20 @@ for indCell, mice in enumerate(mouseType):
                     sessionsExcluded += 1
 
             entryDict = {'mouse': mouse,
+                         'mouseType': mouseTypeLabels[indCell],
                          'sessionType': trialName,
-                         'goodSessions': sessionsToUse}
+                         'goodSessions': sessionsToUse,
+                         'nGoodSessions':len(sessionsToUse),
+                         'nExcludedSessions':sessionsExcluded}
             sessiondb = sessiondb.append(entryDict, ignore_index=True)
             print(f'{mouse} {trialName}: {sessionsExcluded} sessions excluded')
 
             # don't include mice with very few good experimental sessions
             if len(sessionsToUse) < 3 and indType==0:
                 miceToRemove.append(mouse)
-
+                
+    print(f'=====  Mice removed ({mouseTypeLabels[indCell]}) : {miceToRemove} =====')
+    
     mice = [mouse for mouse in mice if mouse not in miceToRemove]
     entryDict = {'strain': mouseTypeLabels[indCell],
                  'mice': mice}
@@ -72,10 +77,32 @@ for indCell, mice in enumerate(mouseType):
 dbName = 'good_sessions.csv'
 # dataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
 dataPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
-sessiondb.to_csv(dataPath)
+#sessiondb.to_csv(dataPath)  # Commented out by sjara 2021-09
 
 dbName = 'good_mice.csv'
 # dataPath = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, dbName)
 dataPath = os.path.join(settings.FIGURES_DATA_PATH, dbName)
-mousedb.to_csv(dataPath)
+#mousedb.to_csv(dataPath)    # Commented out by sjara 2021-09
 
+
+# -- Extra calculations of sessions per mouse --
+sessiondb.nGoodSessions = sessiondb.nGoodSessions.astype(int)
+#mTypeGroups = sessiondb.query("sessionType=='10mW laser'").groupby('mouseType')
+mTypeGroups = sessiondb.query("sessionType=='3mW laser'").groupby('mouseType')
+#mTypeGroups = sessiondb.query("sessionType=='3mW control'").groupby('mouseType')
+#mTypeGroups = sessiondb.query("sessionType=='10mW control'").groupby('mouseType')
+columnsToShow = ['mouse','mouseType','nGoodSessions','nExcludedSessions','sessionType']
+for name,group in mTypeGroups:
+    print(f'\n----- {name} -----')
+    print(group[columnsToShow])
+    nExcludedSessionsFromIncludedMice = group.nExcludedSessions[group.nGoodSessions>=3]
+    print(f'N excluded sessions from included mice: {nExcludedSessionsFromIncludedMice.median()} (median)')
+    
+
+'''
+sessiondb.query("sessionType=='10mW laser'").groupby('mouseType').nGoodSessions.min()
+sessiondb.query("sessionType=='10mW laser'").groupby('mouseType').nGoodSessions.max()   
+
+sessiondb.query("sessionType=='10mW control'").groupby('mouseType').nGoodSessions.min()
+sessiondb.query("sessionType=='10mW control'").groupby('mouseType').nGoodSessions.max()   
+'''
