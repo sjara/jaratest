@@ -12,7 +12,7 @@ experiments.append(exp0)
 exp0.add_site(3314) # 3314.0
 exp0.maxDepth = 3314
 exp0.add_session('14-29-00','a','pureTones','am_tuning_curve') #not very PT responsive
-exp0.add_session('14-27-10','b','AM','am_tuning_curve') #AM responsive (and looks to be phaselocking up to ~60Hz)
+exp0.add_session('14-37-10','b','AM','am_tuning_curve') #AM responsive (and looks to be phaselocking up to ~60Hz)
 
 exp1 = celldatabase.Experiment(subject, '2021-11-09', brainArea='right_AC', probe = 'NPv1-2881',info=['facesRight', 'soundLeft']) #reference = tip
 experiments.append(exp1)
