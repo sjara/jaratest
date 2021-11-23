@@ -7,8 +7,7 @@ experiments = []
 #    info (which contains [probeOrientation, soundSource, probeConfiguration]).
 # Session parameters: sessionTime, behaviorFileSuffix, sessionType paradigmName.
 
-exp0 = celldatabase.Experiment(subject, '2021-11-03', brainArea='right_AC', probe = 'NPv1-2881'
-                               info=['facesRight', 'soundLeft']) #reference = tip
+exp0 = celldatabase.Experiment(subject, '2021-11-03', brainArea='right_AC', probe = 'NPv1-2881', info=['facesRight', 'soundLeft']) #reference = tip
 experiments.append(exp0)
 exp0.add_site(3314) # 3314.0
 exp0.maxDepth = 3314
@@ -36,7 +35,7 @@ exp1.add_session('14-32-18','b','VOT','2afc_speech') # 2 stimuli
 
 # Note: For sessions 0 and 1, animal had name of pals027. From here forward, named feat001.
 
-exp2 = celldatabase.Experiment(subject, '2021-11-11', brainArea='right_AC', probe = 'NPv1-2881' recordingTrack='lateral_DiI', info=['facesRight', 'soundLeft']) #reference = tip
+exp2 = celldatabase.Experiment(subject, '2021-11-11', brainArea='right_AC', probe = 'NPv1-2881', recordingTrack='lateral_DiI', info=['facesRight', 'soundLeft']) #reference = tip
 experiments.append(exp2)
 # In booth 12:15
 # Touch brain @ 12:30
@@ -53,13 +52,13 @@ exp2.add_session('13-53-20','b','FT','2afc_speech')
 
 
 
-exp3 = celldatabase.Experiment(subject, '2021-11-16', brainArea='left_AC', probe = 'NPv1-2881' recordingTrack='anteromedial_DiD', info=['facesLeft', 'soundRight']) #reference = tip
+exp3 = celldatabase.Experiment(subject, '2021-11-16', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='anteromedial_DiD', info=['facesLeft', 'soundRight']) #reference = tip
 experiments.append(exp3)
 #3:26 touched brain
 #3:39 reached maxDepth
 #3:58 Started recording
 #4:45 Done recording
-exp3.addsite(3532) #3532.6
+exp3.add_site(3532) #3532.6
 exp3.maxDepth = 3532
 exp3.add_session('15-58-31','a','AM','am_tuning_curve')
 #exp3.add_session('16-06-22','b','pureTones','am_tuning_curve') #lost saline
@@ -68,14 +67,14 @@ exp3.add_session('16-22-10','a','FT','2afc_speech') # 2 stimuli
 exp3.add_session('16-34-17','b','VOT','2afc_speech') # 2 stimuli
 
 
-exp4 = celldatabase.Experiment(subject, '2021-11-17', brainArea='left_AC', probe = 'NPv1-2881' recordingTrack='caudomedial_DiI', info=['facesLeft', 'soundRight']) #reference = tip
+exp4 = celldatabase.Experiment(subject, '2021-11-17', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='caudomedial_DiI', info=['facesLeft', 'soundRight']) #reference = tip
 experiments.append(exp4)
 #11:10 in booth
 #11:15 touched brain
 #11:27 reached maxDepth
 #11:43 Started recording
 #12:42 Done recording
-exp4.addsite(3408) #3408.6
+exp4.add_site(3408) #3408.6
 exp4.maxDepth = 3408
 exp4.add_session('11-43-40','a','pureTones','am_tuning_curve')
 exp4.add_session('11-58-54','b','AM','am_tuning_curve') 
@@ -84,14 +83,14 @@ exp4.add_session('12-19-03','b','FT','2afc_speech') # 2 stimuli
 exp4.add_session('12-30-49','c','VOT','2afc_speech') # 2 stimuli
 
 
-exp5 = celldatabase.Experiment(subject, '2021-11-18', brainArea='left_AC', probe = 'NPv1-2881' recordingTrack='middlelateral_DiD', info=['facesLeft', 'soundRight']) #reference = tip
+exp5 = celldatabase.Experiment(subject, '2021-11-18', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='middlelateral_DiD', info=['facesLeft', 'soundRight']) #reference = tip
 experiments.append(exp4)
 #11:15 in booth
 #11:20 touched brain
 #11:25 reached maxDepth
 #11:41 Started recording
 #12:24 Done recording
-exp5.addsite(3563) #3563.0
+exp5.add_site(3563) #3563.0
 exp5.maxDepth = 3563
 exp5.add_session('11-41-15','a','AM','am_tuning_curve') 
 exp5.add_session('11-48-19','b','pureTones','am_tuning_curve')
@@ -99,7 +98,7 @@ exp5.add_session('12-01-03','a','VOT','2afc_speech') # 2 stimuli
 exp5.add_session('12-13-26','b','FT','2afc_speech') # 2 stimuli
 
 
-exp6 = celldatabase.Experiment(subject, '2021-11-19', brainArea='left_AC', probe = 'NPv1-2881' recordingTrack='anterolateral_DiI', info=['facesLeft', 'soundRight']) #reference = tip
+exp6 = celldatabase.Experiment(subject, '2021-11-19', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='anterolateral_DiI', info=['facesLeft', 'soundRight']) #reference = tip
 experiments.append(exp6)
 #12:35 in booth
 #12:40 touched brain
@@ -108,25 +107,25 @@ experiments.append(exp6)
 #12:58 reached maxDepth
 #1:28 Started recording
 #2:15 Done recording
-exp6.addsite(3320) #3320.5
+exp6.add_site(3320) #3320.5
 exp6.maxDepth = 3320
 #exp6.add_session('13-27-17','a','pureTones','am_tuning_curve') #lost saline
 exp6.add_session('13-28-26','a','pureTones','am_tuning_curve')
 exp6.add_session('13-43-41','b','AM','am_tuning_curve') 
 exp6.add_session('13-50-57','a','FT','2afc_speech') # 2 stimuli
-exp6.add_session('14-02-09','b','VOT','2afc_speech') # 2 stimuli
+exp6.add_session('14-02-49','b','VOT','2afc_speech') # 2 stimuli
 
-exp7 = celldatabase.Experiment(subject, '2021-11-19', brainArea='left_AC', probe = 'NPv1-2881' recordingTrack='caudolateral_DiI', info=['facesLeft', 'soundRight']) #reference = tip
+exp7 = celldatabase.Experiment(subject, '2021-11-19', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='caudolateral_DiI', info=['facesLeft', 'soundRight']) #reference = tip
 experiments.append(exp7)
 #3:15 in booth
 #3:20 touched brain
 #3:25 reached maxDepth
 #3:42 Started recording
 #4:32 Done recording
-exp7.addsite(3434) #3434.2
+exp7.add_site(3434) #3434.2
 exp7.maxDepth = 3434
 exp7.add_session('15-42-54','c','AM','am_tuning_curve') 
 exp7.add_session('15-50-18','d','pureTones','am_tuning_curve')
-exp7.add_session('16-06-24','c','VOT','2afc_speech') #psycurve mode w/4 stimuli
+exp7.add_session('16-06-24','c','VOT','2afc_speech') #psycurve mode w/4 stimulicd 
 exp7.add_session('16-20-10','d','FT','2afc_speech') #psycurve mode w/4 stimuli
 
