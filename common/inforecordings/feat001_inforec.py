@@ -84,7 +84,7 @@ exp4.add_session('12-30-49','c','VOT','2afc_speech') # 2 stimuli
 
 
 exp5 = celldatabase.Experiment(subject, '2021-11-18', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='middlelateral_DiD', info=['facesLeft', 'soundRight']) #reference = tip
-experiments.append(exp4)
+experiments.append(exp5)
 #11:15 in booth
 #11:20 touched brain
 #11:25 reached maxDepth
