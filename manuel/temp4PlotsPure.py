@@ -50,8 +50,30 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
        #print(thiswin.shape, eventSample.shape)
        lockedSignal[:,inde] = signal[thiswin]
     return (windowTimeVec, lockedSignal)
+    
+    
+def find_prepost_values(timeArray, dataArray, preValMaxLim, postValMinLim): 
+     ''' 
+     Obtain pupil data before and after stimulus 
+     Args: 
+     timeArray (np.array): array of the time window to evaluate pupil area obtained from even
+ t_locked 
+     dataArray (np.array): array of the pupil data obtained from event_locked function 
+     preValMaxLim (int or float): max limit number in time of the pre stimulus data 
+     postValMinLim (int or float): min limit number in time of the post stimulus data 
+     Returns:
+     preData (np.array): array with the pupil data before stimulus
+     postData (np.array): array with the pupil data after stimulus   
+     ''' 
+     preValuesIndices = np.argwhere(timeArray < preValMaxLim) 
+     postValuesIndices = np.argwhere(timeArray >= postValMinLim) 
+     preProcessedPreValues = dataArray[preValuesIndices] 
+     preProcessedPostValues = dataArray[postValuesIndices] 
+     preData = preProcessedPreValues.reshape(preValuesIndices.shape[0], dataArray.shape[1]) 
+     postData = preProcessedPostValues.reshape(postValuesIndices.shape[0], dataArray.shape[1]) 
+     return(preData, postData) 
 
-def comparison_plot(time, valuesData1, valuesData2, valuesData3): 
+def comparison_plot(time, valuesData1, valuesData2, valuesData3, valuesData4, pVal, pVal1, pVal2, pVal3): 
      ''' 
      Creates 1 figure with 3 plots 
      Args: 
@@ -65,18 +87,30 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3):
      labelsSize = 16
      fig, subplt = plt.subplots(1,1)
      fig.set_size_inches(9.5, 7.5, forward = True)
-     subplt.plot(time, valuesData1, color = 'g', label = 'config8_1: ITI= 5s, s.d= 0.2s', linewidth = 4)
-     subplt.plot(time, valuesData2, color = 'c', label = 'config8_2: ITI= 5s, s.d= 0.2s', linewidth = 4)
-     subplt.plot(time, valuesData3, color = 'b', label = 'config8_3: ITI= 5s, s.d=0.2s', linewidth = 4)
+     sp = np.round(pVal, decimals=3)
+     sp1 = np.round(pVal1, decimals=3)
+     sp2 = np.round(pVal2, decimals=3)
+     sp3 = np.round(pVal3, decimals=3)
+     label1 = 'config10: ITI= 20s, dB-SPL= 50','pval:',sp
+     label2 = 'config6: ITI= 20s, dB-SPL= 60','pval:',sp1
+     label3 = 'config12: ITI= 20s, db-SPL= 55','pval:',sp2
+     label4 = 'config11: ITI= 20s, dB-SPL=65','pval:',sp3
+     
+     subplt.plot(time, valuesData1, color = 'g', label = label1, linewidth = 4)
+     subplt.plot(time, valuesData2, color = 'c', label = label2, linewidth = 4)
+     subplt.plot(time, valuesData3, color = 'b', label = label3, linewidth = 4)
+     subplt.plot(time, valuesData4, color = 'y', label = label4, linewidth = 4)
 
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title('Pupil behavior in different conditions: pure004_20211124', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior in different conditions: pure004_20211130', fontsize = labelsSize)
      plt.grid(b = True)
-     #plt.ylim([300, 800])
+     plt.ylim([300, 700])
      plt.xticks(fontsize = labelsSize)
      plt.yticks(fontsize = labelsSize)
-     plt.legend(prop ={"size":10}, bbox_to_anchor=(1.0, 0.8))
+     plt.legend()
+     #plt.legend(prop ={"size":10}, bbox_to_anchor=(1.0, 0.8))
+     plt.savefig('nov30Pure004', format = 'pdf', dpi =50)
      plt.show() 
      return(plt.show())
 
@@ -114,7 +148,7 @@ def scatter_plots(preValues1, postValues1, preValues2, postValues2, preValues3, 
      scatterPlots[3].tick_params(axis = 'x', labelsize = scatterXlabels)
      plt.rc('xtick', labelsize = scatterXlabels)
      plt.rc('ytick', labelsize = scatterLabelsSize)
-     plt.savefig('scatterPure004Plot', format = 'pdf', dpi = 50)
+     #plt.savefig('scatterPure004Plot', format = 'pdf', dpi = 50)
      plt.show()
      return(plt.show())
 
@@ -204,7 +238,7 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      return(plt.show())
 
 
-proc = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211124_syncSound_18_config8_proc.npy', allow_pickle = True).item()
+proc = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211130_syncSound_24_config10_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
 
 
@@ -240,8 +274,9 @@ timeOfBlink2Event = timeOfBlink2Event[1:-1]
 #--- Align trials to the event ---
 timeRange = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRange)
-preSignal = windowed_signal[0:15] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
-postSignal = windowed_signal[57:75] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
+
+#--- Obtain pupil pre and post stimulus values, and average size ---
+preSignal, postSignal = find_prepost_values(windowTimeVec, windowed_signal, 0, 1.4)
 averagePreSignal = preSignal.mean(axis = 0)
 averagePostSignal = postSignal.mean(axis = 0)
 dataToPlot = [averagePreSignal, averagePostSignal]
@@ -256,7 +291,7 @@ pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 
 #--- Wilcoxon test to obtain statistics ---
 wstat, pval = stats.wilcoxon(averagePreSignal, averagePostSignal)
-print('Wilcoxon value config1', wstat,',',  'P-value config1', pval )
+print('Wilcoxon value config10', wstat,',',  'P-value config10', pval )
 
 
 
@@ -275,16 +310,16 @@ print('Wilcoxon value config1', wstat,',',  'P-value config1', pval )
 
 
 
-proc1 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211124_syncSound_19_config8_proc.npy', allow_pickle = True).item()
+proc1 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211130_syncSound_25_config6_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
 
 
 #---obtain pupil data---
 pupil1 = proc1['pupil'][0] # Dic.
 pArea1 = pupil1['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
-blink1 = proc1['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
+blink1a = proc1['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink11 = proc1['blink']   # List.
-blink21 = np.array(blink1).T # Creates transpose matrix of blink. Necessary for plotting.
+blink21 = np.array(blink1a).T # Creates transpose matrix of blink. Necessary for plotting.
 
 
 #---obtain values where sync signal is on---
@@ -308,8 +343,9 @@ timeOfBlink2Event1 = timeOfBlink2Event1[1:-1]
 #--- Align trials to the event ---
 timeRange1 = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec1, windowed_signal1 = eventlocked_signal(timeVec1, pArea1, timeOfBlink2Event1, timeRange1)
-preSignal1 = windowed_signal1[0:15] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
-postSignal1 = windowed_signal1[57:75] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
+
+#--- Obtain pupil pre and post stimulus values, and average size ---
+preSignal1, postSignal1 = find_prepost_values(windowTimeVec1, windowed_signal1, 0, 1.4)
 averagePreSignal1 = preSignal1.mean(axis = 0)
 averagePostSignal1 = postSignal1.mean(axis = 0)
 dataToPlot1 = [averagePreSignal1, averagePostSignal1]
@@ -323,7 +359,7 @@ pAreaDilatedMean1 = pAreaDilated1.mean(axis = 1)
 
 #--- Wilcoxon test to obtain statistics ---
 wstat1, pval1 = stats.wilcoxon(averagePreSignal1, averagePostSignal1)
-print('Wilcoxon value config2', wstat1,',',  'P-value config2', pval1 )
+print('Wilcoxon value config6', wstat1,',',  'P-value config6', pval1 )
 
 
 
@@ -341,23 +377,23 @@ print('Wilcoxon value config2', wstat1,',',  'P-value config2', pval1 )
 
 
 
-proc2 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211124_syncSound_20_config8_proc.npy', allow_pickle = True).item()
+proc2 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211130_syncSound_26_config12_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
 
 
 #---obtain pupil data---
 pupil2 = proc2['pupil'][0] # Dic.
 pArea2 = pupil2['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
-blink2 = proc2['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
+blink2a = proc2['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink12 = proc2['blink']   # List.
-blink22 = np.array(blink2).T # Creates transpose matrix of blink. Necessary for plotting.
+blink22 = np.array(blink2a).T # Creates transpose matrix of blink. Necessary for plotting.
 
 
 
 #---obtain values where sync signal is on---
 minNumberBlink2 = np.amin(blink22)
 diffBlink2 = np.amax(blink22) - minNumberBlink2
-blink2Bool2 = np.logical_and(blink2 > minNumberBlink2, blink2 < diffBlink2) # Boolean values from the blink2 variable where True values will be within the established range.
+blink2Bool2 = np.logical_and(blink2 > minNumberBlink2, blink2 < 68000) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues2 = np.diff(blink2Bool2) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal2 = np.flatnonzero(blink2RangeValues2) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -375,8 +411,9 @@ timeOfBlink2Event2 = timeOfBlink2Event2[1:-1]
 #--- Align trials to the event ---
 timeRange2 = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec2, windowed_signal2 = eventlocked_signal(timeVec2, pArea2, timeOfBlink2Event2, timeRange2)
-preSignal2 = windowed_signal2[0:15] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
-postSignal2 = windowed_signal2[57:75] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
+
+#--- Obtain pupil pre and post stimulus values, and average size ---
+preSignal2, postSignal2 = find_prepost_values(windowTimeVec2, windowed_signal2, 0, 1.4)
 averagePreSignal2 = preSignal2.mean(axis = 0)
 averagePostSignal2 = postSignal2.mean(axis = 0)
 dataToPlot2 = [averagePreSignal2, averagePostSignal2]
@@ -391,26 +428,85 @@ pAreaDilatedMean2 = pAreaDilated2.mean(axis = 1)
 
 #--- Wilcoxon test to obtain statistics ---
 wstat2, pval2 = stats.wilcoxon(averagePreSignal2, averagePostSignal2)
-print('Wilcoxon value config3', wstat2,',',  'P-value config3', pval2 )
+print('Wilcoxon value config12', wstat2,',',  'P-value config12', pval2 )
 
 
 
                                                 
-                                                
+
+
+
+
+
+
+
+
+proc3 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211130_syncSound_27_config11_proc.npy', allow_pickle = True).item()
+#Note: the proc.npy is the output file generated from facemap.
+#---obtain pupil data---
+pupil3 = proc3['pupil'][0] # Dic.
+pArea3 = pupil3['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+blink3 = proc3['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
+blink13 = proc3['blink']   # List.
+blink23 = np.array(blink3).T # Creates transpose matrix of blink. Necessary for plotting.
+
+
+
+minNumberBlink3 = np.amin(blink23)
+diffBlink3 = np.amax(blink23) - minNumberBlink3
+
+#---obtain values where sync signal is on---
+blink2Bool3 = np.logical_and(blink23>minNumberBlink3, blink23<diffBlink3) # Boolean values from the blink2 variable where True values will be within the established range.
+blink2RangeValues3 = np.diff(blink2Bool3) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
+indicesValueSyncSignal3 = np.flatnonzero(blink2RangeValues3) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
+
+#---calculate number of frames, frame rate, and time vector---
+nframes3 = len(pArea3) # Contains length of pArea variable (equivalent to the blink variable).
+frameVec3 = np.arange(0, nframes3, 1) # Vector of the total frames from the video.
+framerate3 = 30 # frame rate of video
+timeVec3 = (frameVec3 * 1)/framerate3 # Time Vector to calculate the length of the video.
+
+#--- obtaining onset sync signal values ---
+syncOnsetValues3 = onset_values(indicesValueSyncSignal3)
+timeOfBlink2Event3 = timeVec3[syncOnsetValues3] # Provides the time values in which the sync signal is on.
+timeOfBlink2Event3 = timeOfBlink2Event3[1:-1]
+
+#--- Align trials to the event ---
+timeRange3 = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+windowTimeVec3, windowed_signal3 = eventlocked_signal(timeVec3, pArea3, timeOfBlink2Event3, timeRange3)
+
+
+#--- Obtain pupil pre and post stimulus values, and average size ---
+preSignal3, postSignal3 = find_values(windowTimeVec3, windowed_signal3, 0, 1.4)
+averagePreSignal3 = preSignal3.mean(axis = 0)
+averagePostSignal3 = postSignal3.mean(axis = 0)
+dataToPlot3 = [averagePreSignal3, averagePostSignal3]
+xlabels3 = ['Pre signal', 'Post signal']
+
+
+#--- Defining the correct time range for pupil's relaxation (dilation) ---
+timeRangeForPupilDilation3 = np.array([-6, 6])
+pupilDilationTimeWindowVec3, pAreaDilated3 = eventlocked_signal(timeVec3, pArea3, timeOfBlink2Event3, timeRangeForPupilDilation3)
+pAreaDilatedMean3 = pAreaDilated3.mean(axis = 1)
+
+
+#--- Wilcoxon test to obtain statistics ---
+wstat3, pval3 = stats.wilcoxon(averagePreSignal3, averagePostSignal3)
+print('Wilcoxon value config11', wstat3,',',  'P-value config11', pval3 )                                                
                                                 
                                                 
                                                 
                                                 
                                                                 
 #--- plot with the three conditions aligned ---
-OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pAreaDilatedMean1, pAreaDilatedMean2)
+OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pAreaDilatedMean1, pAreaDilatedMean2, pAreaDilatedMean3, pval, pval1, pval2, pval3)
 
 
 #--- Figure with 3 scatter plots ---
 #scatterPlots = scatter_plots(averagePreSignal, averagePostSignal, averagePreSignal1, averagePostSignal1, averagePreSignal2, averagePostSignal2, averagePreSignal3, averagePostSignal3)
 
 #--- Figure with 3 bar plots and scatter plots ---
-scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
+#scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
 
 #--- Pupil Dilation plots --- 
 #pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
