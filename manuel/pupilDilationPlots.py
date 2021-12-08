@@ -8,7 +8,7 @@ from scipy import stats
 
 #README: Lines to change for each video: 11, 35, 61, 111, and 112
 
-proc = np.load('./project_videos/projectOutputs/pure003_20210928_syncVisibleNoSound_01_proc.npy', allow_pickle = True).item()
+proc = np.load('./project_videos/projectOutputs/pure001_20210928_syncSound_01_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
 
 
@@ -57,7 +57,7 @@ def onset_values(array, k):
 syncOnsetValues = onset_values(indicesValueSyncSignal, 2)
 timeOfBlink2Event = timeVec[syncOnsetValues] # Provides the time values in which the sync signal is on.
 
-timeRange = np.array([-0.68, 0.68]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange = np.array([-0.95, 0.95]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 
 samplingRate = 1/(timeVec[1]-timeVec[0])
 windowSampleRange = samplingRate*np.array(timeRange) 
@@ -108,8 +108,8 @@ print()
 
 
 #---obtain mean trial values pre and post signal, plot slope plot---
-preSignal = windowed_signal[0:20] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
-postSignal = windowed_signal[20:41] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
+preSignal = windowed_signal[0:28] # Takes the values of the pArea between timeRange within the time window. [0:28] for experimental and [0:18] for controls
+postSignal = windowed_signal[28:57] # Takes the values of the pArea between timeRange within the time window. [28:57] for experimental and [18:36] for controls
 averagePreSignal = preSignal.mean(axis = 0)
 averagePostSignal = postSignal.mean(axis = 0)
 dataToPlot = [averagePreSignal, averagePostSignal]
@@ -165,7 +165,7 @@ def bar_plotting(meanSignalsValues1, meanSignalsValues2, xlabel1, xlabel2, stdDa
      barPlots.errorbar(xlabels, barMeanValues, yerr = stdErrors, capsize=5,  alpha=0.5, ecolor = 'black')
      barPlots.set_xlabel('Conditions')
      barPlots.set(title = 'Pupil Area before and after stimulus', ylabel = 'Mean Pupil Area')
-     plt.ylim(40, 800) 
+     #plt.ylim(40, 800) 
      plt.show() 
      return(plt.show())
 
@@ -188,8 +188,8 @@ def pupilDilation_time(time, data):
  '''
  fig, signalsPlots = plt.subplots()
  signalsPlots.plot(time, data)
- signalsPlots.set(title = 'Averaged trials in time window', ylabel = 'Pupil area', xlabel = 'Time(s)')
- #plt.ylim(150, 800)
+ signalsPlots.set(title = 'Average trials behavior in time window: negative control, pure003', ylabel = 'Pupil area', xlabel = 'Time(s)')
+ plt.grid(b = True)
  plt.show()
  return(plt.show())
 
