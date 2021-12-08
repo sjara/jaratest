@@ -71,7 +71,7 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3):
      plt.grid(b = True)
      plt.ylim([300, 800]) 
      plt.legend()
-     plt.show() 
+     plt.show()
      return(plt.show())
 
 def scatter_plots(preValues1, postValues1, preValues2, postValues2, preValues3, postValues3): 
@@ -190,7 +190,6 @@ pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 #--- Wilcoxon test to obtain statistics ---
 wstat, pval = stats.wilcoxon(averagePreSignal, averagePostSignal)
 print('Wilcoxon value:', wstat,',',  'P-value:', pval )
-
 
 
 
