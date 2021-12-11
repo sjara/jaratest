@@ -10,7 +10,7 @@ tracks = [
      'recordingTrack':'middlelateral_DiD', 'shank':1, 'atlasZ':203},
 
     {'subject':subject, 'brainArea':'left_AC', 'histImage':'p1_B4',
-     'recordingTrack':'caudomedial_DiI', 'shank':1, 'atlasZ':193},
+     'recordingTrack':'caudolateral_DiI', 'shank':1, 'atlasZ':193},
 
     {'subject':subject, 'brainArea':'left_AC', 'histImage':'p1_B3',
-     'recordingTrack':'caudolateral_DiI', 'shank':1, 'atlasZ':187},
+     'recordingTrack':'caudomedial_DiI', 'shank':1, 'atlasZ':187}]
