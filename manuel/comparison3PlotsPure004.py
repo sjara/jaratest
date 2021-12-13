@@ -58,12 +58,14 @@ def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown,
       Args:  
       timeArray (np.array): array of the time window to evaluate pupil area obtained from even  t_locked  
       dataArray (np.array): array of the pupil data obtained from event_locked function  
-      preValMaxLim (int or float): max limit number in time of the pre stimulus data  
-      postValMinLim (int or float): min limit number in time of the post stimulus data  
+      preLimDown (int or float): first number of the time interval to evaluate before stimulus onset  
+      preLimUp (int or float): second number of the time interval to evaluate before stimulus onset
+      postLimDown (int or float): first number of the time interval to evaluate after stimulus onset  
+      postLimUp (int or float): second number of the time interval to evaluate after stimulus onset 
       Returns: 
       preData (np.array): array with the pupil data before stimulus 
       postData (np.array): array with the pupil data after stimulus    
-      '''  
+      '''   
       preBool = np.logical_and(preLimDown <= timeArray, timeArray < preLimUp) 
       postBool = np.logical_and(postLimDown <= timeArray, timeArray < postLimUp) 
       preValuesIndices = np.argwhere(preBool == True)  
@@ -91,9 +93,9 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3, pVal, pVal1, pV
      sp = np.round(pVal, decimals=5)
      sp1 = np.round(pVal1, decimals=5)
      sp2 = np.round(pVal2, decimals=5)
-     label1 = 'config14_1','pval:',sp
-     label2 = 'config14_2','pval:',sp1
-     label3 = 'config14_3','pval:',sp2
+     label1 = filesDict['config1'],'pval:',sp
+     label2 = filesDict['config2'],'pval:',sp1
+     label3 = filesDict['config3'],'pval:',sp2
 
      subplt.plot(time, valuesData1, color = 'g', label = label1, linewidth = 4)
      subplt.plot(time, valuesData2, color = 'c', label = label2, linewidth = 4)
@@ -131,14 +133,14 @@ def scatter_plots(preValues1, postValues1, preValues2, postValues2, preValues3, 
      fig, scatterPlots = plt.subplots(1,4, constrained_layout = True, sharex = True, sharey = True)
      fig.set_size_inches(10.5, 7.5)
      scatterPlots[0].plot(xLabelling, dataToPlot1, marker = 'o', linewidth = 1) 
-     scatterPlots[0].set_title('config1', fontsize = scatterLabelsSize)
+     scatterPlots[0].set_title(filesDict['config1'], fontsize = scatterLabelsSize)
      scatterPlots[0].set_ylabel('Mean Pupil Area', fontsize = scatterLabelsSize)
      scatterPlots[0].tick_params(axis = 'x', labelsize = scatterXlabels)
      scatterPlots[1].plot(xLabelling, dataToPlot2, marker = 'o', linewidth = 1) 
-     scatterPlots[1].set_title('config2', fontsize = scatterLabelsSize)
+     scatterPlots[1].set_title(filesDict['config2'], fontsize = scatterLabelsSize)
      scatterPlots[1].tick_params(axis = 'x', labelsize = scatterXlabels) 
      scatterPlots[2].plot(xLabelling, dataToPlot3, marker = 'o', linewidth = 1) 
-     scatterPlots[2].set_title('config3', fontsize = scatterLabelsSize)
+     scatterPlots[2].set_title(filesDict['config3'], fontsize = scatterLabelsSize)
      scatterPlots[2].tick_params(axis = 'x', labelsize = scatterXlabels)
      plt.suptitle('Average trials signals behavior: pure004_20210928', fontsize = scatterLabelsSize)
      plt.rc('xtick', labelsize = scatterXlabels)
@@ -192,25 +194,25 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      fig.set_size_inches(9.5, 7.5) 
      barPlots[0].bar(xlabels, barMeanValues1, yerr = stdErrors1, color = 'g', label = pValue1) 
      barPlots[0].errorbar(xlabels, barMeanValues1, yerr = stdErrors1, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[0].set_title('config1', fontsize = barLabelsFontSize)
+     barPlots[0].set_title(filesDict['config1'], fontsize = barLabelsFontSize)
      barPlots[0].set_ylabel('Mean Pupil Area', fontsize = barLabelsFontSize)
      barPlots[0].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[0].plot(xlabels, dataPlot1, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[0].legend(prop ={"size":10})
      barPlots[1].bar(xlabels, barMeanValues2, yerr = stdErrors2, color= 'c', label = pValue2) 
      barPlots[1].errorbar(xlabels, barMeanValues2, yerr = stdErrors2, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[1].set_title('config2', fontsize = barLabelsFontSize)
+     barPlots[1].set_title(filesDict['config2'], fontsize = barLabelsFontSize)
      barPlots[1].set_xlabel('Conditions', fontsize = barLabelsFontSize)
      barPlots[1].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[1].plot(xlabels, dataPlot2, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[1].legend(prop ={"size":10})
      barPlots[2].bar(xlabels, barMeanValues3, yerr = stdErrors3, color = 'b', label = pValue3) 
      barPlots[2].errorbar(xlabels, barMeanValues3, yerr = stdErrors3, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[2].set_title('config3', fontsize = barLabelsFontSize)
+     barPlots[2].set_title(filesDict['config3'], fontsize = barLabelsFontSize)
      barPlots[2].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[2].plot(xlabels, dataPlot3, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      
-     plt.ylim(250, 950)
+     plt.ylim(250, 800)
      plt.suptitle('Pupil behavior before and after stimulus: pure001_20210928', fontsize = barLabelsFontSize)
      barPlots[2].legend(prop ={"size":10})
      #plt.xlabel("common X", loc = 'center')
@@ -234,9 +236,21 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      return(plt.show())
 
 
-proc = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_40_config14_proc.npy', allow_pickle = True).item()
+filesDict = {'file1':'pure004_20211203_syncSound_28_config12_proc.npy', 'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_28_config12_proc.npy', allow_pickle = True).item(),'config1':'config12', 'sessionFile1':'28', 'condition':'syncSound', 'sound':'ChordTrain', 'file2':'pure004_20211203_syncSound_29_config12_proc.npy', 'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_29_config12_proc.npy', allow_pickle = True).item(), 'config2':'config12', 'sessionFile2':'29', 'file3':'pure004_20211203_syncSound_30_config12_proc.npy', 'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_30_config12_proc.npy', allow_pickle = True).item(), 'sessionFile3':'30', 'config3':'config12'}
+
+
+
+
+
+
+
+
+
+
+#proc = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_40_config14_proc.npy', allow_pickle = True).item()
 #Note: the proc.npy is the output file generated from facemap.
 
+proc = filesDict['loadFile1']
 
 #---obtain pupil data---
 pupil = proc['pupil'][0] # Dic.
@@ -306,8 +320,7 @@ print('Wilcoxon value config14_1', wstat,',',  'P-value config14_1', pval )
 
 
 
-proc1 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_41_config14_proc.npy', allow_pickle = True).item()
-#Note: the proc.npy is the output file generated from facemap.
+proc1 = filesDict['loadFile2']
 
 
 #---obtain pupil data---
@@ -373,8 +386,7 @@ print('Wilcoxon value config14_2', wstat1,',',  'P-value config14_2', pval1 )
 
 
 
-proc2 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_42_config14_proc.npy', allow_pickle = True).item()
-#Note: the proc.npy is the output file generated from facemap.
+proc2 = filesDict['loadFile3']
 
 
 #---obtain pupil data---
@@ -383,6 +395,8 @@ pArea2 = pupil2['area']    # numpy.array. Contains calculation of the pupil area
 blink2a = proc2['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink12 = proc2['blink']   # List.
 blink22 = np.array(blink2a).T # Creates transpose matrix of blink. Necessary for plotting.
+
+
 
 
 
@@ -437,7 +451,7 @@ OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pA
 #scatterPlots = scatter_plots(averagePreSignal, averagePostSignal, averagePreSignal1, averagePostSignal1, averagePreSignal2, averagePostSignal2, averagePreSignal3, averagePostSignal3)
 
 #--- Figure with 3 bar plots and scatter plots ---
-#scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
+scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
 
 #--- Pupil Dilation plots --- 
 #pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)

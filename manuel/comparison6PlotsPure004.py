@@ -58,12 +58,15 @@ def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown,
       Args:  
       timeArray (np.array): array of the time window to evaluate pupil area obtained from even  t_locked  
       dataArray (np.array): array of the pupil data obtained from event_locked function  
-      preValMaxLim (int or float): max limit number in time of the pre stimulus data  
-      postValMinLim (int or float): min limit number in time of the post stimulus data  
+      preLimDown (int or float): first number of the time interval to evaluate before stimulus onset  
+      preLimUp (int or float): second number of the time interval to evaluate before stimulus onset
+      postLimDown (int or float): first number of the time interval to evaluate after stimulus onset  
+      postLimUp (int or float): second number of the time interval to evaluate after stimulus onset 
       Returns: 
       preData (np.array): array with the pupil data before stimulus 
       postData (np.array): array with the pupil data after stimulus    
-      '''  
+      '''
+      
       preBool = np.logical_and(preLimDown <= timeArray, timeArray < preLimUp) 
       postBool = np.logical_and(postLimDown <= timeArray, timeArray < postLimUp) 
       preValuesIndices = np.argwhere(preBool == True)  
@@ -96,12 +99,12 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3, valuesData4, va
      sp4 = np.round(pVal4, decimals=5)
      sp5 = np.round(pVal5, decimals=5)
      
-     label1 = 'config12_1','pval:',sp
-     label2 = 'config12_2','pval:',sp1
-     label3 = 'config12_3','pval:',sp2
-     label4 = 'config14_1','pval:',sp3
-     label5 = 'config14_2','pval:',sp4
-     label6 = 'config14_3','pval:',sp5
+     label1 = filesDict['config1'],'pval:',sp
+     label2 = filesDict['config2'],'pval:',sp1
+     label3 = filesDict['config3'],'pval:',sp2
+     label4 = filesDict['config4'],'pval:',sp3
+     label5 = filesDict['config5'],'pval:',sp4
+     label6 = filesDict['config6'],'pval:',sp5
      
      subplt.plot(time, valuesData1, color = 'g', label = label1, linewidth = 4)
      subplt.plot(time, valuesData2, color = 'c', label = label2, linewidth = 4)
@@ -140,18 +143,18 @@ def scatter_plots(preValues1, postValues1, preValues2, postValues2, preValues3, 
      fig, scatterPlots = plt.subplots(1,4, constrained_layout = True, sharex = True, sharey = True)
      fig.set_size_inches(10.5, 7.5)
      scatterPlots[0].plot(xLabelling, dataToPlot1, marker = 'o', linewidth = 1) 
-     scatterPlots[0].set_title('config1', fontsize = scatterLabelsSize)
+     scatterPlots[0].set_title(filesDict['config1'], fontsize = scatterLabelsSize)
      scatterPlots[0].set_ylabel('Mean Pupil Area', fontsize = scatterLabelsSize)
      scatterPlots[0].tick_params(axis = 'x', labelsize = scatterXlabels)
      scatterPlots[1].plot(xLabelling, dataToPlot2, marker = 'o', linewidth = 1) 
-     scatterPlots[1].set_title('config2', fontsize = scatterLabelsSize)
+     scatterPlots[1].set_title(filesDict['config2'], fontsize = scatterLabelsSize)
      scatterPlots[1].tick_params(axis = 'x', labelsize = scatterXlabels) 
      scatterPlots[2].plot(xLabelling, dataToPlot3, marker = 'o', linewidth = 1) 
-     scatterPlots[2].set_title('config3', fontsize = scatterLabelsSize)
+     scatterPlots[2].set_title(filesDict['config3'], fontsize = scatterLabelsSize)
      scatterPlots[2].tick_params(axis = 'x', labelsize = scatterXlabels)
      plt.suptitle('Average trials signals behavior: pure004_20210928', fontsize = scatterLabelsSize)
      scatterPlots[3].plot(xLabelling, dataToPlot4, marker = 'o', linewidth = 1)
-     scatterPlots[3].set_title('config4', fontsize = scatterLabelsSize)
+     scatterPlots[3].set_title(filesDict['config4'], fontsize = scatterLabelsSize)
      scatterPlots[3].tick_params(axis = 'x', labelsize = scatterXlabels)
      plt.rc('xtick', labelsize = scatterXlabels)
      plt.rc('ytick', labelsize = scatterLabelsSize)
@@ -231,36 +234,36 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      fig.set_size_inches(9.5, 7.5) 
      barPlots[0].bar(xlabels, barMeanValues1, yerr = stdErrors1, color = 'g', label = pValue1) 
      barPlots[0].errorbar(xlabels, barMeanValues1, yerr = stdErrors1, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[0].set_title('config12_1', fontsize = barLabelsFontSize)
+     barPlots[0].set_title(filesDict['config1'], fontsize = barLabelsFontSize)
      barPlots[0].set_ylabel('Mean Pupil Area', fontsize = barLabelsFontSize)
      barPlots[0].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[0].plot(xlabels, dataPlot1, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[0].legend(prop ={"size":10})
      barPlots[1].bar(xlabels, barMeanValues2, yerr = stdErrors2, color= 'c', label = pValue2) 
      barPlots[1].errorbar(xlabels, barMeanValues2, yerr = stdErrors2, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[1].set_title('config12_2', fontsize = barLabelsFontSize)
+     barPlots[1].set_title(filesDict['config2'], fontsize = barLabelsFontSize)
      barPlots[1].set_xlabel('Conditions', fontsize = barLabelsFontSize)
      barPlots[1].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[1].plot(xlabels, dataPlot2, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[1].legend(prop ={"size":10})
      barPlots[2].bar(xlabels, barMeanValues3, yerr = stdErrors3, color = 'b', label = pValue3) 
      barPlots[2].errorbar(xlabels, barMeanValues3, yerr = stdErrors3, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[2].set_title('config12_3', fontsize = barLabelsFontSize)
+     barPlots[2].set_title(filesDict['config3'], fontsize = barLabelsFontSize)
      barPlots[2].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[2].plot(xlabels, dataPlot3, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[3].bar(xlabels, barMeanValues4, yerr = stdErrors4, color = 'm', label = pValue4)
      barPlots[3].errorbar(xlabels, barMeanValues4, yerr = stdErrors4, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots[3].set_title('config13_1', fontsize = barLabelsFontSize)
+     barPlots[3].set_title(filesDict['config4'], fontsize = barLabelsFontSize)
      barPlots[3].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[3].plot(xlabels, dataPlot4, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[4].bar(xlabels, barMeanValues5, yerr = stdErrors5, color = 'r', label = pValue5)
      barPlots[4].errorbar(xlabels, barMeanValues5, yerr = stdErrors5, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black')
-     barPlots[4].set_title('config13_2', fontsize = barLabelsFontSize)
+     barPlots[4].set_title(filesDict['config5'], fontsize = barLabelsFontSize)
      barPlots[4].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[4].plot(xlabels, dataPlot5, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[5].bar(xlabels, barMeanValues6, yerr = stdErrors6, color = 'y', label = pValue6)
      barPlots[5].errorbar(xlabels, barMeanValues6, yerr = stdErrors6, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black')
-     barPlots[5].set_title('config13_3', fontsize = barLabelsFontSize)
+     barPlots[5].set_title(filesDict['config6'], fontsize = barLabelsFontSize)
      barPlots[5].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[5].plot(xlabels, dataPlot6, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      plt.ylim(100, 800)
@@ -290,8 +293,9 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      return(plt.show())
 
 
-proc = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_28_config12_proc.npy', allow_pickle = True).item()
-#Note: the proc.npy is the output file generated from facemap.
+filesDict = {'file1':'pure004_20211203_syncSound_28_config12_proc.npy', 'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_28_config12_proc.npy', allow_pickle = True).item(),'config1':'config12', 'sessionFile1':'28', 'condition':'syncSound', 'sound':'ChordTrain', 'file2':'pure004_20211203_syncSound_29_config12_proc.npy', 'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_29_config12_proc.npy', allow_pickle = True).item(), 'config2':'config12', 'sessionFile2':'29', 'file3':'pure004_20211203_syncSound_30_config12_proc.npy', 'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_30_config12_proc.npy', allow_pickle = True).item(), 'config3':'config12', 'sessionFile3':'30', 'file4':'pure004_20211203_syncSound_31_config13_proc.npy', 'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_31_config13_proc.npy', allow_pickle = True).item(), 'config4':'config13', 'sessionFile4':'31', 'file4':'pure004_20211207_syncSound_42_config14_proc.npy', 'loadFile4': np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_42_config14_proc.npy', allow_pickle = True).item(), 'config4':'config14', 'sessionFile4':'42', 'file5':'pure004_20211207_syncSound_40_config14_proc.npy', 'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_40_config14_proc.npy', allow_pickle = True).item(), 'config5':'config14', 'sessionFile5':'40', 'file6':'pure004_20211207_syncSound_41_config14_proc.npy', 'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_41_config14_proc.npy', allow_pickle = True).item(), 'config6':'config14', 'sessionFile6':'41'}
+
+proc = filesDict['loadFile1']
 
 
 #---obtain pupil data---
@@ -362,9 +366,7 @@ print('Wilcoxon value config12_1', wstat,',',  'P-value config12_1', pval )
 
 
 
-proc1 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_29_config12_proc.npy', allow_pickle = True).item()
-#Note: the proc.npy is the output file generated from facemap.
-
+proc1 = filesDict['loadFile2']
 
 #---obtain pupil data---
 pupil1 = proc1['pupil'][0] # Dic.
@@ -429,8 +431,7 @@ print('Wilcoxon value config12_2', wstat1,',',  'P-value config12_2', pval1 )
 
 
 
-proc2 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_30_config12_proc.npy', allow_pickle = True).item()
-#Note: the proc.npy is the output file generated from facemap.
+proc2 = filesDict['loadFile3']
 
 
 #---obtain pupil data---
@@ -507,8 +508,7 @@ print('Wilcoxon value config12_3', wstat2,',',  'P-value config12_3', pval2 )
 
 
 
-proc3 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_40_config14_proc.npy', allow_pickle = True).item()
-#Note: the proc.npy is the output file generated from facemap.
+proc3 = filesDict['loadFile4']
 #---obtain pupil data---
 pupil3 = proc3['pupil'][0] # Dic.
 pArea3 = pupil3['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
@@ -575,8 +575,8 @@ print('Wilcoxon value config12_4', wstat3,',',  'P-value config12_4', pval3 )
                                                 
                                                 
                                                 
-proc4 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_41_config14_proc.npy', allow_pickle = True).item()
-#Note: the proc.npy is the output file generated from facemap.
+proc4 = filesDict['loadFile5']
+
 #---obtain pupil data---
 pupil4 = proc4['pupil'][0] # Dic.
 pArea4 = pupil4['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
@@ -639,8 +639,7 @@ print('Wilcoxon value config12_5', wstat4,',',  'P-value config12_5', pval4)
                          
                          
                          
-proc5 = np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_42_config14_proc.npy', allow_pickle = True).item()
-#Note: the proc.npy is the output file generated from facemap.
+proc5 = filesDict['loadFile6']
 #---obtain pupil data---
 pupil5 = proc5['pupil'][0] # Dic.
 pArea5 = pupil5['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
