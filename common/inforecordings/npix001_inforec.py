@@ -81,7 +81,7 @@ exp4.add_session('11-58-54','b','AM','am_tuning_curve')
 #exp4.add_session('12-06-31','a','VOT','2afc_speech') #lost saline partway through
 exp4.add_session('12-19-03','b','FT','2afc_speech') # 2 stimuli
 exp4.add_session('12-30-49','c','VOT','2afc_speech') # 2 stimuli
-
+'''
 
 exp5 = celldatabase.Experiment(subject, '2021-11-18', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='middlelateral_DiD', info=['facesLeft', 'soundRight']) #reference = tip
 experiments.append(exp5)
@@ -96,8 +96,8 @@ exp5.add_session('11-41-15','a','AM','am_tuning_curve')
 exp5.add_session('11-48-19','b','pureTones','am_tuning_curve')
 exp5.add_session('12-01-03','a','VOT','2afc_speech') # 2 stimuli
 exp5.add_session('12-13-26','b','FT','2afc_speech') # 2 stimuli
-'''
 
+'''
 exp6 = celldatabase.Experiment(subject, '2021-11-19', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='anterolateral_DiI', info=['facesLeft', 'soundRight']) #reference = tip
 experiments.append(exp6)
 #12:35 in booth
@@ -115,7 +115,7 @@ exp6.add_session('13-43-41','b','AM','am_tuning_curve')
 exp6.add_session('13-50-57','a','FT','2afc_speech') # 2 stimuli
 exp6.add_session('14-02-49','b','VOT','2afc_speech') # 2 stimuli
 
-'''
+
 exp7 = celldatabase.Experiment(subject, '2021-11-19', brainArea='left_AC', probe = 'NPv1-2881', recordingTrack='caudolateral_DiI', info=['facesLeft', 'soundRight']) #reference = tip
 experiments.append(exp7)
 #3:15 in booth
