@@ -210,14 +210,14 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      barPlots[0].bar(xlabels, barMeanValues1, yerr = stdErrors1, color = 'g', label = pValue1) 
      barPlots[0].errorbar(xlabels, barMeanValues1, yerr = stdErrors1, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
      barPlots[0].set_title(filesDict['config1'], fontsize = barLabelsFontSize)
-     barPlots[0].set_ylabel('Mean Pupil Area', fontsize = barLabelsFontSize)
+     barPlots[0].set_ylabel(scatBarDict['yLabel'], fontsize = barLabelsFontSize)
      barPlots[0].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[0].plot(xlabels, dataPlot1, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[0].legend(prop ={"size":10})
      barPlots[1].bar(xlabels, barMeanValues2, yerr = stdErrors2, color= 'c', label = pValue2) 
      barPlots[1].errorbar(xlabels, barMeanValues2, yerr = stdErrors2, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
      barPlots[1].set_title(filesDict['config2'], fontsize = barLabelsFontSize)
-     barPlots[1].set_xlabel('Conditions', fontsize = barLabelsFontSize)
+     barPlots[1].set_xlabel(scatBarDict['xLabelTitle'], fontsize = barLabelsFontSize)
      barPlots[1].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[1].plot(xlabels, dataPlot2, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[1].legend(prop ={"size":10})
@@ -233,11 +233,11 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      barPlots[3].plot(xlabels, dataPlot4, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      
      plt.ylim(100, 800)
-     plt.suptitle('Pupil behavior before and after stimulus: pure001_20210928', fontsize = barLabelsFontSize)
+     plt.suptitle(scatBarDict['title'], fontsize = barLabelsFontSize)
      barPlots[2].legend(prop ={"size":10})
      barPlots[3].legend(prop ={"size":10})
      #plt.xlabel("common X", loc = 'center')
-     plt.savefig('barPure004Plot', format = 'pdf', dpi =50)
+     plt.savefig(scatBarDict['savedName'], format = 'pdf', dpi =50)
      plt.show() 
      return(plt.show()) 
 
@@ -257,7 +257,17 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      return(plt.show())
 
 
-filesDict = {'file1':'pure004_20211203_syncSound_28_config12_proc.npy', 'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_28_config12_proc.npy', allow_pickle = True).item(),'config1':'config12', 'sessionFile1':'28', 'condition':'syncSound', 'sound':'ChordTrain', 'file2':'pure004_20211203_syncSound_29_config12_proc.npy', 'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_29_config12_proc.npy', allow_pickle = True).item(), 'config2':'config12', 'sessionFile2':'29', 'file3':'pure004_20211203_syncSound_30_config12_proc.npy', 'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_30_config12_proc.npy', allow_pickle = True).item(), 'config3':'config12', 'sessionFile3':'30', 'file4':'pure004_20211203_syncSound_31_config13_proc.npy', 'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_31_config13_proc.npy', allow_pickle = True).item(), 'config4':'config13', 'sessionFile4':'31'}
+filesDict = {'file1':'pure004_20211203_syncSound_28_config12_proc.npy', 
+	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_28_config12_proc.npy', allow_pickle = True).item(),
+	'config1':'config12', 'sessionFile1':'28', 'condition':'syncSound', 'sound':'ChordTrain', 'file2':'pure004_20211203_syncSound_29_config12_proc.npy', 
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_29_config12_proc.npy', allow_pickle = True).item(), 
+	'config2':'config12', 'sessionFile2':'29', 'file3':'pure004_20211203_syncSound_30_config12_proc.npy', 
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_30_config12_proc.npy', allow_pickle = True).item(), 
+	'config3':'config12', 'sessionFile3':'30', 'file4':'pure004_20211203_syncSound_31_config13_proc.npy', 
+	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_31_config13_proc.npy', allow_pickle = True).item(), 
+	'config4':'config13', 'sessionFile4':'31'}
+
+scatBarDict = {'title':'Pupil behavior before and after stimulus: pure001_20210928', 'savedName':'barPure004Plot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
 
 
 proc = filesDict['loadFile1']
@@ -534,7 +544,7 @@ print('Wilcoxon value config4', wstat3,',',  'P-value config4', pval3 )
                                                 
                                                                 
 #--- plot with the three conditions aligned ---
-OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pAreaDilatedMean1, pAreaDilatedMean2, pAreaDilatedMean3)
+OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pAreaDilatedMean1, pAreaDilatedMean2, pAreaDilatedMean3, pval, pval1, pval2, pval3)
 
 
 #--- Figure with 3 scatter plots ---
