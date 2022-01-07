@@ -24,16 +24,19 @@ subjects =  [
                     # 'pals013', 
                     # 'pals014',
                     # 'pals015', 
-                    # 'pals016',
-                    'pals017',
+                    'pals016',
+                    # 'pals017',
                     # 'pals018', 
                     # 'pals020', 
                     # 'pals021', 
-                    # 'pals022'
+                    # 'pals022',
+                    # 'pals024',
+                    # 'pals025',
+                    # 'pals026'
              ]
 
 
-angelica_protocol = ['pals015', 'pals016', 'pals017']
+angelica_protocol = ['pals015', 'pals016', 'pals017', 'pals024', 'pals025', 'pals026']
 bella_protocol = ['pals010', 'pals012', 'pals013', 'pals014', 'pals018']
 sean_protocol = ['pals020', 'pals021', 'pals022']
 
@@ -52,17 +55,17 @@ sessionsEachSubject = {
 
     
      'pals012': [
-          # '20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
-          #          '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
-          #          '20210618a', '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
-          #          '20210626a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
-          #         '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', 
+                  # '20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
+                  # '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a',
+                  # '20210618a', '20210619a', '20210621a', '20210622a', '20210623a', '20210624a', '20210625a',
+                  # '20210626a', '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+                  # '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', 
                  #Stage 3.5
-                  '20210713a', '20210714a', '20210715a', 
-                  '20210716a', '20210717a', '20210718a','20210719a', '20210720a', '20210721a', '20210722a', '20210723a',
-                  '20210724a', '20210725a', '20210726a', '20210727a', '20210728a', '20210729a', 
-                   # '20210730a', 
-                  '20210730b', '20210731a', '20210801a', ],
+                   '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', '20210718a', '20210719a', '20210720a', '20210721a', 
+                   '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', '20210727a', '20210728a', '20210729a', '20210730a', 
+                   '20210730b', '20210731a', '20210801a', '20210802a', '20210803a', '20210804a', '20210805a', '20210806a', '20210807a', 
+                   '20210809a'
+                  ],
     
      # 'pals013': ['20210601a', '20210602a', '20210603a', '20210604a', '20210605a', '20210606a', '20210607a', '20210608a', '20210609a', 
      #             '20210610a', '20210611a', '20210612a', '20210613a', '20210614a', '20210615a', '20210616a', '20210617a', '20210618a', 
@@ -79,39 +82,67 @@ sessionsEachSubject = {
      #             '20210718a', '20210719a'],
     
     'pals015': [
-                # '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
-                # '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', 
+                '20210628a', '20210629a', '20210630a', '20210701a', '20210702a', '20210703a', '20210706a', 
+                '20210707a', '20210708a', '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', 
                 #stage 4.0
-                '20210714a', '20210715a', '20210716a', '20210718a', '20210719a', '20210725a', '20210726a', 
-                '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a'
+                # '20210714a', '20210715a', '20210716a', '20210718a', '20210719a', 
+                # '20210725a', 
+                # '20210726a', 
+                # '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a', 
+                # #stage 0.5
+                # '20210803a', '20210803b', '20210804a', '20210804b', '20210807a', '20210807b', '20210808a', '20210808b', 
+                # stage 4.0 again
+                # '20210809a', '20210811a', '20210812a', '20210813a', '20210815a', '20210817a', '20210818a', '20210819a', '20210820a', '20210821a', 
+                # '20210822a',
             ],
     
-    # 'pals016': [
-    #             # '20210628a', '20210629a', '20210630a', 
-    #             # '20210701a', 
-    #             # '20210702a', 
-    #             # '20210703a',
-    #             # '20210706a',
-    #             # '20210707a', 
-    #             # '20210708a', '20210709a', 
-    #             #stage 4.0
-    #             '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', '20210718a', 
-    #             '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', '20210727a',
-    #             '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a' ],
+    'pals016': [
+                # '20210628a', '20210629a', '20210630a', 
+                # '20210701a', 
+                # '20210702a', 
+                # '20210703a',
+                # '20210706a',
+                # '20210707a', 
+                # '20210708a', '20210709a', 
+    # #             #stage 4.0
+                # '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', '20210718a', 
+                # '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', '20210727a',
+                # '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a' , 
+                # # # stage 0.5
+                # # '20210803b', '20210804a', '20210804b','20210805a', '20210805b', '20210806a', '20210806b', 
+                # # # # stage 4.0 again
+                # '20210807a', '20210808a', '20210809a', '20210810a', '20210811a', '20210812a', '20210813a', '20210815a', 
+                # '20210816a','20210817a', '20210818a', '20210819a', '20210820a', '20210821a', '20210822a', '20210823a', '20210824a', 
+                '20210825a', 
+                # # stage 4.5
+                # '20210826a', '20210827a', '20210828a', '20210829a', '20210830a', '20210831a', '20210901a', '20210902a', 
+                # '20210903a', '20210904a', '20210906a', '20210907a', '20210908a', '20210909a', '20210913a', '20210914a', '20210915a', 
+                # '20210916a', '20210917a', '20210920a'
+                ],
             
     
     'pals017': [
-                # '20210628a', '20210629a', '20210630a',
-                # '20210701a',
-                # '20210702a', 
-                #   '20210703a',
-                # '20210706a', 
-                # '20210707a', 
-                # '20210708a', 
-    #             # stage 4.0
-                '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', 
-                '20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
-                '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a' 
+                '20210628a', '20210629a', '20210630a',
+                '20210701a',
+                '20210702a', 
+                  '20210703a',
+                '20210706a', 
+                '20210707a', 
+                '20210708a', 
+                # # stage 4.0
+                # '20210709a', '20210710a', '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a', 
+                # '20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
+                # '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210802a',  
+                # # #stage 0.5
+                # # '20210803a', '20210803b', '20210804a', '20210804b', '20210805a', '20210805b', '20210806a', '20210806b', 
+                # # '20210807a', '20210807b', '20210808a', '20210808b', 
+                # # stage 4.0 again
+                # '20210809a', '20210810a', '20210811a', '20210812a', '20210813a', 
+                # '20210815a', '20210816a','20210817a', '20210818a',  '20210819a', '20210820a', '20210821a', '20210822a', '20210825a', 
+                # # Stage 4.5
+                # '20210826a', '20210827a', '20210828a', '20210829a', '20210830a', '20210831a', '20210901a', '20210902a', '20210903a', 
+                # '20210904a', '20210906a', '20210907a', '20210908a', '20210909a', '20210913a', '20210914a', '20210915a', '20210916a', 
+                # '20210917a', '20210920a' 
                 ],
         
     # 'pals018': [
@@ -119,14 +150,72 @@ sessionsEachSubject = {
     #             '20210708a', '20210709a', '20210710a', 
     #             '20210711a', '20210712a', '20210713a', '20210714a', '20210715a', '20210716a', '20210717a'],
     
-    'pals020': ['20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
-                '20210727a', '20210729a', '20210730a', '20210731a', '20210801a', ], 
+    'pals020': [ '20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
+                '20210727a', '20210729a', '20210730a', '20210731a', '20210801a', 
+                '20210804a', '20210807a', '20210808a', '20210809a', '20210810a', '20210811a', '20210812a', '20210813a', '20210814a', '20210815a', 
+                '20210817a', '20210818a', '20210819a', '20210820a', '20210821a', '20210822a', '20210823a', '20210824a', '20210825a', '20210826a', 
+                '20210827a', '20210828a', '20210829a',  '20210830a', '20210831a','20210901a', '20210902a', '20210903a', '20210904a', '20210907a', 
+                '20210908a', '20210909a', '20210910a', '20210911a', '20210912a', '20210913a', '20210914a', '20210920a', '20210921a', '20210922a', 
+                '20210923a', '20210924a', '20210925a', '20210926a', '20210927a', '20210928a', '20211009a', '20211010a', '20211011a', '20211012a', 
+                '20211013a'
+                ], 
     
     'pals021': ['20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
-                '20210727a', '20210729a', '20210730a', '20210731a', '20210801a', ],
+                '20210727a', '20210729a', '20210730a', '20210731a', '20210801a', '20210804a', '20210806a', '20210807a', '20210808a', 
+                '20210809a', '20210810a', '20210811a', '20210812a', '20210813a', '20210814a', '20210815a', '20210817a', '20210818a', 
+                '20210819a', '20210820a', '20210821a', '20210822a', '20210823a', '20210824a', '20210825a', '20210826a', '20210827a', 
+                '20210828a', '20210829a', '20210830a', '20210831a', '20210901a', '20210902a', '20210903a', '20210904a', '20210906a', 
+                '20210907a', '20210908a', '20210920a', '20210921a', '20210922a', '20210923a', '20210924a', '20210925a', '20210926a', 
+                '20210927a', '20210928a', '20211009a', '20211010a', '20211011a', '20211012a', '20211013a'],
     
     'pals022': ['20210718a', '20210719a', '20210720a', '20210721a', '20210722a', '20210723a', '20210724a', '20210725a', '20210726a', 
-                '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', ]    
+                '20210727a', '20210728a', '20210729a', '20210730a', '20210731a', '20210801a', '20210804a', '20210805a', '20210806a', 
+                '20210807a', '20210808a', '20210809a', '20210810a', '20210811a', '20210812a', '20210813a', '20210814a', '20210815a', 
+                '20210817a', '20210818a', '20210819a', '20210820a', '20210821a', '20210822a', '20210823a', '20210824a', '20210825a', 
+                '20210826a', '20210827a', '20210828a', '20210829a',  '20210830a', '20210831a', '20210901a', '20210902a', '20210903a', 
+                '20210904a', '20210906a', '20210907a', '20210908a', '20210909a', '20210910a', '20210911a', '20210912a', '20210913a', 
+                '20210914a', '20210915a', '20210920a', '20210921a', '20210922a', '20210923a', '20210924a', '20210925a', '20210926a', 
+                '20210927a', '20210928a', '20211009a', '20211010a', '20211011a', '20211012a', '20211013a'] ,   
+    
+    'pals024': [
+                '20210803a',
+                 '20210804a', '20210805a', '20210806a', '20210808a', '20210809a', '20210810a', '20210811a', '20210812a', 
+                '20210813a','20210814a', '20210815a', 
+                # Stage 4.0
+                '20210817a', '20210818a', '20210819a', '20210820a', '20210821a', 
+                '20210823a', '20210824a', '20210825a', '20210826a', '20210827a', '20210828a', '20210830a', '20210831a', '20210901a', 
+                '20210902a', '20210903a', '20210906a', '20210907a', '20210908a', '20210909a', '20210910a', '20210911a', '20210912a', 
+                '20210913a', '20210914a', '20210915a', '20210916a', '20210917a', '20210920a', '20210921a', '20210922a', '20210923a', 
+                '20210924a', '20210925a', '20210926a', '20210927a', '20210928a', '20210929a', '20210930a', '20211001a', '20211002a', 
+                '20211003a', '20211004a', '20211005a', '20211006a', '20211007a', '20211008a', '20211010a', '20211011a', '20211012a', 
+                '20211013a', '20211014a', '20211015a', '20211016a', '20211014a'
+                ],
+     
+    'pals025': [
+    '20210803a', '20210804a', '20210805a', '20210806a', '20210807a', '20210808a', '20210809a', '20210810a', '20210812a', 
+                '20210813a', '20210814a', '20210815a', '20210816a','20210817a', 
+                # Stage 4.0
+                '20210818a', '20210819a', '20210820a', '20210821a', 
+                '20210823a', '20210824a', '20210825a', '20210826a', '20210827a', '20210828a', '20210830a', '20210831a', '20210901a', 
+                '20210902a', '20210903a', '20210906a', '20210907a', '20210908a', '20210909a', '20210910a', '20210911a', '20210912a', 
+                '20210913a', '20210914a', '20210915a', '20210916a', '20210917a', '20210920a', '20210921a', '20210922a', '20210923a', 
+                '20210924a', '20210925a', '20210926a', '20210927a', '20210928a', '20210929a', '20210930a', '20211001a', '20211002a', 
+                '20211003a', '20211004a', '20211005a', '20211006a', '20211007a', '20211008a', '20211010a', '20211011a', '20211012a', 
+                '20211013a'
+                ],
+                  
+    'pals026': [
+                '20210803a', '20210804a', '20210805a', '20210806a', '20210807a', '20210808a', '20210809a', '20210810a', '20210811a', 
+                '20210812a', 
+                # Stage 4.0
+                '20210813a', '20210814a', '20210815a','20210817a', '20210818a', '20210819a', '20210820a', '20210821a', 
+                '20210823a', '20210824a', '20210825a', '20210826a', '20210827a', '20210828a',  '20210830a', '20210831a', '20210901a', 
+                '20210902a', '20210903a', '20210906a', '20210907a', '20210908a', '20210909a', '20210910a', '20210911a', '20210912a', 
+                '20210913a', '20210914a', '20210915a', '20210916a', '20210917a', '20210920a', '20210921a', '20210922a', '20210923a', 
+                '20210924a', '20210925a', '20210926a', '20210927a', '20210928a', '20210929a', '20210930a', '20211001a', '20211002a', 
+                '20211003a', '20211004a', '20211005a', '20211006a', '20211007a', '20211008a', '20211010a', '20211011a', '20211012a', 
+                '20211013a'
+                ]
    }
 
 
@@ -172,6 +261,8 @@ for subject in subjects:
     total_licks_right = bdata['nLicksRight']
     total_licks = total_licks_left + total_licks_right
     
+    # early_licks_left = bdata['nEarlyLicksLeft']
+    
     # rewarded_trials = bdata.events['nextState'] == bdata.stateMatrix['statesNames']['stopReward']
     # #valid_rewarded_trial = rewarded_trials & choice
     # total_rewards = sum(rewarded_trials)
@@ -182,6 +273,9 @@ for subject in subjects:
     false_alarms_right = bdata['nFalseAlarmsRight']
     false_alarms_left = bdata['nFalseAlarmsLeft']
     
+    # false_alarms_left2 = (bdata['outcome'] == bdata.labels['outcome']['falseAlarm']) & (bdata.events['eventCode']==bdata.stateMatrix['eventsNames']['Lin'])
+    # false_alarms_right2 = (bdata['rewardSide'] == bdata.labels['rewardSide']['right']) & (bdata['outcome'] == bdata.labels['outcome']['falseAlarm'])
+
     missed_outcomes = bdata['outcome'] == bdata.labels['outcome']['miss']
     misses_left = bdata['nMissesLeft']
     misses_right = bdata['nMissesRight']
@@ -201,9 +295,11 @@ for subject in subjects:
                                          'total_errors': total_errors,
                                          'false_alarms_left': false_alarms_left,
                                          'false_alarms_right' : false_alarms_right,  
+                                         'missed_outcomes': missed_outcomes,
                                          'misses_left' : misses_left,
                                          'misses_right': misses_right,
                                          'total_misses' : missed_outcomes,
+                                         # 'early_licks_left': early_licks_left,
                                          'left_choice': choice_left,
                                          'right_choice': choice_right,
                                          'valid_left_trials': valid_left_trials,
@@ -223,15 +319,16 @@ for subject in subjects:
                                          })
     
     #Use this groupby to gather the data that should be summed per session
-    df_session_information = df_trial_information.groupby(by = ['sessionID']) .sum()
+    df_session_information = df_trial_information.groupby(by = ['sessionID']).sum()
     
     #Use this groupby to gather the information that should be maxed per session
-    stage_information = df_trial_information.groupby(by =['sessionID']) .max()
+    stage_information = df_trial_information.groupby(by =['sessionID']).max()
     
     if subject in angelica_protocol: 
         
         conditions = [
-        ((stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 0)),
+        (stage_information['reward_side_mode'] == 2) | (stage_information['reward_side_mode'] == 3),
+        (stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 0),
         (stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 3),
         (stage_information['task_mode'] == 2) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
         (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
@@ -239,7 +336,7 @@ for subject in subjects:
         (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0)
         ]
     
-        values = [1, 2, 3, 4, 4.5, 5]    
+        values = [0.5, 1, 2, 3, 4, 4.5, 5]    
         
     elif subject in bella_protocol: 
        conditions = [
@@ -256,11 +353,14 @@ for subject in subjects:
           conditions = [
         (stage_information['task_mode'] == 0) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 1), 
         (stage_information['task_mode'] == 2) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
-        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 2),
-        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0)
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 3),
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 4) & (stage_information['lick_offset'] == 2), 
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 3), 
+        (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 1),
+        # (stage_information['task_mode'] == 3) & (stage_information['reward_side_mode'] == 0) & (stage_information['lick_offset'] == 1) 
         ]
           
-          values = [1, 2, 3, 4]
+          values = [1, 2, 3, 3.5, 4, 5]
 
        
     stage_information['stage'] = np.select(conditions, values)  
@@ -300,6 +400,8 @@ for subject in subjects:
                                'hit_outcome': df_session_information['hit_outcome'],
                                'left_hits': (df_session_information['left_hits']).astype(int),
                                'right_hits': (df_session_information['right_hits'].astype(int)),
+                               'false_alarms_left': (stage_information['false_alarms_left'].astype(int)),
+                               'false_alarms_right': (stage_information['false_alarms_right'].astype(int)),
                                'left_errors': (df_session_information['left_errors'].astype(int)),
                                'right_errors': (df_session_information['right_errors']).astype(int),         
                                'left_perf': (df_overall_performance['left_performance']),
@@ -307,10 +409,12 @@ for subject in subjects:
                                'percent_correct': (df_overall_performance['percent_correct']),
                                'licks_left': (stage_information['total_licks_left'].astype(int)),
                                'licks_right': (stage_information['total_licks_right'].astype(int)),
-                               'misses': (df_session_information['total_misses'].astype(int)),
-                               # 'left_trials': (df_session_information['total_left_trials'].astype(int)),
-                               # 'right_trials': (df_session_information['total_right_trials'].astype(int)),
-                               'percent_rewarded': percent_rewarded
+                               'misses': (df_session_information['missed_outcomes'].astype(int)),
+                                'misses_right': (stage_information['misses_right'].astype(int)),
+                                'left_trials': (df_session_information['total_left_trials'].astype(int)),
+                                'right_trials': (df_session_information['total_right_trials'].astype(int)),
+                               # 'percent_rewarded': percent_rewarded
+                                # 'early_licks_left': (stage_information['early_licks_left'].astype(int))
                                })
     
 
@@ -319,10 +423,10 @@ for subject in subjects:
     print(subject)
     # print(mouse_perf[subject])
     #Saves the specified dataframe to an excel document 
-    mouse_perf[subject].to_excel('/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.xlsx'.format(subject),  sheet_name='{}'.format(subject), index = False)
+    # mouse_perf[subject].to_excel('/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.xlsx'.format(subject),  sheet_name='{}'.format(subject), index = False)
     
     #Use this one instead, the graphs are 'beautified' and more modern looking
-    extraplots.dataframe_to_html(mouse_perf[subject].iloc[::-1], '/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.html' .format(subject),) 
+    # extraplots.dataframe_to_html(mouse_perf[subject].iloc[::-1], '/users/angelicamejia/Desktop/research/data/behaviorgraphs/{}.html' .format(subject),) 
 
 
 
@@ -339,36 +443,42 @@ for subject in subjects:
     plt.plot(unique_sessionID, right_performance, color = 'red')
     plt.scatter(unique_sessionID, percent_correct, color = 'black', label = 'Percent Correct')
     plt.plot(unique_sessionID, percent_correct, color = 'black')
-    plt.title(subject + ' Performance')
+    plt.title(subject + ' Performance in Stage 4.0')
     plt.xlabel('Sessions in Stage 4.0')
     plt.ylabel('Percent animal chose the correct side (%)')
-    plt.legend(loc = 1)
+    plt.legend(loc = 3)
     plt.xticks(ticks=unique_sessionID, fontsize = 7)
+    # plt.axhline(0.25, linestyle='--')
+    plt.axvline(x= 24, linestyle='--')
     plt.ylim(0, 100)
-    plt.show() 
-    # Take in  mind this is going to have to be specified depending on where you want your figures to save
-    fig.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/{}performance.png' .format(subject), dpi=100)    
-    
-    #plots the hits in each session. You can also uncomment out the errors and side hits if that is something you are interested in looking at. 
-    fig0 = plt.figure() 
-    plt.scatter(unique_sessionID, df_session_information['hit_outcome'], label = 'hits')
-    plt.plot(unique_sessionID, df_session_information['hit_outcome'])
-    plt.scatter(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']), label = 'choices')
-    plt.plot(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']))
-    #plt.plot(unique_sessionID, df_session_information['total_errors'])
-    #plt.scatter(unique_sessionID, df_session_information['total_errors'])
-    #plt.scatter(unique_sessionID, df_session_information['left_hits'], color = 'blue')
-    #plt.scatter(unique_sessionID, df_session_information['right_hits'], color = 'red')    
-    plt.title(subject + ' Total hits and choices in each session')
-    plt.xlabel('Sessions in Stage 4.0')
-    plt.ylabel('Number of hits or choices')
-    plt.ylim(0,350)
-    plt.xticks(ticks=unique_sessionID, fontsize = 7)
-    plt.legend(loc = 1)
     plt.show()
-#     #Take in  mind this is going to have to be specified depending on where you want your figures to save
-    fig0.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/{}hits.png' .format(subject), dpi=100)
+    # Take in  mind this is going to have to be specified depending on where you want your figures to save
+    fig.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/{}remedialefficacy.png' .format(subject), dpi=100)    
     
+#     #plots the hits in each session. You can also uncomment out the errors and side hits if that is something you are interested in looking at. 
+#     fig0 = plt.figure() 
+#     plt.scatter(unique_sessionID, df_session_information['hit_outcome'], color = 'grey', label = 'hits')
+#     plt.plot(unique_sessionID, df_session_information['hit_outcome'], color = 'grey')
+#     plt.scatter(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']), color = 'black', label = 'choices')
+#     plt.plot(unique_sessionID, (df_session_information['left_choice'] + df_session_information['right_choice']), color = 'black')
+# #     # plt.plot(unique_sessionID, df_session_information['total_errors'])
+# #     # plt.scatter(unique_sessionID, df_session_information['total_errors'])
+#     # plt.scatter(unique_sessionID, df_session_information['left_hits'], color = 'blue', label = 'left')
+#     # plt.scatter(unique_sessionID, df_session_information['right_hits'], color = 'red', label = 'right')    
+#     plt.title(subject + ' Total hits and choices in each session, Stage 3.5')
+#     plt.xlabel('Sessions in Stage 3.5')
+#     plt.ylabel('Number of hits per side')
+#     plt.ylim(0,500)
+#     plt.xticks(ticks=unique_sessionID, fontsize = 7)
+#     plt.legend(loc = 1)
+#     plt.show()
+# # #     #Take in  mind this is going to have to be specified depending on where you want your figures to save
+#     fig0.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/{}hitsstage3,5.png' .format(subject), dpi=100)
+    
+## Fig 5 shows what comprises the number of trials in the mouse's performance
+    # percent_falsealarms = mouse_perf[subject]['false_alarms_right'] / mouse_perf[subject]['false']
+    # percent_earlylick = mouse_perf[subject]['early_licks_left'] / mouse_perf[subject]['left_trials']
+
 #We will not use this until we get to stage 4 because it looks at the average performance across many mice and also includes different ways of combining many mice on one graph
 # pals001 = mouse_perf['pals001']
 # pals002 = mouse_perf['pals002']
@@ -429,19 +539,20 @@ for subject in subjects:
 # fig2.savefig(r'C:\Users\isabe\data\behavior_graphs\performance_cohort2.png', dpi=300)
 
 
-# FIG 3 & 4 PLOT THE DAYS THE ANIMAL WAS IN EACH STAGE . 
+# FIG 3 & 4 PLOT THE DAYS THE ANIMAL WAS IN EACH STAGE .
+# subjects_to_graph = ['pals016', 'pals017']
 # fig3 = plt.figure()
 # ax3 = fig3.add_subplot(111)
-# ax3.plot(pals017p['stage'], color = 'red', label = 'pals017')
-# ax3.plot(pals016p['stage'], color ='black', label = 'pals016')
-# ax3.plot(pals015p['stage'], color ='c', label = 'pals015')
+# for subject in subjects: 
+#     ax3.plot(mouse_perf[subject]['stage'], label = subject)
 # ax3.legend(loc='upper right', frameon=False)
-# ax3.set_xticks(np.arange(1,16))
+# ax3.set_xticks(np.arange(1,15))
 # ax3.set_xlabel('Sessions')
 # ax3.set_yticks(values)
 # ax3.set_ylabel('Stage')
-# ax3.set_title('Cohort 1, sessions in stage x')
-#fig3.savefig(r'C:\Users\isabe\data\behavior_graphs\stagedays_cohort1.png', dpi=300)
+# ax3.set_title('Sessions in Stage X')
+# fig3.show
+# fig3.savefig('/Users/angelicamejia/Desktop/research/data/behaviorgraphs/images/stagedays_headfixedcohort3.png' .format(subject), dpi=100)
 
 
 # fig4 = plt.figure()
@@ -456,3 +567,11 @@ for subject in subjects:
 # ax4.set_ylabel('Stage')
 # ax4.set_title('Cohort 2, sessions in stage x')
 #fig4.savefig(r'C:\Users\isabe\data\behavior_graphs\stagedays_cohort2.png', dpi=300)
+
+
+
+    
+    
+    
+    
+    
