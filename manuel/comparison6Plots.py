@@ -235,14 +235,14 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      barPlots[0].bar(xlabels, barMeanValues1, yerr = stdErrors1, color = 'g', label = pValue1) 
      barPlots[0].errorbar(xlabels, barMeanValues1, yerr = stdErrors1, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
      barPlots[0].set_title(filesDict['config1'], fontsize = barLabelsFontSize)
-     barPlots[0].set_ylabel('Mean Pupil Area', fontsize = barLabelsFontSize)
+     barPlots[0].set_ylabel(scatBarDict['yLabel'], fontsize = barLabelsFontSize)
      barPlots[0].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[0].plot(xlabels, dataPlot1, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[0].legend(prop ={"size":10})
      barPlots[1].bar(xlabels, barMeanValues2, yerr = stdErrors2, color= 'c', label = pValue2) 
      barPlots[1].errorbar(xlabels, barMeanValues2, yerr = stdErrors2, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
      barPlots[1].set_title(filesDict['config2'], fontsize = barLabelsFontSize)
-     barPlots[1].set_xlabel('Conditions', fontsize = barLabelsFontSize)
+     barPlots[1].set_xlabel(scatBarDict['xLabelTitle'], fontsize = barLabelsFontSize)
      barPlots[1].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[1].plot(xlabels, dataPlot2, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[1].legend(prop ={"size":10})
@@ -267,13 +267,13 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      barPlots[5].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[5].plot(xlabels, dataPlot6, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      plt.ylim(100, 800)
-     plt.suptitle('Pupil behavior before and after stimulus: pure004_20211203', fontsize = barLabelsFontSize)
+     plt.suptitle(scatBarDict['title'], fontsize = barLabelsFontSize)
      barPlots[2].legend(prop ={"size":10})
      barPlots[3].legend(prop ={"size":10})
      barPlots[4].legend(prop ={"size":10})
      barPlots[5].legend(prop ={"size":10})
      #plt.xlabel("common X", loc = 'center')
-     #plt.savefig('barControlsPure004Plot', format = 'pdf', dpi =50)
+     #plt.savefig(scatBarDict['savedName'], format = 'pdf', dpi =50)
      plt.show() 
      return(plt.show()) 
 
@@ -293,7 +293,24 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      return(plt.show())
 
 
-filesDict = {'file1':'pure004_20211203_syncSound_28_config12_proc.npy', 'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_28_config12_proc.npy', allow_pickle = True).item(),'config1':'config12', 'sessionFile1':'28', 'condition':'syncSound', 'sound':'ChordTrain', 'file2':'pure004_20211203_syncSound_29_config12_proc.npy', 'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_29_config12_proc.npy', allow_pickle = True).item(), 'config2':'config12', 'sessionFile2':'29', 'file3':'pure004_20211203_syncSound_30_config12_proc.npy', 'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_30_config12_proc.npy', allow_pickle = True).item(), 'config3':'config12', 'sessionFile3':'30', 'file4':'pure004_20211203_syncSound_31_config13_proc.npy', 'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_31_config13_proc.npy', allow_pickle = True).item(), 'config4':'config13', 'sessionFile4':'31', 'file4':'pure004_20211207_syncSound_42_config14_proc.npy', 'loadFile4': np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_42_config14_proc.npy', allow_pickle = True).item(), 'config4':'config14', 'sessionFile4':'42', 'file5':'pure004_20211207_syncSound_40_config14_proc.npy', 'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_40_config14_proc.npy', allow_pickle = True).item(), 'config5':'config14', 'sessionFile5':'40', 'file6':'pure004_20211207_syncSound_41_config14_proc.npy', 'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_41_config14_proc.npy', allow_pickle = True).item(), 'config6':'config14', 'sessionFile6':'41'}
+filesDict = {'file1':'pure004_20211203_syncSound_28_config12_proc.npy', 
+	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_28_config12_proc.npy', allow_pickle = True).item(),
+	'config1':'config12', 'sessionFile1':'28', 'condition':'syncSound', 'sound':'ChordTrain', 'file2':'pure004_20211203_syncSound_29_config12_proc.npy', 
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_29_config12_proc.npy', allow_pickle = True).item(), 
+	'config2':'config12', 'sessionFile2':'29', 'file3':'pure004_20211203_syncSound_30_config12_proc.npy', 
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_30_config12_proc.npy', allow_pickle = True).item(), 
+	'config3':'config12', 'sessionFile3':'30', 'file4':'pure004_20211203_syncSound_31_config13_proc.npy', 
+	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_31_config13_proc.npy', allow_pickle = True).item(), 
+	'config4':'config13', 'sessionFile4':'31', 'file4':'pure004_20211207_syncSound_42_config14_proc.npy', 
+	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_42_config14_proc.npy', allow_pickle = True).item(), 
+	'config4':'config14', 'sessionFile4':'42', 'file5':'pure004_20211207_syncSound_40_config14_proc.npy', 
+	'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_40_config14_proc.npy', allow_pickle = True).item(), 
+	'config5':'config14', 'sessionFile5':'40', 'file6':'pure004_20211207_syncSound_41_config14_proc.npy', 
+	'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_41_config14_proc.npy', allow_pickle = True).item(), 
+	'config6':'config14', 'sessionFile6':'41'}
+	
+scatBarDict = {'title':'Pupil behavior before and after stimulus: pure004_20211203', 'savedName':'barControlsPure004Plot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
+
 
 proc = filesDict['loadFile1']
 
@@ -307,9 +324,9 @@ blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for pl
 
 
 #---obtain values where sync signal is on---
-minNumberBlink = np.amin(blink2)
-diffBlink = np.amax(blink2) - minNumberBlink
-blink2Bool = np.logical_and(blink2 > minNumberBlink, blink2 < diffBlink) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink = np.amin(blink2)
+maxBlink = np.amax(blink2) - np.amin(blink21)//2
+blink2Bool = np.logical_and(blink2 > minBlink, blink2 < maxBlink) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -377,9 +394,9 @@ blink21 = np.array(blink1a).T # Creates transpose matrix of blink. Necessary for
 
 
 #---obtain values where sync signal is on---
-minNumberBlink1 = np.amin(blink21)
-diffBlink1 = np.amax(blink21) - minNumberBlink1
-blink2Bool1 = np.logical_and(blink21 > minNumberBlink1, blink21 < diffBlink1) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink1 = np.amin(blink21)
+maxBlink1 = np.amax(blink21) - np.amin(blink21)//2
+blink2Bool1 = np.logical_and(blink21 > minBlink1, blink21 < maxBlink1) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues1 = np.diff(blink2Bool1) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal1 = np.flatnonzero(blink2RangeValues1) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -444,9 +461,9 @@ blink22 = np.array(blink2a).T # Creates transpose matrix of blink. Necessary for
 
 
 #---obtain values where sync signal is on---
-minNumberBlink2 = np.amin(blink22)
-diffBlink2 = np.amax(blink22) - minNumberBlink2
-blink2Bool2 = np.logical_and(blink22 > minNumberBlink2, blink22 < diffBlink2) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink2 = np.amin(blink22)
+maxBlink2 = np.amax(blink22) - np.amin(blink22)//2
+blink2Bool2 = np.logical_and(blink22 > minBlink2, blink22 < maxBlink2) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues2 = np.diff(blink2Bool2) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal2 = np.flatnonzero(blink2RangeValues2) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -519,9 +536,9 @@ blink23 = np.array(blink3).T # Creates transpose matrix of blink. Necessary for 
 
 
 #---obtain values where sync signal is on---
-minNumberBlink3 = np.amin(blink23)
-diffBlink3 = np.amax(blink23) - minNumberBlink3
-blink2Bool3 = np.logical_and(blink23 > minNumberBlink3, blink23 < diffBlink3) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink3 = np.amin(blink23)
+maxBlink3 = np.amax(blink23) - np.amin(blink23)//2
+blink2Bool3 = np.logical_and(blink23 > minBlink3, blink23 < maxBlink3)# Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues3 = np.diff(blink2Bool3) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal3 = np.flatnonzero(blink2RangeValues3) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -587,9 +604,9 @@ blink24 = np.array(blink4).T # Creates transpose matrix of blink. Necessary for 
 
 
 #---obtain values where sync signal is on---
-minNumberBlink4 = np.amin(blink24)
-diffBlink4 = np.amax(blink24) - minNumberBlink4
-blink2Bool4 = np.logical_and(blink24 > minNumberBlink4, blink24 < diffBlink4) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink4 = np.amin(blink24)
+maxBlink4 = np.amax(blink24) - np.amin(blink24)//2
+blink2Bool4 = np.logical_and(blink24 > minBlink4, blink24 < maxBlink4) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues4 = np.diff(blink2Bool4) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal4 = np.flatnonzero(blink2RangeValues4) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -650,9 +667,9 @@ blink25 = np.array(blink5).T # Creates transpose matrix of blink. Necessary for 
 
 
 #---obtain values where sync signal is on---
-minNumberBlink5 = np.amin(blink25)
-diffBlink5 = np.amax(blink25) - minNumberBlink5
-blink2Bool5 = np.logical_and(blink25 > minNumberBlink5, blink25 < diffBlink5) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink5 = np.amin(blink25)
+maxBlink5 = np.amax(blink25) - np.amin(blink25)//2
+blink2Bool5 = np.logical_and(blink25 > minBlink5, blink25 < maxBlink5) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues5 = np.diff(blink2Bool5) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal5 = np.flatnonzero(blink2RangeValues5) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 

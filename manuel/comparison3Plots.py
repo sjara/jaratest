@@ -105,7 +105,7 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3, pVal, pVal1, pV
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
      subplt.set_title('Pupil behavior in different conditions: pure004_20211207', fontsize = labelsSize)
      plt.grid(b = True)
-     plt.ylim([550, 650])
+     #plt.ylim([550, 650])
      plt.xticks(fontsize = labelsSize)
      plt.yticks(fontsize = labelsSize)
      plt.legend()
@@ -195,14 +195,14 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      barPlots[0].bar(xlabels, barMeanValues1, yerr = stdErrors1, color = 'g', label = pValue1) 
      barPlots[0].errorbar(xlabels, barMeanValues1, yerr = stdErrors1, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
      barPlots[0].set_title(filesDict['config1'], fontsize = barLabelsFontSize)
-     barPlots[0].set_ylabel('Mean Pupil Area', fontsize = barLabelsFontSize)
+     barPlots[0].set_ylabel(scatBarDict['yLabel'], fontsize = barLabelsFontSize)
      barPlots[0].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[0].plot(xlabels, dataPlot1, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[0].legend(prop ={"size":10})
      barPlots[1].bar(xlabels, barMeanValues2, yerr = stdErrors2, color= 'c', label = pValue2) 
      barPlots[1].errorbar(xlabels, barMeanValues2, yerr = stdErrors2, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
      barPlots[1].set_title(filesDict['config2'], fontsize = barLabelsFontSize)
-     barPlots[1].set_xlabel('Conditions', fontsize = barLabelsFontSize)
+     barPlots[1].set_xlabel(scatBarDict['xLabelTitle'], fontsize = barLabelsFontSize)
      barPlots[1].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[1].plot(xlabels, dataPlot2, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots[1].legend(prop ={"size":10})
@@ -212,11 +212,11 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      barPlots[2].tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots[2].plot(xlabels, dataPlot3, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      
-     plt.ylim(250, 800)
-     plt.suptitle('Pupil behavior before and after stimulus: pure001_20210928', fontsize = barLabelsFontSize)
+     #plt.ylim(250, 800)
+     plt.suptitle(scatBarDict['title'], fontsize = barLabelsFontSize)
      barPlots[2].legend(prop ={"size":10})
      #plt.xlabel("common X", loc = 'center')
-     plt.savefig('barPure004Plot', format = 'pdf', dpi =50)
+     #plt.savefig(scatBarDict['savedName'], format = 'pdf', dpi =50)
      plt.show() 
      return(plt.show()) 
 
@@ -236,9 +236,16 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      return(plt.show())
 
 
-filesDict = {'file1':'pure004_20211203_syncSound_28_config12_proc.npy', 'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_28_config12_proc.npy', allow_pickle = True).item(),'config1':'config12', 'sessionFile1':'28', 'condition':'syncSound', 'sound':'ChordTrain', 'file2':'pure004_20211203_syncSound_29_config12_proc.npy', 'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_29_config12_proc.npy', allow_pickle = True).item(), 'config2':'config12', 'sessionFile2':'29', 'file3':'pure004_20211203_syncSound_30_config12_proc.npy', 'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211203_syncSound_30_config12_proc.npy', allow_pickle = True).item(), 'sessionFile3':'30', 'config3':'config12'}
+filesDict = {'file1':'pure006_20220111_2sounds_50_2Sconfig1_proc.npy', 
+	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure006_20220111_2sounds_50_2Sconfig1_proc.npy', allow_pickle = True).item(), 
+	'config1':'2Sconfig1', 'sessionFile1':'50', 
+	'condition':'2ChordSound', 'sound':'ChordTrain', 'file2':'pure004_20220111_2sounds_49_2Sconfig1_proc.npy', 
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20220111_2sounds_49_2Sconfig1_proc.npy', allow_pickle = True).item(), 
+	'config2':'2Soundsconfig1', 'sessionFile2':'49', 'file3':'pure005_20220111_2sounds_51_2Sconfig1_proc.npy', 
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure005_20220111_2sounds_51_2Sconfig1_proc.npy', allow_pickle = True).item(), 
+	'sessionFile3':'51', 'config3':'2Sconfig1'}
 
-
+scatBarDict = {'title':'Pupil behavior before and after stimulus: pure001_20210928', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
 
 
 
@@ -261,9 +268,9 @@ blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for pl
 
 
 #---obtain values where sync signal is on---
-minNumberBlink = np.amin(blink2)
-diffBlink = np.amax(blink2) - minNumberBlink
-blink2Bool = np.logical_and(blink2 > minNumberBlink, blink2 < diffBlink) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink = np.amin(blink2)
+maxBlink = np.amax(blink2) - np.amin(blink2)//2
+blink2Bool = np.logical_and(blink2 > minBlink, blink2 < maxBlink) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -332,9 +339,9 @@ blink21 = np.array(blink1a).T # Creates transpose matrix of blink. Necessary for
 
 
 #---obtain values where sync signal is on---
-minNumberBlink1 = np.amin(blink21)
-diffBlink1 = np.amax(blink21) - minNumberBlink1
-blink2Bool1 = np.logical_and(blink21 > minNumberBlink1, blink21 < diffBlink1) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink1 = np.amin(blink21)
+maxBlink1 = np.amax(blink21) - np.amin(blink21)//2
+blink2Bool1 = np.logical_and(blink21 > minBlink1, blink21 < maxBlink1) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues1 = np.diff(blink2Bool1) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal1 = np.flatnonzero(blink2RangeValues1) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -401,9 +408,9 @@ blink22 = np.array(blink2a).T # Creates transpose matrix of blink. Necessary for
 
 
 #---obtain values where sync signal is on---
-minNumberBlink2 = np.amin(blink22)
-diffBlink2 = np.amax(blink22) - minNumberBlink2
-blink2Bool2 = np.logical_and(blink22 > minNumberBlink2, blink22 < diffBlink2) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink2 = np.amin(blink22)
+maxBlink2 = np.amax(blink22) - np.amin(blink22)//2
+blink2Bool2 = np.logical_and(blink22 > minBlink2, blink22 < maxBlink2 ) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues2 = np.diff(blink2Bool2) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal2 = np.flatnonzero(blink2RangeValues2) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -438,7 +445,7 @@ pAreaDilatedMean2 = pAreaDilated2.mean(axis = 1)
 
 #--- Wilcoxon test to obtain statistics ---
 wstat2, pval2 = stats.wilcoxon(averagePreSignal2, averagePostSignal2)
-print('Wilcoxon value config14_3', wstat2,',',  'P-value config12_3', pval2 )
+print('Wilcoxon value', wstat2,',',  'P-value', pval2 )
 
 
 
@@ -451,7 +458,7 @@ OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pA
 #scatterPlots = scatter_plots(averagePreSignal, averagePostSignal, averagePreSignal1, averagePostSignal1, averagePreSignal2, averagePostSignal2, averagePreSignal3, averagePostSignal3)
 
 #--- Figure with 3 bar plots and scatter plots ---
-scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
+#scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
 
 #--- Pupil Dilation plots --- 
 #pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
