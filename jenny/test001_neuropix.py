@@ -48,7 +48,7 @@ for indRow, dbRow in celldb.iterrows():
     timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
     smoothWinSizePsth = 20
     lwPsth = 2
-    downsampleFactorPsth = 5
+    downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     plt.subplot(325)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachCond, colorEachCond=['0.5','c'], linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
@@ -81,7 +81,7 @@ for indRow, dbRow in celldb.iterrows():
     timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
     smoothWinSizePsth = 20 
     lwPsth = 2
-    downsampleFactorPsth = 5
+    downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     plt.subplot(326)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachCond, colorEachCond=['0.5','c'], linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
