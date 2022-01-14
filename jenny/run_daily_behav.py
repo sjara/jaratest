@@ -5,7 +5,9 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from jaratoolbox import settings
+from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
+
 
 ##ToDo##
 # Build pandas structure with stuff I want
@@ -42,12 +44,25 @@ from jaratoolbox import behavioranalysis
 #subject = 'bili049'
 #subject = 'bili050'
 #subject = 'bili051'
-subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+#subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+
+print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, or enter a specific animal name')
+whichSubject = input()
+if whichSubject == '1':
+    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042']
+elif whichSubject == '2':
+    subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+elif whichSubject == '3':
+    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+else:
+    subject = [whichSubject]
 
 paradigm = '2afc_speech'
 
 # Add the dates
-sessions = ['20220112a']
+#session = '20220113a'
+print('input the session name (e.g. 20220113a):')
+session = input()
 
 '''
 ## Single session/subject
@@ -73,21 +88,19 @@ print(np.unique(outcomeMode))
 
 ## Multiple subjects, single day
 for nSub in range(len(subject)):
-    bdata = behavioranalysis.load_many_sessions(subject[nSub], sessions, paradigm)
+    behavFile = loadbehavior.path_to_behavior_data(subject[nSub], paradigm, session)
+    bdata = loadbehavior.BehaviorData(behavFile)
 
-    sessionID = bdata['sessionID']
-    uniqueSessionID = np.unique(sessionID)
-    outcomeMode = bdata['outcomeMode']
-    sidesDirect = bdata['outcomeMode'] == bdata.labels['outcomeMode']['sides_direct']
-    direct = bdata['outcomeMode'] == bdata.labels['outcomeMode']['direct']
-    automationMode = np.any(bdata['automationMode'])
-    mode = bdata.labels['outcomeMode'][bdata['outcomeMode'][0]]
+
+    automationMode = bdata['automationMode'][-1] == bdata.labels['automationMode']['increase_delay']
+    mode = bdata.labels['outcomeMode'][bdata['outcomeMode'][-1]]
 
     print(subject[nSub])
-    numTrls = len(bdata['sessionID'])
+    numTrials = len(bdata['outcomeMode'])
     print(mode)
-    print('numTrls')
-    print(numTrls)
+    print('numTrials')
+    print(numTrials)
+    print()
 
 
     if automationMode == 1:
