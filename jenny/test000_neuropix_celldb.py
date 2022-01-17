@@ -21,13 +21,13 @@ importlib.reload(ephyscore)
 
 # pd.set_option("display.max_rows", None)
 
-inforecFile = os.path.join(settings.INFOREC_PATH,'npix000_inforec.py')
+inforecFile = os.path.join(settings.INFOREC_PATH,'feat004_inforec.py')
 celldb = celldatabase.generate_cell_database(inforecFile)
 
 #celldatabase.save_hdf(celldb, '/tmp/testdb.h5')
 #df = celldatabase.load_hdf('/tmp/testdb.h5')
 '''
-clustersToShow = [200] # 267 
+clustersToShow = [200] # 267
 subcelldb = celldb[celldb.cluster.isin(clustersToShow)]
 
 
@@ -198,7 +198,7 @@ for indTemplate, oneTemplate in enumerate(templates):
 #clusters = np.load(spikeClustersFile).squeeze()
 
 #for indTemplate, oneTemplate in enumerate(templates):
-          
+
 '''
 inforecPath = inforecFile
 #inforec = importlib.import_module('inforec_module', inforecPath)
@@ -287,7 +287,7 @@ clusterGroup = pd.read_csv(clusterGroupFile, sep='\t')
                 clusterDict.update(site.cluster_info())
                 celldb = celldb.append(clusterDict, ignore_index=True)
 '''
-                
+
 '''
             for indTemplate, oneTemplate in enumerate(templates):
                 indMax = np.argmax(np.abs(oneTemplate))
@@ -322,4 +322,3 @@ clusterGroup = pd.read_csv(clusterGroupFile, sep='\t')
 #celldb['tetrode'] = celldb['tetrode'].astype(int)
 #celldb['cluster'] = celldb['cluster'].astype(int)
 #celldb['nSpikes'] = celldb['nSpikes'].astype(int)
-
