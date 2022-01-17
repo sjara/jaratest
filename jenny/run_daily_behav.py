@@ -80,11 +80,15 @@ for nSub in range(len(subject)):
         leftError = leftTrials & rightChoice
         leftInvalid = leftTrials & noChoice
         rightCorrect = rightTrials & rightChoice
-        rightError = rightTrials & rightChoice
+        rightError = rightTrials & leftChoice
         rightInvalid = rightTrials & noChoice
-        print('% Right Correct: {}'.format(round(np.sum(rightCorrect)/np.sum(rightTrials)*100,2)))
-        print('% Left Correct: {}'.format(round(np.sum(leftCorrect)/np.sum(leftTrials)*100,2)))
+        print('% Right Correct: {}'.format(round(sum(rightCorrect)/sum(rightTrials)*100,2)))
+        print('% Left Correct: {}'.format(round(sum(leftCorrect)/sum(leftTrials)*100,2)))
+        print('# Right Errors: {}'.format(sum(rightError)))
+        print('# Left Errors: {}'.format(sum(leftError)))
         print('# of noChoice: {}'.format(np.sum(noChoice)))
+        if bdata['antibiasMode'][-1] == bdata.labels['antibiasMode']['repeat_mistake']:
+            print('Bias Correct ON')
 
 
 
