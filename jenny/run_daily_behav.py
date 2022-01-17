@@ -35,7 +35,9 @@ if whichSubject == '1':
 elif whichSubject == '2':
     subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
 elif whichSubject == '3':
-    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+    #subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+    subject = ['bili034', 'bili035', 'bili037', 'bili038', 'bili039', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+
 else:
     subject = [whichSubject]
 
@@ -55,16 +57,41 @@ for nSub in range(len(subject)):
 
     automationMode = bdata['automationMode'][-1] == bdata.labels['automationMode']['increase_delay']
     mode = bdata.labels['outcomeMode'][bdata['outcomeMode'][-1]]
-
+    print()
     print(subject[nSub])
     numTrials = len(bdata['outcomeMode'])
     print(mode)
-    print('numTrials')
-    print(numTrials)
-    
+    print('# of Trials: {}'.format(numTrials))
+    #print(numTrials)
+
     if automationMode == 1:
         maxDelay = np.max(bdata['delayToTarget'])
-        print('maxDelay')
-        print(maxDelay)
-    print()
+        print('maxDelay: {}'.format(maxDelay))
+        #print(maxDelay)
 
+
+    if bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['only_if_correct']:
+        leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
+        rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
+        leftChoice = bdata['choice'] == bdata.labels['choice']['left']
+        rightChoice = bdata['choice'] == bdata.labels['choice']['right']
+        noChoice = bdata['choice'] == bdata.labels['choice']['none']
+        leftCorrect = leftTrials & leftChoice
+        leftError = leftTrials & rightChoice
+        leftInvalid = leftTrials & noChoice
+        rightCorrect = rightTrials & rightChoice
+        rightError = rightTrials & rightChoice
+        rightInvalid = rightTrials & noChoice
+        print('% Right Correct: {}'.format(round(np.sum(rightCorrect)/np.sum(rightTrials)*100,2)))
+        print('% Left Correct: {}'.format(round(np.sum(leftCorrect)/np.sum(leftTrials)*100,2)))
+        print('# of noChoice: {}'.format(np.sum(noChoice)))
+
+
+
+
+
+# 'soundActionMode' ('high_left' or 'low_left')
+# 'rewardSide' ('left','right')
+# 'outcome' ('aborted', 'aftererror', 'correct', 'error', 'free', 'invalid', 'nochoice')
+# 'choice' ('left', 'right', 'none')
+# 'antibiasMode' = 'off', 'repeat_mistake'
