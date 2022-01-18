@@ -9,31 +9,12 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 
 
-##ToDo##
-# Build pandas structure with stuff I want
-# nRewarded
-# nValid
-# relevantFeature
-# rewardSide
-# targetPercentage
-# valid
-# sessionID
-# subjectID
-
-
-# Add the subject(s)
-## VOT animals
-#subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042']
-
-## FT animals
-#subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
-
 print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, or enter a specific animal name')
 whichSubject = input()
 if whichSubject == '1':
-    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042']
+    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042'] #VOT animals
 elif whichSubject == '2':
-    subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+    subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051'] #FT animals
 elif whichSubject == '3':
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
 
@@ -61,12 +42,10 @@ for nSub in range(len(subject)):
     numTrials = len(bdata['outcomeMode'])
     print(mode)
     print('# of Trials: {}'.format(numTrials))
-    #print(numTrials)
 
     if automationMode == 1:
         maxDelay = np.max(bdata['delayToTarget'])
         print('maxDelay: {}'.format(maxDelay))
-        #print(maxDelay)
 
 
     if bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['only_if_correct']:
@@ -81,20 +60,42 @@ for nSub in range(len(subject)):
         rightCorrect = rightTrials & rightChoice
         rightError = rightTrials & leftChoice
         rightInvalid = rightTrials & noChoice
-        print('% Right Correct: {}'.format(round(sum(rightCorrect)/sum(rightTrials)*100,2)))
-        print('% Left Correct: {}'.format(round(sum(leftCorrect)/sum(leftTrials)*100,2)))
+        rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials)*100,2)
+        leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials)*100,2)
+        print('% Right Correct: {}'.format(rightPercentCorrect))
+        print('% Left Correct: {}'.format(leftPercentCorrect))
         print('# Right Errors: {}'.format(sum(rightError)))
         print('# Left Errors: {}'.format(sum(leftError)))
         print('# of noChoice: {}'.format(np.sum(noChoice)))
+
+    if bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['sides_direct']:
+        if numTrials >= 100:
+            print('move to next stage')
+        else:
+            print('stay on this stage')
+    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['direct']:
+        if numTrials >= 200:
+            print('move to next stage')
+        else:
+            print('stay on this stage')
+    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['on_next_correct']:
+        if numTrials >= 300:
+            print('move to next stage')
+        else:
+            print('stay on this stage')
+    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['only_if_correct']:
         if bdata['antibiasMode'][-1] == bdata.labels['antibiasMode']['repeat_mistake']:
             print('Bias Correct ON')
-
-
-
-
-
-# 'soundActionMode' ('high_left' or 'low_left')
-# 'rewardSide' ('left','right')
-# 'outcome' ('aborted', 'aftererror', 'correct', 'error', 'free', 'invalid', 'nochoice')
-# 'choice' ('left', 'right', 'none')
-# 'antibiasMode' = 'off', 'repeat_mistake'
+            if rightPercentCorrect >= 30 and leftPercentCorrect >= 30:
+                print('move off of bias mode')
+            else:
+                print('stay on bias mode')
+        elif bdata['psycurveMode'][-1] != bdata.labels['psycurveMode']['off']:
+            print('you are on psycurve mode, woohoo!')
+        else:
+            if rightPercentCorrect < 20 or leftPercentCorrect < 20:
+                print('move to bias mode')
+            elif rightPercentCorrect >= 70 and leftPercentCorrect >= 70 and numTrials >= 300:
+                print('move to psycuve mode')
+            else:
+                print('stay on this stage')
