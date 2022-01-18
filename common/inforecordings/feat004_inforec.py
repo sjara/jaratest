@@ -24,3 +24,17 @@ exp0.add_session('13-48-00','a','AM','am_tuning_curve')
 exp0.add_session('13-55-58','b','pureTones','am_tuning_curve')
 exp0.add_session('14-06-21','a','VOT','2afc_speech') # 4 stimuli 20211209 stim
 exp0.add_session('14-20-08','b','FT','2afc_speech') # 4 stimuli 20211209 stim
+
+#exp1 = celldatabase.Experiment(subject, '2022-01-12', brainArea='rightAC', probe = 'NPv1-2872', recordingTrack='DiI', info=['DiI', 'soundLeft']) #reference = tip
+#experiments.append(exp0)
+# 2:08 in booth
+# 2:10 lowered probes
+# 2:50 couldn't penetrate brain. Ended experiment
+
+#exp2 = celldatabase.Experiment(subject, '2022-01-18', brainArea='rightAC', probe = 'NPv1-2872', recordingTrack='DiI', info=['aterolateralDiI', 'soundLeft']) #reference = tip
+#experiments.append(exp2)
+# 13:35 in booth
+# 13:40 lowered probe
+# 14:42 couldn't penetrate brain. Ended experiment.
+
+
