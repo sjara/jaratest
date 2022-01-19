@@ -36,5 +36,23 @@ exp0.add_session('14-20-08','b','FT','2afc_speech') # 4 stimuli 20211209 stim
 # 13:35 in booth
 # 13:40 lowered probe
 # 14:42 couldn't penetrate brain. Ended experiment.
+# Cleaned R craniotomy
+
+exp3 = celldatabase.Experiment(subject, '2022-01-19', brainArea='leftAC', probe = 'NPv1-2872', recordingTrack='caudomedialDiD', info=['caudomedialDiD', 'soundRight']) #reference = tip
+experiments.append(exp3)
+# 12:40 in booth
+# Couldn't penetrate R craniotomy again, moving to left craniotomy.
+# Cleaned left craniotomy. It has healed over a lot since surgery and only about a third of the original craniotomy is useable.
+# 1:35 lowered probes, in brain
+# 1:40 reached max depth
+# 2:00 started recording
+# 3:00 ended recording
+
+exp3.add_site(2504) #2504.6
+exp3.maxDepth = 2504
+exp3.add_session('14-02-47','a','pureTones','am_tuning_curve') # this session presented binaurally accidentally
+exp3.add_session('14-18-27','b','AM','am_tuning_curve') 
+exp3.add_session('14-29-00','a','FT','2afc_speech') # 4 stimuli 20220115 stim
+exp3.add_session('14-42-03','b','VOT','2afc_speech') # 4 stimuli 20220115 stim
 
 
