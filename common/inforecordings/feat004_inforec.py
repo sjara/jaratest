@@ -51,7 +51,7 @@ experiments.append(exp3)
 exp3.add_site(2504) #2504.6
 exp3.maxDepth = 2504
 exp3.add_session('14-02-47','a','pureTones','am_tuning_curve') # this session presented binaurally accidentally
-exp3.add_session('14-18-27','b','AM','am_tuning_curve') 
+exp3.add_session('14-18-17','b','AM','am_tuning_curve') 
 exp3.add_session('14-29-00','a','FT','2afc_speech') # 4 stimuli 20220115 stim
 exp3.add_session('14-42-03','b','VOT','2afc_speech') # 4 stimuli 20220115 stim
 
