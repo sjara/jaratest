@@ -55,4 +55,18 @@ exp3.add_session('14-18-17','b','AM','am_tuning_curve')
 exp3.add_session('14-29-00','a','FT','2afc_speech') # 4 stimuli 20220115 stim
 exp3.add_session('14-42-03','b','VOT','2afc_speech') # 4 stimuli 20220115 stim
 
+exp4 = celldatabase.Experiment(subject, '2022-01-21', brainArea='leftAC', probe = 'NPv1-2761', recordingTrack='caudolateralDiI', info=['caudolateralDiI', 'soundRight']) #reference = tip
+experiments.append(exp4)
+# 8:25 in booth
+# 8:35 lowered probes, in brain
+# 8:40 broke probe
+# 9:10 new probe in brain
+# 9:15 reached max depth
+# 9:32 started recording
+# 10:35 ended recording
 
+exp4.add_site(2700) #2700.5
+exp4.maxDepth = 2700
+exp4.add_session('09-33-00','a','pureTones','am_tuning_curve')
+exp4.add_session('09-49-46','b','AM','am_tuning_curve') 
+exp4.add_session('09-58-15','a','FTVOTBorders','2afc_speech') # matrix borders 20220115 stim
