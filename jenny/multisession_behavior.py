@@ -28,11 +28,39 @@ paradigm = '2afc_speech'
 
 # Add the dates
 #session = '20220113a'
-print('input the session name (e.g. 20220113a):')
-session = input()
+sessions = []
+print('input the date of the first session you want to look at (e.g. 20220115):')
+firstSession = input()
+print('input the last date of the sessions you want to look at (e.g. 20220121):')
+firstSession = input()
+dates = np.arange(firstSession,lastSession,1)
+for nDates in range(len(dates)):
+    sessions.append('{}a'.format(dates[nDates]))
+
+bdata = behavioranalysis.load_many_sessions(subject, dates, paradigm)
+
+leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
+rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
+leftChoice = bdata['choice'] == bdata.labels['choice']['left']
+rightChoice = bdata['choice'] == bdata.labels['choice']['right']
+noChoice = bdata['choice'] == bdata.labels['choice']['none']
+leftCorrect = leftTrials & leftChoice
+leftError = leftTrials & rightChoice
+leftInvalid = leftTrials & noChoice
+rightCorrect = rightTrials & rightChoice
+rightError = rightTrials & leftChoice
+rightInvalid = rightTrials & noChoice
+rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials)*100,2)
+leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials)*100,2)
+totalPercentCorrect = round((sum(leftCorrect)+sum(rightCorrect))/(sum(leftTrials) + sum(rightTrials))*100,2)
+
+for nSub in np.unique(bdata['subjectID']):
+    
+
 
 
 ## Multiple subjects, single day
+'''
 for nSub in range(len(subject)):
     behavFile = loadbehavior.path_to_behavior_data(subject[nSub], paradigm, session)
     bdata = loadbehavior.BehaviorData(behavFile)
@@ -102,3 +130,4 @@ for nSub in range(len(subject)):
                 print('move to psycuve mode')
             else:
                 print('stay on this stage')
+'''
