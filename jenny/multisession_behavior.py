@@ -30,32 +30,61 @@ paradigm = '2afc_speech'
 #session = '20220113a'
 sessions = []
 print('input the date of the first session you want to look at (e.g. 20220115):')
-firstSession = input()
+firstSession = int(input())
 print('input the last date of the sessions you want to look at (e.g. 20220121):')
-firstSession = input()
-dates = np.arange(firstSession,lastSession,1)
+lastSession = int(input())
+dates = np.arange(firstSession,lastSession+1,1)
 for nDates in range(len(dates)):
     sessions.append('{}a'.format(dates[nDates]))
 
-bdata = behavioranalysis.load_many_sessions(subject, dates, paradigm)
+bdata = behavioranalysis.load_many_sessions(subject, sessions, paradigm)
 
 leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
 rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
 leftChoice = bdata['choice'] == bdata.labels['choice']['left']
 rightChoice = bdata['choice'] == bdata.labels['choice']['right']
 noChoice = bdata['choice'] == bdata.labels['choice']['none']
-leftCorrect = leftTrials & leftChoice
-leftError = leftTrials & rightChoice
-leftInvalid = leftTrials & noChoice
-rightCorrect = rightTrials & rightChoice
-rightError = rightTrials & leftChoice
-rightInvalid = rightTrials & noChoice
-rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials)*100,2)
-leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials)*100,2)
-totalPercentCorrect = round((sum(leftCorrect)+sum(rightCorrect))/(sum(leftTrials) + sum(rightTrials))*100,2)
 
+
+
+# Here we will create an array of corrects (L/R/Center) for each animal/session then plot performance over sessions
+
+sessionStart = 0
 for nSub in np.unique(bdata['subjectID']):
-    
+    subjPerformance = np.zeros((len(sessions),3))
+    sessionLimits = np.zeros((len(sessions),2))
+    for nSess in np.unique(bdata['sessionID']):
+        sessionEnd = sessionStart + sum(bdata['sessionID'] == nSess) -1
+        leftCorrect = leftTrials[sessionStart:sessionEnd] & leftChoice[sessionStart:sessionEnd]
+        leftError = leftTrials[sessionStart:sessionEnd] & rightChoice[sessionStart:sessionEnd]
+        leftInvalid = leftTrials[sessionStart:sessionEnd] & noChoice[sessionStart:sessionEnd]
+        rightCorrect = rightTrials[sessionStart:sessionEnd] & rightChoice[sessionStart:sessionEnd]
+        rightError = rightTrials[sessionStart:sessionEnd] & leftChoice[sessionStart:sessionEnd]
+        rightInvalid = rightTrials[sessionStart:sessionEnd] & noChoice[sessionStart:sessionEnd]
+        rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials[sessionStart:sessionEnd])*100,2)
+        leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials[sessionStart:sessionEnd])*100,2)
+        totalPercentCorrect = round((sum(leftCorrect)+sum(rightCorrect))/(sum(leftTrials[sessionStart:sessionEnd]) + sum(rightTrials[sessionStart:sessionEnd]))*100,2)
+        subjPerformance[nSess,:] = [rightPercentCorrect, leftPercentCorrect, totalPercentCorrect]
+        sessionLimits[nSess,:] = [sessionStart, sessionEnd]
+        sessionStart = sessionEnd + 1
+
+
+        plt.title(subject[nSub])
+        if bdata['antibiasMode'][sessionEnd] == bdata.labels['antibiasMode']['repeat_mistake']:
+            plt.plot(sessions[nSess], subjPerformance[nSess,0],'ro', mfc = 'w' )
+            plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc = 'w')
+            plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='w')
+        else:
+            plt.plot(sessions[nSess], subjPerformance[nSess,0],'ro', mfc ='r')
+            plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc ='b')
+            plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='k')
+    plt.plot(sessions, subjPerformance[:,0],'r')
+    plt.plot(sessions, subjPerformance[:,1],'b')
+    plt.plot(sessions, subjPerformance[:,2],'k')
+    plt.show()
+
+
+
 
 
 
