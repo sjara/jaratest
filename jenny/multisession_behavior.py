@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from jaratoolbox import settings
 from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
-
+from os.path import exists
 
 print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, 4 = AM cohort, 5 = PM cohort or enter a specific animal name')
 whichSubject = input()
@@ -27,7 +27,6 @@ else:
 paradigm = '2afc_speech'
 
 # Add the dates
-#session = '20220113a'
 sessions = []
 print('input the date of the first session you want to look at (e.g. 20220115):')
 firstSession = int(input())
@@ -38,50 +37,73 @@ for nDates in range(len(dates)):
     sessions.append('{}a'.format(dates[nDates]))
 
 bdata = behavioranalysis.load_many_sessions(subject, sessions, paradigm)
-
 leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
 rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
 leftChoice = bdata['choice'] == bdata.labels['choice']['left']
 rightChoice = bdata['choice'] == bdata.labels['choice']['right']
 noChoice = bdata['choice'] == bdata.labels['choice']['none']
 
-
-
-# Here we will create an array of corrects (L/R/Center) for each animal/session then plot performance over sessions
-
 sessionStart = 0
 for nSub in np.unique(bdata['subjectID']):
+    plt.clf()
     subjPerformance = np.zeros((len(sessions),3))
     sessionLimits = np.zeros((len(sessions),2))
     for nSess in np.unique(bdata['sessionID']):
-        sessionEnd = sessionStart + sum(bdata['sessionID'] == nSess) -1
-        leftCorrect = leftTrials[sessionStart:sessionEnd] & leftChoice[sessionStart:sessionEnd]
-        leftError = leftTrials[sessionStart:sessionEnd] & rightChoice[sessionStart:sessionEnd]
-        leftInvalid = leftTrials[sessionStart:sessionEnd] & noChoice[sessionStart:sessionEnd]
-        rightCorrect = rightTrials[sessionStart:sessionEnd] & rightChoice[sessionStart:sessionEnd]
-        rightError = rightTrials[sessionStart:sessionEnd] & leftChoice[sessionStart:sessionEnd]
-        rightInvalid = rightTrials[sessionStart:sessionEnd] & noChoice[sessionStart:sessionEnd]
-        rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials[sessionStart:sessionEnd])*100,2)
-        leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials[sessionStart:sessionEnd])*100,2)
-        totalPercentCorrect = round((sum(leftCorrect)+sum(rightCorrect))/(sum(leftTrials[sessionStart:sessionEnd]) + sum(rightTrials[sessionStart:sessionEnd]))*100,2)
-        subjPerformance[nSess,:] = [rightPercentCorrect, leftPercentCorrect, totalPercentCorrect]
-        sessionLimits[nSess,:] = [sessionStart, sessionEnd]
-        sessionStart = sessionEnd + 1
+        #check if file exists, if it doesn't, set all performance = 0
+        behavFile = loadbehavior.path_to_behavior_data(subject[nSub], paradigm, sessions[nSess])
+        try:
+            loadbehavior.BehaviorData(behavFile)
+        except IOError:
+            sessionLimits[nSess,:] = [0, 0]
+            subjPerformance[nSess,:] = [0, 0, 0]
+            endInd = int(sessionLimits[nSess,1])
 
-
-        plt.title(subject[nSub])
-        if bdata['antibiasMode'][sessionEnd] == bdata.labels['antibiasMode']['repeat_mistake']:
-            plt.plot(sessions[nSess], subjPerformance[nSess,0],'ro', mfc = 'w' )
-            plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc = 'w')
-            plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='w')
-        else:
+        sessionEnd = sessionStart + sum(bdata['sessionID'] == nSess) - 1
+        #if session is empty (zero trials) then set everything to 0
+        if sessionEnd - sessionStart == 0:
+            sessionLimits[nSess,:] = [sessionStart, sessionEnd]
+            subjPerformance[nSess,:] = [0, 0, 0]
             plt.plot(sessions[nSess], subjPerformance[nSess,0],'ro', mfc ='r')
             plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc ='b')
             plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='k')
+        #otherwise, calculate percent correct for Left, right and all trials
+        else:
+            leftCorrect = leftTrials[sessionStart:sessionEnd] & leftChoice[sessionStart:sessionEnd]
+            leftError = leftTrials[sessionStart:sessionEnd] & rightChoice[sessionStart:sessionEnd]
+            leftInvalid = leftTrials[sessionStart:sessionEnd] & noChoice[sessionStart:sessionEnd]
+            rightCorrect = rightTrials[sessionStart:sessionEnd] & rightChoice[sessionStart:sessionEnd]
+            rightError = rightTrials[sessionStart:sessionEnd] & leftChoice[sessionStart:sessionEnd]
+            rightInvalid = rightTrials[sessionStart:sessionEnd] & noChoice[sessionStart:sessionEnd]
+            rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials[sessionStart:sessionEnd])*100,2)
+            leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials[sessionStart:sessionEnd])*100,2)
+            totalPercentCorrect = round((sum(leftCorrect)+sum(rightCorrect))/(sum(leftTrials[sessionStart:sessionEnd]) + sum(rightTrials[sessionStart:sessionEnd]))*100,2)
+            subjPerformance[nSess,:] = [rightPercentCorrect, leftPercentCorrect, totalPercentCorrect]
+            sessionLimits[nSess,:] = [sessionStart, sessionEnd]
+            sessionStart = sessionEnd + 1
+
+
+    plt.title(subject[nSub])
     plt.plot(sessions, subjPerformance[:,0],'r')
     plt.plot(sessions, subjPerformance[:,1],'b')
     plt.plot(sessions, subjPerformance[:,2],'k')
     plt.show()
+
+    for nSess in np.unique(bdata['sessionID']):
+        endInd = int(sessionLimits[nSess,1])
+        if bdata['outcomeMode'][endInd] == bdata.labels['outcomeMode']['only_if_correct']:
+            if bdata['antibiasMode'][endInd] == bdata.labels['antibiasMode']['repeat_mistake']:
+                plt.plot(sessions[nSess], subjPerformance[nSess,0],'ro', mfc = 'w' )
+                plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc = 'w')
+                plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='w')
+            else:
+                plt.plot(sessions[nSess], subjPerformance[nSess,0],'ro', mfc ='r')
+                plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc ='b')
+                plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='k')
+
+
+
+    input('press enter for next subject')
+
 
 
 
