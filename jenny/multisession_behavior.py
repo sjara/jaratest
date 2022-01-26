@@ -1,25 +1,24 @@
 import os
 import sys
-import h5py
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from jaratoolbox import settings
 from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
-from os.path import exists
 
 print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, 4 = AM cohort, 5 = PM cohort or enter a specific animal name')
+#print('Enter the subject name')
 whichSubject = input()
-if whichSubject == '1':
+if whichSubject == '1': #VOT cohort
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042'] #VOT animals
-elif whichSubject == '2':
+elif whichSubject == '2': #FT cohort
     subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051'] #FT animals
-elif whichSubject == '3':
+elif whichSubject == '3': #all
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
-elif whichSubject == '4':
+elif whichSubject == '4': #AM cohort
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili048', 'bili049', 'bili050', 'bili051']
-elif whichSubject == '5':
+elif whichSubject == '5': #PM cohort
     subject = ['bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047']
 else:
     subject = [whichSubject]
@@ -36,16 +35,18 @@ dates = np.arange(firstSession,lastSession+1,1)
 for nDates in range(len(dates)):
     sessions.append('{}a'.format(dates[nDates]))
 
-bdata = behavioranalysis.load_many_sessions(subject, sessions, paradigm)
-leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
-rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
-leftChoice = bdata['choice'] == bdata.labels['choice']['left']
-rightChoice = bdata['choice'] == bdata.labels['choice']['right']
-noChoice = bdata['choice'] == bdata.labels['choice']['none']
 
-sessionStart = 0
-for nSub in np.unique(bdata['subjectID']):
-    plt.clf()
+
+
+for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
+    bdata = behavioranalysis.load_many_sessions(subject[nSub], sessions, paradigm)
+    leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
+    rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
+    leftChoice = bdata['choice'] == bdata.labels['choice']['left']
+    rightChoice = bdata['choice'] == bdata.labels['choice']['right']
+    noChoice = bdata['choice'] == bdata.labels['choice']['none']
+
+    sessionStart = 0
     subjPerformance = np.zeros((len(sessions),3))
     sessionLimits = np.zeros((len(sessions),2))
     for nSess in np.unique(bdata['sessionID']):
@@ -87,7 +88,6 @@ for nSub in np.unique(bdata['subjectID']):
     plt.plot(sessions, subjPerformance[:,1],'b')
     plt.plot(sessions, subjPerformance[:,2],'k')
     plt.show()
-
     for nSess in np.unique(bdata['sessionID']):
         endInd = int(sessionLimits[nSess,1])
         if bdata['outcomeMode'][endInd] == bdata.labels['outcomeMode']['only_if_correct']:
@@ -100,11 +100,9 @@ for nSub in np.unique(bdata['subjectID']):
                 plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc ='b')
                 plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='k')
 
-
-
     input('press enter for next subject')
-
-
+    plt.close()
+plt.close()
 
 
 
