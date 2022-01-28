@@ -27,18 +27,20 @@ paradigm = '2afc_speech'
 
 # Add the dates
 sessions = []
-print('input the date of the first session you want to look at (e.g. 20220115):')
-firstSession = int(input())
+#print('input the date of the first session you want to look at (e.g. 20220115):')
+#firstSession = int(input())
+firstSession = 20220115
 print('input the last date of the sessions you want to look at (e.g. 20220121):')
 lastSession = int(input())
 dates = np.arange(firstSession,lastSession+1,1)
 for nDates in range(len(dates)):
     sessions.append('{}a'.format(dates[nDates]))
 
-
+#bdata = behavioranalysis.load_many_sessions(subject, sessions, paradigm)
 
 
 for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
+    fig, ax = plt.subplots(figsize=(5,4),dpi=200)
     bdata = behavioranalysis.load_many_sessions(subject[nSub], sessions, paradigm)
     leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
     rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
@@ -84,99 +86,31 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
 
 
     plt.title(subject[nSub])
-    plt.plot(sessions, subjPerformance[:,0],'r')
-    plt.plot(sessions, subjPerformance[:,1],'b')
-    plt.plot(sessions, subjPerformance[:,2],'k')
-    plt.show()
+    numDays = np.arange(0,nSess+1,1)
+    line1, = ax.plot(numDays, subjPerformance[:,0],'r', label = "Right Trials")
+    line2, = ax.plot(numDays, subjPerformance[:,1],'b', label = "Left Trials")
+    line3, = ax.plot(numDays, subjPerformance[:,2],'k', label = "All Trials")
+    ax.plot([50] * len(numDays), '0.5' ,linestyle = '--')
+
+
     for nSess in np.unique(bdata['sessionID']):
         endInd = int(sessionLimits[nSess,1])
         if bdata['outcomeMode'][endInd] == bdata.labels['outcomeMode']['only_if_correct']:
             if bdata['antibiasMode'][endInd] == bdata.labels['antibiasMode']['repeat_mistake']:
-                plt.plot(sessions[nSess], subjPerformance[nSess,0],'ro', mfc = 'w' )
-                plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc = 'w')
-                plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='w')
+                ax.plot(numDays[nSess], subjPerformance[nSess,0],'ro', mfc = 'w' )
+                ax.plot(numDays[nSess], subjPerformance[nSess,1], 'bo', mfc = 'w')
+                dots1, = ax.plot(numDays[nSess], subjPerformance[nSess,2], 'ko', mfc ='w', label = "Antibiasmode ON")
             else:
-                plt.plot(sessions[nSess], subjPerformance[nSess,0],'ro', mfc ='r')
-                plt.plot(sessions[nSess], subjPerformance[nSess,1], 'bo', mfc ='b')
-                plt.plot(sessions[nSess], subjPerformance[nSess,2], 'ko', mfc ='k')
+                ax.plot(numDays[nSess], subjPerformance[nSess,0],'ro', mfc ='r')
+                ax.plot(numDays[nSess], subjPerformance[nSess,1], 'bo', mfc ='b')
+                dots2, = ax.plot(numDays[nSess], subjPerformance[nSess,2], 'ko', mfc ='k', label = "Antibiasmode OFF")
 
-    input('press enter for next subject')
-    plt.close()
-plt.close()
-
-
-
-
-
-## Multiple subjects, single day
-'''
-for nSub in range(len(subject)):
-    behavFile = loadbehavior.path_to_behavior_data(subject[nSub], paradigm, session)
-    bdata = loadbehavior.BehaviorData(behavFile)
-
-
-    automationMode = bdata['automationMode'][-1] == bdata.labels['automationMode']['increase_delay']
-    mode = bdata.labels['outcomeMode'][bdata['outcomeMode'][-1]]
-    print()
-    print(subject[nSub])
-    numTrials = len(bdata['outcomeMode'])
-    print(mode)
-    print('# of Trials: {}'.format(numTrials))
-
-    if automationMode == 1:
-        maxDelay = np.max(bdata['delayToTarget'])
-        print('maxDelay: {}'.format(maxDelay))
-
-
-    if bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['only_if_correct']:
-        leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
-        rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
-        leftChoice = bdata['choice'] == bdata.labels['choice']['left']
-        rightChoice = bdata['choice'] == bdata.labels['choice']['right']
-        noChoice = bdata['choice'] == bdata.labels['choice']['none']
-        leftCorrect = leftTrials & leftChoice
-        leftError = leftTrials & rightChoice
-        leftInvalid = leftTrials & noChoice
-        rightCorrect = rightTrials & rightChoice
-        rightError = rightTrials & leftChoice
-        rightInvalid = rightTrials & noChoice
-        rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials)*100,2)
-        leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials)*100,2)
-        print('% Right Correct: {}'.format(rightPercentCorrect))
-        print('% Left Correct: {}'.format(leftPercentCorrect))
-        print('# Right Errors: {}'.format(sum(rightError)))
-        print('# Left Errors: {}'.format(sum(leftError)))
-        print('# of noChoice: {}'.format(np.sum(noChoice)))
-
-    if bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['sides_direct']:
-        if numTrials >= 100:
-            print('move to next stage')
-        else:
-            print('stay on this stage')
-    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['direct']:
-        if numTrials >= 200:
-            print('move to next stage')
-        else:
-            print('stay on this stage')
-    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['on_next_correct']:
-        if numTrials >= 300:
-            print('move to next stage')
-        else:
-            print('stay on this stage')
-    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['only_if_correct']:
-        if bdata['antibiasMode'][-1] == bdata.labels['antibiasMode']['repeat_mistake']:
-            print('Bias Correct ON')
-            if rightPercentCorrect >= 30 and leftPercentCorrect >= 30:
-                print('move off of bias mode')
-            else:
-                print('stay on bias mode')
-        elif bdata['psycurveMode'][-1] != bdata.labels['psycurveMode']['off']:
-            print('you are on psycurve mode, woohoo!')
-        else:
-            if rightPercentCorrect < 20 or leftPercentCorrect < 20:
-                print('move to bias mode')
-            elif rightPercentCorrect >= 70 and leftPercentCorrect >= 70 and numTrials >= 300:
-                print('move to psycuve mode')
-            else:
-                print('stay on this stage')
-'''
+    plt.xlabel('Session Number')
+    plt.ylabel('Percent Correct')
+#    ax.legend([line1, line2])#,["rightTrials", "leftTrials"])
+    labels = ['Right Trials', 'Left Trials', 'All Trials', 'Antibiasmode ON', 'Antibiasmode OFF']
+    ax.legend([line1, line2, line3, dots1, dots2], labels, loc = 'upper left')
+    plt.show()
+#    input('press enter for next subject')
+#    plt.close()
+#plt.close()
