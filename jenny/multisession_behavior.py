@@ -28,11 +28,13 @@ paradigm = '2afc_speech'
 # Add the dates
 sessions = []
 #print('input the date of the first session you want to look at (e.g. 20220115):')
-#firstSession = int(input())
-firstSession = 20220115
+#firstSession = str(input())
+firstSession = str(20220115)
 print('input the last date of the sessions you want to look at (e.g. 20220121):')
-lastSession = int(input())
-dates = np.arange(firstSession,lastSession+1,1)
+lastSession = str(input())
+#dates = np.arange(firstSession,lastSession+1,1)
+dates = pd.date_range(firstSession, lastSession)
+dates = dates.strftime("%Y%m%d")
 for nDates in range(len(dates)):
     sessions.append('{}a'.format(dates[nDates]))
 
