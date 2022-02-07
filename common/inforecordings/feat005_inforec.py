@@ -23,5 +23,5 @@ exp0.add_site(3020)
 exp0.maxDepth = 3020
 #exp0.add_session('12-34-34','a','pureTones','am_tuning_curve') #got noisy, if have time at end, redo puretones. presented binaurally.
 exp0.add_session('12-52-53','b','AM','am_tuning_curve') #presented binaurally.
-exp0.add_session('13-03-31','a','FTVOTBorders','2afc_speech') #presented right
+exp0.add_session('13-03-30','a','FTVOTBorders','2afc_speech') #presented right
 exp0.add_session('13-35-09','d','pureTones','am_tuning_curve') 
