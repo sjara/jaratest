@@ -29,7 +29,7 @@ paradigm = '2afc_speech'
 sessions = []
 #print('input the date of the first session you want to look at (e.g. 20220115):')
 #firstSession = str(input())
-firstSession = str(20220115)
+firstSession = str(20220111)
 print('input the last date of the sessions you want to look at (e.g. 20220121):')
 lastSession = str(input())
 #dates = np.arange(firstSession,lastSession+1,1)
@@ -40,7 +40,11 @@ for nDates in range(len(dates)):
 
 #bdata = behavioranalysis.load_many_sessions(subject, sessions, paradigm)
 
-
+fig2, ax2 = plt.subplots(figsize=(5,4),dpi=200)
+plt.xlabel('Session Number')
+plt.ylabel('Percent Correct')
+#plt.title('All subjects in group')
+plt.title('Group Performance')
 for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
     fig, ax = plt.subplots(figsize=(5,4),dpi=200)
     bdata = behavioranalysis.load_many_sessions(subject[nSub], sessions, paradigm)
@@ -93,7 +97,8 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
     line2, = ax.plot(numDays, subjPerformance[:,1],'b', label = "Left Trials")
     line3, = ax.plot(numDays, subjPerformance[:,2],'k', label = "All Trials")
     ax.plot([50] * len(numDays), '0.5' ,linestyle = '--')
-
+    ax2.plot([50] * len(numDays), '0.5' ,linestyle = '--')
+    line4, = ax2.plot(numDays, subjPerformance[:,2])
 
     for nSess in np.unique(bdata['sessionID']):
         endInd = int(sessionLimits[nSess,1])
@@ -102,16 +107,22 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
                 ax.plot(numDays[nSess], subjPerformance[nSess,0],'ro', mfc = 'w' )
                 ax.plot(numDays[nSess], subjPerformance[nSess,1], 'bo', mfc = 'w')
                 dots1, = ax.plot(numDays[nSess], subjPerformance[nSess,2], 'ko', mfc ='w', label = "Antibiasmode ON")
+                dots3, = ax2.plot(numDays[nSess], subjPerformance[nSess,2], 'ko', mfc ='w', label = "Antibiasmode ON")
             else:
                 ax.plot(numDays[nSess], subjPerformance[nSess,0],'ro', mfc ='r')
                 ax.plot(numDays[nSess], subjPerformance[nSess,1], 'bo', mfc ='b')
                 dots2, = ax.plot(numDays[nSess], subjPerformance[nSess,2], 'ko', mfc ='k', label = "Antibiasmode OFF")
+                dots4, = ax2.plot(numDays[nSess], subjPerformance[nSess,2], 'ko', mfc ='k', label = "Antibiasmode OFF")
+
 
     plt.xlabel('Session Number')
     plt.ylabel('Percent Correct')
+
 #    ax.legend([line1, line2])#,["rightTrials", "leftTrials"])
     labels = ['Right Trials', 'Left Trials', 'All Trials', 'Antibiasmode ON', 'Antibiasmode OFF']
     ax.legend([line1, line2, line3, dots1, dots2], labels, loc = 'upper left')
+    labels2 = ['Antibiasmode ON', 'Antibiasmode OFF']
+    ax2.legend([dots1, dots2], labels2, loc = 'upper left')
     plt.show()
 #    input('press enter for next subject')
 #    plt.close()
