@@ -28,8 +28,10 @@ paradigm = '2afc_speech'
 
 # Add the dates
 #session = '20220113a'
-print('input the session name (e.g. 20220113a):')
+print('input the session name (e.g. 20220113):')
 session = input()
+suffix = "a"
+session = session + suffix
 
 
 ## Multiple subjects, single day

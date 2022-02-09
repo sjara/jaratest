@@ -32,7 +32,6 @@ sessions = []
 firstSession = str(20220111)
 print('input the last date of the sessions you want to look at (e.g. 20220121):')
 lastSession = str(input())
-#dates = np.arange(firstSession,lastSession+1,1)
 dates = pd.date_range(firstSession, lastSession)
 dates = dates.strftime("%Y%m%d")
 for nDates in range(len(dates)):
