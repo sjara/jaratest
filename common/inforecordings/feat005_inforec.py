@@ -25,3 +25,19 @@ exp0.maxDepth = 3020
 exp0.add_session('12-52-53','b','AM','am_tuning_curve') #presented binaurally.
 exp0.add_session('13-03-30','a','FTVOTBorders','2afc_speech') #presented right
 exp0.add_session('13-35-09','d','pureTones','am_tuning_curve') 
+
+
+exp1 = celldatabase.Experiment(subject, '2022-02-08', brainArea='leftAC', probe = 'NPv1-2761', recordingTrack='anteromedialDiD', info=['anteromedialDiD', 'soundRight']) #reference = external
+experiments.append(exp1)
+# 14:48 in booth
+# 14:50 lowered electodes
+# 14:54 Reached max depth
+# 15:20 Started recording
+# Electrode 295 last one I see with spikes.
+# 16:16 Done recording
+
+exp1.add_site(3005)
+exp1.maxDepth = 3005
+exp1.add_session('15-20-39','a','pureTones','am_tuning_curve') 
+exp1.add_session('15-36-32','b','AM','am_tuning_curve')
+exp1.add_session('15-45-22','a','FTVOTBorders','2afc_speech')
