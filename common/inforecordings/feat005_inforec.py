@@ -27,7 +27,7 @@ exp0.add_session('13-03-30','a','FTVOTBorders','2afc_speech') #presented right
 exp0.add_session('13-35-09','d','pureTones','am_tuning_curve') 
 
 
-exp1 = celldatabase.Experiment(subject, '2022-02-08', brainArea='leftAC', probe = 'NPv1-2761', recordingTrack='anteromedialDiD', info=['anteromedialDiD', 'soundRight']) #reference = external
+exp1 = celldatabase.Experiment(subject, '2022-02-08', brainArea='leftAC', probe = 'NPv1-2761', recordingTrack='anteromedialDiD', info=['anteromedialDiD', 'soundRight']) #reference = tip
 experiments.append(exp1)
 # 14:48 in booth
 # 14:50 lowered electodes
@@ -41,3 +41,18 @@ exp1.maxDepth = 3005
 exp1.add_session('15-20-39','a','pureTones','am_tuning_curve') 
 exp1.add_session('15-36-32','b','AM','am_tuning_curve')
 exp1.add_session('15-45-22','a','FTVOTBorders','2afc_speech')
+
+#exp2 = celldatabase.Experiment(subject, '2022-02-09', brainArea='leftAC', probe = 'NPv1-2761', recordingTrack='middlemedialDiI', info=['middlemedialDiD', 'soundRight']) #reference = tip
+#experiments.append(exp2)
+# 13:10 in booth
+# 13:20 lowered electrodes, couldn't penetrate brain. Tried cleaning craniotomy some
+# 14:41 Couldn't penetrate still after cleaning Ending recording.
+ 
+#exp3 = celldatabase.Experiment(subject, '2022-02-10', brainArea='leftAC', probe = 'NPv1-2761', recordingTrack='middleDiD', info=['middleDiD', 'soundRight']) #reference = tip
+#experiments.append(exp3)
+# 11:20 in booth
+# 11:25 lowered electrodes
+# 12:11 couldn't penetrate brain. ended session.
+
+
+
