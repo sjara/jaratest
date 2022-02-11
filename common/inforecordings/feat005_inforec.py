@@ -24,7 +24,7 @@ exp0.maxDepth = 3020
 #exp0.add_session('12-34-34','a','pureTones','am_tuning_curve') #got noisy, if have time at end, redo puretones. presented binaurally.
 exp0.add_session('12-52-53','b','AM','am_tuning_curve') #presented binaurally.
 exp0.add_session('13-03-30','a','FTVOTBorders','2afc_speech') #presented right
-exp0.add_session('13-35-09','d','pureTones','am_tuning_curve') 
+exp0.add_session('13-35-09','c','pureTones','am_tuning_curve') 
 
 
 exp1 = celldatabase.Experiment(subject, '2022-02-08', brainArea='leftAC', probe = 'NPv1-2761', recordingTrack='anteromedialDiD', info=['anteromedialDiD', 'soundRight']) #reference = tip
@@ -54,5 +54,20 @@ exp1.add_session('15-45-22','a','FTVOTBorders','2afc_speech')
 # 11:25 lowered electrodes
 # 12:11 couldn't penetrate brain. ended session.
 
+exp4 = celldatabase.Experiment(subject, '2022-02-11', brainArea='rightAC', probe = 'NPv1-8131', recordingTrack='anterolateralDiI', info=['anterolateralDiI', 'soundLeft']) #reference = external
+experiments.append(exp4)
+# 9:01 in booth
+# 9:03 lowered electrodes
+# Couldn't penetrate brain. Cleaned up craniotomy. Some dura was present, was able to remove.
+# 9:58 tried lowering electrodes again, in brain!
+# 10:00 reached max depth
+# 10:20 started recording
+# 11:17 done
+
+exp4.add_site(3154)
+exp4.maxDepth = 3154
+exp4.add_session('10-20-41','a','pureTones','am_tuning_curve') 
+exp4.add_session('10-36-40','b','AM','am_tuning_curve')
+exp4.add_session('10-45-54','a','FTVOTBorders','2afc_speech')
 
 

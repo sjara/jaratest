@@ -42,3 +42,19 @@ videos.add_session('2022-02-08', 'FTVOTBorders',
                    'feat005_2afc_speech_20220208_01.mkv',
                    'feat005_2afc_speech_20220208a.h5',
                    cameraParams) #my_video-3.mkv
+                   
+# 2022-02-11
+videos.add_session('2022-02-08', 'pureTones',
+                   'feat005_am_tuning_curve_20220211_01.mkv',
+                   'feat005_am_tuning_curve_20220211a.h5',
+                   cameraParams)    #my_video-1.mkv                
+
+videos.add_session('2022-02-08', 'AM',
+                   'feat005_am_tuning_curve_20220211_02.mkv',
+                   'feat005_am_tuning_curve_20220211b.h5',
+                   cameraParams) #my_video-2.mkv
+                  
+videos.add_session('2022-02-08', 'FTVOTBorders',
+                   'feat005_2afc_speech_20220211_01.mkv',
+                   'feat005_2afc_speech_20220211a.h5',
+                   cameraParams) #my_video-3.mkv
