@@ -70,4 +70,17 @@ exp4.add_session('10-20-41','a','pureTones','am_tuning_curve')
 exp4.add_session('10-36-40','b','AM','am_tuning_curve')
 exp4.add_session('10-45-54','a','FTVOTBorders','2afc_speech')
 
+exp5 = celldatabase.Experiment(subject, '2022-02-14', brainArea='rightAC', probe = 'NPv1-8131', recordingTrack='anterolateralDiD', info=['anterolateralDiD', 'soundLeft']) #reference = external
+experiments.append(exp5)
+# 11:38 in booth
+# 11:43 lowered electrodes, in brain
+# 11:45 reached max depth
+# 12:05 started recording
+# 1: done
+
+exp5.add_site(2959)
+exp5.maxDepth = 2959
+exp5.add_session('12-07-29','a','pureTones','am_tuning_curve') 
+exp5.add_session('12-23-06','b','AM','am_tuning_curve')
+exp5.add_session('12-31-43','a','FTVOTBorders','2afc_speech')
 
