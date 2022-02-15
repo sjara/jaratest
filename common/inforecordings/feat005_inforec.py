@@ -76,11 +76,28 @@ experiments.append(exp5)
 # 11:43 lowered electrodes, in brain
 # 11:45 reached max depth
 # 12:05 started recording
-# 1: done
+# 1:10 done
 
 exp5.add_site(2959)
 exp5.maxDepth = 2959
 exp5.add_session('12-07-29','a','pureTones','am_tuning_curve') 
 exp5.add_session('12-23-06','b','AM','am_tuning_curve')
 exp5.add_session('12-31-43','a','FTVOTBorders','2afc_speech')
+
+
+exp6 = celldatabase.Experiment(subject, '2022-02-15', brainArea='rightAC', probe = 'NPv1-8131', recordingTrack='caudomedialDiI', info=['caudomedialDiI', 'soundLeft']) #reference = external
+experiments.append(exp5)
+# 12:35 in booth
+# 12:40 shaved off medial edge of R well to get better access across craniotomy
+# 12:53 lowered electrodes, in brain
+# 12:57 reached max depth
+# 1:17 started recording
+# 1: done
+
+exp6.add_site(2983)
+exp6.maxDepth = 2983
+exp6.add_session('13-17-47','a','pureTones','am_tuning_curve') 
+exp6.add_session('13-34-44','b','AM','am_tuning_curve')
+exp6.add_session('13-44-06','a','FTVOTBorders','2afc_speech')
+
 
