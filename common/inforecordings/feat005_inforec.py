@@ -112,6 +112,6 @@ exp7.add_site(2986)
 exp7.maxDepth = 2986
 exp7.add_session('14-25-31','a','AM','am_tuning_curve')
 exp7.add_session('14-34-22','b','pureTones','am_tuning_curve') 
-exp7.add_session(''14-51-25,'a','FTVOTBorders','2afc_speech')
+exp7.add_session('14-51-25','a','FTVOTBorders','2afc_speech')
 
 
