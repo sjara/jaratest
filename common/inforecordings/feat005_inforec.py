@@ -114,4 +114,11 @@ exp7.add_session('14-25-31','a','AM','am_tuning_curve')
 exp7.add_session('14-34-22','b','pureTones','am_tuning_curve') 
 exp7.add_session('14-51-25','a','FTVOTBorders','2afc_speech')
 
+#exp8 = celldatabase.Experiment(subject, '2022-02-17', brainArea='rightAC', probe = 'NPv1-8131', recordingTrack='DiI', info=['DiI', 'soundLeft']) #reference = external
+#experiments.append(exp8)
+# 12:02 in booth
+# 12:05 lowered electrodes, couldn't penetrate brain
+# 12:30 tried cleaning craniotomy and penetrating again, still couldn't get in brain. cancelled recording
+
+
 
