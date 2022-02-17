@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from jaratoolbox import settings
 from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
+from jaratoolbox import extraplots
 
 print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, 4 = AM cohort, 5 = PM cohort or enter a specific animal name')
 #print('Enter the subject name')
@@ -88,6 +89,30 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
             subjPerformance[nSess,:] = [rightPercentCorrect, leftPercentCorrect, totalPercentCorrect]
             sessionLimits[nSess,:] = [sessionStart, sessionEnd]
             sessionStart = sessionEnd + 1
+
+            '''
+            ### Deal with psychometric###
+            if any(bdata['psycurveMode'][sessionStart:sessionEnd]):
+                if bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['spectral']:
+                    targetFrequency = bdata['targetFTpercent'][sessionStart:sessionEnd]
+                elif bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['temporal']:
+                    targetFrequency = bdata['targetVOTpercent'][sessionStart:sessionEnd]
+
+                valid=bdata['valid']& (choice!=bdata.labels['choice']['none'])
+                possibleFreq = np.unique(targetFrequency)
+                sessionRightChoice = rightChoice[sessionStart:sessionEnd]
+                nFreq = len(possibleFreq)
+                trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
+                (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(sessionRightChoice,targetFrequency,valid)
+                (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue,ciHitsEachValue,xTickPeriod=1)
+                plt.xlabel('Frequency (kHz)',fontsize=fontsize)
+                plt.ylabel('Rightward trials (%)',fontsize=fontsize)
+                extraplots.set_ticks_fontsize(plt.gca(),fontsize)
+                    #    return (pline, pcaps, pbars, pdots)
+                '''
+
+
+
 
 
     plt.title(subject[nSub])

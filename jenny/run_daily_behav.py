@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from jaratoolbox import settings
 from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
-
+from jaratoolbox import extraplots
 
 print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, 4 = AM cohort, 5 = PM cohort or enter a specific animal name')
 whichSubject = input()
@@ -67,11 +67,37 @@ for nSub in range(len(subject)):
         rightInvalid = rightTrials & noChoice
         rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials)*100,2)
         leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials)*100,2)
+        whichFeature = bdata.labels['relevantFeature'][bdata['relevantFeature'][-1]]
+
         print('% Right Correct: {}'.format(rightPercentCorrect))
         print('% Left Correct: {}'.format(leftPercentCorrect))
         print('# Right Errors: {}'.format(sum(rightError)))
         print('# Left Errors: {}'.format(sum(leftError)))
         print('# of noChoice: {}'.format(np.sum(noChoice)))
+    ### Deal with psychometric###
+    if any(bdata['psycurveMode']):
+        if bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['spectral']:
+            targetFrequency = bdata['targetFTpercent']
+        elif bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['temporal']:
+            targetFrequency = bdata['targetVOTpercent']
+
+        valid=bdata['valid']& (bdata['choice']!=bdata.labels['choice']['none'])
+        possibleFreq = np.unique(targetFrequency)
+        nFreq = len(possibleFreq)
+        trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
+        (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
+        fontsize = 12
+        fig1 = plt.subplot(3,len(subject)/3,nSub)
+        plt.title('{0} [{1}]'.format(subject[nSub],session))
+        (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue, ciHitsEachValue,xTickPeriod=1, xscale='linear')
+        plt.xlabel('{0} level (a.u.)'.format(whichFeature) ,fontsize=fontsize)
+        plt.ylabel('Rightward trials (%)',fontsize=fontsize)
+        extraplots.set_ticks_fontsize(plt.gca(),fontsize)
+        plt.show()
+
+
+
+
 
     if bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['sides_direct']:
         if numTrials >= 100:
