@@ -1,4 +1,4 @@
-subject = 'feat001'
+subject = 'feat005'
 tracks = [
     {'subject':subject, 'brainArea':'AC_left', 'histImage':'p1_C5',
      'recordingTrack':'anterolateral_DiI', 'shank':0, 'atlasZ':218},
