@@ -378,7 +378,7 @@ videos.add_session('2022-02-16', 'chord',
                    'pure004_20220216_syncSound_64_config20.mp4',
                    'pure004_20220216_syncSound_64_config20.h5',
                    cameraParams)
-
+  
 videos.add_session('2022-02-16', 'chord',
                    'pure004_20220216_syncSound_65_config21.mp4',
                    'pure004_20220216_syncSound_65_config21.h5',
