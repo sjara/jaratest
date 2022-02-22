@@ -87,7 +87,9 @@ for nSub in range(len(subject)):
         trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
         (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
         fontsize = 12
-        fig1 = plt.subplot(3,len(subject)/3,nSub)
+        numSubPlots = int(len(subject)/3)
+        subPlotInd = nSub + 1
+        fig1 = plt.subplot(3,numSubPlots,subPlotInd)
         plt.title('{0} [{1}]'.format(subject[nSub],session))
         (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue, ciHitsEachValue,xTickPeriod=1, xscale='linear')
         plt.xlabel('{0} level (a.u.)'.format(whichFeature) ,fontsize=fontsize)
