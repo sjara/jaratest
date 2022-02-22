@@ -23,7 +23,7 @@ exp0.add_session('12-20-35','a','AM','am_tuning_curve')
 exp0.add_session('12-32-36','b','pureTones','am_tuning_curve')
 exp0.add_session('12-49-24','a','FTVOTBorders','2afc_speech')
 
-exp1 = celldatabase.Experiment(subject, '2022-02-22', brainArea='AC_right', probe = 'NPv1-8131', recordingTrack='DiD', info=['DiD', 'soundLeft']) #reference = external
+exp1 = celldatabase.Experiment(subject, '2022-02-22', brainArea='AC_right', probe = 'NPv1-8131', recordingTrack='middlemedialDiD', info=['middlemedialDiD', 'soundLeft']) #reference = external
 experiments.append(exp1)
 # 13:30 in booth
 # 13:45 reached max depth
