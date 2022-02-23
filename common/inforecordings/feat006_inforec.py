@@ -28,7 +28,7 @@ experiments.append(exp1)
 # 13:30 in booth
 # 13:45 reached max depth
 # 14:05 started recording
-#  done
+# 15:15 done
 
 exp1.add_site(2963)
 exp1.maxDepth = 2963
@@ -36,3 +36,9 @@ exp1.add_session('14-08-43','a','AM','am_tuning_curve')
 exp1.add_session('14-16-56','b','pureTones','am_tuning_curve')
 exp1.add_session('14-34-15','a','FTVOTBorders','2afc_speech')
 
+
+#exp2 = celldatabase.Experiment(subject, '2022-02-23', brainArea='AC_right', probe = 'NPv1-8131', recordingTrack='DiI', info=['DiI', 'soundLeft']) #reference = external
+#experiments.append(exp2)
+# 13:20 in booth
+# 13:30 can't penetrate brain, trying cleaning craniotomy
+# 14:40 still couldn't get in brain. cancelled recording
