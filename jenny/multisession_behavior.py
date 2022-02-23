@@ -122,6 +122,8 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
     line3, = ax.plot(numDays, subjPerformance[:,2],'k', label = "All Trials")
     ax.plot([50] * len(numDays), '0.5' ,linestyle = '--')
     ax2.plot([50] * len(numDays), '0.5' ,linestyle = '--')
+    ax.plot([70] * len(numDays), '0.7' ,linestyle = '--')
+    ax2.plot([70] * len(numDays), '0.7' ,linestyle = '--')
     line4, = ax2.plot(numDays, subjPerformance[:,2])
 
     for nSess in np.unique(bdata['sessionID']):
@@ -132,6 +134,11 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
                 ax.plot(numDays[nSess], subjPerformance[nSess,1], 'bo', mfc = 'w')
                 dots1, = ax.plot(numDays[nSess], subjPerformance[nSess,2], 'ko', mfc ='w', label = "Antibiasmode ON")
                 dots3, = ax2.plot(numDays[nSess], subjPerformance[nSess,2], 'ko', mfc ='w', label = "Antibiasmode ON")
+            elif bdata['psycurveMode'][endInd] > 0:
+                ax.plot(numDays[nSess], subjPerformance[nSess,0],'r*', mfc ='r')
+                ax.plot(numDays[nSess], subjPerformance[nSess,1], 'b*', mfc ='b')
+                dots5, = ax.plot(numDays[nSess], subjPerformance[nSess,2], 'k*', mfc ='k', label = "Psycurve Mode")
+                dots6, = ax2.plot(numDays[nSess], subjPerformance[nSess,2], 'k*', mfc ='k', label = "Psycurve Mode")
             else:
                 ax.plot(numDays[nSess], subjPerformance[nSess,0],'ro', mfc ='r')
                 ax.plot(numDays[nSess], subjPerformance[nSess,1], 'bo', mfc ='b')

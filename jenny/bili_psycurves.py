@@ -2,7 +2,6 @@
 Test function for plotting psy-curves of bili mice (speech categorization)
 '''
 
-
 from jaratoolbox import behavioranalysis
 from jaratoolbox import loadbehavior
 from jaratoolbox import extraplots
@@ -12,34 +11,54 @@ from statsmodels.stats.proportion import proportion_confint #Used to compute con
 from jaratoolbox import settings
 import sys
 
-subject = 'bili036'
-#subjects = ['bili001','bili002','bili003','bili004','bili005','bili006','bili007']
+print('enter subject name')
+subject = input()
 
-paradigm = '2afc'
+if subject == 'bili036':
+    sessions = ['20220213a', '20220214a', '20220215a', '20220216a', '20220217a', '20220218a', '20220219a', '20220220a', '20220221a', '20220222a'] #bili036
+elif subject == 'bili041':
+    sessions = ['20220212a', '20220214a', '20220220a']#['20220209a', '20220210a', '20220212a', '20220214a', '20220215a', '20220216a', '20220220a', '20220221a'] #bili041
+elif subject == 'bili042':
+    sessions = ['20220221a']
+elif subject == 'bili039':
+    sessions = ['20220221a']
+else:
+    print('subject doesnt have any psycurve sessions indicated')
+
+paradigm = '2afc_speech'
 
 plt.clf()
 fontsize=12
-for inds,subject in enumerate(subjects):
+bdata = behavioranalysis.load_many_sessions(subject, sessions, paradigm)
 
-    bfile = loadbehavior.path_to_behavior_data(subject,paradigm,session)
-    bdata = loadbehavior.BehaviorData(bfile,readmode='full')
+#get which feature is relevant
 
-    targetPercentage = bdata['targetFrequency'] # I used name 'frequency' initially
-    choiceRight = bdata['choice']==bdata.labels['choice']['right']
-    valid=bdata['valid']& (bdata['choice']!=bdata.labels['choice']['none'])
-    (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue)=\
-           behavioranalysis.calculate_psychometric(choiceRight,targetPercentage,valid)
 
-    plt.subplot(4,2,inds+1)
-    plt.title('{0} [{1}]'.format(subject,session))
-    #behavioranalysis.plot_frequency_psycurve(behavData,fontsize=12)
+whichFeature = bdata.labels['relevantFeature'][bdata['relevantFeature'][-1]]
+leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
+rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
+leftChoice = bdata['choice'] == bdata.labels['choice']['left']
+rightChoice = bdata['choice'] == bdata.labels['choice']['right']
+noChoice = bdata['choice'] == bdata.labels['choice']['none']
+valid=bdata['valid']& (bdata['choice']!=bdata.labels['choice']['none'])
 
-    (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue,
-                                                                    ciHitsEachValue,xTickPeriod=1, xscale='linear')
-    plt.xlabel('Frequency (kHz)',fontsize=fontsize)
-    plt.ylabel('Rightward trials (%)',fontsize=fontsize)
-    extraplots.set_ticks_fontsize(plt.gca(),fontsize)
+if whichFeature == 'spectral':
+    targetFrequency = bdata['targetFTpercent']
+elif whichFeature == 'temporal':
+    targetFrequency = bdata['targetVOTpercent']
 
-    plt.show()
+possibleFreq = np.unique(targetFrequency)
+nFreq = len(possibleFreq)
+trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
+(possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
 
-sys.exit()
+
+#fig1 = plt.subplot(3,numSubPlots,subPlotInd)
+plt.title('{0} [{1}] - [{2}]'.format(subject,sessions[0],sessions[-1]))
+(pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue, ciHitsEachValue,xTickPeriod=1, xscale='linear')
+plt.xlabel('{0} feature level (a.u.)'.format(whichFeature) ,fontsize=fontsize)
+plt.ylabel('Rightward trials (%)',fontsize=fontsize)
+extraplots.set_ticks_fontsize(plt.gca(),fontsize)
+plt.show()
+
+#sys.exit()
