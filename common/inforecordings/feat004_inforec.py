@@ -7,7 +7,7 @@ experiments = []
 #    info (which contains [probeOrientation, soundSource, probeConfiguration]).
 # Session parameters: sessionTime, behaviorFileSuffix, sessionType paradigmName.
 
-exp0 = celldatabase.Experiment(subject, '2022-01-11', brainArea='AC_right', probe = 'NPv1-2872', recordingTrack='DiD', info=['ateromedialDiD', 'soundLeft']) #reference = tip
+exp0 = celldatabase.Experiment(subject, '2022-01-11', brainArea='AC_right', probe = 'NPv1-2872', recordingTrack='DiD', info=['anteromedialDiD', 'soundLeft']) #reference = tip
 experiments.append(exp0)
 # 12:57 in booth
 # 1:05 lowered probe
