@@ -42,3 +42,16 @@ exp1.add_session('14-34-15','a','FTVOTBorders','2afc_speech')
 # 13:20 in booth
 # 13:30 can't penetrate brain, trying cleaning craniotomy
 # 14:40 still couldn't get in brain. cancelled recording
+
+exp3 = celldatabase.Experiment(subject, '2022-02-24', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='caudomedialDiI', info=['caudomedialDiI', 'soundRight']) #reference = external
+experiments.append(exp2)
+# 11:35 in booth
+# cleaned L craniotomy
+# 12:25 in brain, reached max depth
+# 12:41 started recording
+
+exp3.add_site(2959)
+exp3.maxDepth = 2959
+exp3.add_session('12-40-52','a','AM','am_tuning_curve') 
+exp3.add_session('12-49-15','b','pureTones','am_tuning_curve')
+exp3.add_session('13-05-39','a','FTVOTBorders','2afc_speech')
