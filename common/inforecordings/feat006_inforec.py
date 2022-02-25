@@ -55,3 +55,18 @@ exp3.maxDepth = 2959
 exp3.add_session('12-40-52','a','AM','am_tuning_curve') 
 exp3.add_session('12-49-15','b','pureTones','am_tuning_curve')
 exp3.add_session('13-05-39','a','FTVOTBorders','2afc_speech')
+
+
+exp4 = celldatabase.Experiment(subject, '2022-02-25', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='middlemedialDiD', info=['middlemedialDiD', 'soundRight']) #reference = external
+experiments.append(exp4)
+# 11:58 in booth
+# 12:07 in brain, reached max depth
+# 12:27 started recording
+# recording looks a bit noisier than I've had lately. Check if this results in noisier kilosort sorting.
+# 13:23 Done
+
+exp4.add_site(2956)
+exp4.maxDepth = 2956
+exp4.add_session('12-27-43','a','AM','am_tuning_curve') 
+exp4.add_session('12-35-54','b','pureTones','am_tuning_curve')
+exp4.add_session('12-52-43','a','FTVOTBorders','2afc_speech')
