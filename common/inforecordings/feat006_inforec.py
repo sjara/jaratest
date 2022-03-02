@@ -100,3 +100,18 @@ exp6.add_session('11-41-12','a','AM','am_tuning_curve')
 exp6.add_session('11-48-57','b','pureTones','am_tuning_curve')
 exp6.add_session('12-05-09','a','FTVOTBorders','2afc_speech')
 
+
+exp6 = celldatabase.Experiment(subject, '2022-03-01', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='middlelateralDiI', info=['middlelateralDiI', 'soundRight']) #reference = external
+experiments.append(exp7)
+# 14:45 in booth
+# 15:00 in brain
+# 15:07 4eached max depth
+# 15:26 started recording
+# 16:22 Done
+
+exp7.add_site(2958)
+exp7.maxDepth = 2958
+exp7.add_session('15-26-30','a','AM','am_tuning_curve') 
+exp7.add_session('15-33-50','b','pureTones','am_tuning_curve') # fell asleep for the last ~100 trials or so of pure tones
+exp7.add_session('15-50-18','a','FTVOTBorders','2afc_speech')
+
