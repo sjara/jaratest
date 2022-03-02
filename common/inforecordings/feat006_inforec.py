@@ -101,11 +101,11 @@ exp6.add_session('11-48-57','b','pureTones','am_tuning_curve')
 exp6.add_session('12-05-09','a','FTVOTBorders','2afc_speech')
 
 
-exp6 = celldatabase.Experiment(subject, '2022-03-01', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='middlelateralDiI', info=['middlelateralDiI', 'soundRight']) #reference = external
+exp7 = celldatabase.Experiment(subject, '2022-03-01', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='middlelateralDiI', info=['middlelateralDiI', 'soundRight']) #reference = external
 experiments.append(exp7)
 # 14:45 in booth
 # 15:00 in brain
-# 15:07 4eached max depth
+# 15:07 reached max depth
 # 15:26 started recording
 # 16:22 Done
 
@@ -114,4 +114,20 @@ exp7.maxDepth = 2958
 exp7.add_session('15-26-30','a','AM','am_tuning_curve') 
 exp7.add_session('15-33-50','b','pureTones','am_tuning_curve') # fell asleep for the last ~100 trials or so of pure tones
 exp7.add_session('15-50-18','a','FTVOTBorders','2afc_speech')
+
+
+exp8 = celldatabase.Experiment(subject, '2022-03-02', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='caudolateralDiD', info=['caudolateralDiD', 'soundRight']) #reference = external
+experiments.append(exp8)
+# 12:45 in booth
+# 12:55 lowered electrodes, couldn't penetrate caudolateral part of craniotomy, cleaned that corner of craniotomy
+# 13:07 in brain
+# 13:10 reached max depth
+# 13:32 started recording
+# 14: done
+
+exp8.add_site(2973)
+exp8.maxDepth = 2973
+exp8.add_session('13-32-16','a','AM','am_tuning_curve') 
+exp8.add_session('13-39-58','b','pureTones','am_tuning_curve')
+exp8.add_session('13-58-01','a','FTVOTBorders','2afc_speech')
 
