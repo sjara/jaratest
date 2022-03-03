@@ -150,8 +150,12 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
     plt.ylabel('Percent Correct')
 
 #    ax.legend([line1, line2])#,["rightTrials", "leftTrials"])
-    labels = ['Right Trials', 'Left Trials', 'All Trials', 'Antibiasmode ON', 'Antibiasmode OFF', 'Psycurve Mode']
-    ax.legend([line1, line2, line3, dots1, dots2, dots5], labels, loc = 'upper left')
+    if bdata['psycurveMode'][endInd] > 0:
+        labels = ['Right Trials', 'Left Trials', 'All Trials', 'Antibiasmode ON', 'Antibiasmode OFF', 'Psycurve Mode']
+        ax.legend([line1, line2, line3, dots1, dots2, dots5], labels, loc = 'upper left')
+    else:
+        labels = ['Right Trials', 'Left Trials', 'All Trials', 'Antibiasmode ON', 'Antibiasmode OFF']
+        ax.legend([line1, line2, line3, dots1, dots2], labels, loc = 'upper left')
     #labels2 = ['Antibiasmode ON', 'Antibiasmode OFF']
     #ax2.legend([dots1, dots2, d], labels2, loc = 'upper left')
     plt.show()
