@@ -87,7 +87,10 @@ for nSub in range(len(subject)):
         trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
         (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
         fontsize = 12
-        numSubPlots = int(len(subject)/3)
+        if len(subject) > 1:
+            numSubPlots = int(len(subject)/3)
+        else:
+            numSubPlots = 1
         subPlotInd = nSub + 1
         fig1 = plt.subplot(3,numSubPlots,subPlotInd)
         plt.title('{0} [{1}]'.format(subject[nSub],session))
