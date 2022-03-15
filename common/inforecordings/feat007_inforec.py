@@ -36,4 +36,20 @@ exp1.add_site(2942)
 exp1.maxDepth = 2942
 exp1.add_session('14-47-12','a','AM','am_tuning_curve') 
 exp1.add_session('14-55-00','b','pureTones','am_tuning_curve') #accidentally hit the start button after I finished recording so there are ~2 extra trials in the behavior data at the end that weren't recorded.
-exp1.add_session('15-15-21','a','FTVOTBorders','2afc_speech')
+exp1.add_session('15-15-20','a','FTVOTBorders','2afc_speech')
+
+exp2 = celldatabase.Experiment(subject, '2022-03-15', brainArea='AC_right', probe = 'NPv1-8131', recordingTrack='_DiI', info=['_DiI', 'soundLeft']) #reference = tip
+experiments.append(exp2)
+# 12:35 in booth
+# 12:40 cleaned craniotomy
+# 12:45 lowered electrodes, in brain
+# 12:48 reached max depth
+# 13:14 started recording
+# 1: done
+
+exp2.add_site(2963)
+exp2.maxDepth = 2963
+exp2.add_session('13-14-54','a','AM','am_tuning_curve') 
+exp2.add_session('13-22-51','b','pureTones','am_tuning_curve') 
+exp2.add_session('13-36-57','a','FTVOTBorders','2afc_speech')
+
