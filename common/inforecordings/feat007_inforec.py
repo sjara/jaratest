@@ -38,14 +38,14 @@ exp1.add_session('14-47-12','a','AM','am_tuning_curve')
 exp1.add_session('14-55-00','b','pureTones','am_tuning_curve') #accidentally hit the start button after I finished recording so there are ~2 extra trials in the behavior data at the end that weren't recorded.
 exp1.add_session('15-15-20','a','FTVOTBorders','2afc_speech')
 
-exp2 = celldatabase.Experiment(subject, '2022-03-15', brainArea='AC_right', probe = 'NPv1-8131', recordingTrack='_DiI', info=['_DiI', 'soundLeft']) #reference = tip
+exp2 = celldatabase.Experiment(subject, '2022-03-15', brainArea='AC_right', probe = 'NPv1-8131', recordingTrack='middlelateral_DiI', info=['middlelateral_DiI', 'soundLeft']) #reference = tip
 experiments.append(exp2)
 # 12:35 in booth
 # 12:40 cleaned craniotomy
 # 12:45 lowered electrodes, in brain
 # 12:48 reached max depth
 # 13:14 started recording
-# 1: done
+# 14:14 done
 
 exp2.add_site(2963)
 exp2.maxDepth = 2963
@@ -53,3 +53,17 @@ exp2.add_session('13-14-54','a','AM','am_tuning_curve')
 exp2.add_session('13-22-51','b','pureTones','am_tuning_curve') 
 exp2.add_session('13-36-57','a','FTVOTBorders','2afc_speech')
 
+
+exp3 = celldatabase.Experiment(subject, '2022-03-16', brainArea='AC_right', probe = 'NPv1-8131', recordingTrack='caudolateral_DiD', info=['caudolateral_DiD', 'soundLeft']) #reference = tip
+experiments.append(exp3)
+# 14:05 in booth
+# 14:08 in brain
+# 14:11 reached max depth
+# 14:30 started recording
+# 15:30 done
+
+exp3.add_site(2969)
+exp3.maxDepth = 2969
+exp3.add_session('14-32-47','a','AM','am_tuning_curve') 
+exp3.add_session('14-42-11','b','pureTones','am_tuning_curve') 
+exp3.add_session('14-58-21','a','FTVOTBorders','2afc_speech')
