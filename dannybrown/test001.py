@@ -10,3 +10,4 @@ plt.imshow(random_array)
 plt.show()
 
 print('Test text')
+print('Test text #2')
