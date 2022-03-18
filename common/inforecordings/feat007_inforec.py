@@ -67,3 +67,19 @@ exp3.maxDepth = 2969
 exp3.add_session('14-32-47','a','AM','am_tuning_curve') 
 exp3.add_session('14-42-11','b','pureTones','am_tuning_curve') 
 exp3.add_session('14-58-21','a','FTVOTBorders','2afc_speech')
+
+
+
+exp4 = celldatabase.Experiment(subject, '2022-03-18', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='caudomedial_DiI', info=['caudomedial_DiI', 'soundRight']) #reference = tip
+experiments.append(exp4)
+# 14:45 in booth
+# 14:50 in brain
+# 14:57 reached max depth
+# 15:17 started recording
+# 16: done
+
+exp4.add_site(2974)
+exp4.maxDepth = 2974
+exp4.add_session('15-18-14','a','AM','am_tuning_curve') 
+exp4.add_session('15-27-12','b','pureTones','am_tuning_curve') 
+exp4.add_session('15-43-29','a','FTVOTBorders','2afc_speech')
