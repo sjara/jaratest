@@ -99,3 +99,10 @@ exp5.maxDepth = 3041
 exp5.add_session('11-06-40','a','AM','am_tuning_curve') 
 exp5.add_session('11-14-32','b','pureTones','am_tuning_curve') 
 exp5.add_session('11-30-55','a','FTVOTBorders','2afc_speech')
+
+
+#exp6 = celldatabase.Experiment(subject, '2022-03-22', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='DiI', info=['DiI', 'soundRight']) #reference = tip
+#experiments.append(exp6)
+# 10:00 in booth 
+# 10:20 Couldn't get probe into brain. broke probe
+# lots of bleeding when tried to clean craniotomy, ended recording
