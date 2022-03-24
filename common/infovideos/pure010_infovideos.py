@@ -74,16 +74,35 @@ videos.add_session('2022-02-22', '2chords',
                    'pure010_detectiongonogo_20220222_2Sounds_145_2Sconfig11.h5',
                    cameraParams)
 
+videos.add_session('2022-03-22', '2chords',
+                   'pure010_20220322_2Sounds_165_2Sconfig12.mp4',
+                   'pure010_detectiongonogo_20220322_2Sounds_165_2Sconfig12.h5',
+                   cameraParams)
 
+videos.add_session('2022-03-23', '2chords',
+                   'pure010_20220323_2Sounds_166_2Sconfig12.mp4',
+                   'pure010_detectiongonogo_20220323_2Sounds_166_2Sconfig12.h5',
+                   cameraParams)
 
+videos.add_session('2022-03-23', '2chords',
+                   'pure010_20220323_2Sounds_167_2Sconfig12.mp4',
+                   'pure010_detectiongonogo_20220323_2Sounds_167_2Sconfig12.h5',
+                   cameraParams)
 
+videos.add_session('2022-03-24', '2chords',
+                   'pure010_20220324_2Sounds_171_2Sconfig13.mp4',
+                   'pure010_detectiongonogo_20220324_2Sounds_171_2Sconfig13.h5',
+                   cameraParams)
 
+videos.add_session('2022-03-24', '2chords',
+                   'pure010_20220324_2Sounds_172_2Sconfig13.mp4',
+                   'pure010_detectiongonogo_20220324_2Sounds_172_2Sconfig13.h5',
+                   cameraParams)
 
-
-
-
-
-
+videos.add_session('2022-03-24', '2chords',
+                   'pure010_20220324_2Sounds_173_2Sconfig13.mp4',
+                   'pure010_detectiongonogo_20220324_2Sounds_173_2Sconfig13.h5',
+                   cameraParams)
 
 
 
