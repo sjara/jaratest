@@ -90,9 +90,9 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3, pVal, pVal1, pV
      labelsSize = 16
      fig, subplt = plt.subplots(1,1)
      fig.set_size_inches(9.5, 7.5, forward = True)
-     sp = np.round(pVal, decimals=5)
-     sp1 = np.round(pVal1, decimals=5)
-     sp2 = np.round(pVal2, decimals=5)
+     sp = np.round(pVal, decimals=9)
+     sp1 = np.round(pVal1, decimals=9)
+     sp2 = np.round(pVal2, decimals=9)
      label1 = filesDict['name1'],'pval:',sp
      label2 = filesDict['name2'],'pval:',sp1
      label3 = filesDict['name3'],'pval:',sp2
@@ -103,7 +103,7 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3, pVal, pVal1, pV
 
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title('Pupil behavior in different conditions: pure004_20220125 config3', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior for change between 6kHz-15kHz: pure010 20220324', fontsize = labelsSize)
      plt.grid(b = True)
      #plt.ylim([550, 650])
      plt.xticks(fontsize = labelsSize)
@@ -146,9 +146,9 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      stdErrors1 = [preSignalStd1, postSignalStd1] 
      stdErrors2 = [preSignalStd2, postSignalStd2] 
      stdErrors3 = [preSignalStd3, postSignalStd3]
-     shortPval1 = np.round(pVal1, decimals=3)
-     shortPval2 = np.round(pVal2, decimals=2)
-     shortPval3 = np.round(pVal3, decimals=3)
+     shortPval1 = np.round(pVal1, decimals=9)
+     shortPval2 = np.round(pVal2, decimals=9)
+     shortPval3 = np.round(pVal3, decimals=9)
      pValue1 = 'P-value:', shortPval1
      pValue2 = 'P-value:', shortPval2
      pValue3 = 'P-value:', shortPval3
@@ -190,27 +190,28 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
 def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, plotData3): 
      fig, signalsPlots = plt.subplots(1,3, constrained_layout = True, sharey = True, sharex = True) 
      signalsPlots[0].plot(timeData1, plotData1) 
-     signalsPlots[0].set(title = 'Positive control') 
+     signalsPlots[0].set(title = 'Video 1') 
      signalsPlots[0].set_ylabel('Pupil Area', fontsize = 13)
      signalsPlots[1].plot(timeData2, plotData2) 
-     signalsPlots[1].set(title = 'Negative control')
+     signalsPlots[1].set(title = 'Video 2')
      signalsPlots[1].set_xlabel('Time(s)', fontsize = 13)
      signalsPlots[2].plot(timeData3, plotData3) 
-     signalsPlots[2].set(title = 'chordTrain')
-     plt.suptitle('Average trials behavior in time window: pure001_20210928')
+     signalsPlots[2].set(title = 'Video 3')
+     plt.suptitle('Average trials behavior in time window: pure011 20220322')
      plt.show() 
      return(plt.show())
 
 
-filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20220125_2Sounds_71_2Sconfig3_proc.npy', allow_pickle = True).item(), 
+filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220323_2Sounds_168_2Sconfig13_proc.npy', allow_pickle = True).item(), 
 	'config1':'2Sconfig1', 'sessionFile1':'50', 
-	'condition':'2ChordSound', 'sound':'ChordTrain', 'name1':'pure004', 
-	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20220125_2Sounds_72_2Sconfig3_proc.npy', allow_pickle = True).item(), 
-	'config2':'2Soundsconfig1', 'sessionFile2':'49', 'name2':'pure004', 
-	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20220125_2Sounds_73_2Sconfig3_proc.npy', allow_pickle = True).item(), 
-	'sessionFile3':'51', 'config3':'2Sconfig1', 'name3':'pure004'}
+	'condition':'2ChordSound', 'sound':'ChordTrain', 'name1':'pure010', 
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220323_2Sounds_168_2Sconfig13_proc.npy', allow_pickle = True).item(), 
+	'config2':'2Soundsconfig1', 'sessionFile2':'49', 'name2':'pure010', 
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220323_2Sounds_168_2Sconfig13_proc.npy', allow_pickle = True).item(), 
+	'sessionFile3':'51', 'config3':'2Sconfig1', 'name3':'pure010'}
 
-scatBarDict = {'title':'Pupil behavior before and after second frequency onset: pure006_20220127', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
+scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure010 20220324', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
+
 
 
 
@@ -267,7 +268,7 @@ xlabels = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation = np.array([-15, 15
+timeRangeForPupilDilation = np.array([-15, 15])
 pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRangeForPupilDilation)
 pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 
@@ -372,7 +373,7 @@ blink22 = np.array(blink2a).T # Creates transpose matrix of blink. Necessary for
 
 #---obtain values where sync signal is on---
 minBlink2 = np.amin(blink22)
-maxBlink2 = np.amax(blink22) - minBlink2 #1000
+maxBlink2 = np.amax(blink22) - minBlink2 
 blink2Bool2 = np.logical_and(blink22 > minBlink2, blink22 < maxBlink2 ) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues2 = np.diff(blink2Bool2) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal2 = np.flatnonzero(blink2RangeValues2) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
@@ -424,7 +425,7 @@ OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pA
 scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal2, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
 
 #--- Pupil Dilation plots --- 
-#pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
+pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
 
 #--- scatter & bar plots overlapped ---
-#scattBar = bar_and_scatter(averagePreSignal, averagePostSignal, averagePreSignal1, averagePostSignal1, averagePreSignal2, averagePostSignal2)
+#scattBar = barScat_plots(averagePreSignal, averagePostSignal, averagePreSignal1, averagePostSignal1, averagePreSignal2, averagePostSignal2)
