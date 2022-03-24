@@ -86,7 +86,7 @@ def comparison_plot(time, valuesData1, pVal):
      labelsSize = 16
      fig, subplt = plt.subplots(1,1)
      fig.set_size_inches(9.5, 7.5, forward = True)
-     sp = np.round(pVal, decimals=6)
+     sp = np.round(pVal, decimals=17)
      label1 = filesDict['name'],'pval:',sp
      
 
@@ -94,7 +94,7 @@ def comparison_plot(time, valuesData1, pVal):
 
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title('Pupil behavior in different conditions: pure004_20220126', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior in negative control: pure003_20210928', fontsize = labelsSize)
      plt.grid(b = True)
      #plt.ylim([550, 650])
      plt.xticks(fontsize = labelsSize)
@@ -157,10 +157,10 @@ def pupilDilation_time(timeData1, plotData1, pvalue):
      plt.show() 
      return(plt.show())
 
-filesDict = {'file1':'pure005_20220119_2Sounds_67_2Sconfig2_proc.npy', 
-	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_temerity_20220126_proc.npy', allow_pickle = True).item(), 
+filesDict = {'file1':'1pure005_20220119_2Sounds_67_2Sconfig2_proc.npy', 
+	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220323_2Sounds_168_2Sconfig13_proc.npy', allow_pickle = True).item(), 
 	'config1':'2Sconfig1', 'sessionFile1':'46', 
-	'condition':'2Sounds', 'sound':'ChordTrain', 'name':'pure004'}
+	'condition':'2Sounds', 'sound':'ChordTrain', 'name':'pure003'}
 
 proc = filesDict['loadFile1']
 
@@ -173,9 +173,9 @@ blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for pl
 
 
 #---obtain values where sync signal is on---
-minBlink = np.amin(blink2)
-maxBlink = np.amax(blink2) - minBlink
-blink2Bool = np.logical_and(blink2 > minBlink, blink2 < maxBlink) # Boolean values from the blink2 variable where True values will be within the established range.
+minBlink = np.amin(blink)
+maxBlink = np.amax(blink) - minBlink
+blink2Bool = np.logical_and(blink2 >= minBlink, blink2 < maxBlink) # Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -216,7 +216,7 @@ print('Wilcoxon value config14_1', wstat,',',  'P-value config14_1', pval)
 
 OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean, pval)
 
-scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal,  pval)
+#scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal,  pval)
 
 
 
