@@ -37,7 +37,17 @@ class Paradigm(templates.Paradigm2AFC):
     def __init__(self,parent=None, paramfile=None, paramdictname=None):
         super(Paradigm, self).__init__(parent)
         
-         # -- Manual control of outputs --
+        self.sm = statematrix.StateMatrix(inputs=rigsettings.INPUTS, outputs=rigsettings.OUTPUTS,
+                                          readystate='readyForNextTrial')
+
+        # -- Create dispatcher --
+        smServerType = rigsettings.STATE_MACHINE_TYPE
+        self.dispatcherModel = dispatcher.Dispatcher(serverType=smServerType,interval=0.1)
+        self.dispatcherView = dispatcher.DispatcherGUI(model=self.dispatcherModel)
+
+        # -- Module for saving data --
+        self.saveData = savedata.SaveData(rigsettings.DATA_DIR, remotedir=rigsettings.REMOTE_DIR)
+        # -- Manual control of outputs --
         self.manualControl = manualcontrol.ManualControl(self.dispatcherModel.statemachine)
         timeWaterValve = 0.03
         self.singleDrop = manualcontrol.SingleDrop(self.dispatcherModel.statemachine, timeWaterValve)
