@@ -115,22 +115,6 @@ class Paradigm(templates.Paradigm2AFC):
                                                          value=0,group='Switching parameters')
         switchingParams = self.params.layout_group('Switching parameters')
         '''
-      # -- In this version the laser is set to last as long as the target --
-        self.params['laserMode'] = paramgui.MenuParam('Laser mode',
-                                                      ['none','bilateral'],
-                                                      value=0, group='Photostimulation parameters')
-        self.params['laserTrial'] = paramgui.MenuParam('Laser trial', ['no','yes'],
-                                                       value=0, enabled=False,
-                                                       group='Photostimulation parameters')
-        self.params['laserOnset'] = paramgui.NumericParam('Laser onset (from sound)',value=0.0,
-                                                          enabled=False,
-                                                          units='s',group='Photostimulation parameters')
-        self.params['laserDuration'] = paramgui.NumericParam('Laser duration',value=0.4, enabled=True,
-                                                             units='s',group='Photostimulation parameters')
-        # -- Percent trials with laser. Remaining trials will be no laser.
-        self.params['fractionLaserTrials'] = paramgui.NumericParam('Fraction trials with laser',value=0.25,
-                                                            units='',group='Photostimulation parameters')
-        photostimParams = self.params.layout_group('Photostimulation parameters')
         
         self.params['psycurveMode'] = paramgui.MenuParam('PsyCurve Mode',
                                                          ['off','uniform', 'controls'],
