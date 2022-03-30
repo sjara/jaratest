@@ -9,29 +9,21 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 from jaratoolbox import extraplots
 
-print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, 4 = AM cohort, 5 = PM cohort or enter a specific animal name')
+print('Enter which subjects you want to look at: 1 = all or enter a specific animal name')
 whichSubject = input()
 if whichSubject == '1':
-    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042'] #VOT animals
-elif whichSubject == '2':
-    subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051'] #FT animals
-elif whichSubject == '3':
-    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
-elif whichSubject == '4':
-    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili048', 'bili049', 'bili050', 'bili051']
-elif whichSubject == '5':
-    subject = ['bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047']
+    subject = ['febe007', 'febe008'] #VOT animals
 else:
     subject = [whichSubject]
 
-paradigm = '2afc_speech'
+paradigm = 'headfixed_speech'
 
 # Add the dates
 #session = '20220113a'
-print('input the session name (e.g. 20220113):')
+print('input the session name (e.g. 20220113a):')
 session = input()
-suffix = "a"
-session = session + suffix
+#suffix = "a"
+#session = session + suffix
 
 
 ## Multiple subjects, single day
@@ -40,20 +32,17 @@ for nSub in range(len(subject)):
     bdata = loadbehavior.BehaviorData(behavFile)
 
 
-    automationMode = bdata['automationMode'][-1] == bdata.labels['automationMode']['increase_delay']
-    mode = bdata.labels['outcomeMode'][bdata['outcomeMode'][-1]]
-    print()
+    taskMode = bdata.labels['taskMode'][bdata['taskMode'][-1]]
+    numLicksL = bdata['nLicksL'][-1]
+    numLicksR = bdata['nLicksR'][-1]
     print(subject[nSub])
-    numTrials = len(bdata['outcomeMode'])
-    print(mode)
+    numTrials = len(bdata['taskMode'])
+    print(taskMode)
     print('# of Trials: {}'.format(numTrials))
+    print('# Licks L: {}'.format(numLicksL))
+    print('# Licks R: {}'.format(numLicksR))
 
-    if automationMode == 1:
-        maxDelay = np.max(bdata['delayToTarget'])
-        print('maxDelay: {}'.format(maxDelay))
-
-
-    if bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['only_if_correct']:
+    if bdata['taskMode'][-1] == bdata.labels['taskMode']['discriminate_stim']:
         leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
         rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
         leftChoice = bdata['choice'] == bdata.labels['choice']['left']
@@ -104,28 +93,30 @@ for nSub in range(len(subject)):
 
 
 
-    if bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['sides_direct']:
-        if numTrials >= 100:
+    if bdata['taskMode'][-1] == bdata.labels['taskMode']['water_after_sound']: #Stage1
+        if numLicksL >= 100 and numLicksR >= 100:
             print('move to next stage')
         else:
             print('stay on this stage')
-    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['direct']:
-        if numTrials >= 200:
+    elif bdata['taskMode'][-1] == bdata.labels['taskMode']['lick_on_stim']: #Stage2
+        if bdata['nHitsLeft'][-1] >= 100 and bdata['nHitsRight'][-1] >= 100:
             print('move to next stage')
+            print('# Hits L: {}'.format(bdata['nHitsLeft'][-1]))
+            print('# Hits R: {}'.format(bdata['nHitsRight'][-1]))
         else:
             print('stay on this stage')
-    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['on_next_correct']:
-        if numTrials >= 300:
-            print('move to next stage')
-        else:
-            print('stay on this stage')
-    elif bdata['outcomeMode'][-1] == bdata.labels['outcomeMode']['only_if_correct']:
-        if bdata['antibiasMode'][-1] == bdata.labels['antibiasMode']['repeat_mistake']:
-            print('Bias Correct ON')
-            if rightPercentCorrect >= 30 and leftPercentCorrect >= 30:
-                print('move off of bias mode')
+            print('# Hits L: {}'.format(bdata['nHitsLeft'][-1]))
+            print('# Hits R: {}'.format(bdata['nHitsRight'][-1]))
+    elif bdata['taskMode'][-1] == bdata.labels['discriminate_stim']:
+        if bdata['rewardSideMode'][-1] == bdata.labels['repeat_mistake']: #Stage3
+            if leftPercentCorrect >= 70 and sum(leftTrials) >=100 and rightPercentCorrect >= 70 and sum(rightTrials) >= 100:
+                print('move to next stage')
             else:
-                print('stay on bias mode')
+                print('stay on this stage')
+        elif bdata['rewardSideMode'][-1] == bdata.labels['rewardSideMode']['random']: #Stage4
+            print('you are on stage4! Bother Jenny if there is not a stage5 yet')
+
+        '''
         elif bdata['psycurveMode'][-1] != bdata.labels['psycurveMode']['off']:
             print('you are on psycurve mode, woohoo!')
             if bdata['psycurveMode'][1] == bdata.labels['psycurveMode']['uniform']:
@@ -138,4 +129,4 @@ for nSub in range(len(subject)):
             elif rightPercentCorrect >= 70 and leftPercentCorrect >= 70 and numTrials >= 300:
                 print('move to psycuve mode')
             else:
-                print('stay on this stage')
+                print('stay on this stage')'''
