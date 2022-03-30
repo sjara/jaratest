@@ -41,16 +41,16 @@ class Paradigm(templates.Paradigm2AFC):
                                           readystate='readyForNextTrial')
 
         # -- Create dispatcher --
-        smServerType = rigsettings.STATE_MACHINE_TYPE
-        self.dispatcherModel = dispatcher.Dispatcher(serverType=smServerType,interval=0.1)
-        self.dispatcherView = dispatcher.DispatcherGUI(model=self.dispatcherModel)
+        # smServerType = rigsettings.STATE_MACHINE_TYPE
+        # self.dispatcherModel = dispatcher.Dispatcher(serverType=smServerType,interval=0.1)
+        # self.dispatcherView = dispatcher.DispatcherGUI(model=self.dispatcherModel)
 
         # -- Module for saving data --
         self.saveData = savedata.SaveData(rigsettings.DATA_DIR, remotedir=rigsettings.REMOTE_DIR)
         # -- Manual control of outputs --
-        self.manualControl = manualcontrol.ManualControl(self.dispatcherModel.statemachine)
-        timeWaterValve = 0.03
-        self.singleDrop = manualcontrol.SingleDrop(self.dispatcherModel.statemachine, timeWaterValve)
+        # self.manualControl = manualcontrol.ManualControl(self.dispatcherModel.statemachine)
+        # timeWaterValve = 0.03
+        # self.singleDrop = manualcontrol.SingleDrop(self.dispatcherModel.statemachine, timeWaterValve)
 
         # -- Performance dynamics plot --
         performancedynamicsplot.set_pg_colors(self)
@@ -63,8 +63,8 @@ class Paradigm(templates.Paradigm2AFC):
                                                                units='s',group='Water delivery')
         self.params['timeWaterValveR'] = paramgui.NumericParam('Time valve right',value=0.03,
                                                                units='s',group='Water delivery')
-        self.params['timeWaterValve'] = paramgui.NumericParam('Time valve',value=timeWaterValve,
-                                                                units='s',group='Water delivery')
+        # self.params['timeWaterValve'] = paramgui.NumericParam('Time valve',value=timeWaterValve,
+        #                                                         units='s',group='Water delivery')
         waterDelivery = self.params.layout_group('Water delivery')
 
         self.params['outcomeMode'] = paramgui.MenuParam('Outcome mode',
