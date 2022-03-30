@@ -356,6 +356,7 @@ class Paradigm(templates.Paradigm2AFC):
         allFreq = np.logspace(np.log10(minFreq),np.log10(maxFreq),nFreqs)
         randPre = np.random.randint(nFreqs)
         preFreq = allFreq[randPre]
+        postFreq = preFreq
         minRatio = self.params['minFreqRatio'].get_value()
         possiblePostBool = np.logical_or( (preFreq/allFreq)>=minRatio, (allFreq/preFreq)>=minRatio )
         possiblePostInds = np.flatnonzero(possiblePostBool)
