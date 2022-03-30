@@ -279,8 +279,6 @@ class Paradigm(templates.Paradigm2AFC):
         
         layoutCol4.addWidget(photostimParams)
         layoutCol4.addStretch()
-        layoutCol4.addWidget(photostimParams)
-        layoutCol4.addStretch()
         layoutCol4.addWidget(soundParams)
         layoutCol4.addStretch()
         layoutCol4.addWidget(reportParams)
