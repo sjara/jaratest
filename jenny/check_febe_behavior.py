@@ -33,8 +33,8 @@ for nSub in range(len(subject)):
 
 
     taskMode = bdata.labels['taskMode'][bdata['taskMode'][-1]]
-    numLicksL = bdata['nLicksL'][-1]
-    numLicksR = bdata['nLicksR'][-1]
+    numLicksL = bdata['nLicksLeft'][-1]
+    numLicksR = bdata['nLicksRight'][-1]
     print(subject[nSub])
     numTrials = len(bdata['taskMode'])
     print(taskMode)
@@ -94,21 +94,24 @@ for nSub in range(len(subject)):
 
 
     if bdata['taskMode'][-1] == bdata.labels['taskMode']['water_after_sound']: #Stage1
+        print('Stage1')
         if numLicksL >= 100 and numLicksR >= 100:
             print('move to next stage')
         else:
             print('stay on this stage')
     elif bdata['taskMode'][-1] == bdata.labels['taskMode']['lick_on_stim']: #Stage2
+        print('Stage2')
         if bdata['nHitsLeft'][-1] >= 100 and bdata['nHitsRight'][-1] >= 100:
+            print('# Hits L: {}'.format(bdata['nHitsLeft'][-1]))
+            print('# Hits R: {}'.format(bdata['nHitsRight'][-1]))
             print('move to next stage')
-            print('# Hits L: {}'.format(bdata['nHitsLeft'][-1]))
-            print('# Hits R: {}'.format(bdata['nHitsRight'][-1]))
         else:
-            print('stay on this stage')
             print('# Hits L: {}'.format(bdata['nHitsLeft'][-1]))
             print('# Hits R: {}'.format(bdata['nHitsRight'][-1]))
-    elif bdata['taskMode'][-1] == bdata.labels['discriminate_stim']:
-        if bdata['rewardSideMode'][-1] == bdata.labels['repeat_mistake']: #Stage3
+            print('stay on this stage')
+    elif bdata['taskMode'][-1] == bdata.labels['taskMode']['discriminate_stim']:
+        if bdata['rewardSideMode'][-1] == bdata.labels['rewardSideMode']['repeat_mistake']: #Stage3
+            print('Stage3')
             if leftPercentCorrect >= 70 and sum(leftTrials) >=100 and rightPercentCorrect >= 70 and sum(rightTrials) >= 100:
                 print('move to next stage')
             else:
