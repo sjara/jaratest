@@ -9,7 +9,7 @@ from jaratoolbox import extraplots
 from jaratoolbox import behavioranalysis
 
 
-inforecFile = os.path.join(settings.INFOREC_PATH,'npix001_inforec.py')
+inforecFile = os.path.join(settings.INFOREC_PATH,'feat007_inforec.py')
 celldb = celldatabase.generate_cell_database(inforecFile)
 
 for indRow, dbRow in celldb.iterrows():
@@ -37,16 +37,19 @@ for indRow, dbRow in celldb.iterrows():
     possibleVOTParams = np.unique(VOTParamsEachTrial)
     FTParamsEachTrial = bdata['targetFTpercent']
     possibleFTParams = np.unique(FTParamsEachTrial)
-    trialsEachCond = behavioranalysis.find_trials_each_combination(VOTParamsEachTrial, possibleVOTParams, FTParamsEachTrial, possibleFTParams)
+    #trialsEachCond = behavioranalysis.find_trials_each_combination(VOTParamsEachTrial, possibleVOTParams, FTParamsEachTrial, possibleFTParams)
+    trialsEachVOTCond = behavioranalysis.find_trials_each_type(VOTParamsEachTrial, possibleVOTParams)
+    trialsEachFTCond = behavioranalysis.find_trials_each_type(FTParamsEachTrial, possibleFTParams)
+    colorEachCond = ['0.3','0.5','c','b']
 
-
+    # Raster -- VOT (collapse FTs)
     plt.subplot(334)
-    fRaster = extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachCond)
+    fRaster = extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOTCond, colorEachCond)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
-    plt.title('FTVOTBorders')
+    plt.title('VOT')
 
-    # PSTH -- FTVOTBorders
+    # PSTH -- VOT (collapse FTs)
     binWidth = 0.010
     timeRange = [-0.3,  0.45]
     timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
@@ -55,9 +58,30 @@ for indRow, dbRow in celldb.iterrows():
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     plt.subplot(337)
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOTCond, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
+
+    # Raster -- FT (collapse VOTs)
+    plt.subplot(336)
+    fRaster = extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFTCond, colorEachCond)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Trials')
+    plt.title('FT')
+
+    # PSTH -- FT (collapse VOTs)
+    binWidth = 0.010
+    timeRange = [-0.3,  0.45]
+    timeVec = np.arange(timeRange[0],timeRange[-1],binWidth)
+    smoothWinSizePsth = 6
+    lwPsth = 2
+    downsampleFactorPsth = 3
+    spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
+    plt.subplot(339)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFTCond, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Firing Rate (Sp/s)')
+
 
     #AM
     ephysData, bdata = oneCell.load('AM')
