@@ -391,12 +391,33 @@ class Paradigm(templates.Paradigm2AFC):
                     minRatio = self.params['minFreqRatio'].get_value()
                     possiblePostBool = np.logical_or( (preFreq/allFreq)>=minRatio, (allFreq/preFreq)>=minRatio )
                     possiblePostInds = np.flatnonzero(possiblePostBool)
+                    randPost =np.rrandom.choice(possiblePostInds)
+                    postFreq = allFreq[randPost]
                     if len(possiblePostInds)==0:
                         self.dispatcherView.stop()
                         raise ValueError('There are no frequencies in the range far enough'+\
                                  'from{0.0f} Hz.'.format(allFreq[randPre]))
-            randPost =np.rrandom.choice(possiblePostInds)
-            postFreq = allFreq[randPost]
+                    
+                    
+            #         preDuration = self.params['preDuration'].get_value()
+            #         postDuration = self.params['postDuration'].get_value()
+            #         soundDuration = preDuration + postDuration
+            #         randNum = (2*np.random.random(1)[0]-1)
+            #         maxFreq = self.params['maxFreq'].get_value()
+            #         minFreq = self.params['minFreq'].get_value()
+            #         nFreqs = self.params['nFreqs'].get_value()
+            #         allFreq = np.logspace(np.log10(minFreq),np.log10(maxFreq),nFreqs)
+            #         randPre = np.random.randint(nFreqs)
+            #         preFreq = allFreq[randPre]
+            #         minRatio = self.params['minFreqRatio'].get_value()
+            #         possiblePostBool = np.logical_or( (preFreq/allFreq)>=minRatio, (allFreq/preFreq)>=minRatio )
+            #         possiblePostInds = np.flatnonzero(possiblePostBool)
+            #         if len(possiblePostInds)==0:
+            #             self.dispatcherView.stop()
+            #             raise ValueError('There are no frequencies in the range far enough'+\
+            #                      'from{0.0f} Hz.'.format(allFreq[randPre]))
+            # randPost =np.rrandom.choice(possiblePostInds)
+            # postFreq = allFreq[randPost]
                     
         #=== Prepare next trial ===
         self.execute_automation(nextTrial)
