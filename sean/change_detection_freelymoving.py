@@ -386,6 +386,7 @@ class Paradigm(templates.Paradigm2AFC):
                     minFreq = self.params['minFreq'].get_value()
                     nFreqs = self.params['nFreqs'].get_value()
                     allFreq = np.logspace(np.log10(minFreq),np.log10(maxFreq),nFreqs)
+                    allFreq = np.logspace(np.log10(minFreq),np.log10(maxFreq),nFreqs)
                     randPre = np.random.randint(nFreqs)
                     preFreq = allFreq[randPre]
                     minRatio = self.params['minFreqRatio'].get_value()
