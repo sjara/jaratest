@@ -104,8 +104,62 @@ videos.add_session('2022-03-24', '2chords',
                    'pure010_detectiongonogo_20220324_2Sounds_173_2Sconfig13.h5',
                    cameraParams)
 
+videos.add_session('2022-03-25', '2chords',
+                   'pure010_20220325_2Sounds_177_2Sconfig14.mp4',
+                   'pure010_detectiongonogo_20220325_2Sounds_177_2Sconfig14.h5',
+                   cameraParams)
 
+videos.add_session('2022-03-25', '2chords',
+                   'pure010_20220325_2Sounds_178_2Sconfig14.mp4',
+                   'pure010_detectiongonogo_20220325_2Sounds_178_2Sconfig14.h5',
+                   cameraParams)
+                   
+videos.add_session('2022-03-28', '2chords',
+                   'pure010_20220328_2Sounds_179_2Sconfig14.mp4',
+                   'pure010_detectiongonogo_20220328_2Sounds_179_2Sconfig14.h5',
+                   cameraParams)                   
+                                      
+videos.add_session('2022-03-31', 'multipleFreqs',
+                   'pure010_20220331_mfq_183_mconfig1.mp4',
+                   'pure010_am_tuning_curve_20220331_mfq_183_mconfig1.h5',
+                   cameraParams)
 
-
+videos.add_session('2022-03-31', 'mutlipleFreqs',
+                   'pure010_20220331_mfq_184_mconfig1',
+                   'pure010_am_tuning_curve_20220331_mfq_183_mconfig1.h5',
+                   cameraParams)
+                   
+videos.add_session('2022-03-31', 'multipleFreqs',
+                   'pure010_20220331_mfq_185_mconfig1.mp4',
+                   'pure010_am_tuning_curve_20220331_mfq_185_mconfig1.h5',
+                   cameraParams)                   
+                                      
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
 
 
