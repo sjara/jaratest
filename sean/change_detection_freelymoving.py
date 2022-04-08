@@ -423,20 +423,20 @@ class Paradigm(templates.Paradigm2AFC):
         self.execute_automation(nextTrial)
         nextCorrectChoice = self.results['rewardSide'][nextTrial]
         
-        psycurveMode = self.params['psycurveMode'].get_string()
-        #=== prepare sound===
-        # self.params['preFreq'].set_value(preFreq)
-        # self.params['postFreq'].set_value(postFreq)
-        # self.prepare_sounds()
+        # psycurveMode = self.params['psycurveMode'].get_string()
+        # #=== prepare sound===
+        # # self.params['preFreq'].set_value(preFreq)
+        # # self.params['postFreq'].set_value(postFreq)
+        # # self.prepare_sounds()
         
-        if psycurveMode=='off':
-            if nextCorrectChoice==self.results.labels['rewardSide']['left']:
-                postFreq = preFreq
-            # elif nextCorrectChoice==self.results.labels['rewardSide']['right']:
-            #     postFreq = preFreq
-            #     postFreq = allFreq[randPost]
-            else:
-                raise ValueError('Value of nextCorrectChoice is not appropriate')
+        # if psycurveMode=='off':
+        #     if nextCorrectChoice==self.results.labels['rewardSide']['left']:
+        #             postFreq = preFreq
+        #     # elif nextCorrectChoice==self.results.labels['rewardSide']['right']:
+        #     #     postFreq = preFreq
+        #     #     postFreq = allFreq[randPost]
+        #     else:
+        #         raise ValueError('Value of nextCorrectChoice is not appropriate')
             
         # self.prepare_target_sound(postFreq = preFreq, postFreq = allFreq[randPost])
         # self.prepare_punish_sound()
