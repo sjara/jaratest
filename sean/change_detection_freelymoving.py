@@ -356,7 +356,7 @@ class Paradigm(templates.Paradigm2AFC):
         allFreq = np.logspace(np.log10(minFreq),np.log10(maxFreq),nFreqs)
         randPre = np.random.randint(nFreqs)
         preFreq = allFreq[randPre]
-        postFreq = preFreq
+        #postFreq = preFreq
         minRatio = self.params['minFreqRatio'].get_value()
         possiblePostBool = np.logical_or( (preFreq/allFreq)>=minRatio, (allFreq/preFreq)>=minRatio )
         possiblePostInds = np.flatnonzero(possiblePostBool)
@@ -374,29 +374,29 @@ class Paradigm(templates.Paradigm2AFC):
             self.params.update_history(nextTrial-1)
             self.calculate_results(nextTrial-1)
             
-            if self.params['antibiasMode'].get_string()=='repeat_mistake':
-                if self.results['outcome'][nextTrial-1]==self.results.labels['outcome']['error']:
-                    self.results['rewardSide'][nextTrial] =self.results['rewardSide'][nextTrial-1]
+            # if self.params['antibiasMode'].get_string()=='repeat_mistake':
+            #     if self.results['outcome'][nextTrial-1]==self.results.labels['outcome']['error']:
+            #         self.results['rewardSide'][nextTrial] =self.results['rewardSide'][nextTrial-1]
                     
-                    preDuration = self.params['preDuration'].get_value()
-                    postDuration = self.params['postDuration'].get_value()
-                    soundDuration = preDuration + postDuration
-                    randNum = (2*np.random.random(1)[0]-1)
-                    maxFreq = self.params['maxFreq'].get_value()
-                    minFreq = self.params['minFreq'].get_value()
-                    nFreqs = self.params['nFreqs'].get_value()
-                    allFreq = np.logspace(np.log10(minFreq),np.log10(maxFreq),nFreqs)
-                    randPre = np.random.randint(nFreqs)
-                    preFreq = allFreq[randPre]
-                    minRatio = self.params['minFreqRatio'].get_value()
-                    possiblePostBool = np.logical_or( (preFreq/allFreq)>=minRatio, (allFreq/preFreq)>=minRatio )
-                    possiblePostInds = np.flatnonzero(possiblePostBool)
-                    randPost =np.rrandom.choice(possiblePostInds)
-                    postFreq = allFreq[randPost]
-                    if len(possiblePostInds)==0:
-                        self.dispatcherView.stop()
-                        raise ValueError('There are no frequencies in the range far enough'+\
-                                 'from{0.0f} Hz.'.format(allFreq[randPre]))
+            preDuration = self.params['preDuration'].get_value()
+            postDuration = self.params['postDuration'].get_value()
+            soundDuration = preDuration + postDuration
+            randNum = (2*np.random.random(1)[0]-1)
+            maxFreq = self.params['maxFreq'].get_value()
+            minFreq = self.params['minFreq'].get_value()
+            nFreqs = self.params['nFreqs'].get_value()
+            allFreq = np.logspace(np.log10(minFreq),np.log10(maxFreq),nFreqs)
+            randPre = np.random.randint(nFreqs)
+            preFreq = allFreq[randPre]
+            minRatio = self.params['minFreqRatio'].get_value()
+            possiblePostBool = np.logical_or( (preFreq/allFreq)>=minRatio, (allFreq/preFreq)>=minRatio )
+            possiblePostInds = np.flatnonzero(possiblePostBool)
+            randPost =np.rrandom.choice(possiblePostInds)
+            #postFreq = allFreq[randPost]
+            if len(possiblePostInds)==0:
+                self.dispatcherView.stop()
+                raise ValueError('There are no frequencies in the range far enough'+\
+                             'from{0.0f} Hz.'.format(allFreq[randPre]))
                     
                     
             #         preDuration = self.params['preDuration'].get_value()
@@ -432,8 +432,9 @@ class Paradigm(templates.Paradigm2AFC):
         if psycurveMode=='off':
             if nextCorrectChoice==self.results.labels['rewardSide']['left']:
                 postFreq = preFreq
-            elif nextCorrectChoice==self.results.labels['rewardSide']['right']:
-                postFreq = allFreq[randPost]
+            # elif nextCorrectChoice==self.results.labels['rewardSide']['right']:
+            #     postFreq = preFreq
+            #     postFreq = allFreq[randPost]
             else:
                 raise ValueError('Value of nextCorrectChoice is not appropriate')
             
