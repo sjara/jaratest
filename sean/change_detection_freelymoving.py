@@ -448,11 +448,11 @@ class Paradigm(templates.Paradigm2AFC):
             trialTypeInd=0
         self.params['laserTrial'].set_value(trialTypeInd)
         
-        if nextTrial < self.params['maxNtrials'].get_value():
-            self.set_state_matrix(nextCorrectChoice)
-            self.dispatcher.ready_to_start_trial()
-        else:
-            self.dispatcher.widget.stop()
+        # if nextTrial < self.params['maxNtrials'].get_value():
+        #     self.set_state_matrix(nextCorrectChoice)
+        #     self.dispatcher.ready_to_start_trial()
+        # else:
+        #     self.dispatcher.widget.stop()
         
          # -- Update sides plot --
         self.mySidesPlot.update(self.results['rewardSide'],self.results['outcome'],nextTrial)
@@ -472,6 +472,12 @@ class Paradigm(templates.Paradigm2AFC):
                 laserOutput = ['stim1','stim2']
             else:
                 laserOutput = []
+            
+            if nextTrial < self.params['maxNtrials'].get_value():
+                self.set_state_matrix(nextCorrectChoice)
+                self.dispatcher.ready_to_start_trial()
+            else:
+                self.dispatcher.widget.stop()
             
             targetDuration = self.params['targetDuration'].get_value()
             relevantFeature = self.params['relevantFeature'].get_string()
