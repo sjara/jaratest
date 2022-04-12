@@ -49,7 +49,7 @@ for indRow, dbRow in celldb.iterrows():
     # Raster -- VOT (FTmin)
     plt.subplot(3,4,5)
     fRaster = extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmin, colorEachCond)
-    plt.setp(fRaster, ms=2)
+    #plt.setp(fRaster, ms=2)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
     plt.title('VOT, FT = min')
@@ -91,7 +91,7 @@ for indRow, dbRow in celldb.iterrows():
     # Raster -- FT (VOT = min)
     plt.subplot(3,4,7)
     fRaster = extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFT_VOTmin, colorEachCond)
-    plt.setp(fRaster, ms=2)
+    #plt.setp(fRaster, ms=2)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
     plt.title('FT, VOT = min')
@@ -113,7 +113,7 @@ for indRow, dbRow in celldb.iterrows():
     # Raster -- FT (VOT = max)
     plt.subplot(3,4,8)
     fRaster = extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFT_VOTmax, colorEachCond)
-    plt.setp(fRaster, ms=2)
+    #plt.setp(fRaster, ms=2)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
     plt.title('FT, VOT = max')
@@ -158,6 +158,10 @@ for indRow, dbRow in celldb.iterrows():
     # Align spikes to an event
     spikeTimes = ephysData['spikeTimes']
     eventOnsetTimes = ephysData['events']['stimOn']
+    if len(eventOnsetTimes) > len(bdata['currentIntensity']):
+        print('Ephys data is {} trial longer than bdata, ignoring last trial of ephysData'.format(len(eventOnsetTimes) - len(bdata['currentIntensity'])))
+        newLastTrial = len(bdata['currentIntensity'])
+        eventOnsetTimes = eventOnsetTimes[0:newLastTrial]
     timeRange = [-0.2,  0.3]  # In seconds
     (spikeTimesFromEventOnset,trialIndexForEachSpike,indexLimitsEachTrial) = spikesanalysis.eventlocked_spiketimes(spikeTimes, eventOnsetTimes, timeRange)
 
@@ -169,63 +173,94 @@ for indRow, dbRow in celldb.iterrows():
     possibleIntensities = np.unique(bdata['currentIntensity'])
     trialsEachFreq = behavioranalysis.find_trials_each_type(soundFreqEachTrial, possibleFreq)
     plt.subplot(3,4,3)
-    fRaster = extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFreq)
-    plt.setp(fRaster, ms=2)
+    fRaster = extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachFreq)
+    #plt.setp(fRaster, ms=2)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
     plt.title('Pure Tones')
-    '''
+
     # Fit Gaussian tuning
     def gaussian(x, a, x0, sigma, y0):
         return a*np.exp(-(x-x0)**2/(2*sigma**2))+y0
 
-    #Possible Freq
-    #averageFiringRate = [2.3, 5.6, 10.1, 14.2, 8.9]
+    #Get average firing rates for each freq, intensity
     binWidth = 0.010
     timeRange = [0,  bdata['stimDur'][-1]]
     trialsEachCond = behavioranalysis.find_trials_each_combination(soundFreqEachTrial, possibleFreq, soundIntensityEachTrial, possibleIntensities)
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange)
-    spikesEachFreq_60db = spikesanalysis.avg_num_spikes_each_condition(trialsEachCond[:,:,0], indexLimitsEachTrial)
-    spikesEachFreq_70db = spikesanalysis.avg_num_spikes_each_condition(trialsEachCond[:,:,1], indexLimitsEachTrial)
-    # ?? trialsEachFreq == 694, indexLimitsEachTrial == 695.
-    avgRateEachFreq_60db = spikesEachFreq_60db/bdata['stimDur'][-1]
-    avgRateEachFreq_70db = spikesEachFreq_70db/bdata['stimDur'][-1]
+    avgRateEachCond = np.empty((len(possibleFreq), len(possibleIntensities)))
+    for indFreq, thisFreq in enumerate(possibleFreq):
+        for indIntensity, thisIntensity in enumerate(possibleIntensities):
+            spikeCountThisCond = sum(spikeCountMat[trialsEachCond[:,indFreq,indIntensity]])
+            numTrialsThisCond = sum(trialsEachCond[:,indFreq,indIntensity])
+            avgCountThisCond = spikeCountThisCond/numTrialsThisCond
+            timeWindow = timeRange[1] - timeRange[0]
+            avgRateEachCond[indFreq,indIntensity] = avgCountThisCond/timeWindow
+
     possibleLogFreq = np.log2(possibleFreq)
     nFreq = len(possibleLogFreq)
 
+    #Fit for intensity = 60dB
     # PARAMS: a, x0, sigma, y0
     p0 = [1, possibleLogFreq[nFreq//2], 1, 0]
     bounds = ([0, possibleLogFreq[0], 0, 0],
               [np.inf, possibleLogFreq[-1], np.inf, np.inf])
 
-    popt_60, pcov_60 = scipy.optimize.curve_fit(gaussian, possibleLogFreq,
-                                          averageFiringRate_60db, p0=p0, bounds=bounds)
-
-    popt_70, pcov_70 = scipy.optimize.curve_fit(gaussian, possibleLogFreq,
-                                          averageFiringRate_70db, p0=p0, bounds=bounds)
+    popt, pcov = scipy.optimize.curve_fit(gaussian, possibleLogFreq,
+                                          avgRateEachCond[:,0], p0=p0, bounds=bounds)
 
     # -- Calculate R^2 --
     gaussianResp = gaussian(possibleLogFreq, *popt)
-    residuals = averageFiringRate - gaussianResp
+    residuals = avgRateEachCond[:,0] - gaussianResp
     ssquared = np.sum(residuals**2)
-    ssTotal = np.sum((averageFiringRate-np.mean(averageFiringRate))**2)
+    ssTotal = np.sum((avgRateEachCond[:,0]-np.mean(avgRateEachCond[:,0]))**2)
     Rsquared = 1 - (ssquared/ssTotal)
 
     # -- Calculate bandwidth --
     fullWidthHalfMax = 2.355*popt[2] # Sigma is popt[2]
 
-    plt.clf()
-    xvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
-    yvals = gaussian(xvals, *popt)
-    plt.plot(possibleLogFreq, averageFiringRate, 'o')
+    plt.subplot(3,4,4)
+    yvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
+    xvals = gaussian(yvals, *popt)
+    plt.plot(avgRateEachCond[:,0], possibleLogFreq, 'o')
     plt.plot(xvals, yvals, '-', lw=3)
     plt.title(f'R^2 = {Rsquared:0.4f} ,  Bandwidth = {fullWidthHalfMax:0.2f} oct')
-    plt.ylabel('Firing rate (Hz)')
-    plt.xlabel('Frequency (kHz)')
-    xTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
-    plt.xticks(possibleLogFreq, xTickLabels)
+    plt.xlabel('Firing rate (Hz)')
+    plt.ylabel('Frequency (kHz)')
+    yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
+    plt.yticks(possibleLogFreq, yTickLabels)
+
+    #Fit for intensity = 70dB
+    # PARAMS: a, x0, sigma, y0
+    p0 = [1, possibleLogFreq[nFreq//2], 1, 0]
+    bounds = ([0, possibleLogFreq[0], 0, 0],
+              [np.inf, possibleLogFreq[-1], np.inf, np.inf])
+
+    popt, pcov = scipy.optimize.curve_fit(gaussian, possibleLogFreq,
+                                          avgRateEachCond[:,1], p0=p0, bounds=bounds)
+
+    # -- Calculate R^2 --
+    gaussianResp = gaussian(possibleLogFreq, *popt)
+    residuals = avgRateEachCond[:,1] - gaussianResp
+    ssquared = np.sum(residuals**2)
+    ssTotal = np.sum((avgRateEachCond[:,1]-np.mean(avgRateEachCond[:,1]))**2)
+    Rsquared = 1 - (ssquared/ssTotal)
+
+    # -- Calculate bandwidth --
+    fullWidthHalfMax = 2.355*popt[2] # Sigma is popt[2]
+
+    plt.subplot(3,4,4)
+    yvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
+    xvals = gaussian(yvals, *popt)
+    plt.plot(avgRateEachCond[:,1], possibleLogFreq, 'o')
+    plt.plot(xvals, yvals, '-', lw=3, linestyle = '--')
+    plt.title(f'R^2 = {Rsquared:0.4f} ,  Bandwidth = {fullWidthHalfMax:0.2f} oct')
+    plt.xlabel('Firing rate (Hz)')
+    plt.ylabel('Frequency (kHz)')
+    yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
+    plt.yticks(possibleLogFreq, yTickLabels)
     plt.show()
-    '''
+
 
 
     plt.gcf().set_size_inches([14, 12])
