@@ -12,7 +12,7 @@ from jaratoolbox import extraplots
 print('Enter which subjects you want to look at: 1 = all or enter a specific animal name')
 whichSubject = input()
 if whichSubject == '1':
-    subject = ['febe007', 'febe008', 'febe009', 'febe010', 'febe012'] #VOT animals
+    subject = ['febe007', 'febe008', 'febe009', 'febe012'] #VOT animals
 else:
     subject = [whichSubject]
 
