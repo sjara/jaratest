@@ -429,55 +429,6 @@ videos.add_session('2022-02-22', '2chords',
                    'pure004_detectiongonogo_20220222_2Sounds_151_2Sconfig11.h5',
                    cameraParams)
 
-#Temerity Editing
-videos.add_session('2022-02-15', '2chords',
-                   'pure004_20220215_2Sounds_01_2Sconfig15.mp4',
-                   '',
-                   cameraParams)
-
-videos.add_session('2022-02-15', '2chords',
-                   'pure004_20220215_2Sounds_02_2Sconfig15.mp4',
-                   '',
-                   cameraParams)
-
-videos.add_session('2022-01-13', '2chords',
-                   'pure004_20220113_2Sounds_04_2Sconfig2.mp4',
-                   '',
-                   cameraParams)
-videos.add_session('2022-02-01', '2chords',
-                   'pure004_20220201_2Sounds_05_2Sconfig16.mp4',
-                   '',
-                   cameraParams)
-
-videos.add_session('2022-02-06', '2chords',
-                   'pure004_20220206_2Sounds_06_2Sconfig17.mp4',
-                   '',
-                   cameraParams)
-
-videos.add_session('2022-02-09', '2chords',
-                   'pure004_20220209_2Sounds_07_2Sconfig17.mp4',
-                   '',
-                   cameraParams)
-videos.add_session('2022-02-10', '2chords',
-                   'pure004_20220210_2Sounds_08_2Sconfig17.mp4',
-                   '',
-                   cameraParams)
-videos.add_session('2022-02-13', '2chords',
-                   'pure004_20220213_2Sounds_09_2Sconfig17.mp4',
-                   '',
-                   cameraParams)
-videos.add_session('2022-02-13', '2chords',
-                   'pure004_20220213_2Sounds_10_2Sconfig17.mp4',
-                   '',
-                   cameraParams)
-videos.add_session('2022-02-24', '2chords',
-                   'pure004_20220224_2Sounds_11_2Sconfig11.mp4',
-                   '',
-                   cameraParams)
-videos.add_session('2022-02-25', '2chords',
-                   'pure004_20220225_2Sounds_12_2Sconfig11.mp4',
-                   '',
-                   cameraParams)
 
 
 
