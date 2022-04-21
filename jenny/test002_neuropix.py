@@ -9,7 +9,7 @@ from jaratoolbox import extraplots
 from jaratoolbox import behavioranalysis
 import scipy.optimize
 
-inforecFile = os.path.join(settings.INFOREC_PATH,'feat004_inforec.py')
+inforecFile = os.path.join(settings.INFOREC_PATH,'feat007_inforec.py')
 celldb = celldatabase.generate_cell_database(inforecFile)
 
 for indRow, dbRow in celldb.iterrows():
