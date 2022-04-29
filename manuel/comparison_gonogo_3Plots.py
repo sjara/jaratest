@@ -225,7 +225,7 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3, pVal, pVal1, pV
 
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title('Pupil behavior for frequency range 2kHz-32kHz: pure011 20220419', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior for frequency range 2kHz-32kHz: pure010 20220421', fontsize = labelsSize)
      plt.grid(b = True)
      #plt.ylim([550, 650])
      plt.xticks(fontsize = labelsSize)
@@ -501,14 +501,14 @@ def plot_norm_errbar(frequencies, preValues, postValues, arrFreq1, arrFreq2, arr
 
  
 
-filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_198_xconfig1_proc.npy', allow_pickle = True).item(),
-	'config1':'2Sconfig3', 'sessionFile1':'20220419_xtremes_198_xconfig1', 'condition1':'detectiongonogo', 'sound':'ChordTrain', 'name1':'pure011', 'plotName1':'pure011 session01',
-	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_199_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config2':'2Sconfig3', 'name2':'pure011', 'plotName2':'pure011 session02', 'sessionFile2':'20220419_xtremes_199_xconfig1',
-	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_200_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config3':'2Sconfig3', 'sessionFile3':'20220419_xtremes_200_xconfig1', 'name3':'pure010', 'nameCondition1':'pre stimulus' ,'nameCondition2':'post stimulus', 'nameCondition3':'pre & post stimulus onset', 'plotName3':'pure010 session03'}
+filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220420_xtremes_201_xconfig1_proc.npy', allow_pickle = True).item(),
+	'config1':'2Sconfig3', 'sessionFile1':'20220420_xtremes_201_xconfig1', 'condition1':'detectiongonogo', 'sound':'ChordTrain', 'name1':'pure010', 'plotName1':'pure011 session01',
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220421_xtremes_202_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config2':'2Sconfig3', 'name2':'pure011', 'plotName2':'pure011 session02', 'sessionFile2':'20220421_xtremes_202_xconfig1',
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220421_xtremes_203_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config3':'2Sconfig3', 'sessionFile3':'20220421_xtremes_203_xconfig1', 'name3':'pure010', 'nameCondition1':'pre stimulus' ,'nameCondition2':'post stimulus', 'nameCondition3':'pre & post stimulus onset', 'plotName3':'pure010 session03'}
 
-scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure011 20220419', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions', 'plotFreqName':'Pupil size for 5 different frequencies: pure011_20220419'}
+scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure011 20220419', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions', 'plotFreqName':'Pupil size for 5 different frequencies: pure010_20220421'}
 
 
 subject = filesDict['name1']
