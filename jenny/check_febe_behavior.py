@@ -39,8 +39,8 @@ for nSub in range(len(subject)):
     numTrials = len(bdata['taskMode'])
     print(taskMode)
     print('# of Trials: {}'.format(numTrials))
-    print('# Licks L: {}'.format(numLicksL))
-    print('# Licks R: {}'.format(numLicksR))
+    #print('# Licks L: {}'.format(numLicksL))
+    #print('# Licks R: {}'.format(numLicksR))
 
     if bdata['taskMode'][-1] == bdata.labels['taskMode']['discriminate_stim']:
         leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
@@ -48,21 +48,27 @@ for nSub in range(len(subject)):
         leftChoice = bdata['choice'] == bdata.labels['choice']['left']
         rightChoice = bdata['choice'] == bdata.labels['choice']['right']
         noChoice = bdata['choice'] == bdata.labels['choice']['none']
+        valid = bdata['choice'] != bdata.labels['choice']['none']
         leftCorrect = leftTrials & leftChoice
         leftError = leftTrials & rightChoice
         leftInvalid = leftTrials & noChoice
         rightCorrect = rightTrials & rightChoice
         rightError = rightTrials & leftChoice
         rightInvalid = rightTrials & noChoice
-        rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials)*100,2)
-        leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials)*100,2)
+        rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials & valid)*100,2)
+        leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials & valid)*100,2)
         whichFeature = bdata.labels['relevantFeature'][bdata['relevantFeature'][-1]]
-
+        print('# Responded Trials: {}'.format(sum(valid)))
         print('% Right Correct: {}'.format(rightPercentCorrect))
         print('% Left Correct: {}'.format(leftPercentCorrect))
         print('# Right Errors: {}'.format(sum(rightError)))
         print('# Left Errors: {}'.format(sum(leftError)))
         print('# of noChoice: {}'.format(np.sum(noChoice)))
+    else:
+        print('# Licks L: {}'.format(numLicksL))
+        print('# Licks R: {}'.format(numLicksR))
+
+
     ### Deal with psychometric###
     if any(bdata['psycurveMode']):
         if bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['spectral']:
