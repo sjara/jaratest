@@ -1,0 +1,19 @@
+--- process.py	2022-04-14 10:27:58.243716713 -0700
++++ process_new.py	2022-04-14 10:32:48.815976379 -0700
+@@ -282,7 +282,8 @@
+                                       rois[r]['xrange'][0]:rois[r]['xrange'][-1]+1]
+                 # append last frame from previous set
+                 if n>0:
+-                    imr = np.concatenate((rend[k][np.newaxis,:,:],imr), axis=0)
++                    #imr = np.concatenate((rend[k][np.newaxis,:,:],imr), axis=0) # This line fails 
++                    imr = np.concatenate((imr[0][np.newaxis,:,:],imr), axis=0) # Workaround to avoid error
+                 # save last frame
+                 if k==0:
+                     rend=[]
+@@ -497,4 +498,4 @@
+     utils.close_videos(containers)
+     print('run time %0.2fs'%(time.time() - start))
+ 
+-    return savename
+\ No newline at end of file
++    return savename

@@ -1,6 +1,6 @@
-'''
-Common parameters for figures and data related to this study.
-'''
+"""
+Common parameters for figures related to this study.
+"""
 
 from jaratoolbox import colorpalette as cp
 import matplotlib
@@ -14,9 +14,9 @@ fontSizeLabels = 12
 fontSizeTicks = 12
 fontSizePanel = 16
 
-colp = {}
-colp['blueLaser'] = cp.TangoPalette['SkyBlue1']
-colp['sound'] = cp.TangoPalette['Butter2']
-colp['condition1'] = cp.TangoPalette['ScarletRed1']
-colp['condition2'] = cp.TangoPalette['SkyBlue2']
+colors = {}
+colors['blueLaser'] = cp.TangoPalette['SkyBlue1']
+colors['sound'] = cp.TangoPalette['Butter2']
+colors['condition1'] = cp.TangoPalette['ScarletRed1']
+colors['condition2'] = cp.TangoPalette['SkyBlue2']
 

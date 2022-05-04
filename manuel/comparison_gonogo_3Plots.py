@@ -108,7 +108,7 @@ def freqs_and_meanParea(freqsArray, meanPareaVariable, freq1, freq2, freq3, freq
       arrValues5 = newIndexArr5.flatten()
       return(arrValues1, arrValues2, arrValues3, arrValues4, arrValues5)
       
-def freqs_and_meanParea_gonogo(freqsArray, prePareaVariable, freq1, freq2):      
+def freqs_gonogo(freqsArr, indicesArr, freq1, freq2, freq3, freq4, freq5):      
       '''
       Creates arrays containing the pupil area for each tested frequency. Detectiongonogo paradigm
       Args:
@@ -119,14 +119,24 @@ def freqs_and_meanParea_gonogo(freqsArray, prePareaVariable, freq1, freq2):
       returns:
       arrValues1..5 (np.array): one array per frequency tested (freq1..5) that contains the pupil size for the given frequency
       '''
+      indicesFreq1 = np.argwhere(freq1 == indicesArr)  
+      indicesFreq2 = np.argwhere(freq2 == indicesArr)
+      indicesFreq3 = np.argwhere(freq3 == indicesArr)  
+      indicesFreq4 = np.argwhere(freq4 == indicesArr)  
+      indicesFreq5 = np.argwhere(freq5 == indicesArr)
+      arrValues1 = indicesFreq1.flatten()
+      arrValues2 = indicesFreq2.flatten()   
+      arrValues3 = indicesFreq3.flatten() 
+      arrValues4 = indicesFreq4.flatten()   
+      arrValues5 = indicesFreq5.flatten()
+      newVal1 = np.take(freqsArr, arrValues1)
+      newVal2 = np.take(freqsArr, arrValues2)
+      newVal3 = np.take(freqsArr, arrValues3)
+      newVal4 = np.take(freqsArr, arrValues4)
+      newVal5 = np.take(freqsArr, arrValues5)
       
-      indicesFreq1 = np.argwhere(freq1 == freqsArray)  
-      indicesFreq2 = np.argwhere(freq2 == freqsArray) 
-      newIndexArr1 = np.take(prePareaVariable, indicesFreq1)  
-      newIndexArr2 = np.take(prePareaVariable, indicesFreq2)  
-      arrValues1 = newIndexArr1.flatten()
-      arrValues2 = newIndexArr2.flatten()   
-      return(arrValues1, arrValues2)      
+      
+      return(newVal1, newVal2, newVal3, newVal4, newVal5)      
  
       
 def normalize_data_videos(pupilArea, pupilArea1, pupilArea2, valuesToNormalize):
@@ -138,8 +148,7 @@ def normalize_data_videos(pupilArea, pupilArea1, pupilArea2, valuesToNormalize):
      returns:
      noramlizedData (np.array) = variable containing an array with normalized values
      '''
-     minVal = np.nanmin(pupilArea) 
-     maxVal = np.nanmax(pupilArea)
+
      minVal1 = np.nanmin(pupilArea)
      minVal2 = np.nanmin(pupilArea1)
      minVal3 = np.nanmin(pupilArea2)
@@ -161,16 +170,16 @@ def normalize_data_videos(pupilArea, pupilArea1, pupilArea2, valuesToNormalize):
 
 def mean_freqs(arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5, arrFreq1a, arrFreq2a, arrFreq3a, arrFreq4a, arrFreq5a, arrFreq1b, arrFreq2b, arrFreq3b, arrFreq4b, arrFreq5b, arrFreq1c, arrFreq2c, arrFreq3c, arrFreq4c, arrFreq5c, arrFreq1d, arrFreq2d, arrFreq3d, arrFreq4d, arrFreq5d, arrFreq1e, arrFreq2e, arrFreq3e, arrFreq4e, arrFreq5e):
      
-     totalPreFreq2khz = np.array([arrFreq1, arrFreq1a, arrFreq1b])
-     totalPostFreq2khz = np.array([arrFreq1c, arrFreq1d, arrFreq1e])
-     totalPreFreq4khz = np.array([arrFreq2, arrFreq2a, arrFreq2b])
-     totalPostFreq4khz = np.array([arrFreq2c, arrFreq2d, arrFreq2e])
-     totalPreFreq8khz = np.array([arrFreq3, arrFreq3a, arrFreq3b])
-     totalPostFreq8khz = np.array([arrFreq3c, arrFreq3d, arrFreq3e])
-     totalPreFreq16khz = np.array([arrFreq4, arrFreq4a, arrFreq4b])
-     totalPostFreq16khz = np.array([arrFreq4c, arrFreq4d, arrFreq4e])
-     totalPreFreq32khz = np.array([arrFreq5, arrFreq5a, arrFreq5b])
-     totalPostFreq32khz = np.array([arrFreq5c, arrFreq5d, arrFreq5e])
+     totalPreFreq2khz = np.concatenate((arrFreq1, arrFreq1a, arrFreq1b), axis = None)
+     totalPostFreq2khz = np.concatenate((arrFreq1c, arrFreq1d, arrFreq1e), axis = None)
+     totalPreFreq4khz = np.concatenate((arrFreq2, arrFreq2a, arrFreq2b), axis = None)
+     totalPostFreq4khz = np.concatenate((arrFreq2c, arrFreq2d, arrFreq2e), axis = None)
+     totalPreFreq8khz = np.concatenate((arrFreq3, arrFreq3a, arrFreq3b), axis = None)
+     totalPostFreq8khz = np.concatenate((arrFreq3c, arrFreq3d, arrFreq3e), axis = None)
+     totalPreFreq16khz = np.concatenate((arrFreq4, arrFreq4a, arrFreq4b), axis = None)
+     totalPostFreq16khz = np.concatenate((arrFreq4c, arrFreq4d, arrFreq4e), axis = None)
+     totalPreFreq32khz = np.concatenate((arrFreq5, arrFreq5a, arrFreq5b), axis = None)
+     totalPostFreq32khz = np.concatenate((arrFreq5c, arrFreq5d, arrFreq5e), axis = None)
      
      meanPreFreq2kHz = np.average(totalPreFreq2khz)
      meanPostFreq2kHz = np.average(totalPostFreq2khz)
@@ -216,7 +225,7 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3, pVal, pVal1, pV
 
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title('Pupil behavior for frequency range 2kHz-32kHz: pure010 20220331', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior for frequency range 2kHz-32kHz: pure010 20220421', fontsize = labelsSize)
      plt.grid(b = True)
      #plt.ylim([550, 650])
      plt.xticks(fontsize = labelsSize)
@@ -413,8 +422,8 @@ def plot_normalized_data(frequencies, preValues, postValues):
      normTotal.set_title(scatBarDict['plotFreqName'], fontsize = labelSize)
      normTotal.set_ylabel('Mean normalized pupil area', fontsize = labelSize) 
      normTotal.set_xlabel('Frequencies (kHz)', fontsize = labelSize)
-     normTotal.plot(frequencies, preValues, color = 'g', marker = 'o', label = labela)
-     normTotal.plot(frequencies, postValues, color = 'b', marker = 'o', label = labelb)
+     normTotal.plot(frequencies, preValues, color = '#9ACD32', marker = 'o', label = labela)
+     normTotal.plot(frequencies, postValues, color = '#FFA500', marker = 'o', label = labelb)
      plt.grid(b = True) 
      plt.xticks(fontsize = labelSize) 
      plt.yticks(fontsize = labelSize)
@@ -423,20 +432,23 @@ def plot_normalized_data(frequencies, preValues, postValues):
      return(plt.show())
      
      
-def plot_testing(frequencies, preValues, postValues, arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5, arrFreq1a, arrFreq2a, arrFreq3a, arrFreq4a, arrFreq5a, arrFreq1b, arrFreq2b, arrFreq3b, arrFreq4b, arrFreq5b, arrFreq1c, arrFreq2c, arrFreq3c, arrFreq4c, arrFreq5c, arrFreq1d, arrFreq2d, arrFreq3d, arrFreq4d, arrFreq5d, arrFreq1e, arrFreq2e, arrFreq3e, arrFreq4e, arrFreq5e):
+def plot_norm_errbar(frequencies, preValues, postValues, arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5, arrFreq1a, arrFreq2a, arrFreq3a, arrFreq4a, arrFreq5a, arrFreq1b, arrFreq2b, arrFreq3b, arrFreq4b, arrFreq5b, arrFreq1c, arrFreq2c, arrFreq3c, arrFreq4c, arrFreq5c, arrFreq1d, arrFreq2d, arrFreq3d, arrFreq4d, arrFreq5d, arrFreq1e, arrFreq2e, arrFreq3e, arrFreq4e, arrFreq5e, freqArr):
      '''
      Plots the total pre and post values for each frequency with the mean normalized data
+     Note: the total* arrays were created differently compared to how it is compared in the comparison3Plots.py script because each of these arrays have a different size, the other ones
+     did not have a different size
+     
      '''
-     totalPreFreq2khz = np.array([arrFreq1, arrFreq1a, arrFreq1b])
-     totalPostFreq2khz = np.array([arrFreq1c, arrFreq1d, arrFreq1e])
-     totalPreFreq4khz = np.array([arrFreq2, arrFreq2a, arrFreq2b])
-     totalPostFreq4khz = np.array([arrFreq2c, arrFreq2d, arrFreq2e])
-     totalPreFreq8khz = np.array([arrFreq3, arrFreq3a, arrFreq3b])
-     totalPostFreq8khz = np.array([arrFreq3c, arrFreq3d, arrFreq3e])
-     totalPreFreq16khz = np.array([arrFreq4, arrFreq4a, arrFreq4b])
-     totalPostFreq16khz = np.array([arrFreq4c, arrFreq4d, arrFreq4e])
-     totalPreFreq32khz = np.array([arrFreq5, arrFreq5a, arrFreq5b])
-     totalPostFreq32khz = np.array([arrFreq5c, arrFreq5d, arrFreq5e])
+     totalPreFreq2khz = np.concatenate((arrFreq1, arrFreq1a, arrFreq1b), axis = None)
+     totalPostFreq2khz = np.concatenate((arrFreq1c, arrFreq1d, arrFreq1e), axis = None)
+     totalPreFreq4khz = np.concatenate((arrFreq2, arrFreq2a, arrFreq2b), axis = None)
+     totalPostFreq4khz = np.concatenate((arrFreq2c, arrFreq2d, arrFreq2e), axis = None)
+     totalPreFreq8khz = np.concatenate((arrFreq3, arrFreq3a, arrFreq3), axis = None)
+     totalPostFreq8khz = np.concatenate((arrFreq3c, arrFreq3d, arrFreq3e), axis = None)
+     totalPreFreq16khz = np.concatenate((arrFreq4, arrFreq4a, arrFreq4b), axis = None)
+     totalPostFreq16khz = np.concatenate((arrFreq4c, arrFreq4d, arrFreq4e), axis = None)
+     totalPreFreq32khz = np.concatenate((arrFreq5, arrFreq5a, arrFreq5b), axis = None)
+     totalPostFreq32khz = np.concatenate((arrFreq5c, arrFreq5d, arrFreq5e), axis = None)
      meanPreFreq2kHz = np.average(totalPreFreq2khz)
      meanPostFreq2kHz = np.average(totalPostFreq2khz)
      meanPreFreq4khz = np.average(totalPreFreq4khz)
@@ -456,74 +468,86 @@ def plot_testing(frequencies, preValues, postValues, arrFreq1, arrFreq2, arrFreq
      errPre16khz = np.std(totalPreFreq16khz)
      errPost16khz = np.std(totalPostFreq16khz)
      errPre32khz = np.std(totalPreFreq32khz)
-     errPost32khz = np.std(totalPostFreq32khz)
-     
-     twokhzErr = [errPre2khz, errPost2khz]
-     fourkhzErr = [errPre4khz, errPost4khz]
-     eightkhzErr = [errPre8khz, errPost8khz]
-     sixkhzErr = [errPre16khz, errPost16khz]
-     threetwokhzErr = [errPre32khz, errPost32khz]
-     
-     rawPre = np.array([totalPreFreq2khz, totalPreFreq4khz, totalPreFreq8khz, totalPreFreq16khz, totalPreFreq32khz])
-     rawX = np.full((3,24), 2)
-     rawPreFlat = rawPre.flatten()
-     rawPost = np.array([totalPostFreq2khz, totalPostFreq4khz, totalPostFreq8khz,  totalPostFreq16khz, totalPostFreq32khz])
-     rawPostFlat = rawPost.flatten()
-    
-     
-     #errStdPre = [errPre2khz, errPre4khz, errPre8khz, errPre16khz, errPre32khz]
-     #errStdPost = [errPost2khz, errPost4khz, errPost8khz, errPost16khz, errPost32khz]
-    
-     errStd = np.array([twokhzErr, fourkhzErr, eightkhzErr, sixkhzErr, threetwokhzErr])
-     errStdm = errStd.mean(axis = 0)
-     preAverage = [meanPreFreq2kHz, meanPreFreq4khz, meanPreFreq8khz, meanPreFreq16khz, meanPreFreq32khz]
-     postAverage = [meanPostFreq2kHz, meanPostFreq4khz, meanPostFreq8khz, meanPostFreq16khz, meanPostFreq32khz]
-     meanArray = [preAverage, postAverage]
-     meanArr = np.asarray(meanArray)
-     xArr = [frequencies]
-     x_pos = np.arange(len(xArr))
+     errPost32khz = np.std(totalPostFreq32khz) 
      labela = 'pre stimulus size'
      labelb = 'post stimulus size'
-      
+  
      labelSize = 16 
      fig, normTotal = plt.subplots(1,1, constrained_layout = True, sharex= True, sharey = True) 
      fig.set_size_inches(9.5, 7.5, forward = True)
      normTotal.set_title(scatBarDict['plotFreqName'], fontsize = labelSize)
      normTotal.set_ylabel('Mean normalized pupil area', fontsize = labelSize) 
      normTotal.set_xlabel('Frequencies (kHz)', fontsize = labelSize)
-     normTotal.plot(frequencies, preValues, color = 'g', marker = 'o', label = labela)
-     normTotal.plot(frequencies, postValues, color = 'b', marker = 'o', label = labelb)
-     normTotal.errorbar(frequencies, meanArr , yerr = errStdm, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black')
+     normTotal.plot(frequencies, preValues, color = '#000000', marker = 'o', markersize = '5', label = labela)
+     normTotal.plot(frequencies, postValues, color = '#FFA500', marker = 'o', markersize = '5', label = labelb)
+     normTotal.errorbar(frequencies[0], preValues[0], yerr = errPre2khz, fmt='none', capsize=3.5, color = '#000000')
+     normTotal.errorbar(frequencies[1], preValues[1], yerr = errPre4khz, fmt='none', capsize=3.5, color = '#000000')
+     normTotal.errorbar(frequencies[2], preValues[2], yerr = errPre8khz, fmt='none', capsize=3.5, color = '#000000')
+     normTotal.errorbar(frequencies[3], preValues[3], yerr = errPre16khz, fmt='none', capsize=3.5, color = '#000000')
+     normTotal.errorbar(frequencies[4], preValues[4], yerr = errPre32khz, fmt='none', capsize=3.5, color = '#000000')
+     normTotal.errorbar(frequencies[0], postValues[0], yerr = errPost2khz, fmt='none', capsize=3.5, color = '#FFA500')
+     normTotal.errorbar(frequencies[1], postValues[1], yerr = errPost4khz, fmt='none', capsize=3.5, color = '#FFA500')
+     normTotal.errorbar(frequencies[2], postValues[2], yerr = errPost8khz, fmt='none', capsize=3.5, color = '#FFA500')
+     normTotal.errorbar(frequencies[3], postValues[3], yerr = errPost16khz, fmt='none', capsize=3.5, color = '#FFA500')
+     normTotal.errorbar(frequencies[4], postValues[4], yerr = errPost32khz, fmt='none', capsize=3.5, color = '#FFA500')
+
      plt.grid(b = True) 
      plt.xticks(fontsize = labelSize) 
      plt.yticks(fontsize = labelSize)
      plt.legend(prop ={"size":10}) 
      plt.show() 
      return(plt.show())
+
+
  
 
-filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220414_xtremes_192_xconfig1_proc.npy', allow_pickle = True).item(),
-	'config1':'2Sconfig3', 'sessionFile1':'20220414_xtremes_192_xconfig1', 'condition1':'detectiongonogo', 'sound':'ChordTrain', 'name1':'pure011', 'plotName1':'pure011 session01',
-	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220415_xtremes_193_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config2':'2Sconfig3', 'sessionFile2':'58', 'name2':'pure010', 'plotName2':'pure010 session02',
-	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220415_xtremes_194_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config3':'2Sconfig3', 'sessionFile3':'60', 'name3':'pure010', 'nameCondition1':'pre stimulus' ,'nameCondition2':'post stimulus', 'nameCondition3':'pre & post stimulus onset', 'plotName3':'pure010 session03'}
+filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220420_xtremes_201_xconfig1_proc.npy', allow_pickle = True).item(),
+	'config1':'2Sconfig3', 'sessionFile1':'20220420_xtremes_201_xconfig1', 'condition1':'detectiongonogo', 'sound':'ChordTrain', 'name1':'pure010', 'plotName1':'pure011 session01',
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220421_xtremes_202_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config2':'2Sconfig3', 'name2':'pure011', 'plotName2':'pure011 session02', 'sessionFile2':'20220421_xtremes_202_xconfig1',
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220421_xtremes_203_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config3':'2Sconfig3', 'sessionFile3':'20220421_xtremes_203_xconfig1', 'name3':'pure010', 'nameCondition1':'pre stimulus' ,'nameCondition2':'post stimulus', 'nameCondition3':'pre & post stimulus onset', 'plotName3':'pure010 session03'}
 
-scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure010 20220331', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions', 'plotFreqName':'Pupil size for 5 different frequencies: pure011_20220331'}
+scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure011 20220419', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions', 'plotFreqName':'Pupil size for 5 different frequencies: pure010_20220421'}
+
 
 subject = filesDict['name1']
 paradigm = filesDict['condition1']
 session = filesDict['sessionFile1']
-frequenciesTestedArr = [[2, 4, 8, 16, 32], [2, 4, 8, 16, 32]]
-frequenciesTested = np.array([2, 4, 8, 16, 32])
 
 behavFile = loadbehavior.path_to_behavior_data(subject, paradigm, session)
 bdata = loadbehavior.BehaviorData(behavFile)
-#freqs = bdata['currentFreq'] #works with am_tuning_curve paradigm
 preFreqs = bdata['preFreq'] #works with modified detectiongonogo paradigm
 postFreqs = bdata['postFreq'] #works with modified detectiongonogo paradigm
 
+
+subject2 = filesDict['name1']
+paradigm2 = filesDict['condition1']
+session2 = filesDict['sessionFile2']
+
+behavFile2 = loadbehavior.path_to_behavior_data(subject2, paradigm2, session2)
+bdata2 = loadbehavior.BehaviorData(behavFile2)
+preFreqs2 = bdata2['preFreq'] #works with modified detectiongonogo paradigm
+postFreqs2 = bdata2['postFreq'] #works with modified detectiongonogo paradigm
+
+
+subject3 = filesDict['name1']
+paradigm3 = filesDict['condition1']
+session3 = filesDict['sessionFile3']
+
+behavFile3 = loadbehavior.path_to_behavior_data(subject3, paradigm3, session3)
+bdata3 = loadbehavior.BehaviorData(behavFile3)
+preFreqs3 = bdata3['preFreq'] #works with modified detectiongonogo paradigm
+postFreqs3 = bdata3['postFreq'] #works with modified detectiongonogo paradigm
+
+frequenciesTested = np.array([2, 4, 8, 16, 32])
+frequenciesTestedArr = np.array([[2, 2, 4, 4, 8], [8, 16, 16, 32, 32]])
+
 #list(map(tuple, np.where(np.isnan(pArea))))
+
+
+
+
 
 
 proc = filesDict['loadFile1']
@@ -580,14 +604,10 @@ pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 wstat, pval = stats.wilcoxon(averagePreSignal, averagePostSignal)
 print('Wilcoxon value', wstat,',',  'P-value', pval )
 
-#--- Finding pupil area corresponding to each tested frequency ---
-#prefreqValues1, prefreqValues2, prefreqValues3, prefreqValues4, prefreqValues5 = freqs_and_meanParea(freqs, preSignal, 2000, 4000, 8000, 16000, 32000) #works with am_tuning_curve paradigm
+prefreqValues1, prefreqValues2, prefreqValues3, prefreqValues4, prefreqValues5 = freqs_gonogo(preSignal, postFreqs, 2000, 4000, 8000, 16000, 32000)
 
-#postfreqValues1, postfreqValues2, postfreqValues3, postfreqValues4, postfreqValues5 = freqs_and_meanParea(freqs, postSignal, 2000, 4000, 8000, 16000, 32000) #works with am_tuning_curve paradigm
+postfreqValues1, postfreqValues2, postfreqValues3, postfreqValues4, postfreqValues5 = freqs_gonogo(postSignal, postFreqs, 2000, 4000, 8000, 16000, 32000) #works with modified detectiongonogo paradigm
 
-prefreqValues1, prefreqValues2 = freqs_and_meanParea_gonogo(preFreqs, preSignal, 2000, 32000) # works with modified detectiongonogo paradigm
-
-postfreqValues1, postfreqValues2, postfreqValues3, postfreqValues4, postfreqValues5 = freqs_and_meanParea(postFreqs, postSignal, 2000, 4000, 8000, 16000, 32000) #works with modified detectiongonogo paradigm
 
 
 
@@ -652,14 +672,11 @@ pAreaDilatedMean1 = pAreaDilated1.mean(axis = 1)
 wstat1, pval1 = stats.wilcoxon(averagePreSignal1, averagePostSignal1)
 print('Wilcoxon value', wstat1,',',  'P-value', pval1 )
 
-#--- Finding pupil area corresponding to each tested frequency ---
-#prefreqValues1a, prefreqValues2a, prefreqValues3a, prefreqValues4a, prefreqValues5a = freqs_and_meanParea(freqs, preSignal1, 2000, 4000, 8000, 16000, 32000) #works with am_tuning_curve paradigm
 
-#postfreqValues1a, postfreqValues2a, postfreqValues3a, postfreqValues4a, postfreqValues5a = freqs_and_meanParea(freqs, postSignal1, 2000, 4000, 8000, 16000, 32000) #works with am_tuning_curve paradigm
 
-prefreqValues1a, prefreqValues2a = freqs_and_meanParea_gonogo(preFreqs, preSignal, 2000, 32000) # works with modified detectiongonogo paradigm
+prefreqValues1a, prefreqValues2a, prefreqValues3a, prefreqValues4a, prefreqValues5a = freqs_gonogo(preSignal1, postFreqs2, 2000, 4000, 8000, 16000, 32000) # works with modified detectiongonogo paradigm
 
-postfreqValues1a, postfreqValues2a, postfreqValues3a, postfreqValues4a, postfreqValues5a = freqs_and_meanParea(postFreqs, postSignal, 2000, 4000, 8000, 16000, 32000) #works with modified detectiongonogo paradigm
+postfreqValues1a, postfreqValues2a, postfreqValues3a, postfreqValues4a, postfreqValues5a = freqs_gonogo(postSignal1, postFreqs2, 2000, 4000, 8000, 16000, 32000) #works with modified detectiongonogo paradigm
 
 
 
@@ -721,17 +738,12 @@ pAreaDilatedMean2 = pAreaDilated2.mean(axis = 1)
 wstat2, pval2 = stats.wilcoxon(averagePreSignal2, averagePostSignal2)
 print('Wilcoxon value', wstat2,',',  'P-value', pval2 )
 
-#--- Finding pupil area corresponding to each tested frequency ---
-#prefreqValues1b, prefreqValues2b, prefreqValues3b, prefreqValues4b, prefreqValues5b = freqs_and_meanParea(freqs, preSignal2, 2000, 4000, 8000, 16000, 32000) #works with am_tuning_curve paradigm
 
-#postfreqValues1b, postfreqValues2b, postfreqValues3b, postfreqValues4b, postfreqValues5b = freqs_and_meanParea(freqs, postSignal2, 2000, 4000, 8000, 16000, 32000) #works with am_tuning_curve paradigm
+prefreqValues1b, prefreqValues2b, prefreqValues3b, prefreqValues4b, prefreqValues5b = freqs_gonogo(preSignal2, postFreqs3, 2000, 4000, 8000, 16000, 32000) # works with modified detectiongonogo paradigm
 
-prefreqValues1a, prefreqValues2a = freqs_and_meanParea_gonogo(preFreqs, preSignal, 2000, 32000) # works with modified detectiongonogo paradigm
+postfreqValues1b, postfreqValues2b, postfreqValues3b, postfreqValues4b, postfreqValues5b = freqs_gonogo(postSignal2, postFreqs3, 2000, 4000, 8000, 16000, 32000) #works with modified detectiongonogo paradigm
 
-postfreqValues1a, postfreqValues2a, postfreqValues3a, postfreqValues4a, postfreqValues5a = freqs_and_meanParea(postFreqs, postSignal, 2000, 4000, 8000, 16000, 32000) #works with modified detectiongonogo paradigm
 
-'''
-#This lines are used for paradigm am_tuning_curve
 #--- Normalized data for plotting ---
 normPreVal1 = normalize_data_videos(pArea, pArea1, pArea2, prefreqValues1)
 normPreVal2 = normalize_data_videos(pArea, pArea1, pArea2, prefreqValues2)
@@ -768,7 +780,8 @@ normPostVal2b = normalize_data_videos(pArea, pArea1, pArea2, postfreqValues2b)
 normPostVal3b = normalize_data_videos(pArea, pArea1, pArea2, postfreqValues3b)
 normPostVal4b = normalize_data_videos(pArea, pArea1, pArea2, postfreqValues4b)
 normPostVal5b = normalize_data_videos(pArea, pArea1, pArea2, postfreqValues5b)
-'''
+
+
 
 #--- Calculation of the mean normalized data for pre and post total values only---
 preStimValues, postStimValues = mean_freqs(normPreVal1, normPostVal1, normPreVal2, normPostVal2, normPreVal3, normPostVal3, normPreVal4, normPostVal4, normPreVal5, normPostVal5, normPreVal1a,  normPostVal1a, normPreVal2a, normPostVal2a, normPreVal3a, normPostVal3a, normPreVal4a, normPostVal4a, normPreVal5a, normPostVal5a, normPreVal1b, normPostVal1b, normPreVal2b, normPostVal2b, normPreVal3b, normPostVal3b, normPreVal4b, normPostVal4b, normPreVal5b, normPostVal5b) #preStim represents the total mean normalized values of each freq (2,4,8, etc.), postStim is the same but for the post Data
@@ -785,7 +798,7 @@ OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pA
 #scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal1, postSignal1, averagePreSignal2, averagePostSignal2, preSignal2, postSignal2, pval, pval1, pval2)
 
 #--- Pupil Dilation plots --- 
-pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
+#pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
 
 #--- scatter & bar plots overlapped ---
 #scattBar = barScat_plots(averagePreSignal, averagePostSignal, averagePreSignal1, averagePostSignal1, averagePreSignal2, averagePostSignal2)
@@ -795,7 +808,7 @@ pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilated
 prePostTraces = two_traces_pupilkHz_plot(frequenciesTested, postfreqValues1, postfreqValues2, postfreqValues3, postfreqValues4, postfreqValues5, postfreqValues1a, postfreqValues2a, postfreqValues3a, postfreqValues4a, postfreqValues5a, postfreqValues1b, postfreqValues2b, postfreqValues3b, postfreqValues4b, postfreqValues5b, prefreqValues1, prefreqValues2, prefreqValues3, prefreqValues4, prefreqValues5, prefreqValues1a, prefreqValues2a, prefreqValues3a, prefreqValues4a, prefreqValues5a, prefreqValues1b, prefreqValues2b, prefreqValues3b, prefreqValues4b, prefreqValues5b)
 
 # --- plotting normalized pupil data ---
-normalPlot = plot_normalized_data(frequenciesTested, preStimValues, postStimValues)
+#normalPlot = plot_normalized_data(frequenciesTested, preStimValues, postStimValues)
 
-#prePostValuesAcrossVideos = plot_testing(frequenciesTested, preStimValues, postStimValues, normPreVal1, normPostVal1, normPreVal2, normPostVal2, normPreVal3, normPostVal3, normPreVal4, normPostVal4, normPreVal5, normPostVal5, normPreVal1a,  normPostVal1a, normPreVal2a, normPostVal2a, normPreVal3a, normPostVal3a, normPreVal4a, normPostVal4a, normPreVal5a, normPostVal5a, normPreVal1b, normPostVal1b, normPreVal2b, normPostVal2b, normPreVal3b, normPostVal3b, normPreVal4b, normPostVal4b, normPreVal5b, normPostVal5b) #plots mean normalized data of all the pre and post values of the pupil across all videos
+prePostValuesAcrossVideos = plot_norm_errbar(frequenciesTested, preStimValues, postStimValues, normPreVal1, normPostVal1, normPreVal2, normPostVal2, normPreVal3, normPostVal3, normPreVal4, normPostVal4, normPreVal5, normPostVal5, normPreVal1a,  normPostVal1a, normPreVal2a, normPostVal2a, normPreVal3a, normPostVal3a, normPreVal4a, normPostVal4a, normPreVal5a, normPostVal5a, normPreVal1b, normPostVal1b, normPreVal2b, normPostVal2b, normPreVal3b, normPostVal3b, normPreVal4b, normPostVal4b, normPreVal5b, normPostVal5b, frequenciesTestedArr)
 

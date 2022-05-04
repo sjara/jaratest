@@ -114,7 +114,7 @@ def comparison_plot(time, valuesData1, valuesData2, valuesData3, valuesData4, va
      subplt.plot(time, valuesData6, color = 'y', label = label6, linewidth = 4)
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title('Pupil behavior with 2Sconfig2: pure004 and pure006', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior for 6kHz: pure004 20211207', fontsize = labelsSize)
      plt.grid(b = True)
      #plt.ylim([300, 800])
      plt.xticks(fontsize = labelsSize)
@@ -293,20 +293,20 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      return(plt.show())
 
 
-filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20220127_2Sounds_86_2Sconfig3_proc.npy', allow_pickle = True).item(),
-	'config1':'2Sconfig3', 'sessionFile1':'57', 'condition':'2Sounds', 'sound':'ChordTrain', 'name1':'pure004', 
-	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20220127_2Sounds_87_2Sconfig3_proc.npy', allow_pickle = True).item(), 
-	'config2':'2Sconfig3', 'sessionFile2':'58', 'name2':'pure004',
-	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20220127_2Sounds_88_2Sconfig3_proc.npy', allow_pickle = True).item(), 
-	'config3':'2Sconfig3', 'sessionFile3':'60', 'name3':'pure004',
-	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure006_20220127_2Sounds_83_2Sconfig3_proc.npy', allow_pickle = True).item(), 
-	'config4':'2Sconfig4', 'sessionFile4':'56', 'name4':'pure006', 
-	'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure006_20220127_2Sounds_84_2Sconfig3_proc.npy', allow_pickle = True).item(), 
-	'config5':'2Sconfig4', 'sessionFile4':'59', 'name5':'pure006', 
-	'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure006_20220127_2Sounds_85_2Sconfig3_proc.npy', allow_pickle = True).item(), 
-	'config6':'2Sconfig4', 'sessionFile5':'61', 'name6':'pure006'}
+filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211206_syncSound_37_config12_proc.npy', allow_pickle = True).item(),
+	'config1':'2Sconfig3', 'sessionFile1':'57', 'condition':'2Sounds', 'sound':'ChordTrain', 'name1':'config12_1', 
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211206_syncSound_38_config12_proc.npy', allow_pickle = True).item(), 
+	'config2':'2Sconfig3', 'sessionFile2':'58', 'name2':'config12_2',
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211206_syncSound_39_config12_proc.npy', allow_pickle = True).item(), 
+	'config3':'2Sconfig3', 'sessionFile3':'60', 'name3':'config12_3',
+	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_40_config14_proc.npy', allow_pickle = True).item(), 
+	'config4':'2Sconfig4', 'sessionFile4':'56', 'name4':'config14_1', 
+	'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_41_config14_proc.npy', allow_pickle = True).item(), 
+	'config5':'2Sconfig4', 'sessionFile4':'59', 'name5':'config14_2', 
+	'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_42_config14_proc.npy', allow_pickle = True).item(), 
+	'config6':'2Sconfig4', 'sessionFile5':'61', 'name6':'config14_3'}
 	
-scatBarDict = {'title':'Pupil behavior before and after second frequency onset: pure004 & pure006 20220127 2Sconfig3', 'savedName':'barControlsPure004Plot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
+scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure004', 'savedName':'barControlsPure004Plot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
 
 
 proc = filesDict['loadFile1']
@@ -355,7 +355,7 @@ xlabels = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation = np.array([-15, 15])
+timeRangeForPupilDilation = np.array([-7, 7])
 pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRangeForPupilDilation)
 pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 
@@ -421,7 +421,7 @@ xlabels1 = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation1 = np.array([-15, 15])
+timeRangeForPupilDilation1 = np.array([-7, 7])
 pupilDilationTimeWindowVec1, pAreaDilated1 = eventlocked_signal(timeVec1, pArea1, timeOfBlink2Event1, timeRangeForPupilDilation1)
 pAreaDilatedMean1 = pAreaDilated1.mean(axis = 1)
 
@@ -488,7 +488,7 @@ xlabels2 = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation2 = np.array([-15, 15])
+timeRangeForPupilDilation2 = np.array([-7, 7])
 pupilDilationTimeWindowVec2, pAreaDilated2 = eventlocked_signal(timeVec2, pArea2, timeOfBlink2Event2, timeRangeForPupilDilation2)
 pAreaDilatedMean2 = pAreaDilated2.mean(axis = 1)
 
@@ -563,7 +563,7 @@ xlabels3 = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation3 = np.array([-15, 15])
+timeRangeForPupilDilation3 = np.array([-7, 7])
 pupilDilationTimeWindowVec3, pAreaDilated3 = eventlocked_signal(timeVec3, pArea3, timeOfBlink2Event3, timeRangeForPupilDilation3)
 pAreaDilatedMean3 = pAreaDilated3.mean(axis = 1)
 
@@ -631,7 +631,7 @@ xlabels4 = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation4 = np.array([-15, 15])
+timeRangeForPupilDilation4 = np.array([-7, 7])
 pupilDilationTimeWindowVec4, pAreaDilated4 = eventlocked_signal(timeVec4, pArea4, timeOfBlink2Event4, timeRangeForPupilDilation4)
 pAreaDilatedMean4 = pAreaDilated4.mean(axis = 1)
 
@@ -694,7 +694,7 @@ xlabels5 = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation5 = np.array([-15, 15])
+timeRangeForPupilDilation5 = np.array([-7, 7])
 pupilDilationTimeWindowVec5, pAreaDilated5 = eventlocked_signal(timeVec5, pArea5, timeOfBlink2Event5, timeRangeForPupilDilation5)
 pAreaDilatedMean5 = pAreaDilated5.mean(axis = 1)
 
@@ -714,7 +714,7 @@ print('Wilcoxon value config12_6', wstat5,',',  'P-value config12_2', pval5)
                                                 
                                                                 
 #--- plot with the three conditions aligned ---
-#OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pAreaDilatedMean1, pAreaDilatedMean2, pAreaDilatedMean3, pAreaDilatedMean4, pAreaDilatedMean5, pval, pval1, pval2, pval3, pval4, pval5)
+OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pAreaDilatedMean1, pAreaDilatedMean2, pAreaDilatedMean3, pAreaDilatedMean4, pAreaDilatedMean5, pval, pval1, pval2, pval3, pval4, pval5)
 
 
 #--- Figure with 3 scatter plots ---

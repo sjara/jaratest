@@ -14,16 +14,16 @@ import figparams
 
 FIGNAME = 'figure_name'
 figDataFile = 'file_containing_data_for_this_fig.npz'
-figDataDir = os.path.join(settings.FIGURES_DATA_PATH, figparams.STUDY_NAME, FIGNAME)
-figDataFullPath = os.path.join(figDataDir,figDataFile)
+figDataDir = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, FIGNAME)
+figDataFullPath = os.path.join(figDataDir, figDataFile)
 
 PANELS = [1,1] # Plot panel i if PANELS[i]==1
 
-SAVE_FIGURE = 1
+SAVE_FIGURE = 0
 outputDir = '/tmp/'
 figFilename = 'plots_figure_name' # Do not include extension
 figFormat = 'svg' # 'pdf' or 'svg'
-figSize = [7,5] # In inches
+figSize = [7, 5] # In inches
 
 fontSizeLabels = figparams.fontSizeLabels
 fontSizeTicks = figparams.fontSizeTicks
@@ -33,7 +33,7 @@ labelPosX = [0.07, 0.36, 0.7]   # Horiz position for panel labels
 labelPosY = [0.9, 0.48]    # Vert position for panel labels
 
 # -- Assigned colors (defined in figparams) --
-laserColor = figparams.colp['blueLaser']
+laserColor = figparams.colors['blueLaser']
 
 # -- Load data --
 figData = np.load(figDataFullPath)
@@ -46,11 +46,11 @@ fig = plt.gcf()
 fig.clf()
 fig.set_facecolor('w')
 
-gs = gridspec.GridSpec(2, 1)
-gs.update(left=0.15, right=0.98, top=0.95, bottom=0.05, wspace=0.2, hspace=0.3)
+gsMain = gridspec.GridSpec(2, 1)
+gsMain.update(left=0.15, right=0.98, top=0.95, bottom=0.05, wspace=0.2, hspace=0.3)
 
 # -- Panel: name of panel --
-ax1 = plt.subplot(gs[0, 0])
+ax1 = plt.subplot(gsMain[0, 0])
 ax1.annotate('A', xy=(labelPosX[0],labelPosY[0]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 
@@ -59,7 +59,7 @@ if PANELS[0]:
     pass
 
 # -- Panel: name of next panel --
-ax2 = plt.subplot(gs[1, 0])
+ax2 = plt.subplot(gsMain[1, 0])
 ax2.annotate('B', xy=(labelPosX[0],labelPosY[1]), xycoords='figure fraction',
              fontsize=fontSizePanel, fontweight='bold')
 

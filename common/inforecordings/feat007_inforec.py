@@ -67,3 +67,42 @@ exp3.maxDepth = 2969
 exp3.add_session('14-32-47','a','AM','am_tuning_curve') 
 exp3.add_session('14-42-11','b','pureTones','am_tuning_curve') 
 exp3.add_session('14-58-21','a','FTVOTBorders','2afc_speech')
+
+
+
+exp4 = celldatabase.Experiment(subject, '2022-03-18', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='caudomedial_DiI', info=['caudomedial_DiI', 'soundRight']) #reference = tip
+experiments.append(exp4)
+# 14:45 in booth
+# 14:50 in brain
+# 14:57 reached max depth
+# 15:17 started recording
+# 16:19 done
+
+exp4.add_site(2974)
+exp4.maxDepth = 2974
+exp4.add_session('15-18-14','a','AM','am_tuning_curve') 
+exp4.add_session('15-27-12','b','pureTones','am_tuning_curve') 
+exp4.add_session('15-43-29','a','FTVOTBorders','2afc_speech')
+
+
+exp5 = celldatabase.Experiment(subject, '2022-03-21', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='anteromedial_DiD', info=['anteromedial_DiD', 'soundRight']) #reference = tip
+experiments.append(exp5)
+# 10:30 in booth 
+# Sylgard over R craniotomy was missing, flushed well to clean out a bit, the re-covered with sylgard.
+# 10:40 in brain
+# 10:43 reached max depth
+# 11:03 started recording
+# 12:02 done
+
+exp5.add_site(3041)
+exp5.maxDepth = 3041
+exp5.add_session('11-06-40','a','AM','am_tuning_curve') 
+exp5.add_session('11-14-32','b','pureTones','am_tuning_curve') 
+exp5.add_session('11-30-55','a','FTVOTBorders','2afc_speech')
+
+
+#exp6 = celldatabase.Experiment(subject, '2022-03-22', brainArea='AC_left', probe = 'NPv1-8131', recordingTrack='DiI', info=['DiI', 'soundRight']) #reference = tip
+#experiments.append(exp6)
+# 10:00 in booth 
+# 10:20 Couldn't get probe into brain. broke probe
+# lots of bleeding when tried to clean craniotomy, ended recording

@@ -1,0 +1,11 @@
+--- gui.py	2022-04-14 10:26:30.558431235 -0700
++++ gui_new.py	2022-04-14 10:27:08.374985641 -0700
+@@ -634,7 +634,7 @@
+         proc = {'Ly':self.Ly, 'Lx':self.Lx, 'sy': self.sy, 'sx': self.sx, 'LY':self.LY, 'LX':self.LX,
+                 'sbin': ops['sbin'], 'fullSVD': ops['fullSVD'], 'rois': rois,
+                 'save_mat': ops['save_mat'], 'save_path': ops['save_path'],
+-                'filenames': self.filenames, 'iframes': self.iframes}
++                'filenames': self.filenames}
+         savename = process.save(proc, savepath=savepath)
+         self.batchlist.append(savename)
+         basename,filename = os.path.split(savename)
