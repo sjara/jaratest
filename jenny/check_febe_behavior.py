@@ -69,32 +69,6 @@ for nSub in range(len(subject)):
         print('# Licks L: {}'.format(numLicksL))
         print('# Licks R: {}'.format(numLicksR))
 
-    '''
-    ### Deal with psychometric###
-    if any(bdata['psycurveMode']):
-        if bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['spectral']:
-            targetFrequency = bdata['targetFTpercent']
-        elif bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['temporal']:
-            targetFrequency = bdata['targetVOTpercent']
-
-        possibleFreq = np.unique(targetFrequency)
-        nFreq = len(possibleFreq)
-        trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
-        (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
-        fontsize = 12
-        if len(subject) > 1:
-            numSubPlots = int(len(subject)/3)
-        else:
-            numSubPlots = 1
-        subPlotInd = nSub + 1
-        fig1 = plt.subplot(3,numSubPlots,subPlotInd)
-        plt.title('{0} [{1}]'.format(subject[nSub],session))
-        (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue, ciHitsEachValue,xTickPeriod=1, xscale='linear')
-        plt.xlabel('{0} level (a.u.)'.format(whichFeature) ,fontsize=fontsize)
-        plt.ylabel('Rightward trials (%)',fontsize=fontsize)
-        extraplots.set_ticks_fontsize(plt.gca(),fontsize)
-        plt.show()
-        '''
 
 
     if bdata['taskMode'][-1] == bdata.labels['taskMode']['water_after_sound']: #Stage1
@@ -126,7 +100,34 @@ for nSub in range(len(subject)):
                     print('move to stage5!')
                 else:
                     print('stay on stage 4')
-            elif bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['extreme80pc']:
-                print('you are on psycurveMode, extreme80pc')
-            elif bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['uniform']:
-                print('you are on psycurveMode, uniform')
+            else:
+                ### calculate psychometric###
+                if any(bdata['psycurveMode']):
+                    if bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['spectral']:
+                        targetFrequency = bdata['targetFTpercent']
+                    elif bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['temporal']:
+                        targetFrequency = bdata['targetVOTpercent']
+
+                    possibleFreq = np.unique(targetFrequency)
+                    nFreq = len(possibleFreq)
+                    trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
+                    (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
+                    fontsize = 12
+                    if len(subject) > 1:
+                        numSubPlots = 4
+                    else:
+                        numSubPlots = 1
+                    subPlotInd = nSub + 1
+                    fig1 = plt.subplot(3,numSubPlots,subPlotInd)
+                    plt.title('{0} [{1}]'.format(subject[nSub],session))
+                    (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue, ciHitsEachValue,xTickPeriod=1, xscale='linear')
+                    plt.xlabel('{0} level (a.u.)'.format(whichFeature) ,fontsize=fontsize)
+                    plt.ylabel('Rightward trials (%)',fontsize=fontsize)
+                    extraplots.set_ticks_fontsize(plt.gca(),fontsize)
+                    plt.show()
+
+
+                if bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['extreme80pc']:
+                    print('you are on psycurveMode, extreme80pc')
+                elif bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['uniform']:
+                    print('you are on psycurveMode, uniform')
