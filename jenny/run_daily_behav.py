@@ -16,7 +16,7 @@ if whichSubject == '1':
 elif whichSubject == '2':
     subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051'] #FT animals
 elif whichSubject == '3':
-    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
+    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili048', 'bili049', 'bili050', 'bili051']
 elif whichSubject == '4':
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili048', 'bili049', 'bili050', 'bili051']
 elif whichSubject == '5':
@@ -130,6 +130,8 @@ for nSub in range(len(subject)):
             print('you are on psycurve mode, woohoo!')
             if bdata['psycurveMode'][1] == bdata.labels['psycurveMode']['uniform']:
                 print('psycurveMode = uniform')
+                if bdata['irrelevantFeatureMode'][-1] == bdata.labels['irrelevantFeatureMode']['random']:
+                    print('irrelevantFeatureMode = random')
             elif bdata['psycurveMode'][1] == bdata.labels['psycurveMode']['extreme80pc']:
                 print('psycurveMode = extremes80pct')
         else:
