@@ -21,6 +21,8 @@ elif whichSubject == '4':
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili048', 'bili049', 'bili050', 'bili051']
 elif whichSubject == '5':
     subject = ['bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047']
+elif whichSubject == '6':
+    subject = ['bili044', 'bili046', 'bili047', 'bili051'] #FT animals
 else:
     subject = [whichSubject]
 
