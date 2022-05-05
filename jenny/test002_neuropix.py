@@ -1,26 +1,32 @@
 import os
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gs
 from jaratoolbox import celldatabase
 from jaratoolbox import settings
 from jaratoolbox import ephyscore
 from jaratoolbox import spikesanalysis
 from jaratoolbox import extraplots
 from jaratoolbox import behavioranalysis
+from jaratoolbox import colorpalette
 import scipy.optimize
 
 inforecFile = os.path.join(settings.INFOREC_PATH,'feat004_inforec.py')
 celldb = celldatabase.generate_cell_database(inforecFile)
 
 for indRow, dbRow in celldb.iterrows():
-    #plt.clf()
-    indplot = 1
+    plt.clf()
 
     oneCell = ephyscore.Cell(dbRow)
-    plt.subplot(3,4,1)
+    gsMain = gs.GridSpec(3, 4)
+    gsMain.update(left=0.075, right=0.98, top=0.9, bottom=0.1, wspace=0.4, hspace=0.2) #Change spacing of things
+    plt.suptitle(oneCell, fontsize=16, fontweight='bold', y = 0.99)
+
+    ax0 = plt.subplot(gsMain[0,0])
+
     plt.plot(dbRow.spikeShape, linewidth = 3)
-    plt.text(30, -0.1, f"bestChannel = {dbRow.bestChannel}")
-    plt.title(oneCell)
+    plt.title('bestChannel = {}'.format(dbRow.bestChannel))
+    #plt.text(30, -0.1, f"bestChannel = {dbRow.bestChannel}")
 
     #FTVOTBorders
     ephysData, bdata = oneCell.load('FTVOTBorders')
@@ -47,7 +53,7 @@ for indRow, dbRow in celldb.iterrows():
     colorEachCond = ['0.3','0.5','c','b']
 
     # Raster -- VOT (FTmin)
-    plt.subplot(3,4,5)
+    ax1 = plt.subplot(gsMain[1,0])
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmin, colorEachCond)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
@@ -62,13 +68,13 @@ for indRow, dbRow in celldb.iterrows():
     lwPsth = 2
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
-    plt.subplot(3,4,9)
+    ax2 = plt.subplot(gsMain[2,0], sharex=ax1)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOT_FTmin, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
 
     # Raster -- VOT (FTmax)
-    plt.subplot(3,4,6)
+    ax3 = plt.subplot(gsMain[1,1])
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmax, colorEachCond)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
@@ -83,13 +89,13 @@ for indRow, dbRow in celldb.iterrows():
     lwPsth = 2
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
-    plt.subplot(3,4,10)
+    ax4 = plt.subplot(gsMain[2,1], sharex=ax3)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOT_FTmax, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
 
     # Raster -- FT (VOT = min)
-    plt.subplot(3,4,7)
+    ax5 = plt.subplot(gsMain[1,2])
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFT_VOTmin, colorEachCond)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
@@ -104,14 +110,14 @@ for indRow, dbRow in celldb.iterrows():
     lwPsth = 2
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
-    plt.subplot(3,4,11)
+    ax6 = plt.subplot(gsMain[2,2], sharex=ax5)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFT_VOTmin, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
 
 
     # Raster -- FT (VOT = max)
-    plt.subplot(3,4,8)
+    ax7 = plt.subplot(gsMain[1,3])
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFT_VOTmax, colorEachCond)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
@@ -126,7 +132,7 @@ for indRow, dbRow in celldb.iterrows():
     lwPsth = 2
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
-    plt.subplot(3,4,12)
+    ax8 = plt.subplot(gsMain[2,3], sharex=ax7)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFT_VOTmax, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
@@ -145,7 +151,7 @@ for indRow, dbRow in celldb.iterrows():
     soundParamsEachTrial = bdata['currentFreq']
     possibleParams = np.unique(soundParamsEachTrial)
     trialsEachCond = behavioranalysis.find_trials_each_type(soundParamsEachTrial, possibleParams)
-    plt.subplot(3,4,2)
+    ax9 = plt.subplot(gsMain[0,1])
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachCond)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
@@ -172,7 +178,7 @@ for indRow, dbRow in celldb.iterrows():
     soundIntensityEachTrial = bdata['currentIntensity']
     possibleIntensities = np.unique(bdata['currentIntensity'])
     trialsEachFreq = behavioranalysis.find_trials_each_type(soundFreqEachTrial, possibleFreq)
-    plt.subplot(3,4,3)
+    ax10 = plt.subplot(gsMain[0,2])
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachFreq)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
@@ -214,17 +220,17 @@ for indRow, dbRow in celldb.iterrows():
     residuals = avgRateEachCond[:,0] - gaussianResp
     ssquared = np.sum(residuals**2)
     ssTotal = np.sum((avgRateEachCond[:,0]-np.mean(avgRateEachCond[:,0]))**2)
-    Rsquared = 1 - (ssquared/ssTotal)
+    Rsquared_60dB = 1 - (ssquared/ssTotal)
 
     # -- Calculate bandwidth --
-    fullWidthHalfMax = 2.355*popt[2] # Sigma is popt[2]
+    fullWidthHalfMax_60dB = 2.355*popt[2] # Sigma is popt[2]
 
-    plt.subplot(3,4,4)
+    ax11 = plt.subplot(gsMain[0,3])
     yvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
     xvals = gaussian(yvals, *popt)
-    plt.plot(avgRateEachCond[:,0], possibleLogFreq, 'o')
-    plt.plot(xvals, yvals, '-', lw=3)
-    plt.title(f'R^2 = {Rsquared:0.4f} ,  Bandwidth = {fullWidthHalfMax:0.2f} oct')
+    plt.plot(avgRateEachCond[:,0], possibleLogFreq, 'ko')
+    line1, = plt.plot(xvals, yvals, 'k-', lw=3)
+    #plt.title(f'R^2 = {Rsquared_60dB:0.4f} ,  Bandwidth = {fullWidthHalfMax:0.2f} oct')
     plt.xlabel('Firing rate (Hz)')
     plt.ylabel('Frequency (kHz)')
     yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
@@ -244,21 +250,22 @@ for indRow, dbRow in celldb.iterrows():
     residuals = avgRateEachCond[:,1] - gaussianResp
     ssquared = np.sum(residuals**2)
     ssTotal = np.sum((avgRateEachCond[:,1]-np.mean(avgRateEachCond[:,1]))**2)
-    Rsquared = 1 - (ssquared/ssTotal)
+    Rsquared_70dB = 1 - (ssquared/ssTotal)
 
     # -- Calculate bandwidth --
-    fullWidthHalfMax = 2.355*popt[2] # Sigma is popt[2]
+    fullWidthHalfMax_70dB = 2.355*popt[2] # Sigma is popt[2]
 
-    plt.subplot(3,4,4)
+    ax11 = plt.subplot(gsMain[0,3])
     yvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
     xvals = gaussian(yvals, *popt)
-    plt.plot(avgRateEachCond[:,1], possibleLogFreq, 'o')
-    plt.plot(xvals, yvals, '-', lw=3, linestyle = '--')
-    plt.title(f'R^2 = {Rsquared:0.4f} ,  Bandwidth = {fullWidthHalfMax:0.2f} oct')
+    plt.plot(avgRateEachCond[:,1], possibleLogFreq, 'ro')
+    line2, = plt.plot(xvals, yvals, 'r-', lw=3)
+    plt.title(f'60dB: R^2 = {Rsquared_60dB:0.4f} ,  60dB Bandwidth = {fullWidthHalfMax_60dB:0.2f} oct \n' + f'70dB: R^2 = {Rsquared_70dB:0.4f} ,  70dB Bandwidth = {fullWidthHalfMax_70dB:0.2f} oct \n')
     plt.xlabel('Firing rate (Hz)')
     plt.ylabel('Frequency (kHz)')
     yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
     plt.yticks(possibleLogFreq, yTickLabels)
+    ax11.legend([line1, line2], ['60dB', '70dB'], loc = 'lower left')
     plt.show()
 
 
@@ -267,6 +274,5 @@ for indRow, dbRow in celldb.iterrows():
     print(oneCell)
     plt.show()
     input("press enter for next cell")
-    indplot += 1
     plt.close()
 plt.close()
