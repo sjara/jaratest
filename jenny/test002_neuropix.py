@@ -10,6 +10,10 @@ from jaratoolbox import extraplots
 from jaratoolbox import behavioranalysis
 from jaratoolbox import colorpalette
 import scipy.optimize
+import matplotlib
+
+matplotlib.rcParams['font.family'] = 'Helvetica'
+matplotlib.rcParams['svg.fonttype'] = 'none'  # To render as font rather than outlines
 
 subject = 'feat004'
 inforecFile = os.path.join(settings.INFOREC_PATH,f'{subject}_inforec.py')
@@ -22,7 +26,7 @@ for indRow, dbRow in celldb.iterrows():
 
     oneCell = ephyscore.Cell(dbRow)
     gsMain = gs.GridSpec(3, 4)
-    gsMain.update(left=0.075, right=0.98, top=0.9, bottom=0.1, wspace=0.4, hspace=0.3) #Change spacing of things
+    gsMain.update(left=0.075, right=0.98, top=0.9, bottom=0.1, wspace=0.4, hspace=0.4) #Change spacing of things
     plt.suptitle(oneCell, fontsize=16, fontweight='bold', y = 0.99)
 
     # Plot Waveform
@@ -32,7 +36,8 @@ for indRow, dbRow in celldb.iterrows():
     plt.text(30, -0.1, f"bestChannel = {dbRow.bestChannel}")
     #plt.title('x {},'.format(dbRow.x_coord) + 'y {},'.format(dbRow.y_coord) + 'z {}'.format(dbRow.z_coord))
     #plt.title(f'x:{dbRow.x_coord:0.1f},' + f'y:{dbRow.y_coord:0.1f},' + f'z:{dbRow.z_coord}')
-    plt.title(f'Recording Site:{dbRow.recordingSiteName}')
+    plt.title(f'Recording Site:{dbRow.recordingSiteName}\n'+f'x:{dbRow.x_coord:0.0f}  ' +
+              f'y:{dbRow.y_coord:0.0f}  ' + f'z:{dbRow.z_coord:0.0f}')
 
     #FTVOTBorders
     ephysData, bdata = oneCell.load('FTVOTBorders')
@@ -64,7 +69,7 @@ for indRow, dbRow in celldb.iterrows():
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
-    plt.title('VOT, FT = min')
+    plt.title(f'VOT, FTmin (n = {np.sum(trialsEachVOT_FTmin)})')
 
     # PSTH -- VOT (FTmax)
     binWidth = 0.010
@@ -81,11 +86,11 @@ for indRow, dbRow in celldb.iterrows():
 
     # Raster -- VOT (FTmax)
     ax3 = plt.subplot(gsMain[1,1])
-    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmax, colorEachCond)
+    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmax, colorEachCond, labels = ['a', 'b', 'c', 'd'])
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
-    plt.title('VOT, FT = max')
+    plt.title(f'VOT, FTmax (n = {np.sum(trialsEachVOT_FTmax)})')
 
     # PSTH -- VOT (FTmax)
     binWidth = 0.010
@@ -106,7 +111,7 @@ for indRow, dbRow in celldb.iterrows():
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
-    plt.title('FT, VOT = min')
+    plt.title(f'FT, VOTmin (n = {np.sum(trialsEachFT_VOTmin)})')
 
     # PSTH -- FT (VOT = min)
     binWidth = 0.010
@@ -128,7 +133,7 @@ for indRow, dbRow in celldb.iterrows():
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
     plt.ylabel('Trials')
-    plt.title('FT, VOT = max')
+    plt.title(f'FT, VOTmax (n = {np.sum(trialsEachFT_VOTmax)})')
 
     # PSTH -- FT (VOT = min)
     binWidth = 0.010
@@ -266,7 +271,7 @@ for indRow, dbRow in celldb.iterrows():
     xvals = gaussian(yvals, *popt)
     plt.plot(avgRateEachCond[:,1], possibleLogFreq, 'ro')
     line2, = plt.plot(xvals, yvals, 'r-', lw=3)
-    plt.title(f'60dB: R^2 = {Rsquared_60dB:0.4f}, Bandwidth = {fullWidthHalfMax_60dB:0.2f} oct \n' + f'70dB: R^2 = {Rsquared_70dB:0.4f}, Bandwidth = {fullWidthHalfMax_70dB:0.2f} oct \n', fontsize = 12)
+    plt.title(f'60dB: R^2 = {Rsquared_60dB:0.4f}, BW = {fullWidthHalfMax_60dB:0.2f} oct \n' + f'70dB: R^2 = {Rsquared_70dB:0.4f}, BW = {fullWidthHalfMax_70dB:0.2f} oct \n', fontsize = 12)
     plt.xlabel('Firing rate (Hz)')
     plt.ylabel('Frequency (kHz)')
     yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
