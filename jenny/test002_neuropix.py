@@ -11,22 +11,28 @@ from jaratoolbox import behavioranalysis
 from jaratoolbox import colorpalette
 import scipy.optimize
 
-inforecFile = os.path.join(settings.INFOREC_PATH,'feat004_inforec.py')
-celldb = celldatabase.generate_cell_database(inforecFile)
+subject = 'feat004'
+inforecFile = os.path.join(settings.INFOREC_PATH,f'{subject}_inforec.py')
+dbPath = os.path.join(settings.DATABASE_PATH, f'celldb_{subject}.h5')
+celldb = celldatabase.load_hdf(dbPath)
+#celldb = celldatabase.generate_cell_database(inforecFile)
 
 for indRow, dbRow in celldb.iterrows():
     plt.clf()
 
     oneCell = ephyscore.Cell(dbRow)
     gsMain = gs.GridSpec(3, 4)
-    gsMain.update(left=0.075, right=0.98, top=0.9, bottom=0.1, wspace=0.4, hspace=0.2) #Change spacing of things
+    gsMain.update(left=0.075, right=0.98, top=0.9, bottom=0.1, wspace=0.4, hspace=0.3) #Change spacing of things
     plt.suptitle(oneCell, fontsize=16, fontweight='bold', y = 0.99)
 
+    # Plot Waveform
     ax0 = plt.subplot(gsMain[0,0])
-
     plt.plot(dbRow.spikeShape, linewidth = 3)
-    plt.title('bestChannel = {}'.format(dbRow.bestChannel))
-    #plt.text(30, -0.1, f"bestChannel = {dbRow.bestChannel}")
+    #plt.title('bestChannel = {}'.format(dbRow.bestChannel))
+    plt.text(30, -0.1, f"bestChannel = {dbRow.bestChannel}")
+    #plt.title('x {},'.format(dbRow.x_coord) + 'y {},'.format(dbRow.y_coord) + 'z {}'.format(dbRow.z_coord))
+    #plt.title(f'x:{dbRow.x_coord:0.1f},' + f'y:{dbRow.y_coord:0.1f},' + f'z:{dbRow.z_coord}')
+    plt.title(f'Recording Site:{dbRow.recordingSiteName}')
 
     #FTVOTBorders
     ephysData, bdata = oneCell.load('FTVOTBorders')
@@ -255,12 +261,12 @@ for indRow, dbRow in celldb.iterrows():
     # -- Calculate bandwidth --
     fullWidthHalfMax_70dB = 2.355*popt[2] # Sigma is popt[2]
 
-    ax11 = plt.subplot(gsMain[0,3])
+    #ax11 = plt.subplot(gsMain[0,3])
     yvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
     xvals = gaussian(yvals, *popt)
     plt.plot(avgRateEachCond[:,1], possibleLogFreq, 'ro')
     line2, = plt.plot(xvals, yvals, 'r-', lw=3)
-    plt.title(f'60dB: R^2 = {Rsquared_60dB:0.4f} ,  60dB Bandwidth = {fullWidthHalfMax_60dB:0.2f} oct \n' + f'70dB: R^2 = {Rsquared_70dB:0.4f} ,  70dB Bandwidth = {fullWidthHalfMax_70dB:0.2f} oct \n')
+    plt.title(f'60dB: R^2 = {Rsquared_60dB:0.4f}, Bandwidth = {fullWidthHalfMax_60dB:0.2f} oct \n' + f'70dB: R^2 = {Rsquared_70dB:0.4f}, Bandwidth = {fullWidthHalfMax_70dB:0.2f} oct \n', fontsize = 12)
     plt.xlabel('Firing rate (Hz)')
     plt.ylabel('Frequency (kHz)')
     yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
@@ -273,6 +279,8 @@ for indRow, dbRow in celldb.iterrows():
     plt.gcf().set_size_inches([14, 12])
     print(oneCell)
     plt.show()
+    #figPath = figPath = os.path.join('/mnt/jarahubdata/reports/2022paspeech/cellReports/', f'{subject}_tracks_on_brain.png')
+    #plt.savefig(figPath, format='png')
     input("press enter for next cell")
     plt.close()
 plt.close()
