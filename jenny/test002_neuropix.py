@@ -61,14 +61,17 @@ for indRow, dbRow in celldb.iterrows():
     trialsEachFT_VOTmax = trialsEachVOT_FT[:,-1,:]
     #trialsEachVOTCond = behavioranalysis.find_trials_each_type(VOTParamsEachTrial, possibleVOTParams)
     #trialsEachFTCond = behavioranalysis.find_trials_each_type(FTParamsEachTrial, possibleFTParams)
-    colorEachCond = ['0.3','0.5','c','b']
+    VOTlabels = list(possibleVOTParams)
+    FTlabels = list(possibleFTParams)
+    colorsEachVOT = ['#3e5cfc', '#3ebbfc', '#fdce89', '#ea8d04']
+    colorsEachFT = ['#3e5cfc', '#3ebbfc', '#fdce89', '#ea8d04']
 
     # Raster -- VOT (FTmin)
     ax1 = plt.subplot(gsMain[1,0])
-    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmin, colorEachCond)
+    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmin, colorsEachVOT, labels = VOTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    plt.ylabel('Trials')
+    #plt.ylabel('Trials')
     plt.title(f'VOT, FTmin (n = {np.sum(trialsEachVOT_FTmin)})')
 
     # PSTH -- VOT (FTmax)
@@ -80,16 +83,16 @@ for indRow, dbRow in celldb.iterrows():
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     ax2 = plt.subplot(gsMain[2,0], sharex=ax1)
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOT_FTmin, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOT_FTmin, colorsEachVOT, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
 
     # Raster -- VOT (FTmax)
     ax3 = plt.subplot(gsMain[1,1])
-    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmax, colorEachCond, labels = ['a', 'b', 'c', 'd'])
+    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachVOT_FTmax, colorsEachVOT, labels = VOTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    plt.ylabel('Trials')
+    #plt.ylabel('trials')
     plt.title(f'VOT, FTmax (n = {np.sum(trialsEachVOT_FTmax)})')
 
     # PSTH -- VOT (FTmax)
@@ -101,16 +104,16 @@ for indRow, dbRow in celldb.iterrows():
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     ax4 = plt.subplot(gsMain[2,1], sharex=ax3)
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOT_FTmax, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOT_FTmax, colorsEachVOT, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
 
     # Raster -- FT (VOT = min)
     ax5 = plt.subplot(gsMain[1,2])
-    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFT_VOTmin, colorEachCond)
+    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFT_VOTmin, colorsEachFT, labels = VOTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    plt.ylabel('Trials')
+    #plt.ylabel('Trials')
     plt.title(f'FT, VOTmin (n = {np.sum(trialsEachFT_VOTmin)})')
 
     # PSTH -- FT (VOT = min)
@@ -122,17 +125,17 @@ for indRow, dbRow in celldb.iterrows():
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     ax6 = plt.subplot(gsMain[2,2], sharex=ax5)
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFT_VOTmin, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFT_VOTmin, colorsEachFT, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
 
 
     # Raster -- FT (VOT = max)
     ax7 = plt.subplot(gsMain[1,3])
-    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFT_VOTmax, colorEachCond)
+    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset,indexLimitsEachTrial,timeRange, trialsEachFT_VOTmax, colorsEachFT, labels = VOTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    plt.ylabel('Trials')
+    #plt.ylabel('trials')
     plt.title(f'FT, VOTmax (n = {np.sum(trialsEachFT_VOTmax)})')
 
     # PSTH -- FT (VOT = min)
@@ -144,7 +147,7 @@ for indRow, dbRow in celldb.iterrows():
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,indexLimitsEachTrial,timeVec)
     ax8 = plt.subplot(gsMain[2,3], sharex=ax7)
-    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFT_VOTmax, colorEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+    pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFT_VOTmax, colorsEachFT, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
     plt.ylabel('Firing Rate (Sp/s)')
 
