@@ -1867,7 +1867,7 @@ postMeanType3216kze = averagePostSignal5[indexType3216kze]
 postMeanType3232kze = averagePostSignal5[indexType3232kze]
 
 
-# --- Finding values in the average signals with each freq type indices
+
 
 
 
