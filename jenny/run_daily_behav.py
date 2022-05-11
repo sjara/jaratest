@@ -90,7 +90,7 @@ for nSub in range(len(subject)):
         (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
         fontsize = 12
         if len(subject) > 1:
-            numSubPlots = int(len(subject)/3)
+            numSubPlots = int(np.ceil(len(subject)/3))
         else:
             numSubPlots = 1
         subPlotInd = nSub + 1
