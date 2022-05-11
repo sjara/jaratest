@@ -15,9 +15,12 @@ import matplotlib
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To render as font rather than outlines
 
-subject = 'feat005'
+subject = 'feat004'
 inforecFile = os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py')
 dbPath = os.path.join(settings.DATABASE_PATH, f'celldb_{subject}.h5')
+
+
+
 celldb = celldatabase.load_hdf(dbPath)
 #celldb = celldatabase.generate_cell_database(inforecFile)
 
@@ -280,15 +283,15 @@ for indRow, dbRow in celldb.iterrows():
     yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
     plt.yticks(possibleLogFreq, yTickLabels)
     ax11.legend([line1, line2], ['60dB', '70dB'], loc = 'lower left')
-    plt.show()
 
 
 
     plt.gcf().set_size_inches([14, 12])
     print(oneCell)
     plt.show()
-    #figPath = figPath = os.path.join('/mnt/jarahubdata/reports/2022paspeech/cellReports/', f'{subject}_tracks_on_brain.png')
-    #plt.savefig(figPath, format='png')
     input("press enter for next cell")
+    #figPath = os.path.join(settings.FIGURES_DATA_PATH, 'cell_reports', f'{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_report.png')
+    #plt.savefig(figPath, format='png')
+
     plt.close()
 plt.close()
