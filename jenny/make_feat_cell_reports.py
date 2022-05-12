@@ -228,70 +228,82 @@ for indRow, dbRow in celldb.iterrows():
     p0 = [1, possibleLogFreq[nFreq//2], 1, 0]
     bounds = ([0, possibleLogFreq[0], 0, 0],
               [np.inf, possibleLogFreq[-1], np.inf, np.inf])
-
-    popt, pcov = scipy.optimize.curve_fit(gaussian, possibleLogFreq,
+    try:
+        popt, pcov = scipy.optimize.curve_fit(gaussian, possibleLogFreq,
                                           avgRateEachCond[:, 0], p0=p0, bounds=bounds)
-
-    # -- Calculate R^2 --
-    gaussianResp = gaussian(possibleLogFreq, *popt)
-    residuals = avgRateEachCond[:, 0] - gaussianResp
-    ssquared = np.sum(residuals**2)
-    ssTotal = np.sum((avgRateEachCond[:, 0]-np.mean(avgRateEachCond[:, 0]))**2)
-    Rsquared_60dB = 1 - (ssquared/ssTotal)
-
-    # -- Calculate bandwidth --
-    fullWidthHalfMax_60dB = 2.355*popt[2] # Sigma is popt[2]
+    except RuntimeError:
+        popt = None
+        pcov = None
 
     ax11 = plt.subplot(gsMain[0, 3])
     yvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
-    xvals = gaussian(yvals, *popt)
+    #xvals = gaussian(yvals, *popt)
     plt.plot(avgRateEachCond[:, 0], possibleLogFreq, 'ko')
-    line1, = plt.plot(xvals, yvals, 'k-', lw=3)
-    #plt.title(f'R^2 = {Rsquared_60dB:0.4f} , Bandwidth = {fullWidthHalfMax:0.2f} oct')
+    #line1, = plt.plot(xvals, yvals, 'k-', lw=3)
     plt.xlabel('Firing rate (Hz)')
     plt.ylabel('Frequency (kHz)')
     yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
     plt.yticks(possibleLogFreq, yTickLabels)
+
+    if popt is not None:
+        # -- Calculate R^2 --
+        gaussianResp = gaussian(possibleLogFreq, *popt)
+        residuals = avgRateEachCond[:, 0] - gaussianResp
+        ssquared = np.sum(residuals**2)
+        ssTotal = np.sum((avgRateEachCond[:, 0]-np.mean(avgRateEachCond[:, 0]))**2)
+        Rsquared_60dB = 1 - (ssquared/ssTotal)
+
+        # -- Calculate bandwidth --
+        fullWidthHalfMax_60dB = 2.355*popt[2] # Sigma is popt[2]
+        xvals = gaussian(yvals, *popt)
+        line1, = plt.plot(xvals, yvals, 'k-', lw=3)
+
 
     #Fit for intensity = 70dB
     # PARAMS: a, x0, sigma, y0
     p0 = [1, possibleLogFreq[nFreq//2], 1, 0]
     bounds = ([0, possibleLogFreq[0], 0, 0],
               [np.inf, possibleLogFreq[-1], np.inf, np.inf])
-
-    popt, pcov = scipy.optimize.curve_fit(gaussian, possibleLogFreq,
+    try:
+        popt, pcov = scipy.optimize.curve_fit(gaussian, possibleLogFreq,
                                           avgRateEachCond[:, 1], p0=p0, bounds=bounds)
+    except RuntimeError:
+        popt = None
+        pcov = None
 
-    # -- Calculate R^2 --
-    gaussianResp = gaussian(possibleLogFreq, *popt)
-    residuals = avgRateEachCond[:, 1] - gaussianResp
-    ssquared = np.sum(residuals**2)
-    ssTotal = np.sum((avgRateEachCond[:, 1]-np.mean(avgRateEachCond[:, 1]))**2)
-    Rsquared_70dB = 1 - (ssquared/ssTotal)
-
-    # -- Calculate bandwidth --
-    fullWidthHalfMax_70dB = 2.355*popt[2] # Sigma is popt[2]
-
-    #ax11 = plt.subplot(gsMain[0, 3])
     yvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
-    xvals = gaussian(yvals, *popt)
+    #xvals = gaussian(yvals, *popt)
     plt.plot(avgRateEachCond[:, 1], possibleLogFreq, 'ro')
-    line2, = plt.plot(xvals, yvals, 'r-', lw=3)
-    plt.title(f'60dB: R^2 = {Rsquared_60dB:0.4f}, BW = {fullWidthHalfMax_60dB:0.2f} oct \n' + f'70dB: R^2 = {Rsquared_70dB:0.4f}, BW = {fullWidthHalfMax_70dB:0.2f} oct \n', fontsize = 12)
+    #line2, = plt.plot(xvals, yvals, 'r-', lw=3)
+    #plt.title(f'60dB: R^2 = {Rsquared_60dB:0.4f}, BW = {fullWidthHalfMax_60dB:0.2f} oct \n' + f'70dB: R^2 = {Rsquared_70dB:0.4f}, BW = {fullWidthHalfMax_70dB:0.2f} oct \n', fontsize = 12)
     plt.xlabel('Firing rate (Hz)')
     plt.ylabel('Frequency (kHz)')
     yTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
     plt.yticks(possibleLogFreq, yTickLabels)
-    ax11.legend([line1, line2], ['60dB', '70dB'], loc = 'lower left')
+    #ax11.legend([line1, line2], ['60dB', '70dB'], loc = 'lower left')
 
+    if popt is not None:
+        # -- Calculate R^2 --
+        gaussianResp = gaussian(possibleLogFreq, *popt)
+        residuals = avgRateEachCond[:, 1] - gaussianResp
+        ssquared = np.sum(residuals**2)
+        ssTotal = np.sum((avgRateEachCond[:, 1]-np.mean(avgRateEachCond[:, 1]))**2)
+        Rsquared_70dB = 1 - (ssquared/ssTotal)
+
+        # -- Calculate bandwidth --
+        fullWidthHalfMax_70dB = 2.355*popt[2] # Sigma is popt[2]
+        xvals = gaussian(yvals, *popt)
+        line2, = plt.plot(xvals, yvals, 'r-', lw=3)
+        plt.title(f'60dB: R^2 = {Rsquared_60dB:0.4f}, BW = {fullWidthHalfMax_60dB:0.2f} oct \n' + f'70dB: R^2 = {Rsquared_70dB:0.4f}, BW = {fullWidthHalfMax_70dB:0.2f} oct \n', fontsize = 12)
+        ax11.legend([line1, line2], ['60dB', '70dB'], loc = 'lower left')
 
 
     plt.gcf().set_size_inches([14, 12])
     print(oneCell)
-    plt.show()
-    input("press enter for next cell")
-    #figPath = os.path.join(settings.FIGURES_DATA_PATH, 'cell_reports', f'{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_report.png')
-    #plt.savefig(figPath, format='png')
+    #plt.show()
+    #input("press enter for next cell")
+    figPath = os.path.join(settings.FIGURES_DATA_PATH, 'cell_reports', f'{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_report.png')
+    plt.savefig(figPath, format='png')
 
     plt.close()
 plt.close()
