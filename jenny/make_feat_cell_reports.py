@@ -8,14 +8,17 @@ from jaratoolbox import ephyscore
 from jaratoolbox import spikesanalysis
 from jaratoolbox import extraplots
 from jaratoolbox import behavioranalysis
-from jaratoolbox import colorpalette
 import scipy.optimize
 import matplotlib
 
 matplotlib.rcParams['font.family'] = 'Helvetica'
 matplotlib.rcParams['svg.fonttype'] = 'none'  # To render as font rather than outlines
 
-subject = 'feat004'
+#subject = 'feat004'
+
+print('enter subject name')
+subject = input()
+
 inforecFile = os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py')
 dbPath = os.path.join(settings.DATABASE_PATH, f'celldb_{subject}.h5')
 
