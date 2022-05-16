@@ -1309,7 +1309,7 @@ def plot_trials_only(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, time
      trialPl[2,1].set_ylim([400, 700])
      trialPl[3,1].set_ylim([400, 700])
      trialPl[4,1].set_ylim([400, 700])
-     '''
+     
      plt.suptitle('Pupil size for each frequency type across videos: pure11_20220415-19(actual pure011)', fontsize = labelSize)
 
      plt.show()
