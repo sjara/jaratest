@@ -93,14 +93,17 @@ def find_freqs_indices(preFreqArr, postFreqArr, freq1, freq2, freq3, freq4, freq
       returns:
       findPostFreq1..5Arr = arrays containing the indices values for each freq that correspond to the postValues used as an input
       '''
+      
+# --- Find the location of the given frequencies as args ---
+
       findPreFreq1 = np.argwhere(freq1 == preFreqArr) #finds indices for 2kHz values in preFreqs
       findPreFreq1Arr = findPreFreq1.flatten()
       findPreFreq2 = np.argwhere(freq5 == preFreqArr) #finds indices for 32kHz values in preFreqs
       findPreFreq2Arr = findPreFreq2.flatten()
+      
+# --- Find the post freqs corresponding to their pre freqs ---       
       correspondingValues1 = np.take(postFreqArr, findPreFreq1Arr) #finds all post frequencies values for pre 2kHz
       correspondingValues2 = np.take(postFreqArr, findPreFreq2Arr) #finds all post frequencies values for pre 32kHz
-      #print(findPreFreq1Arr)
-      #print(correspondingValues1)
       findPostFreq1 = np.argwhere(freq1 == correspondingValues1) #finds the 2kHz post values indices with 2kHz as pre value
       
       findPostFreq1a = np.argwhere(freq1 == correspondingValues2) #finds the 2kHz post values indices with 32kHz as pre value.. so forth
@@ -471,7 +474,17 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
 
 
 def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, plotData3): 
-     fig, signalsPlots = plt.subplots(1,3, constrained_layout = True, sharey = True, sharex = True) 
+     fig, signalsPlots = plt.subplots(1,3, constrained_layout = True, sharey = True, sharex = True)
+     '''
+     Creates a plot with traces made up with the mean pupil size along the videos
+     Args:
+     timeData1...3 (np.array) = array containing the time window to evaluate the pupil size
+     plotData1...3 (np.array) = array containing the mean pupil size to plot against time
+     
+     Returns:
+     plt.show() = returns a plot with traces of different colors, representing the mean pupil behavior in each video recorded
+     '''
+ 
      signalsPlots[0].plot(timeData1, plotData1) 
      signalsPlots[0].set(title = 'Positive control') 
      signalsPlots[0].set_ylabel('Pupil Area', fontsize = 13)
@@ -486,14 +499,17 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
 
 def calculate_pupil_size_and_plot(normValue1, normValue2, normValue3, normValue4, normValue5, normValue6, normValue7, normValue8, normValue9, normValue10,  normValue1a, normValue2a, normValue3a, normValue4a, normValue5a, normValue6a, normValue7a, normValue8a, normValue9a, normValue10a, normValue1b, normValue2b, normValue3b, normValue4b, normValue5b, normValue6b, normValue7b, normValue8b, normValue9b, normValue10b, normValue1c, normValue2c, normValue3c, normValue4c, normValue5c, normValue6c, normValue7c, normValue8c, normValue9c, normValue10c,  normValue1d, normValue2d, normValue3d, normValue4d, normValue5d, normValue6d, normValue7d, normValue8d, normValue9d, normValue10d, normValue1e, normValue2e, normValue3e, normValue4e, normValue5e, normValue6e, normValue7e, normValue8e, normValue9e, normValue10e, normPreVal1, normPreVal2, normPreVal3, normPreVal4, normPreVal5, normPreVal6, normPreVal7, normPreVal8, normPreVal9, normPreVal10, normPreVal1a, normPreVal2a, normPreVal3a, normPreVal4a, normPreVal5a, normPreVal6a, normPreVal7a, normPreVal8a, normPreVal9a, normPreVal10a, normPreVal1b, normPreVal2b, normPreVal3b, normPreVal4b, normPreVal5b, normPreVal6b, normPreVal7b, normPreVal8b, normPreVal9b, normPreVal10b, normPreVal1c, normPreVal2c, normPreVal3c, normPreVal4c, normPreVal5c, normPreVal6c, normPreVal7c, normPreVal8c, normPreVal9c, normPreVal10c, normPreVal1d, normPreVal2d, normPreVal3d, normPreVal4d, normPreVal5d, normPreVal6d, normPreVal7d, normPreVal8d, normPreVal9d, normPreVal10d, normPreVal1e, normPreVal2e, normPreVal3e, normPreVal4e, normPreVal5e, normPreVal6e, normPreVal7e, normPreVal8e, normPreVal9e, normPreVal10e, frequencies):
      '''
-     Calculates the pupil size with normalized values  and plots it
+     Calculates the pupil size with normalized values for pre freqs 2kHz and 32kHz, and plots them
      
-     args:
+     Args:
      normVal1...10e (np.array) =  array containing the normalized pupil size for each frequency type
      frequencies (np.array) = array containing the number of frequencies being tested
-     returns:
+     
+     Returns:
      plot.show() = plots the normalized pupil size across videos for each frequency type
      '''
+     
+# --- Creating one array per post freqs values across videos in one array ---
      
      values2Khz1 = np.concatenate((normValue1, normValue1a, normValue1b, normValue1c, normValue1d, normValue1e), axis = 0)
      values4Khz1 = np.concatenate((normValue2, normValue2a, normValue2b, normValue2c, normValue2d, normValue2e), axis = 0)
@@ -515,27 +531,31 @@ def calculate_pupil_size_and_plot(normValue1, normValue2, normValue3, normValue4
      pre8Khz2 = np.concatenate((normPreVal8, normPreVal8a, normPreVal8b, normPreVal8c, normPreVal8d, normPreVal8e), axis = 0)
      pre16Khz2 = np.concatenate((normPreVal9, normPreVal9a, normPreVal9b, normPreVal9c, normPreVal9d, normPreVal9e), axis = 0)
      pre32Khz2 = np.concatenate((normPreVal10, normPreVal10a, normPreVal10b, normPreVal10c, normPreVal10d, normPreVal10e), axis = 0)
+
+# --- Calculate mean values for each array created in the past step ---
      
-     mean2Khz1 = np.average(values2Khz1)
-     mean4Khz1 = np.average(values4Khz1)
-     mean8Khz1 = np.average(values8Khz1)
-     mean16Khz1 = np.average(values16Khz1)
-     mean32Khz1 = np.average(values32Khz1)
-     mean2Khz2 = np.average(values2Khz2)
-     mean4Khz2 = np.average(values4Khz2)
-     mean8Khz2 = np.average(values8Khz2)
-     mean16Khz2 = np.average(values16Khz2)
-     mean32Khz2 = np.average(values32Khz2)
-     meanPre2Khz1 = np.average(pre2Khz1)
-     meanPre4Khz1 = np.average(pre4Khz1)
-     meanPre8Khz1 = np.average(pre8Khz1)
-     meanPre16Khz1 = np.average(pre16Khz1)
-     meanPre32Khz1 = np.average(pre32Khz1)
-     meanPre2Khz2 = np.average(pre2Khz2)
-     meanPre4Khz2 = np.average(pre4Khz2)
-     meanPre8Khz2 = np.average(pre8Khz2)
-     meanPre16Khz2 = np.average(pre16Khz2)
-     meanPre32Khz2 = np.average(pre32Khz2)
+     mean2Khz1 = np.nanmean(values2Khz1)
+     mean4Khz1 = np.nanmean(values4Khz1)
+     mean8Khz1 = np.nanmean(values8Khz1)
+     mean16Khz1 = np.nanmean(values16Khz1)
+     mean32Khz1 = np.nanmean(values32Khz1)
+     mean2Khz2 = np.nanmean(values2Khz2)
+     mean4Khz2 = np.nanmean(values4Khz2)
+     mean8Khz2 = np.nanmean(values8Khz2)
+     mean16Khz2 = np.nanmean(values16Khz2)
+     mean32Khz2 = np.nanmean(values32Khz2)
+     meanPre2Khz1 = np.nanmean(pre2Khz1)
+     meanPre4Khz1 = np.nanmean(pre4Khz1)
+     meanPre8Khz1 = np.nanmean(pre8Khz1)
+     meanPre16Khz1 = np.nanmean(pre16Khz1)
+     meanPre32Khz1 = np.nanmean(pre32Khz1)
+     meanPre2Khz2 = np.nanmean(pre2Khz2)
+     meanPre4Khz2 = np.nanmean(pre4Khz2)
+     meanPre8Khz2 = np.nanmean(pre8Khz2)
+     meanPre16Khz2 = np.nanmean(pre16Khz2)
+     meanPre32Khz2 = np.nanmean(pre32Khz2)
+
+# --- Round mean values decimals so it is easier to see in the plot --- 
      
      round2Khz1 = np.around(mean2Khz1, decimals = 3)
      round4Khz1 = np.round(mean4Khz1, decimals = 3)
@@ -558,7 +578,8 @@ def calculate_pupil_size_and_plot(normValue1, normValue2, normValue3, normValue4
      roundPre16Khz2 = np.round(meanPre16Khz2, decimals = 3)
      roundPre32Khz2 = np.round(meanPre32Khz2, decimals = 3)
      
-     
+# --- Calculate the deviation bars for each frequency type --- 
+
      err2Khz1 = np.std(values2Khz1)
      err4Khz1 = np.std(values4Khz1)
      err8Khz1 = np.std(values8Khz1)
@@ -580,14 +601,15 @@ def calculate_pupil_size_and_plot(normValue1, normValue2, normValue3, normValue4
      errPre16Khz2 = np.std(pre16Khz2)
      errPre32Khz2 = np.std(pre32Khz2)
      
-     
+# --- Create an array with the errors and mean values for freqs type with pre 2kHz and pre 32kHz ---
+    
      totalErr1 = [err2Khz1, err4Khz1, err8Khz1, err16Khz1, err32Khz1]
      totalErr2 = [err2Khz2, err4Khz2, err8Khz2, err16Khz2, err32Khz2]
      totalMean1 = [round2Khz1, round4Khz1, round8Khz1, round16Khz1, round32Khz1]
      totalPreMean1 = [roundPre2Khz1, roundPre4Khz1, roundPre8Khz1, roundPre16Khz1, roundPre32Khz1]
      totalMean2 = [round2Khz2, round4Khz2, round8Khz2, round16Khz2, round32Khz2]
      totalPreMean2 = [roundPre2Khz2, roundPre4Khz2, roundPre8Khz2, roundPre16Khz2, roundPre32Khz2]
-     
+
 # --- Calculate delta pupil area ---
      pArea2Khz1 = mean2Khz1 - meanPre2Khz1
      pArea4Khz1 = mean4Khz1 - meanPre4Khz1
@@ -621,7 +643,10 @@ def calculate_pupil_size_and_plot(normValue1, normValue2, normValue3, normValue4
      ylimInf = np.nanmin(ylimArr)
      ymaxArr = [np.nanmax(values2Khz), np.nanmax(values32Khz)]
      ymaxSup = np.nanmax(ymaxArr)
-# --- Finishing calculating ---     
+# --- Finishing calculating ---
+
+          
+# --- Plot the results ---
      
      labelSize = 16 
      fig, plotVal = plt.subplots(2,2, constrained_layout = True, sharex= True) 
@@ -637,7 +662,7 @@ def calculate_pupil_size_and_plot(normValue1, normValue2, normValue3, normValue4
      plotVal[1,0].set_xlabel('Frequencies (kHz)', fontsize = labelSize)
      plotVal[1,0].plot(frequencies, mean32Khz, color = '#FFA500', marker = '^', markersize = '9', label = postLegend)
      plotVal[1,0].plot(frequencies, meanPre32Khz, color = '#FFA500', marker = '^', markersize = '9', alpha = 0.5, label = preLegend2)
-     plotVal[1,0].plot(preXaxis32, preValPlot32, color ='r', marker ='o', markersize = '9', label = secondLegend) # Red dot in plot
+     plotVal[1,0].plot(preXaxis32, preValPlot32, color ='r', marker ='o', label = secondLegend) # Red dot in plot
      plotVal[1,0].errorbar(frequencies, totalMean2, yerr = totalErr2, fmt='none', capsize=3.5, color = '#FFA500') 
      plotVal[1,0].tick_params(axis='x', labelsize=labelSize)
      plotVal[1,0].tick_params(axis='y', labelsize=labelSize)
@@ -684,8 +709,8 @@ def calculate_pupil_size_and_plot(normValue1, normValue2, normValue3, normValue4
      plt.xticks(fontsize = labelSize) 
      plt.yticks(fontsize = labelSize)
      plt.yticks(fontsize = labelSize)
-     plotVal[0,1].set_ylim([-0.01, 0.04])
-     plotVal[1,1].set_ylim([-0.01, 0.04])
+     plotVal[0,1].set_ylim([-0.01, 0.05])
+     plotVal[1,1].set_ylim([-0.01, 0.05])
      plotVal[0,0].legend(prop ={"size":10})
      plotVal[0,1].legend(prop ={"size":10})
      plotVal[1,0].legend(prop ={"size":10})
@@ -698,15 +723,19 @@ def calculate_pupil_size_trials(value1, value2, value3, value4, value5, value6, 
      '''
      Returns the pre and post values for each frequency type in their respective trials
      
-     args:
+     Args:
      value1...value10e (np.array) = post values of each frequency type of each video
      preVal1...preValue10e (np.array) = pre valus of each frequency type of each video
-     returns:
+     index1...10e (np.array) = index corresponding to each one of the positions of the pre and post freqs for each freq type
+     preSignal (np.array) = array containing the values of the pupil size during the pre period
+     postSignal (np.array) = array containing the vlaues of the pupils size during the post period
+     
+     Returns:
      trialsVal2kHz1... 32kHz1 (np.array) = array containing all the pre and post values across videos for the frequency types with a pre period frequency of 2kHz
      trialsVal2kHz2... 32kHz2 (np.array) = array containing all the pre and post values across videos for the frequency types with a pre period frequency of 32kHz
       
      '''
-# --- transform into array the data input ---     
+# --- transform into arrays the data input ---     
      arrValue1 = np.array([value1])
      arrValue2 = np.array([value2])
      arrValue3 = np.array([value3])
@@ -839,7 +868,8 @@ def calculate_pupil_size_trials(value1, value2, value3, value4, value5, value6, 
      arrPreValue9e = np.array([preVal9e])
      arrPreValue10e = np.array([preVal10e])                    
 
-# --- Reshape arrays so they contain the corresponding rows to pre/psot Signal       
+# --- Reshape arrays so they contain the corresponding rows and columns from the preIndicesTime and indexType variables ---       
+
      arrPost2khz1 = np.resize(arrValue1,(postSignal.shape[0], index1.shape[0]))
      arrPost4khz1 = np.resize(arrValue2,(postSignal.shape[0], index2.shape[0]))
      arrPost8khz1 = np.resize(arrValue3,(postSignal.shape[0], index3.shape[0]))
@@ -959,7 +989,7 @@ def calculate_pupil_size_trials(value1, value2, value3, value4, value5, value6, 
      arrPre4khz2d = np.resize(arrPreValue7d,(preSignal.shape[0], index7d.shape[0]))
      arrPre8khz2d = np.resize(arrPreValue8d,(preSignal.shape[0], index8d.shape[0]))
      arrPre16khz2d = np.resize(arrPreValue9d,(preSignal.shape[0], index9d.shape[0]))
-     arrPre32khz2d = np.resize(arrPreValue10d,(preSignal.shape[0], index10d.shape[0]))              
+     arrPre32khz2d = np.resize(arrPreValue10d,(preSignal.shape[0], index10d.shape[0]))
      
      arrPre2khz1e = np.resize(arrPreValue1e,(preSignal.shape[0], index1e.shape[0]))
      arrPre4khz1e = np.resize(arrPreValue2e,(preSignal.shape[0], index2e.shape[0]))
@@ -972,139 +1002,143 @@ def calculate_pupil_size_trials(value1, value2, value3, value4, value5, value6, 
      arrPre16khz2e = np.resize(arrPreValue9e,(preSignal.shape[0], index9e.shape[0]))
      arrPre32khz2e = np.resize(arrPreValue10e,(preSignal.shape[0], index10e.shape[0]))
      
-# --- Calculate mean for rows ---               
      
-     meanPost2kz1 = arrPost2khz1.mean(axis = 0)
-     meanPost4kz1 = arrPost4khz1.mean(axis = 0)
-     meanPost8kz1 = arrPost8khz1.mean(axis = 0)
-     meanPost16kz1 = arrPost16khz1.mean(axis = 0)
-     meanPost32kz1 = arrPost32khz1.mean(axis = 0)
-     meanPost2kz2 = arrPost2khz2.mean(axis = 0)
-     meanPost4kz2 = arrPost4khz2.mean(axis = 0)
-     meanPost8kz2 = arrPost8khz2.mean(axis = 0)
-     meanPost16kz2 = arrPost16khz2.mean(axis = 0)
-     meanPost32kz2 = arrPost32khz2.mean(axis = 0)
+# --- Calculate mean row-wise ---               
      
-     meanPost2kz1a = arrPost2khz1a.mean(axis = 0)
-     meanPost4kz1a = arrPost4khz1a.mean(axis = 0)
-     meanPost8kz1a = arrPost8khz1a.mean(axis = 0)
-     meanPost16kz1a = arrPost16khz1a.mean(axis = 0)
-     meanPost32kz1a = arrPost32khz1a.mean(axis = 0)
-     meanPost2kz2a = arrPost2khz2a.mean(axis = 0)
-     meanPost4kz2a = arrPost4khz2a.mean(axis = 0)
-     meanPost8kz2a = arrPost8khz2a.mean(axis = 0)
-     meanPost16kz2a = arrPost16khz2a.mean(axis = 0)
-     meanPost32kz2a = arrPost32khz2a.mean(axis = 0)
+     meanPost2kz1 = arrPost2khz1.mean(axis = 1)
+     meanPost4kz1 = arrPost4khz1.mean(axis = 1)
+     meanPost8kz1 = arrPost8khz1.mean(axis = 1)
+     meanPost16kz1 = arrPost16khz1.mean(axis = 1)
+     meanPost32kz1 = arrPost32khz1.mean(axis = 1)
+     meanPost2kz2 = arrPost2khz2.mean(axis = 1)
+     meanPost4kz2 = arrPost4khz2.mean(axis = 1)
+     meanPost8kz2 = arrPost8khz2.mean(axis = 1)
+     meanPost16kz2 = arrPost16khz2.mean(axis = 1)
+     meanPost32kz2 = arrPost32khz2.mean(axis = 1)
      
-     meanPost2kz1b = arrPost2khz1b.mean(axis = 0)
-     meanPost4kz1b = arrPost4khz1b.mean(axis = 0)
-     meanPost8kz1b = arrPost8khz1b.mean(axis = 0)
-     meanPost16kz1b = arrPost16khz1b.mean(axis = 0)
-     meanPost32kz1b = arrPost32khz1b.mean(axis = 0)
-     meanPost2kz2b = arrPost2khz2b.mean(axis = 0)
-     meanPost4kz2b = arrPost4khz2b.mean(axis = 0)
-     meanPost8kz2b = arrPost8khz2b.mean(axis = 0)
-     meanPost16kz2b = arrPost16khz2b.mean(axis = 0)
-     meanPost32kz2b = arrPost32khz2b.mean(axis = 0)          
+     meanPost2kz1a = arrPost2khz1a.mean(axis = 1)
+     meanPost4kz1a = arrPost4khz1a.mean(axis = 1)
+     meanPost8kz1a = arrPost8khz1a.mean(axis = 1)
+     meanPost16kz1a = arrPost16khz1a.mean(axis = 1)
+     meanPost32kz1a = arrPost32khz1a.mean(axis = 1)
+     meanPost2kz2a = arrPost2khz2a.mean(axis = 1)
+     meanPost4kz2a = arrPost4khz2a.mean(axis = 1)
+     meanPost8kz2a = arrPost8khz2a.mean(axis = 1)
+     meanPost16kz2a = arrPost16khz2a.mean(axis = 1)
+     meanPost32kz2a = arrPost32khz2a.mean(axis = 1)
      
-     meanPost2kz1c = arrPost2khz1c.mean(axis = 0)
-     meanPost4kz1c = arrPost4khz1c.mean(axis = 0)
-     meanPost8kz1c = arrPost8khz1c.mean(axis = 0)
-     meanPost16kz1c = arrPost16khz1c.mean(axis = 0)
-     meanPost32kz1c = arrPost32khz1c.mean(axis = 0)
-     meanPost2kz2c = arrPost2khz2c.mean(axis = 0)
-     meanPost4kz2c = arrPost4khz2c.mean(axis = 0)
-     meanPost8kz2c = arrPost8khz2c.mean(axis = 0)
-     meanPost16kz2c = arrPost16khz2c.mean(axis = 0)
-     meanPost32kz2c = arrPost32khz2c.mean(axis = 0)     
+     meanPost2kz1b = arrPost2khz1b.mean(axis = 1)
+     meanPost4kz1b = arrPost4khz1b.mean(axis = 1)
+     meanPost8kz1b = arrPost8khz1b.mean(axis = 1)
+     meanPost16kz1b = arrPost16khz1b.mean(axis = 1)
+     meanPost32kz1b = arrPost32khz1b.mean(axis = 1)
+     meanPost2kz2b = arrPost2khz2b.mean(axis = 1)
+     meanPost4kz2b = arrPost4khz2b.mean(axis = 1)
+     meanPost8kz2b = arrPost8khz2b.mean(axis = 1)
+     meanPost16kz2b = arrPost16khz2b.mean(axis = 1)
+     meanPost32kz2b = arrPost32khz2b.mean(axis = 1)          
      
-     meanPost2kz1d = arrPost2khz1d.mean(axis = 0)
-     meanPost4kz1d = arrPost4khz1d.mean(axis = 0)
-     meanPost8kz1d = arrPost8khz1d.mean(axis = 0)
-     meanPost16kz1d = arrPost16khz1d.mean(axis = 0)
-     meanPost32kz1d = arrPost32khz1d.mean(axis = 0)
-     meanPost2kz2d = arrPost2khz2d.mean(axis = 0)
-     meanPost4kz2d = arrPost4khz2d.mean(axis = 0)
-     meanPost8kz2d = arrPost8khz2d.mean(axis = 0)
-     meanPost16kz2d = arrPost16khz2d.mean(axis = 0)
-     meanPost32kz2d = arrPost32khz2d.mean(axis = 0)     
+     meanPost2kz1c = arrPost2khz1c.mean(axis = 1)
+     meanPost4kz1c = arrPost4khz1c.mean(axis = 1)
+     meanPost8kz1c = arrPost8khz1c.mean(axis = 1)
+     meanPost16kz1c = arrPost16khz1c.mean(axis = 1)
+     meanPost32kz1c = arrPost32khz1c.mean(axis = 1)
+     meanPost2kz2c = arrPost2khz2c.mean(axis = 1)
+     meanPost4kz2c = arrPost4khz2c.mean(axis = 1)
+     meanPost8kz2c = arrPost8khz2c.mean(axis = 1)
+     meanPost16kz2c = arrPost16khz2c.mean(axis = 1)
+     meanPost32kz2c = arrPost32khz2c.mean(axis = 1)     
      
-     meanPost2kz1e = arrPost2khz1e.mean(axis = 0)
-     meanPost4kz1e = arrPost4khz1e.mean(axis = 0)
-     meanPost8kz1e = arrPost8khz1e.mean(axis = 0)
-     meanPost16kz1e = arrPost16khz1e.mean(axis = 0)
-     meanPost32kz1e = arrPost32khz1e.mean(axis = 0)
-     meanPost2kz2e = arrPost2khz2e.mean(axis = 0)
-     meanPost4kz2e = arrPost4khz2e.mean(axis = 0)
-     meanPost8kz2e = arrPost8khz2e.mean(axis = 0)
-     meanPost16kz2e = arrPost16khz2e.mean(axis = 0)
-     meanPost32kz2e = arrPost32khz2e.mean(axis = 0)
+     meanPost2kz1d = arrPost2khz1d.mean(axis = 1)
+     meanPost4kz1d = arrPost4khz1d.mean(axis = 1)
+     meanPost8kz1d = arrPost8khz1d.mean(axis = 1)
+     meanPost16kz1d = arrPost16khz1d.mean(axis = 1)
+     meanPost32kz1d = arrPost32khz1d.mean(axis = 1)
+     meanPost2kz2d = arrPost2khz2d.mean(axis = 1)
+     meanPost4kz2d = arrPost4khz2d.mean(axis = 1)
+     meanPost8kz2d = arrPost8khz2d.mean(axis = 1)
+     meanPost16kz2d = arrPost16khz2d.mean(axis = 1)
+     meanPost32kz2d = arrPost32khz2d.mean(axis = 1)     
      
-     meanPre2kz1 = arrPre2khz1.mean(axis = 0)
-     meanPre4kz1 = arrPre4khz1.mean(axis = 0)     
-     meanPre8kz1 = arrPre8khz1.mean(axis = 0)
-     meanPre16kz1 = arrPre16khz1.mean(axis = 0)
-     meanPre32kz1 = arrPre32khz1.mean(axis = 0)
-     meanPre2kz2 = arrPre2khz2.mean(axis = 0)
-     meanPre4kz2 = arrPre4khz2.mean(axis = 0)
-     meanPre8kz2 = arrPre8khz2.mean(axis = 0)
-     meanPre16kz2 = arrPre16khz2.mean(axis = 0)
-     meanPre32kz2 = arrPre32khz2.mean(axis = 0)
+     meanPost2kz1e = arrPost2khz1e.mean(axis = 1)
+     meanPost4kz1e = arrPost4khz1e.mean(axis = 1)
+     meanPost8kz1e = arrPost8khz1e.mean(axis = 1)
+     meanPost16kz1e = arrPost16khz1e.mean(axis = 1)
+     meanPost32kz1e = arrPost32khz1e.mean(axis = 1)
+     meanPost2kz2e = arrPost2khz2e.mean(axis = 1)
+     meanPost4kz2e = arrPost4khz2e.mean(axis = 1)
+     meanPost8kz2e = arrPost8khz2e.mean(axis = 1)
+     meanPost16kz2e = arrPost16khz2e.mean(axis = 1)
+     meanPost32kz2e = arrPost32khz2e.mean(axis = 1)
      
-     meanPre2kz1a = arrPre2khz1a.mean(axis = 0)
-     meanPre4kz1a = arrPre4khz1a.mean(axis = 0)     
-     meanPre8kz1a = arrPre8khz1a.mean(axis = 0)
-     meanPre16kz1a = arrPre16khz1a.mean(axis = 0)
-     meanPre32kz1a = arrPre32khz1a.mean(axis = 0)
-     meanPre2kz2a = arrPre2khz2a.mean(axis = 0)
-     meanPre4kz2a = arrPre4khz2a.mean(axis = 0)
-     meanPre8kz2a = arrPre8khz2a.mean(axis = 0)
-     meanPre16kz2a = arrPre16khz2a.mean(axis = 0)
-     meanPre32kz2a = arrPre32khz2a.mean(axis = 0)     
+     meanPre2kz1 = arrPre2khz1.mean(axis = 1)
+     meanPre4kz1 = arrPre4khz1.mean(axis = 1)     
+     meanPre8kz1 = arrPre8khz1.mean(axis = 1)
+     meanPre16kz1 = arrPre16khz1.mean(axis = 1)
+     meanPre32kz1 = arrPre32khz1.mean(axis = 1)
+     meanPre2kz2 = arrPre2khz2.mean(axis = 1)
+     meanPre4kz2 = arrPre4khz2.mean(axis = 1)
+     meanPre8kz2 = arrPre8khz2.mean(axis = 1)
+     meanPre16kz2 = arrPre16khz2.mean(axis = 1)
+     meanPre32kz2 = arrPre32khz2.mean(axis = 1)
      
-     meanPre2kz1b = arrPre2khz1b.mean(axis = 0)
-     meanPre4kz1b = arrPre4khz1b.mean(axis = 0)     
-     meanPre8kz1b = arrPre8khz1b.mean(axis = 0)
-     meanPre16kz1b = arrPre16khz1b.mean(axis = 0)
-     meanPre32kz1b = arrPre32khz1b.mean(axis = 0)
-     meanPre2kz2b = arrPre2khz2b.mean(axis = 0)
-     meanPre4kz2b = arrPre4khz2b.mean(axis = 0)
-     meanPre8kz2b = arrPre8khz2b.mean(axis = 0)
-     meanPre16kz2b = arrPre16khz2b.mean(axis = 0)
-     meanPre32kz2b = arrPre32khz2b.mean(axis = 0)     
+     meanPre2kz1a = arrPre2khz1a.mean(axis = 1)
+     meanPre4kz1a = arrPre4khz1a.mean(axis = 1)     
+     meanPre8kz1a = arrPre8khz1a.mean(axis = 1)
+     meanPre16kz1a = arrPre16khz1a.mean(axis = 1)
+     meanPre32kz1a = arrPre32khz1a.mean(axis = 1)
+     meanPre2kz2a = arrPre2khz2a.mean(axis = 1)
+     meanPre4kz2a = arrPre4khz2a.mean(axis = 1)
+     meanPre8kz2a = arrPre8khz2a.mean(axis = 1)
+     meanPre16kz2a = arrPre16khz2a.mean(axis = 1)
+     meanPre32kz2a = arrPre32khz2a.mean(axis = 1)     
      
-     meanPre2kz1c = arrPre2khz1c.mean(axis = 0)
-     meanPre4kz1c = arrPre4khz1c.mean(axis = 0)     
-     meanPre8kz1c = arrPre8khz1c.mean(axis = 0)
-     meanPre16kz1c = arrPre16khz1c.mean(axis = 0)
-     meanPre32kz1c = arrPre32khz1c.mean(axis = 0)
-     meanPre2kz2c = arrPre2khz2c.mean(axis = 0)
-     meanPre4kz2c = arrPre4khz2c.mean(axis = 0)
-     meanPre8kz2c = arrPre8khz2c.mean(axis = 0)
-     meanPre16kz2c = arrPre16khz2c.mean(axis = 0)
-     meanPre32kz2c = arrPre32khz2c.mean(axis = 0)
+     meanPre2kz1b = arrPre2khz1b.mean(axis = 1)
+     meanPre4kz1b = arrPre4khz1b.mean(axis = 1)     
+     meanPre8kz1b = arrPre8khz1b.mean(axis = 1)
+     meanPre16kz1b = arrPre16khz1b.mean(axis = 1)
+     meanPre32kz1b = arrPre32khz1b.mean(axis = 1)
+     meanPre2kz2b = arrPre2khz2b.mean(axis = 1)
+     meanPre4kz2b = arrPre4khz2b.mean(axis = 1)
+     meanPre8kz2b = arrPre8khz2b.mean(axis = 1)
+     meanPre16kz2b = arrPre16khz2b.mean(axis = 1)
+     meanPre32kz2b = arrPre32khz2b.mean(axis = 1)     
      
-     meanPre2kz1d = arrPre2khz1d.mean(axis = 0)
-     meanPre4kz1d = arrPre4khz1d.mean(axis = 0)     
-     meanPre8kz1d = arrPre8khz1d.mean(axis = 0)
-     meanPre16kz1d = arrPre16khz1d.mean(axis = 0)
-     meanPre32kz1d = arrPre32khz1d.mean(axis = 0)
-     meanPre2kz2d = arrPre2khz2d.mean(axis = 0)
-     meanPre4kz2d = arrPre4khz2d.mean(axis = 0)
-     meanPre8kz2d = arrPre8khz2d.mean(axis = 0)
-     meanPre16kz2d = arrPre16khz2d.mean(axis = 0)
-     meanPre32kz2d = arrPre32khz2d.mean(axis = 0)          
+     meanPre2kz1c = arrPre2khz1c.mean(axis = 1)
+     meanPre4kz1c = arrPre4khz1c.mean(axis = 1)     
+     meanPre8kz1c = arrPre8khz1c.mean(axis = 1)
+     meanPre16kz1c = arrPre16khz1c.mean(axis = 1)
+     meanPre32kz1c = arrPre32khz1c.mean(axis = 1)
+     meanPre2kz2c = arrPre2khz2c.mean(axis = 1)
+     meanPre4kz2c = arrPre4khz2c.mean(axis = 1)
+     meanPre8kz2c = arrPre8khz2c.mean(axis = 1)
+     meanPre16kz2c = arrPre16khz2c.mean(axis = 1)
+     meanPre32kz2c = arrPre32khz2c.mean(axis = 1)
      
-     meanPre2kz1e = arrPre2khz1e.mean(axis = 0)
-     meanPre4kz1e = arrPre4khz1e.mean(axis = 0)     
-     meanPre8kz1e = arrPre8khz1e.mean(axis = 0)
-     meanPre16kz1e = arrPre16khz1e.mean(axis = 0)
-     meanPre32kz1e = arrPre32khz1e.mean(axis = 0)
-     meanPre2kz2e = arrPre2khz2e.mean(axis = 0)
-     meanPre4kz2e = arrPre4khz2e.mean(axis = 0)
-     meanPre8kz2e = arrPre8khz2e.mean(axis = 0)
-     meanPre16kz2e = arrPre16khz2e.mean(axis = 0)
-     meanPre32kz2e = arrPre32khz2e.mean(axis = 0)     
+     meanPre2kz1d = arrPre2khz1d.mean(axis = 1)
+     meanPre4kz1d = arrPre4khz1d.mean(axis = 1)     
+     meanPre8kz1d = arrPre8khz1d.mean(axis = 1)
+     meanPre16kz1d = arrPre16khz1d.mean(axis = 1)
+     meanPre32kz1d = arrPre32khz1d.mean(axis = 1)
+     meanPre2kz2d = arrPre2khz2d.mean(axis = 1)
+     meanPre4kz2d = arrPre4khz2d.mean(axis = 1)
+     meanPre8kz2d = arrPre8khz2d.mean(axis = 1)
+     meanPre16kz2d = arrPre16khz2d.mean(axis = 1)
+     meanPre32kz2d = arrPre32khz2d.mean(axis = 1)          
+     
+     meanPre2kz1e = arrPre2khz1e.mean(axis = 1)
+     meanPre4kz1e = arrPre4khz1e.mean(axis = 1)     
+     meanPre8kz1e = arrPre8khz1e.mean(axis = 1)
+     meanPre16kz1e = arrPre16khz1e.mean(axis = 1)
+     meanPre32kz1e = arrPre32khz1e.mean(axis = 1)
+     meanPre2kz2e = arrPre2khz2e.mean(axis = 1)
+     meanPre4kz2e = arrPre4khz2e.mean(axis = 1)
+     meanPre8kz2e = arrPre8khz2e.mean(axis = 1)
+     meanPre16kz2e = arrPre16khz2e.mean(axis = 1)
+     meanPre32kz2e = arrPre32khz2e.mean(axis = 1)
+     
+          
+# --- Create an array per post and pre frequency ---
       
      values2Khz1 = np.concatenate((meanPost2kz1, meanPost2kz1a, meanPost2kz1b, meanPost2kz1c, meanPost2kz1d, meanPost2kz1e), axis = 0)
      values4Khz1 = np.concatenate((meanPost4kz1, meanPost4kz1a, meanPost4kz1b, meanPost4kz1, meanPost4kz1d, meanPost4kz1e), axis = 0)
@@ -1117,221 +1151,46 @@ def calculate_pupil_size_trials(value1, value2, value3, value4, value5, value6, 
      values16Khz2 = np.concatenate((meanPost16kz2, meanPost16kz2a, meanPost16kz2b, meanPost16kz2c, meanPost16kz2d, meanPost16kz2e), axis = 0)
      values32Khz2 = np.concatenate((meanPost32kz2, meanPost32kz2a, meanPost32kz2b, meanPost32kz2c, meanPost32kz2d, meanPost32kz2e), axis = 0)
      
-     pre2Khz1 = np.concatenate((meanPre2kz1, meanPre2kz1a, meanPre2kz1b, meanPre2kz1c, meanPre2kz1d, meanPre2kz1e), axis = 0)
-     pre4Khz1 = np.concatenate((meanPre4kz1, meanPre4kz1a, meanPre4kz1b, meanPre4kz1c, meanPre4kz1d, meanPre4kz1e), axis = 0)
-     pre8Khz1 = np.concatenate((meanPre8kz1, meanPre8kz1a, meanPre8kz1b, meanPre8kz1c, meanPre8kz1d, meanPre8kz1e), axis = 0)
-     pre16Khz1 = np.concatenate((meanPre16kz1, meanPre16kz1a, meanPre16kz1b, meanPre16kz1c, meanPre16kz1d, meanPre16kz1e), axis = 0)
-     pre32Khz1 = np.concatenate((meanPre32kz1, meanPre32kz1a, meanPre32kz1b, meanPre32kz1c, meanPre32kz1d, meanPre32kz1e), axis = 0)
-     pre2Khz2 = np.concatenate((meanPre2kz2, meanPre2kz2a, meanPre2kz2b, meanPre2kz2c, meanPre2kz2d, meanPre2kz2e), axis = 0)
-     pre4Khz2 = np.concatenate((meanPre4kz2, meanPre4kz2a, meanPre4kz2b, meanPre4kz2c, meanPre4kz2d,meanPre4kz2e), axis = 0)
-     pre8Khz2 = np.concatenate((meanPre8kz2, meanPre8kz2a, meanPre8kz2b, meanPre8kz2c, meanPre8kz2d, meanPre8kz2e), axis = 0)
-     pre16Khz2 = np.concatenate((meanPre16kz2, meanPre16kz2a, meanPre16kz2b, meanPre16kz2c, meanPre16kz2d, meanPre16kz2e), axis = 0)
-     pre32Khz2 = np.concatenate((meanPre32kz2, meanPre32kz2a, meanPre32kz2b, meanPre32kz2c, meanPre32kz2d, meanPre32kz2e), axis = 0)
+     trialsVal2kHz1 = np.concatenate((meanPre2kz1, meanPost2kz1, meanPre2kz1a, meanPost2kz1a, meanPre2kz1b, meanPost2kz1b, meanPre2kz1c, meanPost2kz1c, meanPre2kz1d, meanPost2kz1d, meanPre2kz1e, meanPost2kz1e), axis = 0)
      
-     trialsVal2kHz1 = np.concatenate((pre2Khz1, values2Khz1), axis = 0)
-     trialsVal4kHz1 = np.concatenate((pre4Khz1, values4Khz1), axis = 0)
-     trialsVal8kHz1 = np.concatenate((pre8Khz1, values8Khz1), axis = 0)
-     trialsVal16kHz1 = np.concatenate((pre16Khz1, values16Khz1), axis = 0)
-     trialsVal32kHz1 = np.concatenate((pre32Khz1, values32Khz1), axis = 0)
-     trialsVal2kHz2 = np.concatenate((pre2Khz2, values2Khz2), axis = 0)
-     trialsVal4kHz2 = np.concatenate((pre4Khz2, values4Khz2), axis = 0)
-     trialsVal8kHz2 = np.concatenate((pre8Khz2, values8Khz2), axis = 0)
-     trialsVal16kHz2 = np.concatenate((pre16Khz2, values16Khz2), axis = 0)
-     trialsVal32kHz2 = np.concatenate((pre32Khz2, values32Khz2), axis = 0)
+     trialsVal4kHz1 = np.concatenate((meanPre4kz1, meanPost4kz1, meanPre4kz1a, meanPost4kz1a, meanPre4kz1b, meanPost4kz1b, meanPre4kz1c, meanPost4kz1c, meanPre4kz1d, meanPost4kz1d, meanPre4kz1e, meanPost4kz1e), axis = 0)
      
-     return(trialsVal2kHz1, trialsVal4kHz1, trialsVal8kHz1, trialsVal16kHz1, trialsVal32kHz1, trialsVal2kHz2, trialsVal4kHz2, trialsVal8kHz2, trialsVal16kHz2, trialsVal32kHz2, pre2Khz1, pre4Khz1, pre8Khz1, pre16Khz1, pre32Khz1, pre2Khz2, pre4Khz2, pre8Khz2, pre16Khz2, pre32Khz2, values2Khz1, values4Khz1, values8Khz1, values16Khz1, values32Khz1, values2Khz2, values4Khz2, values8Khz2, values16Khz2, values32Khz2)
+     trialsVal8kHz1 = np.concatenate((meanPre8kz1, meanPost8kz1, meanPre8kz1a, meanPost8kz1a, meanPre8kz1b, meanPost8kz1b, meanPre8kz1c, meanPost8kz1c, meanPre8kz1d, meanPost8kz1d, meanPre8kz1e, meanPost8kz1e), axis = 0)
+     
+     trialsVal16kHz1 = np.concatenate((meanPre16kz1, meanPost16kz1, meanPre16kz1a, meanPost16kz1a, meanPre16kz1b, meanPost16kz1b, meanPre16kz1c, meanPost16kz1c, meanPre16kz1d, meanPost16kz1d, meanPre16kz1e, meanPost16kz1e), axis = 0)
+     
+     trialsVal32kHz1 = np.concatenate((meanPre32kz1, meanPost32kz1, meanPre32kz1a, meanPost32kz1a, meanPre32kz1b, meanPost32kz1b, meanPre32kz1c, meanPost32kz1c, meanPre32kz1d, meanPost32kz1d, meanPre32kz1e, meanPost32kz1e), axis = 0)
+     
+     trialsVal2kHz2 = np.concatenate((meanPre2kz2, meanPost2kz2, meanPre2kz2a, meanPost2kz2a, meanPre2kz2b, meanPost2kz2b, meanPre2kz2c, meanPost2kz2c, meanPre2kz2d, meanPost2kz2d, meanPre2kz2e, meanPost2kz2e), axis = 0)
+     
+     trialsVal4kHz2 = np.concatenate((meanPre4kz2, meanPost4kz2, meanPre4kz2a, meanPost4kz2a, meanPre4kz2b, meanPost4kz2b, meanPre4kz2c, meanPost4kz2c, meanPre4kz2d, meanPost4kz2d, meanPre4kz2e, meanPost4kz2e), axis = 0)
+     
+     trialsVal8kHz2 = np.concatenate((meanPre8kz2, meanPost8kz2, meanPre8kz2a, meanPost8kz2a, meanPre8kz2b, meanPost8kz2b, meanPre8kz2c, meanPost8kz2c, meanPre8kz2d, meanPost8kz2d, meanPre8kz2e, meanPost8kz2e), axis = 0)
+     
+     trialsVal16kHz2 = np.concatenate((meanPre16kz2, meanPost16kz2, meanPre16kz2a, meanPost16kz2a, meanPre16kz2b, meanPost16kz2b, meanPre16kz2c, meanPost16kz2c, meanPre16kz2d, meanPost16kz2d, meanPre16kz2e, meanPost16kz2e), axis = 0)
+     
+     trialsVal32kHz2 = np.concatenate((meanPre32kz2, meanPost32kz2, meanPre32kz2a, meanPost32kz2a, meanPre32kz2b, meanPost32kz2b, meanPre32kz2c, meanPost32kz2c, meanPre32kz2d, meanPost32kz2d, meanPre32kz2e, meanPost32kz2e), axis = 0)
+     
+     return(trialsVal2kHz1, trialsVal4kHz1, trialsVal8kHz1, trialsVal16kHz1, trialsVal32kHz1, trialsVal2kHz2, trialsVal4kHz2, trialsVal8kHz2, trialsVal16kHz2, trialsVal32kHz2)
 
-
-
-def find_values_time(pupilTime, index1, index2, index3, index4, index5, index6, index7, index8, index9, index10, index1a, index2a, index3a, index4a, index5a, index6a, index7a, index8a, index9a, index10a, index1b, index2b, index3b, index4b, index5b, index6b, index7b, index8b, index9b, index10b, index1c, index2c, index3c, index4c, index5c, index6c, index7c, index8c, index9c, index10c, index1d, index2d, index3d, index4d, index5d, index6d, index7d, index8d, index9d, index10d, index1e, index2e, index3e, index4e, index5e, index6e, index7e, index8e, index9e, index10e, midLim):
-     '''
-     finds the corresponding time where each trial takes places for each freq type
-     '''
-     preBool = np.logical_and(pupilTime[0] <= pupilTime, pupilTime < midLim)
-     postBool = np.logical_and(midLim <= pupilTime, pupilTime <= len(pupilTime)-1)
-     preTime = pupilTime[preBool]
-     postTime = pupilTime[postBool]
-     
-
-     
-     pre2kzTime1 = np.take(preTime, index1)
-     pre4kzTime1 = np.take(preTime, index2)
-     pre8kzTime1 = np.take(preTime, index3)
-     pre16kzTime1 = np.take(preTime, index4)
-     pre32kzTime1 = np.take(preTime, index5)
-     pre2kzTime2 = np.take(preTime, index6)
-     pre4kzTime2 = np.take(preTime, index7)
-     pre8kzTime2 = np.take(preTime, index8)
-     pre16kzTime2 = np.take(preTime, index9)
-     pre32kzTime2 = np.take(preTime, index10)
-     
-     pre2kzTime1a = np.take(preTime, index1a)
-     pre4kzTime1a = np.take(preTime, index2a)
-     pre8kzTime1a = np.take(preTime, index3a)
-     pre16kzTime1a = np.take(preTime, index4a)
-     pre32kzTime1a = np.take(preTime, index5a)
-     pre2kzTime2a = np.take(preTime, index6a)
-     pre4kzTime2a = np.take(preTime, index7a)
-     pre8kzTime2a = np.take(preTime, index8a)
-     pre16kzTime2a = np.take(preTime, index9a)
-     pre32kzTime2a = np.take(preTime, index10a)     
-     
-     pre2kzTime1b = np.take(preTime, index1b)
-     pre4kzTime1b = np.take(preTime, index2b)
-     pre8kzTime1b = np.take(preTime, index3b)
-     pre16kzTime1b = np.take(preTime, index4b)
-     pre32kzTime1b = np.take(preTime, index5b)
-     pre2kzTime2b = np.take(preTime, index6b)
-     pre4kzTime2b = np.take(preTime, index7b)
-     pre8kzTime2b = np.take(preTime, index8b)
-     pre16kzTime2b = np.take(preTime, index9b)
-     pre32kzTime2b = np.take(preTime, index10b)     
-     
-     pre2kzTime1c = np.take(preTime, index1c)
-     pre4kzTime1c = np.take(preTime, index2c)
-     pre8kzTime1c = np.take(preTime, index3c)
-     pre16kzTime1c = np.take(preTime, index4c)
-     pre32kzTime1c = np.take(preTime, index5c)
-     pre2kzTime2c = np.take(preTime, index6c)
-     pre4kzTime2c = np.take(preTime, index7c)
-     pre8kzTime2c = np.take(preTime, index8c)
-     pre16kzTime2c = np.take(preTime, index9c)
-     pre32kzTime2c = np.take(preTime, index10c)
-     
-     pre2kzTime1d = np.take(preTime, index1d)
-     pre4kzTime1d = np.take(preTime, index2d)
-     pre8kzTime1d = np.take(preTime, index3d)
-     pre16kzTime1d = np.take(preTime, index4d)
-     pre32kzTime1d = np.take(preTime, index5d)
-     pre2kzTime2d = np.take(preTime, index6d)
-     pre4kzTime2d = np.take(preTime, index7d)
-     pre8kzTime2d = np.take(preTime, index8d)
-     pre16kzTime2d = np.take(preTime, index9d)
-     pre32kzTime2d = np.take(preTime, index10d)
-     
-     pre2kzTime1e = np.take(preTime, index1e)
-     pre4kzTime1e = np.take(preTime, index2e)
-     pre8kzTime1e = np.take(preTime, index3e)
-     pre16kzTime1e = np.take(preTime, index4e)
-     pre32kzTime1e = np.take(preTime, index5e)
-     pre2kzTime2e = np.take(preTime, index6e)
-     pre4kzTime2e = np.take(preTime, index7e)
-     pre8kzTime2e = np.take(preTime, index8e)
-     pre16kzTime2e = np.take(preTime, index9e)
-     pre32kzTime2e = np.take(preTime, index10e)         
-     
-     post2kzTime1 = np.take(postTime, index1)
-     post4kzTime1 = np.take(postTime, index2)
-     post8kzTime1 = np.take(postTime, index3)
-     post16kzTime1 = np.take(postTime, index4)
-     post32kzTime1 = np.take(postTime, index5)
-     post2kzTime2 = np.take(postTime, index6)
-     post4kzTime2 = np.take(postTime, index7)
-     post8kzTime2 = np.take(postTime, index8)
-     post16kzTime2 = np.take(postTime, index9)
-     post32kzTime2 = np.take(postTime, index10)
-     
-     post2kzTime1a = np.take(postTime, index1a)
-     post4kzTime1a = np.take(postTime, index2a)
-     post8kzTime1a = np.take(postTime, index3a)
-     post16kzTime1a = np.take(postTime, index4a)
-     post32kzTime1a = np.take(postTime, index5a)
-     post2kzTime2a = np.take(postTime, index6a)
-     post4kzTime2a = np.take(postTime, index7a)
-     post8kzTime2a = np.take(postTime, index8a)
-     post16kzTime2a = np.take(postTime, index9a)
-     post32kzTime2a = np.take(postTime, index10a)     
-     
-     post2kzTime1b = np.take(postTime, index1b)
-     post4kzTime1b = np.take(postTime, index2b)
-     post8kzTime1b = np.take(postTime, index3b)
-     post16kzTime1b = np.take(postTime, index4b)
-     post32kzTime1b = np.take(postTime, index5b)
-     post2kzTime2b = np.take(postTime, index6b)
-     post4kzTime2b = np.take(postTime, index7b)
-     post8kzTime2b = np.take(postTime, index8b)
-     post16kzTime2b = np.take(postTime, index9b)
-     post32kzTime2b = np.take(postTime, index10b)     
-     
-     post2kzTime1c = np.take(postTime, index1c)
-     post4kzTime1c = np.take(postTime, index2c)
-     post8kzTime1c = np.take(postTime, index3c)
-     post16kzTime1c = np.take(postTime, index4c)
-     post32kzTime1c = np.take(postTime, index5c)
-     post2kzTime2c = np.take(postTime, index6c)
-     post4kzTime2c = np.take(postTime, index7c)
-     post8kzTime2c = np.take(postTime, index8c)
-     post16kzTime2c = np.take(postTime, index9c)
-     post32kzTime2c = np.take(postTime, index10c)
-     
-     post2kzTime1d = np.take(postTime, index1d)
-     post4kzTime1d = np.take(postTime, index2d)
-     post8kzTime1d = np.take(postTime, index3d)
-     post16kzTime1d = np.take(postTime, index4d)
-     post32kzTime1d = np.take(postTime, index5d)
-     post2kzTime2d = np.take(postTime, index6d)
-     post4kzTime2d = np.take(postTime, index7d)
-     post8kzTime2d = np.take(postTime, index8d)
-     post16kzTime2d = np.take(postTime, index9d)
-     post32kzTime2d = np.take(postTime, index10d)
-     
-     post2kzTime1e = np.take(postTime, index1e)
-     post4kzTime1e = np.take(postTime, index2e)
-     post8kzTime1e = np.take(postTime, index3e)
-     post16kzTime1e = np.take(postTime, index4e)
-     post32kzTime1e = np.take(postTime, index5e)
-     post2kzTime2e = np.take(postTime, index6e)
-     post4kzTime2e = np.take(postTime, index7e)
-     post8kzTime2e = np.take(postTime, index8e)
-     post16kzTime2e = np.take(postTime, index9e)
-     post32kzTime2e = np.take(postTime, index10e)
-     
-     preTime2kz1 = np.concatenate((pre2kzTime1, pre2kzTime1a, pre2kzTime1b, pre2kzTime1c, pre2kzTime1d, pre2kzTime1e), axis = 0)
-     preTime4kz1 = np.concatenate((pre4kzTime1, pre4kzTime1a, pre4kzTime1b, pre4kzTime1c, pre4kzTime1d, pre4kzTime1e), axis = 0)
-     preTime8kz1 = np.concatenate((pre8kzTime1, pre8kzTime1a, pre8kzTime1b, pre8kzTime1c, pre8kzTime1d, pre8kzTime1e), axis = 0)
-     preTime16kz1 = np.concatenate((pre16kzTime1, pre16kzTime1a, pre16kzTime1b, pre16kzTime1c, pre16kzTime1d, pre16kzTime1e), axis = 0)
-     preTime32kz1 = np.concatenate((pre32kzTime1, pre32kzTime1a, pre32kzTime1b, pre32kzTime1c, pre32kzTime1d, pre32kzTime1e), axis = 0)  
-     preTime2kz2 = np.concatenate((pre2kzTime2, pre2kzTime2a, pre2kzTime2b, pre2kzTime2c, pre2kzTime2d, pre2kzTime2e), axis = 0)
-     preTime4kz2 = np.concatenate((pre4kzTime2, pre4kzTime2a, pre4kzTime2b, pre4kzTime2c, pre4kzTime2d, pre4kzTime2e), axis = 0)
-     preTime8kz2 = np.concatenate((pre8kzTime2, pre8kzTime2a, pre8kzTime2b, pre8kzTime2c, pre8kzTime2d, pre8kzTime2e), axis = 0)
-     preTime16kz2 = np.concatenate((pre16kzTime2, pre16kzTime2a, pre16kzTime2b, pre16kzTime2c, pre16kzTime2d, pre16kzTime2e), axis = 0)
-     preTime32kz2 = np.concatenate((pre32kzTime2, pre32kzTime2a, pre32kzTime2b, pre32kzTime2c, pre32kzTime2d, pre32kzTime2e), axis = 0)
-
-     postTime2kz1 = np.concatenate((post2kzTime1, post2kzTime1a, post2kzTime1b, post2kzTime1c, post2kzTime1d, post2kzTime1e), axis = 0)
-     postTime4kz1 = np.concatenate((post4kzTime1, post4kzTime1a, post4kzTime1b, post4kzTime1c, post4kzTime1d, post4kzTime1e), axis = 0)
-     postTime8kz1 = np.concatenate((post8kzTime1, post8kzTime1a, post8kzTime1b, post8kzTime1c, post8kzTime1d, post8kzTime1e), axis = 0)
-     postTime16kz1 = np.concatenate((post16kzTime1, post16kzTime1a, post16kzTime1b, post16kzTime1c, post16kzTime1d, post16kzTime1e), axis = 0)
-     postTime32kz1 = np.concatenate((post32kzTime1, post32kzTime1a, post32kzTime1b, post32kzTime1c, post32kzTime1d, post32kzTime1e), axis = 0)  
-     postTime2kz2 = np.concatenate((post2kzTime2, post2kzTime2a, post2kzTime2b, post2kzTime2c, post2kzTime2d, post2kzTime2e), axis = 0)
-     postTime4kz2 = np.concatenate((post4kzTime2, post4kzTime2a, post4kzTime2b, post4kzTime2c, post4kzTime2d, post4kzTime2e), axis = 0)
-     postTime8kz2 = np.concatenate((post8kzTime2, post8kzTime2a, post8kzTime2b, post8kzTime2c, post8kzTime2d, post8kzTime2e), axis = 0)
-     postTime16kz2 = np.concatenate((post16kzTime2, post16kzTime2a, post16kzTime2b, post16kzTime2c, post16kzTime2d, post16kzTime2e), axis = 0)
-     postTime32kz2 = np.concatenate((post32kzTime2, post32kzTime2a, post32kzTime2b, post32kzTime2c, post32kzTime2d, post32kzTime2e), axis = 0)
-     
-     time2khz1 = np.concatenate((preTime2kz1, postTime2kz1), axis = 0)
-     time4khz1 = np.concatenate((preTime4kz1, postTime4kz1), axis = 0)
-     time8khz1 = np.concatenate((preTime8kz1, postTime8kz1), axis = 0)
-     time16khz1 = np.concatenate((preTime16kz1, postTime16kz1), axis = 0)
-     time32khz1 = np.concatenate((preTime32kz1, postTime32kz1), axis = 0)
-     time2khz2 = np.concatenate((preTime2kz2, postTime2kz2), axis = 0)
-     time4khz2 = np.concatenate((preTime4kz2, postTime4kz2), axis = 0)
-     time8khz2 = np.concatenate((preTime8kz2, postTime8kz2), axis = 0)
-     time16khz2 = np.concatenate((preTime16kz2, postTime16kz2), axis = 0)
-     time32khz2 = np.concatenate((preTime32kz2, postTime32kz2), axis = 0)
-     
-     return(time2khz1, time4khz1, time8khz1, time16khz1, time32khz1, time2khz2, time4khz2, time8khz2, time16khz2, time32khz2)   
+   
         
 
 
-def plot_trials_only(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, timePlot6, timePlot7, timePlot8, timePlot9, timePlot10, dataPlot1, dataPlot2, dataPlot3, dataPlot4, dataPlot5, dataPlot6, dataPlot7, dataPlot8, dataPlot9, dataPlot10):
+def plot_trials_only(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, timePlot6, timePlot7, timePlot8, timePlot9, timePlot10,  dataPlot1, dataPlot2, dataPlot3, dataPlot4, dataPlot5, dataPlot6, dataPlot7, dataPlot8, dataPlot9, dataPlot10):
      '''
-     Plots the behavior for each frequency type across videos
-     args:
+     Plots the mean pupil behavior for each frequency type across videos
+     
+     Args:
      timePlot1...10 (np.array) = array containing the time values where each value of each trial takes place during the pre and post period for each frequency type across videos
      dataPlot...10 (np.array) = array containing the pre and post values for each frequency type across videos
-     returns:
+     
+     Returns:
      plt.show() = plots each frequency type vs time across videos
      '''
+
+# --- Organize the time values but prevailing their indices positions ---
+
      sortTime1 = np.argsort(timePlot1)
      sortTime2 = np.argsort(timePlot2)
      sortTime3 = np.argsort(timePlot3)
@@ -1364,7 +1223,7 @@ def plot_trials_only(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, time
      valArr10 = []
      timeSort10 = []
      
- 
+# --- Organizes the dataPlots variables in new arrays corresponding to their associated time ---
      
      for i in sortTime1:
          timeSort1.append(timePlot1[i])
@@ -1396,11 +1255,14 @@ def plot_trials_only(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, time
      for z in sortTime10:
          timeSort10.append(timePlot10[z])
          valArr10.append(dataPlot10[z])
-             
-     labelSize = 14 
-     fig, trialPl = plt.subplots(5, 2, constrained_layout = True, sharex= True, sharey = True) 
+
+# --- Plot the results ---
+            
+     labelSize = 14
+
+     fig, trialPl = plt.subplots(1, 1, constrained_layout = True, sharex= True, sharey = True) 
      fig.set_size_inches(9.5, 7.5, forward = True)
-     
+
      trialPl[0,0].plot(timeSort1, valArr1, color = '#04D8B2')
      trialPl[0,0].set_title('Type 2kHz-2kHz', fontsize = labelSize)
      trialPl[0,0].tick_params(axis='y', labelsize=labelSize)
@@ -1410,10 +1272,10 @@ def plot_trials_only(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, time
      trialPl[2,0].plot(timeSort3, valArr3, color = '#054907')
      trialPl[2,0].set_title('Type 2kHz-8kHz', fontsize = labelSize)
      trialPl[2,0].set_ylabel('Mean pupil area', fontsize = labelSize) 
-     trialPl[2,0].tick_params(axis='y', labelsize=labelSize) 
+     trialPl[2,0].tick_params(axis='y', labelsize=labelSize)
      trialPl[3,0].plot(timeSort4, valArr4, color = 'r')
      trialPl[3,0].set_title('Type 2kHz-16kHz', fontsize = labelSize)
-     trialPl[3,0].tick_params(axis='y', labelsize=labelSize) 
+     trialPl[3,0].tick_params(axis='y', labelsize=labelSize)
      trialPl[4,0].plot(timeSort5, valArr5, color = '#808080')
      trialPl[4,0].set_title('Type 2kHz-32kHz', fontsize = labelSize)
      trialPl[4,0].set_xlabel('Time (s)', fontsize = labelSize)
@@ -1421,13 +1283,13 @@ def plot_trials_only(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, time
      trialPl[4,0].tick_params(axis='x', labelsize=labelSize)
      trialPl[0,1].plot(timeSort6, valArr6, color = '#04D8B2')
      trialPl[0,1].set_title('Type 32kHz-2kHz', fontsize = labelSize)
-     trialPl[0,1].tick_params(axis='y', labelsize=labelSize) 
+     trialPl[0,1].tick_params(axis='y', labelsize=labelSize)
      trialPl[1,1].plot(timeSort7, valArr7, color = '#D2691E')
      trialPl[1,1].set_title('Type 32kHz-4kHz', fontsize = labelSize)
      trialPl[1,1].tick_params(axis='y', labelsize=labelSize)
      trialPl[2,1].plot(timeSort8, valArr8, color = '#054907')
      trialPl[2,1].set_title('Type 32kHz-8kHz', fontsize = labelSize)
-     trialPl[2,1].tick_params(axis='y', labelsize=labelSize) 
+     trialPl[2,1].tick_params(axis='y', labelsize=labelSize)
      trialPl[3,1].plot(timeSort9, valArr9, color = 'r')
      trialPl[3,1].set_title('Type 32kHz-16kHz', fontsize = labelSize)
      trialPl[3,1].tick_params(axis='y', labelsize=labelSize)
@@ -1436,25 +1298,41 @@ def plot_trials_only(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, time
      trialPl[4,1].set_xlabel('Time (s)', fontsize = labelSize)
      trialPl[4,1].tick_params(axis='x', labelsize=labelSize)
      trialPl[4,1].tick_params(axis='y', labelsize=labelSize)
-  
-     plt.suptitle('Pupil size for each frequency type across videos: pure10_20220418-21', fontsize = labelSize)
+
+     trialPl[0,0].set_ylim([400, 700])
+     trialPl[1,0].set_ylim([400, 700])
+     trialPl[2,0].set_ylim([400, 700])
+     trialPl[3,0].set_ylim([400, 700])
+     trialPl[4,0].set_ylim([400, 700])
+     trialPl[0,1].set_ylim([400, 700])
+     trialPl[1,1].set_ylim([400, 700])
+     trialPl[2,1].set_ylim([400, 700])
+     trialPl[3,1].set_ylim([400, 700])
+     trialPl[4,1].set_ylim([400, 700])
+     '''
+     plt.suptitle('Pupil size for each frequency type across videos: pure11_20220415-19(actual pure011)', fontsize = labelSize)
+
      plt.show()
      
      return(plt.show())    
       
 
 def find_typeLocked_values(indices, conditionIndex, pupilValues):
+
      '''
      Finds pupil values associated with each frequency type
+     
      Args:
-     indices (np.array): array containing the indices of the time values corresponding to each of the pupil values in the pre or post period
-     conditionIndex (np.array): array containing the indices corresponding to a specific period for each frequency type
-     pupilValues (np.array): array containing the pupil values after being processed with the eventlocked_signal function
+     indices (np.array) = array containing the indices of the time values corresponding to each of the pupil values in the pre or post period
+     conditionIndex (np.array) = array containing the indices corresponding to a specific period for each frequency type
+     pupilValues (np.array) = array containing the pupil values after being processed with the eventlocked_signal function
      
-     returns:
-     arr (np.array): array containing the corresponding pupil values for the specified period for each frequency type.
-     
+     Returns:
+     arr (np.array) = array containing the corresponding pupil values for the specified period for each frequency type.    
      '''
+
+# --- Look for pupil values using the rows determined by the indices variable, and columns determined by conditionIndex ---
+
      arr = []
      for i in indices.flatten():
          for j in conditionIndex:
@@ -1463,124 +1341,6 @@ def find_typeLocked_values(indices, conditionIndex, pupilValues):
      return(arr)
     
 
-def plot_trials(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, timePlot6, timePlot7, timePlot8, timePlot9, timePlot10, dataPlot1, dataPlot2, dataPlot3, dataPlot4, dataPlot5, dataPlot6, dataPlot7, dataPlot8, dataPlot9, dataPlot10):
-     '''
-     Plots the behavior for each frequency type across videos
-     args:
-     timePlot1...10 (np.array) = array containing the time values where each value of each trial takes place during the pre and post period for each frequency type across videos
-     dataPlot...10 (np.array) = array containing the pre and post values for each frequency type across videos
-     returns:
-     plt.show() = plots each frequency type vs time across videos
-     '''
-     sortTime1 = np.argsort(timePlot1)
-     sortTime2 = np.argsort(timePlot2)
-     sortTime3 = np.argsort(timePlot3)
-     sortTime4 = np.argsort(timePlot4)
-     sortTime5 = np.argsort(timePlot5)
-     sortTime6 = np.argsort(timePlot6)
-     sortTime7 = np.argsort(timePlot7)
-     sortTime8 = np.argsort(timePlot8)
-     sortTime9 = np.argsort(timePlot9)
-     sortTime10 = np.argsort(timePlot10)
-     
-     valArr1 = []
-     timeSort1 = []
-     valArr2 = []
-     timeSort2 = []
-     valArr3 = []
-     timeSort3 = []
-     valArr4 = []
-     timeSort4 = []
-     valArr5 = []
-     timeSort5 = []
-     valArr6 = []
-     timeSort6 = []
-     valArr7 = []
-     timeSort7 = []
-     valArr8 = []
-     timeSort8 = []
-     valArr9 = []
-     timeSort9 = []
-     valArr10 = []
-     timeSort10 = []
-     
- 
-     
-     for i in sortTime1:
-         timeSort1.append(timePlot1[i])
-         valArr1.append(dataPlot1[i]) 
-     for j in sortTime2:
-         timeSort2.append(timePlot2[j])
-         valArr2.append(dataPlot2[j])
-     for k in sortTime3:
-         timeSort3.append(timePlot3[k])
-         valArr3.append(dataPlot3[k])         
-     for l in sortTime4:
-         timeSort4.append(timePlot4[l])
-         valArr4.append(dataPlot4[l])
-     for m in sortTime5:
-         timeSort5.append(timePlot5[m])
-         valArr5.append(dataPlot5[m])
-     for n in sortTime6:
-         timeSort6.append(timePlot6[n])
-         valArr6.append(dataPlot6[n])
-     for o in sortTime7:
-         timeSort7.append(timePlot7[o])
-         valArr7.append(dataPlot7[o])
-     for p in sortTime8:
-         timeSort8.append(timePlot8[p])
-         valArr8.append(dataPlot8[p])
-     for x in sortTime9:
-         timeSort9.append(timePlot9[x])
-         valArr9.append(dataPlot9[x])
-     for z in sortTime10:
-         timeSort10.append(timePlot10[z])
-         valArr10.append(dataPlot10[z])
-             
-     labelSize = 14 
-     fig, trialPl = plt.subplots(5, 2, constrained_layout = True, sharex= True, sharey = True) 
-     fig.set_size_inches(9.5, 7.5, forward = True)
-     
-     trialPl[0,0].plot(timeSort1, valArr1, color = '#04D8B2')
-     trialPl[0,0].set_title('Type 2kHz-2kHz', fontsize = labelSize)
-     trialPl[0,0].tick_params(axis='y', labelsize=labelSize)
-     trialPl[1,0].plot(timeSort2, valArr2, color = '#D2691E')
-     trialPl[1,0].set_title('Type 2kHz-4kHz', fontsize = labelSize)
-     trialPl[1,0].tick_params(axis='y', labelsize=labelSize)
-     trialPl[2,0].plot(timeSort3, valArr3, color = '#054907')
-     trialPl[2,0].set_title('Type 2kHz-8kHz', fontsize = labelSize)
-     trialPl[2,0].set_ylabel('Mean pupil area', fontsize = labelSize) 
-     trialPl[2,0].tick_params(axis='y', labelsize=labelSize) 
-     trialPl[3,0].plot(timeSort4, valArr4, color = 'r')
-     trialPl[3,0].set_title('Type 2kHz-16kHz', fontsize = labelSize)
-     trialPl[3,0].tick_params(axis='y', labelsize=labelSize) 
-     trialPl[4,0].plot(timeSort5, valArr5, color = '#808080')
-     trialPl[4,0].set_title('Type 2kHz-32kHz', fontsize = labelSize)
-     trialPl[4,0].set_xlabel('Time (s)', fontsize = labelSize)
-     trialPl[4,0].tick_params(axis='y', labelsize=labelSize)
-     trialPl[4,0].tick_params(axis='x', labelsize=labelSize)
-     trialPl[0,1].plot(timeSort6, valArr6, color = '#04D8B2')
-     trialPl[0,1].set_title('Type 32kHz-2kHz', fontsize = labelSize)
-     trialPl[0,1].tick_params(axis='y', labelsize=labelSize) 
-     trialPl[1,1].plot(timeSort7, valArr7, color = '#D2691E')
-     trialPl[1,1].set_title('Type 32kHz-4kHz', fontsize = labelSize)
-     trialPl[1,1].tick_params(axis='y', labelsize=labelSize)
-     trialPl[2,1].plot(timeSort8, valArr8, color = '#054907')
-     trialPl[2,1].set_title('Type 32kHz-8kHz', fontsize = labelSize)
-     trialPl[2,1].tick_params(axis='y', labelsize=labelSize) 
-     trialPl[3,1].plot(timeSort9, valArr9, color = 'r')
-     trialPl[3,1].set_title('Type 32kHz-16kHz', fontsize = labelSize)
-     trialPl[3,1].tick_params(axis='y', labelsize=labelSize)
-     trialPl[4,1].plot(timeSort10, valArr10, color = '#808080')
-     trialPl[4,1].set_title('Type 32kHz-32kHz', fontsize = labelSize)
-     trialPl[4,1].set_xlabel('Time (s)', fontsize = labelSize)
-     trialPl[4,1].tick_params(axis='x', labelsize=labelSize)
-     trialPl[4,1].tick_params(axis='y', labelsize=labelSize)
-  
-     plt.suptitle('Pupil size for each frequency type across videos: pure10_20220418-21', fontsize = labelSize)
-     plt.show()
-     return(plt.show())    
-     
      
      
      
@@ -1589,18 +1349,18 @@ def plot_trials(timePlot1, timePlot2, timePlot3, timePlot4, timePlot5, timePlot6
      
      
 
-filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220415_xtremes_195_xconfig1_proc.npy', allow_pickle = True).item(),
-	'sessionFile1':'20220415_xtremes_195_xconfig1', 'condition1':'detectiongonogo', 'sound':'ChordTrain', 'name1':'pure010', 
-	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220418_xtremes_196_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config2':'2Sconfig3', 'sessionFile2':'20220418_xtremes_196_xconfig1', 'name2':'config12_2',
-	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220418_xtremes_197_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config3':'2Sconfig3', 'sessionFile3':'20220418_xtremes_197_xconfig1', 'name3':'config12_3',
-	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220420_xtremes_201_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config4':'2Sconfig4', 'sessionFile4':'20220420_xtremes_201_xconfig1', 'name4':'config14_1', 
-	'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220421_xtremes_202_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config5':'2Sconfig4', 'sessionFile5':'20220421_xtremes_202_xconfig1', 'name5':'config14_2', 
-	'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220421_xtremes_203_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config6':'2Sconfig4', 'sessionFile6':'20220421_xtremes_203_xconfig1', 'name6':'config14_3'}
+filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220414_xtremes_192_xconfig1_proc.npy', allow_pickle = True).item(),
+	'sessionFile1':'20220414_xtremes_192_xconfig1', 'condition1':'detectiongonogo', 'sound':'ChordTrain', 'name1':'pure011', 
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220415_xtremes_193_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config2':'2Sconfig3', 'sessionFile2':'20220415_xtremes_193_xconfig1', 'name2':'config12_2',
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220415_xtremes_194_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config3':'2Sconfig3', 'sessionFile3':'20220415_xtremes_194_xconfig1', 'name3':'config12_3',
+	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_198_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config4':'2Sconfig4', 'sessionFile4':'20220419_xtremes_198_xconfig1', 'name4':'config14_1', 
+	'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_199_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config5':'2Sconfig4', 'sessionFile5':'20220419_xtremes_199_xconfig1', 'name5':'config14_2', 
+	'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_200_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config6':'2Sconfig4', 'sessionFile6':'20220419_xtremes_200_xconfig1', 'name6':'config14_3'}
 	
 scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure011 20220419', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions', 'plotFreqName':'Pupil size for 5 different frequencies: pure011_20220415-19'}
 
@@ -1705,11 +1465,11 @@ timeOfBlink2Event = timeVec[syncOnsetValues] # Provides the time values in which
 #timeOfBlink2Event = timeOfBlink2Event[1:-1]
 
 #--- Align trials to the event ---
-timeRange = np.array([-0.5, 2.0]) # Range of time window, 0.5 seconds before the sync signal is on and 2 seconds after is on.
+timeRange = np.array([-5, 5]) # Range of time window, 0.5 seconds before the sync signal is on and 2 seconds after is on.
 windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRange)
 
 #--- Obtain pupil pre and post stimulus values, and average size ---
-preSignal, postSignal, preTimeIndices, postTimeIndices = find_prepost_values(windowTimeVec, windowed_signal, -0.5, 0, 1.4, 2.0)
+preSignal, postSignal, preTimeIndices, postTimeIndices = find_prepost_values(windowTimeVec, windowed_signal, -5, 0, 0, 5)
 averagePreSignal = preSignal.mean(axis = 1)
 averagePostSignal = postSignal.mean(axis = 1)
 dataToPlot = [averagePreSignal, averagePostSignal]
@@ -1733,9 +1493,6 @@ indexType22kz, indexType24kz, indexType28kz, indexType216kz, indexType232kz = fi
 indexType322kz, indexType324kz, indexType328kz, indexType3216kz, indexType3232kz = find_type_freqs_pupil_values(preSignalValues32Kz, postFreqs, windowed_signal)
 
 
-#preValType22kz, preValType24kz, preValType28kz, preValType216kz, preValType232kz, postValType22kz, postValType24kz, postValType28kz, postValType216kz, postValType232kz = find_pupil_values(preSignal, postSignal, indexType22kz, indexType24kz, indexType28kz, indexType216kz, indexType232kz)
-
-#preValType322kz, preValType324kz, preValType328kz, preValType3216kz, preValType3232kz, postValType322kz, postValType324kz, postValType328kz, postValType3216kz, postValType3232kz = find_pupil_values(preSignal, postSignal, indexType322kz, indexType324kz, indexType328kz, indexType3216kz, indexType3232kz)
 
 
 
@@ -1780,11 +1537,11 @@ timeOfBlink2Event1 = timeVec1[syncOnsetValues1] # Provides the time values in wh
 #timeOfBlink2Event1 = timeOfBlink2Event1[1:-1]
 
 #--- Align trials to the event ---
-timeRange1 = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange1 = np.array([-5, 5]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec1, windowed_signal1 = eventlocked_signal(timeVec1, pArea1, timeOfBlink2Event1, timeRange1)
 
 #--- Obtain pupil pre and post stimulus values, and average size ---
-preSignal1, postSignal1, preTimeIndices1, postTimeIndices1 = find_prepost_values(windowTimeVec1, windowed_signal1, -0.5, 0, 1.4, 2.0)
+preSignal1, postSignal1, preTimeIndices1, postTimeIndices1 = find_prepost_values(windowTimeVec1, windowed_signal1, -5, 0, 0, 5)
 averagePreSignal1 = preSignal1.mean(axis = 1)
 averagePostSignal1 = postSignal1.mean(axis = 1)
 dataToPlot1 = [averagePreSignal1, averagePostSignal1]
@@ -1809,9 +1566,6 @@ indexType22kza, indexType24kza, indexType28kza, indexType216kza, indexType232kza
 
 indexType322kza, indexType324kza, indexType328kza, indexType3216kza, indexType3232kza = find_type_freqs_pupil_values(preSignalValues32Kza, postFreqs2, windowed_signal1)
 
-#preValType22kza, preValType24kza, preValType28kza, preValType216kza, preValType232kza, postValType22kza, postValType24kza, postValType28kza, postValType216kza, postValType232kza = find_pupil_values(preSignal1, postSignal1, indexType22kza, indexType24kza, indexType28kza, indexType216kza, indexType232kza)
-
-#preValType322kza, preValType324kza, preValType328kza, preValType3216kza, preValType3232kza, postValType322kza, postValType324kza, postValType328kza, postValType3216kza, postValType3232kza = find_pupil_values(preSignal1, postSignal1, indexType322kza, indexType324kza, indexType328kza, indexType3216kza, indexType3232kza)
 
 
 
@@ -1855,11 +1609,11 @@ timeOfBlink2Event2 = timeVec2[syncOnsetValues2] # Provides the time values in wh
 #timeOfBlink2Event2 = timeOfBlink2Event2[1:-1]
 
 #--- Align trials to the event ---
-timeRange2 = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange2 = np.array([-5, 5]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec2, windowed_signal2 = eventlocked_signal(timeVec2, pArea2, timeOfBlink2Event2, timeRange2)
 
 #--- Obtain pupil pre and post stimulus values, and average size ---
-preSignal2, postSignal2, preTimeIndices2, postTimeIndices2 = find_prepost_values(windowTimeVec2, windowed_signal2, -0.5, 0, 1.4, 2.0)
+preSignal2, postSignal2, preTimeIndices2, postTimeIndices2 = find_prepost_values(windowTimeVec2, windowed_signal2, -5, 0, 0, 5)
 averagePreSignal2 = preSignal2.mean(axis = 1)
 averagePostSignal2 = postSignal2.mean(axis = 1)
 dataToPlot2 = [averagePreSignal2, averagePostSignal2]
@@ -1883,9 +1637,6 @@ indexType22kzb, indexType24kzb, indexType28kzb, indexType216kzb, indexType232kzb
 
 indexType322kzb, indexType324kzb, indexType328kzb, indexType3216kzb, indexType3232kzb = find_type_freqs_pupil_values(preSignalValues32Kzb, postFreqs3, windowed_signal2)
 
-#preValType22kzb, preValType24kzb, preValType28kzb, preValType216kzb, preValType232kzb, postValType22kzb, postValType24kzb, postValType28kzb, postValType216kzb, postValType232kzb = find_pupil_values(preSignal2, postSignal2, indexType22kzb, indexType24kzb, indexType28kzb, indexType216kzb, indexType232kzb)
-
-#preValType322kzb, preValType324kzb, preValType328kzb, preValType3216kzb, preValType3232kzb, postValType322kzb, postValType324kzb, postValType328kzb, postValType3216kzb, postValType3232kzb = find_pupil_values(preSignal2, postSignal2, indexType322kzb, indexType324kzb, indexType328kzb, indexType3216kzb, indexType3232kzb)
 
 
 
@@ -1928,11 +1679,11 @@ timeOfBlink2Event3 = timeVec3[syncOnsetValues3] # Provides the time values in wh
 #timeOfBlink2Event3 = timeOfBlink2Event3[1:-1]
 
 #--- Align trials to the event ---
-timeRange3 = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange3 = np.array([-5, 5]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec3, windowed_signal3 = eventlocked_signal(timeVec3, pArea3, timeOfBlink2Event3, timeRange3)
 
 #--- Obtain pupil pre and post stimulus values, and average size ---
-preSignal3, postSignal3, preTimeIndices3, postTimeIndices3 = find_prepost_values(windowTimeVec3, windowed_signal3, -0.5, 0, 1.4, 2.0)
+preSignal3, postSignal3, preTimeIndices3, postTimeIndices3 = find_prepost_values(windowTimeVec3, windowed_signal3, -5, 0, 0, 5)
 averagePreSignal3 = preSignal3.mean(axis = 1)
 averagePostSignal3 = postSignal3.mean(axis = 1)
 dataToPlot3 = [averagePreSignal3, averagePostSignal3]
@@ -1940,7 +1691,7 @@ xlabels3 = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation3 = np.array([-7, 7])
+timeRangeForPupilDilation3 = np.array([-5, 5])
 pupilDilationTimeWindowVec3, pAreaDilated3 = eventlocked_signal(timeVec3, pArea3, timeOfBlink2Event3, timeRangeForPupilDilation3)
 pAreaDilatedMean3 = pAreaDilated3.mean(axis = 1)
 
@@ -1956,11 +1707,8 @@ indexType22kzc, indexType24kzc, indexType28kzc, indexType216kzc, indexType232kzc
 
 indexType322kzc, indexType324kzc, indexType328kzc, indexType3216kzc, indexType3232kzc = find_type_freqs_pupil_values(preSignalValues32Kzc, postFreqs4, windowed_signal3)               
                                                 
-#preValType22kzc, preValType24kzc, preValType28kzc, preValType216kzc, preValType232kzc, postValType22kzc, postValType24kzc, postValType28kzc, postValType216kzc, postValType232kzc = find_pupil_values(preSignal3, postSignal3, indexType22kzc, indexType24kzc, indexType28kzc, indexType216kzc, indexType232kzc)
-
-#preValType322kzc, preValType324kzc, preValType328kzc, preValType3216kzc, preValType3232kzc, postValType322kzc, postValType324kzc, postValType328kzc, postValType3216kzc, postValType3232kzc = find_pupil_values(preSignal3, postSignal3, indexType322kzc, indexType324kzc, indexType328kzc, indexType3216kzc, indexType3232kzc)                                                
-                                                
-                                                
+                                           
+                                                                                             
  
                                                 
                  
@@ -2001,11 +1749,11 @@ timeOfBlink2Event4 = timeVec4[syncOnsetValues4] # Provides the time values in wh
 #timeOfBlink2Event4 = timeOfBlink2Event4[1:-1]
 
 #--- Align trials to the event ---
-timeRange4 = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange4 = np.array([-5, 5]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec4, windowed_signal4 = eventlocked_signal(timeVec4, pArea4, timeOfBlink2Event4, timeRange4)
 
 #--- Obtain pupil pre and post stimulus values, and average size ---
-preSignal4, postSignal4, preTimeIndices4, postTimeIndices4 = find_prepost_values(windowTimeVec4, windowed_signal4, -0.5, 0, 1.4, 2.0)
+preSignal4, postSignal4, preTimeIndices4, postTimeIndices4 = find_prepost_values(windowTimeVec4, windowed_signal4, -5, 0, 0, 5)
 averagePreSignal4 = preSignal4.mean(axis = 1)
 averagePostSignal4 = postSignal4.mean(axis = 1)
 dataToPlot4 = [averagePreSignal4, averagePostSignal4]
@@ -2029,11 +1777,6 @@ indexType22kzd, indexType24kzd, indexType28kzd, indexType216kzd, indexType232kzd
 
 indexType322kzd, indexType324kzd, indexType328kzd, indexType3216kzd, indexType3232kzd = find_type_freqs_pupil_values(preSignalValues32Kzd, postFreqs5, windowed_signal4) 
          
-#preValType22kzd, preValType24kzd, preValType28kzd, preValType216kzd, preValType232kzd, postValType22kzd, postValType24kzd, postValType28kzd, postValType216kzd, postValType232kzd = find_pupil_values(preSignal4, postSignal4, indexType22kzd, indexType24kzd, indexType28kzd, indexType216kzd, indexType232kzd)
-
-#preValType322kzd, preValType324kzd, preValType328kzd, preValType3216kzd, preValType3232kzd, postValType322kzd, postValType324kzd, postValType328kzd, postValType3216kzd, postValType3232kzd = find_pupil_values(preSignal4, postSignal4, indexType322kzd, indexType324kzd, indexType328kzd, indexType3216kzd, indexType3232kzd)                         
-                         
-                         
  
   
            
@@ -2071,11 +1814,11 @@ timeOfBlink2Event5 = timeVec5[syncOnsetValues5] # Provides the time values in wh
 #timeOfBlink2Event5 = timeOfBlink2Event5[1:-1]
 
 #--- Align trials to the event ---
-timeRange5 = np.array([-0.5, 2.0]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
+timeRange5 = np.array([-5, 5]) # Range of time window, one second before the sync signal is on and one second after is on. For syncSound [-0.95,0.95] and for controls [-0.6,0.6]
 windowTimeVec5, windowed_signal5 = eventlocked_signal(timeVec5, pArea5, timeOfBlink2Event5, timeRange5)
 
 #--- Obtain pupil pre and post stimulus values, and average size ---
-preSignal5, postSignal5, preTimeIndices5, postTimeIndices5 = find_prepost_values(windowTimeVec5, windowed_signal5, -0.5, 0, 1.4, 2.0)
+preSignal5, postSignal5, preTimeIndices5, postTimeIndices5 = find_prepost_values(windowTimeVec5, windowed_signal5, -5, 0, 0, 5)
 averagePreSignal5 = preSignal5.mean(axis = 1)
 averagePostSignal5 = postSignal5.mean(axis = 1)
 dataToPlot5 = [averagePreSignal5, averagePostSignal5]
@@ -2095,14 +1838,11 @@ pAreaDilatedMean5 = pAreaDilated5.mean(axis = 1)
 
 freq1Index2Kze, freq1Index32Kze, freq2Index2Kze, freq2Index32Kze, freq3Index2Kze, freq3Index32Kze, freq4Index2Kze, freq4Index32Kze, freq5Index2Kze, freq5Index32Kze, preSignalValues2Kze, preSignalValues32Kze = find_freqs_indices(preFreqs6, postFreqs6, 2000, 4000, 8000, 16000, 32000)
 
+# --- Find the indices for each frequency type ---
 
 indexType22kze, indexType24kze, indexType28kze, indexType216kze, indexType232kze = find_type_freqs_pupil_values(preSignalValues2Kze, postFreqs6, windowed_signal5)
-
 indexType322kze, indexType324kze, indexType328kze, indexType3216kze, indexType3232kze = find_type_freqs_pupil_values(preSignalValues32Kze, postFreqs6, windowed_signal5)
 
-#preValType22kze, preValType24kze, preValType28kze, preValType216kze, preValType232kze, postValType22kze, postValType24kze, postValType28kze, postValType216kze, postValType232kze = find_pupil_values(preSignal5, postSignal5, indexType22kze, indexType24kze, indexType28kze, indexType216kze, indexType232kze)
-
-#preValType322kze, preValType324kze, preValType328kze, preValType3216kze, preValType3232kze, postValType322kze, postValType324kze, postValType328kze, postValType3216kze, postValType3232kze = find_pupil_values(preSignal5, postSignal5, indexType322kze, indexType324kze, indexType328kze, indexType3216kze, indexType3232kze)
                          
 
 # --- Finding pupil area for each freq type (may 11) ---
@@ -2388,15 +2128,7 @@ normPreVal8e = normalize_data_videos(pArea, pArea1, pArea2, pArea3, pArea4, pAre
 normPreVal9e = normalize_data_videos(pArea, pArea1, pArea2, pArea3, pArea4, pArea5, preVal3216Typee)
 normPreVal10e = normalize_data_videos(pArea, pArea1, pArea2, pArea3, pArea4, pArea5, preVal3232Typee)
 
-
-# --- calculating the pre and post mean values for each freq type across videos --- 
-trialsMean2kz1, trialsMean4kz1, trialsMean8kz1, trialsMean16kz1, trialsMean32kz1, trialsMean2kz2, trialsMean4kz2, trialsMean8kz2, trialsMean16kz2, trialsMean32kz2, preTrials2kz1, preTrials4kz1, preTrials8kz1, preTrials16kz1, preTrials32kz1, preTrials2kz2, preTrials4kz2, preTrials8kz2, preTrials16kz2, preTrials32kz2, postTrials2kz1, postTrials4kz1, postTrials8kz1, postTrials16kz1, postTrials32kz1, postTrials2kz2, postTrials4kz2, postTrials8kz2, postTrials16kz2, postTrials32kz2,  = calculate_pupil_size_trials(postVal22Type, postVal24Type, postVal28Type, postVal216Type, postVal232Type, postVal322Type, postVal324Type, postVal328Type, postVal3216Type, postVal3232Type, postVal22Typea, postVal24Typea, postVal28Typea, postVal216Typea, postVal232Typea, postVal322Typea, postVal324Typea, postVal328Typea, postVal3216Typea, postVal3232Typea, postVal22Typeb, postVal24Typeb, postVal28Typeb, postVal216Typeb, postVal232Typeb, postVal322Typeb, postVal324Typeb, postVal328Typeb, postVal3216Typeb, postVal3232Typeb, postVal22Typec, postVal24Typec, postVal28Typec, postVal216Typec, postVal232Typec, postVal322Typec, postVal324Typec, postVal328Typec, postVal3216Typec, postVal3232Typec, postVal22Typed, postVal24Typed, postVal28Typed, postVal216Typed, postVal232Typed, postVal322Typed, postVal324Typed, postVal328Typed, postVal3216Typed, postVal3232Typed, postVal22Typee, postVal24Typee, postVal28Typee, postVal216Typee, postVal232Typee, postVal322Typee, postVal324Typee, postVal328Typee, postVal3216Typee, postVal3232Typee, preVal22Type, preVal24Type, preVal28Type, preVal216Type, preVal232Type, preVal322Type, preVal324Type, preVal328Type, preVal3216Type, preVal3232Type, preVal22Typea, preVal24Typea, preVal28Typea, preVal216Typea, preVal232Typea, preVal322Typea, preVal324Typea, preVal328Typea, preVal3216Typea, preVal3232Typea, preVal22Typeb, preVal24Typeb, preVal28Typeb, preVal216Typeb, preVal232Typeb, preVal322Typeb, preVal324Typeb, preVal328Typeb, preVal3216Typeb, preVal3232Typeb, preVal22Typec, preVal24Typec, preVal28Typec, preVal216Typec, preVal232Typec, preVal322Typec, preVal324Typec, preVal328Typec, preVal3216Typec, preVal3232Typec, preVal22Typed, preVal24Typed, preVal28Typed, preVal216Typed, preVal232Typed, preVal322Typed, preVal324Typed, preVal328Typed, preVal3216Typed, preVal3232Typed, preVal22Typee, preVal24Typee, preVal28Typee, preVal216Typee, preVal232Typee, preVal322Typee, preVal324Typee, preVal328Typee, preVal3216Typee, preVal3232Typee, indexType22kz, indexType24kz, indexType28kz, indexType216kz, indexType232kz, indexType322kz, indexType324kz, indexType328kz, indexType3216kz, indexType3232kz, indexType22kza, indexType24kza, indexType28kza, indexType216kza, indexType232kza, indexType322kza, indexType324kza, indexType328kza, indexType3216kza, indexType3232kza, indexType22kzb, indexType24kzb, indexType28kzb, indexType216kzb, indexType232kzb, indexType322kzb, indexType324kzb, indexType328kzb, indexType3216kzb, indexType3232kzb, indexType22kzc, indexType24kzc, indexType28kzc, indexType216kzc, indexType232kzc, indexType322kzc, indexType324kzc, indexType328kzc, indexType3216kzc, indexType3232kzc, indexType22kzd, indexType24kzd, indexType28kzd, indexType216kzd, indexType232kzd, indexType322kzd, indexType324kzd, indexType328kzd, indexType3216kzd, indexType3232kzd, indexType22kze, indexType24kze, indexType28kze, indexType216kze, indexType232kze, indexType322kze, indexType324kze, indexType328kze, indexType3216kze, indexType3232kze, preSignal, postSignal)
-
-
-
-# --- Finding the time location for each trial of each frequency type ---
-trialsTime2kz1, trialsTime4kz1, trialsTime8kz1, trialsTime16kz1, trialsTime32kz1, trialsTime2kz2, trialsTime4kz2, trialsTime8kz2, trialsTime16kz2, trialsTime32kz2  = find_values_time(pupilDilationTimeWindowVec,  indexType22kz, indexType24kz, indexType28kz, indexType216kz, indexType232kz, indexType322kz, indexType324kz, indexType328kz, indexType3216kz, indexType3232kz, indexType22kza, indexType24kza, indexType28kza, indexType216kza, indexType232kza, indexType322kza, indexType324kza, indexType328kza, indexType3216kza, indexType3232kza, indexType22kzb, indexType24kzb, indexType28kzb, indexType216kzb, indexType232kzb, indexType322kzb, indexType324kzb, indexType328kzb, indexType3216kzb, indexType3232kzb, indexType22kzc, indexType24kzc, indexType28kzc, indexType216kzc, indexType232kzc, indexType322kzc, indexType324kzc, indexType328kzc, indexType3216kzc, indexType3232kzc, indexType22kzd, indexType24kzd, indexType28kzd, indexType216kzd, indexType232kzd, indexType322kzd, indexType324kzd, indexType328kzd, indexType3216kzd, indexType3232kzd, indexType22kze, indexType24kze, indexType28kze, indexType216kze, indexType232kze, indexType322kze, indexType324kze, indexType328kze, indexType3216kze, indexType3232kze, 0)
-                                 
+    
 
 
  #--- Plotting normalized values; differences in pupil pre period and post period         
@@ -2404,85 +2136,12 @@ trialsTime2kz1, trialsTime4kz1, trialsTime8kz1, trialsTime16kz1, trialsTime32kz1
 #plottingPupilNormalData = calculate_pupil_size_and_plot(normVal1, normVal2, normVal3, normVal4, normVal5, normVal6, normVal7, normVal8, normVal9, normVal10, normVal1a, normVal2a, normVal3a, normVal4a, normVal5a, normVal6a, normVal7a, normVal8a, normVal9a, normVal10a, normVal1b, normVal2b, normVal3b, normVal4b, normVal5b, normVal6b, normVal7b, normVal8b, normVal9b, normVal10b, normVal1c, normVal2c, normVal3c, normVal4c, normVal5c, normVal6c, normVal7c, normVal8c, normVal9c, normVal10c, normVal1d, normVal2d, normVal3d, normVal4d, normVal5d, normVal6d, normVal7d, normVal8d, normVal9d, normVal10d, normVal1e, normVal2e, normVal3e, normVal4e, normVal5e, normVal6e, normVal7e, normVal8e, normVal9e, normVal10e, normPreVal1, normPreVal2, normPreVal3, normPreVal4, normPreVal5, normPreVal6, normPreVal7, normPreVal8, normPreVal9, normPreVal10, normPreVal1a, normPreVal2a, normPreVal3a, normPreVal4a, normPreVal5a, normPreVal6a, normPreVal7a, normPreVal8a, normPreVal9a, normPreVal10a, normPreVal1b, normPreVal2b, normPreVal3b, normPreVal4b, normPreVal5b, normPreVal6b, normPreVal7b, normPreVal8b, normPreVal9b, normPreVal10b, normPreVal1c, normPreVal2c, normPreVal3c, normPreVal4c, normPreVal5c, normPreVal6c, normPreVal7c, normPreVal8c, normPreVal9c, normPreVal10c, normPreVal1d, normPreVal2d, normPreVal3d, normPreVal4d, normPreVal5d, normPreVal6d, normPreVal7d, normPreVal8d, normPreVal9d, normPreVal10d, normPreVal1e, normPreVal2e, normPreVal3e, normPreVal4e, normPreVal5e, normPreVal6e, normPreVal7e, normPreVal8e, normPreVal9e, normPreVal10e, frequenciesTested)
 
 
-
-'''
-preTrials2kz1, preTrials4kz1, preTrials8kz1, preTrials16kz1, preTrials32kz1, preTrials2kz2, preTrials4kz2, preTrials8kz2, preTrials16kz2, preTrials32kz2, postTrials2kz1, postTrials4kz1, postTrials8kz1, postTrials16kz1, postTrials32kz1, postTrials2kz2, postTrials4kz2, postTrials8kz2, postTrials16kz2, postTrials32kz2
-'''
-
-preTimeVals = windowTimeVec[preTimeIndices]
-postTimeVals = windowTimeVec[postTimeIndices]
-preTimeFlat = preTimeVals.flatten()
-postTimeFlat = postTimeVals.flatten()
-
-pre2kz1 = np.tile(preTimeFlat, 8)
-restPre2kz1 = np.array([-0.3,  -0.26666667, -0.23333333, -0.2,  -0.16666667, -0.13333333])
-tPre2kz1 = np.append(pre2kz1, restPre2kz1)
-
-post2kz1 = np.tile(postTimeFlat, 8)
-tPost2kz1 = post2kz1[0:126]
-
-
-pre4kz1 = np.tile(preTimeFlat, 9)
-tPre4kz1 = pre4kz1[0:119]
-post4kz1 = np.tile(postTimeFlat, 10)
-tPost4kz1 = post4kz1[0:121] 
-
-pre8kz1 = np.tile(preTimeFlat, 10)
-tPre8kz1 = pre8kz1[0:113]
-post8kz1 = np.tile(postTimeFlat, 10)
-tPost8kz1 = post8kz1[0:113] 
-
-pre16kz1 = np.tile(preTimeFlat, 9)
-tPre16kz1 = pre16kz1[0:121]
-post16kz1 = np.tile(postTimeFlat, 9)
-tPost16kz1 = post16kz1[0:121] 
-
-pre32kz1 = np.tile(preTimeFlat, 9)
-tPre32kz1 = pre32kz1[0:122]
-post32kz1 = np.tile(postTimeFlat, 9)
-tPost32kz1 = post32kz1[0:122]
-
-pre2kz2 = np.tile(preTimeFlat, 8)
-tPre2kz2 = pre2kz2[0:112]
-post2kz2 = np.tile(postTimeFlat, 8)
-tPost2kz2 = post2kz2[0:112]
-
-pre4kz2 = np.tile(preTimeFlat, 10)
-tPre4kz2 = pre4kz2[0:136]
-post4kz2 = np.tile(postTimeFlat, 10)
-tPost4kz2 = post4kz2[0:136]  
-
-pre8kz2 = np.tile(preTimeFlat, 7)
-tPre8kz2 = pre8kz2[0:98]
-post8kz2 = np.tile(postTimeFlat, 7)
-tPost8kz2 = post8kz2[0:98]
-
-pre16kz2 = np.tile(preTimeFlat, 9)
-tPre16kz2 = pre16kz2[0:126]
-post16kz2 = np.tile(postTimeFlat, 9)
-tPost16kz2 = post16kz2[0:126]
-
-pre32kz2 = np.tile(preTimeFlat, 9)
-tPre32kz2 = pre32kz2[0:127]
-post32kz2 = np.tile(postTimeFlat, 9)
-tPost32kz2 = post32kz2[0:127]
-
-time2kz1 = np.concatenate((tPre2kz1, tPost2kz1), axis = 0)
-time4kz1 = np.concatenate((tPre4kz1, tPost4kz1), axis = 0)
-time8kz1 = np.concatenate((tPre8kz1, tPost8kz1), axis = 0)
-time16kz1 = np.concatenate((tPre16kz1, tPost16kz1), axis = 0)
-time32kz1 = np.concatenate((tPre32kz1, tPost32kz1), axis = 0)
-
-time2kz2 = np.concatenate((tPre2kz2, tPost2kz2), axis = 0)
-time4kz2 = np.concatenate((tPre4kz2, tPost4kz2), axis = 0)
-time8kz2 = np.concatenate((tPre8kz2, tPost8kz2), axis = 0)
-time16kz2 = np.concatenate((tPre16kz2, tPost16kz2), axis = 0)
-time32kz2 = np.concatenate((tPre32kz2, tPost32kz2), axis = 0)
-
-onlyTrialsPlots = plot_trials(time2kz1, time4kz1, time8kz1, time16kz1, time32kz1, time2kz2, time4kz2, time8kz2, time16kz2, time32kz2, trialsMean2kz1, trialsMean4kz1, trialsMean8kz1, trialsMean16kz1, trialsMean32kz1, trialsMean2kz2, trialsMean4kz2, trialsMean8kz2, trialsMean16kz2, trialsMean32kz2)
-
-# --- plotting each freq type vs time --- 
-#onlyTrialsPlots = plot_trials_only(trialsTime2kz1, trialsTime4kz1, trialsTime8kz1, trialsTime16kz1, trialsTime32kz1, trialsTime2kz2, trialsTime4kz2, trialsTime8kz2, trialsTime16kz2, trialsTime32kz2, trialsMean2kz1, trialsMean4kz1, trialsMean8kz1, trialsMean16kz1, trialsMean32kz1, trialsMean2kz2, trialsMean4kz2, trialsMean8kz2, trialsMean16kz2, trialsMean32kz2)
+# --- Calculating mean values for each frequency type --- 
+  
+trialsMean2kz1, trialsMean4kz1, trialsMean8kz1, trialsMean16kz1, trialsMean32kz1, trialsMean2kz2, trialsMean4kz2, trialsMean8kz2, trialsMean16kz2, trialsMean32kz2 = calculate_pupil_size_trials(postVal22Type, postVal24Type, postVal28Type, postVal216Type, postVal232Type, postVal322Type, postVal324Type, postVal328Type, postVal3216Type, postVal3232Type, postVal22Typea, postVal24Typea, postVal28Typea, postVal216Typea, postVal232Typea, postVal322Typea, postVal324Typea, postVal328Typea, postVal3216Typea, postVal3232Typea, postVal22Typeb, postVal24Typeb, postVal28Typeb, postVal216Typeb, postVal232Typeb, postVal322Typeb, postVal324Typeb, postVal328Typeb, postVal3216Typeb, postVal3232Typeb, postVal22Typec, postVal24Typec, postVal28Typec, postVal216Typec, postVal232Typec, postVal322Typec, postVal324Typec, postVal328Typec, postVal3216Typec, postVal3232Typec, postVal22Typed, postVal24Typed, postVal28Typed, postVal216Typed, postVal232Typed, postVal322Typed, postVal324Typed, postVal328Typed, postVal3216Typed, postVal3232Typed, postVal22Typee, postVal24Typee, postVal28Typee, postVal216Typee, postVal232Typee, postVal322Typee, postVal324Typee, postVal328Typee, postVal3216Typee, postVal3232Typee, preVal22Type, preVal24Type, preVal28Type, preVal216Type, preVal232Type, preVal322Type, preVal324Type, preVal328Type, preVal3216Type, preVal3232Type, preVal22Typea, preVal24Typea, preVal28Typea, preVal216Typea, preVal232Typea, preVal322Typea, preVal324Typea, preVal328Typea, preVal3216Typea, preVal3232Typea, preVal22Typeb, preVal24Typeb, preVal28Typeb, preVal216Typeb, preVal232Typeb, preVal322Typeb, preVal324Typeb, preVal328Typeb, preVal3216Typeb, preVal3232Typeb, preVal22Typec, preVal24Typec, preVal28Typec, preVal216Typec, preVal232Typec, preVal322Typec, preVal324Typec, preVal328Typec, preVal3216Typec, preVal3232Typec, preVal22Typed, preVal24Typed, preVal28Typed, preVal216Typed, preVal232Typed, preVal322Typed, preVal324Typed, preVal328Typed, preVal3216Typed, preVal3232Typed, preVal22Typee, preVal24Typee, preVal28Typee, preVal216Typee, preVal232Typee, preVal322Typee, preVal324Typee, preVal328Typee, preVal3216Typee, preVal3232Typee, indexType22kz, indexType24kz, indexType28kz, indexType216kz, indexType232kz, indexType322kz, indexType324kz, indexType328kz, indexType3216kz, indexType3232kz, indexType22kza, indexType24kza, indexType28kza, indexType216kza, indexType232kza, indexType322kza, indexType324kza, indexType328kza, indexType3216kza, indexType3232kza, indexType22kzb, indexType24kzb, indexType28kzb, indexType216kzb, indexType232kzb, indexType322kzb, indexType324kzb, indexType328kzb, indexType3216kzb, indexType3232kzb, indexType22kzc, indexType24kzc, indexType28kzc, indexType216kzc, indexType232kzc, indexType322kzc, indexType324kzc, indexType328kzc, indexType3216kzc, indexType3232kzc, indexType22kzd, indexType24kzd, indexType28kzd, indexType216kzd, indexType232kzd, indexType322kzd, indexType324kzd, indexType328kzd, indexType3216kzd, indexType3232kzd, indexType22kze, indexType24kze, indexType28kze, indexType216kze, indexType232kze, indexType322kze, indexType324kze, indexType328kze, indexType3216kze, indexType3232kze, preSignal, postSignal)
+     
+# --- plotting each freq type vs time (second try) having organized pres and posts --- 
+onlyTrialPlotsShortTimeWindow = plot_trials_only(windowTimeVec, windowTimeVec, windowTimeVec, windowTimeVec, windowTimeVec, windowTimeVec, windowTimeVec, windowTimeVec, windowTimeVec, windowTimeVec, trialsMean2kz1, trialsMean4kz1, trialsMean8kz1, trialsMean16kz1, trialsMean32kz1, trialsMean2kz2, trialsMean4kz2, trialsMean8kz2, trialsMean16kz2, trialsMean32kz2)
 
 #--- plot with the three conditions aligned ---
 #OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pAreaDilatedMean1, pAreaDilatedMean2, pAreaDilatedMean3, pAreaDilatedMean4, pAreaDilatedMean5, pval, pval1, pval2, pval3, pval4, pval5)
@@ -2494,6 +2153,5 @@ onlyTrialsPlots = plot_trials(time2kz1, time4kz1, time8kz1, time16kz1, time32kz1
 
 #--- Pupil Dilation plots --- 
 #pupilDilationPlots = pupilDilation_time(pupilDilationTimeWindowVec, pAreaDilatedMean, pupilDilationTimeWindowVec1, pAreaDilatedMean1, pupilDilationTimeWindowVec2, pAreaDilatedMean2)
-
-# Creo que los jumpy plots se da porque tenemos muy pocos trials con cada uno de los tipos de frequencias, ya que incluso corrigiendo la forma de calcularse el promedio, se ven mejor pero aun jumpy, y claramente un plot con 
+ 
 
