@@ -77,10 +77,10 @@ for indRow, dbRow in celldb.iterrows():
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachVOT_FTmin, colorsEachVOT, labels = VOTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    #plt.ylabel('Trials')
+    plt.ylabel('% VOT')
     plt.title(f'VOT, FTmin (n = {np.sum(trialsEachVOT_FTmin)})')
 
-    # PSTH -- VOT (FTmax)
+    # PSTH -- VOT (FTmin)
     binWidth = 0.010
     timeRange = [-0.3, 0.45]
     timeVec = np.arange(timeRange[0], timeRange[-1], binWidth)
@@ -91,14 +91,14 @@ for indRow, dbRow in celldb.iterrows():
     ax2 = plt.subplot(gsMain[2, 0], sharex=ax1)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOT_FTmin, colorsEachVOT, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
-    plt.ylabel('Firing Rate (Sp/s)')
+    plt.ylabel('Firing Rate (spk/s)')
 
     # Raster -- VOT (FTmax)
     ax3 = plt.subplot(gsMain[1, 1])
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachVOT_FTmax, colorsEachVOT, labels = VOTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    #plt.ylabel('trials')
+    plt.ylabel('% VOT')
     plt.title(f'VOT, FTmax (n = {np.sum(trialsEachVOT_FTmax)})')
 
     # PSTH -- VOT (FTmax)
@@ -109,17 +109,17 @@ for indRow, dbRow in celldb.iterrows():
     lwPsth = 2
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeVec)
-    ax4 = plt.subplot(gsMain[2, 1], sharex=ax3)
+    ax4 = plt.subplot(gsMain[2, 1], sharex=ax3, sharey=ax2)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachVOT_FTmax, colorsEachVOT, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
-    plt.ylabel('Firing Rate (Sp/s)')
+    plt.ylabel('Firing Rate (spk/s)')
 
     # Raster -- FT (VOT = min)
     ax5 = plt.subplot(gsMain[1, 2])
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachFT_VOTmin, colorsEachFT, labels = VOTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    #plt.ylabel('Trials')
+    plt.ylabel('% FT')
     plt.title(f'FT, VOTmin (n = {np.sum(trialsEachFT_VOTmin)})')
 
     # PSTH -- FT (VOT = min)
@@ -130,10 +130,10 @@ for indRow, dbRow in celldb.iterrows():
     lwPsth = 2
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeVec)
-    ax6 = plt.subplot(gsMain[2, 2], sharex=ax5)
+    ax6 = plt.subplot(gsMain[2, 2], sharex=ax5, sharey=ax2)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFT_VOTmin, colorsEachFT, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
-    plt.ylabel('Firing Rate (Sp/s)')
+    plt.ylabel('Firing Rate (spk/s)')
 
 
     # Raster -- FT (VOT = max)
@@ -141,7 +141,7 @@ for indRow, dbRow in celldb.iterrows():
     pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachFT_VOTmax, colorsEachFT, labels = VOTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    #plt.ylabel('trials')
+    plt.ylabel('% FT')
     plt.title(f'FT, VOTmax (n = {np.sum(trialsEachFT_VOTmax)})')
 
     # PSTH -- FT (VOT = min)
@@ -152,10 +152,10 @@ for indRow, dbRow in celldb.iterrows():
     lwPsth = 2
     downsampleFactorPsth = 3
     spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, timeVec)
-    ax8 = plt.subplot(gsMain[2, 3], sharex=ax7)
+    ax8 = plt.subplot(gsMain[2, 3], sharex=ax7, sharey=ax2)
     pPSTH = extraplots.plot_psth(spikeCountMat/binWidth, smoothWinSizePsth, timeVec, trialsEachFT_VOTmax, colorsEachFT, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
     plt.xlabel('Time (s)')
-    plt.ylabel('Firing Rate (Sp/s)')
+    plt.ylabel('Firing Rate (spk/s)')
 
     #AM
     ephysData, bdata = oneCell.load('AM')
@@ -170,12 +170,13 @@ for indRow, dbRow in celldb.iterrows():
     timeRange = [-0.3, 0.75]
     soundParamsEachTrial = bdata['currentFreq']
     possibleParams = np.unique(soundParamsEachTrial)
+    AMlabels = list(np.rint(possibleParams))
     trialsEachCond = behavioranalysis.find_trials_each_type(soundParamsEachTrial, possibleParams)
     ax9 = plt.subplot(gsMain[0, 1])
-    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachCond)
+    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachCond, labels = AMlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    plt.ylabel('Trials')
+    plt.ylabel('AM Rate (Hz)')
     plt.title('AM')
 
     #pureTones
@@ -195,14 +196,15 @@ for indRow, dbRow in celldb.iterrows():
     timeRange = [-0.2, 0.3]
     soundFreqEachTrial = bdata['currentFreq']
     possibleFreq = np.unique(soundFreqEachTrial)
+    PTlabels = list(np.rint(possibleFreq))
     soundIntensityEachTrial = bdata['currentIntensity']
     possibleIntensities = np.unique(bdata['currentIntensity'])
     trialsEachFreq = behavioranalysis.find_trials_each_type(soundFreqEachTrial, possibleFreq)
     ax10 = plt.subplot(gsMain[0, 2])
-    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachFreq)
+    pRaster, hcond, zline =extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachFreq, labels = PTlabels)
     plt.setp(pRaster, ms=2)
     plt.xlabel('Time (s)')
-    plt.ylabel('Trials')
+    plt.ylabel('Frequency (Hz)')
     plt.title('Pure Tones')
 
     # Fit Gaussian tuning
@@ -303,10 +305,12 @@ for indRow, dbRow in celldb.iterrows():
 
     plt.gcf().set_size_inches([14, 12])
     print(oneCell)
-    #plt.show()
-    #input("press enter for next cell")
-    figPath = os.path.join(settings.FIGURES_DATA_PATH, 'cell_reports', f'{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_report.png')
-    plt.savefig(figPath, format='png')
+
+    plt.show()
+    input("press enter for next cell")
+
+    #figPath = os.path.join(settings.FIGURES_DATA_PATH, 'cell_reports', f'{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_report.png')
+    #plt.savefig(figPath, format='png')
 
     plt.close()
 plt.close()
