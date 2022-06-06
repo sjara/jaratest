@@ -23,12 +23,12 @@
 -  pupil_change_onsetStimulus.py: Code that shows how to obtain the onset values for a stimulus.
 -  comparison6_gonogoPlots.py: First code made to obtain mean pupil size for randomized frequencies change
 -  comparison6_gonogo_V2.py:  Second version of the code made to obtain mean pupil size for randomized frequencies change
--  comparisonPupilPlotsPure001.py: First code draft to create the comparison1Plot.py code but with mkv's videos outputs
--  comparisonPupilPlotsPure002.py: First code draft to create the comparison2Plots.py code but with mkv's videos outputs
--  comparisonPupilPlotsPure003.py: First code draft to create the comparison3Plots.py code but with mkv's videos outputs
--  mp4ComparisonPlotsMp4Pure001.py: First code draft to create the comparison1Plot.py code but with mp4's videos outputs
--  mp4ComparisonPlotsMp4Pure002.py: First code draft to create the comparison2Plots.py code but with mp4's videos outputs
--  mp4ComparisonPlotsMp4Pure003.py: First code draft to create the comparison3Plots.py code but with mp4's videos outputs
+-  comparisonPupilPlotsPure001.py: First code draft to create plots for the mouse pure001 but with mkv's videos outputs
+-  comparisonPupilPlotsPure002.py: First code draft to create plots for the mouse pure002 but with mkv's videos outputs
+-  comparisonPupilPlotsPure003.py: First code draft to create plots for the mouse pure003 but with mkv's videos outputs
+-  mp4ComparisonPlotsMp4Pure001.py: First code draft to create the mouse pure001 but with mp4's videos outputs
+-  mp4ComparisonPlotsMp4Pure002.py: First code draft to create the mouse pure002 but with mp4's videos outputs
+-  mp4ComparisonPlotsMp4Pure003.py: First code draft to create the mouse pure003 but with mp4's videos outputs
 -  originalComparisonPlots.py: First code made to plot three different videos (positive negative control, and an experimental session) using mkv's videos output. 
 -  originalComparisonPlots_Without_WeirdValues.py: Code made to evaluate the mean pupil's size behavior without NaN values contained in the pArea (pupil area) variable
 -  PDR_kHzPlot.py: First draft code trying to plot the mean pupil's size when two random frequencies were played
