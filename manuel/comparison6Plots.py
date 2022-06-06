@@ -293,28 +293,30 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      return(plt.show())
 
 
-filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211206_syncSound_37_config12_proc.npy', allow_pickle = True).item(),
+filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220331_mfq_183_mconfig1_proc.npy', allow_pickle = True).item(),
 	'config1':'2Sconfig3', 'sessionFile1':'57', 'condition':'2Sounds', 'sound':'ChordTrain', 'name1':'config12_1', 
-	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211206_syncSound_38_config12_proc.npy', allow_pickle = True).item(), 
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220331_mfq_184_mconfig1_proc.npy', allow_pickle = True).item(), 
 	'config2':'2Sconfig3', 'sessionFile2':'58', 'name2':'config12_2',
-	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211206_syncSound_39_config12_proc.npy', allow_pickle = True).item(), 
+	'loadFile3':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220331_mfq_185_mconfig1_proc.npy', allow_pickle = True).item(), 
 	'config3':'2Sconfig3', 'sessionFile3':'60', 'name3':'config12_3',
-	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_40_config14_proc.npy', allow_pickle = True).item(), 
+	'loadFile4':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220404_mfq_186_mconfig1_proc.npy', allow_pickle = True).item(), 
 	'config4':'2Sconfig4', 'sessionFile4':'56', 'name4':'config14_1', 
-	'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_41_config14_proc.npy', allow_pickle = True).item(), 
+	'loadFile5':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220404_mfq_187_mconfig1_proc.npy', allow_pickle = True).item(), 
 	'config5':'2Sconfig4', 'sessionFile4':'59', 'name5':'config14_2', 
-	'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20211207_syncSound_42_config14_proc.npy', allow_pickle = True).item(), 
+	'loadFile6':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220404_mfq_188_mconfig1_proc.npy', allow_pickle = True).item(), 
 	'config6':'2Sconfig4', 'sessionFile5':'61', 'name6':'config14_3'}
 	
 scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure004', 'savedName':'barControlsPure004Plot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
 
+#list(map(tuple, np.where(np.isnan(pAreaDilatedMean4)))) --> finds NaN's within an array
+#a = pAreaDilatedMean4[np.isfinite(pAreaDilatedMean4)] --> allows to eliminate NaN's
 
 proc = filesDict['loadFile1']
 
 
 #---obtain pupil data---
 pupil = proc['pupil'][0] # Dic.
-pArea = pupil['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+pArea = pupil['area'] # numpy.array. Contains calculation of the pupil area in each frame of the video.
 blink = proc['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink1 = proc['blink']   # List.
 blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for plotting.
@@ -384,7 +386,7 @@ proc1 = filesDict['loadFile2']
 
 #---obtain pupil data---
 pupil1 = proc1['pupil'][0] # Dic.
-pArea1 = pupil1['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+pArea1 = pupil1['area'] # numpy.array. Contains calculation of the pupil area in each frame of the video.
 blink1a = proc1['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink11 = proc1['blink']   # List.
 blink21 = np.array(blink1a).T # Creates transpose matrix of blink. Necessary for plotting.
@@ -450,7 +452,8 @@ proc2 = filesDict['loadFile3']
 
 #---obtain pupil data---
 pupil2 = proc2['pupil'][0] # Dic.
-pArea2 = pupil2['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+pArea2 = pupil2['area'] # numpy.array. Contains calculation of the pupil area in each frame of the video.
+
 blink2a = proc2['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink12 = proc2['blink']   # List.
 blink22 = np.array(blink2a).T # Creates transpose matrix of blink. Necessary for plotting.
@@ -525,7 +528,8 @@ print('Wilcoxon value config12_3', wstat2,',',  'P-value config12_3', pval2 )
 proc3 = filesDict['loadFile4']
 #---obtain pupil data---
 pupil3 = proc3['pupil'][0] # Dic.
-pArea3 = pupil3['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+pArea3 = pupil3['area'] # numpy.array. Contains calculation of the pupil area in each frame of the video.
+
 blink3 = proc3['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink13 = proc3['blink']   # List.
 blink23 = np.array(blink3).T # Creates transpose matrix of blink. Necessary for plotting.
@@ -593,7 +597,7 @@ proc4 = filesDict['loadFile5']
 
 #---obtain pupil data---
 pupil4 = proc4['pupil'][0] # Dic.
-pArea4 = pupil4['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+pArea4 = pupil4['area'] # numpy.array. Contains calculation of the pupil area in each frame of the video.
 blink4 = proc4['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink14 = proc4['blink']   # List.
 blink24 = np.array(blink4).T # Creates transpose matrix of blink. Necessary for plotting.
@@ -656,7 +660,7 @@ print('Wilcoxon value config12_5', wstat4,',',  'P-value config12_5', pval4)
 proc5 = filesDict['loadFile6']
 #---obtain pupil data---
 pupil5 = proc5['pupil'][0] # Dic.
-pArea5 = pupil5['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+pArea5 = pupil5['area'] # numpy.array. Contains calculation of the pupil area in each frame of the video.
 blink5 = proc5['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink15 = proc5['blink']   # List.
 blink25 = np.array(blink5).T # Creates transpose matrix of blink. Necessary for plotting.

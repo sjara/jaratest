@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
+from jaratoolbox.jaratoolbox import loadbehavior
 
 def onset_values(signalArray): 
 
@@ -71,7 +72,50 @@ def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown,
       preData = preProcessedPreValues.reshape(preValuesIndices.shape[0], dataArray.shape[1]) 
       postData = preProcessedPostValues.reshape(postValuesIndices.shape[0], dataArray.shape[1])  
       return(preData, postData)
+
+def freqs_and_meanParea(freqsArray, meanPareaVariable, freq1, freq2, freq3, freq4, freq5):      
+      '''
+      Creates arrays containing the pupil area for each tested frequency
+      Args:
+      freqsArray (np.array): array containing the tested frequencies
+      meanPareaVariable (np.array): array containing the average pupil size
+      freq1..5 (int): frequencies tested
       
+      returns:
+      arrValues1..5 (np.array): one array per frequency tested (freq1..5) that contains the pupil size for the given frequency
+      '''
+      
+      indicesFreq1 = np.argwhere(freq1 == freqsArray)  
+      indicesFreq2 = np.argwhere(freq2 == freqsArray)
+      indicesFreq3 = np.argwhere(freq3 == freqsArray)  
+      indicesFreq4 = np.argwhere(freq4 == freqsArray)  
+      indicesFreq5 = np.argwhere(freq5 == freqsArray)  
+      newIndexArr1 = np.take(meanPareaVariable, indicesFreq1)  
+      newIndexArr2 = np.take(meanPareaVariable, indicesFreq2)  
+      newIndexArr3 = np.take(meanPareaVariable, indicesFreq3)  
+      newIndexArr4 = np.take(meanPareaVariable, indicesFreq4)  
+      newIndexArr5 = np.take(meanPareaVariable, indicesFreq5)
+      arrValues1 = newIndexArr1.flatten()
+      arrValues2 = newIndexArr2.flatten()   
+      arrValues3 = newIndexArr3.flatten() 
+      arrValues4 = newIndexArr4.flatten()   
+      arrValues5 = newIndexArr5.flatten()
+      return(arrValues1, arrValues2, arrValues3, arrValues4, arrValues5)
+
+
+def normalize_data(pupilArea, valuesToNormalize): 
+     minVal = np.amin(pupilArea) 
+     maxVal = np.amax(pupilArea) 
+     rangeValues = maxVal - minVal 
+     listData = [] 
+     for i in valuesToNormalize: 
+         substractMin = i - minVal 
+         newData = substractMin/rangeValues
+         listData.append(newData) 
+         normalizedData = np.asarray(listData) 
+     return(normalizedData)
+
+     
 def comparison_plot(time, valuesData1, pVal): 
      ''' 
      Creates 1 figure with 3 plots 
@@ -157,10 +201,42 @@ def pupilDilation_time(timeData1, plotData1, pvalue):
      plt.show() 
      return(plt.show())
 
+def PDR_kHz_plot(freqsArray, arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5):
+     labelsSize = 16
+     fig, freqplt = plt.subplots(1, 1)
+     fig.set_size_inches(9.5, 7.5, forward = True)
+     label1 = filesDict['name']
+     
+     meanPoint1 = arrFreq1.mean(axis = 0)
+     meanPoint2 = arrFreq2.mean(axis = 0)     
+     meanPoint3 = arrFreq3.mean(axis = 0)     
+     meanPoint4 = arrFreq4.mean(axis = 0)     
+     meanPoint5 = arrFreq5.mean(axis = 0)     
+     valuesPlot = [meanPoint1, meanPoint2, meanPoint3, meanPoint4, meanPoint5]
+     
+     freqplt.plot(freqsArray, valuesPlot, marker = 'o')
+     freqplt.set_title('Pupil size for 5 different frequencies: pure011_20220331', fontsize = labelsSize)
+     freqplt.set_ylabel('Mean pupil Area', fontsize = labelsSize)
+     freqplt.set_xlabel('Frequencies (kHz)', fontsize = labelsSize)
+     plt.grid(b = True)
+     plt.xticks(fontsize = labelsSize)
+     plt.yticks(fontsize = labelsSize)
+     plt.show() 
+     return(plt.show())
+
 filesDict = {'file1':'1pure005_20220119_2Sounds_67_2Sconfig2_proc.npy', 
-	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220323_2Sounds_168_2Sconfig13_proc.npy', allow_pickle = True).item(), 
-	'config1':'2Sconfig1', 'sessionFile1':'46', 
-	'condition':'2Sounds', 'sound':'ChordTrain', 'name':'pure003'}
+	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_200_xconfig1_proc.npy', allow_pickle = True).item(), 
+	'config1':'2Sconfig1', 'sessionFile':'20220419_xtremes_200_xconfig1', 
+	'condition':'detectiongonogo', 'sound':'ChordTrain', 'name':'pure011'}
+
+subject = filesDict['name']
+paradigm = filesDict['condition']
+session = filesDict['sessionFile']
+frequenciesTested = [2, 4, 8, 16, 32]
+
+behavFile = loadbehavior.path_to_behavior_data(subject, paradigm, session)
+bdata = loadbehavior.BehaviorData(behavFile)
+freqs = bdata['currentFreq']
 
 proc = filesDict['loadFile1']
 
@@ -191,7 +267,7 @@ timeVec = (frameVec * 1)/framerate # Time Vector to calculate the length of the 
 #--- obtaining onset sync signal values ---
 syncOnsetValues = onset_values(indicesValueSyncSignal) #--> if the terminal complains around here, check the blink2Bool variable.
 timeOfBlink2Event = timeVec[syncOnsetValues] # Provides the time values in which the sync signal is on.
-timeOfBlink2Event = timeOfBlink2Event[1:-1]
+timeOfBlink2Event = timeOfBlink2Event[0:-1]
 
 #--- Align trials to the event ---
 timeRange = np.array([-0.5, 2.0]) # Range of time window
@@ -214,11 +290,23 @@ pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 wstat, pval = stats.wilcoxon(averagePreSignal, averagePostSignal)
 print('Wilcoxon value config14_1', wstat,',',  'P-value config14_1', pval)
 
+#--- Finding pupil area corresponding to each tested frequency ---
+freqValues1, freqValues2, freqValues3, freqValues4, freqValues5 = freqs_and_meanParea(freqs, averagePostSignal, 2000, 4000, 8000, 16000, 32000) 
+
+minVal = np.amin(pArea)
+maxVal = np.amax(pArea)
+rangeValues = maxVal - minVal
+substractMin = pArea[0] - minVal
+normalizedData = substractMin/rangeValues
+
+
+
+#--- Plotting the results ---
 OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean, pval)
 
-#scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal,  pval)
+scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal,  pval)
 
-
+pAreaFreqPlot = PDR_kHz_plot(frequenciesTested, freqValues1, freqValues2, freqValues3, freqValues4, freqValues5)
 
 
 

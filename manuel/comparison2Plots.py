@@ -100,7 +100,7 @@ def comparison_plot(time, valuesData1, valuesData2, pVal, pVal1):
 
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title('Pupil behavior in different conditions: pure004 and pure005', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior for change between 6kHz-16kHz: pure010 20220325', fontsize = labelsSize)
      plt.grid(b = True)
      #plt.ylim([550, 650])
      plt.xticks(fontsize = labelsSize)
@@ -179,7 +179,36 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      plt.show() 
      return(plt.show()) 
 
-
+def bar_plotting(meanSignalsValues1, meanSignalsValues2, xlabel1, xlabel2, stdData1, stdData2):
+     ''' 
+     Creates bar plots for two mean values
+     Args: 
+     meanSignalsValues1: nump.array type, first data set to plot  
+     meanSignalsValues2: nump.array type, second data set to plot 
+     xlabel1: str type, first condition to compare 
+     xlabel: str type, second condition to compare
+     stdData1: first dataset from which the standard deviation will be calculated from
+     stdaData1: second dataset from which the standard deviation will be calculated from
+     returns: 
+     plt.show(): bar plot comparing the average pupil area before and after signal onset 
+     ''' 
+     
+     meanPreSignal = meanSignalsValues1.mean(axis = 0) 
+     meanPostSignal = meanSignalsValues2.mean(axis = 0)
+     preSignalStd = np.std(stdData1)
+     postSignalStd = np.std(stdData2) 
+     xlabels = [xlabel1, xlabel2]
+     barMeanValues = [meanPreSignal, meanPostSignal]
+     stdErrors = [preSignalStd, postSignalStd] 
+     fig, barPlots = plt.subplots()
+     barPlots.bar(xlabels, barMeanValues, yerr = stdErrors)
+     barPlots.errorbar(xlabels, barMeanValues, yerr = stdErrors, fmt = 'none', capsize=5,  alpha=0.5, ecolor = 'black')
+     barPlots.set_xlabel('Conditions')
+     barPlots.set(title = 'Pupil behavior for 13kHz and 17kHz: pure011', ylabel = 'Mean Pupil Area')
+     #plt.ylim(40, 800) 
+     plt.show() 
+     return(plt.show())
+ 
 def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, plotData3): 
      fig, signalsPlots = plt.subplots(1,3, constrained_layout = True, sharey = True, sharex = True) 
      signalsPlots[0].plot(timeData1, plotData1) 
@@ -194,10 +223,10 @@ def  pupilDilation_time(timeData1, plotData1, timeData2, plotData2, timeData3, p
      plt.show() 
      return(plt.show())
 
-filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure004_20220125_temerity_proc.npy', allow_pickle = True).item(), 
+filesDict = {'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220404_mfq_186_mconfig1_proc.npy', allow_pickle = True).item(), 
 	'config1':'2Sconfig1', 'sessionFile1':'46', 
-	'condition':'2Sounds', 'sound':'ChordTrain', 'name1':'pure004', 
-	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure005_20220125_temerity_proc.npy', allow_pickle = True).item(), 'config2':'2Sconfig1', 'name2':'pure005'}
+	'condition':'2Sounds', 'sound':'ChordTrain', 'name1':'pure010', 
+	'loadFile2':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220404_mfq_187_mconfig1_proc.npy', allow_pickle = True).item(), 'config2':'2Sconfig1', 'name2':'pure010'}
 
 scatBarDict = {'title':'Pupil behavior before and after second frequency onset: pure005 and pure006_20220125', 'savedName':'pure0043ScatbarPlot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
 
@@ -205,7 +234,7 @@ proc = filesDict['loadFile1']
 
 #---obtain pupil data---
 pupil = proc['pupil'][0] # Dic.
-pArea = pupil['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+pArea = pupil['area'] # numpy.array. Contains calculation of the pupil area in each frame of the video.
 blink = proc['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink1 = proc['blink']   # List.
 blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for plotting.
@@ -272,7 +301,7 @@ proc1 = filesDict['loadFile2']
 
 #---obtain pupil data---
 pupil1 = proc1['pupil'][0] # Dic.
-pArea1 = pupil1['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
+pArea1 = pupil1['area'] # numpy.array. Contains calculation of the pupil area in each frame of the video.
 blink1a = proc1['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
 blink11 = proc1['blink']   # List.
 blink21 = np.array(blink1a).T # Creates transpose matrix of blink. Necessary for plotting.
@@ -313,6 +342,8 @@ timeRangeForPupilDilation1 = np.array([-15, 15])
 pupilDilationTimeWindowVec1, pAreaDilated1 = eventlocked_signal(timeVec1, pArea1, timeOfBlink2Event1, timeRangeForPupilDilation1)
 pAreaDilatedMean1 = pAreaDilated1.mean(axis = 1)
 
+
+
 #--- Wilcoxon test to obtain statistics ---
 wstat1, pval1 = stats.wilcoxon(averagePreSignal1, averagePostSignal1)
 print('Wilcoxon value config14_2', wstat1,',',  'P-value config14_2', pval1 )
@@ -327,4 +358,6 @@ print('Wilcoxon value config14_2', wstat1,',',  'P-value config14_2', pval1 )
 
 OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean,  pAreaDilatedMean1, pval, pval1)
 
-scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal, postSignal, pval, pval1)
+#scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal, averagePreSignal1, averagePostSignal1, preSignal, postSignal, pval, pval1)
+
+#barPlotting1 = bar_plotting(averagePostSignal, averagePostSignal1, '13kHz', '17kHz', postSignal, postSignal1)
