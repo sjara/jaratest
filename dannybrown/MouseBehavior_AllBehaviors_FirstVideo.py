@@ -29,11 +29,12 @@ def moving_average(data, width):
 
 ### LOADING THE DATA
 # Load file with pupil, light, groom, & whisk data
-proc = np.load('/data/videos/feat007/feat007_am_tuning_curve_20220321_02_proc.npy', allow_pickle=True).item()
+proc = np.load('/data/videos/feat007/test/feat007_am_tuning_curve_20220321_02_proc_new.npy', allow_pickle=True).item()
 pupil = proc['pupil'][0]  # A dict inside a 1-item list, so you need to get the first element
 pArea = pupil['area']
 light = proc['blink'][0]
 groom = proc['blink'][1]
+blink = proc['blink'][2]
 whisk = proc['running'][0] # outputs the dx, dy offsets between frames by registering frame N to frame
 # N-1. If the movement is larger than half the frame size, outputs NaN.
 whisking_sum = np.sqrt(np.square(whisk[:,0]) + np.square(whisk[:,1])) # Convert to movement vector
@@ -168,6 +169,10 @@ plt.ylabel('Light')
 plt.title('Synchronization Light',fontweight="bold")
 
 
+## Blinking (May 10th)
+plt.figure()
+plt.plot(blink)
+input = plt.ginput(1)[0][1]
 
 
 # To apply ROIs to other files:
