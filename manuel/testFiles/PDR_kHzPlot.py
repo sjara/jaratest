@@ -13,7 +13,7 @@ def onset_values(signalArray):
      onsetStartValues (np.array)  = an array of the indices containing the start onset values of the sync signal.
     ''' 
      firstIndexValue = 0 
-     lastIndexValue = len(signalArray)-1 
+     lastIndexValue = len(signalArray) - 1
      stepNumber = 2
      startIndicesValues = range(firstIndexValue, lastIndexValue, stepNumber)
      startIndicesVec = np.array(startIndicesValues)
@@ -64,7 +64,7 @@ def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown,
       postData (np.array): array with the pupil data after stimulus    
       '''   
       preBool = np.logical_and(preLimDown <= timeArray, timeArray < preLimUp) 
-      postBool = np.logical_and(postLimDown <= timeArray, timeArray < postLimUp) 
+      postBool = np.logical_and(postLimDown <= timeArray, timeArray <= postLimUp) 
       preValuesIndices = np.argwhere(preBool == True)  
       postValuesIndices = np.argwhere(postBool == True)  
       preProcessedPreValues = dataArray[preValuesIndices]  
@@ -100,22 +100,9 @@ def freqs_and_meanParea(freqsArray, meanPareaVariable, freq1, freq2, freq3, freq
       arrValues3 = newIndexArr3.flatten() 
       arrValues4 = newIndexArr4.flatten()   
       arrValues5 = newIndexArr5.flatten()
+      
       return(arrValues1, arrValues2, arrValues3, arrValues4, arrValues5)
-
-
-def normalize_data(pupilArea, valuesToNormalize): 
-     minVal = np.amin(pupilArea) 
-     maxVal = np.amax(pupilArea) 
-     rangeValues = maxVal - minVal 
-     listData = [] 
-     for i in valuesToNormalize: 
-         substractMin = i - minVal 
-         newData = substractMin/rangeValues
-         listData.append(newData) 
-         normalizedData = np.asarray(listData) 
-     return(normalizedData)
-
-     
+      
 def comparison_plot(time, valuesData1, pVal): 
      ''' 
      Creates 1 figure with 3 plots 
@@ -148,6 +135,8 @@ def comparison_plot(time, valuesData1, pVal):
      #plt.savefig('comparisonPure004Plot', format = 'pdf', dpi = 50)
      plt.show() 
      return(plt.show())
+
+
      
 def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, firstPlotStdData1, firstPlotStdData2, pVal):
      '''
@@ -203,7 +192,7 @@ def pupilDilation_time(timeData1, plotData1, pvalue):
 
 def PDR_kHz_plot(freqsArray, arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5):
      labelsSize = 16
-     fig, freqplt = plt.subplots(1, 1)
+     fig, freqplt = plt.subplots(1,1)
      fig.set_size_inches(9.5, 7.5, forward = True)
      label1 = filesDict['name']
      
@@ -224,10 +213,12 @@ def PDR_kHz_plot(freqsArray, arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5):
      plt.show() 
      return(plt.show())
 
-filesDict = {'file1':'1pure005_20220119_2Sounds_67_2Sconfig2_proc.npy', 
-	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_200_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config1':'2Sconfig1', 'sessionFile':'20220419_xtremes_200_xconfig1', 
-	'condition':'detectiongonogo', 'sound':'ChordTrain', 'name':'pure011'}
+
+filesDict = { 'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure010_20220331_mfq_184_mconfig1_proc.npy', allow_pickle = True).item(), 
+	'config1':'2Sconfig1', 'sessionFile':'20220331_mfq_183_mconfig1', 
+	'condition':'am_tuning_curve', 'sound':'ChordTrain', 'name':'pure010'}
+
+scatBarDict = {'title':'Pupil behavior before and after sound stimulus: pure004', 'savedName':'barControlsPure004Plot', 'yLabel':'Mean Pupil Area', 'xLabelTitle':'Conditions'}
 
 subject = filesDict['name']
 paradigm = filesDict['condition']
@@ -251,7 +242,7 @@ blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for pl
 #---obtain values where sync signal is on---
 minBlink = np.amin(blink)
 maxBlink = np.amax(blink) - minBlink
-blink2Bool = np.logical_and(blink2 >= minBlink, blink2 < maxBlink) # Boolean values from the blink2 variable where True values will be within the established range.
+blink2Bool = np.logical_and(blink2 >= minBlink, blink2 < maxBlink) # #40050 37952 Boolean values from the blink2 variable where True values will be within the established range.
 blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
 indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
 
@@ -267,7 +258,9 @@ timeVec = (frameVec * 1)/framerate # Time Vector to calculate the length of the 
 #--- obtaining onset sync signal values ---
 syncOnsetValues = onset_values(indicesValueSyncSignal) #--> if the terminal complains around here, check the blink2Bool variable.
 timeOfBlink2Event = timeVec[syncOnsetValues] # Provides the time values in which the sync signal is on.
-timeOfBlink2Event = timeOfBlink2Event[0:-1]
+
+timeOfBlink2Event = timeOfBlink2Event[0:-1] #it was before timeOfBlink2Event = timeOfBlink2Event[1:-1]
+
 
 #--- Align trials to the event ---
 timeRange = np.array([-0.5, 2.0]) # Range of time window
@@ -289,27 +282,13 @@ pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 #--- Wilcoxon test to obtain statistics ---
 wstat, pval = stats.wilcoxon(averagePreSignal, averagePostSignal)
 print('Wilcoxon value config14_1', wstat,',',  'P-value config14_1', pval)
-
+                                                                    
 #--- Finding pupil area corresponding to each tested frequency ---
-freqValues1, freqValues2, freqValues3, freqValues4, freqValues5 = freqs_and_meanParea(freqs, averagePostSignal, 2000, 4000, 8000, 16000, 32000) 
-
-minVal = np.amin(pArea)
-maxVal = np.amax(pArea)
-rangeValues = maxVal - minVal
-substractMin = pArea[0] - minVal
-normalizedData = substractMin/rangeValues
-
-
-
-#--- Plotting the results ---
+freqValues1, freqValues2, freqValues3, freqValues4, freqValues5 = freqs_and_meanParea(freqs, averagePostSignal, 2000, 4000, 8000, 16000, 32000)   
+      
+#--- Plotting results ---
 OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean, pval)
 
-scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal,  pval)
+#scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal,  pval)
 
 pAreaFreqPlot = PDR_kHz_plot(frequenciesTested, freqValues1, freqValues2, freqValues3, freqValues4, freqValues5)
-
-
-
-
-
-

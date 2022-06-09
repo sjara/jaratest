@@ -35,12 +35,13 @@ for nSub in range(len(subject)):
     taskMode = bdata.labels['taskMode'][bdata['taskMode'][-1]]
     numLicksL = bdata['nLicksLeft'][-1]
     numLicksR = bdata['nLicksRight'][-1]
+    print()
     print(subject[nSub])
     numTrials = len(bdata['taskMode'])
     print(taskMode)
     print('# of Trials: {}'.format(numTrials))
-    print('# Licks L: {}'.format(numLicksL))
-    print('# Licks R: {}'.format(numLicksR))
+    #print('# Licks L: {}'.format(numLicksL))
+    #print('# Licks R: {}'.format(numLicksR))
 
     if bdata['taskMode'][-1] == bdata.labels['taskMode']['discriminate_stim']:
         leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
@@ -48,48 +49,25 @@ for nSub in range(len(subject)):
         leftChoice = bdata['choice'] == bdata.labels['choice']['left']
         rightChoice = bdata['choice'] == bdata.labels['choice']['right']
         noChoice = bdata['choice'] == bdata.labels['choice']['none']
+        valid = bdata['choice'] != bdata.labels['choice']['none']
         leftCorrect = leftTrials & leftChoice
         leftError = leftTrials & rightChoice
         leftInvalid = leftTrials & noChoice
         rightCorrect = rightTrials & rightChoice
         rightError = rightTrials & leftChoice
         rightInvalid = rightTrials & noChoice
-        rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials)*100,2)
-        leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials)*100,2)
+        rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials & valid)*100,2)
+        leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials & valid)*100,2)
         whichFeature = bdata.labels['relevantFeature'][bdata['relevantFeature'][-1]]
-
+        print('# Responded Trials: {}'.format(sum(valid)))
         print('% Right Correct: {}'.format(rightPercentCorrect))
         print('% Left Correct: {}'.format(leftPercentCorrect))
         print('# Right Errors: {}'.format(sum(rightError)))
         print('# Left Errors: {}'.format(sum(leftError)))
         print('# of noChoice: {}'.format(np.sum(noChoice)))
-    ### Deal with psychometric###
-    if any(bdata['psycurveMode']):
-        if bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['spectral']:
-            targetFrequency = bdata['targetFTpercent']
-        elif bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['temporal']:
-            targetFrequency = bdata['targetVOTpercent']
-
-        valid=bdata['valid']& (bdata['choice']!=bdata.labels['choice']['none'])
-        possibleFreq = np.unique(targetFrequency)
-        nFreq = len(possibleFreq)
-        trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
-        (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
-        fontsize = 12
-        if len(subject) > 1:
-            numSubPlots = int(len(subject)/3)
-        else:
-            numSubPlots = 1
-        subPlotInd = nSub + 1
-        fig1 = plt.subplot(3,numSubPlots,subPlotInd)
-        plt.title('{0} [{1}]'.format(subject[nSub],session))
-        (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue, ciHitsEachValue,xTickPeriod=1, xscale='linear')
-        plt.xlabel('{0} level (a.u.)'.format(whichFeature) ,fontsize=fontsize)
-        plt.ylabel('Rightward trials (%)',fontsize=fontsize)
-        extraplots.set_ticks_fontsize(plt.gca(),fontsize)
-        plt.show()
-
-
+    else:
+        print('# Licks L: {}'.format(numLicksL))
+        print('# Licks R: {}'.format(numLicksR))
 
 
 
@@ -116,20 +94,40 @@ for nSub in range(len(subject)):
                 print('move to next stage')
             else:
                 print('stay on this stage')
-        elif bdata['rewardSideMode'][-1] == bdata.labels['rewardSideMode']['random']: #Stage4
-            print('you are on stage4! Bother Jenny if there is not a stage5 yet')
-
-        '''
-        elif bdata['psycurveMode'][-1] != bdata.labels['psycurveMode']['off']:
-            print('you are on psycurve mode, woohoo!')
-            if bdata['psycurveMode'][1] == bdata.labels['psycurveMode']['uniform']:
-                print('psycurveMode = uniform')
-            elif bdata['psycurveMode'][1] == bdata.labels['psycurveMode']['extreme80pc']:
-                print('psycurveMode = extremes80pct')
-        else:
-            if rightPercentCorrect < 20 or leftPercentCorrect < 20:
-                print('move to bias mode')
-            elif rightPercentCorrect >= 70 and leftPercentCorrect >= 70 and numTrials >= 300:
-                print('move to psycuve mode')
+        elif bdata['rewardSideMode'][-1] == bdata.labels['rewardSideMode']['random']: #Stage4 -6
+            if bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['off']: #Stage4
+                if leftPercentCorrect >= 70 and sum(leftTrials) >=100 and rightPercentCorrect >= 70 and sum(rightTrials) >= 100:
+                    print('move to stage5!')
+                else:
+                    print('stay on stage 4')
             else:
-                print('stay on this stage')'''
+                ### calculate psychometric###
+                if any(bdata['psycurveMode']):
+                    if bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['spectral']:
+                        targetFrequency = bdata['targetFTpercent']
+                    elif bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['temporal']:
+                        targetFrequency = bdata['targetVOTpercent']
+
+                    possibleFreq = np.unique(targetFrequency)
+                    nFreq = len(possibleFreq)
+                    trialsEachFreq = behavioranalysis.find_trials_each_type(targetFrequency,possibleFreq)
+                    (possibleValues,fractionHitsEachValue,ciHitsEachValue,nTrialsEachValue,nHitsEachValue) = behavioranalysis.calculate_psychometric(rightChoice,targetFrequency,valid)
+                    fontsize = 12
+                    if len(subject) > 1:
+                        numSubPlots = 4
+                    else:
+                        numSubPlots = 1
+                    subPlotInd = nSub + 1
+                    fig1 = plt.subplot(3,numSubPlots,subPlotInd)
+                    plt.title('{0} [{1}]'.format(subject[nSub],session))
+                    (pline, pcaps, pbars, pdots) = extraplots.plot_psychometric(1e-3*possibleValues,fractionHitsEachValue, ciHitsEachValue,xTickPeriod=1, xscale='linear')
+                    plt.xlabel('{0} level (a.u.)'.format(whichFeature) ,fontsize=fontsize)
+                    plt.ylabel('Rightward trials (%)',fontsize=fontsize)
+                    extraplots.set_ticks_fontsize(plt.gca(),fontsize)
+                    plt.show()
+
+
+                if bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['extreme80pc']:
+                    print('you are on psycurveMode, extreme80pc')
+                elif bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['uniform']:
+                    print('you are on psycurveMode, uniform')

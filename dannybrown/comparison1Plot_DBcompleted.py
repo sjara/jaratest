@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
-from jaratoolbox.jaratoolbox import loadbehavior
+from jaratoolbox import loadbehavior
+import os
+import facemapanalysis as fmap
 
 def onset_values(signalArray): 
 
@@ -33,27 +35,29 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
         lockedSignal (np.array): extracted windows of signal aligned to event. Size (nSamples,nEvents)
     '''
     samplingRate = 1/(timeVec[1]-timeVec[0])
-    windowSampleRange = samplingRate*np.array(windowTimeRange) 
-    windowSampleVec = np.arange(*windowSampleRange, dtype=int)
-    windowTimeVec = windowSampleVec/samplingRate
-    nSamples = len(windowTimeVec)
-    nTrials = len(eventOnsetTimes)
+    windowSampleRange = samplingRate*np.array(windowTimeRange)  # units: frames
+    windowSampleVec = np.arange(*windowSampleRange, dtype=int) # units: frames
+    windowTimeVec = windowSampleVec/samplingRate # Units: time
+    nSamples = len(windowTimeVec) # time samples / trial
+    nTrials = len(eventOnsetTimes) # number of times the sync light went off
     lockedSignal = np.empty((nSamples,nTrials))
+    discards = []
     for inde,eventTime in enumerate(eventOnsetTimes):
-       eventSample = np.searchsorted(timeVec, eventTime)
-       #print('eventS:',eventSample)
-       thiswin = windowSampleVec + eventSample
-       #print('thiswin:',thiswin)
-       #print(thiswin.shape, eventSample.shape)
-       lockedSignal[:,inde] = signal[thiswin]
-    return (windowTimeVec, lockedSignal)
+       eventSample = np.searchsorted(timeVec, eventTime) # eventSample = index at which the synch turns on
+       thiswin = windowSampleVec + eventSample # indexes of window
+       if np.logical_and(np.min(thiswin) > 0, np.max(thiswin) < len(signal)): # DB ADDED
+           lockedSignal[:,inde] = signal[thiswin]                           # DB ADDED
+       else:                                                                # DB ADDED
+           discards.append(inde)                                            # DB ADDED
+    lockedSignal_trim = np.delete(lockedSignal,discards,1)                  # DB ADDED
+    return (windowTimeVec, lockedSignal_trim)
     
 def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown, postLimUp): 
   
       '''  
       Obtain pupil data before and after stimulus  
       Args:  
-      timeArray (np.array): array of the time window to evaluate pupil area obtained from even  t_locked  
+      timeArray (np.array): array of the time window to evaluate pupil area obtained from event_locked  
       dataArray (np.array): array of the pupil data obtained from event_locked function  
       preLimDown (int or float): first number of the time interval to evaluate before stimulus onset  
       preLimUp (int or float): second number of the time interval to evaluate before stimulus onset
@@ -131,14 +135,13 @@ def comparison_plot(time, valuesData1, pVal):
      fig, subplt = plt.subplots(1,1)
      fig.set_size_inches(9.5, 7.5, forward = True)
      sp = np.round(pVal, decimals=17)
-     label1 = filesDict['name'],'pval:',sp
+     label1 = filename,'pval:',sp
      
-
      subplt.plot(time, valuesData1, color = 'g', label = label1, linewidth = 4)
 
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title('Pupil behavior in negative control: pure003_20210928', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior: ' + filename, fontsize = labelsSize)
      plt.grid(b = True)
      #plt.ylim([550, 650])
      plt.xticks(fontsize = labelsSize)
@@ -171,20 +174,19 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      shortPval1 = np.round(pVal, decimals=3)
      pValue1 = 'P-value:', shortPval1
      dataPlot1 = [firstPlotMeanValues1, firstPlotMeanValues2] 
-
-     
+    
      fig, barPlots = plt.subplots(1,1, constrained_layout = True, sharex = True, sharey = True)
      fig.set_size_inches(9.5, 7.5) 
      barPlots.bar(xlabels, barMeanValues1, yerr = stdErrors1, color = 'g', label = pValue1) 
      barPlots.errorbar(xlabels, barMeanValues1, yerr = stdErrors1, fmt='none', capsize=5,  alpha=0.5, ecolor = 'black') 
-     barPlots.set_title(filesDict['name'], fontsize = barLabelsFontSize)
+     barPlots.set_title(filename, fontsize = barLabelsFontSize)
      barPlots.set_ylabel('Pupil area', fontsize = barLabelsFontSize)
      barPlots.tick_params(axis='x', labelsize=barLabelsFontSize)
      barPlots.plot(xlabels, dataPlot1, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots.legend(prop ={"size":10})
      
      #plt.ylim(250, 800)
-     plt.suptitle('pure004 pupil behavior across trials', fontsize = barLabelsFontSize)
+     plt.suptitle('pupil behavior across trials', fontsize = barLabelsFontSize)
      #plt.xlabel("common X", loc = 'center')
      #plt.savefig(scatBarDict['savedName'], format = 'pdf', dpi =50)
      plt.show() 
@@ -205,7 +207,7 @@ def PDR_kHz_plot(freqsArray, arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5):
      labelsSize = 16
      fig, freqplt = plt.subplots(1, 1)
      fig.set_size_inches(9.5, 7.5, forward = True)
-     label1 = filesDict['name']
+     label1 = filename
      
      meanPoint1 = arrFreq1.mean(axis = 0)
      meanPoint2 = arrFreq2.mean(axis = 0)     
@@ -224,54 +226,27 @@ def PDR_kHz_plot(freqsArray, arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5):
      plt.show() 
      return(plt.show())
 
-filesDict = {'file1':'1pure005_20220119_2Sounds_67_2Sconfig2_proc.npy', 
-	'loadFile1':np.load('./project_videos/mp4Files/mp4Outputs/pure011_20220419_xtremes_200_xconfig1_proc.npy', allow_pickle = True).item(), 
-	'config1':'2Sconfig1', 'sessionFile':'20220419_xtremes_200_xconfig1', 
-	'condition':'detectiongonogo', 'sound':'ChordTrain', 'name':'pure011'}
+#--- loading data ---
+fileloc = '/home/jarauser/Desktop/manuels_videos/'
+filename = 'pure001_20210928_syncVisibleNoSound_01_proc.npy'
+proc = fmap.load_data(os.path.join(fileloc, filename), runchecks=False)
 
-subject = filesDict['name']
-paradigm = filesDict['condition']
-session = filesDict['sessionFile']
-frequenciesTested = [2, 4, 8, 16, 32]
-
-behavFile = loadbehavior.path_to_behavior_data(subject, paradigm, session)
-bdata = loadbehavior.BehaviorData(behavFile)
-freqs = bdata['currentFreq']
-
-proc = filesDict['loadFile1']
-
-#---obtain pupil data---
-pupil = proc['pupil'][0] # Dic.
-pArea = pupil['area']    # numpy.array. Contains calculation of the pupil area in each frame of the video.
-blink = proc['blink'][0] # numpy.array. Contains calculation of the sync signal in each frame of the video.
-blink1 = proc['blink']   # List.
-blink2 = np.array(blink).T # Creates transpose matrix of blink. Necessary for plotting.
-
-
-#---obtain values where sync signal is on---
-minBlink = np.amin(blink)
-maxBlink = np.amax(blink) - minBlink
-blink2Bool = np.logical_and(blink2 >= minBlink, blink2 < maxBlink) # Boolean values from the blink2 variable where True values will be within the established range.
-blink2RangeValues = np.diff(blink2Bool) # Determines the start and ending values (as the boolean value True) where the sync signal is on. 
-indicesValueSyncSignal = np.flatnonzero(blink2RangeValues) # Provides all the indices of numbers assigned as 'True' from the blink2_binary variable.
-
+#--- obtain pupil data ---
+pArea = fmap.extract_pupil(proc)
 
 #---calculate number of frames, frame rate, and time vector---
-nframes = len(pArea) # Contains length of pArea variable (equivalent to the blink variable).
+nframes = len(pArea) # Number of frames.
 frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
-#newFrame = frameVec[blink2Bool]
 framerate = 30 # frame rate of video
-timeVec = (frameVec * 1)/framerate # Time Vector to calculate the length of the video.
+timeVec = frameVec / framerate # Time Vector to calculate the length of the video.
 
-
-#--- obtaining onset sync signal values ---
-syncOnsetValues = onset_values(indicesValueSyncSignal) #--> if the terminal complains around here, check the blink2Bool variable.
-timeOfBlink2Event = timeVec[syncOnsetValues] # Provides the time values in which the sync signal is on.
-timeOfBlink2Event = timeOfBlink2Event[0:-1]
+#--- obtain values where sync signal turns on ---
+_, syncOnsetValues, _, _ = fmap.extract_sync(proc)
+timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which the sync signal turns on.
 
 #--- Align trials to the event ---
 timeRange = np.array([-0.5, 2.0]) # Range of time window
-windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRange)
+windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfSyncOnset, timeRange)
 
 #--- Obtain pupil pre and post stimulus values, and average size ---
 preSignal, postSignal = find_prepost_values(windowTimeVec, windowed_signal, -0.5, 0, 1.4, 2.0)
@@ -282,33 +257,24 @@ xlabels = ['Pre signal', 'Post signal']
 
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation = np.array([-15, 15])
-pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfBlink2Event, timeRangeForPupilDilation)
+timeRangeForPupilDilation = np.array([-6, 6])
+#def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange)
+pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfSyncOnset, timeRangeForPupilDilation)
 pAreaDilatedMean = pAreaDilated.mean(axis = 1)
 
 #--- Wilcoxon test to obtain statistics ---
 wstat, pval = stats.wilcoxon(averagePreSignal, averagePostSignal)
 print('Wilcoxon value config14_1', wstat,',',  'P-value config14_1', pval)
 
-#--- Finding pupil area corresponding to each tested frequency ---
-freqValues1, freqValues2, freqValues3, freqValues4, freqValues5 = freqs_and_meanParea(freqs, averagePostSignal, 2000, 4000, 8000, 16000, 32000) 
-
-minVal = np.amin(pArea)
-maxVal = np.amax(pArea)
-rangeValues = maxVal - minVal
-substractMin = pArea[0] - minVal
-normalizedData = substractMin/rangeValues
-
-
-
 #--- Plotting the results ---
 OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean, pval)
-
 scattBar = barScat_plots(averagePreSignal, averagePostSignal, 'pre stimulus onset', 'post stimulus onset', preSignal, postSignal,  pval)
 
-pAreaFreqPlot = PDR_kHz_plot(frequenciesTested, freqValues1, freqValues2, freqValues3, freqValues4, freqValues5)
+#--- Finding and plotting pupil area corresponding to each tested frequency ---
+#freqValues1, freqValues2, freqValues3, freqValues4, freqValues5 = freqs_and_meanParea(freqs, averagePostSignal, 2000, 4000, 8000, 16000, 32000) 
+#pAreaFreqPlot = PDR_kHz_plot(frequenciesTested, freqValues1, freqValues2, freqValues3, freqValues4, freqValues5)
 
-
+print('Data averaged over ', pAreaDilated.shape[1], ' trials')
 
 
 
