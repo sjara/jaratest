@@ -5,3 +5,4 @@ Sno.	File name			 				Explanation
 4	plot_averages_for_mul_animals_stage4.py			This script plot average performance of all animals during the stage 4. It A and A+P group animals seperately.
 5	plot_averages_for_pamo_animals_stage3.py			This script plot average performance of all animals during the stage 3. plot averages for each animals seperately.
 6	plot_psychometric_curve.py					This script is used to plot psychometric curve for pamo animals
+7	plot_psychometric_slope_curvefitting.py			This script is used to see how psychometric curve slope is changing through out the training days.
