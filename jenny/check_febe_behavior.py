@@ -90,19 +90,31 @@ for nSub in range(len(subject)):
             print('# Hits R: {}'.format(bdata['nHitsRight'][-1]))
             print('stay on this stage')
     elif bdata['taskMode'][-1] == bdata.labels['taskMode']['discriminate_stim']:
-        if bdata['rewardSideMode'][-1] == bdata.labels['rewardSideMode']['repeat_mistake']: #Stage3
-            print('Stage3')
-            if leftPercentCorrect >= 70 and sum(leftTrials) >=100 and rightPercentCorrect >= 70 and sum(rightTrials) >= 100:
-                print('move to next stage')
+        if bdata['rewardSideMode'][-1] == bdata.labels['rewardSideMode']['repeat_mistake']: #Bias correct
+            print('Bias Correct Mode')
+            if leftPercentCorrect >= 30 and sum(leftChoice) >=100 and rightPercentCorrect >= 30 and sum(rightChoice) >= 100:
+                print('move back to stage 3')
             else:
                 print('stay on this stage')
-        elif bdata['rewardSideMode'][-1] == bdata.labels['rewardSideMode']['random']: #Stage4 -6
-            if bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['off']: #Stage4
-                if leftPercentCorrect >= 70 and sum(leftTrials) >=100 and rightPercentCorrect >= 70 and sum(rightTrials) >= 100:
-                    print('move to stage5!')
+        elif bdata['rewardSideMode'][-1] == bdata.labels['rewardSideMode']['random']: #Stage3 -6
+            if bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['off']: #Stage3
+                if leftPercentCorrect >= 70 and rightPercentCorrect >= 70 and (np.sum(rightChoice)+np.sum(leftChoice)) >= 300:
+                    print('move to stage 4!')
+                elif leftPercentCorrect < 20 or rightPercentCorrect < 20 and (np.sum(rightChoice) + np.sum(leftChoice)) >= 200:
+                    print('move to bias correct')
                 else:
-                    print('stay on stage 4')
+                    print('stay on stage 3')
             else:
+                if bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['extreme80pc']:
+                    print('you are on psycurveMode, extreme80pc')
+
+                elif bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['uniform']:
+                    print('you are on psycurveMode, uniform')
+                    if bdata['irrelevantFeatureMode'][-1] == bdata.labels['irrelevantFeatureMode']['random']:
+                        print('irrelevantFeatureMode is random')
+                    elif bdata['irrelevantFeatureMode'][-1] == bdata.labels['irrelevantFeatureMode']['fix_to_min']:
+                        print('irrelevantFeatureMode is fix_to_min')
+
                 ### calculate psychometric###
                 if any(bdata['psycurveMode']):
                     if bdata['relevantFeature'][-1] == bdata.labels['relevantFeature']['spectral']:
@@ -127,9 +139,3 @@ for nSub in range(len(subject)):
                     plt.ylabel('Rightward trials (%)',fontsize=fontsize)
                     extraplots.set_ticks_fontsize(plt.gca(),fontsize)
                     plt.show()
-
-
-                if bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['extreme80pc']:
-                    print('you are on psycurveMode, extreme80pc')
-                elif bdata['psycurveMode'][-1] == bdata.labels['psycurveMode']['uniform']:
-                    print('you are on psycurveMode, uniform')
