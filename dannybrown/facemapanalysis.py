@@ -150,20 +150,20 @@ def extract_sync(proc_data,threshold = None):
         sync_trace (np.array): An array of floats that contains the raw trace from the sync light (values =
         # of non-white pixels observed in the ROI).
     """
-    sync_raw = proc_data['blink'][1]
+    sync_raw = proc_data['blink'][0] #CHANGE THIS BACK to 1!!! Or, change wiki documentation.
     if threshold == None:
         # USE A THRESHOLD FROM A PLOT
-        fig = plt.figure()
-        fig.set_figwidth(18)
-        fig.set_figheight(4)
-        plt.plot(sync_raw)
-        plt.title('Click to select a y-value threshold for the Synchronization Light')
+#        fig = plt.figure()
+#        fig.set_figwidth(18)
+#        fig.set_figheight(4)
+#        plt.plot(sync_raw)
+#        plt.title('Click to select a y-value threshold for the Synchronization Light')
         threshold = (np.max(sync_raw) + np.min(sync_raw)) / 2
         print('Sync Threshold set: %.2f' % threshold)
-        plt.axhline(threshold, color='r')
-        plt.title('Synch light threshold set. Does this look OK? Click again to close the window')
-        plt.ginput(1)
-        plt.close(fig)
+#        plt.axhline(threshold, color='r')
+#        plt.title('Synch light threshold set. Does this look OK? Click again to close the window')
+#        plt.ginput(1)
+#        plt.close(fig)
     
     threshold = (np.max(sync_raw) + np.min(sync_raw)) / 2
     sync_bool = sync_raw < threshold # Trigger when it is below threshold
@@ -231,7 +231,7 @@ def extract_blink(proc_data, threshold = None):
         in pixels.
     """
 
-    blink_trace = proc_data['blink'][0]
+    blink_trace = proc_data['blink'][1] ## CHANGE THIS BACK TO 0!! Or, change wiki documentation.
     if threshold == None:
         # USE A THRESHOLD FROM A PLOT
         fig = plt.figure()

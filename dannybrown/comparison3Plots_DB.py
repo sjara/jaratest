@@ -4,7 +4,6 @@ from scipy import stats
 from jaratoolbox import loadbehavior
 import os
 import facemapanalysis as fmap
-import sys
 
 def onset_values(signalArray): 
 
@@ -24,51 +23,6 @@ def onset_values(signalArray):
      return (onsetStartValues)
      
 def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
-    '''
-    Make array of signal traces locked to an event.
-    Args:
-        timeVec (np.array): time of each sample in the signal.
-        signal (np.array): samples of the signal to process.
-        eventOnsetTimes (np.array): time of each event.
-        windowTimeRange (list or np.array): 2-element array defining range of window to extract.
-    Returns: 
-        windowTimeVec (np.array): time of each sample in the window w.r.t. the event.
-        lockedSignal (np.array): extracted windows of signal aligned to event. Size (nSamples,nEvents)
-    '''
-    if (eventOnsetTimes[0] + windowTimeRange[0]) < timeVec[0]:
-        raise ValueError('Your first window falls outside the recorded data.')
-    if (eventOnsetTimes[-1] + windowTimeRange[-1]) > timeVec[-1]:
-        raise ValueError('Your last window falls outside the recorded data.')
-    samplingRate = 1/(timeVec[1]-timeVec[0])
-    windowSampleRange = samplingRate*np.array(windowTimeRange)  # units: frames
-    windowSampleVec = np.arange(*windowSampleRange, dtype=int) # units: frames
-    windowTimeVec = windowSampleVec/samplingRate # Units: time
-    nSamples = len(windowTimeVec) # time samples / trial
-    nTrials = len(eventOnsetTimes) # number of times the sync light went off
-    lockedSignal = np.empty((nSamples,nTrials))
-    for inde,eventTime in enumerate(eventOnsetTimes):
-       eventSample = np.searchsorted(timeVec, eventTime) # eventSample = index at which the synch turns on
-       thiswin = windowSampleVec + eventSample # indexes of window
-       lockedSignal[:,inde] = signal[thiswin]
-    return (windowTimeVec, lockedSignal)
-
-
-def find_valid_windows(timeVec, eventOnsetTimes, windowTimeRange):
-    """
-    Find windows that lie within the timeVec.
-    Args:
-        timeVec (np.array): time of each sample in the signal.
-        eventOnsetTimes (np.array): time of each event.
-        windowTimeRange (list or np.array): 2-element array defining range of window to extract.
-    Returns: 
-        validWindows (np.array): array of booleans that is True if the window falls within.
-
-    """
-    return (validWindows)
-
-
-
-def eventlocked_signalold(timeVec, signal, eventOnsetTimes, windowTimeRange):
     '''
     Make array of signal traces locked to an event.
     Args:
@@ -188,12 +142,49 @@ def comparison_plot(time, valuesData1, pVal):
      subplt.set_xlabel('Time (s)', fontsize = labelsSize)
      subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
      subplt.set_title('Pupil behavior: ' + filename, fontsize = labelsSize)
-     plt.suptitle('Mouse = pure013.  Data Collected 2022-07-01.', fontsize = labelsSize)
      plt.grid(b = True)
      #plt.ylim([550, 650])
      plt.xticks(fontsize = labelsSize)
      plt.yticks(fontsize = labelsSize)
-#     plt.legend()
+     plt.legend()
+     #plt.legend(prop ={"size":10}, bbox_to_anchor=(1.0, 0.8))
+     #plt.savefig('comparisonPure004Plot', format = 'pdf', dpi = 50)
+     plt.show() 
+     return(plt.show())
+     
+def comparison_3plot(time, valuesData1, valuesData2, valuesData3, pVal, pVal1, pVal2): 
+     ''' 
+     Creates 1 figure with 3 plots 
+     Args: 
+     time = vector values for x axis 
+     valuesData1 (np.array) = vector values for y axis of the first plot 
+     valuesData2 (np.array)= vector values for y axis of the second plot
+     valuesData3 (np.array)= vector values for y axis of the third plot
+     returns: 
+     plt.show() = 1 figure with 3 plots using the input data 
+     ''' 
+     labelsSize = 16
+     fig, subplt = plt.subplots(1,1)
+     fig.set_size_inches(9.5, 7.5, forward = True)
+     sp = np.round(pVal, decimals=9)
+     sp1 = np.round(pVal1, decimals=9)
+     sp2 = np.round(pVal2, decimals=9)
+     label1 = filesDict['name1'],'pval:',sp     # DB - NEED TO RENAME
+     label2 = filesDict['name2'],'pval:',sp1    # DB - NEED TO RENAME
+     label3 = filesDict['name3'],'pval:',sp2    #DB - NEED TO RENAME
+
+     subplt.plot(time, valuesData1, color = 'g', label = label1, linewidth = 4)
+     subplt.plot(time, valuesData2, color = 'c', label = label2, linewidth = 4)
+     subplt.plot(time, valuesData3, color = 'b', label = label3, linewidth = 4)
+
+     subplt.set_xlabel('Time (s)', fontsize = labelsSize)
+     subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior for frequency range 2kHz-17kHz: pure012_20220602', fontsize = labelsSize)
+     plt.grid(b = True)
+     #plt.ylim([550, 650])
+     plt.xticks(fontsize = labelsSize)
+     plt.yticks(fontsize = labelsSize)
+     plt.legend()
      #plt.legend(prop ={"size":10}, bbox_to_anchor=(1.0, 0.8))
      #plt.savefig('comparisonPure004Plot', format = 'pdf', dpi = 50)
      plt.show() 
@@ -229,8 +220,7 @@ def barScat_plots(firstPlotMeanValues1, firstPlotMeanValues2, xlabel1, xlabel2, 
      barPlots.set_title(filename, fontsize = barLabelsFontSize)
      barPlots.set_ylabel('Pupil area', fontsize = barLabelsFontSize)
      barPlots.tick_params(axis='x', labelsize=barLabelsFontSize)
-     #plotcolors = firstPlotMeanValues1 - firstPlotMeanValues2
-     barPlots.plot(xlabels, dataPlot1, marker = 'o', c = 'k', alpha = 0.3, linewidth = 1)
+     barPlots.plot(xlabels, dataPlot1, marker = 'o', color = 'k', alpha = 0.3, linewidth = 1)
      barPlots.legend(prop ={"size":10})
      
      #plt.ylim(250, 800)
@@ -275,30 +265,29 @@ def PDR_kHz_plot(freqsArray, arrFreq1, arrFreq2, arrFreq3, arrFreq4, arrFreq5):
      return(plt.show())
 # ---------------------------------------------------------------------------------------------------------------
      
-   
+     
      
 #--- loading data ---
-fileloc = '/home/jarauser/Desktop/danny_datacollection/dbtest3_pure013_2022-07-01'
-filename = 'pure013_detectiongonogo_20220701a_dbtest3_proc.npy'
-proc = fmap.load_data(os.path.join(fileloc, filename), runchecks=False)
+fileloc = '/home/jarauser/Desktop/manuels_videos/'
+filename1 = 'pure001_20210928_syncVisibleNoSound_01_proc.npy'
+proc1 = fmap.load_data(os.path.join(fileloc, filename1), runchecks=False)
 
 #--- obtain pupil data ---
-pArea = fmap.extract_pupil(proc)
+pArea1 = fmap.extract_pupil(proc1)
 
 #---calculate number of frames, frame rate, and time vector---
-nframes = len(pArea) # Number of frames.
-frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
-framerate = 30 # frame rate of video
-timeVec = frameVec / framerate # Time Vector to calculate the length of the video.
+nframes1 = len(pArea1) # Number of frames.
+frameVec1 = np.arange(0, nframes1, 1) # Vector of the total frames from the video.
+framerate1 = 30 # frame rate of video
+timeVec1 = frameVec1 / framerate1 # Time Vector to calculate the length of the video.
 
 #--- obtain values where sync signal turns on ---
-_, syncOnsetValues, _, _ = fmap.extract_sync(proc)
-timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which the sync signal turns on.
+_, syncOnsetValues1, _, _ = fmap.extract_sync(proc1)
+timeOfSyncOnset1 = timeVec1[syncOnsetValues1] # Provides the time values in which the sync signal turns on.
 
 #--- Align trials to the event ---
 timeRange = np.array([-0.5, 2.0]) # Range of time window
-# run function you're creating, to restrict trials to valid trials: timeofSyncOnset[bool] 
-windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfSyncOnset, timeRange)
+windowTimeVec, windowed_signal1 = eventlocked_signal(timeVec1, pArea1, timeOfSyncOnset1, timeRange)
 
 
 # TO SHOW SANTIAGO:
@@ -311,8 +300,6 @@ print(syncOnsetValues.shape)
 print('total number of trials included in the analysis:')
 print(windowed_signal.shape[1])
 
-
-#sys.exit()  
 
 #--- Obtain pupil pre and post stimulus values, and average size ---
 #find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown, postLimUp)
@@ -327,7 +314,7 @@ wstat, pval = stats.wilcoxon(averagePreSignal, averagePostSignal)
 print('Wilcoxon value config14_1', wstat,',',  'P-value config14_1', pval)
 
 #--- Defining the correct time range for pupil's relaxation (dilation) ---  DB: SEEMS TO BE FOR PLOTTING, MAYBE WE SHOULD RENAME.
-timeRangeForPupilDilation = np.array([-12, 12])
+timeRangeForPupilDilation = np.array([-6, 6])
 #def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange)
 pupilDilationTimeWindowVec, pAreaDilated = eventlocked_signal(timeVec, pArea, timeOfSyncOnset, timeRangeForPupilDilation)
 pAreaDilatedMean = pAreaDilated.mean(axis = 1)
