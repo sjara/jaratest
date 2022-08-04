@@ -14,7 +14,7 @@ whichSubject = input()
 if whichSubject == '1':
     subject = ['febe007', 'febe012'] #VOT animals
 elif whichSubject == '2':
-    subject = ['febe013', 'febe019', 'febe020', 'febe021'] #, 'febe014', 'febe017', 'febe018']
+    subject = ['febe007', 'febe012', 'febe013', 'febe019', 'febe020', 'febe021'] #, 'febe014', 'febe017', 'febe018']
 else:
     subject = [whichSubject]
 
