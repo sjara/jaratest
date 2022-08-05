@@ -16,7 +16,7 @@ import sys
 sys.path.append('/home/jarauser/src/jaratest/dannybrown/')
 import facemapanalysis as fmap
 
-# Input session parameters
+# Input the session parameters
 subject = 'pure013'
 date = '2022-06-24'
 
