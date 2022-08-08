@@ -31,6 +31,8 @@ elif subject == 'febe012':
     sessions = ['20220604a', '20220605a', '20220606a', '20220607a']
     #sessions = ['20220529a', '20220530a', '20220531a', '20220601a', '20220602a', '20220603a'] #uniform
     #sessions = ['20220520a', '20220521a', '20220522a', '20220523a','20220524a', '20220525a', '20220526a', '20220528a'] #extremes80pct  '20220527a',
+elif subject == 'febe020':
+    sessions = ['20220731a', '20220801a', '20220802a', '20220803a']
 else:
     print('subject doesnt have any psycurve sessions indicated')
 

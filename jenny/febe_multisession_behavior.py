@@ -45,8 +45,10 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
     fig, ax = plt.subplots(figsize=(5,4),dpi=200)
     bdata = behavioranalysis.load_many_sessions(subject[nSub], sessions, paradigm)
     valid = bdata['choice'] != bdata.labels['choice']['none']
-    leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left'] & valid
-    rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right'] & valid
+    allLeftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
+    leftTrials = allLeftTrials & valid
+    allRightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
+    rightTrials = allRightTrials & valid
     leftChoice = bdata['choice'] == bdata.labels['choice']['left']
     rightChoice = bdata['choice'] == bdata.labels['choice']['right']
     noChoice = bdata['choice'] == bdata.labels['choice']['none']
@@ -82,7 +84,7 @@ for nSub in range(len(subject)): #np.unique(bdata['subjectID']):
             rightInvalid = rightTrials[sessionStart:sessionEnd] & noChoice[sessionStart:sessionEnd]
             rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials[sessionStart:sessionEnd])*100,2)
             leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials[sessionStart:sessionEnd])*100,2)
-            totalPercentCorrect = round((sum(leftCorrect)+sum(rightCorrect))/(sum(leftTrials[sessionStart:sessionEnd]) + sum(rightTrials[sessionStart:sessionEnd]))*100,2)
+            totalPercentCorrect = round((sum(leftCorrect)+sum(rightCorrect))/(sum(valid[sessionStart:sessionEnd]))*100,2)
             subjPerformance[nSess,:] = [rightPercentCorrect, leftPercentCorrect, totalPercentCorrect]
             sessionLimits[nSess,:] = [sessionStart, sessionEnd]
             sessionStart = sessionEnd + 1
