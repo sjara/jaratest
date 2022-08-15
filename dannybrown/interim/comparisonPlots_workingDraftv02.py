@@ -1,8 +1,5 @@
 '''
-This script creates plots of pupil dilation, and is configured for the am_tuning_curve paradigm.
-It creates windowed-average plots of pupil data, which are grouped by the various frequncy changes
-the animal is presented with.  Script outputs n plots, with n determined by the number of unique
-values of frequency changes that appear in the data provided.
+This script is for the project of pupil dilation. It is intended to obtain pupil data, its mean the desired time windows, create a slope and bar plots
 '''
 
 import numpy as np
@@ -16,23 +13,19 @@ import sys
 sys.path.append('/home/jarauser/src/jaratest/dannybrown/')
 import facemapanalysis as fmap
 
-# Input the session parameters
-subject = 'pure013'
-date = '2022-06-24'
+# Input session parameters
+subject = 'pure012'
+date = '20220701'
 
 # Load data from infovideos file
-infovideosFilename = os.path.join('/home/jarauser/src/jarainfo/infovideos', f'{subject}_infovideos.py')
+infovideosFilename = os.path.join('/home/jarauser/src/jarainfo_old', f'{subject}_infovideos.py') # Remove 'old' when SJ has fixed Jarainfo
 infovideos = extrafuncs.read_infofile(infovideosFilename)
 
 # File locations for behavioral data and processed FaceMap data
-for session in infovideos.videos.sessions:
-    if session.date == date:
-        selSession = session
-        break
-
-filename_behav = selSession.behavFile
+#sessionNumber = (FIND THE SESSION NUMBER BY DATE IN INFOVIDEOS) # HOW DO YOU FIND A MATCH FOR THE DATE?
+filename_behav = infovideos.videos.sessions[3].behavFile # Hardcoded - sub in 3 for the date match from above.
 fileloc_behav = os.path.join(settings.BEHAVIOR_PATH,subject,filename_behav)
-filename_video = selSession.videoFile
+filename_video = infovideos.videos.sessions[3].videoFile
 filename_fmap = '_'.join([filename_video.split('.')[0],'proc.npy'])
 fileloc_fmap = os.path.join('/data/videos',f'{subject}_processed', filename_fmap)
 
@@ -41,11 +34,8 @@ bdata = loadbehavior.BehaviorData(fileloc_behav)
 faceMap = fmap.load_data(os.path.join(fileloc_fmap), runchecks=False)
 
 #--- obtain frequencies data ---
-if selSession.sessionType == 'random6chord':
-    freqs = bdata['currentFreq'] # works with am_tuning_curve paradigm
-else:
-    freqs = bdata['postFreq'] # works with gonogo paradigm
-    
+freqs = bdata['currentFreq'] # works with am_tuning_curve paradigm
+#freqs = bdata['postFreq'] # works with gonogo paradigm
 freqs_list = np.unique(freqs)
 #--- obtain pupil data ---
 pArea = fmap.extract_pupil(faceMap)
@@ -61,18 +51,14 @@ _, syncOnsetValues, _, _ = fmap.extract_sync(faceMap)
 timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which the sync signal turns on.
 
 ########## IF ERROR IS THROWN BELOW, INSPECT THE FILE AND THEN MAKE MANUAL CHANGES HERE ######
-# More freqs than sync lights?
 #freqs=freqs[0:-1]
-# -or- # 
-# More sync lights than freqs?
-#syncOnsetValues=syncOnsetValues[0:-1]
-#timeOfSyncOnset=timeOfSyncOnset[0:-1]
+syncOnsetValues=syncOnsetValues[0:-1]
+timeOfSyncOnset=timeOfSyncOnset[0:-1]
 
 ###########################################################################
 
 if len(freqs) != syncOnsetValues.shape[0]: # Throw an error if there wasn't a sync light for every sound
-    print('ERROR: # of sync light signals does not match number of sounds played:')
-    print(f'freqs = {len(freqs)}, sync lights = {syncOnsetValues.shape[0]}')
+    print('ERROR: # of sync light signals does not match number of sounds played')
     sys.exit()
      
 def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
@@ -88,13 +74,9 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
         lockedSignal (np.array): extracted windows of signal aligned to event. Size (nSamples,nEvents)
     '''
     if (eventOnsetTimes[0] + windowTimeRange[0]) < timeVec[0]:
-#        raise ValueError('Your first window falls outside the recorded data.')
-        print('Your first window fell outside of the recorded data; it has been discarded.')
-        eventOnsetTimes = eventOnsetTimes[1::]
+        raise ValueError('Your first window falls outside the recorded data.')
     if (eventOnsetTimes[-1] + windowTimeRange[-1]) > timeVec[-1]:
-#        raise ValueError('Your last window falls outside the recorded data.')
-        print('Your last window fell outside of the recorded data; it has been discarded')
-        eventOnsetTimes = eventOnsetTimes[0:-1]
+        raise ValueError('Your last window falls outside the recorded data.')
     samplingRate = 1/(timeVec[1]-timeVec[0])
     windowSampleRange = samplingRate*np.array(windowTimeRange)  # units: frames
     windowSampleVec = np.arange(*windowSampleRange, dtype=int) # units: frames
@@ -103,7 +85,7 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     nTrials = len(eventOnsetTimes) # number of times the sync light went off
     lockedSignal = np.empty((nSamples,nTrials))
     for inde,eventTime in enumerate(eventOnsetTimes):
-       eventSample = np.searchsorted(timeVec, eventTime) # eventSample = index at which the sync turns on
+       eventSample = np.searchsorted(timeVec, eventTime) # eventSample = index at which the synch turns on
        thiswin = windowSampleVec + eventSample # indexes of window
        lockedSignal[:,inde] = signal[thiswin]
     return (windowTimeVec, lockedSignal)
@@ -116,8 +98,15 @@ for inde,freq in enumerate(freqs_list):
     windowTimeVec, signals = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRange)
     windowed_signal.append(signals)
 
+#windowTimeVec, windowed_signal_nochange = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[0]], timeRange)
+#_, windowed_signal_change1 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[1]], timeRange)
+#_, windowed_signal_change2 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[2]], timeRange)
+#_, windowed_signal_change3 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[3]], timeRange)
+#_, windowed_signal_change4 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[4]], timeRange)
+#_, windowed_signal_change5 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[5]], timeRange)
 
 def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown, postLimUp): 
+  
       '''  
       Obtain pupil data before and after stimulus  
       Args:  
@@ -157,106 +146,6 @@ for inde in range(len(freqs_list)):
     avgPreSignal.append(thisfreqPre)
     avgPostSignal.append(thisfreqPost)
 
-#--- For p-values: Wilcoxon test and Pvalue statistics ---
-wstats = []
-pvals = []
-for inde in range(len(freqs_list)):
-    thisW, thisP = stats.wilcoxon(avgPreSignal[inde], avgPostSignal[inde])
-    wstats.append(thisW)
-    pvals.append(thisP)
-
-#--- For Plots: Defining time range for pupil, extracting the traces, create plotting function ---
-timeRangeForPupilDilation = np.array([-15, 15])
-
-pAreaDilated = []
-for inde,freq in enumerate(freqs_list):
-    pupilDilationTimeWindowVec, thispArea = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRangeForPupilDilation)
-    pAreaDilated.append(thispArea)
-    
-meanpAreaDilated = []
-for inde in range(len(freqs_list)):
-    thismean = pAreaDilated[inde].mean(axis = 1)
-    meanpAreaDilated.append(thismean)
-    
-nTrials = []
-for inde in range(len(freqs_list)):
-    thisN = pAreaDilated[inde].shape[1]
-    nTrials.append(thisN)
-
-def comparison_plot(time, valuesData, pVals, freqs_list, nTrials, firstSound): 
-     ''' 
-     Creates 1 figure with 6 plots 
-     Args: 
-     time = vector values for x axis 
-     valuesData (np.array) = array of mean pupil traces to be plotted
-     pVals (np.array) = list of pValues associated with each frequency
-     freqs_list (np.array) = list of frequencies included
-     nTrials (np.array) = number of trials at each frequency
-     firstSound (float) = Frequency value of the first sound presented in each trial.
-     returns: 
-     plt.show() = 1 figure with 6 plots using the input data 
-     ''' 
-     labelsSize = 16
-     fig, subplt = plt.subplots(1,1)
-     fig.set_size_inches(18, 10, forward = True)
-     pVals = np.round(pVals, decimals=4)
-     
-     legendLabels = []
-     for f_ind, freq in enumerate(freqs_list):
-        iteration = f'Sound change = {firstSound}-->{freq} Hz, nTrials = {nTrials[f_ind]}, pval = {pVals[f_ind]}'
-        legendLabels.append(iteration)
-
-     alphas = np.linspace(.4,1,len(freqs_list))
-     for inde in range(len(freqs_list)):
-         subplt.plot(time, valuesData[inde], alpha = alphas[inde], label = legendLabels[inde], linewidth = 4)
-
-     subplt.set_xlabel('Time (s)', fontsize = labelsSize)
-     subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
-     subplt.set_title(f'Pupil behavior in response to a chord change (with no gap): {len(freqs_list)} Frequencies.', fontsize = labelsSize)
-     plt.suptitle(f'Mouse = {subject}.  Data Collected {date}.', fontsize = labelsSize)
-     plt.axvline(-7, label='begin fade in', color = 'lightskyblue', linestyle='dashed', linewidth = 3)
-     plt.axvline(-5, label='fade in complete', color = 'dodgerblue', linestyle='dashed', linewidth = 3)
-     plt.axvline(0, label = 'sound change', color = 'red', linestyle='dashed', linewidth = 3)
-     plt.axvline(5, label = 'sound turns off', color = 'pink', linestyle='dashed', linewidth = 3)
-     plt.grid(b = True)
-     #plt.ylim([550, 650])
-     plt.xticks(fontsize = labelsSize)
-     plt.yticks(fontsize = labelsSize)
-     plt.legend()
-     #plt.legend(prop ={"size":10}, bbox_to_anchor=(1.0, 0.8))
-     #plt.savefig('comparisonPure004Plot', format = 'pdf', dpi = 50)
-     plt.show() 
-     return(plt.show())
-
-
-if np.logical_or(selSession.sessionType == 'lowestfirst3chord', selSession.sessionType == 'lowestfirst6chord'):
-    firstSound = np.min(freqs_list)
-if selSession.sessionType == 'highestfirst6chord':
-    firstSound = np.max(freqs_list)
-if selSession.sessionType == 'random6chord':
-    firstSound='(only one sound)'
-
-
-#--- plot for all included frequencies ---
-OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, meanpAreaDilated, pvals, freqs_list=freqs_list,
-                               nTrials = nTrials, firstSound=firstSound)
-
-
-
-
-#-----------------------------------------------------------------------------------------------------------------
-#Unneccessary Code
-#--- For p-values: Align trials to events ---
-# create signal locked to sync light, for each condition
-#windowTimeVec, windowed_signal_nochange = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[0]], timeRange)
-#_, windowed_signal_change1 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[1]], timeRange)
-#_, windowed_signal_change2 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[2]], timeRange)
-#_, windowed_signal_change3 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[3]], timeRange)
-#_, windowed_signal_change4 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[4]], timeRange)
-#_, windowed_signal_change5 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[5]], timeRange)
-
-#--- For p-values: Obtain pupil pre and post stimulus values, and average size ---
-
 #preSignal_nochange, postSignal_nochange = find_prepost_values(windowTimeVec, windowed_signal_nochange, -0.5, 0, 1.4, 2.0)
 #preSignal_change1, postSignal_change1 = find_prepost_values(windowTimeVec, windowed_signal_change1, -0.5, 0, 1.4, 2.0)
 #preSignal_change2, postSignal_change2 = find_prepost_values(windowTimeVec, windowed_signal_change2, -0.5, 0, 1.4, 2.0)
@@ -278,7 +167,16 @@ OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, meanpAreaDilated, pva
 #averagePostSignal_change4 = postSignal_change4.mean(axis = 0)
 #averagePostSignal_change5 = postSignal_change5.mean(axis = 0)
 
+
+
 #--- Wilcoxon test and Pvalue statistics ---
+wstats = []
+pvals = []
+for inde in range(len(freqs_list)):
+    thisW, thisP = stats.wilcoxon(avgPreSignal[inde], avgPostSignal[inde])
+    wstats.append(thisW)
+    pvals.append(thisP)
+    
 #wstat0, pval0 = stats.wilcoxon(averagePreSignal_nochange, averagePostSignal_nochange)
 #wstat1, pval1 = stats.wilcoxon(averagePreSignal_change1, averagePostSignal_change1)
 #wstat2, pval2 = stats.wilcoxon(averagePreSignal_change2, averagePostSignal_change2)
@@ -286,7 +184,19 @@ OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, meanpAreaDilated, pva
 #wstat4, pval4 = stats.wilcoxon(averagePreSignal_change4, averagePostSignal_change4)
 #wstat5, pval5 = stats.wilcoxon(averagePreSignal_change5, averagePostSignal_change5)
 
-#--- For Plots: Defining time range for pupil dilation, and extracting the trace ---                         
+#--- For Plots: Defining time range for pupil dilation, and extracting the trace ---
+timeRangeForPupilDilation = np.array([-15, 15])
+pAreaDilated = []
+for inde,freq in enumerate(freqs_list):
+    pupilDilationTimeWindowVec, thispArea = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRangeForPupilDilation)
+    pAreaDilated.append(thispArea)
+    
+meanpAreaDilated = []
+for inde in range(len(freqs_list)):
+    thismean = pAreaDilated[inde].mean(axis = 1)
+    meanpAreaDilated.append(thismean)
+                           
+                           
 #pupilDilationTimeWindowVec, pAreaDilated0 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[0]], timeRangeForPupilDilation)
 #_, pAreaDilated1 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[1]], timeRangeForPupilDilation)
 #_, pAreaDilated2 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[2]], timeRangeForPupilDilation)
@@ -300,25 +210,77 @@ OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, meanpAreaDilated, pva
 #pAreaDilatedMean3 = pAreaDilated3.mean(axis = 1)
 #pAreaDilatedMean4 = pAreaDilated4.mean(axis = 1)
 #pAreaDilatedMean5 = pAreaDilated5.mean(axis = 1)
-#    
-#     sp0 = np.round(pVal0, decimals=9)
-#     sp1 = np.round(pVal1, decimals=9)
-#     sp2 = np.round(pVal2, decimals=9)
-#     sp3 = np.round(pVal3, decimals=9)
-#     sp4 = np.round(pVal4, decimals=9)
-#     sp5 = np.round(pVal5, decimals=9)     
-#     label0 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[0])+' Hz: nTrials = '+str(sum(freqs==freqs_list[0]))+', pval='+str(sp0)
-#     label1 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[1])+' Hz: nTrials = '+str(sum(freqs==freqs_list[1]))+', pval='+str(sp1)
-#     label2 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[2])+' Hz: nTrials = '+str(sum(freqs==freqs_list[2]))+', pval='+str(sp2)
-#     label3 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[3])+' Hz: nTrials = '+str(sum(freqs==freqs_list[3]))+', pval='+str(sp3)
-#     label4 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[4])+' Hz: nTrials = '+str(sum(freqs==freqs_list[4]))+', pval='+str(sp4)
-#     label5 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[5])+' Hz: nTrials = '+str(sum(freqs==freqs_list[5]))+', pval='+str(sp5)
-#     subplt.plot(time, valuesData0, alpha = alphas[0], label = label0, linewidth = 4)
-#     subplt.plot(time, valuesData1, alpha = alphas[1], label = label1, linewidth = 4)
-#     subplt.plot(time, valuesData2, alpha = alphas[2], label = label2, linewidth = 4)
-#     subplt.plot(time, valuesData3, alpha = alphas[3], label = label3, linewidth = 4)
-#     subplt.plot(time, valuesData4, alpha = alphas[4], label = label4, linewidth = 4)
-#     subplt.plot(time, valuesData5, alpha = alphas[5], label = label5, linewidth = 4) 
+
+def comparison_plot(time, valuesData0, valuesData1, valuesData2, valuesData3, valuesData4, valuesData5, pVal0, pVal1, pVal2, pVal3, pVal4, pVal5, freqs_list): 
+     ''' 
+     Creates 1 figure with 6 plots 
+     Args: 
+     time = vector values for x axis 
+     valuesData0 (np.array) = vector values for y axis of the first plot 
+     valuesData1 (np.array)= vector values for y axis of the second plot
+     valuesData2 (np.array)= vector values for y axis of the third plot
+     valuesData3 (np.array) = vector values for y axis of the fourth plot 
+     valuesData4 (np.array)= vector values for y axis of the fifth plot
+     valuesData5 (np.array)= vector values for y axis of the sixth plot
+     freqs_list (np.array) = list of frequencies included
+     returns: 
+     plt.show() = 1 figure with 6 plots using the input data 
+     ''' 
+     labelsSize = 16
+     fig, subplt = plt.subplots(1,1)
+     fig.set_size_inches(18, 10, forward = True)
+     sp0 = np.round(pVal0, decimals=9)
+     sp1 = np.round(pVal1, decimals=9)
+     sp2 = np.round(pVal2, decimals=9)
+     sp3 = np.round(pVal3, decimals=9)
+     sp4 = np.round(pVal4, decimals=9)
+     sp5 = np.round(pVal5, decimals=9)
+     label0 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[0])+' Hz: nTrials = '+str(sum(freqs==freqs_list[0]))+', pval='+str(sp0)
+     label1 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[1])+' Hz: nTrials = '+str(sum(freqs==freqs_list[1]))+', pval='+str(sp1)
+     label2 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[2])+' Hz: nTrials = '+str(sum(freqs==freqs_list[2]))+', pval='+str(sp2)
+     label3 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[3])+' Hz: nTrials = '+str(sum(freqs==freqs_list[3]))+', pval='+str(sp3)
+     label4 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[4])+' Hz: nTrials = '+str(sum(freqs==freqs_list[4]))+', pval='+str(sp4)
+     label5 = 'Change = '+str(freqs_list[-1])+' Hz--> '+str(freqs_list[5])+' Hz: nTrials = '+str(sum(freqs==freqs_list[5]))+', pval='+str(sp5)
+     
+     alphas = np.linspace(.4,1,6)
+     subplt.plot(time, valuesData0, alpha = alphas[0], label = label0, linewidth = 4)
+     subplt.plot(time, valuesData1, alpha = alphas[1], label = label1, linewidth = 4)
+     subplt.plot(time, valuesData2, alpha = alphas[2], label = label2, linewidth = 4)
+     subplt.plot(time, valuesData3, alpha = alphas[3], label = label3, linewidth = 4)
+     subplt.plot(time, valuesData4, alpha = alphas[4], label = label4, linewidth = 4)
+     subplt.plot(time, valuesData5, alpha = alphas[5], label = label5, linewidth = 4)
+
+     subplt.set_xlabel('Time (s)', fontsize = labelsSize)
+     subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
+     subplt.set_title('Pupil behavior in response to a chord change (with no gap): 6 Frequencies.', fontsize = labelsSize)
+     plt.suptitle('Mouse = pure012.  Data Collected 2022-06-28.', fontsize = labelsSize)
+     plt.axvline(-7, label='begin fade in', color = 'lightskyblue', linestyle='dashed', linewidth = 3)
+     plt.axvline(-5, label='fade in complete', color = 'dodgerblue', linestyle='dashed', linewidth = 3)
+     plt.axvline(0, label = 'sound change', color = 'red', linestyle='dashed', linewidth = 3)
+     plt.axvline(5, label = 'sound turns off', color = 'pink', linestyle='dashed', linewidth = 3)
+     plt.grid(b = True)
+     #plt.ylim([550, 650])
+     plt.xticks(fontsize = labelsSize)
+     plt.yticks(fontsize = labelsSize)
+     plt.legend()
+     #plt.legend(prop ={"size":10}, bbox_to_anchor=(1.0, 0.8))
+     #plt.savefig('comparisonPure004Plot', format = 'pdf', dpi = 50)
+     plt.show() 
+     return(plt.show())
+
+#--- plot with the three conditions aligned ---
+OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean0, pAreaDilatedMean1,  pAreaDilatedMean2, pAreaDilatedMean3, pAreaDilatedMean4, pAreaDilatedMean5, pval0, pval1, pval2, pval3, pval4,  pval5, freqs_list=freqs_list)
+#scattBar1 = barScat_plots(averagePreSignal_nochange, averagePostSignal_nochange, 'pre stimulus onset', 'post stimulus onset', preSignal_nochange, postSignal_nochange,  pval0)
+#--- Get the number of trials for each condition ---
+print('cond0: ',sum(freqs==freqs_list[0]))
+print('cond1: ',sum(freqs==freqs_list[1]))
+print('cond2: ',sum(freqs==freqs_list[2]))
+print('cond3: ',sum(freqs==freqs_list[3]))
+print('cond4: ',sum(freqs==freqs_list[4]))
+print('cond5: ',sum(freqs==freqs_list[5]))
+
+#Unneccessary Code
+#     
 #
 #def onset_values(signalArray): 
 #

@@ -20,12 +20,11 @@ import facemapanalysis as fmap
 #sshfs -o ro -o idmap=user jarauser@jarahub:/data/ /mnt/jarahubdata
 
 # Input the session parameters
-subject = 'pure012'
-date = '2022-08-11'
+subject = 'pure013'
+date = '2022-06-24'
 
 # Load data from infovideos file
-#infovideosFilename = os.path.join('/home/jarauser/src/jarainfo/infovideos', f'{subject}_infovideos.py') #CHANGE
-infovideosFilename = os.path.join(settings.INFOVIDEOS_PATH, f'{subject}_infovideos.py')
+infovideosFilename = os.path.join('/home/jarauser/src/jarainfo/infovideos', f'{subject}_infovideos.py')
 infovideos = extrafuncs.read_infofile(infovideosFilename)
 
 # File locations for behavioral data and processed FaceMap data
@@ -38,7 +37,7 @@ filename_behav = selSession.behavFile
 fileloc_behav = os.path.join(settings.BEHAVIOR_PATH,subject,filename_behav)
 filename_video = selSession.videoFile
 filename_fmap = '_'.join([filename_video.split('.')[0],'proc.npy'])
-fileloc_fmap = os.path.join(settings.VIDEO_PATH,f'{subject}_processed', filename_fmap)
+fileloc_fmap = os.path.join('/data/videos',f'{subject}_processed', filename_fmap)
 
 # Load the Behavioral Data and FaceMap data
 bdata = loadbehavior.BehaviorData(fileloc_behav)
@@ -66,11 +65,11 @@ timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which t
 
 ########## IF ERROR IS THROWN BELOW, FIRST INSPECT THE FILE AND THEN MAKE MANUAL CHANGES HERE ######
 # More freqs than sync lights?
-freqs=freqs[0:-1]
+#freqs=freqs[0:-1]
 # -or- # 
 # More sync lights than freqs?
-syncOnsetValues=syncOnsetValues[0:-1]
-timeOfSyncOnset=timeOfSyncOnset[0:-1]
+#syncOnsetValues=syncOnsetValues[0:-1]
+#timeOfSyncOnset=timeOfSyncOnset[0:-1]
 
 ###########################################################################
 
@@ -240,7 +239,6 @@ if selSession.sessionType == 'highestfirst6chord':
     firstSound = np.max(freqs_list)
 if selSession.sessionType == 'random6chord':
     firstSound='(only one sound)'
-#if selSession.sessionType == 'AMrandom3rate':
 
 
 #--- plot for all included frequencies ---

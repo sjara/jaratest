@@ -7,22 +7,173 @@ import matplotlib.pyplot as plt
 from scipy import stats
 from jaratoolbox import loadbehavior
 from jaratoolbox import settings
+from jaratoolbox import extrafuncs
 import os
-import facemapanalysis as fmap # how to bring this in from jaratest?
 import sys
+sys.path.append('/home/jarauser/src/jaratest/dannybrown/')
+import facemapanalysis as fmap
 
-# File Paths for Behavior and Fmap files
-subject = 'pure013'
-date = '2022-07-01'
-params = 'dbtest3'
-paradigm = 'detectiongonogo'
+# Input session parameters
+subject = 'pure012'
+date = '20220701'
 
-fileloc_behav = os.path.join(settings.BEHAVIOR_PATH, subject, '_'.join([params, subject, date])) # how to change the naming convention in the behav files?
-filename_behav = 'pure013_detectiongonogo_20220701a.h5' # still need to soft code this, once you can change the naming convention
+# Load data from infovideos file
+infovideosFilename = os.path.join('/home/jarauser/src/jarainfo_old', f'{subject}_infovideos.py') # Remove 'old' when SJ has fixed Jarainfo
+infovideos = extrafuncs.read_infofile(infovideosFilename)
 
-fileloc_fmap = '/home/jarauser/Desktop/danny_datacollection/dbtest3_pure013_2022-07-01' # where will processed facemap files live?
-filename_fmap = 'pure013_detectiongonogo_20220701a_dbtest3_proc.npy'
+# File locations for behavioral data and processed FaceMap data
+#sessionNumber = (FIND THE SESSION NUMBER BY DATE IN INFOVIDEOS) # HOW DO YOU FIND A MATCH FOR THE DATE?
+filename_behav = infovideos.videos.sessions[3].behavFile # Hardcoded - sub in 3 for the date match from above.
+fileloc_behav = os.path.join(settings.BEHAVIOR_PATH,subject,filename_behav)
+filename_video = infovideos.videos.sessions[3].videoFile
+filename_fmap = '_'.join([filename_video.split('.')[0],'proc.npy'])
+fileloc_fmap = os.path.join('/data/videos',f'{subject}_processed', filename_fmap)
 
+# Load the Behavioral Data and FaceMap data
+bdata = loadbehavior.BehaviorData(fileloc_behav)
+faceMap = fmap.load_data(os.path.join(fileloc_fmap), runchecks=False)
+
+#--- obtain frequencies data ---
+freqs = bdata['currentFreq'] # works with am_tuning_curve paradigm
+#freqs = bdata['postFreq'] # works with gonogo paradigm
+freqs_list = np.unique(freqs)
+#--- obtain pupil data ---
+pArea = fmap.extract_pupil(faceMap)
+
+#---calculate number of frames, frame rate, and time vector---
+nframes = len(pArea) # Number of frames.
+frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
+framerate = 30 # frame rate of video
+timeVec = frameVec / framerate # Time Vector to calculate the length of the video.
+
+#--- obtain values where sync signal turns on ---
+_, syncOnsetValues, _, _ = fmap.extract_sync(faceMap)
+timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which the sync signal turns on.
+
+########## IF ERROR IS THROWN BELOW, YOU CAN MAKE MANUAL CHANGE HERE ######
+#freqs=freqs[0:-1]
+syncOnsetValues=syncOnsetValues[0:-1]
+timeOfSyncOnset=timeOfSyncOnset[0:-1]
+
+###########################################################################
+
+if len(freqs) != syncOnsetValues.shape[0]: # Throw an error if there wasn't a sync light for every sound
+    print('ERROR: # of sync light signals does not match number of sounds played')
+    sys.exit()
+     
+def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
+    '''
+    Make array of signal traces locked to an event.
+    Args:
+        timeVec (np.array): time of each sample in the signal.
+        signal (np.array): samples of the signal to process.
+        eventOnsetTimes (np.array): time of each event.
+        windowTimeRange (list or np.array): 2-element array defining range of window to extract.
+    Returns: 
+        windowTimeVec (np.array): time of each sample in the window w.r.t. the event.
+        lockedSignal (np.array): extracted windows of signal aligned to event. Size (nSamples,nEvents)
+    '''
+    if (eventOnsetTimes[0] + windowTimeRange[0]) < timeVec[0]:
+        raise ValueError('Your first window falls outside the recorded data.')
+    if (eventOnsetTimes[-1] + windowTimeRange[-1]) > timeVec[-1]:
+        raise ValueError('Your last window falls outside the recorded data.')
+    samplingRate = 1/(timeVec[1]-timeVec[0])
+    windowSampleRange = samplingRate*np.array(windowTimeRange)  # units: frames
+    windowSampleVec = np.arange(*windowSampleRange, dtype=int) # units: frames
+    windowTimeVec = windowSampleVec/samplingRate # Units: time
+    nSamples = len(windowTimeVec) # time samples / trial
+    nTrials = len(eventOnsetTimes) # number of times the sync light went off
+    lockedSignal = np.empty((nSamples,nTrials))
+    for inde,eventTime in enumerate(eventOnsetTimes):
+       eventSample = np.searchsorted(timeVec, eventTime) # eventSample = index at which the synch turns on
+       thiswin = windowSampleVec + eventSample # indexes of window
+       lockedSignal[:,inde] = signal[thiswin]
+    return (windowTimeVec, lockedSignal)
+
+#--- For p-values: Align trials to events ---
+timeRange = np.array([-0.5, 2.0]) # Create range for time window
+# create signal locked to sync light, for each condition
+windowTimeVec, _ = eventlocked_signal(timeVec, pArea, timeOfSyncOnset, timeRange) # CAN YOU TAKE THIS OUT?
+_, windowed_signal_nochange = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[0]], timeRange)
+_, windowed_signal_change1 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[1]], timeRange)
+_, windowed_signal_change2 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[2]], timeRange)
+_, windowed_signal_change3 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[3]], timeRange)
+_, windowed_signal_change4 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[4]], timeRange)
+_, windowed_signal_change5 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[5]], timeRange)
+
+def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown, postLimUp): 
+  
+      '''  
+      Obtain pupil data before and after stimulus  
+      Args:  
+      timeArray (np.array): array of the time window to evaluate pupil area obtained from even  t_locked  
+      dataArray (np.array): array of the pupil data obtained from event_locked function  
+      preLimDown (int or float): first number of the time interval to evaluate before stimulus onset  
+      preLimUp (int or float): second number of the time interval to evaluate before stimulus onset
+      postLimDown (int or float): first number of the time interval to evaluate after stimulus onset  
+      postLimUp (int or float): second number of the time interval to evaluate after stimulus onset 
+      Returns: 
+      preData (np.array): array with the pupil data before stimulus 
+      postData (np.array): array with the pupil data after stimulus    
+      '''   
+      preBool = np.logical_and(preLimDown <= timeArray, timeArray < preLimUp) 
+      postBool = np.logical_and(postLimDown <= timeArray, timeArray < postLimUp) 
+      preValuesIndices = np.argwhere(preBool == True)  
+      postValuesIndices = np.argwhere(postBool == True)  
+      preProcessedPreValues = dataArray[preValuesIndices]  
+      preProcessedPostValues = dataArray[postValuesIndices]  
+      preData = preProcessedPreValues.reshape(preValuesIndices.shape[0], dataArray.shape[1]) 
+      postData = preProcessedPostValues.reshape(postValuesIndices.shape[0], dataArray.shape[1])  
+      return(preData, postData)
+
+#--- For p-values: Obtain pupil pre and post stimulus values, and average size ---
+preSignal_nochange, postSignal_nochange = find_prepost_values(windowTimeVec, windowed_signal_nochange, -0.5, 0, 1.4, 2.0)
+preSignal_change1, postSignal_change1 = find_prepost_values(windowTimeVec, windowed_signal_change1, -0.5, 0, 1.4, 2.0)
+preSignal_change2, postSignal_change2 = find_prepost_values(windowTimeVec, windowed_signal_change2, -0.5, 0, 1.4, 2.0)
+preSignal_change3, postSignal_change3 = find_prepost_values(windowTimeVec, windowed_signal_change3, -0.5, 0, 1.4, 2.0)
+preSignal_change4, postSignal_change4 = find_prepost_values(windowTimeVec, windowed_signal_change4, -0.5, 0, 1.4, 2.0)
+preSignal_change5, postSignal_change5 = find_prepost_values(windowTimeVec, windowed_signal_change5, -0.5, 0, 1.4, 2.0)
+
+averagePreSignal_nochange = preSignal_nochange.mean(axis = 0)
+averagePreSignal_change1 = preSignal_change1.mean(axis = 0)
+averagePreSignal_change2 = preSignal_change2.mean(axis = 0)
+averagePreSignal_change3 = preSignal_change3.mean(axis = 0)
+averagePreSignal_change4 = preSignal_change4.mean(axis = 0)
+averagePreSignal_change5 = preSignal_change5.mean(axis = 0)
+
+averagePostSignal_nochange = postSignal_nochange.mean(axis = 0)
+averagePostSignal_change1 = postSignal_change1.mean(axis = 0)
+averagePostSignal_change2 = postSignal_change2.mean(axis = 0)
+averagePostSignal_change3 = postSignal_change3.mean(axis = 0)
+averagePostSignal_change4 = postSignal_change4.mean(axis = 0)
+averagePostSignal_change5 = postSignal_change5.mean(axis = 0)
+
+
+
+#--- For p-values: Wilcoxon test to obtain statistics ---
+wstat0, pval0 = stats.wilcoxon(averagePreSignal_nochange, averagePostSignal_nochange)
+wstat1, pval1 = stats.wilcoxon(averagePreSignal_change1, averagePostSignal_change1)
+wstat2, pval2 = stats.wilcoxon(averagePreSignal_change2, averagePostSignal_change2)
+wstat3, pval3 = stats.wilcoxon(averagePreSignal_change3, averagePostSignal_change3)
+wstat4, pval4 = stats.wilcoxon(averagePreSignal_change4, averagePostSignal_change4)
+wstat5, pval5 = stats.wilcoxon(averagePreSignal_change5, averagePostSignal_change5)
+
+#--- For Plots: Defining the correct time range for pupil's relaxation (dilation) ---
+timeRangeForPupilDilation = np.array([-15, 15])
+pupilDilationTimeWindowVec, pAreaDilated0 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[0]], timeRangeForPupilDilation)
+_, pAreaDilated1 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[1]], timeRangeForPupilDilation)
+_, pAreaDilated2 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[2]], timeRangeForPupilDilation)
+_, pAreaDilated3 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[3]], timeRangeForPupilDilation)
+_, pAreaDilated4 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[4]], timeRangeForPupilDilation)
+_, pAreaDilated5 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[5]], timeRangeForPupilDilation)
+
+
+pAreaDilatedMean0 = pAreaDilated0.mean(axis = 1)
+pAreaDilatedMean1 = pAreaDilated1.mean(axis = 1)
+pAreaDilatedMean2 = pAreaDilated2.mean(axis = 1)
+pAreaDilatedMean3 = pAreaDilated3.mean(axis = 1)
+pAreaDilatedMean4 = pAreaDilated4.mean(axis = 1)
+pAreaDilatedMean5 = pAreaDilated5.mean(axis = 1)
 
 def comparison_plot(time, valuesData0, valuesData1, valuesData2, valuesData3, valuesData4, valuesData5, pVal0, pVal1, pVal2, pVal3, pVal4, pVal5, freqs_list): 
      ''' 
@@ -80,148 +231,6 @@ def comparison_plot(time, valuesData0, valuesData1, valuesData2, valuesData3, va
      #plt.savefig('comparisonPure004Plot', format = 'pdf', dpi = 50)
      plt.show() 
      return(plt.show())
-     
-def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
-    '''
-    Make array of signal traces locked to an event.
-    Args:
-        timeVec (np.array): time of each sample in the signal.
-        signal (np.array): samples of the signal to process.
-        eventOnsetTimes (np.array): time of each event.
-        windowTimeRange (list or np.array): 2-element array defining range of window to extract.
-    Returns: 
-        windowTimeVec (np.array): time of each sample in the window w.r.t. the event.
-        lockedSignal (np.array): extracted windows of signal aligned to event. Size (nSamples,nEvents)
-    '''
-    if (eventOnsetTimes[0] + windowTimeRange[0]) < timeVec[0]:
-        raise ValueError('Your first window falls outside the recorded data.')
-    if (eventOnsetTimes[-1] + windowTimeRange[-1]) > timeVec[-1]:
-        raise ValueError('Your last window falls outside the recorded data.')
-    samplingRate = 1/(timeVec[1]-timeVec[0])
-    windowSampleRange = samplingRate*np.array(windowTimeRange)  # units: frames
-    windowSampleVec = np.arange(*windowSampleRange, dtype=int) # units: frames
-    windowTimeVec = windowSampleVec/samplingRate # Units: time
-    nSamples = len(windowTimeVec) # time samples / trial
-    nTrials = len(eventOnsetTimes) # number of times the sync light went off
-    lockedSignal = np.empty((nSamples,nTrials))
-    for inde,eventTime in enumerate(eventOnsetTimes):
-       eventSample = np.searchsorted(timeVec, eventTime) # eventSample = index at which the synch turns on
-       thiswin = windowSampleVec + eventSample # indexes of window
-       lockedSignal[:,inde] = signal[thiswin]
-    return (windowTimeVec, lockedSignal)
- 
-def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown, postLimUp): 
-  
-      '''  
-      Obtain pupil data before and after stimulus  
-      Args:  
-      timeArray (np.array): array of the time window to evaluate pupil area obtained from even  t_locked  
-      dataArray (np.array): array of the pupil data obtained from event_locked function  
-      preLimDown (int or float): first number of the time interval to evaluate before stimulus onset  
-      preLimUp (int or float): second number of the time interval to evaluate before stimulus onset
-      postLimDown (int or float): first number of the time interval to evaluate after stimulus onset  
-      postLimUp (int or float): second number of the time interval to evaluate after stimulus onset 
-      Returns: 
-      preData (np.array): array with the pupil data before stimulus 
-      postData (np.array): array with the pupil data after stimulus    
-      '''   
-      preBool = np.logical_and(preLimDown <= timeArray, timeArray < preLimUp) 
-      postBool = np.logical_and(postLimDown <= timeArray, timeArray < postLimUp) 
-      preValuesIndices = np.argwhere(preBool == True)  
-      postValuesIndices = np.argwhere(postBool == True)  
-      preProcessedPreValues = dataArray[preValuesIndices]  
-      preProcessedPostValues = dataArray[postValuesIndices]  
-      preData = preProcessedPreValues.reshape(preValuesIndices.shape[0], dataArray.shape[1]) 
-      postData = preProcessedPostValues.reshape(postValuesIndices.shape[0], dataArray.shape[1])  
-      return(preData, postData)
-
-# Load the Behavioral Data
-bdata = loadbehavior.BehaviorData(fileloc_behav, filename_behav)
-# Load the FaceMap data
-proc = fmap.load_data(os.path.join(fileloc_fmap, filename_behav), runchecks=False)
-
-#--- obtain frequencies data ---
-#freqs = bdata['currentFreq'] # works with am_tuning_curve paradigm
-freqs = bdata['postFreq'] # works with gonogo paradigm
-freqs_list = np.unique(freqs)
-#--- obtain pupil data ---
-pArea = fmap.extract_pupil(proc)
-
-#---calculate number of frames, frame rate, and time vector---
-nframes = len(pArea) # Number of frames.
-frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
-framerate = 30 # frame rate of video
-timeVec = frameVec / framerate # Time Vector to calculate the length of the video.
-
-#--- obtain values where sync signal turns on ---
-_, syncOnsetValues, _, _ = fmap.extract_sync(proc)
-timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which the sync signal turns on.
-
-if len(freqs) != syncOnsetValues.shape[0]: # Throw an error if there wasn't a sync light for every sound
-    print('ERROR: # of sync light signals does not match number of sounds played')
-    sys.exit()
-
-########## MAKE MANUAL CHANGE HERE, IF ERROR IS THROWN ABOVE ######
-#freqs=freqs[0:-1]
-#timeOfSyncOnset=timeOfSyncOnset[0:-1]
-
-#--- For p-values: Align trials to events ---
-timeRange = np.array([-0.5, 2.0]) # Create range for time window
-# create signal locked to sync light, for each condition
-windowTimeVec, windowed_signal = eventlocked_signal(timeVec, pArea, timeOfSyncOnset, timeRange)
-_, windowed_signal_nochange = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[0]], timeRange)
-_, windowed_signal_change1 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[1]], timeRange)
-_, windowed_signal_change2 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[2]], timeRange)
-_, windowed_signal_change3 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[3]], timeRange)
-_, windowed_signal_change4 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[4]], timeRange)
-_, windowed_signal_change5 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[5]], timeRange)
-
-#--- For p-values: Obtain pupil pre and post stimulus values, and average size ---
-preSignal_nochange, postSignal_nochange = find_prepost_values(windowTimeVec, windowed_signal_nochange, -0.5, 0, 1.4, 2.0)
-preSignal_change1, postSignal_change1 = find_prepost_values(windowTimeVec, windowed_signal_change1, -0.5, 0, 1.4, 2.0)
-preSignal_change2, postSignal_change2 = find_prepost_values(windowTimeVec, windowed_signal_change2, -0.5, 0, 1.4, 2.0)
-preSignal_change3, postSignal_change3 = find_prepost_values(windowTimeVec, windowed_signal_change3, -0.5, 0, 1.4, 2.0)
-preSignal_change4, postSignal_change4 = find_prepost_values(windowTimeVec, windowed_signal_change4, -0.5, 0, 1.4, 2.0)
-preSignal_change5, postSignal_change5 = find_prepost_values(windowTimeVec, windowed_signal_change5, -0.5, 0, 1.4, 2.0)
-
-averagePreSignal_nochange = preSignal_nochange.mean(axis = 0)
-averagePreSignal_change1 = preSignal_change1.mean(axis = 0)
-averagePreSignal_change2 = preSignal_change2.mean(axis = 0)
-averagePreSignal_change3 = preSignal_change3.mean(axis = 0)
-averagePreSignal_change4 = preSignal_change4.mean(axis = 0)
-averagePreSignal_change5 = preSignal_change5.mean(axis = 0)
-
-averagePostSignal_nochange = postSignal_nochange.mean(axis = 0)
-averagePostSignal_change1 = postSignal_change1.mean(axis = 0)
-averagePostSignal_change2 = postSignal_change2.mean(axis = 0)
-averagePostSignal_change3 = postSignal_change3.mean(axis = 0)
-averagePostSignal_change4 = postSignal_change4.mean(axis = 0)
-averagePostSignal_change5 = postSignal_change5.mean(axis = 0)
-
-#--- For p-values: Wilcoxon test to obtain statistics ---
-wstat0, pval0 = stats.wilcoxon(averagePreSignal_nochange, averagePostSignal_nochange)
-wstat1, pval1 = stats.wilcoxon(averagePreSignal_change1, averagePostSignal_change1)
-wstat2, pval2 = stats.wilcoxon(averagePreSignal_change2, averagePostSignal_change2)
-wstat3, pval3 = stats.wilcoxon(averagePreSignal_change3, averagePostSignal_change3)
-wstat4, pval4 = stats.wilcoxon(averagePreSignal_change4, averagePostSignal_change4)
-wstat5, pval5 = stats.wilcoxon(averagePreSignal_change5, averagePostSignal_change5)
-
-#--- For Plots: Defining the correct time range for pupil's relaxation (dilation) ---
-timeRangeForPupilDilation = np.array([-15, 15])
-pupilDilationTimeWindowVec, pAreaDilated0 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[0]], timeRangeForPupilDilation)
-_, pAreaDilated1 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[1]], timeRangeForPupilDilation)
-_, pAreaDilated2 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[2]], timeRangeForPupilDilation)
-_, pAreaDilated3 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[3]], timeRangeForPupilDilation)
-_, pAreaDilated4 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[4]], timeRangeForPupilDilation)
-_, pAreaDilated5 = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freqs_list[5]], timeRangeForPupilDilation)
-
-
-pAreaDilatedMean0 = pAreaDilated0.mean(axis = 1)
-pAreaDilatedMean1 = pAreaDilated1.mean(axis = 1)
-pAreaDilatedMean2 = pAreaDilated2.mean(axis = 1)
-pAreaDilatedMean3 = pAreaDilated3.mean(axis = 1)
-pAreaDilatedMean4 = pAreaDilated4.mean(axis = 1)
-pAreaDilatedMean5 = pAreaDilated5.mean(axis = 1)
 
 #--- plot with the three conditions aligned ---
 OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, pAreaDilatedMean0, pAreaDilatedMean1,  pAreaDilatedMean2, pAreaDilatedMean3, pAreaDilatedMean4, pAreaDilatedMean5, pval0, pval1, pval2, pval3, pval4,  pval5, freqs_list=freqs_list)
