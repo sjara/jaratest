@@ -20,12 +20,12 @@ inforec = os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py')
 
 dbPath = os.path.join(settings.DATABASE_PATH, f'celldb_{subject}.h5')
 
-if 1:
+if 0:
     basicdb = celldatabase.generate_cell_database(inforec, minimal=False)
     celldatabase.save_hdf(basicdb, dbPath)
     sys.exit()
 
-if 0:
+if 1:
     basicdb = celldatabase.load_hdf(dbPath)
     brainAreaDict = None #{'left_AudStr': 'LeftAstr', 'right_AudStr': 'RightAstr'}
     filterConditions = None
