@@ -1,5 +1,6 @@
 # Danny's Scripts
-This folder contains Danny's scripts.
+This folder contains Danny's scripts for working with FaceMap-generated traces
+of pupil area, and other mouse behaviors.
 
 * comparisonplots.py: Produces a plot of pupil area, averaged across
 trials that are locked to played sounds.  The trials are plotted by
