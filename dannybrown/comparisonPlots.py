@@ -19,67 +19,10 @@ import facemapanalysis as fmap
 # Reminder: may need to mount jarahubdata.  In terminal:
 #sshfs -o ro -o idmap=user jarauser@jarahub:/data/ /mnt/jarahubdata
 
-# Input the session parameters
+# User: Input the session parameters
 subject = 'pure012'
-date = '2022-08-11'
+date = '2022-08-18'
 
-# Load data from infovideos file
-#infovideosFilename = os.path.join('/home/jarauser/src/jarainfo/infovideos', f'{subject}_infovideos.py') #CHANGE
-infovideosFilename = os.path.join(settings.INFOVIDEOS_PATH, f'{subject}_infovideos.py')
-infovideos = extrafuncs.read_infofile(infovideosFilename)
-
-# File locations for behavioral data and processed FaceMap data
-for session in infovideos.videos.sessions:
-    if session.date == date:
-        selSession = session
-        break
-
-filename_behav = selSession.behavFile
-fileloc_behav = os.path.join(settings.BEHAVIOR_PATH,subject,filename_behav)
-filename_video = selSession.videoFile
-filename_fmap = '_'.join([filename_video.split('.')[0],'proc.npy'])
-fileloc_fmap = os.path.join(settings.VIDEO_PATH,f'{subject}_processed', filename_fmap)
-
-# Load the Behavioral Data and FaceMap data
-bdata = loadbehavior.BehaviorData(fileloc_behav)
-faceMap = fmap.load_data(os.path.join(fileloc_fmap), runchecks=False)
-
-#--- obtain frequencies data ---
-if selSession.sessionType == 'random6chord':
-    freqs = bdata['currentFreq'] # works with am_tuning_curve paradigm
-else:
-    freqs = bdata['postFreq'] # works with gonogo paradigm 
-freqs_list = np.unique(freqs)
-
-#--- obtain pupil data ---
-pArea = fmap.extract_pupil(faceMap)
-
-#---calculate number of frames, frame rate, and time vector---
-nframes = len(pArea) # Number of frames.
-frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
-framerate = 30 # frame rate of video
-timeVec = frameVec / framerate # Time Vector to calculate the length of the video.
-
-#--- obtain values where sync signal turns on ---
-_, syncOnsetValues, _, _ = fmap.extract_sync(faceMap)
-timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which the sync signal turns on.
-
-########## IF ERROR IS THROWN BELOW, FIRST INSPECT THE FILE AND THEN MAKE MANUAL CHANGES HERE ######
-# More freqs than sync lights?
-freqs=freqs[0:-1]
-# -or- # 
-# More sync lights than freqs?
-syncOnsetValues=syncOnsetValues[0:-1]
-timeOfSyncOnset=timeOfSyncOnset[0:-1]
-
-###########################################################################
-
-if len(freqs) != syncOnsetValues.shape[0]: # Throw an error if there wasn't a sync light for every sound
-    print('ERROR: # of sync light signals does not match number of sounds played:')
-    print(f'freqs = {len(freqs)}, sync lights = {syncOnsetValues.shape[0]}.')
-    print('See code line 63 for troubleshooting options.')
-    sys.exit()
-     
 def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
     '''
     Make array of signal traces locked to an event.
@@ -113,15 +56,6 @@ def eventlocked_signal(timeVec, signal, eventOnsetTimes, windowTimeRange):
        lockedSignal[:,inde] = signal[thiswin]
     return (windowTimeVec, lockedSignal)
 
-#--- For p-values: Align trials to events ---
-# create signal locked to sync light, for each condition
-timeRange = np.array([-0.5, 2.0]) # Create range for time window
-windowed_signal=[]
-for inde,freq in enumerate(freqs_list):
-    windowTimeVec, signals = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRange)
-    windowed_signal.append(signals)
-
-
 def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown, postLimUp): 
       '''  
       Obtain pupil data before and after stimulus  
@@ -145,48 +79,6 @@ def find_prepost_values(timeArray, dataArray, preLimDown, preLimUp, postLimDown,
       preData = preProcessedPreValues.reshape(preValuesIndices.shape[0], dataArray.shape[1]) 
       postData = preProcessedPostValues.reshape(postValuesIndices.shape[0], dataArray.shape[1])  
       return(preData, postData)
-
-#--- For p-values: Obtain pupil pre and post stimulus values, and average size ---
-preSignal = []
-postSignal = []
-for inde in range(len(freqs_list)):
-    thisValuePre, thisValuePost = find_prepost_values(windowTimeVec, windowed_signal[inde], -0.5, 0, 1.4, 2.0)
-    preSignal.append(thisValuePre)
-    postSignal.append(thisValuePost)
-    
-avgPreSignal = []
-avgPostSignal = []
-for inde in range(len(freqs_list)):
-    thisfreqPre = preSignal[inde].mean(axis = 0)
-    thisfreqPost = postSignal[inde].mean(axis = 0)
-    avgPreSignal.append(thisfreqPre)
-    avgPostSignal.append(thisfreqPost)
-
-#--- For p-values: Wilcoxon test and Pvalue statistics ---
-wstats = []
-pvals = []
-for inde in range(len(freqs_list)):
-    thisW, thisP = stats.wilcoxon(avgPreSignal[inde], avgPostSignal[inde])
-    wstats.append(thisW)
-    pvals.append(thisP)
-
-#--- For Plots: Defining time range for pupil, extracting the traces, create plotting function ---
-timeRangeForPupilDilation = np.array([-15, 15])
-
-pAreaDilated = []
-for inde,freq in enumerate(freqs_list):
-    pupilDilationTimeWindowVec, thispArea = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRangeForPupilDilation)
-    pAreaDilated.append(thispArea)
-    
-meanpAreaDilated = []
-for inde in range(len(freqs_list)):
-    thismean = pAreaDilated[inde].mean(axis = 1)
-    meanpAreaDilated.append(thismean)
-    
-nTrials = []
-for inde in range(len(freqs_list)):
-    thisN = pAreaDilated[inde].shape[1]
-    nTrials.append(thisN)
 
 def comparison_plot(time, valuesData, pVals, freqs_list, nTrials, firstSound): 
      ''' 
@@ -233,6 +125,115 @@ def comparison_plot(time, valuesData, pVals, freqs_list, nTrials, firstSound):
      plt.show() 
      return(plt.show())
 
+# Load data from infovideos file
+#infovideosFilename = os.path.join('/home/jarauser/src/jarainfo/infovideos', f'{subject}_infovideos.py') #CHANGE
+infovideosFilename = os.path.join(settings.INFOVIDEOS_PATH, f'{subject}_infovideos.py')
+infovideos = extrafuncs.read_infofile(infovideosFilename)
+
+# File locations for behavioral data and processed FaceMap data
+for session in infovideos.videos.sessions:
+    if session.date == date:
+        selSession = session
+        break
+
+filename_behav = selSession.behavFile
+fileloc_behav = os.path.join(settings.BEHAVIOR_PATH,subject,filename_behav)
+filename_video = selSession.videoFile
+filename_fmap = '_'.join([filename_video.split('.')[0],'proc.npy'])
+fileloc_fmap = os.path.join(settings.VIDEO_PATH,f'{subject}_processed', filename_fmap)
+
+# Load the Behavioral Data and FaceMap data
+bdata = loadbehavior.BehaviorData(fileloc_behav)
+faceMap = fmap.load_data(os.path.join(fileloc_fmap), runchecks=False)
+
+#--- obtain frequencies data ---
+if selSession.sessionType == 'random6chord':
+    freqs = bdata['currentFreq'] # works with am_tuning_curve paradigm
+else:
+    freqs = bdata['postFreq'] # works with gonogo paradigm 
+freqs_list = np.unique(freqs)
+
+#--- obtain pupil data ---
+pArea = fmap.extract_pupil(faceMap)
+
+#---calculate number of frames, frame rate, and time vector---
+nframes = len(pArea) # Number of frames.
+frameVec = np.arange(0, nframes, 1) # Vector of the total frames from the video.
+framerate = 30 # frame rate of video
+timeVec = frameVec / framerate # Time Vector to calculate the length of the video.
+
+#--- obtain values where sync signal turns on ---
+_, syncOnsetValues, _, _ = fmap.extract_sync(faceMap)
+timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which the sync signal turns on.
+
+#--- Make sure the # of sync lights observed equals the # of sounds played ---    
+if len(freqs) != syncOnsetValues.shape[0]:
+    if len(freqs) - syncOnsetValues.shape[0] == 1:
+        # More freqs than sync lights?
+        print('ERROR: # of sync light signals does not match number of sounds played:')
+        print(f'freqs = {len(freqs)}, sync lights = {syncOnsetValues.shape[0]}.')
+        print('Using solution: last trial was removed.')
+        freqs=freqs[0:-1] 
+    if len(freqs) - syncOnsetValues.shape[0] == -1:
+        # More sync lights than freqs?
+        print('ERROR: # of sync light signals does not match number of sounds played:')
+        print(f'freqs = {len(freqs)}, sync lights = {syncOnsetValues.shape[0]}.')
+        print('Using solution: last trial was removed.')
+        syncOnsetValues=syncOnsetValues[0:-1]
+        timeOfSyncOnset=timeOfSyncOnset[0:-1]
+    else:
+        print('ERROR: # of sync light signals does not match number of sounds played and needs to be inspected')
+        sys.exit()
+     
+#--- For p-values: Align trials to events ---
+# create signal locked to sync light, for each condition
+timeRange = np.array([-0.5, 2.0]) # Create range for time window
+windowed_signal=[]
+for inde,freq in enumerate(freqs_list):
+    windowTimeVec, signals = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRange)
+    windowed_signal.append(signals)
+
+#--- For p-values: Obtain pupil pre and post stimulus values, and average size ---
+preSignal = []
+postSignal = []
+for inde in range(len(freqs_list)):
+    thisValuePre, thisValuePost = find_prepost_values(windowTimeVec, windowed_signal[inde], -0.5, 0, 1.4, 2.0)
+    preSignal.append(thisValuePre)
+    postSignal.append(thisValuePost)
+    
+avgPreSignal = []
+avgPostSignal = []
+for inde in range(len(freqs_list)):
+    thisfreqPre = preSignal[inde].mean(axis = 0)
+    thisfreqPost = postSignal[inde].mean(axis = 0)
+    avgPreSignal.append(thisfreqPre)
+    avgPostSignal.append(thisfreqPost)
+
+#--- For p-values: Wilcoxon test and Pvalue statistics ---
+wstats = []
+pvals = []
+for inde in range(len(freqs_list)):
+    thisW, thisP = stats.wilcoxon(avgPreSignal[inde], avgPostSignal[inde])
+    wstats.append(thisW)
+    pvals.append(thisP)
+
+#--- For Plots: Defining time range for pupil, extracting the traces, create plotting function ---
+timeRangeForPupilDilation = np.array([-15, 15])
+
+pAreaDilated = []
+for inde,freq in enumerate(freqs_list):
+    pupilDilationTimeWindowVec, thispArea = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRangeForPupilDilation)
+    pAreaDilated.append(thispArea)
+    
+meanpAreaDilated = []
+for inde in range(len(freqs_list)):
+    thismean = pAreaDilated[inde].mean(axis = 1)
+    meanpAreaDilated.append(thismean)
+    
+nTrials = []
+for inde in range(len(freqs_list)):
+    thisN = pAreaDilated[inde].shape[1]
+    nTrials.append(thisN)
 
 if np.logical_or(selSession.sessionType == 'lowestfirst3chord', selSession.sessionType == 'lowestfirst6chord'):
     firstSound = np.min(freqs_list)
@@ -240,8 +241,6 @@ if selSession.sessionType == 'highestfirst6chord':
     firstSound = np.max(freqs_list)
 if selSession.sessionType == 'random6chord':
     firstSound='(only one sound)'
-#if selSession.sessionType == 'AMrandom3rate':
-
 
 #--- plot for all included frequencies ---
 OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, meanpAreaDilated, pvals, freqs_list=freqs_list,

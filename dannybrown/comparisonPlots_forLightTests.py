@@ -20,9 +20,15 @@ import facemapanalysis as fmap
 #sshfs -o ro -o idmap=user jarauser@jarahub:/data/ /mnt/jarahubdata
 
 # Input the session parameters
-subject = 'pure012'
-date = '2022-08-18'
+subject = 'pure014'
+date = '2022-09-07'
+breakout = 1
+runplot = 0
+limitrunning = 0
 
+runThreshold = .35
+runningThresholdTime = 3
+ 
 # Load data from infovideos file
 #infovideosFilename = os.path.join('/home/jarauser/src/jarainfo/infovideos', f'{subject}_infovideos.py') #CHANGE
 infovideosFilename = os.path.join(settings.INFOVIDEOS_PATH, f'{subject}_infovideos.py')
@@ -33,12 +39,17 @@ for session in infovideos.videos.sessions:
     if session.date == date:
         selSession = session
         break
+if session.date != date:
+    raise ValueError('ERROR - No data with that date in infovideos file.')
 
 filename_behav = selSession.behavFile
 fileloc_behav = os.path.join(settings.BEHAVIOR_PATH,subject,filename_behav)
 filename_video = selSession.videoFile
 filename_fmap = '_'.join([filename_video.split('.')[0],'proc.npy'])
 fileloc_fmap = os.path.join(settings.VIDEO_PATH,f'{subject}_processed', filename_fmap)
+
+paradigm = filename_behav[8:-13]
+params = selSession.sessionType
 
 # Load the Behavioral Data and FaceMap data
 bdata = loadbehavior.BehaviorData(fileloc_behav)
@@ -119,25 +130,46 @@ def comparison_plot(time, valuesData, pVals, freqs_list, nTrials, firstSound):
  fig.set_size_inches(18, 10, forward = True)
  pVals = np.round(pVals, decimals=4)
  
- legendLabels = []
- for f_ind, freq in enumerate(freqs_list):
-    iteration = f'Sound change = {firstSound}-->{freq} Hz, nTrials = {nTrials[f_ind]}, pval = {pVals[f_ind]}'
-    legendLabels.append(iteration)
-
- alphas = np.linspace(.4,1,len(freqs_list))
- for inde in range(len(freqs_list)):
-     subplt.plot(time, valuesData[inde], alpha = alphas[inde], label = legendLabels[inde], linewidth = 4)
-
- subplt.set_xlabel('Time (s)', fontsize = labelsSize)
- subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
- subplt.set_title(f'Pupil behavior in response to a sound change (with no gap): {len(freqs_list)} Rates.  Trials beginning with {theseTrials} Hz', fontsize = labelsSize)
- plt.suptitle(f'Mouse = {subject}.  Data Collected {date}.', fontsize = labelsSize)
- plt.axvline(-7, label='begin fade in', color = 'lightskyblue', linestyle='dashed', linewidth = 3)
- plt.axvline(-5, label='fade in complete', color = 'dodgerblue', linestyle='dashed', linewidth = 3)
- plt.axvline(0, label = 'sound change', color = 'red', linestyle='dashed', linewidth = 3)
- plt.axvline(5, label = 'sound turns off', color = 'pink', linestyle='dashed', linewidth = 3)
- plt.grid(b = True)
+ if paradigm == 'am_tuning_curve':
+     legendLabels = []
+     for f_ind, freq in enumerate(freqs_list):
+        iteration = f'Sound = {freq} Hz'
+        legendLabels.append(iteration)
+    
+     alphas = np.linspace(.4,1,len(freqs_list))
+     for inde in range(len(freqs_list)):
+         subplt.plot(time, valuesData[inde], alpha = alphas[inde], label = legendLabels[inde], linewidth = 4)
+    
+     subplt.set_title(f'Pupil behavior in response to a sound turning on, then off.  Sound = {theseTrials} Hz', fontsize = labelsSize)
+     plt.suptitle(f'Mouse = {subject}.  Data Collected {date}.  Params: {params}.  # of Trials: {len(freqs)}.', fontsize = labelsSize)
+     subplt.set_xlabel('Time (s)', fontsize = labelsSize)
+     subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
+     plt.axvline(0, label = 'sound turns off', color = 'red', linestyle='dashed', linewidth = 3)
+     plt.grid(b = True)
+ 
+ if paradigm == 'detectiongonogo':
+     legendLabels = []
+     for f_ind, freq in enumerate(freqs_list):
+        iteration = f'Sound change = {firstSound}-->{freq} Hz, nTrials = {nTrials[f_ind]}, pval = {pVals[f_ind]}'
+        legendLabels.append(iteration)
+     alphas = np.linspace(.4,1,len(freqs_list))
+     
+     for inde in range(len(freqs_list)):
+         subplt.plot(time, valuesData[inde], alpha = alphas[inde], label = legendLabels[inde], linewidth = 4)
+    
+     subplt.set_xlabel('Time (s)', fontsize = labelsSize)
+     subplt.set_ylabel('Pupil Area', fontsize = labelsSize)
+     plt.axvline(0, label = 'sound turns on', color = 'red', linestyle='dashed', linewidth = 3)
+     subplt.set_title(f'Pupil behavior in response to a sound change (with no gap): {len(freqs_list)} Rates.  Trials beginning with {theseTrials} Hz', fontsize = labelsSize)
+     plt.suptitle(f'Mouse = {subject}.  Data Collected {date}.', fontsize = labelsSize)
+     plt.axvline(-7, label='begin fade in', color = 'lightskyblue', linestyle='dashed', linewidth = 3)
+     plt.axvline(-5, label='fade in complete', color = 'dodgerblue', linestyle='dashed', linewidth = 3)
+     plt.axvline(0, label = 'sound change', color = 'red', linestyle='dashed', linewidth = 3)
+     plt.axvline(5, label = 'sound turns off', color = 'pink', linestyle='dashed', linewidth = 3)
+     plt.grid(b = True)
+ 
  #plt.ylim([550, 650])
+ 
  plt.xticks(fontsize = labelsSize)
  plt.yticks(fontsize = labelsSize)
  plt.legend()
@@ -155,25 +187,60 @@ def comparison_plot(time, valuesData, pVals, freqs_list, nTrials, firstSound):
 #timeOfSyncOnset=timeOfSyncOnset[0:-1]
 
 
-# LIMIT ANALYSIS BY 1ST SOUND PRESENTED
-if np.logical_or(selSession.sessionType == 'random6chord', selSession.sessionType == 'pureTone20sec'):
+#light = np.array([1,1,1,1,1,1,1,1,1,1,3,3,3,3,3,3,3,3,3,3,5,5,5,5,5,5,5,5,5,5,7,7,7,7,7,7,7,7,7,7,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,7,7,7,7,7,7,7,7,7,7,7,5,5,5,5,5,5,5,5,5,5,5,3,3,3,3,3,3,3,3,3,3,3,1,1,1,1,1,1,1,1,1,1,1])
+light = np.ones(100)
+if session.date == '2022-08-25':
+    light=np.ones(80)
+
+if breakout == 1:
+    light[0:10] = 3
+    light[10:20] = 4
+    light[20:30] = 5
+    light[30:40] = 6
+    light[40:60] = 7
+    light[60:70] = 6
+    light[70:80] = 5
+    light[80:90] = 4
+    light[90:100] = 3
+ 
+
+bdata['currentFreq'] = light
+
+
+# Build list of unique frequencies
+if paradigm == 'am_tuning_curve':
+#    if params == 'AM4sec10off':
+#        freqs = light
+#    else:
     freqs = bdata['currentFreq'] # works with am_tuning_curve paradigm
-else:
+
+if paradigm == 'detectiongonogo':
     freqs = bdata['postFreq'] # works with gonogo paradigm 
 
 freqs_list = np.unique(freqs)
 
+# LIMIT ANALYSIS BY 1ST SOUND PRESENTED
 for theseTrials in freqs_list:
     
     #--- obtain frequencies data ---
-    if np.any([[selSession.sessionType == 'random6chord'], [selSession.sessionType == 'pureTone20sec']]):
+    if paradigm == 'am_tuning_curve':
+#        if params == 'AM4sec10off':
+#            freqs = light
+#        else:
         freqs = bdata['currentFreq'] # works with am_tuning_curve paradigm
-    else:
+    if paradigm == 'detectiongonogo':
         freqs = bdata['postFreq'] # works with gonogo paradigm 
     freqs_list = np.unique(freqs)
     
-    #--- obtain pupil data ---
+    
+    
+    #--- obtain pupil and running data ---
     pArea = fmap.extract_pupil(faceMap)
+    running, _ = fmap.extract_whisking(faceMap, window_width = 60)
+    
+    #--- marker of running behavior ----
+    running_binary = np.zeros(len(running))
+    running_binary[running<runThreshold] = 1
     
     #---calculate number of frames, frame rate, and time vector---
     nframes = len(pArea) # Number of frames.
@@ -184,17 +251,19 @@ for theseTrials in freqs_list:
     #--- obtain values where sync signal turns on ---
     _, syncOnsetValues, _, _ = fmap.extract_sync(faceMap)
     timeOfSyncOnset = timeVec[syncOnsetValues] # Provides the time values in which the sync signal turns on.
-    syncOnsetValues = syncOnsetValues[bdata['preFreq']==theseTrials]
-    timeOfSyncOnset=timeOfSyncOnset[bdata['preFreq']==theseTrials]
-    freqs=freqs[bdata['preFreq']==theseTrials]
     
-    # skip to the next freq, if this one never appears as a first freq.
-    if len(timeOfSyncOnset) == 0:
-        continue
-
-###########################################################################
-
+    if limitrunning == 1:
+        freqs = freqs[running_binary[syncOnsetValues - runningThresholdTime*framerate]==0]
+        syncOnsetValues = syncOnsetValues[running_binary[syncOnsetValues - runningThresholdTime*framerate]==0]
+        timeOfSyncOnset = timeVec[syncOnsetValues]
+        
+    
+    
     #--- Make sure the # of sync lights observed equals the # of sounds played ---    
+    if session.date == '2022-08-25':
+        syncOnsetValues = syncOnsetValues[:-4] #HARDCODED FOR A VIDEO THAT WAS NOT ENDED ON TIME
+        timeOfSyncOnset = timeOfSyncOnset[:-4] #HARDCODED FOR A VIDEO THAT WAS NOT ENDED ON TIME
+        
     if len(freqs) != syncOnsetValues.shape[0]:
         if len(freqs) - syncOnsetValues.shape[0] == 1:
             # More freqs than sync lights?
@@ -211,14 +280,27 @@ for theseTrials in freqs_list:
             timeOfSyncOnset=timeOfSyncOnset[0:-1]
         else:
             print('ERROR: # of sync light signals does not match number of sounds played and needs to be inspected')
-            sys.exit()
-    
+            sys.exit()    
+    if limitrunning == 0:
+        if paradigm == 'am_tuning_curve':
+            syncOnsetValues = syncOnsetValues[bdata['currentFreq']==theseTrials]
+            timeOfSyncOnset=timeOfSyncOnset[bdata['currentFreq']==theseTrials]
+            freqs=freqs[bdata['currentFreq']==theseTrials] 
+        if paradigm == 'detectiongonogo':
+            syncOnsetValues = syncOnsetValues[bdata['preFreq']==theseTrials]
+            timeOfSyncOnset=timeOfSyncOnset[bdata['preFreq']==theseTrials]
+            freqs=freqs[bdata['preFreq']==theseTrials]    
+        # skip to the next freq, if this one never appears as a first freq.
+        if len(timeOfSyncOnset) == 0:
+            continue
+
+###########################################################################
     #--- For p-values: Align trials to events ---
     # create signal locked to sync light, for each condition
     timeRange = np.array([-0.5, 2.0]) # Create range for time window
     windowed_signal=[]
     for inde,freq in enumerate(freqs_list):
-        windowTimeVec, signals = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRange)
+        windowTimeVec, signals = eventlocked_signal(timeVec, pArea, timeOfSyncOnset, timeRange)
         windowed_signal.append(signals)
     
     #--- For p-values: Obtain pupil pre and post stimulus values, and average size ---
@@ -247,12 +329,14 @@ for theseTrials in freqs_list:
     
     #--- For Plots: Defining time range for pupil, extracting the traces, create plotting function ---
     timeRangeForPupilDilation = np.array([-15, 15])
-    if np.logical_or(selSession.sessionType == 'pureTone20sec', selSession.sessionType == 'AM20sec'):
-        timeRangeForPupilDilation = np.array([-20, 20])
+    if np.any([selSession.sessionType == 'pureTone20sec', selSession.sessionType == 'AM20sec', selSession.sessionType == 'AM20secControl']):
+        timeRangeForPupilDilation = np.array([-25, 25])
+    if np.any([selSession.sessionType == 'AM4sec10off']):
+        timeRangeForPupilDilation = np.array([-5, 12])
     
     pAreaDilated = []
     for inde,freq in enumerate(freqs_list):
-        pupilDilationTimeWindowVec, thispArea = eventlocked_signal(timeVec, pArea, timeOfSyncOnset[freqs==freq], timeRangeForPupilDilation)
+        pupilDilationTimeWindowVec, thispArea = eventlocked_signal(timeVec, pArea, timeOfSyncOnset, timeRangeForPupilDilation)
         pAreaDilated.append(thispArea)
         
     meanpAreaDilated = []
@@ -271,9 +355,75 @@ for theseTrials in freqs_list:
         firstSound = np.max(freqs_list)
     if selSession.sessionType == 'random6chord':
         firstSound='(only one sound)'
-    if np.logical_or(selSession.sessionType == 'AMrandom3rate', selSession.sessionType == 'AMpreExtreme3rate'):
+    if np.any([selSession.sessionType == 'AMrandom3rate', selSession.sessionType == 'AMpreExtreme3rate', selSession.sessionType == 'pureTone20sec',
+              selSession.sessionType == 'AM20sec', selSession.sessionType == 'AM4sec10off']):
         firstSound = theseTrials
        
     #--- plot for all included frequencies ---
-    OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, meanpAreaDilated, pvals, freqs_list=freqs_list,
-                                   nTrials = nTrials, firstSound=firstSound)
+#    OverLapPlots = comparison_plot(pupilDilationTimeWindowVec, meanpAreaDilated, pvals, freqs_list=freqs_list,
+#                                   nTrials = nTrials, firstSound=firstSound)
+#    plt.ylim([650,1850])
+    
+    runningTraces = []
+    for inde,freq in enumerate(freqs_list):
+        runTimeWindowVec, thisRunTrace = eventlocked_signal(timeVec, running, timeOfSyncOnset, timeRangeForPupilDilation)
+        runningTraces.append(thisRunTrace)
+    
+    meanRunDilated = []
+    for inde in range(len(freqs_list)):
+        thismean = runningTraces[inde].mean(axis = 1)
+        meanRunDilated.append(thismean)
+#    
+#    OverLapPlots_running = comparison_plot(runTimeWindowVec, meanRunDilated, pvals, freqs_list=freqs_list, 
+#                                           nTrials = nTrials, firstSound=firstSound)
+#    plt.title(f'Average running behavior locked to a sound turning on, then off.', fontsize = 16)
+#    plt.suptitle(f'Mouse = {subject}.  Data Collected {date}.  Params: {params}.  # of Trials: {len(freqs)}.', fontsize = 16)
+#    plt.xlabel('Time (s)', fontsize = 16)
+#    plt.ylabel('Running Movement', fontsize = 16)
+#    plt.axvline(0, label = 'sound turns off', color = 'red', linestyle='dashed', linewidth = 3)
+    if breakout != 1:
+        plt.figure()
+    if breakout == 1:
+        plt.plot(pupilDilationTimeWindowVec, meanpAreaDilated[0], linewidth = 3, label = f'Light = {theseTrials}.  nTrials = {len(freqs)}')
+    if breakout != 1:
+        plt.plot(pupilDilationTimeWindowVec, meanpAreaDilated[0], linewidth = 3, label = f'nTrials = {len(freqs)}')
+    plt.grid(b = True)
+    plt.title(f'Pupil trace, all trials.  Mouse: {subject}.  Date: {date}', fontsize=18)
+    if limitrunning == 1:
+        plt.title(f'Pupil trace restricted to running =< {runThreshold} at {-runningThresholdTime} seconds.  Mouse: {subject}.  Date: {date}', fontsize=18)
+    plt.xlabel('Time (s)', fontsize=14)
+    plt.ylabel('Pupil Area', fontsize=14)
+
+plt.axvline(-4, label = 'sound turns on', color = 'red', linestyle='dashed', linewidth = 3)
+plt.axvline(0, label = 'sound turns off', color = 'blue', linestyle='dashed', linewidth = 3)
+plt.axvline(10, color = 'red', linestyle='dashed', linewidth = 3)
+plt.legend(prop={'size':12})  
+    
+if runplot == 1:
+    plt.figure()
+    plt.plot(runTimeWindowVec, meanRunDilated[0], linewidth = 3, label = f'nTrials = {len(freqs)}')
+    plt.grid(b = True)
+    plt.title(f'Running trace.  Mouse: {subject}.  Date: {date}', fontsize=18)
+    plt.xlabel('Time (s)', fontsize=14)
+    plt.ylabel('Running', fontsize=14)
+    
+    plt.axvline(-4, label = 'sound turns on', color = 'red', linestyle='dashed', linewidth = 3)
+    plt.axvline(0, label = 'sound turns off', color = 'blue', linestyle='dashed', linewidth = 3)
+    plt.axvline(10, color = 'red', linestyle='dashed', linewidth = 3)
+    plt.legend(prop={'size':12})            
+
+# Investigating: raw running and pupil traces, with sync light
+if breakout != 1:
+    plt.figure()
+    plt.plot(pArea, label='pupil') # plot pupil
+    plt.plot(np.mean(pArea)/np.mean(running)*running, label='running (adjusted)', color = 'purple') # plot running, adjusted to pupil mean
+    counter=1
+    for x in syncOnsetValues:
+        if np.logical_and(counter%10 == 0, limitrunning ==0):
+            plt.axvline(x, linestyle='dashed', color = 'orange')
+            counter+=1
+        else:
+            plt.axvline(x, linestyle='dashed', color = 'blue')
+            counter+=1
+    plt.legend()
+    plt.title('Raw Traces - Included trials.')
