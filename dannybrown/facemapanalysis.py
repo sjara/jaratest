@@ -27,6 +27,7 @@ def load_data(filepath, runchecks=False):
 
     if runchecks == True:
         # Make lists of running and blinking ROIs with their: position (running) & area (blinking)
+        print('RUNCHECKS IS NOT YET FINISHED - DO NOT USE UNTIL YOU HAVE COMPLETED IT.')
         running_rois = [] # Format: (iROI, ymin)
         blink_rois = [] # Format: (iROI, area, ymax)
         counter_run = 0; counter_blink=0
@@ -134,7 +135,7 @@ def extract_running(proc_data, window_width=5):
     return running_smooth, running_raw
 
 
-def extract_sync(proc_data,threshold = None):
+def extract_sync(proc_data, threshold = None):
     """
     Extract a boolean of the syncronizaition light in FaceMap, using a threshold set by the user.
     The threshold can be manually set using the optional argument 'threshold=True'.  If not
