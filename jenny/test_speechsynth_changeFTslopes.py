@@ -106,8 +106,8 @@ class SyllableRange():
         F3on = self.formantSet[3,0]
         #self.formant2onset = np.geomspace(F2on/1.4, F2on*1.4, self.nFT)
         #self.formant3onset = np.geomspace(F3on/1.25, F3on*1.25, self.nFT)
-        self.formant2onset = np.geomspace(F2on/1.68, F2on*1.68, self.nFT)
-        self.formant3onset = np.geomspace(F3on/1.5, F3on*1.5, self.nFT)
+        self.formant2onset = np.geomspace(F2on/2.24, F2on*2.24, self.nFT)
+        self.formant3onset = np.geomspace(F3on/2, F3on*2, self.nFT)
         for indvot in range(self.nVOT):
             self.syllables.append([])
             self.timingParams['aspPoint'] = self.aspPointValues[indvot]
