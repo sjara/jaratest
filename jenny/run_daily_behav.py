@@ -9,10 +9,10 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 from jaratoolbox import extraplots
 
-print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, 4 = AM cohort, 5 = PM cohort or enter a specific animal name')
+print('Enter which subjects you want to look at: 1 = Gabes cohort, or enter a specific animal name')
 whichSubject = input()
 if whichSubject == '1':
-    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042'] #VOT animals
+    subject = ['bili052', 'bili053', 'bili054', 'bili055', 'bili056', 'bili057', 'bili058', 'bili059', 'bili060']
 elif whichSubject == '2':
     subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051'] #FT animals
 elif whichSubject == '3':
@@ -23,6 +23,8 @@ elif whichSubject == '5':
     subject = ['bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047']
 elif whichSubject == '6':
     subject = ['bili044', 'bili046', 'bili047', 'bili051'] #FT animals
+elif whichSubject == '7':
+    subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042'] #VOT animals
 else:
     subject = [whichSubject]
 
