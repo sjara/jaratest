@@ -28,7 +28,8 @@ elif whichSubject == '7':
 else:
     subject = [whichSubject]
 
-paradigm = '2afc_speech'
+#paradigm = '2afc_speech'
+paradigm = '2afc'
 
 # Add the dates
 #session = '20220113a'
