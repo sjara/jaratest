@@ -8,18 +8,20 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 from jaratoolbox import extraplots
 
-print('Enter which subjects you want to look at: 1 = VOT, 2 = FT, 3 = all, 4 = AM cohort, 5 = PM cohort or enter a specific animal name')
+print('Enter which subjects you want to look at: 1 = Gabes cohort, or enter a specific animal name')
 #print('Enter the subject name')
 whichSubject = input()
-if whichSubject == '1': #VOT cohort
+if whichSubject == '1':
+    subject = ['bili052', 'bili053', 'bili054', 'bili055', 'bili056', 'bili057', 'bili058', 'bili059', 'bili060']
+elif whichSubject == '2': #VOT cohort
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042'] #VOT animals
-elif whichSubject == '2': #FT cohort
+elif whichSubject == '3': #FT cohort
     subject = ['bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051'] #FT animals
-elif whichSubject == '3': #all
+elif whichSubject == '4': #all
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047', 'bili048', 'bili049', 'bili050', 'bili051']
-elif whichSubject == '4': #AM cohort
+elif whichSubject == '5': #AM cohort
     subject = ['bili034', 'bili035', 'bili036', 'bili037', 'bili038', 'bili048', 'bili049', 'bili050', 'bili051']
-elif whichSubject == '5': #PM cohort
+elif whichSubject == '6': #PM cohort
     subject = ['bili039', 'bili040', 'bili041', 'bili042', 'bili043', 'bili044', 'bili045', 'bili046', 'bili047']
 else:
     subject = [whichSubject]
@@ -30,7 +32,8 @@ paradigm = '2afc_speech'
 sessions = []
 #print('input the date of the first session you want to look at (e.g. 20220115):')
 #firstSession = str(input())
-firstSession = str(20220111)
+#firstSession = str(20220111)
+firstSession = str(20230109)
 print('input the last date of the sessions you want to look at (e.g. 20220121):')
 lastSession = str(input())
 dates = pd.date_range(firstSession, lastSession)
