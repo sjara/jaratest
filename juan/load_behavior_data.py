@@ -1,5 +1,6 @@
 from jaratoolbox import loadbehavior
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from datetime import date, timedelta
 
@@ -80,10 +81,34 @@ data_1 = data_1.groupby(
     ]
 )["Outcome"].count()
 
-fig, ax = plt.subplots(layout="constrained")
-ax.bar(
-    data_1.loc['solid'].reset_index()['MiceID'].values,
-    data_1.loc['solid'].values,
-)
+# Paso 3: Creation of bar charts
+fig, ax = plt.subplots(layout='constrained',nrows=2)
+fig.suptitle(f'Accumulated rewards on time per mice')
+times = data_1.loc['perforated'].reset_index().set_index('Time').drop('MiceID',axis=1).index.unique()
+x_pos = np.arange(len(times))
+mice_ids = data_1.loc['perforated'].index.levels[0].to_list()
+width = 0.25
+multiplier =0
+
+for index, barrier in enumerate(data_1.index.levels[0]):
+    
+    for time in times:
+        offset = width * multiplier
+        bars = ax[0].bar(
+            x_pos + offset,
+            data_1.loc['perforated',:,time].values,
+            width,
+            label=time
+        )
+        ax[0].bar_label(bars, padding=3)
+        multiplier +=1
+
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax[index].set_title(f"{barrier} barrier")
+    ax[index].set_ylabel('Rewards count')
+    ax[index].set_xticks(x_pos + 0.25, mice_ids)
+    ax[index].legend(loc='upper left', ncols=3)
+    ax[index].set_ylim(0, 150)
 
 plt.show()
