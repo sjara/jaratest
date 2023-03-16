@@ -1,9 +1,7 @@
 from jaratoolbox import loadbehavior
 import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
 from datetime import date, timedelta
-from IPython.display import display
 
 # subject = "coop010x011"  
 # paradigm = "coop4ports"  # The paradigm name is also part of the data file name
@@ -34,7 +32,7 @@ def load_data (subject, session):
 # only the time of stage 1 can be estimated
 def merge_data (start_subject, number_of_mice, start_date, end_date):
     # Empty dataframe defining the fields will need
-    df_all_data = pd.DataFrame(columns=['Outcome', 'Time', "barrierType", "Date", "MiceID"])
+    df_all_data = pd.DataFrame(columns=['Outcome', 'Time', "BarrierType", "Date", "MiceID"])
     # Break down the tuple to handle each number separetaly 
     mouse1,mouse2 = start_subject
     for _ in range(number_of_mice):
@@ -44,21 +42,20 @@ def merge_data (start_subject, number_of_mice, start_date, end_date):
             current_date = str(start_date + timedelta(days)).replace("-", "")
             #print(current_date)
             bdata = load_data(mice_id, f'{current_date}a')
-            print(bdata.labels['barrierType'])
-            df = pd.DataFrame({'Outcome':bdata['outcome'], 'Time': bdata['timeTrialStart'], "barrierType":bdata['barrierType'] })
+            df = pd.DataFrame({'Outcome':bdata['outcome'], 'Time': bdata['timeTrialStart'], "BarrierType":bdata['barrierType'] })
             df['Date'] = current_date
             df['MiceID'] = mice_id
             df_all_data= pd.concat([df, df_all_data],ignore_index=True)
         mouse1= mouse2 + 1
         mouse2= mouse1 + 1
     
-    df_all_data.replace({'barrierType':bdata.labels['barrierType']}, inplace=True)
-    display(df_all_data.head())
+    df_all_data.replace({'BarrierType':bdata.labels['barrierType']}, inplace=True)
     return df_all_data
 
-merge_data(start_subject=(10,11), number_of_mice=3, start_date=date(2023, 3, 13), end_date=date(2023, 3, 14))
+data = merge_data(start_subject=(10,11), number_of_mice=3, start_date=date(2023, 3, 13), end_date=date(2023, 3, 14))
 
 # Paso 2: I need to group all data by barrier > mice id 
+data.set_index(keys=['BarrierType','MiceID'], inplace=True)
 
 
 def f ():
