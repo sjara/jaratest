@@ -26,6 +26,15 @@ def load_data(subject, session):
     bdata = loadbehavior.BehaviorData(behavFile)
     return bdata
 
+def for_stage_1(bdata):
+    time = list()
+    count = 0
+    for i in bdata['outcome']:
+        if i in [1,2,3]:
+            count += 3
+        count+=3
+        time.append(count)
+    return time
 
 def collect_data(
     start_subject: tuple[int], number_of_mice: int, start_date: date, end_date: date
@@ -69,7 +78,9 @@ def collect_data(
             df = pd.DataFrame(
                 {
                     "Outcome": bdata["outcome"],
-                    # "Time": bdata["timeTrialStart"],
+                    "Time":  #for_stage_1(bdata)
+                        bdata["timeTrialStart"]
+                    ,
                     "BarrierType": bdata["barrierType"],
                     "TimePoke1": bdata["timePoke1"],
                     "TimePoke2": bdata["timePoke2"],

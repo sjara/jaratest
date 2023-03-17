@@ -1,30 +1,27 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from datetime import date, timedelta
-from load_behavior_data import load_data, collect_data
+from datetime import date
+from load_behavior_data import collect_data
 
 # Objective: Make a group of graphs to show the accumulated rewards every 20 min for each pair of mice, date and barrier
 
 # Paso 1: I need to accumulate all data taking into account that I started recording the time since 20230313a and
 # only the time of stage 1 can be estimated
 
-def for_stage_1(bdata):
-    time = list()
-    count = 0
-    for i in bdata['outcome']:
-        if i in [1,2,3]:
-            count += 3
-        count+=3
-        time.append(count)
-    return time
-
 data = collect_data(
     start_subject=(10, 11),
-    number_of_mice=2,
-    start_date=date(2023, 2, 28),
-    end_date=date(2023, 3, 3),
+    number_of_mice=3,
+    start_date=date(2023, 3, 13),
+    end_date=date(2023, 3, 16),
 )
+# data2 = collect_data(
+#     start_subject=(14, 15),
+#     number_of_mice=1,
+#     start_date=date(2023, 3, 5),
+#     end_date=date(2023, 3, 7),
+# )
+# data = pd.concat([data,data2])
 
 # Paso 2: I need to group all data by barrier > mice id
 data.set_index(keys=["BarrierType", "MiceID"], inplace=True)
@@ -51,21 +48,18 @@ def barplot_accu_rewards_time(data):
         data (pandas.dataframe): Dataframe containing minimun
     """
 
-    fig, ax = plt.subplots(layout="constrained", nrows=2)
-    fig.suptitle(f"Accumulated rewards on time per mice")
+    fig, ax = plt.subplots( nrows=2,figsize=(10, 5) )
+    fig.suptitle(f"Accumulated rewards on time per mice for stage 1")
     times = data.index.levels[2]
     x_pos = np.arange(len(times))
-    print(x_pos)
     mice_ids = data.index.levels[1]
-    print(mice_ids)
     width = 0.25
     multiplier = 0
-    print(data)
     for index, barrier in enumerate(data.index.levels[0]):
         for time in times:
             offset = width * multiplier
             bars = ax[index].bar(
-                x_pos[:-1] + offset,
+                x_pos + offset,
                 data.loc[f"{barrier}", :, time].values,
                 width,
                 label=time,
@@ -77,9 +71,10 @@ def barplot_accu_rewards_time(data):
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax[index].set_title(f"{barrier} barrier")
         ax[index].set_ylabel("Rewards count")
-        #ax[index].set_xticks(x_pos + width, mice_ids)
+        ax[index].set_xticks(x_pos + width, mice_ids)
         ax[index].legend(loc="upper left", ncols=3)
-        ax[index].set_ylim(0, 150)
+        ax[index].set_ylim(0, 350)
 
-#barplot_accu_rewards_time(data_only_successful_grouped)
-#plt.show()
+barplot_accu_rewards_time(data_only_successful_grouped)
+plt.tight_layout()
+plt.savefig('rewards_on_time_stage4.jpg')
