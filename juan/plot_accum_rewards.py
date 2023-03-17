@@ -1,3 +1,13 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from datetime import date, timedelta
+from load_behavior_data import load_data, collect_data
+
+# Objective: Make a group of graphs to show the accumulated rewards every 20 min for each pair of mice, date and barrier
+
+# Paso 1: I need to accumulate all data taking into account that I started recording the time since 20230313a and
+# only the time of stage 1 can be estimated
 
 def for_stage_1(bdata):
     time = list()
@@ -9,56 +19,7 @@ def for_stage_1(bdata):
         time.append(count)
     return time
 
-# Paso 1: I need to accumulate all data taking into account that I started recording the time since 20230313a and
-# only the time of stage 1 can be estimated
-def merge_data(start_subject, number_of_mice, start_date, end_date):
-    """_summary_:
-    This function is used to merge all the behavior data we want from cosial cooperatio project into one dataframe
-
-    Args:
-        start_subject (str): Store the numbers of the first pair of mice we want to start collecting data.
-        number_of_mice (int): Store the amount of mice we want to collect data. So, we start iterating number_of_mice mices from start_subject.
-        start_date (datetime.date): Store the first date we want to collect the data.
-        end_date (datetime.date): Store the last date we want to collect the data.
-
-    Returns:
-        pandas.Dataframe: All collected data returned into one Dataframe
-    """
-    # Empty dataframe defining the fields will need
-    df_all_data = pd.DataFrame(
-        columns=["Outcome", "Time", "BarrierType", "Date", "MiceID"]
-    )
-    # Break down the tuple to handle each number separetaly
-    mouse1, mouse2 = start_subject
-
-    # Upload a dataframe for each pair of mice and date 
-    for _ in range(number_of_mice):
-        mice_id = f"coop0{mouse1}x0{mouse2}"
-        # print(mice_id)
-        for days in range(int((end_date - start_date).days) + 1):
-            current_date = str(start_date + timedelta(days)).replace("-", "")
-            # print(current_date)
-            bdata = load_data(mice_id, f"{current_date}a")
-            df = pd.DataFrame(
-                {
-                    "Outcome": bdata["outcome"],
-                    "Time": for_stage_1(bdata)
-                        #bdata["timeTrialStart"]
-                        ,
-                    "BarrierType": bdata["barrierType"],
-                }
-            )
-            df["Date"] = current_date
-            df["MiceID"] = mice_id
-            df_all_data = pd.concat([df, df_all_data], ignore_index=True)
-        mouse1 = mouse2 + 1
-        mouse2 = mouse1 + 1
-
-    df_all_data.replace({"BarrierType": bdata.labels["barrierType"]}, inplace=True)
-    return df_all_data
-
-
-data = merge_data(
+data = collect_data(
     start_subject=(10, 11),
     number_of_mice=2,
     start_date=date(2023, 2, 28),
