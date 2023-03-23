@@ -20,23 +20,34 @@ data = collect_data(
     end_date=date(2023, 3, 20),
 )
 # Paso 2: I need to filter and group all data by barrier > mice id
-data.set_index(keys=["BarrierType", "MiceID"], inplace=True)
-data_only_successful = data[data["Outcome"] == 1]
-bins = 4
-data_only_successful_grouped = data_only_successful.groupby(
-    by=[
-        "BarrierType",
-        "MiceID",
-        pd.cut(
-            data_only_successful["Time"],
-            bins=bins,
-            labels=[
-                f"{int((60/bins*i)-(60/bins))}-{int(60/bins*i)}"
-                for i in range(1, bins + 1)
-            ],
-        ),
-    ]
-)["Outcome"].count()
+def filter_and_group(bins) -> pd.DataFrame:
+    
+    """_summary_:
+    This function is used to filter the data by the outcome of a trial 
+    and to group the data by the number of segmentation in time desired (bins)
+
+    Returns:
+        data_filtered_grouped: Dataframe with the data filtered and grouped into 
+        as many segments as chose by the user
+    """
+    
+    data.set_index(keys=["BarrierType", "MiceID"], inplace=True)
+    data_filtered = data[data["Outcome"] == 1]
+    data_filtered_grouped = data_filtered.groupby(
+        by=[
+            "BarrierType",
+            "MiceID",
+            pd.cut(
+                data_filtered["Time"],
+                bins=bins,
+                labels=[
+                    f"{int((60/bins*i)-(60/bins))}-{int(60/bins*i)}"
+                    for i in range(1, bins + 1)
+                ],
+            ),
+        ]
+    )["Outcome"].count()
+    return data_filtered_grouped
 
 # Paso 3: Creation of bar charts
 # paso 4: Compile all in a function to plot both barriers
@@ -81,7 +92,13 @@ def barplot_accu_rewards_time(data):
         ax[index].set_ylim(0, 350)
 
 
-barplot_accu_rewards_time(data_only_successful_grouped)
-plt.tight_layout()
-plt.show()
-# plt.savefig('rewards_on_time_stage4.jpg')
+if __name__ == '__main__':
+    
+    ## RUN
+    data_filtered_grouped = filter_and_group(bins=4)
+    barplot_accu_rewards_time(data_filtered_grouped)
+
+    ## SHOW PLOT
+    plt.tight_layout()
+    plt.show()
+    # plt.savefig('rewards_on_time_stage4.jpg')
