@@ -4,23 +4,8 @@ import pandas as pd
 from datetime import date
 from load_behavior_data import collect_data
 
-''' 
-Objective: 
-    Make a group of graphs to show the accumulated rewards 
-    every n min for each pair of mice in order to assess
-    how mice are performing through time.
-'''
 
-# Paso 1: I need to accumulate all data taking into account that I started recording the time since 20230313a and
-# only the time of stage 1 can be estimated
-data = collect_data(
-    start_subject=(10, 11),
-    number_of_mice=3,
-    start_date=date(2023, 3, 19),
-    end_date=date(2023, 3, 20),
-)
-# Paso 2: I need to filter and group all data by barrier > mice id
-def filter_and_group(bins) -> pd.DataFrame:
+def filter_and_group(bins, data) -> pd.DataFrame:
     
     """_summary_:
     This function is used to filter the data by the outcome of a trial 
@@ -38,7 +23,7 @@ def filter_and_group(bins) -> pd.DataFrame:
             "BarrierType",
             "MiceID",
             pd.cut(
-                data_filtered["Time"],
+                data_filtered["TimeTrialStart"],
                 bins=bins,
                 labels=[
                     f"{int((60/bins*i)-(60/bins))}-{int(60/bins*i)}"
@@ -49,8 +34,7 @@ def filter_and_group(bins) -> pd.DataFrame:
     )["Outcome"].count()
     return data_filtered_grouped
 
-# Paso 3: Creation of bar charts
-# paso 4: Compile all in a function to plot both barriers
+
 def barplot_accu_rewards_time(data):
     """_summary_:
     This function is used to create axes for each barrier,
@@ -93,9 +77,31 @@ def barplot_accu_rewards_time(data):
 
 
 if __name__ == '__main__':
+
+    '''
+    Objective: 
+    
+        Make a group of graphs to show the accumulated rewards 
+        every n min for each pair of mice in order to assess
+        how mice are performing through time.
+
+    Steps:
+    # Paso 1: I need to accumulate all data taking into account that I started recording the time since 20230313a and
+    # only the time of stage 1 can be estimated.
+    # Paso 2: I need to filter and group all data by barrier > mice id.
+    # Paso 3: Creation of bar charts.
+    # paso 4: Compile all in a function to plot both barriers.
+    '''
+    ## DATA COLLECTION
+    data = collect_data(
+        start_subject=(10, 11),
+        number_of_mice=3,
+        start_date=date(2023, 3, 19),
+        end_date=date(2023, 3, 20),
+    )
     
     ## RUN
-    data_filtered_grouped = filter_and_group(bins=4)
+    data_filtered_grouped = filter_and_group(bins=4, data=data)
     barplot_accu_rewards_time(data_filtered_grouped)
 
     ## SHOW PLOT

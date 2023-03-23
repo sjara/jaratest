@@ -36,6 +36,20 @@ def for_stage_1(bdata):
         time.append(count)
     return time
 
+def normalize_data(df):
+    """_summary_
+    This function is to "normalized" data, since the timer of the GUI for cooperation project most of the time does not start
+    at second 0. In other words, this function is to asure that data are between 0 and 3600 (60 min) or 0 and 2400 (40 min) depending on the long
+    of the session.
+    Args:
+        df (pd.Dataframe): Dataframe with all the data collected in collect_data function 
+
+    Returns:
+        pd.Dataframe:  Dataframe with all the data collected in collect_data function normalized between the range of time the session was performed
+    """
+    df['TimeTrialStart'] = df ['TimeTrialStart'] - df.loc[0,'TimeTrialStart']
+    return df
+
 def collect_data(
     start_subject: tuple[int], number_of_mice: int, start_date: date, end_date: date
 ):
@@ -55,7 +69,7 @@ def collect_data(
     df_all_data = pd.DataFrame(
         columns=[
             "Outcome",
-            "Time",
+            "TimeTrialStart",
             "BarrierType",
             "Date",
             "MiceID",
@@ -73,12 +87,11 @@ def collect_data(
         # print(mice_id)
         for days in range(int((end_date - start_date).days) + 1):
             current_date = str(start_date + timedelta(days)).replace("-", "")
-            # print(current_date)
             bdata = load_data(mice_id, f"{current_date}a")
             df = pd.DataFrame(
                 {
                     "Outcome": bdata["outcome"],
-                    "Time":  #for_stage_1(bdata)
+                    "TimeTrialStart":  #for_stage_1(bdata)
                         bdata["timeTrialStart"]
                     ,
                     "BarrierType": bdata["barrierType"],
@@ -90,6 +103,8 @@ def collect_data(
                 }
             )
 
+            ## "Normalize" data since GUI has a problem and most of the time the timer does not start at second 0 
+            df = normalize_data (df)
             df_all_data = pd.concat([df, df_all_data], ignore_index=True)
         mouse1 = mouse2 + 1
         mouse2 = mouse1 + 1
