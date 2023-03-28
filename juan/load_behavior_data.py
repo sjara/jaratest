@@ -26,31 +26,34 @@ def load_data(subject, session):
     bdata = loadbehavior.BehaviorData(behavFile)
     return bdata
 
+
 def for_stage_1(bdata):
     time = list()
     count = 0
-    for i in bdata['outcome']:
-        if i in [1,2,3]:
+    for i in bdata["outcome"]:
+        if i in [1, 2, 3]:
             count += 3
-        count+=3
+        count += 3
         time.append(count)
     return time
 
-def normalize_data(df):
+
+def normalize_time(df):
     """_summary_
     This function is to "normalized" data, since the timer of the GUI for cooperation project most of the time does not start
     at second 0. In other words, this function is to asure that data are between 0 and 3600 (60 min) or 0 and 2400 (40 min) depending on the long
     of the session.
     Args:
-        df (pd.Dataframe): Dataframe with all the data collected in collect_data function 
+        df (pd.Dataframe): Dataframe with all the data collected in collect_data function
 
     Returns:
         pd.Dataframe:  Dataframe with all the data collected in collect_data function normalized between the range of time the session was performed
     """
-    df['TimeTrialStart'] = df ['TimeTrialStart'] - df.loc[0,'TimeTrialStart']
+    df["TimeTrialStart"] = df["TimeTrialStart"] - df.loc[0, "TimeTrialStart"]
     return df
 
-def collect_data(
+
+def collect_behavior_data(
     start_subject: tuple[int], number_of_mice: int, start_date: date, end_date: date
 ):
     """_summary_:
@@ -91,9 +94,7 @@ def collect_data(
             df = pd.DataFrame(
                 {
                     "Outcome": bdata["outcome"],
-                    "TimeTrialStart":  #for_stage_1(bdata)
-                        bdata["timeTrialStart"]
-                    ,
+                    "TimeTrialStart": bdata["timeTrialStart"],  # for_stage_1(bdata)
                     "BarrierType": bdata["barrierType"],
                     "TimePoke1": bdata["timePoke1"],
                     "TimePoke2": bdata["timePoke2"],
@@ -103,12 +104,64 @@ def collect_data(
                 }
             )
 
-            ## "Normalize" data since GUI has a problem and most of the time the timer does not start at second 0 
-            df = normalize_data (df)
+            ## "Normalize" data since GUI has a problem and most of the time the timer does not start at second 0
+            df = normalize_time(df)
             df_all_data = pd.concat([df, df_all_data], ignore_index=True)
         mouse1 = mouse2 + 1
         mouse2 = mouse1 + 1
 
     df_all_data.replace({"BarrierType": bdata.labels["barrierType"]}, inplace=True)
     df_all_data.replace([{"Stage": bdata.labels["taskMode"]}], inplace=True)
+    return df_all_data
+
+
+def collect_events(
+    start_subject: tuple[int], number_of_mice: int, start_date: date, end_date: date
+):
+    """_summary_:
+    This function is used to merge all the events of the behavior data we want from social cooperatio project into one dataframe
+
+    Args:
+        start_subject (str): Store the numbers of the first pair of mice we want to start collecting data.
+        number_of_mice (int): Store the amount of mice we want to collect data. So, we start iterating number_of_mice mices from start_subject.
+        start_date (datetime.date): Store the first date we want to collect the data.
+        end_date (datetime.date): Store the last date we want to collect the data.
+
+    Returns:
+        pandas.Dataframe: All collected events returned into one Dataframe
+    """
+    # Empty dataframe defining the fields will need
+    df_all_data = pd.DataFrame(
+        columns=[
+            "MiceID",
+            "Date",
+            "Barrier Type",
+            "Events",
+            "Event Time",
+        ]
+    )
+    # Break down the tuple to handle each number separetaly
+    mouse1, mouse2 = start_subject
+
+    # Upload a dataframe for each pair of mice and date
+    for _ in range(number_of_mice):
+        mice_id = f"coop0{mouse1}x0{mouse2}"
+        for days in range(int((end_date - start_date).days) + 1):
+            current_date = str(start_date + timedelta(days)).replace("-", "")
+            bdata = load_data(mice_id, f"{current_date}a")
+            df = pd.DataFrame(
+                {
+                    "MiceID": mice_id,
+                    "Date": current_date,
+                    "Barrier Type":bdata["barrierType"][0],
+                    "Events": bdata.events["eventCode"],
+                    "Event Time":bdata.events["eventTime"],
+                }
+            )
+            df.replace({"Events":bdata.stateMatrix["eventsNames"]}, inplace=True)
+            df.replace({"Barrier Type": bdata.labels["barrierType"]}, inplace=True)
+
+            df_all_data = pd.concat([df, df_all_data], ignore_index=True)
+        mouse1 = mouse2 + 1
+        mouse2 = mouse1 + 1
     return df_all_data
