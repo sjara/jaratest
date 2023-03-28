@@ -5,7 +5,7 @@ from datetime import date
 from load_behavior_data import collect_data
 
 
-def filter_and_group(bins, data) -> pd.DataFrame:
+def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int) -> pd.DataFrame:
 
     """_summary_:
     This function is used to filter the data by the outcome of a trial
@@ -17,7 +17,7 @@ def filter_and_group(bins, data) -> pd.DataFrame:
     """
 
     data.set_index(keys=["BarrierType", "MiceID"], inplace=True)
-    data_filtered = data[data["Outcome"] == 1]
+    data_filtered = data#[data["Outcome"] == 1]
     data_filtered_grouped = data_filtered.groupby(
         by=[
             "BarrierType",
@@ -26,16 +26,16 @@ def filter_and_group(bins, data) -> pd.DataFrame:
                 data_filtered["TimeTrialStart"],
                 bins=bins,
                 labels=[
-                    f"{int((60/bins*i)-(60/bins))}-{int(60/bins*i)}"
+                    f"{int((sessionLen/bins*i)-(sessionLen/bins))}-{int(sessionLen/bins*i)}"
                     for i in range(1, bins + 1)
                 ],
             ),
         ]
-    )["Outcome"].count()
+    )["Outcome"]
     return data_filtered_grouped
 
 
-def barplot_accu_rewards_time(data):
+def barplot_accu_rewards_time(data:pd.DataFrame):
     """_summary_:
     This function is used to create axes for each barrier,
     each axes will show bars representing the accumulated rewards for each pair of mice on time.
@@ -47,7 +47,7 @@ def barplot_accu_rewards_time(data):
     """
 
     fig, ax = plt.subplots(nrows=2, figsize=(10, 5))
-    fig.suptitle(f"Accumulated rewards on time per mice for stage 4")
+    fig.suptitle(f"Total trials on time per mice for stage 4")
     times = data.index.levels[2]
     mice_ids = data.index.levels[1]
     x_pos = np.arange(len(mice_ids))
@@ -71,15 +71,14 @@ def barplot_accu_rewards_time(data):
                 if max(data.loc[f"{barrier}", :, time].values) > max_value
                 else max_value
             )
-
         offset = 0
 
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax[index].set_title(f"{barrier} barrier")
-        ax[index].set_ylabel("Rewards count")
+        ax[index].set_ylabel("Trials count")
         ax[index].set_xticks(x_pos + (width * len(times) - width) / 2, mice_ids)
         ax[index].legend(loc="upper left", ncols=len(times) / 2)
-        ax[index].set_ylim(0, max_value+100)
+        ax[index].set_ylim(0, max_value+1000)
 
 
 if __name__ == "__main__":
@@ -103,14 +102,18 @@ if __name__ == "__main__":
         start_subject=(10, 11),
         number_of_mice=3,
         start_date=date(2023, 3, 19),
-        end_date=date(2023, 3, 25),
+        end_date=date(2023, 3, 27),
     )
+    data.loc[(data['MiceID']=='coop012x013') & (data['Date']=='20230327'),'BarrierType'] = "solid"
 
+    print(data)
+    
     ## RUN
-    data_filtered_grouped = filter_and_group(bins=4, data=data)
+    data_filtered_grouped = filter_and_group(bins=4, data=data,sessionLen=40)
+    print(data_filtered_grouped)
     barplot_accu_rewards_time(data_filtered_grouped)
 
     ## SHOW PLOT
     plt.tight_layout()
     plt.show()
-    # plt.savefig('rewards_on_time_stage4.jpg')
+    plt.savefig('trials_on_time_stage4.jpg')
