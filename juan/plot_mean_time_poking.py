@@ -38,7 +38,6 @@ data_coop014x015['timeBetweenPokes'] = abs(data_coop014x015['TimePoke1'] - data_
 
 df = pd.concat([data_coop010x011,data_coop012x013,data_coop014x015])
 
-#print(df)
 fig,ax = plt.subplots(nrows=1,ncols=2)
 sns.violinplot(x=df['MiceID'], y=df['timeBetweenPokes'],ax=ax[0])
 ax[0].set_title("time between first and second poke from stage 2 and 3")

@@ -63,40 +63,84 @@ data_trials
 
 # Analyzing the Wait time
 
-+ Here I am trying to determine the time it takes to move from one port to the other one.
+- Here I am trying to determine the time it takes to move from one port to the other one.
 
-+ Of course index have to take into account that sometimes the mice do not go inmediatly to the port
+- Of course index have to take into account that sometimes the mice do not go inmediatly to the port
 Also, here a doubt arise, The average will change depending on what value I take since sometimes mice are into the task and sometimes they are not.
 
-+ So what value to take?
+- **So what value to take?**
+
 * Since what I want to know is if the wait time is been enough for the changes between ports, I have to filter the data_1 only to those changes that were equivalent to go from one port to the other one, which are all values equal or lower than 1 sec. since that is the wait time set right now.
+
+##### Conclusions
+
+- Aparently mice are extremely fast. We can try reducing in a factor of 10 times, that is to a value of 0.1 seconds
 
 #####
 
+# BY NOW, THE CODE IS ONLY TAKING INTO ACCOUNT COOP014X015 IN A, PROBABLY, UNNECESSARY COMPLEX WAY, 
+# BUT IT IS REQUIRED, DUE TO THE NECESSITY TO DO THESE ANALYSIS ASAP.
+
+## Separate the two mice in different variables for ease. just for now.
+## NOTE: ALL VARIABLES WITH _1 AND _2 SUFFIX MEAN MOUSE TRACK 1 AND MOUSE TRACK 2, RESPECTIVELY.
 data_index_date_1 = data_filt_1.set_index("Date")
 data_index_date_2 = data_filt_2.set_index("Date")
 
-mouse1=list()
-mouse2=list()
+## this is the final dataframe with all the data collected
+## regarding with how long is it taking to the mice to achieve the other port
+waitTime = pd.DataFrame()
+
+## this is the final dataframe with all the data collected
+## regarding with how long mice spend on each port
+
+
+## Iteration through dates to separate by session and therefore by treatment (barrier)
 for date in data_index_date_1.index.unique():
     times_curr_date_1 = np.array([])
     times_curr_date_2 = np.array([])
-    
+
     data_1 = data_index_date_1.loc[date].reset_index()
     index_curr_date_1 = list(data_1.index)
     data_2 = data_index_date_2.loc[date].reset_index()
     index_curr_date_2 = list(data_2.index)
-    
-    for index in index_curr_date_1[:-1]:
-        if data_1.loc[index,"Events"] != data_1.loc[index+1,"Events"]:
-            times_curr_date_1 = np.append(times_curr_date_1, data_1.loc[index+1,"Event Time"] - data_1.loc[index,'Event Time'])
-            
-    for index in index_curr_date_2[:-1]:
-        if data_2.loc[index,"Events"] != data_2.loc[index+1,"Events"]:
-            times_curr_date_2 = np.append(times_curr_date_2, data_2.loc[index+1,"Event Time"] - data_2.loc[index,'Event Time'])
 
-    print("mouse_1: ", times_curr_date_1 [times_curr_date_1<=1].mean())
-    print("mouse_2: ", times_curr_date_2 [times_curr_date_2<=1].mean())
-    mouse1.append(times_curr_date_1 [times_curr_date_1<=1].mean())
-    mouse2.append(times_curr_date_2 [times_curr_date_2<=1].mean())
-print(np.mean(mouse1), np.mean(mouse2))
+    # mouse 1
+    for index in index_curr_date_1[:-1]:
+        if data_1.loc[index, "Events"] != data_1.loc[index + 1, "Events"]:
+            times_curr_date_1 = np.append(
+                times_curr_date_1,
+                data_1.loc[index + 1, "Event Time"] - data_1.loc[index, "Event Time"],
+            )
+
+    # mouse 2
+    for index in index_curr_date_2[:-1]:
+        if data_2.loc[index, "Events"] != data_2.loc[index + 1, "Events"]:
+            times_curr_date_2 = np.append(
+                times_curr_date_2,
+                data_2.loc[index + 1, "Event Time"] - data_2.loc[index, "Event Time"],
+            )
+
+    waitTime = pd.concat(
+        [
+            pd.DataFrame(
+                {"time": times_curr_date_1[times_curr_date_1 <= 1],
+                "mice": 1,
+                'date':date}
+            ),
+            pd.DataFrame(
+                {"time": times_curr_date_2[times_curr_date_2 <= 1], 
+                "mice": 2,
+                "date":date}
+            ),
+            waitTime,
+        ]
+    )
+waitTime
+#mice[mice['time']<=0.1].describe()
+
+######
+## PLOT
+violin = sns.violinplot(data=waitTime[waitTime['time']<= 0.1], x="date", y="time", hue="waitTime",split=True)
+plt.yticks(np.arange(start=0,stop=0.1,step=0.1/10))
+
+#####

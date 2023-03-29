@@ -79,6 +79,7 @@ def collect_behavior_data(
             "TimePoke1",
             "TimePoke2",
             "Stage",
+            "Percent rewarded"
         ]
     )
     # Break down the tuple to handle each number separetaly
@@ -106,6 +107,7 @@ def collect_behavior_data(
 
             ## "Normalize" data since GUI has a problem and most of the time the timer does not start at second 0
             df = normalize_time(df)
+            df["Percent rewarded"]= len(bdata["outcome"][bdata['outcome']==1])/len(bdata['outcome']) * 100
             df_all_data = pd.concat([df, df_all_data], ignore_index=True)
         mouse1 = mouse2 + 1
         mouse2 = mouse1 + 1
