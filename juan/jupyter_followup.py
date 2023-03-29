@@ -158,7 +158,8 @@ for date in data_index_date_1.index.unique():
         ]
     )
 
-iti.describe()
+display(iti[(iti['barrierType'] == 'perforated') & (iti['time'] > 6)].groupby('track').describe())
+iti[(iti['barrierType'] == 'solid') & (iti['time'] > 6)].groupby('track').describe()
 # waitTime[waitTime['time']<=0.1].describe()
 
 
