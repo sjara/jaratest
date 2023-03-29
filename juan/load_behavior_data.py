@@ -137,7 +137,7 @@ def collect_events(
         columns=[
             "MiceID",
             "Date",
-            "Barrier Type",
+            "BarrierType",
             "Events",
             "Event Time",
         ]
@@ -155,13 +155,13 @@ def collect_events(
                 {
                     "MiceID": mice_id,
                     "Date": current_date,
-                    "Barrier Type":bdata["barrierType"][0],
+                    "BarrierType":bdata["barrierType"][0],
                     "Events": bdata.events["eventCode"],
                     "Event Time":bdata.events["eventTime"],
                 }
             )
             df.replace({"Events":bdata.stateMatrix["eventsNames"]}, inplace=True)
-            df.replace({"Barrier Type": bdata.labels["barrierType"]}, inplace=True)
+            df.replace({"BarrierType": bdata.labels["barrierType"]}, inplace=True)
 
             df_all_data = pd.concat([df, df_all_data], ignore_index=True)
         mouse1 = mouse2 + 1

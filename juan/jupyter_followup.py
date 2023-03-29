@@ -17,17 +17,26 @@
 # The first approach will be to compared if a mouse sticks longer to a port if its partner is there too
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 import numpy as np
 from datetime import date
-from load_behavior_data import collect_events, load_data
+from load_behavior_data import collect_events, collect_behavior_data
+pd.options.display.float_format = "{:.6f}".format
 
-#data_1 = load_data("coop010x011", "20230319a")
 data_events = collect_events(
         start_subject=(14, 15),
         number_of_mice=1,
         start_date=date(2023, 3, 21),
         end_date=date(2023, 3, 26),
     )
+data_behavior = collect_behavior_data(
+        start_subject=(14, 15),
+        number_of_mice=1,
+        start_date=date(2023, 3, 21),
+        end_date=date(2023, 3, 26),
+    )
+
+
 ####
 
 # Categorical scatter plot for stage 4 coop014x015
