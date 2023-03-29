@@ -24,9 +24,9 @@ data = collect_behavior_data(
 
 # Categorical scatter plot for stage 4 coop014x015
 # This to observed if data is enough to start stadistical analysis, not only in quantity, but quality (are they sufficently separated?)
-fig, ax = plt.subplots()
-ax.scatter(x=data["BarrierType"],y=data['Percent rewarded'],c=(data['BarrierType']=="solid").apply(lambda x:int(x)))
-ax.hlines(y=[int(data.loc[data['BarrierType']=='perforated','Percent rewarded'].mean()),
-            int(data.loc[data['BarrierType']=='solid','Percent rewarded'].mean())],xmin=0,xmax=1,colors=['purple','yellow'])
+# fig, ax = plt.subplots()
+# ax.scatter(x=data["BarrierType"],y=data['Percent rewarded'],c=(data['BarrierType']=="solid").apply(lambda x:int(x)))
+# ax.hlines(y=[int(data.loc[data['BarrierType']=='perforated','Percent rewarded'].mean()),
+#             int(data.loc[data['BarrierType']=='solid','Percent rewarded'].mean())],xmin=0,xmax=1,colors=['purple','yellow'])
 
-plt.savefig('coop014x015_stage4.jpg')
+# plt.savefig('coop014x015_stage4.jpg')

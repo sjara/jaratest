@@ -77,66 +77,96 @@ Also, here a doubt arise, The average will change depending on what value I take
 - Aparently mice are extremely fast. We can try reducing in a factor of 10 times, that is to a value of 0.1 seconds
 
 #####
-
-# BY NOW, THE CODE IS ONLY TAKING INTO ACCOUNT COOP014X015 IN A, PROBABLY, UNNECESSARY COMPLEX WAY, 
+# BY NOW, THE CODE IS ONLY TAKING INTO ACCOUNT COOP014X015 IN A, PROBABLY, UNNECESSARY COMPLEX WAY,
 # BUT IT IS REQUIRED, DUE TO THE NECESSITY TO DO THESE ANALYSIS ASAP.
 
-## Separate the two mice in different variables for ease. just for now.
+## Separate the two waitTime in different variables for ease. just for now.
 ## NOTE: ALL VARIABLES WITH _1 AND _2 SUFFIX MEAN MOUSE TRACK 1 AND MOUSE TRACK 2, RESPECTIVELY.
 data_index_date_1 = data_filt_1.set_index("Date")
 data_index_date_2 = data_filt_2.set_index("Date")
 
 ## this is the final dataframe with all the data collected
-## regarding with how long is it taking to the mice to achieve the other port
+## regarding with how long is it taking to the waitTime to achieve the other port
 waitTime = pd.DataFrame()
 
 ## this is the final dataframe with all the data collected
-## regarding with how long mice spend on each port
-
+## regarding with how long waitTime spend on each port
+iti = pd.DataFrame()
 
 ## Iteration through dates to separate by session and therefore by treatment (barrier)
 for date in data_index_date_1.index.unique():
-    times_curr_date_1 = np.array([])
-    times_curr_date_2 = np.array([])
-
+    # Mouse 1
     data_1 = data_index_date_1.loc[date].reset_index()
-    index_curr_date_1 = list(data_1.index)
+    index_curr_date_1 = data_1.index
+    times_wt_curr_date_1 = np.array([])
+    times_iti_curr_date_1 = np.array([])
+    port_1 = index_curr_date_1[0]
+
+    # Mouse 2
     data_2 = data_index_date_2.loc[date].reset_index()
-    index_curr_date_2 = list(data_2.index)
+    index_curr_date_2 = data_2.index
+    times_wt_curr_date_2 = np.array([])
+    times_iti_curr_date_2 = np.array([])
+    port_2 = index_curr_date_2[0]
 
     # mouse 1
     for index in index_curr_date_1[:-1]:
         if data_1.loc[index, "Events"] != data_1.loc[index + 1, "Events"]:
-            times_curr_date_1 = np.append(
-                times_curr_date_1,
+            times_wt_curr_date_1 = np.append(
+                times_wt_curr_date_1,
                 data_1.loc[index + 1, "Event Time"] - data_1.loc[index, "Event Time"],
             )
+
+            times_iti_curr_date_1 = np.append(
+                times_iti_curr_date_1,
+                data_1.loc[index, "Event Time"] - data_1.loc[port_1, "Event Time"],
+            )
+
+            port_1 = index + 1
 
     # mouse 2
     for index in index_curr_date_2[:-1]:
         if data_2.loc[index, "Events"] != data_2.loc[index + 1, "Events"]:
-            times_curr_date_2 = np.append(
-                times_curr_date_2,
+            times_wt_curr_date_2 = np.append(
+                times_wt_curr_date_2,
                 data_2.loc[index + 1, "Event Time"] - data_2.loc[index, "Event Time"],
             )
+            times_iti_curr_date_2 = np.append(
+                times_iti_curr_date_2,
+                data_2.loc[index, "Event Time"] - data_2.loc[port_2, "Event Time"],
+            )
+            port_2 = index + 1
 
     waitTime = pd.concat(
         [
             pd.DataFrame(
-                {"time": times_curr_date_1[times_curr_date_1 <= 1],
-                "mice": 1,
-                'date':date}
+                {
+                    "time": times_wt_curr_date_1[times_wt_curr_date_1 <= 1],
+                    "track": 1,
+                    "date": date,
+                }
             ),
             pd.DataFrame(
-                {"time": times_curr_date_2[times_curr_date_2 <= 1], 
-                "mice": 2,
-                "date":date}
+                {
+                    "time": times_wt_curr_date_2[times_wt_curr_date_2 <= 1],
+                    "track": 2,
+                    "date": date,
+                }
             ),
             waitTime,
         ]
     )
-waitTime
-#mice[mice['time']<=0.1].describe()
+    iti = pd.concat(
+        [
+            pd.DataFrame({"time": times_iti_curr_date_1, "track": 1, "date": date}),
+            pd.DataFrame({"time": times_iti_curr_date_2, "track": 2, "date": date}),
+            iti,
+        ]
+    )
+
+iti.describe()
+# waitTime[waitTime['time']<=0.1].describe()
+
 
 ######
 ## PLOT
