@@ -169,3 +169,13 @@ violin = sns.violinplot(data=waitTime[waitTime['time']<= 0.1], x="date", y="time
 plt.yticks(np.arange(start=0,stop=0.1,step=0.1/10))
 
 #####
+
+# Analyzing the ITI
+
+- Here I want to determine how long the waitTime are spending in the ports.
+
+- This will help to know if ITI is being too short that is unsignificant, something that is important when with talk about solid barrier.
+
+- For this analysis was taking into account that following pokes were equivalent to be in that from from the first poke to the last one before changing to the other one
+
+#####
