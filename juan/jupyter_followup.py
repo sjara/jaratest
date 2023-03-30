@@ -60,8 +60,16 @@ data_trials = data_events[
     data_events["Events"]
     .isin(["Forced"])
 ]
-data_trials
+data_behavior_merge = data_behavior[['Outcome','Date']]
+data_behavior_merge.set_index('Date',inplace=True)
+data_behavior_merge['id'] = range(0,len(data_behavior_merge))
+display(data_behavior_merge)
 
+data_trials.set_index('Date',inplace=True)
+display(data_trials)
+data_trials.merge(data_behavior_merge,left_index=True,right_index=True).drop_duplicates(subset=['Event Time','id']).sort_values('id')
+#f[(f['Date']=='20230326') & (f['index'] == 0)]
+#f.drop_duplicates(subset='Event Time')
 #####
 
 # Analyzing the Wait time
@@ -183,8 +191,8 @@ plt.yticks(np.arange(start=0,stop=0.1,step=0.1/10))
 
 - Here I want to determine how long the waitTime are spending in the ports.
 
-- This will help to know if ITI is being too short that is unsignificant, something that is important when with talk about solid barrier.
+- This will help to know if ITI is being too short that is unsignificant.
 
-- For this analysis was taking into account that following pokes were equivalent to be in that from from the first poke to the last one before changing to the other one
+- Mice have gotten rewards in a row. So, I need to compute in a successful trial how long mice stick there, but on succesful trials where the next port to be selected is the other port, no the same.
 
-#####
+##### Conclusions
