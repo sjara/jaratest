@@ -74,6 +74,7 @@ def collect_behavior_data(
             "Outcome",
             "TimeTrialStart",
             "BarrierType",
+            'ActiveSide',
             "Date",
             "MiceID",
             "TimePoke1",
@@ -97,6 +98,7 @@ def collect_behavior_data(
                     "Outcome": bdata["outcome"],
                     "TimeTrialStart": bdata["timeTrialStart"],  # for_stage_1(bdata)
                     "BarrierType": bdata["barrierType"],
+                    "ActiveSide":bdata['activeSide'],
                     "TimePoke1": bdata["timePoke1"],
                     "TimePoke2": bdata["timePoke2"],
                     "Stage": bdata["taskMode"],
@@ -112,7 +114,7 @@ def collect_behavior_data(
         mouse1 = mouse2 + 1
         mouse2 = mouse1 + 1
 
-    df_all_data.replace({"BarrierType": bdata.labels["barrierType"]}, inplace=True)
+    df_all_data.replace({"BarrierType": bdata.labels["barrierType"], "ActiveSide": bdata.labels["activeSide"]}, inplace=True)
     df_all_data.replace([{"Stage": bdata.labels["taskMode"]}], inplace=True)
     return df_all_data
 

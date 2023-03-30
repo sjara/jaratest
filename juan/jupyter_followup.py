@@ -175,8 +175,7 @@ for date in data_index_date_1.index.unique():
         ]
     )
 
-display(iti[(iti['barrierType'] == 'perforated') & (iti['time'] > 6)].groupby('track').describe())
-iti[(iti['barrierType'] == 'solid') & (iti['time'] > 6)].groupby('track').describe()
+waitTime.groupby(by=['BarrierType', 'track',pd.cut(iti['time'], bins=[-1, 1, waitTime['time'].max()])])['time'].describe()
 # waitTime[waitTime['time']<=0.1].describe()
 
 
@@ -196,3 +195,17 @@ plt.yticks(np.arange(start=0,stop=0.1,step=0.1/10))
 - Mice have gotten rewards in a row. So, I need to compute in a successful trial how long mice stick there, but on succesful trials where the next port to be selected is the other port, no the same.
 
 ##### Conclusions
+
+#####
+
+#iti.groupby(by=['BarrierType', 'track', pd.cut(iti['time'],bins=[-1, 3, iti['time'].max()])])['time'].describe()
+pd.cut(iti['time'], bins=[-1, 3, iti['time'].max()],retbins=True)
+#iti[iti['time']<0]
+
+#####
+## PLOT
+violin = sns.violinplot(
+    data=iti[iti["time"] <= 10], x="date", y="time", hue="track", split=True
+)
+plt.yticks(np.arange(start=0, stop=10, step=10 / 10))
+plt.show()
