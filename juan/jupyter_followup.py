@@ -79,6 +79,8 @@ data_trials.merge(data_behavior_merge,left_index=True,right_index=True).drop_dup
 - Of course index have to take into account that sometimes the mice do not go inmediatly to the port
 Also, here a doubt arise, The average will change depending on what value I take since sometimes mice are into the task and sometimes they are not.
 
+- However, I will check How much time elapsed between the first and second poke on successful trials.
+
 - **So what value to take?**
 
 * Since what I want to know is if the wait time is been enough for the changes between ports, I have to filter the data_1 only to those changes that were equivalent to go from one port to the other one, which are all values equal or lower than 1 sec. since that is the wait time set right now.
@@ -86,6 +88,21 @@ Also, here a doubt arise, The average will change depending on what value I take
 ##### Conclusions
 
 - Aparently mice are extremely fast. We can try reducing in a factor of 10 times, that is to a value of 0.1 seconds
+
+######
+#FIRST PART
+# How much time elapsed between the first and second poke?
+
+success = data_behavior[data_behavior['Outcome'] == 1].copy()
+success.reset_index(inplace=True,drop=True)
+success["timeBetweenPokes"] = abs(success['TimePoke1'] - success['TimePoke2'])
+indexes = list()
+for i in range (1, len(success.index)):
+    if success.loc[i,'ActiveSide'] != success.loc[i-1,'ActiveSide']:
+        indexes.append(i)
+        
+alternate = success.loc[indexes]
+alternate.groupby(by=['BarrierType'])['timeBetweenPokes'].describe()
 
 #####
 # BY NOW, THE CODE IS ONLY TAKING INTO ACCOUNT COOP014X015 IN A, PROBABLY, UNNECESSARY COMPLEX WAY,
@@ -207,5 +224,5 @@ pd.cut(iti['time'], bins=[-1, 3, iti['time'].max()],retbins=True)
 violin = sns.violinplot(
     data=iti[iti["time"] <= 10], x="date", y="time", hue="track", split=True
 )
-plt.yticks(np.arange(start=0, stop=10, step=10 / 10))
+plt.yticks(np.arange(start=0, stop=10, step=10/10))
 plt.show()
