@@ -91,6 +91,7 @@ alternate = success.loc[indexes]
 #alternate.groupby(by=['BarrierType'])['timeBetweenPokes'].describe()
 alternate
 data_events
+
 #####
 # BY NOW, THE CODE IS ONLY TAKING INTO ACCOUNT COOP014X015 IN A, PROBABLY, UNNECESSARY COMPLEX WAY,
 # BUT IT IS REQUIRED, DUE TO THE NECESSITY TO DO THESE ANALYSIS ASAP.
