@@ -115,7 +115,7 @@ def violin_plot_waitTime(data_behavior:pd.DataFrame, outcome:list[int] = [1], fi
         data_behavior (pd.DataFrame): Pandas dataframe with at least 4 columns: BarrierType, TimePoke1, TimePoke2, ActiveSide, Outcome and MiceID
         outcome (list[int], optional): List of integers to define what outcomes user want to plot, 
                     since the meaning of successful trial will change with the stage of training, for example, for stage 4 successfull trial 
-                    is only outcome = [1], but for stage 1 successfull trial is outcome = [1,2,3]. Defaults to [1].
+                    is only outcome = [1], but for stage 1 successful trial is outcome = [1,2,3]. Defaults to [1].
         figsize (tuple[int], optional): Tuple with two integer to define the size of the figure containing the plots.
     """
 
@@ -140,7 +140,7 @@ def violin_plot_waitTime(data_behavior:pd.DataFrame, outcome:list[int] = [1], fi
         data=success, x="MiceID", y="timeBetweenPokes", hue="BarrierType", split=True, ax=axes[0], cut=0
     )
     axes[0].set_xlim(-1, 3.5)
-    axes[0].set_title("All trials")
+    axes[0].set_title("All successful trials")
 
     # Only alternate sides
     sns.violinplot(
@@ -152,4 +152,4 @@ def violin_plot_waitTime(data_behavior:pd.DataFrame, outcome:list[int] = [1], fi
     plt.tight_layout()
     plt.show()
 
-violin_plot_waitTime(data_behavior)
+
