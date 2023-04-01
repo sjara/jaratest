@@ -76,21 +76,20 @@ Also, here a doubt arise, The average will change depending on what value I take
 - Aparently mice are extremely fast. We can try reducing in a factor of 10 times, that is to a value of 0.1 seconds
 
 ######
-#FIRST PART
+# FIRST PART
 # How much time elapsed between the first and second poke?
 
-success = data_behavior[data_behavior['Outcome'] == 1].copy()
-success.reset_index(inplace=True,drop=True)
-success["timeBetweenPokes"] = abs(success['TimePoke1'] - success['TimePoke2'])
+success = data_behavior[data_behavior["Outcome"] == 1].copy()
+success.reset_index(inplace=True, drop=True)
+success["timeBetweenPokes"] = abs(success["TimePoke1"] - success["TimePoke2"])
 indexes = list()
-for i in range (1, len(success.index)):
-    if success.loc[i,'ActiveSide'] != success.loc[i-1,'ActiveSide']:
+for i in range(1, len(success.index)):
+    if success.loc[i, "ActiveSide"] != success.loc[i - 1, "ActiveSide"]:
         indexes.append(i)
-        
+
 alternate = success.loc[indexes]
-#alternate.groupby(by=['BarrierType'])['timeBetweenPokes'].describe()
-alternate
-data_events
+display(alternate.groupby(by=['BarrierType','MiceID'])['timeBetweenPokes'].describe())
+display(success.groupby(by=['BarrierType','MiceID'])['timeBetweenPokes'].describe())
 
 #####
 # BY NOW, THE CODE IS ONLY TAKING INTO ACCOUNT COOP014X015 IN A, PROBABLY, UNNECESSARY COMPLEX WAY,
@@ -195,13 +194,14 @@ def get_iti_wt(data_filt_1, data_filt_2):
             ]
         )
 
-#waitTime = waitTime[waitTime['time']<=1]
-#waitTime.groupby(by=['BarrierType', 'track',pd.cut(iti['time'], bins=[-1, 1, waitTime['time'].max()])])['time'].describe()
-#waitTime[waitTime['time']==waitTime['time'].min()]
+# waitTime = waitTime[waitTime['time']<=1]
+# waitTime.groupby(by=['BarrierType', 'track',pd.cut(iti['time'], bins=[-1, 1, waitTime['time'].max()])])['time'].describe()
+# waitTime[waitTime['time']==waitTime['time'].min()]
 
 ## BUGS PORTS IN THE SAME TRACK WITH THE SAME TIME!!
-# a = waitTime[waitTime['time'].apply(lambda x:x[0] == waitTime['time'].min()[0])]
-# data_events.loc[a['time'].apply(lambda x:x[1])]
+waitTime,iti = get_iti_wt(data_filt_1=data_filt_1, data_filt_2=data_filt_2)
+iti.drop_duplicates(subset='time', inplace=True)
+#iti.groupby(by=['BarrierType','track']).describe()
 
 ######
 ## PLOT
@@ -223,15 +223,17 @@ plt.yticks(np.arange(start=0,stop=0.1,step=0.1/10))
 #####
 ### I WANT TO TRY TO DETERMINE HOW MANY TIME MICE SPEND DURING PORTS WHEN THE PORT HAS ONLY ON REWARD
 ### ALSO I WANT TO DETERMINE I WANT TO SEE IF IS POSSIBLE TO DO THE SAME WHEN THEY TRY ON THE WRONG PORT.
-trials_in_events = data_events[data_events['Events'] == 'Forced'].reset_index()
-alternate_in_events = trials_in_events.loc[alternate.index]
-for i in alternate_in_events['index'][:1]:
-    for j in range(i+1, len(data_events)):
-        if data_events.at[j,'Events'] == 'Forced':
-            data_to_get_iti = data_events.loc[i+1:j-1]
-            print(data_to_get_iti)
-            break
+data_behavior.drop_duplicates(subset='TimeTrialStart', inplace=True)
+data_trials.reset_index(inplace=True)
+data_trials_events_merge= alternate.merge(data_trials[["Event Time","index","Events"]], how='right', left_on='TimeTrialStart', right_on="Event Time")
+data_trials_events_merge.dropna(subset=['TimeTrialStart'],inplace=True)
 
+for orginalIndex in data_trials_events_merge["index"]:
+    for num in range(orginalIndex, len(data_events)):
+        if data_events.at[num, "Events"] == "Forced":
+            data_to_get_iti = data_events.loc[i + 1 : num - 1]
+            break
+data_trials_events_merge
 #####
 ## PLOT
 violin = sns.violinplot(
