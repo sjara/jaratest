@@ -92,7 +92,13 @@ def collect_behavior_data(
         # print(mice_id)
         for days in range(int((end_date - start_date).days) + 1):
             current_date = str(start_date + timedelta(days)).replace("-", "")
-            bdata = load_data(mice_id, f"{current_date}a")
+            try:
+                
+                bdata = load_data(mice_id, f"{current_date}a")
+            except:
+                print(f"ERROR FILE {current_date}a FOR {mice_id} MICE DOES NOT EXIST")
+                continue
+            
             df = pd.DataFrame(
                 {
                     "Outcome": bdata["outcome"],

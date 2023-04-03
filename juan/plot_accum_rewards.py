@@ -32,7 +32,6 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int) -> pd.DataFram
             ),
         ]
     )["Outcome"].count()
-    #print(data_filtered_grouped.index())
     return data_filtered_grouped
 
 
