@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from datetime import date
-from load_behavior_data import collect_data
+from load_behavior_data import collect_behavior_data
 
 
 def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int) -> pd.DataFrame:
@@ -31,7 +31,8 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int) -> pd.DataFram
                 ],
             ),
         ]
-    )["Outcome"]
+    )["Outcome"].count()
+    #print(data_filtered_grouped.index())
     return data_filtered_grouped
 
 
@@ -51,7 +52,6 @@ def barplot_accu_rewards_time(data:pd.DataFrame):
     times = data.index.levels[2]
     mice_ids = data.index.levels[1]
     x_pos = np.arange(len(mice_ids))
-    print(mice_ids)
     width = 0.8 / len(times)
     offset = 0
 
@@ -98,22 +98,19 @@ if __name__ == "__main__":
     # paso 4: Compile all in a function to plot both barriers.
     """
     ## DATA COLLECTION
-    data = collect_data(
+    data = collect_behavior_data(
         start_subject=(10, 11),
-        number_of_mice=3,
-        start_date=date(2023, 3, 19),
-        end_date=date(2023, 3, 27),
+        number_of_mice=2,
+        start_date=date(2023, 3, 29),
+        end_date=date(2023, 4, 2),
     )
-    data.loc[(data['MiceID']=='coop012x013') & (data['Date']=='20230327'),'BarrierType'] = "solid"
-
-    print(data)
+    #data.loc[(data['MiceID']=='coop012x013') & (data['Date']=='20230327'),'BarrierType'] = "solid"
     
     ## RUN
-    data_filtered_grouped = filter_and_group(bins=4, data=data,sessionLen=40)
-    print(data_filtered_grouped)
+    data_filtered_grouped = filter_and_group(bins=4, data=data, sessionLen=40)
     barplot_accu_rewards_time(data_filtered_grouped)
 
     ## SHOW PLOT
     plt.tight_layout()
     plt.show()
-    plt.savefig('trials_on_time_stage4.jpg')
+    #plt.savefig('trials_on_time_stage4.jpg')
