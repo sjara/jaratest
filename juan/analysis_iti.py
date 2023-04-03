@@ -20,11 +20,14 @@ data_behavior = collect_behavior_data(
     start_date=date(2023, 3, 30),
     end_date=date(2023, 3, 30),
 )
+
+
 def filt_by_event(data_events, events):
     data_filt = data_events[data_events["Events"].isin(events)].copy()
     data_filt.drop_duplicates(subset="Event Time", inplace=True)
     data_filt.reset_index(inplace=True, names="indexOriginal")
     return data_filt
+
 
 # BY NOW, THE CODE IS ONLY TAKING INTO ACCOUNT COOP014X015 IN A, PROBABLY, UNNECESSARY COMPLEX WAY,
 # BUT IT IS REQUIRED, DUE TO THE NECESSITY TO DO THESE ANALYSIS ASAP.
@@ -91,6 +94,8 @@ def get_iti(data_filt_1, data_filt_2):
 
     iti = pd.concat([pd.DataFrame({key: pokes[key]}) for key in pokes.keys()], axis=1)
     return iti
+
+
 def get_pokes_on_each_trial(data_trials_events_merge):
     ## NECESITO ITERAR POR CADA TRIAL VALIDO Y SAVE POKES IN N1,S1,N2,S2 DURING A CERTAIN TRIAL
     df = pd.DataFrame([])
@@ -103,12 +108,14 @@ def get_pokes_on_each_trial(data_trials_events_merge):
             data_filt_1 = filt_by_event(data_to_get_iti, ["N1in", "S1in", "Forced"])
             data_filt_2 = filt_by_event(data_to_get_iti, ["N2in", "S2in", "Forced"])
             data_with_iti = get_iti(data_filt_1, data_filt_2)
-            data_with_iti["ActiveSide"] = data_trials_events_merge[
-                data_trials_events_merge["indexOriginal"] == indexOriginal
-            ]["ActiveSide"]
-            print(indexOriginal)
+            data_with_iti["ActiveSide"] = data_trials_events_merge.loc[
+                data_trials_events_merge["indexOriginal"] == indexOriginal, "ActiveSide"
+            ].values[0]
             df = pd.concat([df, data_with_iti], ignore_index=True)
+
     return df
+
+
 ### I WANT TO TRY TO DETERMINE HOW MANY TIME MICE SPEND DURING PORTS WHEN THE PORT HAS ONLY ON REWARD
 ### ALSO I WANT TO DETERMINE I WANT TO SEE IF IS POSSIBLE TO DO THE SAME WHEN THEY TRY ON THE WRONG PORT.
 data_trials = filt_by_event(data_events, ["Forced"])
@@ -118,7 +125,6 @@ data_trials_events_merge = data_behavior.merge(
     left_on=["MiceID", "Date", "TimeTrialStart"],
     right_on=["MiceID", "Date", "Event Time"],
 )
-data_trials_events_merge.dropna(subset=["TimeTrialStart"], inplace=True)
 
 final = get_pokes_on_each_trial(data_trials_events_merge)
 final
