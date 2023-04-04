@@ -111,8 +111,13 @@ def get_pokes_on_each_trial(data_trials_events_merge):
             data_with_iti["ActiveSide"] = data_trials_events_merge.loc[
                 data_trials_events_merge["indexOriginal"] == indexOriginal, "ActiveSide"
             ].values[0]
+            data_with_iti["BarrierType"] = data_trials_events_merge.loc[
+                data_trials_events_merge["indexOriginal"] == indexOriginal, "BarrierType"
+            ].values[0]
+            data_with_iti["MideID"] = data_trials_events_merge.loc[
+                data_trials_events_merge["indexOriginal"] == indexOriginal, "MiceID"
+            ].values[0]
             df = pd.concat([df, data_with_iti], ignore_index=True)
-
     return df
 
 
