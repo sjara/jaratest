@@ -14,7 +14,7 @@ data_behavior = collect_behavior_data(
 
 
 def categorical_scatter_plot(
-    data_behavior: pd.DataFrame, colors: list[str] = ["red", "cyan"], width_lines=0.1
+    data_behavior: pd.DataFrame, colors: list[str] = ["red", "blue"], width_lines=0.1
 ):
     width_lines = width_lines
     number_of_mice = len(data_behavior["MiceID"].unique())
