@@ -11,6 +11,10 @@ from statsmodels.stats.proportion import proportion_confint #Used to compute con
 from jaratoolbox import settings
 import matplotlib.gridspec as gridspec
 
+SAVE_FIGURE = 1
+outputDir = 'C:/Users/jenny/tmp/bili_psycurves_wq2023/'
+figFormat = 'png' # 'pdf' or 'svg'
+figSize = [6, 6] # In inches
 
 print('enter subject name')
 subject = input()
@@ -85,6 +89,25 @@ elif subject == 'bili051':
     #sessions = ['20220504a', '20220505a', '20220506a', '20220507a', '20220508a', '20220509a', '20220510a', '20220511a', '20220512a', '20220513a', '20220514a', '20220515a', '20220516a', '20220517a', '20220518a'] #Irrelevant Feature = random
     sessions = ['20220415a', '20220416a', '2020417a' , '20220418a', '20220419a', '20220420a', '20220421a', '20220422', '20220423a', '20220424a', '20220425a', '20220426a', '20220427a', '20220428a', '20220429a', '20220430a', '20220501a', '20220502a', '20220503a'] #uniform
     #sessions = ['20220324a', '20220329a', '20220330a',  '20220331a', '20220401a', '20220402a', '20220403a', '20220404a', '20220405a', '20220406a', '20220407a', '20220408a', '20220409a', '20220410a', '20220411a', '20220412a', '20220413a' , '20220414a' ] # extreme80pc
+## -- ANIMALS FROM GABE'S WINTER QUARTER 2023 COHORT (steeper FT slopes)
+elif subject == 'bili052':
+    sessions = ['20230318a', '20230319a', '20230320a', '20230321a', '20230322a', '20230323a']
+elif subject == 'bili053':
+    sessions = ['20230302a', '20230303a', '20230304a', '20230305a', '20230306a', '20230307a', '20230308a', '20230309a']
+elif subject == 'bili054':
+    sessions = ['20230303a', '20230304a', '20230305a', '20230306a', '20230307a', '20230308a', '20230309a'] # '20230215a', '20230216a', '20230217a', '20230218a', '20230219a', '20230220a', '20230221a', '20230222a', '20230223a', '20230224a', '20230225a', '20230226a', '20230227a', '20230228a', '20230301a', '20230302a'
+elif subject == 'bili055':
+    sessions = ['20230317a', '20230318a', '20230319a', '20230321a', '20230323a']
+elif subject == 'bili056':
+    sessions = ['20230317a', '20230318a', '20230319a', '20230320a', '20230321a', '20230322a', '20230323a'] #'20230305a', '20230306a', '20230307a', '20230308a', '20230309a', '20230310a', '20230311a', '20230312a', '20230313a', '20230314a', '20230315a', '20230316a',
+elif subject == 'bili057':
+    sessions = ['20230318a', '20230319a', '20230320a', '20230321a', '20230322a', '20230323a']
+elif subject == 'bili059':
+    sessions = ['20230301a', '20230302a','20230303a', '20230304a', '20230305a', '20230306a', '20230307a', '20230308a', '20230309a']
+elif subject == 'bili060':
+    sessions = ['20230205a', '20230206a', '20230207a', '20230208a', '20230209a', '20230210a', '20230211a'] #,'20230211a' '20230212a', '20230213a', '20230214a', '20230215a', '20230216a', '20230217a', '20230218a', '20230219a', '20230220a', '20230221a', '20230222a', '20230223a', '20230224a', '20230225a', '20230226a', '20230227a', '20230228a', '20230301a', '20230302a','20230303a', '20230304a', '20230305a', '20230306a', '20230307a', '20230308a', '20230309a'
+
+
 else:
     print('subject doesnt have any psycurve sessions indicated')
 
@@ -176,3 +199,7 @@ else:
 plt.show()
 
 #sys.exit()
+
+if SAVE_FIGURE:
+    figFilename = f'{subject}_avg_psycurve' # Do not include extension
+    extraplots.save_figure(figFilename, figFormat, figSize, outputDir)
