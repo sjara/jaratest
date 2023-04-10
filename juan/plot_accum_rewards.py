@@ -97,14 +97,14 @@ if __name__ == "__main__":
     """
     ## DATA COLLECTION
     data = collect_behavior_data(
-        start_subject=(10, 11),
-        number_of_mice=2,
-        start_date=date(2023, 3, 5),
-        end_date=date(2023, 3, 5),
+        start_subject=(12, 13),
+        number_of_mice=1,
+        start_date=date(2023, 3, 4),
+        end_date=date(2023, 3, 4),
     )
     
     ## RUN
-    data_filtered_grouped = filter_and_group(bins=2, data=data, sessionLen=60)
+    data_filtered_grouped = filter_and_group(bins=6, data=data, sessionLen=60)
     barplot_accu_rewards_time(data_filtered_grouped)
 
     ## SHOW PLOT
