@@ -17,13 +17,13 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int) -> pd.DataFram
     """
 
     data.set_index(keys=["BarrierType", "MiceID"], inplace=True)
-    data_filtered = data#[data["Outcome"] == 1]
+    data_filtered = data[data["Outcome"] == 1]
     data_filtered_grouped = data_filtered.groupby(
         by=[
             "BarrierType",
             "MiceID",
             pd.cut(
-                data_filtered["TimeTrialStart"],
+                data_filtered[["TimePoke2", 'TimePoke1']].apply(max, axis=1),
                 bins=bins,
                 labels=[
                     f"{int((sessionLen/bins*i)-(sessionLen/bins))}-{int(sessionLen/bins*i)}"
@@ -47,7 +47,6 @@ def barplot_accu_rewards_time(data:pd.DataFrame):
     """
 
     fig, ax = plt.subplots(nrows=2, figsize=(10, 5))
-    fig.suptitle(f"Total trials on time per mice for stage 4")
     times = data.index.levels[2]
     mice_ids = data.index.levels[1]
     x_pos = np.arange(len(mice_ids))
@@ -100,13 +99,12 @@ if __name__ == "__main__":
     data = collect_behavior_data(
         start_subject=(10, 11),
         number_of_mice=2,
-        start_date=date(2023, 3, 29),
-        end_date=date(2023, 4, 2),
+        start_date=date(2023, 3, 5),
+        end_date=date(2023, 3, 5),
     )
-    #data.loc[(data['MiceID']=='coop012x013') & (data['Date']=='20230327'),'BarrierType'] = "solid"
     
     ## RUN
-    data_filtered_grouped = filter_and_group(bins=4, data=data, sessionLen=40)
+    data_filtered_grouped = filter_and_group(bins=2, data=data, sessionLen=60)
     barplot_accu_rewards_time(data_filtered_grouped)
 
     ## SHOW PLOT

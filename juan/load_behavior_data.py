@@ -101,7 +101,7 @@ def collect_behavior_data(
             df = pd.DataFrame(
                 {
                     "Outcome": bdata["outcome"],
-                    "TimeTrialStart": bdata["timeTrialStart"],  # for_stage_1(bdata)
+                    #"TimeTrialStart": bdata["timeTrialStart"],  # for_stage_1(bdata)
                     "BarrierType": bdata["barrierType"],
                     "ActiveSide":bdata['activeSide'],
                     "TimePoke1": bdata["timePoke1"],
