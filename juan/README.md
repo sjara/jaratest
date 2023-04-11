@@ -1,6 +1,6 @@
 # Test scripts by Juan Picón.
 
-### Utils :tools:
+### Utils 🧰
 * `load_behavior_data.py`: Contains functions for processing behavior data from coop_four_port paradigm.
     * `load_data`:description
     * `collect_behavior_data`: description
