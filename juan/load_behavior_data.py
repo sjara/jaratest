@@ -174,3 +174,41 @@ def collect_events(
         mouse1 = mouse2 + 1
         mouse2 = mouse1 + 1
     return df_all_data
+
+
+def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[int] = [1]) -> pd.DataFrame:
+
+    """_summary_:
+    This function is used to filter the data by the outcome of a trial
+    and to group the data by BarrierType, MiceID and the number of segmentation in time desired (bins).
+    Time of each trial is retrieve from the last poke in each trial.
+
+    Args:
+    sessionLen (int): How long is the training session.
+    bins (int): How many ranges do you want to segment the time session? 
+        For example, for a session of 60 min. 6 bins is equal to ranges of 10 min 
+    data (pd.DataFrame): pandas dataframe with at least 5 columns: BarrierType, MiceID, Outcome, TimePoke1 and TimePoke2
+    outcome (list[int], optional): This is to filter trials by outcome. Defaults to [1]
+
+    Returns:
+        data_filtered_grouped: Dataframe with the data filtered and grouped into
+        as many segments as chose by the user
+    """
+
+    data.set_index(keys=["BarrierType", "MiceID"], inplace=True)
+    data_filtered = data[data["Outcome"].isin(outcome)]
+    data_filtered_grouped = data_filtered.groupby(
+        by=[
+            "BarrierType",
+            "MiceID",
+            pd.cut(
+                data_filtered[["TimePoke2", 'TimePoke1']].apply(max, axis=1),
+                bins=bins,
+                labels=[
+                    f"{int((sessionLen/bins*i)-(sessionLen/bins))}-{int(sessionLen/bins*i)}"
+                    for i in range(1, bins + 1)
+                ],
+            ),
+        ]
+    )["Outcome"].count()
+    return data_filtered_grouped

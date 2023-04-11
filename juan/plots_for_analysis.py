@@ -13,6 +13,53 @@ data_behavior = collect_behavior_data(
 )
 
 
+
+def barplot_accu_rewards_time(data:pd.DataFrame):
+    """_summary_:
+    This function will create axes for each barrier,
+    each axes will show bars representing the accumulated rewards for each pair of mice on time.
+    In turn, accumulated rewards will be segmented in as many bars as the user want. The default will be 3,
+    wich means that for a 60 minute assay, accumulated rewards will be calculated every 20 minutes.
+
+    Args:
+        data (pandas.dataframe): Dataframe grouped by 3 columns: 
+            BarrierType, MiceID and ranges of numerical values (time). 
+        This dataframe is returned by load_behavior_data.py.filter_and_group
+    """
+
+    fig, ax = plt.subplots(nrows=2, figsize=(10, 5))
+    times = data.index.levels[2]
+    mice_ids = data.index.levels[1]
+    x_pos = np.arange(len(mice_ids))
+    width = 0.8 / len(times)
+    offset = 0
+
+    for index, barrier in enumerate(data.index.levels[0]):
+        max_value = 0
+        for time in times:
+            bars = ax[index].bar(
+                x_pos + offset,
+                data.loc[f"{barrier}", :, time].values,
+                width,
+                label=time,
+            )
+            ax[index].bar_label(bars, padding=3)
+            offset += width
+            max_value = (
+                max(data.loc[f"{barrier}", :, time].values)
+                if max(data.loc[f"{barrier}", :, time].values) > max_value
+                else max_value
+            )
+        offset = 0
+
+        # Add some text for labels, title and custom x-axis tick labels, etc.
+        ax[index].set_title(f"{barrier} barrier")
+        ax[index].set_ylabel("Trials count")
+        ax[index].set_xticks(x_pos + (width * len(times) - width) / 2, mice_ids)
+        ax[index].legend(loc="upper left", ncols=len(times) / 2)
+        ax[index].set_ylim(0, max_value+1000)
+
+
 def pct_rewarded_trials(
     data_behavior: pd.DataFrame, colors: list[str] = ["red", "cyan"], width_lines=0.1
 ):
@@ -107,7 +154,7 @@ def pct_rewarded_trials(
 def violin_plot_waitTime(data_behavior:pd.DataFrame, outcome:list[int] = [1], figsize:tuple[int]=(15, 5)):
     """_summary_:
     This violin plot is for analyze the waitTime
-    It helps to see the distributions of how long doe it take the second mouse to poke after the first mouse.
+    It helps to see the distributions of how long does it take the second mouse to poke after the first mouse poked.
     The function plot the time vs pair of mice. Also, each drawing is colored by the barrier.
     The output are two plots one for those trials in which the next available side is in the oppossite side and one with all the data
 
