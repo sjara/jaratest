@@ -7,7 +7,7 @@
     * `collect_events`: description
     * `filter_and_group`: description
 
-### Plotting :bar_chart:
+### Plotting 📊
 
 * `plot_for_analysis.py`: Contains functions for plotting graphs useful for data analysis from coop_four_ports paradigm.  
     * `pct_rewarded_trials` : Show  percentage of rewarded trials for each barrier per pair of mice in a categorical scatter graph. 
