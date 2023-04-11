@@ -13,7 +13,7 @@ data_behavior = collect_behavior_data(
 )
 
 
-def categorical_scatter_plot(
+def pct_rewarded_trials(
     data_behavior: pd.DataFrame, colors: list[str] = ["red", "cyan"], width_lines=0.1
 ):
     """_summary_:
