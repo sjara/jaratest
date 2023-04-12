@@ -122,3 +122,24 @@ def prepare_plots(oneCell, timeRange, sessionType1, sessionType2, timeVec):
         spikeCountMatLow = spikesanalysis.spiketimes_to_spikecounts(combinedSpikeTimesLow, combinedIndexLimitsLow, timeVec)
 
         return (combinedSpikeTimesHigh, combinedSpikeTimesLow, combinedIndexLimitsHigh, combinedIndexLimitsLow, combinedTrialsHigh, combinedTrialsLow, spikeCountMatHigh, spikeCountMatLow)
+
+
+def seperate_running_trials(combinedTrialsHigh, runningBoolean):
+
+    # concatenate the array with itself to create an array of size 1002
+    b = np.concatenate((runningBoolean, runningBoolean))
+
+    # add a new dimension to the array and copy the data
+    runningBoolean = np.tile(b[:, np.newaxis], (1, 2))
+
+    runningOddball = np.zeros_like(combinedTrialsHigh, dtype=bool)
+    for i in range(combinedTrialsHigh.shape[0]):
+        for j in range(combinedTrialsHigh.shape[1]):
+            if combinedTrialsHigh[i,j] and runningBoolean[i,j]:
+                runningOddball[i,j] = True
+
+    nonRunningBoolean = ~runningBoolean
+    nonRunningOddball = np.logical_and(combinedTrialsHigh, nonRunningBoolean)            
+
+
+    return runningOddball, nonRunningOddball
