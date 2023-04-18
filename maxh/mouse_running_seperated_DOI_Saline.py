@@ -78,13 +78,19 @@ else:
         oneCell = ephyscore.Cell(dbRow)
 
         fig = plt.figure()
-        gsMain = gs.GridSpec(2, 3, figure=fig)
+        gsMain = gs.GridSpec(3, 4, figure=fig)
         gsOne = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[0])
         gsTwo = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[1])
         gsThree = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[2])
         gsFour = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[3])
         gsFive = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[4])
         gsSix = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[5])
+        gsSeven = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec= gsMain[6])
+        gsEight = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[7])
+        gsNine = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[8])
+        gsTen = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[9])
+        gsEleven = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[10])
+        gsTwelve = gs.GridSpecFromSubplotSpec(2, 1, subplot_spec = gsMain[11])
         plt.subplots_adjust(hspace=0.10)
         gsMain.update(top=0.9, bottom=0.1, wspace=0.45, hspace=0.45) #Change spacing of things (left=0.075, right=0.98) 
 
@@ -189,7 +195,7 @@ else:
             ax0 = plt.subplot(gsOne[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('13kHz Chord - Combined')
+            plt.title('Saline 13kHz Chord - Combined')
             #plt.text(1.05,1.05, f'n {stdTrialLenHigh}')
             ax0.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHigh, combinedIndexLimitsHigh, timeRange, combinedTrialsHigh, colorsEachCond, labels= highFreqLabels)
@@ -206,10 +212,10 @@ else:
 
 
             # Raster plot of running     
-            ax2 = plt.subplot(gsTwo[0])
+            ax2 = plt.subplot(gsFive[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('13kHz Chord - Running')
+            plt.title('Saline 13kHz Chord - Running')
             ax2.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHigh, combinedIndexLimitsHigh, timeRange, runningOddballHigh, colorsEachCond, labels= highFreqLabelsRun)
             for p in pRaster:
@@ -217,7 +223,7 @@ else:
 
            
             # PSTH of running trials
-            ax3 = plt.subplot(gsTwo[1], sharex=ax2)    
+            ax3 = plt.subplot(gsFive[1], sharex=ax2)    
             extraplots.plot_psth(spikeCountMatHigh/binWidth, smoothWinSizePsth, timeVec, runningOddballHigh, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
@@ -226,17 +232,17 @@ else:
             
 
             # Raster plot of nonrunning     
-            ax4 = plt.subplot(gsThree[0])
+            ax4 = plt.subplot(gsNine[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('13kHz Chord - NonRunning')
+            plt.title('Saline 13kHz Chord - NonRunning')
             ax4.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHigh, combinedIndexLimitsHigh, timeRange, nonRunningOddballHigh, colorsEachCond, labels= highFreqLabelsNon)
             for p in pRaster:
                 p.set_markersize(4)
 
             # PSTH of nonrunning trials
-            ax5 = plt.subplot(gsThree[1], sharex=ax4)    
+            ax5 = plt.subplot(gsNine[1], sharex=ax4)    
             extraplots.plot_psth(spikeCountMatHigh/binWidth, smoothWinSizePsth, timeVec, nonRunningOddballHigh, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
@@ -248,17 +254,17 @@ else:
             # Raster plot of Low frequency
             colorsEachCond = ['#39b5c4', '#f04158']
             highFreqLabels = ('Standard', "Oddball")
-            ax6 = plt.subplot(gsFour[0])
+            ax6 = plt.subplot(gsThree[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('8kHz Chord - Combined')
+            plt.title('Saline 8kHz Chord - Combined')
             ax6.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLow, combinedIndexLimitsLow, timeRange, combinedTrialsLow, colorsEachCond, labels= lowFreqLabels)
             for p in pRaster:
                 p.set_markersize(4)
 
             # PSTH of lowFreq trials
-            ax7 = plt.subplot(gsFour[1], sharex=ax6)
+            ax7 = plt.subplot(gsThree[1], sharex=ax6)
             extraplots.plot_psth(spikeCountMatLow/binWidth, smoothWinSizePsth, timeVec, combinedTrialsLow, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
@@ -267,10 +273,10 @@ else:
 
 
             # Raster plot of running     
-            ax8 = plt.subplot(gsFive[0])
+            ax8 = plt.subplot(gsSeven[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('8kHz Chord - Running')
+            plt.title('Saline 8kHz Chord - Running')
             ax8.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLow, combinedIndexLimitsLow, timeRange, runningOddballLow, colorsEachCond, labels= lowFreqLabelsRun)
             for p in pRaster:
@@ -278,7 +284,7 @@ else:
 
            
             # PSTH of running trials
-            ax9 = plt.subplot(gsFive[1], sharex=ax8)    
+            ax9 = plt.subplot(gsSeven[1], sharex=ax8)    
             extraplots.plot_psth(spikeCountMatLow/binWidth, smoothWinSizePsth, timeVec, runningOddballLow, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
@@ -287,17 +293,188 @@ else:
             
 
             # Raster plot of nonrunning     
-            ax10 = plt.subplot(gsSix[0])
+            ax10 = plt.subplot(gsEleven[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('8kHz Chord - NonRunning')
+            plt.title('Saline 8kHz Chord - NonRunning')
             ax10.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLow, combinedIndexLimitsLow, timeRange, nonRunningOddballLow, colorsEachCond, labels= lowFreqLabelsNon)
             for p in pRaster:
                 p.set_markersize(4)
 
             # PSTH of nonrunning trials
-            ax11 = plt.subplot(gsSix[1], sharex=ax10)    
+            ax11 = plt.subplot(gsEleven[1], sharex=ax10)    
+            extraplots.plot_psth(spikeCountMatLow/binWidth, smoothWinSizePsth, timeVec, nonRunningOddballLow, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Firing Rate')
+            #plt.title('13kHz (post)')
+            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+
+
+        # Post DOI
+        if oneCell.get_session_inds('doiLowFreq') != []:
+
+            (spikeTimesHigh, trialIndexHigh, indexLimitsHigh, LowStd, HighOdd) = odbl.main_function(oneCell, 'doiHighFreq', timeRange)
+            (spikeTimesLow, trialIndexLow, indexLimitsLow, LowOdd, HighStd) = odbl.main_function(oneCell, 'doiLowFreq', timeRange)
+
+            # Get standard trials before oddball trials
+            trialsBeforeOddLowStd = odbl.trials_before_oddball(HighOdd)       
+            trialsBeforeOddHighStd = odbl.trials_before_oddball(LowOdd)
+            
+
+            # Combine spike times and index limits of standard and oddball trials.
+            (combinedSpikeTimesHigh, combinedIndexLimitsHigh) = odbl.combine_index_limits(spikeTimesLow, spikeTimesHigh, indexLimitsLow, indexLimitsHigh)
+            (combinedSpikeTimesLow, combinedIndexLimitsLow) = odbl.combine_index_limits(spikeTimesHigh, spikeTimesLow, indexLimitsHigh, indexLimitsLow)
+            
+            
+            
+            # Combine trials of high freq standard before oddball and high freq oddball.
+            combinedTrialsHigh = odbl.combine_trials(trialsBeforeOddHighStd, HighOdd)
+
+            # Combine trials of low freq standard before oddball and low freq oddball.
+            combinedTrialsLow = odbl.combine_trials(trialsBeforeOddLowStd, LowOdd)
+
+            runningBooleanLow = runningBooleanLow.reshape(-1,1).astype(bool)
+            runningBooleanHigh = runningBooleanHigh.reshape(-1,1).astype(bool)
+            combinedRunningHigh = odbl.combine_trials(runningBooleanLow, runningBooleanHigh)
+            combinedRunningLow = odbl.combine_trials(runningBooleanHigh, runningBooleanLow)
+
+            # Creates a trialsEachCond for the running and nonrunning oddball.
+            runningOddballHigh, nonRunningOddballHigh = odbl.seperate_running_trials(combinedTrialsHigh, combinedRunningHigh)
+            runningOddballLow, nonRunningOddballLow = odbl.seperate_running_trials(combinedTrialsLow, combinedRunningLow)
+    
+
+            # Create spikeCountMat for psth
+            spikeCountMatHigh = spikesanalysis.spiketimes_to_spikecounts(combinedSpikeTimesHigh, combinedIndexLimitsHigh, timeVec)
+            spikeCountMatLow = spikesanalysis.spiketimes_to_spikecounts(combinedSpikeTimesLow, combinedIndexLimitsLow, timeVec)
+
+
+
+            # Create highFrequencyLabels
+            highFreqLabels = odbl.create_labels(combinedTrialsHigh)
+            highFreqLabelsRun = odbl.create_labels(runningOddballHigh)
+            highFreqLabelsNon = odbl.create_labels(nonRunningOddballHigh)
+
+            # Create lowFrequencyLabels
+            lowFreqLabels = odbl.create_labels(combinedTrialsLow)
+            lowFreqLabelsRun = odbl.create_labels(runningOddballLow)
+            lowFreqLabelsNon = odbl.create_labels(nonRunningOddballLow)
+
+
+            # Raster plot of high frequency
+            colorsEachCond = ['#39b5c4', '#f04158']
+            ax12 = plt.subplot(gsTwo[0])
+            #plt.xlabel('Time (s)')
+            plt.ylabel('Trials')
+            plt.title('DOI 13kHz Chord - Combined')
+            #plt.text(1.05,1.05, f'n {stdTrialLenHigh}')
+            ax12.tick_params(labelbottom=False) 
+            pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHigh, combinedIndexLimitsHigh, timeRange, combinedTrialsHigh, colorsEachCond, labels= highFreqLabels)
+            for p in pRaster:
+                p.set_markersize(4)
+
+            # PSTH of highFreq trials (may not need spikeCountMatHigh)
+            ax13 = plt.subplot(gsTwo[1], sharex=ax12)
+            extraplots.plot_psth(spikeCountMatHigh/binWidth, smoothWinSizePsth, timeVec, combinedTrialsHigh, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Firing Rate')
+            #plt.title('8kHz (post)')
+            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+
+
+            # Raster plot of running     
+            ax14 = plt.subplot(gsSix[0])
+            #plt.xlabel('Time (s)')
+            plt.ylabel('Trials')
+            plt.title('DOI 13kHz Chord - Running')
+            ax14.tick_params(labelbottom=False) 
+            pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHigh, combinedIndexLimitsHigh, timeRange, runningOddballHigh, colorsEachCond, labels= highFreqLabelsRun)
+            for p in pRaster:
+                p.set_markersize(4)
+
+           
+            # PSTH of running trials
+            ax15 = plt.subplot(gsSix[1], sharex=ax14)    
+            extraplots.plot_psth(spikeCountMatHigh/binWidth, smoothWinSizePsth, timeVec, runningOddballHigh, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Firing Rate')
+            #plt.title('13kHz (post)')
+            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+            
+
+            # Raster plot of nonrunning     
+            ax16 = plt.subplot(gsTen[0])
+            #plt.xlabel('Time (s)')
+            plt.ylabel('Trials')
+            plt.title('DOI 13kHz Chord - NonRunning')
+            ax16.tick_params(labelbottom=False) 
+            pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHigh, combinedIndexLimitsHigh, timeRange, nonRunningOddballHigh, colorsEachCond, labels= highFreqLabelsNon)
+            for p in pRaster:
+                p.set_markersize(4)
+
+            # PSTH of nonrunning trials
+            ax17 = plt.subplot(gsTen[1], sharex=ax16)    
+            extraplots.plot_psth(spikeCountMatHigh/binWidth, smoothWinSizePsth, timeVec, nonRunningOddballHigh, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Firing Rate')
+            #plt.title('13kHz (post)')
+            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+
+
+            # Low Freqency Trials ----------------------------------
+            # Raster plot of Low frequency
+            colorsEachCond = ['#39b5c4', '#f04158']
+            highFreqLabels = ('Standard', "Oddball")
+            ax18 = plt.subplot(gsFour[0])
+            #plt.xlabel('Time (s)')
+            plt.ylabel('Trials')
+            plt.title('DOI 8kHz Chord - Combined')
+            ax18.tick_params(labelbottom=False) 
+            pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLow, combinedIndexLimitsLow, timeRange, combinedTrialsLow, colorsEachCond, labels= lowFreqLabels)
+            for p in pRaster:
+                p.set_markersize(4)
+
+            # PSTH of lowFreq trials
+            ax19 = plt.subplot(gsFour[1], sharex=ax18)
+            extraplots.plot_psth(spikeCountMatLow/binWidth, smoothWinSizePsth, timeVec, combinedTrialsLow, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Firing Rate')
+            #plt.title('8kHz (post)')
+            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+
+
+            # Raster plot of running     
+            ax20 = plt.subplot(gsEight[0])
+            #plt.xlabel('Time (s)')
+            plt.ylabel('Trials')
+            plt.title('DOI 8kHz Chord - Running')
+            ax20.tick_params(labelbottom=False) 
+            pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLow, combinedIndexLimitsLow, timeRange, runningOddballLow, colorsEachCond, labels= lowFreqLabelsRun)
+            for p in pRaster:
+                p.set_markersize(4)
+
+           
+            # PSTH of running trials
+            ax21 = plt.subplot(gsEight[1], sharex=ax20)    
+            extraplots.plot_psth(spikeCountMatLow/binWidth, smoothWinSizePsth, timeVec, runningOddballLow, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Firing Rate')
+            #plt.title('13kHz (post)')
+            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+            
+
+            # Raster plot of nonrunning     
+            ax22 = plt.subplot(gsTwelve[0])
+            #plt.xlabel('Time (s)')
+            plt.ylabel('Trials')
+            plt.title('DOI 8kHz Chord - NonRunning')
+            ax22.tick_params(labelbottom=False) 
+            pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLow, combinedIndexLimitsLow, timeRange, nonRunningOddballLow, colorsEachCond, labels= lowFreqLabelsNon)
+            for p in pRaster:
+                p.set_markersize(4)
+
+            # PSTH of nonrunning trials
+            ax23 = plt.subplot(gsTwelve[1], sharex=ax22)    
             extraplots.plot_psth(spikeCountMatLow/binWidth, smoothWinSizePsth, timeVec, nonRunningOddballLow, colorsEachCond, linestyle=None, linewidth=lwPsth, downsamplefactor=downsampleFactorPsth)
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
@@ -332,9 +509,9 @@ else:
             '''
 
             # Plot Waveform
-            ax12 = fig.add_axes([0.9, 0.9, 0.1, 0.1])
-            ax12.plot(dbRow.spikeShape, linewidth = 3)
-            ax12.axis('off')
+            ax24 = fig.add_axes([0.9, 0.9, 0.1, 0.1])
+            ax24.plot(dbRow.spikeShape, linewidth = 3)
+            ax24.axis('off')
             #plt.text(30, -0.1, f"bestChannel = {dbRow.beate}_{dbRow.maxDepth}um_c{dbRow.cluster}_combined_report.png'
             #fileName = os.path.join(figDirectory, figName)
 
@@ -343,7 +520,7 @@ else:
 
             #mng = plt.get_current_fig_manager()
             #mng.full_screen_toggle()
-            #plt.show()
+            plt.show()
             figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/FM/cell_reports')
             if not os.path.exists(figDirectory):
                 os.makedirs(figDirectory)
@@ -351,7 +528,7 @@ else:
             fileName = os.path.join(figDirectory, figName)
 
 
-            plt.savefig(fileName, format='png')
+            #plt.savefig(fileName, format='png')
             print(f'saving image {figName}')
             figureCount+=1
     

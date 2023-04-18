@@ -14,7 +14,7 @@ from jaratoolbox import behavioranalysis
 import scipy.optimize
 import matplotlib
 
-subject = 'inpi001'
+subject = 'acid006'
 
 # Set to True if want to load one cell. Defaults to loading first cell unless cellDict is complete.
 oneFigure = False
@@ -81,7 +81,7 @@ else:
 
         
         # Title of image
-        plt.suptitle(f'{oneCell} combined {figureCount}/{figureTotal}', fontsize=16, fontweight='bold', y = 0.99)
+        plt.suptitle(f'{oneCell} combined {figureCount:03d}/{figureTotal:03d}', fontsize=16, fontweight='bold', y = 0.99)
         
 
 
@@ -390,7 +390,7 @@ else:
             figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/combined/' 'cell_reports')
             if not os.path.exists(figDirectory):
                 os.makedirs(figDirectory)
-            figName= f'{figureCount}_{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_combined_report.png'
+            figName= f'{figureCount:03d}_{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_combined_report.png'
             fileName = os.path.join(figDirectory, figName)
 
             plt.savefig(fileName, format='png')
