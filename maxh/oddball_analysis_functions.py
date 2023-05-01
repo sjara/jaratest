@@ -170,6 +170,9 @@ def create_running_boolean(runStart, runStop, oneCell, sessionType):
 def seperate_running_trials(combinedTrialsHigh, combinedRunning):
     '''
     Compares two booleans and creates a new array that returns when both are TRUE. Also inverts the second boolean argument and makes the same comparison and return.
+
+    Args: Two arrays. First array values are kept if second array is TRUE.
+
     '''
 
     runningOddball = np.zeros_like(combinedTrialsHigh, dtype=bool)
@@ -182,7 +185,10 @@ def seperate_running_trials(combinedTrialsHigh, combinedRunning):
 
 def read_videotimes(videotimesFile):
     '''
-    Loads a python module with videoTimes.
+    Loads a python module to access its dictionaries and values.
+
+    Arg: path to python module file.
+
     '''
     spec = importlib.util.spec_from_file_location('videotimes', videotimesFile)
     videotimes = importlib.util.module_from_spec(spec)
@@ -194,7 +200,11 @@ def read_videotimes(videotimesFile):
 
 def convert_videotimes(videotimes, sessionType):
     '''
-    Using the keys runStart and runStop of 'sessionType', converts the timestamp strings into seconds.
+    Takes a videotimes dictionary and uses the keys 'runStart' and 'runStop' of 'sessionType' to convert the timestamp strings into seconds.
+
+    Args: loaded python module of the video times, the sessionType you want to convert
+
+    Returns: Two arrays of the startTime and stopTime converted into seconds.
     '''
     start_str = videotimes.__dict__[sessionType]["runStart"]
     stop_str = videotimes.__dict__[sessionType]["runStop"]
@@ -225,6 +235,11 @@ def convert_videotimes(videotimes, sessionType):
 def create_labels(trialsEachCond):
     '''
     Takes a boolean of trials of each condition and counts the length of TRUE trials for each of the conditions.
+    Used to make labels for standard vs oddball PSTH plots.
+
+    Args: 2D boolean array
+
+    Returns: String of text with trial count
     '''
     standardTrials= trialsEachCond[:,0].sum()
     oddballTrials= trialsEachCond[:,1].sum()

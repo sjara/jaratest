@@ -344,7 +344,7 @@ else:
             #mng = plt.get_current_fig_manager()
             #mng.full_screen_toggle()
             #plt.show()
-            figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/FM/cell_reports')
+            figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/FM_running_compare/saline')
             if not os.path.exists(figDirectory):
                 os.makedirs(figDirectory)
             figName= f'{figureCount:03d}_{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_running_report.png'
