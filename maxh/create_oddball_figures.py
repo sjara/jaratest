@@ -59,7 +59,7 @@ gsMain = gs.GridSpec(2, 2, fig)
 
 
 if oneCell.get_session_inds(f'salineFM_Up') != []:
-        (combinedSpikeTimesDown, combinedSpikeTimesUp, combinedIndexLimitsDown, combinedIndexLimitsUp, combinedTrialsDown, combinedTrialsUp, spikeCountMatDown, spikeCountMatUp) = odbl.prepare_plots(oneCell, timeRangePlot, 'salineFM_Down', 'salineFM_Up', timeVec)
+        (combinedSpikeTimesDown, combinedSpikeTimesUp, combinedIndexLimitsDown, combinedIndexLimitsUp, combinedTrialsDown, combinedTrialsUp, spikeCountMatDown, spikeCountMatUp) = odbl.combine_sessions(oneCell, timeRangePlot, 'salineFM_Down', 'salineFM_Up', timeVec)
         
         ax1 = plt.subplot(gsMain[0])
         # plt.xlabel('Time (s)')
@@ -79,7 +79,7 @@ if oneCell.get_session_inds(f'salineFM_Up') != []:
         plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
 
         
-        (combinedSpikeTimesDown, combinedSpikeTimesUp, combinedIndexLimitsDown, combinedIndexLimitsUp, combinedTrialsDown, combinedTrialsUp, spikeCountMatDown, spikeCountMatUp) = odbl.prepare_plots(oneCell, timeRangePlot, 'doiFM_Down', 'doiFM_Up', timeVec)
+        (combinedSpikeTimesDown, combinedSpikeTimesUp, combinedIndexLimitsDown, combinedIndexLimitsUp, combinedTrialsDown, combinedTrialsUp, spikeCountMatDown, spikeCountMatUp) = odbl.combine_sessions(oneCell, timeRangePlot, 'doiFM_Down', 'doiFM_Up', timeVec)
         
         ax3 = plt.subplot(gsMain[1])
         # plt.xlabel('Time (s)')
