@@ -100,13 +100,6 @@ else:
 
 
 
-        # Converts the video timestamps into seconds.
-        # Adds the value of videoStartDelay to each timestamp.
-        runStartHigh, runStopHigh = odbl.convert_videotimes(videoTimes, "salineHighFreq")
-        runStartHigh, runStopHigh = [[x + videoStartDelay for x in times] for times in (runStartHigh, runStopHigh)]
-
-        runStartLow, runStopLow = odbl.convert_videotimes(videoTimes, "salineLowFreq")
-        runStartLow, runStopLow = [[x + videoStartDelay for x in times] for times in (runStartLow, runStopLow)]
 
 
         '''
@@ -126,8 +119,6 @@ else:
         runStopLow = list(np.asarray([12, 38, 83 ]) + videoStartDelay)
         '''
 
-        runningBooleanHigh = odbl.create_running_boolean(runStartHigh, runStopHigh, oneCell, 'salineHighFreq')
-        runningBooleanLow = odbl.create_running_boolean(runStartLow, runStopLow, oneCell, 'salineLowFreq')
 
         '''
         runningBooleanDown = odbl.create_running_boolean(runStartDown, runStopDown, oneCell, 'salineFMDown')
@@ -142,6 +133,19 @@ else:
 
         # Post Saline
         if oneCell.get_session_inds('salineLowFreq') != []:
+
+
+            # Converts the video timestamps into seconds.
+            # Adds the value of videoStartDelay to each timestamp.
+            runStartHigh, runStopHigh = odbl.convert_videotimes(videoTimes, "salineHighFreq")
+            runStartHigh, runStopHigh = [[x + videoStartDelay for x in times] for times in (runStartHigh, runStopHigh)]
+
+            runStartLow, runStopLow = odbl.convert_videotimes(videoTimes, "salineLowFreq")
+            runStartLow, runStopLow = [[x + videoStartDelay for x in times] for times in (runStartLow, runStopLow)]
+
+            runningBooleanHigh = odbl.create_running_boolean(runStartHigh, runStopHigh, oneCell, 'salineHighFreq')
+            runningBooleanLow = odbl.create_running_boolean(runStartLow, runStopLow, oneCell, 'salineLowFreq')
+
 
             (spikeTimesHigh, trialIndexHigh, indexLimitsHigh, LowStd, HighOdd) = odbl.main_function(oneCell, 'salineHighFreq', timeRange)
             (spikeTimesLow, trialIndexLow, indexLimitsLow, LowOdd, HighStd) = odbl.main_function(oneCell, 'salineLowFreq', timeRange)
@@ -314,6 +318,17 @@ else:
         # Post DOI
         if oneCell.get_session_inds('doiLowFreq') != []:
 
+            # Converts the video timestamps into seconds.
+            # Adds the value of videoStartDelay to each timestamp.
+            runStartHigh, runStopHigh = odbl.convert_videotimes(videoTimes, "doiHighFreq")
+            runStartHigh, runStopHigh = [[x + videoStartDelay for x in times] for times in (runStartHigh, runStopHigh)]
+
+            runStartLow, runStopLow = odbl.convert_videotimes(videoTimes, "doiLowFreq")
+            runStartLow, runStopLow = [[x + videoStartDelay for x in times] for times in (runStartLow, runStopLow)]
+
+            runningBooleanHigh = odbl.create_running_boolean(runStartHigh, runStopHigh, oneCell, 'doiHighFreq')
+            runningBooleanLow = odbl.create_running_boolean(runStartLow, runStopLow, oneCell, 'doiLowFreq')
+
             (spikeTimesHigh, trialIndexHigh, indexLimitsHigh, LowStd, HighOdd) = odbl.main_function(oneCell, 'doiHighFreq', timeRange)
             (spikeTimesLow, trialIndexLow, indexLimitsLow, LowOdd, HighStd) = odbl.main_function(oneCell, 'doiLowFreq', timeRange)
 
@@ -482,12 +497,6 @@ else:
             plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
 
 
-
-
-
-
-
-
             '''
             num_plots = len(fig.get_axes())
 
@@ -520,15 +529,15 @@ else:
 
             #mng = plt.get_current_fig_manager()
             #mng.full_screen_toggle()
-            plt.show()
-            figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/FM/cell_reports')
+            #plt.show()
+            figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/FM_running_compare/DOI_combined')
             if not os.path.exists(figDirectory):
                 os.makedirs(figDirectory)
             figName= f'{figureCount:03d}_{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_running_report.png'
             fileName = os.path.join(figDirectory, figName)
 
 
-            #plt.savefig(fileName, format='png')
+            plt.savefig(fileName, format='png')
             print(f'saving image {figName}')
             figureCount+=1
     
