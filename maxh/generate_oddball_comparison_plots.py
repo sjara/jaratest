@@ -66,7 +66,7 @@ plt.plot(np.tile(barLoc[1], len(downOddballIndexSaline)), downOddballIndexDOI, '
 ax2.set_xlim(barLoc[0] - 0.2, barLoc[1] + 0.2)
 ax2.set_xticks(barLoc)
 ax2.set_xticklabels(['saline', 'DOI'])
-ax2.set_ylabel("upOddballIndex")
+ax2.set_ylabel("downOddballIndex")
 #axes.set_ylim(0,5)
 #extraplots.boxoff(axes)
 extraplots.set_ticks_fontsize(ax2, 20)
