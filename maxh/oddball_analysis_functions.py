@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gs
 import importlib
 import datetime
+sys.path.append('C:/Users/mdhor/Documents/GitHub/jaratoolbox/')
 from jaratoolbox import celldatabase
 from jaratoolbox import settings
 from jaratoolbox import ephyscore
@@ -103,7 +104,21 @@ def combine_trials(trials1, trials2):
 
 
 
-def prepare_plots(oneCell, timeRange, sessionType1, sessionType2, timeVec):
+def combine_sessions(oneCell, timeRange, sessionType1, sessionType2, timeVec):
+    '''Prepares and combines data for plotting peri-stimulus time histograms (PSTHs) of spike counts for a single neuron from two different oddball sessions.
+        Seperates trials by stimulus frequency from each session and then combines the same frequencies from both sessions together.
+
+    Args:
+        oneCell: A cell object representing a single neuron's data.
+        
+        timeRange (tuple): A tuple specifying the start and end times of the PSTH relative to a stimulus event.
+        
+        sessionType1 (str): A string specifying the first session.
+        
+        sessionType2 (str): A string specifying the second session.
+        
+        timeVec (numpy.ndarray): A 1D array of time values for the PSTH bins.
+    '''
     if oneCell.get_session_inds(sessionType2) != []:
         # Load session, lock spikes to event, seperate trials into columns.
         (spikeTimesHigh, trialIndexHigh, indexLimitsHigh, LowStd, HighOdd) = main_function(oneCell, sessionType1, timeRange)
