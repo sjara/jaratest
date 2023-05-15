@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gs
 import importlib
 import datetime
+sys.path.append('C:/Users/mdhor/Documents/GitHub/jaratoolbox/')
 from jaratoolbox import celldatabase
 from jaratoolbox import settings
 from jaratoolbox import ephyscore
@@ -33,7 +34,6 @@ def main_function(oneCell, session_type, timeRange):
         ephysData, bdata = oneCell.load(session_type)  
         spikeTimes = ephysData['spikeTimes']
         eventOnsetTimes = ephysData['events']['stimOn']
-        #eventOnsetTimes = eventOnsetTimes[:-1]
 
         frequencies_each_trial = bdata['currentStartFreq']
 
@@ -104,7 +104,21 @@ def combine_trials(trials1, trials2):
 
 
 
-def prepare_plots(oneCell, timeRange, sessionType1, sessionType2, timeVec):
+def combine_sessions(oneCell, timeRange, sessionType1, sessionType2, timeVec):
+    '''Prepares and combines data for plotting peri-stimulus time histograms (PSTHs) of spike counts for a single neuron from two different oddball sessions.
+        Seperates trials by stimulus frequency from each session and then combines the same frequencies from both sessions together.
+
+    Args:
+        oneCell: A cell object representing a single neuron's data.
+        
+        timeRange (tuple): A tuple specifying the start and end times of the PSTH relative to a stimulus event.
+        
+        sessionType1 (str): A string specifying the first session.
+        
+        sessionType2 (str): A string specifying the second session.
+        
+        timeVec (numpy.ndarray): A 1D array of time values for the PSTH bins.
+    '''
     if oneCell.get_session_inds(sessionType2) != []:
         # Load session, lock spikes to event, seperate trials into columns.
         (spikeTimesHigh, trialIndexHigh, indexLimitsHigh, LowStd, HighOdd) = main_function(oneCell, sessionType1, timeRange)
@@ -137,48 +151,46 @@ def prepare_plots(oneCell, timeRange, sessionType1, sessionType2, timeVec):
 
 def create_running_boolean(runStart, runStop, oneCell, sessionType):
     '''
-    Returns a boolean that is length of ephys trials that is TRUE when the mouse is running according to arguments runStart and Runstop.
+    Returns a boolean that is length of ephys trials that are TRUE when the mouse is running according to arguments runStart and Runstop.
     '''
+    ephysData, bdata = oneCell.load(sessionType)
 
-    if oneCell.get_session_inds('salineLowFreq') != []:
-        ephysData, bdata = oneCell.load('salineLowFreq')
-    
-        spikeTimes = ephysData['spikeTimes']
-        eventOnsetTimes = ephysData['events']['stimOn']
+    spikeTimes = ephysData['spikeTimes']
+    eventOnsetTimes = ephysData['events']['stimOn']
 
 
-        # Creates an list of indexs of the trials where the mouse is running.
-        selectedTrials = [] #Boolean array of size event
-        for start, stop in zip(runStart, runStop):
-            selectedTrials.extend([j for j,v in enumerate(eventOnsetTimes) if start <= v <= stop])
+    # Creates an list of indexs of the trials where the mouse is running.
+    selectedTrials = [] #Boolean array of size event
+    for start, stop in zip(runStart, runStop):
+        selectedTrials.extend([j for j,v in enumerate(eventOnsetTimes) if start <= v <= stop])
 
 
-            frequencies_each_trial = bdata['currentStartFreq']
+        frequencies_each_trial = bdata['currentStartFreq']
 
-        if (len(frequencies_each_trial) > len(eventOnsetTimes)) or (len(frequencies_each_trial) < len(eventOnsetTimes)-1):
-            print(f'Warning! BevahTrials ({len(frequencies_each_trial)}) and ' + f'EphysTrials ({len(eventOnsetTimes)})')
-            sys.exit()
+    if (len(frequencies_each_trial) > len(eventOnsetTimes)) or (len(frequencies_each_trial) < len(eventOnsetTimes)-1):
+        print(f'Warning! BevahTrials ({len(frequencies_each_trial)}) and ' + f'EphysTrials ({len(eventOnsetTimes)})')
+        sys.exit()
 
-        if len(frequencies_each_trial) == len(eventOnsetTimes)-1:
-            eventOnsetTimes = eventOnsetTimes[:len(frequencies_each_trial)]
+    if len(frequencies_each_trial) == len(eventOnsetTimes)-1:
+        eventOnsetTimes = eventOnsetTimes[:len(frequencies_each_trial)]
 
 
-        # Creates a boolean of all the trials where running is TRUE
-        ntrials = len(eventOnsetTimes)
-        runningBoolean = np.zeros(ntrials, dtype=bool)
-        runningBoolean[selectedTrials] = True
+    # Creates a boolean of all the trials where running is TRUE
+    ntrials = len(eventOnsetTimes)
+    runningBoolean = np.zeros(ntrials, dtype=bool)
+    runningBoolean[selectedTrials] = True
 
-        return runningBoolean
+    return runningBoolean
 
 def seperate_running_trials(combinedTrialsHigh, combinedRunning):
+    '''
+    Compares two booleans and creates a new array that returns when both are TRUE. Also inverts the second boolean argument and makes the same comparison and return.
+
+    Args: Two arrays. First array values are kept if second array is TRUE.
+
+    '''
 
     runningOddball = np.zeros_like(combinedTrialsHigh, dtype=bool)
-    '''
-    for i in range(combinedTrialsHigh.shape[0]):
-        for j in range(combinedTrialsHigh.shape[1]):
-            if combinedTrialsHigh[i,j] and runningBoolean[i,j]:
-                runningOddball[i,j] = True
-    '''
     runningOddball = np.logical_and(combinedTrialsHigh, combinedRunning)
     nonRunningBoolean = ~combinedRunning
     nonRunningOddball = np.logical_and(combinedTrialsHigh, nonRunningBoolean)            
@@ -187,6 +199,12 @@ def seperate_running_trials(combinedTrialsHigh, combinedRunning):
     return runningOddball, nonRunningOddball
 
 def read_videotimes(videotimesFile):
+    '''
+    Loads a python module to access its dictionaries and values.
+
+    Arg: path to python module file.
+
+    '''
     spec = importlib.util.spec_from_file_location('videotimes', videotimesFile)
     videotimes = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(videotimes)
@@ -196,6 +214,13 @@ def read_videotimes(videotimesFile):
 
 
 def convert_videotimes(videotimes, sessionType):
+    '''
+    Takes a videotimes dictionary and uses the keys 'runStart' and 'runStop' of 'sessionType' to convert the timestamp strings into seconds.
+
+    Args: loaded python module of the video times, the sessionType you want to convert
+
+    Returns: Two arrays of the startTime and stopTime converted into seconds.
+    '''
     start_str = videotimes.__dict__[sessionType]["runStart"]
     stop_str = videotimes.__dict__[sessionType]["runStop"]
 
@@ -220,6 +245,23 @@ def convert_videotimes(videotimes, sessionType):
             exit()
 
     return (start_sec_arr, stop_sec_arr)
+
+
+def create_labels(trialsEachCond):
+    '''
+    Takes a boolean of trials of each condition and counts the length of TRUE trials for each of the conditions.
+    Used to make labels for standard vs oddball PSTH plots.
+
+    Args: 2D boolean array
+
+    Returns: String of text with trial count
+    '''
+    standardTrials= trialsEachCond[:,0].sum()
+    oddballTrials= trialsEachCond[:,1].sum()
+    labels = (f'Standard ({standardTrials})', f"Oddball ({oddballTrials})")
+
+    return labels
+
 
 
 

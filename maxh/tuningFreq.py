@@ -14,7 +14,7 @@ from jaratoolbox import behavioranalysis
 import scipy.optimize
 import matplotlib
 
-subject = 'inpi001'
+subject = 'acid006'
 
 # Set to True if want to load one cell. Defaults to loading first cell unless cellDict is complete.
 oneFigure = False
@@ -88,6 +88,7 @@ for indRow, dbRow in celldb.iterrows():
         plt.title('Pre Injection')
         ax1.tick_params(labelbottom=False)
 
+        '''
         # Generate an array of 16 equally spaced numbers between 0 and 1
         numbers = np.linspace(0, 1, 16)
 
@@ -96,7 +97,7 @@ for indRow, dbRow in celldb.iterrows():
 
         # Use the colormap to map the numbers to colors
         colors = [cmap(x) for x in numbers]
-
+        '''
 
 
         pRaster = extraplots.raster_plot(spikeTimesFromEventOnset, indexLimitsEachTrial, timeRange, trialsEachCond, labels = PTlabels)
