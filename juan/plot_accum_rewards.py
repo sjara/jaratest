@@ -23,7 +23,7 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int) -> pd.DataFram
             "BarrierType",
             "MiceID",
             pd.cut(
-                data_filtered[["TimePoke2", 'TimePoke1']].apply(max, axis=1),
+                data_filtered[["TimePoke2", 'TimePoke1']].fillna(0).apply(max, axis=1),
                 bins=bins,
                 labels=[
                     f"{int((sessionLen/bins*i)-(sessionLen/bins))}-{int(sessionLen/bins*i)}"
@@ -81,30 +81,15 @@ def barplot_accu_rewards_time(data:pd.DataFrame):
 
 if __name__ == "__main__":
 
-    """
-    Objective:
-
-        Make a group of graphs to show the accumulated rewards
-        every n min for each pair of mice in order to assess
-        how mice are performing through time.
-
-    Steps:
-    # Paso 1: I need to accumulate all data taking into account that I started recording the time since 20230313a and
-    # only the time of stage 1 can be estimated.
-    # Paso 2: I need to filter and group all data by barrier > mice id.
-    # Paso 3: Creation of bar charts.
-    # paso 4: Compile all in a function to plot both barriers.
-    """
     ## DATA COLLECTION
     data = collect_behavior_data(
-        start_subject=(12, 13),
+        start_subject=(18, 19),
         number_of_mice=1,
-        start_date=date(2023, 3, 4),
-        end_date=date(2023, 3, 4),
+        start_date=date(2023, 5, 14),
+        end_date=date(2023, 5, 14),
     )
-    
     ## RUN
-    data_filtered_grouped = filter_and_group(bins=6, data=data, sessionLen=60)
+    data_filtered_grouped = filter_and_group(bins=3, data=data, sessionLen=60)
     barplot_accu_rewards_time(data_filtered_grouped)
 
     ## SHOW PLOT
