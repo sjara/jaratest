@@ -14,14 +14,14 @@ from jaratoolbox import behavioranalysis
 import scipy.optimize
 import matplotlib
 
-subject = 'acid006'
+subject = 'acid007'
 
 # Set to True if want to load one cell. Defaults to loading first cell unless cellDict is complete.
 oneFigure = False
 
 # Add info for loading a specific cell.
 cellDict = {'subject' : '',
-            'date' : '2023-03-23',
+            'date' : '2023-03-19',
             'pdepth' : 3000,
             'egroup' : 1,
             'cluster' : 120}
@@ -32,7 +32,7 @@ dbPath = os.path.join(settings.DATABASE_PATH ,f'celldb_{subject}.h5')
 
 celldb = celldatabase.generate_cell_database(inforecFile)
 # Used to load specific recording session dates.
-#celldb = celldb.query("date == '2023-03-23'")
+celldb = celldb.query("date == '2023-05-17'")
 figureCount = 1
 figureTotal = 0
 
@@ -197,7 +197,7 @@ for indRow, dbRow in celldb.iterrows():
         #mng = plt.get_current_fig_manager()
         #mng.full_screen_toggle()
         #plt.show()
-        figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/combined/' 'freq_tuning')
+        figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/{dbRow.date}/combined/' 'freq_tuning')
         if not os.path.exists(figDirectory):
             os.makedirs(figDirectory)
         figName= f'{figureCount}_{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_combined_freqTuning.png'

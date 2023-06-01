@@ -14,7 +14,7 @@ from jaratoolbox import behavioranalysis
 import scipy.optimize
 import matplotlib
 
-subject = 'acid007'
+subject = 'acid006'
 
 # Set to True if want to load one cell. Defaults to loading first cell unless cellDict is complete.
 oneFigure = False
@@ -32,7 +32,7 @@ dbPath = os.path.join(settings.DATABASE_PATH ,f'celldb_{subject}.h5')
 
 celldb = celldatabase.generate_cell_database(inforecFile)
 # Used to load specific recording session dates.
-#celldb = celldb.query("date == '2023-03-23'")
+celldb = celldb.query("date == '2023-05-30'")
 figureCount = 1
 figureTotal = 0
 
@@ -101,7 +101,7 @@ else:
             ax1 = plt.subplot(gsOne[0])
             # plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('13kHz Tone (pre)')
+            plt.title('13kHz Chord (pre)')
             ax1.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHighPre, combinedIndexLimitsHighPre, timeRange, combinedTrialsHighPre, colorsEachCond, labels= highFreqLabels)
             for p in pRaster:
@@ -113,14 +113,14 @@ else:
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
             #plt.title('13kHz (pre)')
-            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+            plt.legend(("Standard", "Oddball"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
 
 
             # Raster plot of low frequency        
             ax3 = plt.subplot(gsTwo[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('8kHz Tone (pre)')
+            plt.title('8kHz Chord (pre)')
             ax3.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLowPre, combinedIndexLimitsLowPre, timeRange, combinedTrialsLowPre, colorsEachCond, labels= highFreqLabels)
             for p in pRaster:
@@ -132,7 +132,7 @@ else:
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
             #plt.title('8kHz (pre)')
-            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+            plt.legend(("Standard", "Oddball"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
                 #plt.legend(("Standard Tone", "Oddball Tone"))
 
         if oneCell.get_session_inds('preFM_Up') != []: #and oneCell.get_session_inds('lowFreq') != []:
@@ -191,7 +191,7 @@ else:
             ax9 = plt.subplot(gsFive[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('13kHz Tone (saline)')
+            plt.title('13kHz Chord(saline)')
             ax9.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHighSaline, combinedIndexLimitsHighSaline, timeRange, combinedTrialsHighSaline, colorsEachCond, labels= highFreqLabels)
             for p in pRaster:
@@ -203,14 +203,14 @@ else:
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
             #plt.title('8kHz (post)')
-            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+            plt.legend(("Standard", "Oddball"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
 
 
             # Raster plot of low frequency        
             ax11 = plt.subplot(gsSix[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('8kHz Tone (saline)')
+            plt.title('8kHz Chord (saline)')
             ax11.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLowSaline, combinedIndexLimitsLowSaline, timeRange, combinedTrialsLowSaline, colorsEachCond, labels= highFreqLabels)
             for p in pRaster:
@@ -222,7 +222,7 @@ else:
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
             #plt.title('13kHz (post)')
-            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+            plt.legend(("Standard", "Oddball"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
 
 
         if oneCell.get_session_inds('salineFM_Up') != []:
@@ -278,7 +278,7 @@ else:
             ax17 = plt.subplot(gsNine[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('13kHz Tone (DOI)')
+            plt.title('13kHz Chord (DOI)')
             ax17.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesHighDoi, combinedIndexLimitsHighDoi, timeRange, combinedTrialsHighDoi, colorsEachCond, labels= highFreqLabels)
             for p in pRaster:
@@ -290,14 +290,14 @@ else:
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
             #plt.title('8kHz (post)')
-            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+            plt.legend(("Standard", "Oddball"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
 
 
             # Raster plot of low frequency        
             ax19 = plt.subplot(gsTen[0])
             #plt.xlabel('Time (s)')
             plt.ylabel('Trials')
-            plt.title('8kHz Tone (DOI)')
+            plt.title('8kHz Chord (DOI)')
             ax19.tick_params(labelbottom=False) 
             pRaster, hcond, zline = extraplots.raster_plot(combinedSpikeTimesLowDoi, combinedIndexLimitsLowDoi, timeRange, combinedTrialsLowDoi, colorsEachCond, labels= highFreqLabels)
             for p in pRaster:
@@ -309,7 +309,7 @@ else:
             plt.xlabel('Time (s)')
             plt.ylabel('Firing Rate')
             #plt.title('13kHz (post)')
-            plt.legend(("Standard Tone", "Oddball Tone"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
+            plt.legend(("Standard", "Oddball"), bbox_to_anchor=(-0.20, -0.20), loc = 'upper left', fontsize = 8)
 
 
         if oneCell.get_session_inds('doiFM_Up') != []:
@@ -387,7 +387,7 @@ else:
             #mng = plt.get_current_fig_manager()
             #mng.full_screen_toggle()
             #plt.show()
-            figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/combined/' 'cell_reports')
+            figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/{dbRow.date}/combined/' 'cell_reports')
             if not os.path.exists(figDirectory):
                 os.makedirs(figDirectory)
             figName= f'{figureCount:03d}_{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_combined_report.png'
