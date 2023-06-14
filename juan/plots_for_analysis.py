@@ -6,35 +6,45 @@ from datetime import date
 from load_behavior_data import collect_behavior_data
 
 all_data = pd.DataFrame([])
-data_behavior_comp = collect_behavior_data(
-    start_subject=(10, 11),
-    number_of_mice=3,
-    start_date=date(2023, 3, 21),
-    end_date=date(2023, 3, 30),
-)
+# data_behavior_comp = collect_behavior_data(
+#     start_subject=(10, 11),
+#     number_of_mice=3,
+#     start_date=date(2023, 3, 21),
+#     end_date=date(2023, 3, 30),
+# )
 
 data_behavior = collect_behavior_data(
     start_subject=(12, 13),
     number_of_mice=1,
-    start_date=date(2023, 5, 5),
-    end_date=date(2023, 5, 12),
+    start_date=date(2023, 5, 4),
+    end_date=date(2023, 5, 15),
 )
+data_behavior.loc[data_behavior["Date"] == "20230515", "BarrierType"] = "solid"
 data_behavior_2 = collect_behavior_data(
     start_subject=(14, 15),
     number_of_mice=1,
     start_date=date(2023, 5, 11),
-    end_date=date(2023, 5, 14),
+    end_date=date(2023, 6, 12),
 )
 data_behavior_2.loc[data_behavior_2["Date"] == "20230512", "BarrierType"] = "solid"
+data_behavior_2 = data_behavior_2[(data_behavior_2['Date'] < "20230517") | (data_behavior_2['Date'] > "20230604")]
 
 data_behavior_3 = collect_behavior_data(
+    start_subject=(16, 17),
+    number_of_mice=1,
+    start_date=date(2023, 5, 12),
+    end_date=date(2023, 6, 12),
+)
+data_behavior_3 = data_behavior_3[(data_behavior_3['Date'] < "20230518") | (data_behavior_3['Date'] > "20230604")]
+
+data_behavior_4 = collect_behavior_data(
     start_subject=(18, 19),
     number_of_mice=1,
-    start_date=date(2023, 5, 7),
-    end_date=date(2023, 5, 14),
+    start_date=date(2023, 5, 8),
+    end_date=date(2023, 5, 19),
 )
 all_data = pd.concat(
-    [data_behavior, data_behavior_2, data_behavior_3, all_data], ignore_index=True
+    [data_behavior, data_behavior_2, data_behavior_3, data_behavior_4, all_data], ignore_index=True
 )
 
 
