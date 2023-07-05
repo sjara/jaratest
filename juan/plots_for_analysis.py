@@ -234,7 +234,7 @@ def rewarded_trials(
         .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
         .sum()
     )
-    print(data_behavior_by_outcome.index.get_level_values(1))
+    print(data_behavior_by_outcome)
 
     # FIXME: Right now the code plot organizing the dataframes by the barriertype name. This has to be corrected.
     # It is easy to make wrong plots if the isolated and non-isolated barriers do not follow an alphabetical order where isolated are together and same for non-isolated.
@@ -310,9 +310,10 @@ def rewarded_trials(
             colors=colors[::-1],
         )
 
-        ax.set_xlabel(data_behavior_by_outcome.index.unique(0))
+        ax.set_xlabel(data_behavior_by_outcome.index.unique(0)[0])
         ax.set_ylabel("Rewarded trials")
         ax.set_xlim(locs[0][0] - 0.5, locs[0][-1] + 0.5)
+        ax.set_yticks(np.arange(0,data_behavior_by_outcome.max(),10))
 
     plt.tight_layout()
     plt.title("Rewarded trial per mice per barrier")
