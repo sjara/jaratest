@@ -227,7 +227,8 @@ def rewarded_trials(
     number_of_mice = len(miceIds)
     fig, ax = plt.subplots(1, number_of_mice, sharey=True)
 
-    ## filter the dataframe by the outcome desired.
+    ## Filter the dataframe by the outcome desired.
+    ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2) 
     data_behavior_by_outcome = (
         data_behavior[data_behavior["Outcome"].isin(outcome)]
         .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
@@ -290,7 +291,7 @@ def rewarded_trials(
         ax.scatter(
             x=data_behavior_by_outcome.index.get_level_values(1).to_list(),
             y=data_behavior_by_outcome.values,
-            c=(data_behavior_by_outcome.index.get_level_values(1).to_list()).map(
+            c=(data_behavior_by_outcome.index.get_level_values(1)).map(
                 lambda x: colors[0] if x == "solid" else colors[1]
             ),
         )
@@ -309,13 +310,13 @@ def rewarded_trials(
             colors=colors[::-1],
         )
 
-        ax.set_xlabel(data_behavior["MiceID"].unique()[0])
-        ax.set_ylabel("Percentage of rewarded trials")
-        ax.set_xlim(-1, 2)
+        ax.set_xlabel(data_behavior_by_outcome.index.unique(0))
+        ax.set_ylabel("Rewarded trials")
+        ax.set_xlim(locs[0][0] - 0.5, locs[0][-1] + 0.5)
 
-    # plt.tight_layout()
-    # plt.title("Rewarded trial per mice per barrier")
-    # plt.show()
+    plt.tight_layout()
+    plt.title("Rewarded trial per mice per barrier")
+    plt.show()
 
 
 def violin_plot_waitTime(
