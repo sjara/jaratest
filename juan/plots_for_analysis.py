@@ -197,7 +197,10 @@ def pct_rewarded_trials(
         ax.set_xlim(-1, 2)
 
     plt.tight_layout()
-    # plt.title("Percentage of rewarded trial per each treatment")
+    # Adjust the spacing between the subplots and the top of the figure
+    fig.subplots_adjust(top=0.9)
+    # Title for the entire figure
+    fig.suptitle("Percentage of rewarded trial per each treatment")
     plt.show()
 
 
@@ -315,7 +318,11 @@ def rewarded_trials(
         ax.set_yticks(np.arange(0, data_behavior_by_outcome.max(), 10))
 
     plt.tight_layout()
-    plt.title("Rewarded trial per mice per barrier")
+    # title for the entire figure
+    fig.suptitle("Rewarded trial per mice per barrier")
+    # Adjust the spacing between the subplots and the top of the figure
+    fig.subplots_adjust(top=0.9)
+    #plt.title("Rewarded trial per mice per barrier")
     plt.show()
 
 
