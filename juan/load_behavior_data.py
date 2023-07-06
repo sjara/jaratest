@@ -212,3 +212,26 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[i
         ]
     )["Outcome"].count()
     return data_filtered_grouped
+
+
+def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected:pd.DataFrame=None, **kwargs):
+    """_summary_: Using an excel file to correct the data collected from each pair of mice using 
+    the function collect_behavior_data which uses loadbehavior from jaratoolbox. This is specially useful
+    to correct variables which did not affect the training, for example, the barrier, other parameters error are
+    just reported like the waitTime and others. For example, if you set the wrong barrier during the section with this function
+    you can use a spreadsheet to correct it.
+
+    Args:
+        fileName (str): _description_
+        sheetName (list[str]): _description_
+        data_collected (pd.DataFrame): _description_
+    """
+    df_excel = pd.read_excel(io=fileName, sheet_name=sheet_name, **kwargs)
+    print(df_excel)
+    #data_collected.set_index(keys='MiceID', inplace=True)
+    for mice in data_collected['MiceID'].unique():
+        df_excel[mice]
+
+
+correct_data_with_excel('coop_seek_and_find_v2.xlsx',sheet_name='coop016x017')
+    
