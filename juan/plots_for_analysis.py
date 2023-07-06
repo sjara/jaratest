@@ -94,7 +94,7 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
 
 
 def pct_rewarded_trials(
-    data_behavior: pd.DataFrame, colors: list[str] = ["red", "blue"], width_lines=0.1
+    data_behavior: pd.DataFrame, colors: list[str] = ["red", "blue"], width_lines=0.2
 ):
     """_summary_:
     This categorical scatter plot is for analyze the percentage of regarded trials against barriers
@@ -389,5 +389,5 @@ def violin_plot_waitTime(
     plt.show()
 
 
-# pct_rewarded_trials(all_data)
-rewarded_trials(all_data)
+pct_rewarded_trials(all_data)
+#rewarded_trials(all_data)
