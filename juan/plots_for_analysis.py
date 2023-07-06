@@ -6,28 +6,24 @@ from datetime import date
 from load_behavior_data import collect_behavior_data
 
 all_data = pd.DataFrame([])
-# data_behavior_comp = collect_behavior_data(
-#     start_subject=(10, 11),
-#     number_of_mice=3,
-#     start_date=date(2023, 3, 21),
-#     end_date=date(2023, 3, 30),
-# )
 
-# data_behavior = collect_behavior_data(
-#     start_subject=(12, 13),
-#     number_of_mice=1,
-#     start_date=date(2023, 5, 4),
-#     end_date=date(2023, 5, 15),
-# )
-# data_behavior.loc[data_behavior["Date"] == "20230515", "BarrierType"] = "solid"
-# data_behavior_2 = collect_behavior_data(
-#     start_subject=(14, 15),
-#     number_of_mice=1,
-#     start_date=date(2023, 5, 11),
-#     end_date=date(2023, 6, 16),
-# )
-# data_behavior_2.loc[data_behavior_2["Date"] == "20230512", "BarrierType"] = "solid"
-# data_behavior_2 = data_behavior_2[(data_behavior_2['Date'] < "20230517") | (data_behavior_2['Date'] > "20230604")]
+data_behavior = collect_behavior_data(
+    start_subject=(12, 13),
+    number_of_mice=1,
+    start_date=date(2023, 5, 4),
+    end_date=date(2023, 5, 15),
+)
+data_behavior.loc[data_behavior["Date"] == "20230515", "BarrierType"] = "solid"
+data_behavior_2 = collect_behavior_data(
+    start_subject=(14, 15),
+    number_of_mice=1,
+    start_date=date(2023, 5, 11),
+    end_date=date(2023, 6, 16),
+)
+data_behavior_2.loc[data_behavior_2["Date"] == "20230512", "BarrierType"] = "solid"
+data_behavior_2 = data_behavior_2[
+    (data_behavior_2["Date"] < "20230517") | (data_behavior_2["Date"] > "20230604")
+]
 
 data_behavior_3 = collect_behavior_data(
     start_subject=(16, 17),
@@ -39,15 +35,16 @@ data_behavior_3 = data_behavior_3[
     (data_behavior_3["Date"] < "20230518") | (data_behavior_3["Date"] > "20230604")
 ]
 
-# data_behavior_4 = collect_behavior_data(
-#     start_subject=(18, 19),
-#     number_of_mice=1,
-#     start_date=date(2023, 5, 8),
-#     end_date=date(2023, 5, 19),
-# )
-# all_data = pd.concat(
-#     [data_behavior, data_behavior_2, data_behavior_3, data_behavior_4, all_data], ignore_index=True
-# )
+data_behavior_4 = collect_behavior_data(
+    start_subject=(18, 19),
+    number_of_mice=1,
+    start_date=date(2023, 5, 8),
+    end_date=date(2023, 5, 19),
+)
+all_data = pd.concat(
+    [data_behavior, data_behavior_2, data_behavior_3, data_behavior_4, all_data],
+    ignore_index=True,
+)
 
 
 def barplot_accu_rewards_time(data: pd.DataFrame):
@@ -208,7 +205,7 @@ def rewarded_trials(
     data_behavior: pd.DataFrame,
     outcome: list[int] = [1],
     colors: list[str] = ["red", "blue"],
-    width_lines=0.1,
+    width_lines=0.2,
 ):
     """_summary_:
     This categorical scatter plot is for analyze the number of trials between different barriers. The developer can filter by the outcome of preference.
@@ -222,19 +219,21 @@ def rewarded_trials(
         outcome (list[int], optional): Filter the dataframe by the desired outcome to plot. Defaults to 1.
     """
 
-    width_lines = width_lines
-    miceIds = data_behavior["MiceID"].unique()
-    number_of_mice = len(miceIds)
-    fig, ax = plt.subplots(1, number_of_mice, sharey=True)
-
     ## Filter the dataframe by the outcome desired.
-    ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2) 
+    ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2)
     data_behavior_by_outcome = (
         data_behavior[data_behavior["Outcome"].isin(outcome)]
         .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
         .sum()
     )
-    print(data_behavior_by_outcome)
+    # data_behavior_by_outcome.sort_index(level=0, sort_remaining=True, inplace=True)
+    # print(data_behavior_by_outcome)
+
+    width_lines = width_lines
+    miceIds = data_behavior_by_outcome.index.unique(0).to_list()
+    number_of_mice = len(miceIds)
+    fig, ax = plt.subplots(1, number_of_mice, sharey=True)
+    locs = plt.xticks()
 
     # FIXME: Right now the code plot organizing the dataframes by the barriertype name. This has to be corrected.
     # It is easy to make wrong plots if the isolated and non-isolated barriers do not follow an alphabetical order where isolated are together and same for non-isolated.
@@ -243,48 +242,43 @@ def rewarded_trials(
     if number_of_mice > 1:
         for i in range(number_of_mice):
             ## select data from each pair of mice
-            data_one_pair_mice = data_behavior.loc[
-                (data_behavior["MiceID"] == (miceIds[i]))
-            ]
-            data_one_pair_mice.sort_values(["BarrierType"], inplace=True)
-
+            data_one_pair_mice = data_behavior_by_outcome.loc[miceIds[i]]
+            data_one_pair_mice.sort_index(level=0, inplace=True)
+            
             ax[i].scatter(
-                x=data_one_pair_mice["BarrierType"],
-                y=data_one_pair_mice["Percent rewarded"],
-                c=(data_one_pair_mice["BarrierType"]).apply(
+                x=data_one_pair_mice.index.get_level_values(0).to_list(),
+                y=data_one_pair_mice.values,
+                c=(data_one_pair_mice.index.get_level_values(0)).map(
                     lambda x: colors[0] if x == "solid" else colors[1]
                 ),
             )
             # This is for getting the positions of the x sticks in order to determine the limites of the lines to plot the mean
             locs = plt.xticks()
+            # print(locs)
 
             # Horizontal line to represent mean of points of both barriers
             ax[i].hlines(
                 y=[
-                    int(
-                        data_one_pair_mice.loc[
-                            (
-                                data_one_pair_mice["BarrierType"].isin(
-                                    ["perforated", "no_barrier"]
-                                )
-                            ),
-                            "Percent rewarded",
-                        ].mean()
-                    ),
-                    int(
-                        data_one_pair_mice.loc[
-                            (data_one_pair_mice["BarrierType"] == "solid"),
-                            "Percent rewarded",
-                        ].mean()
-                    ),
+                    int(data_one_pair_mice.loc[barrier].mean())
+                    for barrier in data_one_pair_mice.index.unique(0).to_list()
                 ],
-                xmin=[locs[0][0] - width_lines, locs[0][-1] - width_lines],
-                xmax=[locs[0][0] + width_lines, locs[0][-1] + width_lines],
+                xmin=[0 - width_lines]
+                + [
+                    (0 + 1 // idx) - width_lines
+                    for idx in range(1, len(data_one_pair_mice.index.unique(0)))
+                ],
+                xmax=[0 + width_lines]
+                + [
+                    (0 + 1 // idx) + width_lines
+                    for idx in range(1, len(data_one_pair_mice.index.unique(0)))
+                ],
                 colors=colors[::-1],
             )
 
-            ax[i].set_xlabel(data_behavior["MiceID"].unique()[i])
-            ax[i].set_ylabel("Percentage of rewarded trials")
+            ax[i].set_xlabel(miceIds[i])
+            ax[i].set_ylabel("Rewarded trials")
+            ax[i].set_xlim(locs[0][0] - 0.2, locs[0][-1] + 0.2)
+            ax[i].set_yticks(np.arange(0, data_behavior_by_outcome.max(), 10))
 
     else:
         ## set each point
@@ -297,7 +291,6 @@ def rewarded_trials(
         )
         # This is for getting the positions of the x sticks in order to determine the limits of the lines to plot the mean
         locs = plt.xticks()
-        #print("Locations in graph: ", locs)
 
         # Horizontal line to represent mean of points of both barriers
         ax.hlines(
@@ -305,15 +298,21 @@ def rewarded_trials(
                 int(data_behavior_by_outcome.loc[:, barrier].mean())
                 for barrier in data_behavior_by_outcome.index.unique(1).to_list()
             ],
-            xmin=[locs[0][idx] - width_lines for idx in range(0, len(data_behavior_by_outcome.index.unique(1)))],
-            xmax=[locs[0][idx] + width_lines for idx in range(0, len(data_behavior_by_outcome.index.unique(1)))],
+            xmin=[
+                locs[0][idx] - width_lines
+                for idx in range(0, len(data_behavior_by_outcome.index.unique(1)))
+            ],
+            xmax=[
+                locs[0][idx] + width_lines
+                for idx in range(0, len(data_behavior_by_outcome.index.unique(1)))
+            ],
             colors=colors[::-1],
         )
 
-        ax.set_xlabel(data_behavior_by_outcome.index.unique(0)[0])
+        ax.set_xlabel(miceIds[0])
         ax.set_ylabel("Rewarded trials")
         ax.set_xlim(locs[0][0] - 0.5, locs[0][-1] + 0.5)
-        ax.set_yticks(np.arange(0,data_behavior_by_outcome.max(),10))
+        ax.set_yticks(np.arange(0, data_behavior_by_outcome.max(), 10))
 
     plt.tight_layout()
     plt.title("Rewarded trial per mice per barrier")
@@ -384,4 +383,4 @@ def violin_plot_waitTime(
 
 
 # pct_rewarded_trials(all_data)
-rewarded_trials(data_behavior_3)
+rewarded_trials(all_data)
