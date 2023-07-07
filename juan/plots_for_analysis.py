@@ -34,8 +34,6 @@ data_behavior_3 = collect_behavior_data(
 data_behavior_3 = data_behavior_3[
     (data_behavior_3["Date"] < "20230518") | (data_behavior_3["Date"] > "20230604")
 ]
-data_behavior_3.loc[data_behavior_3['BarrierType']=='perforated', 'BarrierType'] = 'solid'
-print(data_behavior_3.loc[data_behavior_3['BarrierType']=='perforated'] ['BarrierType'])
 data_behavior_4 = collect_behavior_data(
     start_subject=(18, 19),
     number_of_mice=1,

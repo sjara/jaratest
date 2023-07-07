@@ -54,13 +54,13 @@ def normalize_time(df):
 
 
 def collect_behavior_data(
-    start_subject: tuple[int], number_of_mice: int, start_date: date, end_date: date
+    start_subject: dict[int:list], number_of_mice: int, start_date: date, end_date: date
 ):
     """_summary_:
     This function is used to merge all the behavior data we want from social cooperatio project into one dataframe
 
     Args:
-        start_subject (str): Store the numbers of the first pair of mice we want to start collecting data.
+        start_subject dict[int:list]: Store the numbers of the first pair of mice we want to start collecting data.
         number_of_mice (int): Store the amount of mice we want to collect data. So, we start iterating number_of_mice mices from start_subject.
         start_date (datetime.date): Store the first date we want to collect the data.
         end_date (datetime.date): Store the last date we want to collect the data.
@@ -217,21 +217,35 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[i
 def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected:pd.DataFrame=None, **kwargs):
     """_summary_: Using an excel file to correct the data collected from each pair of mice using 
     the function collect_behavior_data which uses loadbehavior from jaratoolbox. This is specially useful
-    to correct variables which did not affect the training, for example, the barrier, other parameters error are
-    just reported like the waitTime and others. For example, if you set the wrong barrier during the section with this function
+    to correct variables which did not affect the training, for example, the barrier. For example, if you set the wrong barrier during the section with this function
     you can use a spreadsheet to correct it.
 
     Args:
-        fileName (str): _description_
-        sheetName (list[str]): _description_
+        fileName (str): Spreadsheet with at least two columns named: 'Date' and 'Barrier Type'.
+        sheetName (list[str]): string list with the names of the spreadsheet, it can be a list of only one element.
         data_collected (pd.DataFrame): _description_
     """
-    df_excel = pd.read_excel(io=fileName, sheet_name=sheet_name, **kwargs)
-    print(df_excel)
-    #data_collected.set_index(keys='MiceID', inplace=True)
-    for mice in data_collected['MiceID'].unique():
-        df_excel[mice]
+    if not(isinstance(sheet_name, list)):
+        raise Exception('ERROR: sheet_name must be a list')
+    
+    df_excel = pd.read_excel(io=fileName, sheet_name=sheet_name , **kwargs)
+    data_collected.set_index(keys='MiceID', inplace=True)
+    for mice in data_collected.index.unique():
+        df_excel_filt = df_excel[mice][['Barrier Type','Date']]
+        data_collected.loc[mice][['BarrierType','Date']].merge(df_excel_filt, how='right', on='Date')
+    return data_collected
 
 
-#correct_data_with_excel('coop_seek_and_find_v2.xlsx',sheet_name='coop016x017')
+data_behavior_3 = collect_behavior_data(
+    start_subject=(16, 17),
+    number_of_mice=1,
+    start_date=date(2023, 5, 12),
+    end_date=date(2023, 6, 16),
+)
+data_behavior_3 = data_behavior_3[
+    (data_behavior_3["Date"] < "20230518") | (data_behavior_3["Date"] > "20230604")
+]
+
+
+
     
