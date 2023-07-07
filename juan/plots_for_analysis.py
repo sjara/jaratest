@@ -34,6 +34,8 @@ data_behavior_3 = collect_behavior_data(
 data_behavior_3 = data_behavior_3[
     (data_behavior_3["Date"] < "20230518") | (data_behavior_3["Date"] > "20230604")
 ]
+data_behavior_3.loc[data_behavior_3['BarrierType']=='perforated', 'BarrierType'] = 'solid'
+print(data_behavior_3.loc[data_behavior_3['BarrierType']=='perforated'] ['BarrierType'])
 data_behavior_4 = collect_behavior_data(
     start_subject=(18, 19),
     number_of_mice=1,
@@ -93,7 +95,7 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
 
 
 def pct_rewarded_trials(
-    data_behavior: pd.DataFrame, colors: list[str] = ["red", "blue"], width_lines=0.2, figsize:tuple[int]= (12,4), **kwargs
+    data_behavior: pd.DataFrame, colors: list[str] = ["red", "blue"], width_lines=0.2, **kwargs
 ):
     """_summary_:
     This categorical scatter plot is for analyze the percentage of regarded trials against barriers
@@ -111,7 +113,7 @@ def pct_rewarded_trials(
     width_lines = width_lines
     miceIds = data_behavior["MiceID"].unique()
     number_of_mice = len(miceIds)
-    fig, ax = plt.subplots(1, number_of_mice, sharey=True, figsize=figsize, **kwargs)
+    fig, ax = plt.subplots(1, number_of_mice, sharey=True, **kwargs)
 
     ## Set the index for mice selection for each graph
     data_behavior.set_index(keys=['MiceID','BarrierType'], inplace=True)
@@ -394,7 +396,7 @@ def violin_plot_waitTime(
     plt.tight_layout()
     plt.show()
 
-#print(data_behavior_3["BarrierType"].unique())
+
 pct_rewarded_trials(all_data)
 #rewarded_trials(all_data)
-#print (data_behavior_3[data_behavior_3['BarrierType']=='perforated'] ['Date'])
+#print ()
