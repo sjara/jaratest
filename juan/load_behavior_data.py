@@ -1,6 +1,6 @@
 from jaratoolbox import loadbehavior
 import pandas as pd
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 # subject = "coop010x011"
 # paradigm = "coop4ports"  # The paradigm name is also part of the data file name
@@ -54,16 +54,21 @@ def normalize_time(df):
 
 
 def collect_behavior_data(
-    start_subject: dict[int:list], number_of_mice: int, start_date: date, end_date: date
+    mice_data: dict[int:list], number_of_mice: int = 1, starter_mice: str = None, date_format = '%Y-%m-%d'
 ):
     """_summary_:
     This function is used to merge all the behavior data we want from social cooperatio project into one dataframe
 
     Args:
-        start_subject dict[int:list]: Store the numbers of the first pair of mice we want to start collecting data.
-        number_of_mice (int): Store the amount of mice we want to collect data. So, we start iterating number_of_mice mices from start_subject.
-        start_date (datetime.date): Store the first date we want to collect the data.
-        end_date (datetime.date): Store the last date we want to collect the data.
+        mice_data dict[int:list]: Store the numbers of the first pair of mice we want to start collecting data. keys is the first number of the
+            pair of mice, for example, for coop014x015 the key in mice_data would be '14'. The values each key contains is a list of tuples/strings.
+            Tuples are used for range of dates and only strings for individual dates, for example, if I want the data for coop014x015 from the 2023-05-12 to the 2023-05-16,
+            the dict would look like {'14':[('2023-05-12', '2023-05-16')]} and for individual dates would be {'14':['2023-05-25']} and 
+            they can be combined in the way {'14':[('2023-05-12', '2023-05-16'), '2023-05-25']}
+        number_of_mice (int): Store the amount of mice we want to collect data. the number set mean the amount of mice to increment. stater_mice is required.
+        stater_mice (str): Set the pair of mice as base to start the incrementing the ID until collected the number of pair of mice set in number_of_mice.
+            the increment is by one unit. for example, if we set number_of_mice = 2 and starter_mice = '14', data will be collected for
+            coop014x015 and coop016x017 for the dates set for coop014x015.
 
     Returns:
         pandas.Dataframe: All collected data returned into one Dataframe
@@ -83,41 +88,61 @@ def collect_behavior_data(
             "Percent rewarded"
         ]
     )
-    # Break down the tuple to handle each number separetaly
-    mouse1, mouse2 = start_subject
+    # Get the mice to retrieve from the dict
+    mice = mice_data.keys()
+    for first_mouse_on_pair in mice:
+        
+        mouse1 = first_mouse_on_pair
+        mouse2 = str(int(mouse1) + 1)
+        mice_to_collect = number_of_mice if starter_mice and first_mouse_on_pair == starter_mice else 1
 
-    # Upload a dataframe for each pair of mice and date
-    for _ in range(number_of_mice):
-        mice_id = f"coop0{mouse1}x0{mouse2}"
-        # print(mice_id)
-        for days in range(int((end_date - start_date).days) + 1):
-            current_date = str(start_date + timedelta(days)).replace("-", "")
-            try:
-                bdata = load_data(mice_id, f"{current_date}a")
-            except:
-                print(f"ERROR FILE {current_date}a FOR {mice_id} MICE DOES NOT EXIST")
-                continue
+        while mice_to_collect > 0:
             
-            df = pd.DataFrame(
-                {
-                    "Outcome": bdata["outcome"],
-                    "TimeTrialStart": bdata["timeTrialStart"],  # for_stage_1(bdata)
-                    "BarrierType": bdata["barrierType"],
-                    "ActiveSide":bdata['activeSide'],
-                    "TimePoke1": bdata["timePoke1"],
-                    "TimePoke2": bdata["timePoke2"],
-                    "Stage": bdata["taskMode"],
-                    "Date": current_date,
-                    "MiceID": mice_id,
-                }
-            )
+            for date in mice_data[first_mouse_on_pair]:
+                
+                # Defines the date format the input is received
+                date_format = date_format
+                
+                # Tuples are for ranges of dates
+                if isinstance(date, tuple):
+                    start_date = datetime.strptime(date[0], date_format).date()
+                    end_date = datetime.strptime(date[1], date_format).date()
+                else:
+                    start_date = datetime.strptime(date, date_format).date()
+                    end_date = start_date
 
-            ## "Normalize" data since GUI has a problem and most of the time the timer does not start at second 0
-            #df = normalize_time(df)
-            df["Percent rewarded"]= len(bdata["outcome"][bdata['outcome']==1])/len(bdata['outcome']) * 100
-            df_all_data = pd.concat([df, df_all_data], ignore_index=True)
-        mouse1 = mouse2 + 1
-        mouse2 = mouse1 + 1
+                # Upload a dataframe for each pair of mice and date
+                mice_id = f"coop0{mouse1}x0{mouse2}"
+                # print(mice_id)
+                for days in range (int((end_date - start_date).days) + 1):
+                    current_date = str(start_date + timedelta(days)).replace("-", "")
+                    try:
+                        bdata = load_data(mice_id, f"{current_date}a")
+                    except:
+                        print(f"ERROR FILE {current_date}a FOR {mice_id} MICE DOES NOT EXIST")
+                        continue
+                    
+                    df = pd.DataFrame(
+                        {
+                            "Outcome": bdata["outcome"],
+                            "TimeTrialStart": bdata["timeTrialStart"],  # for_stage_1(bdata)
+                            "BarrierType": bdata["barrierType"],
+                            "ActiveSide":bdata['activeSide'],
+                            "TimePoke1": bdata["timePoke1"],
+                            "TimePoke2": bdata["timePoke2"],
+                            "Stage": bdata["taskMode"],
+                            "Date": current_date,
+                            "MiceID": mice_id,
+                        }
+                    )
+                    
+                    df["Percent rewarded"]= len(bdata["outcome"][bdata['outcome']==1])/len(bdata['outcome']) * 100
+                    df_all_data = pd.concat([df, df_all_data], ignore_index=True)
+            
+            # get the new consecutive pair of mice
+            mouse1 = str(int(mouse1) + 2)
+            mouse2 = str(int(mouse2) + 2)
+            mice_to_collect -= 1
 
     df_all_data.replace({"BarrierType": bdata.labels["barrierType"], "ActiveSide": bdata.labels["activeSide"]}, inplace=True)
     df_all_data.replace([{"Stage": bdata.labels["taskMode"]}], inplace=True)
@@ -236,16 +261,13 @@ def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected
     return data_collected
 
 
-data_behavior_3 = collect_behavior_data(
-    start_subject=(16, 17),
-    number_of_mice=1,
-    start_date=date(2023, 5, 12),
-    end_date=date(2023, 6, 16),
-)
-data_behavior_3 = data_behavior_3[
-    (data_behavior_3["Date"] < "20230518") | (data_behavior_3["Date"] > "20230604")
-]
+# data_behavior_3 = collect_behavior_data(
+#     start_subject=(16, 17),
+#     number_of_mice=1,
+#     start_date=date(2023, 5, 12),
+#     end_date=date(2023, 6, 16),
+# )
 
 
-
-    
+data = collect_behavior_data(mice_data={'14':[('2023-05-12','2023-6-16')]})
+print(data)
