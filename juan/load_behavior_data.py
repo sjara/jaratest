@@ -261,13 +261,6 @@ def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected
     return data_collected
 
 
-# data_behavior_3 = collect_behavior_data(
-#     start_subject=(16, 17),
-#     number_of_mice=1,
-#     start_date=date(2023, 5, 12),
-#     end_date=date(2023, 6, 16),
-# )
-
-
-data = collect_behavior_data(mice_data={'14':[('2023-05-12','2023-6-16')]})
-print(data)
+## EJEMPLO
+# data = collect_behavior_data(mice_data={'14':[('2023-05-12','2023-6-16')]})
+# print(data)
