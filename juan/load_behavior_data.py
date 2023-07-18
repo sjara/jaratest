@@ -65,10 +65,11 @@ def collect_behavior_data(
             Tuples are used for range of dates and only strings for individual dates, for example, if I want the data for coop014x015 from the 2023-05-12 to the 2023-05-16,
             the dict would look like {'14':[('2023-05-12', '2023-05-16')]} and for individual dates would be {'14':['2023-05-25']} and 
             they can be combined in the way {'14':[('2023-05-12', '2023-05-16'), '2023-05-25']}
-        number_of_mice (int): Store the amount of mice we want to collect data. the number set mean the amount of mice to increment. stater_mice is required.
-        stater_mice (str): Set the pair of mice as base to start the incrementing the ID until collected the number of pair of mice set in number_of_mice.
+        number_of_mice (int, optional): Store the amount of mice we want to collect data. the number set mean the amount of mice to increment. stater_mice is required.
+        stater_mice (str, optinal): Set the pair of mice as base to start the incrementing the ID until collected the number of pair of mice set in number_of_mice.
             the increment is by one unit. for example, if we set number_of_mice = 2 and starter_mice = '14', data will be collected for
             coop014x015 and coop016x017 for the dates set for coop014x015.
+        date_format (str, optional): Set the date format the input will be given.
 
     Returns:
         pandas.Dataframe: All collected data returned into one Dataframe
