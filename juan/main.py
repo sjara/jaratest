@@ -1,5 +1,5 @@
 import load_behavior_data as lbd
-# import plots_for_analysis as pfa
+#import plots_for_analysis as pfa
 import argparse
 
 if __name__ == "__main__":
@@ -14,7 +14,7 @@ if __name__ == "__main__":
         epilog="Author: Juan Picon Cossio",
     )
     parser.add_argument(
-        "excelfile", help="""Excel file containing two columns: ids and dates. Where in ids column is stored the first number of the pair and 
+        "excelName", help="""Excel file containing two columns: ids and dates. Where in ids column is stored the first number of the pair and 
         in dates column a list with ranges of dates inside parenthesis and individual dates without them, E.g.[('2023-05-12','2023-6-16', '2023-7-1')]  """
     )
     parser.add_argument(
@@ -40,5 +40,8 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+    df = lbd.get_dates_from_excel(args.excelName)
     #df = lbd.collect_behavior_data(mice_data=args.data_dict)
-    #print(df)
+    print(df)
+    if args.pct_rewarded_trials != None:
+        pfa.pct_rewarded_trials(df)

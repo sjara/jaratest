@@ -262,6 +262,11 @@ def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected
     return data_collected
 
 
+def get_dates_from_excel (excelFile:str) -> dict:
+    df = pd.read_excel(excelFile)
+    df = df.to_dict()
+    return df
+
 ## EJEMPLO
 # data = collect_behavior_data(mice_data={'14':[('2023-05-12','2023-6-16')]})
 # print(data)
