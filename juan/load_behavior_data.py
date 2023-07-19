@@ -264,7 +264,8 @@ def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected
 
 def get_dates_from_excel (excelFile:str) -> dict:
     df = pd.read_excel(excelFile)
-    df = df.to_dict()
+    df.set_index(keys='ids')
+    df = df.to_dict() 
     return df
 
 ## EJEMPLO
