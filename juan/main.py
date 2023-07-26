@@ -52,7 +52,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(args)
-    # df = lbd.get_dates_from_excel(args.excelName)
+    df = lbd.get_dates_from_excel(args.excelName)
+    print(df)
     # #df = lbd.collect_behavior_data(mice_data=args.data_dict)
     # print(df)
     # if args.pct_rewarded_trials != None:

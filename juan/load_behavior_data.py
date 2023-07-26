@@ -1,6 +1,7 @@
 from jaratoolbox import loadbehavior
 import pandas as pd
 from datetime import date, timedelta, datetime
+import re
 
 # subject = "coop010x011"
 # paradigm = "coop4ports"  # The paradigm name is also part of the data file name
@@ -263,10 +264,24 @@ def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected
 
 
 def get_dates_from_excel (excelFile:str) -> dict:
+    """Get date for each pair of mice to collect using an excel
+
+    Args:
+        excelFile (str): Excel file with two columns IDs
+
+    Returns:
+        dict: _description_
+    """
     df = pd.read_excel(excelFile)
-    df.set_index(keys='ids')
-    df = df.to_dict() 
-    return df
+    df.set_index(keys='IDs', inplace=True)
+    df_to_dict = {key:deserialize_dates(df.loc[key,'Dates']) for key in df.index}
+    return df_to_dict
+
+def deserialize_dates (dates) -> list:
+    print(dates.strip('[ ]'))
+    print(re.split(r'\(|\)'), dates)
+    #dates.strip('[ ]')
+    return dates
 
 ## EJEMPLO
 # data = collect_behavior_data(mice_data={'14':[('2023-05-12','2023-6-16')]})
