@@ -2,7 +2,6 @@ from jaratoolbox import loadbehavior
 import pandas as pd
 from datetime import date, timedelta, datetime
 import re
-import ast
 
 # subject = "coop010x011"
 # paradigm = "coop4ports"  # The paradigm name is also part of the data file name
@@ -28,7 +27,6 @@ def load_data(subject, session):
     bdata = loadbehavior.BehaviorData(behavFile)
     return bdata
 
-
 def for_stage_1(bdata):
     time = list()
     count = 0
@@ -38,7 +36,6 @@ def for_stage_1(bdata):
         count += 3
         time.append(count)
     return time
-
 
 def normalize_time(df):
     """_summary_
@@ -96,7 +93,7 @@ def collect_behavior_data(
         
         mouse1 = first_mouse_on_pair
         mouse2 = str(int(mouse1) + 1)
-        mice_to_collect = number_of_mice if starter_mice and first_mouse_on_pair == starter_mice else 1
+        mice_to_collect = number_of_mice if (starter_mice != None) and first_mouse_on_pair == starter_mice else 1
 
         while mice_to_collect > 0:
             
@@ -263,27 +260,40 @@ def get_dates_from_excel (excelFile:str) -> dict:
     """Get date for each pair of mice to collect using an excel
 
     Args:
-        excelFile (str): Excel file with three columns IDs, RangeDates and AloneDates
+        excelFile (str): Excel file with three columns IDs, RangeDates and SingleDates
 
     Returns:
-        dict: _description_
+        dict: it contains the first number of the pair of mice as the key and the values are lists containing range of dates in tuples and just strings as single dates 
     """
     df = pd.read_excel(excelFile)
     df.set_index(keys='IDs', inplace=True)
     df_to_dict = {key:deserialize_dates(df.loc[key]) for key in df.index}
     return df_to_dict
 
-def deserialize_dates (dates) -> list:
-    #dates = dates.strip('[ ]')
-    #dates = re.split(r'\(|\)', dates)
-    #print(ast.literal_eval(dates))
+def deserialize_dates (dates:pd.Series) -> list:
+    """transform the strings stored in column RangeDates and SingleDate for a specific row into the requested python form 
+
+    Args:
+        dates (pd.Series): pandas serie which contains within the index RangeDates and/or SingleDate 
+
+    Returns:
+        list: it contains the range dates in tuples and alone range just as strings
+    """
     columns = dates.index
+    dates_list = list()
     if len(columns):
-        for i in columns:
-            print("e")
+        for column in columns:
+            if column.strip() == 'RangeDates' and not(pd.isna(dates["RangeDates"])):
+                range_dates = [i.strip() for i in re.split(r'\(|\)', dates['RangeDates']) if len(i)>=8]
+                range_dates = [((date.split(',')[0]).strip(), (date.split(',')[1]).strip()) for date in range_dates]
+                dates_list.extend(range_dates)
+            elif column.strip() == 'SingleDates' and not(pd.isna(dates["SingleDates"])):
+                print(dates["SingleDates"])
+                alone_dates = [i.strip() for i in dates["SingleDates"].split(',')]
+                dates_list.extend(alone_dates)
+        return dates_list
     else:
-        raise(Exception("Excel must have at least one of the two columns: RangesDates, AloneDates"))
-    return dates
+        raise(Exception("Excel must have at least one of the two columns: RangeDates, SingleDates"))
 
 ## EJEMPLO
 # data = collect_behavior_data(mice_data={'14':[('2023-05-12','2023-6-16')]})

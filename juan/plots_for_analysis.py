@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import numpy as np
-from datetime import date
 from load_behavior_data import collect_behavior_data
 
 def barplot_accu_rewards_time(data: pd.DataFrame):
@@ -193,7 +192,6 @@ def rewarded_trials(
         .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
         .sum()
     )
-    # data_behavior_by_outcome.sort_index(level=0, sort_remaining=True, inplace=True)
 
     width_lines = width_lines
     miceIds = data_behavior_by_outcome.index.unique(0).to_list()
@@ -280,7 +278,7 @@ def rewarded_trials(
         ax.set_xlabel(miceIds[0])
         ax.set_ylabel("Rewarded trials")
         ax.set_xlim(locs[0][0] - 0.5, locs[0][-1] + 0.5)
-        ax.set_yticks(np.arange(0, data_behavior_by_outcome.max(), 10))
+        ax.set_yticks(np.arange(0, data_behavior_by_outcome.max(), 5))
 
     plt.tight_layout()
     # title for the entire figure
@@ -353,7 +351,3 @@ def violin_plot_waitTime(
     plt.tight_layout()
     plt.show()
 
-
-#pct_rewarded_trials(all_data)
-#rewarded_trials(all_data)
-#print ()
