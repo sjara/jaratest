@@ -95,6 +95,7 @@ def pct_rewarded_trials(
                 c=(data_one_pair_mice.index).map(
                     lambda x: colors[0] if x == "solid" else colors[1]
                 ),
+                alpha=0.3,
             )
             
             # Horizontal line to represent mean of points of both barriers
@@ -132,6 +133,7 @@ def pct_rewarded_trials(
                 c=(data_behavior.index.get_level_values(1)).map(
                     lambda x: colors[0] if x == "solid" else colors[1]
                 ),
+                alpha=0.3,
             )
         # This is for getting the positions of the x sticks in order to determine the limits of the lines to plot the mean
         locs = plt.xticks()
@@ -192,7 +194,7 @@ def rewarded_trials(
         .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
         .sum()
     )
-
+    
     width_lines = width_lines
     miceIds = data_behavior_by_outcome.index.unique(0).to_list()
     number_of_mice = len(miceIds)
@@ -208,19 +210,16 @@ def rewarded_trials(
             ## select data from each pair of mice
             data_one_pair_mice = data_behavior_by_outcome.loc[miceIds[i]]
             data_one_pair_mice.sort_index(level=0, inplace=True)
-            print(miceIds[i], len(data_one_pair_mice.values))
-            print(len(data_one_pair_mice.index.get_level_values(0)))
             ax[i].scatter(
                 x=data_one_pair_mice.index.get_level_values(0).to_list(),
                 y=data_one_pair_mice.values,
                 c=(data_one_pair_mice.index.get_level_values(0)).map(
                     lambda x: colors[0] if x == "solid" else colors[1]
                 ),
+                alpha=0.3,
             )
             # This is for getting the positions of the x sticks in order to determine the limites of the lines to plot the mean
             locs = plt.xticks()
-            print(miceIds[i],locs)
-            
 
             # Horizontal line to represent mean of points of both barriers
             ax[i].hlines(
@@ -254,6 +253,7 @@ def rewarded_trials(
             c=(data_behavior_by_outcome.index.get_level_values(1)).map(
                 lambda x: colors[0] if x == "solid" else colors[1]
             ),
+            alpha=0.3,
         )
         # This is for getting the positions of the x sticks in order to determine the limits of the lines to plot the mean
         locs = plt.xticks()
