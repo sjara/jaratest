@@ -2,6 +2,7 @@ from jaratoolbox import loadbehavior
 import pandas as pd
 from datetime import date, timedelta, datetime
 import re
+import ast
 
 # subject = "coop010x011"
 # paradigm = "coop4ports"  # The paradigm name is also part of the data file name
@@ -52,7 +53,6 @@ def normalize_time(df):
     """
     df["TimeTrialStart"] = df["TimeTrialStart"] - df.loc[0, "TimeTrialStart"]
     return df
-
 
 def collect_behavior_data(
     mice_data: dict[int:list], number_of_mice: int = 1, starter_mice: str = None, date_format = '%Y-%m-%d'
@@ -150,7 +150,6 @@ def collect_behavior_data(
     df_all_data.replace([{"Stage": bdata.labels["taskMode"]}], inplace=True)
     return df_all_data
 
-
 def collect_events(
     start_subject: tuple[int], number_of_mice: int, start_date: date, end_date: date
 ):
@@ -202,7 +201,6 @@ def collect_events(
         mouse2 = mouse1 + 1
     return df_all_data
 
-
 def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[int] = [1]) -> pd.DataFrame:
 
     """_summary_:
@@ -240,7 +238,6 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[i
     )["Outcome"].count()
     return data_filtered_grouped
 
-
 def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected:pd.DataFrame=None, **kwargs):
     """_summary_: Using an excel file to correct the data collected from each pair of mice using 
     the function collect_behavior_data which uses loadbehavior from jaratoolbox. This is specially useful
@@ -262,25 +259,30 @@ def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected
         data_collected.loc[mice][['BarrierType','Date']].merge(df_excel_filt, how='right', on='Date')
     return data_collected
 
-
 def get_dates_from_excel (excelFile:str) -> dict:
     """Get date for each pair of mice to collect using an excel
 
     Args:
-        excelFile (str): Excel file with two columns IDs
+        excelFile (str): Excel file with three columns IDs, RangeDates and AloneDates
 
     Returns:
         dict: _description_
     """
     df = pd.read_excel(excelFile)
     df.set_index(keys='IDs', inplace=True)
-    df_to_dict = {key:deserialize_dates(df.loc[key,'Dates']) for key in df.index}
+    df_to_dict = {key:deserialize_dates(df.loc[key]) for key in df.index}
     return df_to_dict
 
 def deserialize_dates (dates) -> list:
-    print(dates.strip('[ ]'))
-    print(re.split(r'\(|\)'), dates)
-    #dates.strip('[ ]')
+    #dates = dates.strip('[ ]')
+    #dates = re.split(r'\(|\)', dates)
+    #print(ast.literal_eval(dates))
+    columns = dates.index
+    if len(columns):
+        for i in columns:
+            print("e")
+    else:
+        raise(Exception("Excel must have at least one of the two columns: RangesDates, AloneDates"))
     return dates
 
 ## EJEMPLO
