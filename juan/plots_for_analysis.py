@@ -71,10 +71,18 @@ def pct_rewarded_trials(
     number_of_mice = len(miceIds)
     fig, ax = plt.subplots(1, number_of_mice, sharey=True, **kwargs)
 
+    ## limit dataframe to the columns we need for comfort
+    data_behavior = data_behavior[['MiceID', 'Date','BarrierType','Percent rewarded']]
+    ## Reduce all the session to only one row per session
+    data_behavior.drop_duplicates(subset=['MiceID','Date'],inplace=True)
     ## Set the index for mice selection for each graph
     data_behavior.set_index(keys=['MiceID','BarrierType'], inplace=True)
-    data_behavior.sort_index(level=0, inplace=True)
-    
+
+    ## Sort the dataframe by miceID and barrier
+    data_behavior.sort_index(level=[0,1], inplace=True)
+    print(data_behavior.loc['coop012x013'].index)
+
+    # NOTE
     # Depending on the number of mice we will get list of axes of just one ax.
     # When subplots = (1,1). ax takes only 1 value.
     
@@ -88,7 +96,7 @@ def pct_rewarded_trials(
             
             ## convert every label to a position in x-axis
             x_data = [ barriers.index(barrier) for barrier in data_one_pair_mice.index]
-            
+            print(x_data)
             ax[i].scatter(
                 x=x_data,
                 y=data_one_pair_mice["Percent rewarded"].values,
