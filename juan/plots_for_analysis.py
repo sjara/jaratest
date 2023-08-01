@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import numpy as np
-from load_behavior_data import collect_behavior_data
+from load_behavior_data import collect_behavior_data, correct_data_with_excel
 
 def barplot_accu_rewards_time(data: pd.DataFrame):
     """_summary_:
@@ -72,7 +72,7 @@ def pct_rewarded_trials(
     fig, ax = plt.subplots(1, number_of_mice, sharey=True, **kwargs)
 
     ## limit dataframe to the columns we need for comfort
-    data_behavior = data_behavior[['MiceID', 'Date','BarrierType','Percent rewarded']]
+    data_behavior = data_behavior.loc[:,['MiceID', 'Date','BarrierType','Percent rewarded']]
     ## Reduce all the session to only one row per session
     data_behavior.drop_duplicates(subset=['MiceID','Date'],inplace=True)
     ## Set the index for mice selection for each graph
@@ -80,7 +80,6 @@ def pct_rewarded_trials(
 
     ## Sort the dataframe by miceID and barrier
     data_behavior.sort_index(level=[0,1], inplace=True)
-    print(data_behavior.loc['coop012x013'].index)
 
     # NOTE
     # Depending on the number of mice we will get list of axes of just one ax.
@@ -96,14 +95,13 @@ def pct_rewarded_trials(
             
             ## convert every label to a position in x-axis
             x_data = [ barriers.index(barrier) for barrier in data_one_pair_mice.index]
-            print(x_data)
             ax[i].scatter(
                 x=x_data,
                 y=data_one_pair_mice["Percent rewarded"].values,
-                c=(data_one_pair_mice.index).map(
-                    lambda x: colors[0] if x == "solid" else colors[1]
-                ),
-                alpha=0.3,
+                # c=(data_one_pair_mice.index).map(
+                #     lambda x: colors[0] if x == "solid" else colors[1]
+                # ),
+                alpha=0.5,
             )
             
             # Horizontal line to represent mean of points of both barriers
@@ -128,7 +126,6 @@ def pct_rewarded_trials(
             ax[i].set_xticks(ticks=np.unique(x_data), labels = barriers)
             ax[i].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 5))
             
-
     else:
         ## get all the barriers which will be plotted
         barriers =  data_behavior.index.unique(1).to_list()
@@ -141,7 +138,7 @@ def pct_rewarded_trials(
                 c=(data_behavior.index.get_level_values(1)).map(
                     lambda x: colors[0] if x == "solid" else colors[1]
                 ),
-                alpha=0.3,
+                alpha=0.5,
             )
         # This is for getting the positions of the x sticks in order to determine the limits of the lines to plot the mean
         locs = plt.xticks()
@@ -359,3 +356,12 @@ def violin_plot_waitTime(
     plt.tight_layout()
     plt.show()
 
+
+data = collect_behavior_data(mice_data={
+    'coop014x015':[('2023-07-17','2023-07-21'),('2023-07-23','2023-07-27')],
+    'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
+    'coop022x023':[('2023-07-17','2023-07-28')]
+})
+data = correct_data_with_excel(fileName='coop_seek_and_find_v2.xlsx',sheet_name=['coop014x015','coop016x017','coop022x023'],data_collected=data)
+#print(data)
+pct_rewarded_trials(data_behavior=data)

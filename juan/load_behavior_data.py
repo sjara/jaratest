@@ -27,15 +27,6 @@ def load_data(subject, session):
     bdata = loadbehavior.BehaviorData(behavFile)
     return bdata
 
-def for_stage_1(bdata):
-    time = list()
-    count = 0
-    for i in bdata["outcome"]:
-        if i in [1, 2, 3]:
-            count += 3
-        count += 3
-        time.append(count)
-    return time
 
 def normalize_time(df):
     """_summary_
@@ -51,9 +42,8 @@ def normalize_time(df):
     df["TimeTrialStart"] = df["TimeTrialStart"] - df.loc[0, "TimeTrialStart"]
     return df
 
-def collect_behavior_data(
-    mice_data: dict[int:list], number_of_mice: int = 1, starter_mice: str = None, date_format = '%Y-%m-%d'
-):
+
+def collect_behavior_data(mice_data: dict[int:list], date_format="%Y-%m-%d"):
     """_summary_:
     This function is used to merge all the behavior data we want from social cooperatio project into one dataframe
 
@@ -61,7 +51,7 @@ def collect_behavior_data(
         mice_data dict[int:list]: Store the numbers of the first pair of mice we want to start collecting data. keys is the first number of the
             pair of mice, for example, for coop014x015 the key in mice_data would be '14'. The values each key contains is a list of tuples/strings.
             Tuples are used for range of dates and only strings for individual dates, for example, if I want the data for coop014x015 from the 2023-05-12 to the 2023-05-16,
-            the dict would look like {'14':[('2023-05-12', '2023-05-16')]} and for individual dates would be {'14':['2023-05-25']} and 
+            the dict would look like {'14':[('2023-05-12', '2023-05-16')]} and for individual dates would be {'14':['2023-05-25']} and
             they can be combined in the way {'14':[('2023-05-12', '2023-05-16'), '2023-05-25']}
         number_of_mice (int, optional): Store the amount of mice we want to collect data. the number set mean the amount of mice to increment. stater_mice is required.
         stater_mice (str, optinal): Set the pair of mice as base to start the incrementing the ID until collected the number of pair of mice set in number_of_mice.
@@ -78,74 +68,73 @@ def collect_behavior_data(
             "Outcome",
             "TimeTrialStart",
             "BarrierType",
-            'ActiveSide',
+            "ActiveSide",
             "Date",
             "MiceID",
             "TimePoke1",
             "TimePoke2",
             "Stage",
-            "Percent rewarded"
+            "Percent rewarded",
         ]
     )
     # Get the mice to retrieve from the dict
-    mice = mice_data.keys()
-    for first_mouse_on_pair in mice:
-        
-        mouse1 = first_mouse_on_pair
-        mouse2 = str(int(mouse1) + 1)
-        mice_to_collect = number_of_mice if (starter_mice != None) and first_mouse_on_pair == starter_mice else 1
+    miceIDs = mice_data.keys()
+    for mice in miceIDs:
+        for date in mice_data[mice]:
+            # Defines the date format the input is received
+            date_format = date_format
 
-        while mice_to_collect > 0:
-            
-            for date in mice_data[first_mouse_on_pair]:
-                
-                # Defines the date format the input is received
-                date_format = date_format
-                
-                # Tuples are for ranges of dates
-                if isinstance(date, tuple):
-                    start_date = datetime.strptime(date[0], date_format).date()
-                    end_date = datetime.strptime(date[1], date_format).date()
-                else:
-                    start_date = datetime.strptime(date, date_format).date()
-                    end_date = start_date
+            # Tuples are for ranges of dates
+            if isinstance(date, tuple):
+                start_date = datetime.strptime(date[0], date_format).date()
+                end_date = datetime.strptime(date[1], date_format).date()
+            else:
+                start_date = datetime.strptime(date, date_format).date()
+                end_date = start_date
 
-                # Upload a dataframe for each pair of mice and date
-                mice_id = f"coop0{mouse1}x0{mouse2}"
-                # print(mice_id)
-                for days in range (int((end_date - start_date).days) + 1):
-                    current_date = str(start_date + timedelta(days)).replace("-", "")
-                    try:
-                        bdata = load_data(mice_id, f"{current_date}a")
-                    except:
-                        print(f"ERROR FILE {current_date}a FOR {mice_id} MICE DOES NOT EXIST")
-                        continue
-                    
-                    df = pd.DataFrame(
-                        {
-                            "Outcome": bdata["outcome"],
-                            "TimeTrialStart": bdata["timeTrialStart"],  # for_stage_1(bdata)
-                            "BarrierType": bdata["barrierType"],
-                            "ActiveSide":bdata['activeSide'],
-                            "TimePoke1": bdata["timePoke1"],
-                            "TimePoke2": bdata["timePoke2"],
-                            "Stage": bdata["taskMode"],
-                            "Date": current_date,
-                            "MiceID": mice_id,
-                        }
+            # Upload a dataframe for each pair of mice and date
+            mice_id = mice
+            for days in range(int((end_date - start_date).days) + 1):
+                current_date = str(start_date + timedelta(days)).replace("-", "")
+                try:
+                    bdata = load_data(mice_id, f"{current_date}a")
+                except:
+                    print(
+                        f"ERROR FILE {current_date}a FOR {mice_id} MICE DOES NOT EXIST"
                     )
-                    
-                    df["Percent rewarded"]= len(bdata["outcome"][bdata['outcome']==1])/len(bdata['outcome']) * 100
-                    df_all_data = pd.concat([df, df_all_data], ignore_index=True)
-            
-            # get the new consecutive pair of mice
-            mouse1 = str(int(mouse1) + 2)
-            mouse2 = str(int(mouse2) + 2)
-            mice_to_collect -= 1
+                    continue
 
-    df_all_data.replace({"BarrierType": bdata.labels["barrierType"], "ActiveSide": bdata.labels["activeSide"]}, inplace=True)
-    df_all_data.replace([{"Stage": bdata.labels["taskMode"]}], inplace=True)
+                df = pd.DataFrame(
+                    {
+                        "Outcome": bdata["outcome"],
+                        "TimeTrialStart": bdata["timeTrialStart"],  # for_stage_1(bdata)
+                        "BarrierType": bdata["barrierType"],
+                        "ActiveSide": bdata["activeSide"],
+                        "TimePoke1": bdata["timePoke1"],
+                        "TimePoke2": bdata["timePoke2"],
+                        "Stage": bdata["taskMode"],
+                        "Date": current_date,
+                        "MiceID": mice_id,
+                    }
+                )
+
+                df["Percent rewarded"] = (
+                    len(bdata["outcome"][bdata["outcome"] == 1])
+                    / len(bdata["outcome"])
+                    * 100
+                )
+                df.replace(
+                    {
+                        "BarrierType": bdata.labels["barrierType"],
+                        "ActiveSide": bdata.labels["activeSide"],
+                    },
+                    inplace=True,
+                )
+                df_all_data = pd.concat([df, df_all_data], ignore_index=True)
+
+                # df_all_data.replace([{"Stage": bdata.labels["taskMode"]}], inplace=True)
     return df_all_data
+
 
 def collect_events(
     start_subject: tuple[int], number_of_mice: int, start_date: date, end_date: date
@@ -189,17 +178,19 @@ def collect_events(
                     "MiceID": mice_id,
                     "Date": current_date,
                     "Events": bdata.events["eventCode"],
-                    "Event Time":bdata.events["eventTime"],
+                    "Event Time": bdata.events["eventTime"],
                 }
             )
-            df.replace({"Events":bdata.stateMatrix["eventsNames"]}, inplace=True)
+            df.replace({"Events": bdata.stateMatrix["eventsNames"]}, inplace=True)
             df_all_data = pd.concat([df, df_all_data], ignore_index=True)
         mouse1 = mouse2 + 1
         mouse2 = mouse1 + 1
     return df_all_data
 
-def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[int] = [1]) -> pd.DataFrame:
 
+def filter_and_group(
+    bins: int, data: pd.DataFrame, sessionLen: int, outcome: list[int] = [1]
+) -> pd.DataFrame:
     """_summary_:
     This function is used to filter the data by the outcome of a trial
     and to group the data by BarrierType, MiceID and the number of segmentation in time desired (bins).
@@ -207,8 +198,8 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[i
 
     Args:
     sessionLen (int): How long is the training session.
-    bins (int): How many ranges do you want to segment the time session? 
-        For example, for a session of 60 min. 6 bins is equal to ranges of 10 min 
+    bins (int): How many ranges do you want to segment the time session?
+        For example, for a session of 60 min. 6 bins is equal to ranges of 10 min
     data (pd.DataFrame): pandas dataframe with at least 5 columns: BarrierType, MiceID, Outcome, TimePoke1 and TimePoke2
     outcome (list[int], optional): This is to filter trials by outcome. Defaults to [1]
 
@@ -224,7 +215,7 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[i
             "BarrierType",
             "MiceID",
             pd.cut(
-                data_filtered[["TimePoke2", 'TimePoke1']].apply(max, axis=1),
+                data_filtered[["TimePoke2", "TimePoke1"]].apply(max, axis=1),
                 bins=bins,
                 labels=[
                     f"{int((sessionLen/bins*i)-(sessionLen/bins))}-{int(sessionLen/bins*i)}"
@@ -235,8 +226,15 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int, outcome:list[i
     )["Outcome"].count()
     return data_filtered_grouped
 
-def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected:pd.DataFrame=None, **kwargs):
-    """_summary_: Using an excel file to correct the data collected from each pair of mice using 
+
+def correct_data_with_excel(
+    fileName: str,
+    sheet_name: list[str],
+    data_collected: pd.DataFrame,
+    date_format="%Y-%m-%d",
+    **kwargs,
+) -> pd.DataFrame:
+    """_summary_: Using an excel file to correct the data collected from each pair of mice using
     the function collect_behavior_data which uses loadbehavior from jaratoolbox. This is specially useful
     to correct variables which did not affect the training, for example, the barrier. For example, if you set the wrong barrier during the section with this function
     you can use a spreadsheet to correct it.
@@ -246,54 +244,41 @@ def correct_data_with_excel (fileName:str,  sheet_name:list[str], data_collected
         sheetName (list[str]): string list with the names of the spreadsheet, it can be a list of only one element.
         data_collected (pd.DataFrame): _description_
     """
-    if not(isinstance(sheet_name, list)):
-        raise Exception('ERROR: sheet_name must be a list')
-    
-    df_excel = pd.read_excel(io=fileName, sheet_name=sheet_name , **kwargs)
-    data_collected.set_index(keys='MiceID', inplace=True)
-    for mice in data_collected.index.unique():
-        df_excel_filt = df_excel[mice][['Barrier Type','Date']]
-        data_collected.loc[mice][['BarrierType','Date']].merge(df_excel_filt, how='right', on='Date')
-    return data_collected
+    if not (isinstance(sheet_name, list)):
+        raise Exception("ERROR: sheet_name must be a list")
 
-def get_dates_from_excel (excelFile:str) -> dict:
-    """Get date for each pair of mice to collect using an excel
+    ## Dataframe to return
+    data_return = pd.DataFrame()
 
-    Args:
-        excelFile (str): Excel file with three columns IDs, RangeDates and SingleDates
+    ## This column will be replace with the excel
+    data_collected.drop(["BarrierType"], axis=1, inplace=True)
 
-    Returns:
-        dict: it contains the first number of the pair of mice as the key and the values are lists containing range of dates in tuples and just strings as single dates 
-    """
-    df = pd.read_excel(excelFile)
-    df.set_index(keys='IDs', inplace=True)
-    df_to_dict = {key:deserialize_dates(df.loc[key]) for key in df.index}
-    return df_to_dict
+    df_excel = pd.read_excel(io=fileName, sheet_name=sheet_name, **kwargs)
+    miceIDs = data_collected["MiceID"].unique()
 
-def deserialize_dates (dates:pd.Series) -> list:
-    """transform the strings stored in column RangeDates and SingleDate for a specific row into the requested python form 
+    # Go through eacry mice to correct every mice need it
+    for mice in miceIDs:
+        df_excel_filt = pd.DataFrame(df_excel[mice][["Barrier Type", "Date"]])
+        df_excel_filt.rename(columns={"Barrier Type": "BarrierType"}, inplace=True)
+        # Drop dates empty
+        df_excel_filt.dropna(subset="Date", inplace=True)
+        # Convert to the same date format
+        df_excel_filt.loc[:, "Date"] = df_excel_filt["Date"].map(
+            lambda x: (str(x).strip().split(" ")[0]).replace("-", "")
+        )
+        
+        # Merge data collected with the excel
+        data_return = pd.concat(
+            [
+                data_return,
+                data_collected.loc[data_collected["MiceID"] == mice].merge(
+                    df_excel_filt, how="left", on="Date"
+                ),
+            ],
+            ignore_index=True,
+        )
+    return data_return
 
-    Args:
-        dates (pd.Series): pandas serie which contains within the index RangeDates and/or SingleDate 
-
-    Returns:
-        list: it contains the range dates in tuples and alone range just as strings
-    """
-    columns = dates.index
-    dates_list = list()
-    if len(columns):
-        for column in columns:
-            if column.strip() == 'RangeDates' and not(pd.isna(dates["RangeDates"])):
-                range_dates = [i.strip() for i in re.split(r'\(|\)', dates['RangeDates']) if len(i)>=8]
-                range_dates = [((date.split(',')[0]).strip(), (date.split(',')[1]).strip()) for date in range_dates]
-                dates_list.extend(range_dates)
-            elif column.strip() == 'SingleDates' and not(pd.isna(dates["SingleDates"])):
-                print(dates["SingleDates"])
-                alone_dates = [i.strip() for i in dates["SingleDates"].split(',')]
-                dates_list.extend(alone_dates)
-        return dates_list
-    else:
-        raise(Exception("Excel must have at least one of the two columns: RangeDates, SingleDates"))
 
 ## EJEMPLO
 # data = collect_behavior_data(mice_data={'14':[('2023-05-12','2023-6-16')]})

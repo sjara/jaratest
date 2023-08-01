@@ -28,60 +28,23 @@ def rewarded_trials_subcommand (args):
 if __name__ == "__main__":
     ## Parse arguments
     parser = argparse.ArgumentParser(
-        prog="python main.py",
-        description="""Make plots for social cooperation project. This tool receives a excel file with two columns: ids and dates. 
-        dates column: All dates desired for a given pair of mice are inside squared brackets (key_mice:[dates]), 
-        inside the squared brakets range of dates are inside parenthesis, and individual dates without them.
-        ids column: only the first number of the pair is stored in this column, so for 'coop014x015' the key is '14'.
+        prog="python cooperate.py",
+        description="""Make plots for social cooperation project. This tool receives a mice ID, E.g. coop012x013 and a range of dates, E. g. 2023-05-05x2023-05-15.
                     """,
-        epilog="Author: Juan Picon Cossio",
+        epilog="GitHub: juanjo255",
     )
 
-    ## Create subcommands for each plot
-    subparsers = parser.add_subparsers(title='Subcommads',help="""subcommands to generate plots for social
-                                    cooperation project""", required=True)
-
-    ## Subcommand for plotting percentage rewarded trials
-    parser_pct = subparsers.add_parser(
-        name="pct_rewarded_trials",
-        aliases=['pct'],
-        help="""This is a categorical scatter plot for analyze the percentage of regarded trials against barriers
-                So, for each pair of mice is going to plot a graph with the percentage of rewarded trials for each barrier.""",
+    parser.add_argument(
+        "MiceID", help=""" For cooperation project IDs are made up of the word 'coop' followed by two 3-digits number separated by an 'x', E. g. 'coop000x000'"""
     )
-    parser_pct.add_argument(
-        "excelName", help="""Excel file containing two columns: ids and dates. Where in ids column is stored the first number of the pair and
-        in dates column a list with ranges of dates inside parenthesis and individual dates without them, E.g.[('2023-05-12','2023-6-16', '2023-7-1')]  """
+    parser.add_argument(
+        "Dates", help=""" Range of dates in the format yyyy-mm-dd separated by an 'x', E. g. 2023-05-05x2023-05-15"""
     )
-    parser_pct.set_defaults(func=pct_rewarded_trials_subcommand)
-    
-    ## Subcommand for plotting rewarded trials
-    parser_rt = subparsers.add_parser(
-        name="rewarded_trials",
-        aliases=['rt'],
-        help="""This is a categorical scatter plot for analyze the number of trials between different barriers.
-                The developer can filter by the outcome of preference.
-                0 = total of trials, 1 = both mice pokes, 2 = only track 1 mouse poke, 3 = only track 2 mouse poke and 4 = None.
-                So, for each pair of mice is going to plot a graph with the trials for each barrier."""
-    )
-    parser_rt.add_argument(
-        "excelName", help="""Excel file containing two columns: ids and dates. Where in ids column is stored the first number of the pair and
-        in dates column a list with ranges of dates inside parenthesis and individual dates without them, E.g.[('2023-05-12','2023-6-16', '2023-7-1')]  """
-    )
-    
-    parser_rt.add_argument(
-        "--filt_outcome_by",
-        help="Select the outcome desired to plot",
-        choices=[0, 1, 2, 3, 4],
-        nargs="*",
-        type=int
-    )
-
-    parser_rt.set_defaults(func=rewarded_trials_subcommand)
+    parser.set_defaults(collect_data_df)
 
     ## Parse arguments
     args = parser.parse_args()
-    
-    # Call the default function for the subcommand
+    ## Call the default function
     args.func(args)
 
 
