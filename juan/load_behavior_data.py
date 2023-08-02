@@ -262,16 +262,16 @@ def correct_data_with_excel(
         df_excel_filt.rename(columns={"Barrier Type": "BarrierType"}, inplace=True)
         # Drop dates empty
         df_excel_filt.dropna(subset="Date", inplace=True)
-        # Convert to the same date format
+        # Convert dates in excel to the same date format as the sessions data
+        df_excel_filt["Date"] = df_excel_filt["Date"].astype(object)
         df_excel_filt.loc[:, "Date"] = df_excel_filt["Date"].map(
             lambda x: (str(x).strip().split(" ")[0]).replace("-", "")
         )
-        
-        # Merge data collected with the excel
+        # Replace the barrier column in the sessions with the barrier column in the excel
         data_return = pd.concat(
             [
                 data_return,
-                data_collected.loc[data_collected["MiceID"] == mice].merge(
+                data_collected.loc[data_collected["MiceID"] == mice,:].merge(
                     df_excel_filt, how="left", on="Date"
                 ),
             ],
