@@ -363,5 +363,5 @@ data = collect_behavior_data(mice_data={
     'coop022x023':[('2023-07-17','2023-07-28')]
 })
 data = correct_data_with_excel(fileName='coop_seek_and_find_v2.xlsx',sheet_name=['coop014x015','coop016x017','coop022x023'],data_collected=data)
-#print(data)
-pct_rewarded_trials(data_behavior=data)
+print(data)
+#pct_rewarded_trials(data_behavior=data)
