@@ -4,6 +4,7 @@ import seaborn as sns
 import numpy as np
 from load_behavior_data import collect_behavior_data, correct_data_with_excel
 
+
 def barplot_accu_rewards_time(data: pd.DataFrame):
     """_summary_:
     This function will create axes for each barrier,
@@ -51,7 +52,10 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
 
 
 def pct_rewarded_trials(
-    data_behavior: pd.DataFrame, colors: list[str] = ["red", "blue"], width_lines=0.3, **kwargs
+    data_behavior: pd.DataFrame,
+    colors: list[str] = ["red", "blue"],
+    width_lines=0.3,
+    **kwargs,
 ):
     """_summary_:
     This categorical scatter plot is for analyze the percentage of regarded trials against barriers
@@ -62,86 +66,84 @@ def pct_rewarded_trials(
         colors (list[str], optional): List of colors in string type to distinguish points from each barrier. Defaults to ["red", "cyan"].
         width_lines (float, optional): Float type to set the long of the line representing the mean of the points in each barrier. Defaults to 0.1.
     """
+    # NOTE
+    # Depending on the number of mice we will get list of axes of just one ax.
+    # When subplots = (1,1). ax takes only 1 value.
 
-    width_lines = width_lines
     miceIds = data_behavior["MiceID"].unique()
     number_of_mice = len(miceIds)
     fig, ax = plt.subplots(1, number_of_mice, sharey=True, **kwargs)
 
     # Colors for barriers
-    possible_barriers = data_behavior['BarrierType'].unique()
-    colors = {key:np.random.rand(3) for key in possible_barriers}
+    possible_barriers = data_behavior["BarrierType"].unique()
+    colors = {key: np.random.rand(3) for key in possible_barriers}
 
     ## limit dataframe to the columns we need for comfort
-    data_behavior = data_behavior.loc[:,['MiceID', 'Date','BarrierType','Percent rewarded']]
+    data_behavior = data_behavior.loc[
+        :, ["MiceID", "Date", "BarrierType", "Percent rewarded"]
+    ]
     ## Reduce all the session to only one row per session
-    data_behavior.drop_duplicates(subset=['MiceID','Date'],inplace=True)
+    data_behavior.drop_duplicates(subset=["MiceID", "Date"], inplace=True)
     ## Set the index for mice selection for each graph
-    data_behavior.set_index(keys=['MiceID','BarrierType'], inplace=True)
+    data_behavior.set_index(keys=["MiceID", "BarrierType"], inplace=True)
 
     ## Sort the dataframe by miceID and barrier
-    data_behavior.sort_index(level=[0,1], inplace=True)
+    data_behavior.sort_index(level=[0, 1], inplace=True)
 
-    
-    # NOTE
-    # Depending on the number of mice we will get list of axes of just one ax.
-    # When subplots = (1,1). ax takes only 1 value.
-    
     if number_of_mice > 1:
         for i in range(number_of_mice):
             ## get the data for each pair of mice
             data_one_pair_mice = data_behavior.loc[miceIds[i]]
-            
+
             ## get all the barriers which will be plotted
             barriers = data_one_pair_mice.index.unique().to_list()
-            
+
             ## convert every label to a position in x-axis
-            x_data = [ barriers.index(barrier) for barrier in data_one_pair_mice.index]
+            x_data = [barriers.index(barrier) for barrier in data_one_pair_mice.index]
             ax[i].scatter(
                 x=x_data,
                 y=data_one_pair_mice["Percent rewarded"].values,
                 c=(data_one_pair_mice.index).map(
-                    lambda x: colors[x] #colors[0] if x == "solid" else colors[1]
+                    lambda x: colors[x]  # colors[0] if x == "solid" else colors[1]
                 ),
                 alpha=0.5,
             )
-            
+
             # Horizontal line to represent mean of points of both barriers
             ax[i].hlines(
                 y=[
                     int(data_one_pair_mice.loc[barrier]["Percent rewarded"].mean())
                     for barrier in data_one_pair_mice.index.unique()
                 ],
-                xmin=[
-                    idx - width_lines
-                    for idx in range(0, len(barriers))
-                ],
-                xmax=[
-                    idx + width_lines
-                    for idx in range(0, len(barriers))
-                ],
-                colors=[ colors[barrier] for barrier in barriers],#[colors[0] if barrier == "solid" else colors[1] for barrier in barriers],
+                xmin=[idx - width_lines for idx in range(0, len(barriers))],
+                xmax=[idx + width_lines for idx in range(0, len(barriers))],
+                colors=[
+                    colors[barrier] for barrier in barriers
+                ],  # [colors[0] if barrier == "solid" else colors[1] for barrier in barriers],
             )
 
             ax[i].set_xlabel(miceIds[i])
             ax[i].set_xlim(0 - 1, max(x_data) + 1)
-            ax[i].set_xticks(ticks=np.unique(x_data), labels = barriers)
+            ax[i].set_xticks(ticks=np.unique(x_data), labels=barriers)
             ax[i].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 5))
-            
+
     else:
         ## get all the barriers which will be plotted
-        barriers =  data_behavior.index.unique(1).to_list()
-            
+        barriers = data_behavior.index.unique(1).to_list()
+
         ## convert every label to a position in x-axis
-        x_data = [ barriers.index(barrier) for barrier in data_behavior.index.get_level_values(1)]
+        x_data = [
+            barriers.index(barrier)
+            for barrier in data_behavior.index.get_level_values(1)
+        ]
         ax.scatter(
-                x=x_data,
-                y=data_behavior["Percent rewarded"].values,
-                c=(data_behavior.index.get_level_values(1)).map(
-                    lambda x: colors[0] if x == "solid" else colors[1]
-                ),
-                alpha=0.5,
-            )
+            x=x_data,
+            y=data_behavior["Percent rewarded"].values,
+            c=(data_behavior.index.get_level_values(1)).map(
+                lambda x: colors[x]  # colors[0] if x == "solid" else colors[1]
+            ),
+            alpha=0.5,
+        )
 
         # Horizontal line to represent mean of points of both barriers
         ax.hlines(
@@ -149,21 +151,15 @@ def pct_rewarded_trials(
                 int(data_behavior.loc(axis=0)[:, barrier]["Percent rewarded"].mean())
                 for barrier in barriers
             ],
-            xmin=[
-                idx - width_lines
-                for idx in range(0, len(barriers))
-            ],
-            xmax=[
-                idx + width_lines
-                for idx in range(0, len(barriers))
-            ],
-            colors=[colors[0] if barrier == "solid" else colors[1] for barrier in barriers],#colors[::-1],
+            xmin=[idx - width_lines for idx in range(0, len(barriers))],
+            xmax=[idx + width_lines for idx in range(0, len(barriers))],
+            colors=[colors[barrier] for barrier in barriers],  # colors[::-1],
         )
 
         ax.set_xlabel(miceIds[0])
         ax.set_ylabel("Percentage of rewarded trials")
         ax.set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 5))
-        ax.set_xticks(ticks=np.unique(x_data), labels = barriers)
+        ax.set_xticks(ticks=np.unique(x_data), labels=barriers)
 
     plt.tight_layout()
     # Adjust the spacing between the subplots and the top of the figure
@@ -191,10 +187,14 @@ def rewarded_trials(
         outcome (list[int], optional): Filter the dataframe by the desired outcome to plot. Defaults to 1.
     """
 
+    # NOTE
+    # Depending on the number of mice we will get list of axes of just one ax.
+    # When subplots = (1,1). ax takes only 1 value.
+
     # Colors for barriers
-    possible_barriers = data_behavior['BarrierType'].unique()
-    colors = {key:np.random.rand(3) for key in possible_barriers}
-    
+    possible_barriers = data_behavior["BarrierType"].unique()
+    colors = {key: np.random.rand(3) for key in possible_barriers}
+
     ## Filter the dataframe by the outcome desired.
     ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2)
     data_behavior_by_outcome = (
@@ -202,17 +202,12 @@ def rewarded_trials(
         .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
         .sum()
     )
-    
-    width_lines = width_lines
+
     miceIds = data_behavior_by_outcome.index.unique(0).to_list()
     number_of_mice = len(miceIds)
     fig, ax = plt.subplots(1, number_of_mice, sharey=True)
     locs = plt.xticks()
 
-    # FIXME: Right now the code plot organizing the dataframes by the barriertype name. This has to be corrected.
-    # It is easy to make wrong plots if the isolated and non-isolated barriers do not follow an alphabetical order where isolated are together and same for non-isolated.
-
-    # Depending on the number of mice we will get list of axes of just one ax
     if number_of_mice > 1:
         for i in range(number_of_mice):
             ## select data from each pair of mice
@@ -245,7 +240,10 @@ def rewarded_trials(
                     (0 + 1 / idx) + width_lines
                     for idx in range(1, len(data_one_pair_mice.index.unique(0)))
                 ],
-                colors=[colors[barrier] for barrier in data_one_pair_mice.index.get_level_values(0).unique()],
+                colors=[
+                    colors[barrier]
+                    for barrier in data_one_pair_mice.index.get_level_values(0).unique()
+                ],
             )
 
             ax[i].set_xlabel(miceIds[i])
@@ -280,7 +278,12 @@ def rewarded_trials(
                 locs[0][idx] + width_lines
                 for idx in range(0, len(data_behavior_by_outcome.index.unique(1)))
             ],
-            colors=[colors[barrier] for barrier in data_behavior_by_outcome.index.get_level_values(1).unique()],
+            colors=[
+                colors[barrier]
+                for barrier in data_behavior_by_outcome.index.get_level_values(
+                    1
+                ).unique()
+            ],
         )
 
         ax.set_xlabel(miceIds[0])
@@ -296,9 +299,7 @@ def rewarded_trials(
     return ax
 
 
-def violin_plot_waitTime(
-    data_behavior: pd.DataFrame, outcome: list[int] = [1]
-):
+def violin_plot_waitTime(data_behavior: pd.DataFrame, outcome: list[int] = [1]):
     """_summary_:
     This violin plot is for analyze the waitTime
     It helps to see the distributions of how long does it take the second mouse to poke after the first mouse poked.
@@ -359,33 +360,250 @@ def violin_plot_waitTime(
     plt.show()
 
 
-def report (data_behavior: pd.DataFrame, colors: list[str] = ["red", "blue"], width_lines=0.3, **kwargs): 
-    
-    width_lines = width_lines
-    miceIds = data_behavior["MiceID"].unique()
-    number_of_mice = len(miceIds)
-    fig, ax = plt.subplots(1, number_of_mice, sharey=True, **kwargs)
+def hist_time_in_ports(data_behavior: pd.DataFrame):
+    """_summary_: histogram for time spent by the mice in ports during a sucessfull trial
 
-    # Colors for barriers
-    possible_barriers = data_behavior['BarrierType'].unique()
-    colors = {key:np.random.rand(3) for key in possible_barriers}
+    Args:
+        data_behavior (pd.DataFrame): Dataframe collected by the function collect_behavior_data in load_behavior_data module
+    """
+    data_behavior["timeBetweenPokes"] = abs(
+        data_behavior["TimePoke1"] - data_behavior["TimePoke2"]
+    )
+    data_behavior = data_behavior[["BarrierType", "timeBetweenPokes"]]
+    fig, ax = plt.subplots()
 
-    ## limit dataframe to the columns we need for comfort
-    data_behavior = data_behavior.loc[:,['MiceID', 'Date','BarrierType','Percent rewarded']]
-    ## Reduce all the session to only one row per session
-    data_behavior.drop_duplicates(subset=['MiceID','Date'],inplace=True)
-    ## Set the index for mice selection for each graph
-    data_behavior.set_index(keys=['MiceID','BarrierType'], inplace=True)
+    ## Possible barriers
+    barriers = data_behavior["BarrierType"].unique()
+    ## Collect data in a list of arrays where each arrays belongs to a barrier
+    data_per_barrier = [
+        np.array(
+            data_behavior.loc[
+                data_behavior["BarrierType"] == barrier, "timeBetweenPokes"
+            ].values
+        )
+        for barrier in barriers
+    ]
 
-    ## Sort the dataframe by miceID and barrier
-    data_behavior.sort_index(level=[0,1], inplace=True)
+    # histogran
+    ax.hist(
+        x=data_per_barrier,
+        label=barriers,
+        color=[np.random.rand(3), np.random.rand(3)],
+        histtype="stepfilled",
+        alpha=0.5,
+    )
+    ax.legend()
 
-data = collect_behavior_data(mice_data={
-    'coop014x015':[('2023-07-17','2023-07-21'),('2023-07-23','2023-07-27')],
-    # 'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
-    # 'coop022x023':[('2023-07-17','2023-07-28')]
-})
-data = correct_data_with_excel(fileName='coop_seek_and_find_v2.xlsx',sheet_name=['coop014x015'],data_collected=data)
-#print(data)
-rewarded_trials(data)
+
+def report(
+    data_behavior: pd.DataFrame,
+    colors: list[str] = ["red", "blue"],
+    outcome: list[int] = [1],
+    width_lines=0.2,
+):
+    """_summary_: Generates different plots for one pair of mice showing important information such as
+    percent rewarded trials.
+
+    Args:
+        data_behavior (pd.DataFrame): Dataframe collected by the function collect_behavior_data in load_behavior_data module
+        colors (list[str], optional): Set color for the points. Defaults to ["red", "blue"].
+        width_lines (float, optional): Width of horizontal lines representing average. Defaults to 0.3.
+    """
+
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12, 7))
+
+    ## GENERAL SETTINGS ##
+    ## Colors for barriers
+    possible_barriers = data_behavior["BarrierType"].unique()
+    colors = {key: np.random.rand(3) for key in possible_barriers}
+
+    data_behavior.sort_values(by="BarrierType", inplace=True)
+
+    ## Get all the barriers which will be plotted
+    barriers = data_behavior["BarrierType"].unique().tolist()
+
+    ## PERCENTAGE REWARDED TRIALS PER SESSION PER BARRIER ##
+    ## Reduce all sessions to only one row per session
+    data_behavior_pct = data_behavior.drop_duplicates(subset=["Date"])
+
+    ## Convert every label to a position in x-axis
+    x_data = [barriers.index(barrier) for barrier in data_behavior_pct["BarrierType"]]
+
+    ## Scatter plot
+    ax[0, 0].scatter(
+        x=x_data,
+        y=data_behavior_pct["Percent rewarded"].values,
+        c=(data_behavior_pct["BarrierType"]).map(lambda x: colors[x]),
+        alpha=0.7,
+    )
+
+    # Horizontal line to represent mean of points of both barriers
+    ax[0, 0].hlines(
+        y=[
+            int(
+                data_behavior_pct.loc[
+                    data_behavior_pct["BarrierType"] == barrier, "Percent rewarded"
+                ].mean()
+            )
+            for barrier in barriers
+        ],
+        xmin=[idx - width_lines for idx in range(0, len(barriers))],
+        xmax=[idx + width_lines for idx in range(0, len(barriers))],
+        colors=[colors[barrier] for barrier in barriers],
+    )
+
+    ax[0, 0].set_ylabel("Percentage of rewarded trials")
+    ax[0, 0].set_yticks(
+        np.arange(
+            0,
+            data_behavior_pct["Percent rewarded"].max()
+            + (data_behavior_pct["Percent rewarded"].max() * 0.1),
+            2,
+        )
+    )
+    ax[0, 0].set_xticks(ticks=np.unique(x_data), labels=barriers)
+    ax[0, 0].set_ylim(
+        0,
+        data_behavior_pct["Percent rewarded"].max()
+        + (data_behavior_pct["Percent rewarded"].max() * 0.1),
+    )
+    ax[0, 0].set_title("Percentage of rewarded trials")
+
+    ## REWARDED TRIALS PER SESSION PER BARRIER ##
+    ## Filter the dataframe by the outcome desired.
+    ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2)
+    data_behavior_by_outcome = (
+        data_behavior[data_behavior["Outcome"].isin(outcome)].groupby(
+            ["BarrierType", "Date"]
+        )
+    )["Outcome"].sum()
+
+    ## Scatter plot
+    ax[0, 1].scatter(
+        x=x_data,
+        y=data_behavior_by_outcome.values,
+        c=(data_behavior_by_outcome.index.get_level_values(0)).map(lambda x: colors[x]),
+        alpha=0.7,
+    )
+
+    # Horizontal line to represent mean of points of both barriers
+    ax[0, 1].hlines(
+        y=[int(data_behavior_by_outcome.loc[barrier].mean()) for barrier in barriers],
+        xmin=[idx - width_lines for idx in range(0, len(barriers))],
+        xmax=[idx + width_lines for idx in range(0, len(barriers))],
+        colors=[colors[barrier] for barrier in barriers],
+    )
+
+    ax[0, 1].set_ylabel("Rewarded trials")
+    ax[0, 1].set_xticks(ticks=np.unique(x_data), labels=barriers)
+    ax[0, 1].set_yticks(
+        np.arange(
+            0,
+            data_behavior_by_outcome.max() + (data_behavior_by_outcome.max() * 0.1),
+            20,
+        )
+    )
+    ax[0, 1].set_ylim(
+        0, data_behavior_by_outcome.max() + (data_behavior_by_outcome.max() * 0.1)
+    )
+    ax[0, 1].set_title("Rewarded trials per session")
+
+    ## TOTAL TRIALS PER SESSION PER BARRIER ##
+    sessions = data_behavior["Date"].unique()
+    y_data = [len(data_behavior[data_behavior["Date"] == date]) for date in sessions]
+
+    ## Scatter plot
+    ax[0, 2].scatter(
+        x=x_data,
+        y=y_data,
+        c=(data_behavior_by_outcome.index.get_level_values(0)).map(lambda x: colors[x]),
+        alpha=0.7,
+    )
+
+    # Horizontal line to represent mean of points of both barriers
+    # ax[0, 2].hlines(
+    #     y=[int(data_behavior_by_outcome.loc[barrier].mean()) for barrier in barriers],
+    #     xmin=[idx - width_lines for idx in range(0, len(barriers))],
+    #     xmax=[idx + width_lines for idx in range(0, len(barriers))],
+    #     colors=[colors[barrier] for barrier in barriers],
+    # )
+
+    ax[0, 2].set_ylabel("Total trials")
+    ax[0, 2].set_xticks(ticks=np.unique(x_data), labels=barriers)
+    ax[0, 2].set_ylim(0, max(y_data) + (max(y_data) * 0.1))
+    ax[0, 2].set_xlim(0 - 1, len(barriers))
+    ax[0, 2].set_title("Total trials per session")
+
+    ## ACCUMULATED REWARDED TRIALS ##
+    y_data = [data_behavior_by_outcome.loc[barrier].sum() for barrier in barriers]
+    ## Bar plot
+    bars = ax[1, 0].bar(
+        barriers,
+        y_data,
+        label=barriers,
+    )
+    ax[1, 0].bar_label(bars, padding=3)
+    ax[1, 0].set_title("Accumulated rewarded trials")
+    ax[1, 0].set_ylim(0, max(y_data) + (max(y_data) * 0.2))
+
+    ## ACCUMULATED TOTAL TRIALS ##
+    y_data = [
+        len(data_behavior.loc[data_behavior["BarrierType"] == barrier])
+        for barrier in barriers
+    ]
+    ## Bar plot
+    bars = ax[1, 1].bar(
+        barriers,
+        y_data,
+        label=barriers,
+    )
+    ax[1, 1].bar_label(bars, padding=3)
+    ax[1, 1].set_title("Accumulated total trials")
+    ax[1, 1].set_ylim(0, max(y_data) + (max(y_data) * 0.2))
+
+    ## TIME SPEND IN PORTS: TIME BETWEEN THE STARTER POKE AND THE LAST POKE OF A SUCCESSFULL TRIAL ##
+
+    ## Compute the first and last poke
+    data_behavior["timeBetweenPokes"] = abs(
+        data_behavior["TimePoke1"] - data_behavior["TimePoke2"]
+    )
+    ## Collect data in a list of arrays where each arrays belongs to a barrier
+    data_per_barrier = [
+        np.array(
+            data_behavior.loc[
+                data_behavior["BarrierType"] == barrier, "timeBetweenPokes"
+            ].values
+        )
+        for barrier in barriers
+    ]
+
+    ## Histogram
+    ax[1, 2].hist(
+        x=data_per_barrier,
+        label=barriers,
+        color=[np.random.rand(3), np.random.rand(3)],
+        histtype="stepfilled",
+        alpha=0.5,
+    )
+    ax[1, 2].legend()
+    ax[1, 2].set_title("Time spent in ports")
+
+    fig.suptitle(data_behavior["MiceID"][0])
+    fig.tight_layout()
+
+
+data = collect_behavior_data(
+    mice_data={
+        "coop014x015": [("2023-07-17", "2023-07-21"), ("2023-07-23", "2023-07-27")],
+        # 'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
+        # 'coop022x023':[('2023-07-17','2023-07-28')]
+    }
+)
+data = correct_data_with_excel(
+    fileName="coop_seek_and_find_v2.xlsx",
+    sheet_name=["coop014x015"],
+    data_collected=data,
+)
+
+report(data)
 plt.show()

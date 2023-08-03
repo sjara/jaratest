@@ -258,6 +258,11 @@ def correct_data_with_excel(
 
     # Go through eacry mice to correct every mice need it
     for mice in miceIDs:
+
+        # Avoid mice were not included in sheet_name
+        if not(mice in df_excel):
+            continue
+        
         df_excel_filt = pd.DataFrame(df_excel[mice][["Barrier Type", "Date"]])
         df_excel_filt.rename(columns={"Barrier Type": "BarrierType"}, inplace=True)
         # Drop dates empty
