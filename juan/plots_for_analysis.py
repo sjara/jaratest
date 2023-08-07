@@ -510,12 +510,12 @@ def report(
 
     ## TOTAL TRIALS PER SESSION PER BARRIER ##
     sessions = data_behavior["Date"].unique()
-    y_data = [len(data_behavior[data_behavior["Date"] == date]) for date in sessions]
+    y_data_total_trials = [len(data_behavior[data_behavior["Date"] == date]) for date in sessions]
 
     ## Scatter plot
     ax[0, 2].scatter(
         x=x_data,
-        y=y_data,
+        y=y_data_total_trials,
         c=(data_behavior_by_outcome.index.get_level_values(0)).map(lambda x: colors[x]),
         alpha=0.7,
     )
@@ -530,36 +530,36 @@ def report(
 
     ax[0, 2].set_ylabel("Total trials")
     ax[0, 2].set_xticks(ticks=np.unique(x_data), labels=barriers)
-    ax[0, 2].set_ylim(0, max(y_data) + (max(y_data) * 0.1))
+    ax[0, 2].set_ylim(0, max(y_data_total_trials) + (max(y_data_total_trials) * 0.1))
     ax[0, 2].set_xlim(0 - 1, len(barriers))
     ax[0, 2].set_title("Total trials per session")
 
     ## ACCUMULATED REWARDED TRIALS ##
-    y_data = [data_behavior_by_outcome.loc[barrier].sum() for barrier in barriers]
+    y_data_accumulated_rewarded_trials = [data_behavior_by_outcome.loc[barrier].sum() for barrier in barriers]
     ## Bar plot
     bars = ax[1, 0].bar(
         barriers,
-        y_data,
+        y_data_accumulated_rewarded_trials,
         label=barriers,
     )
     ax[1, 0].bar_label(bars, padding=3)
     ax[1, 0].set_title("Accumulated rewarded trials")
-    ax[1, 0].set_ylim(0, max(y_data) + (max(y_data) * 0.2))
+    ax[1, 0].set_ylim(0, max(y_data_accumulated_rewarded_trials) + (max(y_data_accumulated_rewarded_trials) * 0.2))
 
     ## ACCUMULATED TOTAL TRIALS ##
-    y_data = [
-        len(data_behavior.loc[data_behavior["BarrierType"] == barrier])
-        for barrier in barriers
-    ]
-    ## Bar plot
-    bars = ax[1, 1].bar(
-        barriers,
-        y_data,
-        label=barriers,
-    )
-    ax[1, 1].bar_label(bars, padding=3)
-    ax[1, 1].set_title("Accumulated total trials")
-    ax[1, 1].set_ylim(0, max(y_data) + (max(y_data) * 0.2))
+    # y_data = [
+    #     len(data_behavior.loc[data_behavior["BarrierType"] == barrier])
+    #     for barrier in barriers
+    # ]
+    # ## Bar plot
+    # bars = ax[1, 1].bar(
+    #     barriers,
+    #     y_data,
+    #     label=barriers,
+    # )
+    # ax[1, 1].bar_label(bars, padding=3)
+    # ax[1, 1].set_title("Accumulated total trials")
+    # ax[1, 1].set_ylim(0, max(y_data) + (max(y_data) * 0.2))
 
     ## TIME SPEND IN PORTS: TIME BETWEEN THE STARTER POKE AND THE LAST POKE OF A SUCCESSFULL TRIAL ##
 
@@ -596,7 +596,7 @@ data = collect_behavior_data(
     mice_data={
         "coop014x015": [("2023-07-17", "2023-07-21"), ("2023-07-23", "2023-07-27")],
         # 'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
-        # 'coop022x023':[('2023-07-17','2023-07-28')]
+        #'coop022x023':[('2023-07-29','2023-08-03')]
     }
 )
 data = correct_data_with_excel(
