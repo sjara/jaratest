@@ -587,23 +587,24 @@ def report(
     )
     ax[1, 2].legend()
     ax[1, 2].set_title("Time spent in ports")
+    ax[1, 2].set_xlabel("Time (sec)")
 
-    fig.suptitle(data_behavior["MiceID"][0])
+    fig.suptitle(f"{data_behavior['MiceID'][0]} \n {data_behavior['Date'].min()} => {data_behavior['Date'].max()} " )
     fig.tight_layout()
 
 
-# data = collect_behavior_data(
-#     mice_data={
-#         "coop014x015": [("2023-07-17", "2023-07-21"), ("2023-07-23", "2023-07-27")],
-#         # 'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
-#         #'coop022x023':[('2023-07-29','2023-08-03')]
-#     }
-# )
-# data = correct_data_with_excel(
-#     fileName="coop_seek_and_find_v2.xlsx",
-#     sheet_name=["coop014x015"],
-#     data_collected=data,
-# )
+data = collect_behavior_data(
+    mice_data={
+        "coop014x015": [("2023-07-17", "2023-07-21"), ("2023-07-23", "2023-07-27")],
+        # 'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
+        #'coop022x023':[('2023-07-29','2023-08-03')]
+    }
+)
+data = correct_data_with_excel(
+    fileName="coop_seek_and_find_v2.xlsx",
+    sheet_name=["coop014x015"],
+    data_collected=data,
+)
 
-# report(data)
-# plt.show()
+report(data)
+plt.show()
