@@ -265,6 +265,8 @@ def correct_data_with_excel(
         
         df_excel_filt = pd.DataFrame(df_excel[mice][["Barrier Type", "Date"]])
         df_excel_filt.rename(columns={"Barrier Type": "BarrierType"}, inplace=True)
+        df_excel_filt['BarrierType'] = df_excel_filt['BarrierType'].map(lambda x : x.lower().strip() if isinstance(x,str) else x)
+        #print(df_excel_filt['BarrierType'])
         # Drop dates empty
         df_excel_filt.dropna(subset="Date", inplace=True)
         # Convert dates in excel to the same date format as the sessions data
