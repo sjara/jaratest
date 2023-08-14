@@ -17,7 +17,7 @@ def filter_and_group(bins:int, data:pd.DataFrame, sessionLen:int) -> pd.DataFram
     """
 
     data.set_index(keys=["BarrierType", "MiceID"], inplace=True)
-    data_filtered = data[data["Outcome"] == 1]
+    data_filtered = data#[data["Outcome"] == 1]
     data_filtered_grouped = data_filtered.groupby(
         by=[
             "BarrierType",
@@ -82,7 +82,7 @@ def barplot_accu_rewards_time(data:pd.DataFrame):
 if __name__ == "__main__":
 
     ## DATA COLLECTION
-    data = collect_behavior_data(mice_data={'18':[('2023-07-20','2023-7-20')]})
+    data = collect_behavior_data(mice_data={'coop026x027':[('2023-08-11','2023-08-11')]})
     ## RUN
     data_filtered_grouped = filter_and_group(bins=1, data=data, sessionLen=60)
     barplot_accu_rewards_time(data_filtered_grouped)

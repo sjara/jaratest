@@ -123,9 +123,10 @@ def pct_rewarded_trials(
             )
 
             ax[i].set_xlabel(miceIds[i])
-            ax[i].set_xlim(0 - 1, max(x_data) + 1)
+            ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
             ax[i].set_xticks(ticks=np.unique(x_data), labels=barriers)
             ax[i].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 5))
+        ax[0].set_ylabel("Percentage rewarded trials")
 
     else:
         ## get all the barriers which will be plotted
@@ -202,6 +203,7 @@ def rewarded_trials(
         .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
         .sum()
     )
+    data_behavior_by_outcome.sort_index(level=0,inplace=True,ascending=False)
 
     miceIds = data_behavior_by_outcome.index.unique(0).to_list()
     number_of_mice = len(miceIds)
@@ -247,9 +249,9 @@ def rewarded_trials(
             )
 
             ax[i].set_xlabel(miceIds[i])
-            ax[i].set_ylabel("Rewarded trials")
             ax[i].set_xlim(locs[0][0] - 0.2, locs[0][-1] + 0.2)
             ax[i].set_yticks(np.arange(0, data_behavior_by_outcome.max(), 10))
+        ax[0].set_ylabel("Rewarded trials")
 
     else:
         ## set each point
@@ -581,7 +583,7 @@ def report(
     ax[1, 2].hist(
         x=data_per_barrier,
         label=barriers,
-        color=[np.random.rand(3), np.random.rand(3)],
+        color=[np.random.rand(3) for _i in barriers],
         histtype="stepfilled",
         alpha=0.5,
     )
@@ -593,18 +595,18 @@ def report(
     fig.tight_layout()
 
 
-data = collect_behavior_data(
-    mice_data={
-        "coop014x015": [("2023-07-17", "2023-07-21"), ("2023-07-23", "2023-07-27")],
-        # 'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
-        #'coop022x023':[('2023-07-29','2023-08-03')]
-    }
-)
-data = correct_data_with_excel(
-    fileName="coop_seek_and_find_v2.xlsx",
-    sheet_name=["coop014x015"],
-    data_collected=data,
-)
+# data = collect_behavior_data(
+#     mice_data={
+#         #"coop014x015": [("2023-07-17", "2023-07-21"), ("2023-07-23", "2023-07-27")],
+#         # 'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
+#         'coop022x023':[('2023-07-29','2023-08-09')]
+#     }
+# )
+# data = correct_data_with_excel(
+#     fileName="coop_seek_and_find_v2.xlsx",
+#     sheet_name=["coop022x023"],
+#     data_collected=data,
+# ) 
 
-report(data)
-plt.show()
+# report(data)
+# plt.show()
