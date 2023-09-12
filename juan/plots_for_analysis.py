@@ -54,7 +54,8 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
 def pct_rewarded_trials(
     data_behavior: pd.DataFrame,
     colors: list[str] = ["red", "blue"],
-    width_lines=0.3,
+    width_lines:float=0.3,
+    alpha:float=0.7,
     **kwargs,
 ):
     """_summary_:
@@ -106,7 +107,7 @@ def pct_rewarded_trials(
                 c=(data_one_pair_mice.index).map(
                     lambda x: colors[x]  # colors[0] if x == "solid" else colors[1]
                 ),
-                alpha=0.5,
+                alpha=alpha,
             )
 
             # Horizontal line to represent mean of points of both barriers
@@ -143,7 +144,7 @@ def pct_rewarded_trials(
             c=(data_behavior.index.get_level_values(1)).map(
                 lambda x: colors[x]  # colors[0] if x == "solid" else colors[1]
             ),
-            alpha=0.5,
+            alpha=alpha,
         )
 
         # Horizontal line to represent mean of points of both barriers
@@ -174,7 +175,8 @@ def rewarded_trials(
     data_behavior: pd.DataFrame,
     outcome: list[int] = [1],
     colors: list[str] = ["red", "blue"],
-    width_lines=0.2,
+    alpha:float =0.7,
+    width_lines:float=0.2,
 ):
     """_summary_:
     This categorical scatter plot is for analyze the number of trials between different barriers. The developer can filter by the outcome of preference.
@@ -221,7 +223,7 @@ def rewarded_trials(
                 c=(data_one_pair_mice.index.get_level_values(0)).map(
                     lambda x: colors[x]
                 ),
-                alpha=0.3,
+                alpha=alpha,
             )
             # This is for getting the positions of the x sticks in order to determine the limites of the lines to plot the mean
             locs = plt.xticks()
@@ -261,7 +263,7 @@ def rewarded_trials(
             c=(data_behavior_by_outcome.index.get_level_values(1)).map(
                 lambda x: colors[x]
             ),
-            alpha=0.3,
+            alpha=alpha,
         )
         # This is for getting the positions of the x sticks in order to determine the limits of the lines to plot the mean
         locs = plt.xticks()
@@ -595,18 +597,29 @@ def report(
     fig.tight_layout()
 
 
-# data = collect_behavior_data(
-#     mice_data={
-#         #"coop014x015": [("2023-07-17", "2023-07-21"), ("2023-07-23", "2023-07-27")],
-#         # 'coop016x017':[('2023-07-10','2023-07-14'),('2023-07-16','2023-07-21'),('2023-07-23','2023-07-27')],
-#         'coop022x023':[('2023-07-29','2023-08-09')]
-#     }
-# )
-# data = correct_data_with_excel(
-#     fileName="coop_seek_and_find_v2.xlsx",
-#     sheet_name=["coop022x023"],
-#     data_collected=data,
-# ) 
-
-# report(data)
-# plt.show()
+data = collect_behavior_data(
+    mice_data={
+        #"coop026x027": [("2023-08-27", "2023-09-07")]
+        #"coop024x025": [("2023-08-28", "2023-09-07")],
+        #'coop022x023':[('2023-07-29','2023-08-15')],
+        #'coop018x019':[('2023-08-17','2023-08-24')]
+## update evidence report
+        "coop012x013": [('2023-05-04', '2023-05-15')],
+        "coop014x015": [('2023-05-11', '2023-05-17'),('2023-06-04', '2023-06-16')],
+        "coop016x017": [('2023-05-12', '2023-05-17'),('2023-06-04','2023-06-16'), ('2023-08-23','2023-09-01')],
+        "coop018x019": [('2023-05-08', '2023-05-19')]
+## add evidence to dark vs light report
+        # "coop014x015": [('2023-05-11', '2023-05-17'),('2023-06-04', '2023-06-16')],
+        # "coop016x017": [('2023-05-12', '2023-05-17'),('2023-06-04','2023-06-16'), ('2023-08-23','2023-09-01')],
+        # "coop022x023": [('2023-08-08', '2023-08-15'),('2023-08-18', '2023-08-22')]
+    }
+)
+data.sort_values(by='MiceID',inplace=True)
+data = correct_data_with_excel(
+    fileName="coop_seek_and_find_v2_updated.xlsx",
+    sheet_name=["coop018x019",'coop012x013',"coop014x015","coop016x017"],
+    data_collected=data,
+)
+#report(data)
+pct_rewarded_trials(data)
+plt.show()
