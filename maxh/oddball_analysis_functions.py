@@ -22,14 +22,19 @@ from jaratoolbox import behavioranalysis
 
 
 
-def main_function(oneCell, session_type, timeRange):
+def load_data(oneCell, session_type, timeRange):
 
-    '''
+    """
     Loads a session from oneCell accoring to the 'session_type'. Creates variables spikeTimes and eventOnsetTimes and calls the 
     spikesanalysis.eventlocked_spiketimes() function to lock the spikes to the events. Creates the trialsEachCond array according to the frequencies of each trial
-    in the bdata. Finally, splits the trialsEachCond variable by its columns to seperate the conditions by standard and oddball. 
+    in the bdata. Splits the trialsEachCond variable by its columns to seperate the conditions by standard and oddball. 
+
+    Args:
+        oneCell: One cell from your database
+        session_type: (str) The session from your inforec you want to load.
+        timeRange: (list) The time around the stimulus you want to load. eg: [-0.3, 0.45]
     
-    '''
+    """
     if oneCell.get_session_inds(session_type) != []: #and oneCell.get_session_inds('lowFreq') != []:
         ephysData, bdata = oneCell.load(session_type)  
         spikeTimes = ephysData['spikeTimes']
@@ -52,11 +57,12 @@ def main_function(oneCell, session_type, timeRange):
         trialsEachCond = behavioranalysis.find_trials_each_type(frequencies_each_trial, array_of_frequencies)
 
 
-        # Extract column and reshape array for raster_plot function
+        # Extract column and reshape array.
         trialsLowFreq= trialsEachCond[:,0].reshape(-1,1) 
         trialsHighFreq = trialsEachCond[:,1].reshape(-1,1)
 
         return (spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial, trialsLowFreq, trialsHighFreq)
+
 
 def trials_before_oddball(oddballTrials):
         """
@@ -90,7 +96,7 @@ def combine_index_limits(spikeTimesFromEventOnset1, spikeTimesFromEventOnset2, i
 
 def combine_trials(trials1, trials2):
         """
-        Combine two trial arrays into one
+        Combine two trial arrays into one 2d array. 
 
         Args:
             trials1: (np.arry) standard trials before oddball
@@ -102,6 +108,38 @@ def combine_trials(trials1, trials2):
 
         return (tec.astype(bool))
 
+def prepare_plots(oneCell, timeRange, sessionType1, sessionType2, timeVec):
+    """
+    Outdated function. Only kept for old scripts that use it.
+    """
+    if oneCell.get_session_inds(sessionType2) != []:
+        # Load session, lock spikes to event, seperate trials into columns.
+        (spikeTimesHigh, trialIndexHigh, indexLimitsHigh, LowStd, HighOdd) = load_data(oneCell, sessionType1, timeRange)
+        (spikeTimesLow, trialIndexLow, indexLimitsLow, LowOdd, HighStd) = load_data(oneCell, sessionType2, timeRange)
+            
+
+        # Get standard trials before oddball trials
+        trialsBeforeOddLowStd = trials_before_oddball(HighOdd)       
+        trialsBeforeOddHighStd = trials_before_oddball(LowOdd)
+        
+
+        # Combine spike times and index limits of standard and oddball trials.
+        (combinedSpikeTimesHigh, combinedIndexLimitsHigh) = combine_index_limits(spikeTimesLow, spikeTimesHigh, indexLimitsLow, indexLimitsHigh)
+        (combinedSpikeTimesLow, combinedIndexLimitsLow) = combine_index_limits(spikeTimesHigh, spikeTimesLow, indexLimitsHigh, indexLimitsLow)
+        
+        
+        
+        # Combine trials of high freq before oddball and high freq oddball.
+        combinedTrialsHigh = combine_trials(trialsBeforeOddHighStd, HighOdd)
+
+        # Combine trials of low freq before oddball and low freq oddball.
+        combinedTrialsLow = combine_trials(trialsBeforeOddLowStd, LowOdd)
+
+        # Create spikeCountMat for psth
+        spikeCountMatHigh = spikesanalysis.spiketimes_to_spikecounts(combinedSpikeTimesHigh, combinedIndexLimitsHigh, timeVec)
+        spikeCountMatLow = spikesanalysis.spiketimes_to_spikecounts(combinedSpikeTimesLow, combinedIndexLimitsLow, timeVec)
+
+        return (combinedSpikeTimesHigh, combinedSpikeTimesLow, combinedIndexLimitsHigh, combinedIndexLimitsLow, combinedTrialsHigh, combinedTrialsLow, spikeCountMatHigh, spikeCountMatLow)
 
 
 def combine_sessions(oneCell, timeRange, sessionType1, sessionType2, timeVec):
@@ -121,8 +159,8 @@ def combine_sessions(oneCell, timeRange, sessionType1, sessionType2, timeVec):
     '''
     if oneCell.get_session_inds(sessionType2) != []:
         # Load session, lock spikes to event, seperate trials into columns.
-        (spikeTimesHigh, trialIndexHigh, indexLimitsHigh, LowStd, HighOdd) = main_function(oneCell, sessionType1, timeRange)
-        (spikeTimesLow, trialIndexLow, indexLimitsLow, LowOdd, HighStd) = main_function(oneCell, sessionType2, timeRange)
+        (spikeTimesHigh, trialIndexHigh, indexLimitsHigh, LowStd, HighOdd) = load_data(oneCell, sessionType1, timeRange)
+        (spikeTimesLow, trialIndexLow, indexLimitsLow, LowOdd, HighStd) = load_data(oneCell, sessionType2, timeRange)
             
 
         # Get standard trials before oddball trials
@@ -271,5 +309,110 @@ def create_labels(trialsEachCond):
     print(seconds)  # output: 75.0
 
 
+def compare_trial_count(trials1, trials2):
+    """
+    Compares and matches the length of two trial arrays.
+    """
+
+    trials1Matched = trials1
+    trials2Matched = trials2
+    
+    if len(trials1) > len(trials2):
+        #diff = abs(len(trials1) - len(trials2))
+        trials1Matched = trials1[:len(trials2)]
+    if len(trials2) > len(trials1):
+        #diff = abs(len(trials2) - len(trials1))
+        trials2Matched = trials2[:len(trials1)]
+
+    return trials1Matched, trials2Matched
 
 
+def find_sync_light_onsets(sync_light, invert=True, fixmissing=False, prepost=False):
+    """
+    Find the onsets in the array representing the synchronization light.
+    This function assumes the onsets are periodic (with randomness within 0.5T and 1.5T).
+    The function can also fix missing onsets.
+
+    Args:
+        sync_light (np.array): array representing the synchronization light trace.
+                               Values when the light is on are usually lower than baseline,
+                               so use invert=True to invert the trace if needed.
+        invert (bool): if True, the sync_light trace is inverted before processing.
+        fixmissing (bool): if True, missing onsets are added to the output.
+        prepost (bool): if True, assume there is a pre and post pulse of longer duration,
+                        and ignore these in the final list.
+
+    Returns:
+        fixed_sync_light_onset (np.array): array of booleans indicating the onsets.
+    """
+    PRE_POST_DURATION_THRESHOLD = 20  # In units of frames. HARCODED! (should be calculated)
+
+    # -- Find changes in synch light --
+    sync_light_diff = np.diff(sync_light, prepend=sync_light[0])
+    if invert:
+        sync_light_diff = -sync_light_diff
+
+    sync_light_threshold = 0.2*np.abs(sync_light_diff).max()
+    sync_light_onset = sync_light_diff > sync_light_threshold
+    sync_light_offset = sync_light_diff < -sync_light_threshold
+    sync_light_onset_ind = np.where(sync_light_onset)[0]
+    sync_light_offset_ind = np.where(sync_light_offset)[0]
+
+    # -- Find period of sync_light_onset --
+    sync_light_onset_diff = np.diff(sync_light_onset_ind)  # In units of frames
+    expected_onset_period = np.median(sync_light_onset_diff)  # In units of (float) frames
+
+    # -- Remove repeated onsets --
+    onset_freq_upper_threshold = int(1.5 * expected_onset_period)
+    onset_freq_lower_threshold = int(0.5 * expected_onset_period)
+    repeated_onsets = sync_light_onset_diff < onset_freq_lower_threshold
+    repeated_onsets_ind = np.where(repeated_onsets)[0]
+    fixed_sync_light_onset = sync_light_onset.copy()
+    fixed_sync_light_onset[sync_light_onset_ind[repeated_onsets_ind+1]] = False
+
+
+    fixed_sync_light_onset_ind= np.where(fixed_sync_light_onset)[0]
+    
+
+
+    if prepost:
+        sync_light_midpoint = (sync_light.max()+sync_light.min())/2
+        if fixed_sync_light_onset_ind[-1] > sync_light_offset_ind[-1]:
+            sync_light_offset_ind = np.append(sync_light_offset_ind, len(sync_light)-1)
+            nOffsets = len(sync_light_offset_ind)
+        first_sync_duration = sync_light_offset_ind[0] - fixed_sync_light_onset_ind[0]
+        last_sync_duration = sync_light_offset_ind[-1] - fixed_sync_light_onset_ind[-1]
+        if first_sync_duration > PRE_POST_DURATION_THRESHOLD:
+            print('Found pre sync pulse. This pulse will be ignore in the final list.')
+            fixed_sync_light_onset[fixed_sync_light_onset_ind[0]] = False
+            fixed_sync_light_onset_ind = fixed_sync_light_onset_ind[1:]
+        else:
+            # Raise ValueError exception
+            raise ValueError('No pre sync pulse found.')
+        if last_sync_duration > PRE_POST_DURATION_THRESHOLD:
+            print('Found post sync pulse. This pulse will be ignore in the final list.')
+            fixed_sync_light_onset[fixed_sync_light_onset_ind[-1]] = False
+            fixed_sync_light_onset_ind = fixed_sync_light_onset_ind[:-1]
+        else:
+            # Raise ValueError exception
+            raise ValueError('No post sync pulse found.')
+
+    fixed_sync_light_onset_diff = np.diff(fixed_sync_light_onset_ind)
+
+    # -- Fix missing onsets --
+    if fixmissing:
+        missing_next_onsets = fixed_sync_light_onset_diff > onset_freq_upper_threshold
+        missing_next_onsets_ind = np.where(missing_next_onsets)[0]
+        for indm, missing_onset_ind in enumerate(missing_next_onsets_ind):
+            onset_diff = fixed_sync_light_onset_diff[missing_onset_ind]
+            n_missing = int(np.round(onset_diff / expected_onset_period))-1
+            #print(n_missing)
+            last_onset_ind = fixed_sync_light_onset_ind[missing_onset_ind]
+            next_onset_ind = fixed_sync_light_onset_ind[missing_onset_ind+1]
+            period_missing = (next_onset_ind - last_onset_ind)//(n_missing+1)
+            new_onset_inds = last_onset_ind + np.arange(1, n_missing+1)*period_missing
+            #print([last_onset_ind, next_onset_ind])
+            #print(new_onset_inds)
+            fixed_sync_light_onset[new_onset_inds] = True
+
+    return fixed_sync_light_onset
