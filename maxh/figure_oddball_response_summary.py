@@ -14,17 +14,48 @@ from jaratoolbox import settings
 from jaratoolbox import celldatabase
 from jaratoolbox import extraplots
 from jaratoolbox import colorpalette as cp
+import studyparams
 
-SAVE_FIGURE = 0
+SAVE_FIGURE = 1
 
 subject = 'allMice'
 
+"""
+Choose which database type you're using.
+1 = database with all trials.
+2 = database with only nonrunning trials.
+3 = database with only running trials.
+"""
+databaseType = 1
 
-# Change to cellDB 
-#filename = '/home/jarauser/Max/allAcidCombined.h5'
-#filename = '/home/jarauser/Max/acid009AndAcid010WithChord.h5'
-#filename = '/home/jarauser/Max/acid010WithBaselineAndChord.h5'
-#filename = '/home/jarauser/Max/acid010CalculationsRunningRemoved.h5'
+
+"""
+Choose what criteria you want for cell selection.
+1 = baseline firing rate of standard stimuli is less than firing rate during standard stimuli (saline)
+2 = baseline firing rate of oddball stimuli is less than firing rate during oddball stimuli (saline)
+3 = baseline firing rate of standard stimuli is less than firing rate during standard stimuli (pre)
+
+"""
+cell_selection_type = 1
+
+"""
+Cells are also selected by if the standard stimuli firing rate is above the firingThreshold under pre, saline, and DOI.
+"""
+firingThreshold = 5
+
+
+if databaseType == 1:
+    nameType = 'allTrials'
+if databaseType == 2:
+    nameType = 'nonRunningTrials'
+if databaseType == 3:
+    nameType = 'runningTrials'
+
+
+dbPath = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME)
+#filename = os.path.join(dbPath, f'{subject}_puretone_and_oddball_calcs_{nameType}')
+
+
 filename = '/home/jarauser/Max/allAcidCombined_20230825.h5'
 celldb = celldatabase.load_hdf(filename)
 
@@ -37,8 +68,6 @@ figsToPlot = [1, 1, 1, 1]
 fig = plt.gcf()
 gsMain = gs.GridSpec(1, np.sum(figsToPlot), figure = fig)
 gsMain.update(top=0.90, bottom=0.2, left=0.1, right=0.95, wspace=0.3, hspace=0.075)
-#gsMain.update(top=0.95, bottom=0.1, left=0.35, right=0.95, wspace=0.3, hspace=0.075)
-#plt.subplots_adjust(wspace=0.5)
 barLoc = np.array([-0.6, 0, 0.6])
 
 colors = {'saline':cp.TangoPalette['SkyBlue2'], 'doi': cp.TangoPalette['ScarletRed1']}
@@ -125,47 +154,52 @@ baselineLowStandardFiringRatePre = celldb['baselineLowStandardFiringRatePre']
 baselineHighOddFiringRatePre = celldb['baselineHighOddFiringRatePre']
 baselineLowOddFiringRatePre = celldb['baselineLowOddFiringRatePre']
 
+
+if cell_selection_type == 1:
+    selectionUp = (baselineUpStandardFiringRateSaline < upStandSpikesAvgSalineColumn)
+    selectionDown = (baselineDownStandardFiringRateSaline < downStandSpikesAvgSalineColumn)
+    selectionHigh = (baselineHighStandardFiringRateSaline < highStandSpikesAvgSalineColumn)
+    selectionLow = (baselineLowStandardFiringRateSaline < lowStandSpikesAvgSalineColumn)
+    selectionName = 'selection01'
+
+if cell_selection_type == 2:
+    selectionUp = (baselineUpOddFiringRateSaline < upOddSpikesAvgSalineColumn)
+    selectionDown = (baselineDownOddFiringRateSaline < downOddSpikesAvgSalineColumn)
+    selectionHigh = (baselineHighOddFiringRateSaline < highOddSpikesAvgSalineColumn)
+    selectionLow = (baselineLowOddFiringRateSaline < lowOddSpikesAvgSalineColumn)
+    selectionName = 'selection02'
+
+if cell_selection_type == 3:
+    selectionUp = (baselineUpStandardFiringRatePre < upStandSpikesAvgPreColumn)
+    selectionDown = (baselineDownStandardFiringRatePre < downStandSpikesAvgPreColumn)
+    selectionHigh = (baselineHighStandardFiringRatePre < highStandSpikesAvgPreColumn)
+    selectionLow = (baselineLowStandardFiringRatePre < lowStandSpikesAvgPreColumn)
+    selectionName = 'selection03'
+
 # Cell Selection
-
-
-firingThreshold = 5
-'''
-selectedCellsUp = ((upOddSpikesAvgSalineColumn > firingThreshold) &
-                   (upOddSpikesAvgDOIColumn > firingThreshold) &
-                   ((baselineUpOddFiringRateSaline < upOddSpikesAvgSalineColumn))) #& (responseMagnitude > 0)
-
-selectedCellsDown = ((downOddSpikesAvgSalineColumn > firingThreshold) &
-                     (downOddSpikesAvgDOIColumn > firingThreshold) &
-                     (baselineUpOddFiringRateSaline < downOddSpikesAvgSalineColumn))
-'''
 
 selectedCellsUp = ((upStandSpikesAvgSalineColumn > firingThreshold) &
                    (upStandSpikesAvgDOIColumn > firingThreshold) &
                    (upStandSpikesAvgPreColumn > firingThreshold) &
-                   #((baselineUpStandardFiringRatePre < upStandSpikesAvgPreColumn)))
-                   ((baselineUpStandardFiringRateSaline < upStandSpikesAvgSalineColumn))) #&
-                   #(baselineUpOddFiringRateSaline < upOddSpikesAvgSalineColumn)) #& (responseMagnitude > 0)
+                   selectionUp)
 
 selectedCellsDown = ((downStandSpikesAvgSalineColumn > firingThreshold) &
                      (downStandSpikesAvgDOIColumn > firingThreshold) &
                      (downStandSpikesAvgPreColumn > firingThreshold) &
-                     #((baselineDownStandardFiringRatePre < downStandSpikesAvgPreColumn)))
-                     ((baselineDownStandardFiringRateSaline < downStandSpikesAvgSalineColumn))) #&
-                     #(baselineDownOddFiringRateSaline < downOddSpikesAvgSalineColumn))
+                     selectionDown)
+
 
 selectedCellsHigh = ((highStandSpikesAvgSalineColumn > firingThreshold) &
                    (highStandSpikesAvgDOIColumn > firingThreshold) &
                    (highStandSpikesAvgPreColumn > firingThreshold) &
-                   #((baselineHighStandardFiringRatePre < highStandSpikesAvgPreColumn)))
-                   ((baselineHighStandardFiringRateSaline < highStandSpikesAvgSalineColumn))) #& 
-                   #(baselineHighOddFiringRateSaline < highOddSpikesAvgSalineColumn)) #& (responseMagnitude > 0)
+                   selectionHigh)
+
 
 selectedCellsLow = ((lowStandSpikesAvgSalineColumn > firingThreshold) &
                      (lowStandSpikesAvgDOIColumn > firingThreshold) &
                      (lowStandSpikesAvgPreColumn > firingThreshold) &
-                     #((baselineLowStandardFiringRatePre < lowStandSpikesAvgPreColumn)))
-                     ((baselineLowStandardFiringRateSaline < lowStandSpikesAvgSalineColumn))) #& 
-                     #(baselineLowOddFiringRateSaline < lowOddSpikesAvgSalineColumn))
+                     selectionLow)
+
 
                                   
 
@@ -399,8 +433,11 @@ print(f'Pre to Saline p = {lowP1}\n')
 print(f'Saline to DOI p = {lowP2}\n')
 
 
-figName = f'{subject}_comparison_oddball_index'
 if SAVE_FIGURE:
-    extraplots.save_figure(figName, 'png', [12, 10], outputDir='/home/jarauser/Max/newFigs/', facecolor='w')
+    figName = f'{subject}_comparison_oddball_index_{nameType}_{selectionName}'
+    figurePath = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/')
+    if not os.path.exists(figurePath):
+        os.makedirs(figurePath)
+    extraplots.save_figure(figName, 'png', [12, 10], outputDir= figurePath, facecolor='w')
 elif SAVE_FIGURE == 0:
     plt.show()

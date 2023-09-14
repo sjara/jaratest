@@ -36,10 +36,10 @@ Choose which database to generate.
 
 Selection only changes oddball_sequence paradigm trials.
 """
-databaseType = 3
+databaseType = 1
 
 
-subjects = ['acid010']
+subjects = ['acid006', 'acid007', 'acid009']
 #subjects = studyparams.SUBJECTS
 for subject in subjects:
     dbPath = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME)

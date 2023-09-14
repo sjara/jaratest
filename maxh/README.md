@@ -9,19 +9,25 @@ You need to run the database generation scripts in the order listed here, as mos
 - `database_generation.py`: Uses the inforec, ephys data, and behavior data to create a database of cells. Creates `celldb_SUBJECT.h5`
 - `database_cell_locations.py`: **UNFINISHED** 
 - `database_generate_running_boolean.py`: Generates a 3d numpy array of running or nonrunning trials. 
+    - Currently only gets trials for oddball_sequence paradigm sessions.
     - Creates either: 
         - `SUBJECT_runningBooleanArrayNon.npy` 
         - `SUBJECT_runningBooleanArrayRun.npy`
     - You will need to run it twice: once for running and once for nonrunning.
 - `database_puretone_and_oddball_calcs.py`: 
     - Calculates statistics for puretone and oddball trials. Can be used for all trials, running trials, or nonrunning trials.
-    - Run each animal individually, takes around ~22min. for each. 
+    - Run each animal individually, takes around ~22min. for each.
+    - Selecting for running or nonrunning currently only changes oddball_sequence calculations. 
     - Creates either: 
         - `SUBJECT_puretone_and_oddball_calcs_all.h5` 
         - `SUBJECT_puretone_and_oddball_calcs_nonRunning.h5`
         - `SUBJECT_puretone_and_oddball_calcs_running.h5`
     - You will need to run it twice: once for running and once for nonrunning. (Optional third time for all trials.)
-- `database_combine_subjects.py`: **UNFINISHED** Combines the databases of all subjects into one database. 
+- `database_combine_subjects.py`: **UNFINISHED** Combines the databases of all subjects into one database.
+    - Creates either:
+        - `allMice_puretone_and_oddball_calcs_all.h5` 
+        - `allMice_puretone_and_oddball_calcs_nonRunning.h5`
+        - `allMice_puretone_and_oddball_calcs_running.h5`
 
 # Database contents
 
@@ -107,6 +113,11 @@ $$\frac{(OddSpikesAvgFiringRate - StandardSpikesAvgFiringRate)}{(OddSpikesAvgFir
 
 # Figures
 - `figure_oddball_response_summary.py`: generates a figure showing the change in oddball enhancement effect between each injection type for each session type.
+    - Parameters to change figure results:
+        - `database_type`: Changes which database is loaded.
+        - `cell_selection_type`: Changes the criteria for selecting cells to use.
+        - `firingThreshold`: The minimum threshold of firing rate for selecting cells.
+ 
 
 # Extras
 - `make_acid_oddball_cell_reports.py`: generates figures for each cell that has raster and psth plots for each session type and injection.
@@ -120,14 +131,3 @@ $$\frac{(OddSpikesAvgFiringRate - StandardSpikesAvgFiringRate)}{(OddSpikesAvgFir
 - `test_load_facemap_data.py`: loads and plots the proc file from facemap and compares it to behavior data.
 - `test_sync_light_function.py`: loads and plots proc file after sync light fixes have been made.
 
-
-
-
-
-Order:
- 1. database_generartion
- 2. database_cell_locations
- 2. database_puretone_and_oddball_calcs
- 3. database_generate_running_boolean
- 4. database_running_calcs
- 5. database_nonrunning_calcs
