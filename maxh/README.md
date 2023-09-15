@@ -14,6 +14,7 @@ You need to run the database generation scripts in the order listed here, as mos
         - `SUBJECT_runningBooleanArrayNon.npy` 
         - `SUBJECT_runningBooleanArrayRun.npy`
     - You will need to run it twice: once for running and once for nonrunning.
+    - **TO DO:** Handle data for sessions that do not have sync light data. Script currently places an array of [0] instead of a trial boolean array for these sessions.
 - `database_puretone_and_oddball_calcs.py`: 
     - Calculates statistics for puretone and oddball trials. Can be used for all trials, running trials, or nonrunning trials.
     - Run each animal individually, takes around ~22min. for each.
@@ -23,7 +24,8 @@ You need to run the database generation scripts in the order listed here, as mos
         - `SUBJECT_puretone_and_oddball_calcs_nonRunning.h5`
         - `SUBJECT_puretone_and_oddball_calcs_running.h5`
     - You will need to run it twice: once for running and once for nonrunning. (Optional third time for all trials.)
-- `database_combine_subjects.py`: **UNFINISHED** Combines the databases of all subjects into one database.
+    - **TO DO:** Handle trials that do not have running trial boolean array data in the loaded .npy for running/nonrunning.
+- `database_combine_subjects.py`: Combines the databases of all subjects into one database.
     - Creates either:
         - `allMice_puretone_and_oddball_calcs_all.h5` 
         - `allMice_puretone_and_oddball_calcs_nonRunning.h5`
@@ -107,9 +109,6 @@ $$\frac{(OddSpikesAvgFiringRate - StandardSpikesAvgFiringRate)}{(OddSpikesAvgFir
             - Only used for making cell reports.
             - Returns: combinedTrials
 
-
-
-        
 
 # Figures
 - `figure_oddball_response_summary.py`: generates a figure showing the change in oddball enhancement effect between each injection type for each session type.
