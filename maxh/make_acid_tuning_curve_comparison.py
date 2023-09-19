@@ -20,7 +20,7 @@ baselineDuration = timeRangeBaseline[1] - timeRangeBaseline[0]
 stimDuration = timeRangeStim[1] - timeRangeStim[0]
 
 
-subject = 'acid006'
+subject = 'acid010'
 
 inforecFile = os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py')
 
@@ -28,11 +28,11 @@ celldb = celldatabase.generate_cell_database(inforecFile)
 dbPath = os.path.join(settings.DATABASE_PATH ,f'celldb_{subject}.h5')
 
 # Add info for loading a specific cell.
-cellDict = {'subject' : 'acid006',
-            'date' : '2023-03-22',
+cellDict = {'subject' : 'acid010',
+            'date' : '2023-08-07',
             'pdepth' : 3000,
             'egroup' : 0,
-            'cluster' : 431}
+            'cluster' : 104}
 
 cellInd, dbRow = celldatabase.find_cell(celldb, **cellDict)
 oneCell = ephyscore.Cell(dbRow)
