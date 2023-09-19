@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gs
-import main_function as max
+import oddball_analysis_functions as odbl
 from jaratoolbox import celldatabase
 from jaratoolbox import settings
 from jaratoolbox import ephyscore
@@ -14,7 +14,7 @@ from jaratoolbox import behavioranalysis
 import scipy.optimize
 import matplotlib
 
-subject = 'acid006'
+subject = 'acid010'
 
 # Set to True if want to load one cell. Defaults to loading first cell unless cellDict is complete.
 oneFigure = False
@@ -32,7 +32,7 @@ dbPath = os.path.join(settings.DATABASE_PATH ,f'celldb_{subject}.h5')
 
 celldb = celldatabase.generate_cell_database(inforecFile)
 # Used to load specific recording session dates.
-celldb = celldb.query("date == '2023-05-30'")
+celldb = celldb.query("date == '2023-08-22'")
 figureCount = 1
 figureTotal = 0
 
@@ -93,7 +93,7 @@ else:
         
 
         if oneCell.get_session_inds('preHighFreq') != []:
-            (combinedSpikeTimesHighPre, combinedSpikeTimesLowPre, combinedIndexLimitsHighPre, combinedIndexLimitsLowPre, combinedTrialsHighPre, combinedTrialsLowPre, spikeCountMatHighPre, spikeCountMatLowPre ) = max.prepare_plots(oneCell, timeRange, 'preHighFreq', 'preLowFreq', timeVec)
+            (combinedSpikeTimesHighPre, combinedSpikeTimesLowPre, combinedIndexLimitsHighPre, combinedIndexLimitsLowPre, combinedTrialsHighPre, combinedTrialsLowPre, spikeCountMatHighPre, spikeCountMatLowPre ) = odbl.prepare_plots(oneCell, timeRange, 'preHighFreq', 'preLowFreq', timeVec)
             
             # Raster plot of high frequency
             colorsEachCond = ['#39b5c4', '#f04158']
@@ -137,7 +137,7 @@ else:
 
         if oneCell.get_session_inds('preFM_Up') != []: #and oneCell.get_session_inds('lowFreq') != []:
 
-            (combinedSpikeTimesDownPre, combinedSpikeTimesUpPre, combinedIndexLimitsDownPre, combinedIndexLimitsUpPre, combinedTrialsDownPre, combinedTrialsUpPre, spikeCountMatDownPre, spikeCountMatUpPre ) = max.prepare_plots(oneCell, timeRange, 'preFM_Down', 'preFM_Up', timeVec)
+            (combinedSpikeTimesDownPre, combinedSpikeTimesUpPre, combinedIndexLimitsDownPre, combinedIndexLimitsUpPre, combinedTrialsDownPre, combinedTrialsUpPre, spikeCountMatDownPre, spikeCountMatUpPre ) = odbl.prepare_plots(oneCell, timeRange, 'preFM_Down', 'preFM_Up', timeVec)
 
 
             # Raster plot of Down Sweep
@@ -183,7 +183,7 @@ else:
         
         # Post Saline
         if oneCell.get_session_inds('salineLowFreq') != []:
-            (combinedSpikeTimesHighSaline, combinedSpikeTimesLowSaline, combinedIndexLimitsHighSaline, combinedIndexLimitsLowSaline, combinedTrialsHighSaline, combinedTrialsLowSaline, spikeCountMatHighSaline, spikeCountMatLowSaline ) = max.prepare_plots(oneCell, timeRange, 'salineHighFreq', 'salineLowFreq', timeVec)
+            (combinedSpikeTimesHighSaline, combinedSpikeTimesLowSaline, combinedIndexLimitsHighSaline, combinedIndexLimitsLowSaline, combinedTrialsHighSaline, combinedTrialsLowSaline, spikeCountMatHighSaline, spikeCountMatLowSaline ) = odbl.prepare_plots(oneCell, timeRange, 'salineHighFreq', 'salineLowFreq', timeVec)
 
             # Raster plot of high frequency
             colorsEachCond = ['#39b5c4', '#f04158']
@@ -226,7 +226,7 @@ else:
 
 
         if oneCell.get_session_inds('salineFM_Up') != []:
-            (combinedSpikeTimesDownSaline, combinedSpikeTimesUpSaline, combinedIndexLimitsDownSaline, combinedIndexLimitsUpSaline, combinedTrialsDownSaline, combinedTrialsUpSaline, spikeCountMatDownSaline, spikeCountMatUpSaline ) = max.prepare_plots(oneCell, timeRange, 'salineFM_Down', 'salineFM_Up', timeVec)
+            (combinedSpikeTimesDownSaline, combinedSpikeTimesUpSaline, combinedIndexLimitsDownSaline, combinedIndexLimitsUpSaline, combinedTrialsDownSaline, combinedTrialsUpSaline, spikeCountMatDownSaline, spikeCountMatUpSaline ) = odbl.prepare_plots(oneCell, timeRange, 'salineFM_Down', 'salineFM_Up', timeVec)
 
             # Raster plot of Down Sweep
             colorsEachCond = ['#39b5c4', '#f04158']
@@ -270,7 +270,7 @@ else:
 
         # Post DOI
         if oneCell.get_session_inds('doiLowFreq') != []:
-            (combinedSpikeTimesHighDoi, combinedSpikeTimesLowDoi, combinedIndexLimitsHighDoi, combinedIndexLimitsLowDoi, combinedTrialsHighDoi, combinedTrialsLowDoi, spikeCountMatHighDoi, spikeCountMatLowDoi ) = max.prepare_plots(oneCell, timeRange, 'doiHighFreq', 'doiLowFreq', timeVec)
+            (combinedSpikeTimesHighDoi, combinedSpikeTimesLowDoi, combinedIndexLimitsHighDoi, combinedIndexLimitsLowDoi, combinedTrialsHighDoi, combinedTrialsLowDoi, spikeCountMatHighDoi, spikeCountMatLowDoi ) = odbl.prepare_plots(oneCell, timeRange, 'doiHighFreq', 'doiLowFreq', timeVec)
 
             # Raster plot of high frequency
             colorsEachCond = ['#39b5c4', '#f04158']
@@ -313,7 +313,7 @@ else:
 
 
         if oneCell.get_session_inds('doiFM_Up') != []:
-            (combinedSpikeTimesDownDoi, combinedSpikeTimesUpDoi, combinedIndexLimitsDownDoi, combinedIndexLimitsUpDoi, combinedTrialsDownDoi, combinedTrialsUpDoi, spikeCountMatDownDoi, spikeCountMatUpDoi ) = max.prepare_plots(oneCell, timeRange, 'doiFM_Down', 'doiFM_Up', timeVec)
+            (combinedSpikeTimesDownDoi, combinedSpikeTimesUpDoi, combinedIndexLimitsDownDoi, combinedIndexLimitsUpDoi, combinedTrialsDownDoi, combinedTrialsUpDoi, spikeCountMatDownDoi, spikeCountMatUpDoi ) = odbl.prepare_plots(oneCell, timeRange, 'doiFM_Down', 'doiFM_Up', timeVec)
 
             # Raster plot of Down Sweep
             colorsEachCond = ['#39b5c4', '#f04158']

@@ -3,7 +3,6 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gs
-import main_function as max
 from jaratoolbox import celldatabase
 from jaratoolbox import settings
 from jaratoolbox import ephyscore
@@ -14,7 +13,7 @@ from jaratoolbox import behavioranalysis
 import scipy.optimize
 import matplotlib
 
-subject = 'acid007'
+subject = 'acid010'
 
 # Set to True if want to load one cell. Defaults to loading first cell unless cellDict is complete.
 oneFigure = False
@@ -32,7 +31,7 @@ dbPath = os.path.join(settings.DATABASE_PATH ,f'celldb_{subject}.h5')
 
 celldb = celldatabase.generate_cell_database(inforecFile)
 # Used to load specific recording session dates.
-celldb = celldb.query("date == '2023-05-17'")
+#celldb = celldb.query("date == '2023-05-17'")
 figureCount = 1
 figureTotal = 0
 
@@ -196,14 +195,14 @@ for indRow, dbRow in celldb.iterrows():
 
         #mng = plt.get_current_fig_manager()
         #mng.full_screen_toggle()
-        #plt.show()
+        plt.show()
         figDirectory = os.path.join(settings.FIGURES_DATA_PATH, f'{subject}/{dbRow.date}/combined/' 'freq_tuning')
         if not os.path.exists(figDirectory):
             os.makedirs(figDirectory)
         figName= f'{figureCount}_{subject}_{dbRow.date}_{dbRow.maxDepth}um_c{dbRow.cluster}_combined_freqTuning.png'
         fileName = os.path.join(figDirectory, figName)
 
-        plt.savefig(fileName, format='png')
+        #plt.savefig(fileName, format='png')
         print(f'saving image {figName}')
         figureCount+=1
     
