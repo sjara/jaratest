@@ -48,8 +48,10 @@ for nSub in range(len(subject)):
         rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
         leftChoice = bdata['choice'] == bdata.labels['choice']['left']
         rightChoice = bdata['choice'] == bdata.labels['choice']['right']
-        noChoice = bdata['choice'] == bdata.labels['choice']['none']
         valid = bdata['choice'] != bdata.labels['choice']['none']
+        noChoice = bdata['choice'] == bdata.labels['choice']['none']
+        earlyLick = bdata['outcome'] == bdata.labels['outcome']['falseAlarm']
+        noChoice = noChoice & ~earlyLick
         leftCorrect = leftTrials & leftChoice
         leftError = leftTrials & rightChoice
         leftInvalid = leftTrials & noChoice
@@ -58,13 +60,14 @@ for nSub in range(len(subject)):
         rightInvalid = rightTrials & noChoice
         rightPercentCorrect = round(sum(rightCorrect)/sum(rightTrials & valid)*100,2)
         leftPercentCorrect = round(sum(leftCorrect)/sum(leftTrials & valid)*100,2)
-        whichFeature = bdata.labels['relevantFeature'][bdata['relevantFeature'][-1]]
+        #whichFeature = bdata.labels['relevantFeature'][bdata['relevantFeature'][-1]]
         print('# Responded Trials: {}'.format(sum(valid)))
         print('% Right Correct: {}'.format(rightPercentCorrect))
         print('% Left Correct: {}'.format(leftPercentCorrect))
         print('# Right Errors: {}'.format(sum(rightError)))
         print('# Left Errors: {}'.format(sum(leftError)))
         print('# of noChoice: {}'.format(np.sum(noChoice)))
+        print('# of Early Licks: {}'.format(np.sum(earlyLick)))
     else:
         print('# Licks L: {}'.format(numLicksL))
         print('# Licks R: {}'.format(numLicksR))
