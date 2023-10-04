@@ -253,8 +253,8 @@ def correct_data_with_excel(
     ## This column will be replace with the excel
     data_collected.drop(["BarrierType"], axis=1, inplace=True)
 
-    df_excel = pd.read_excel(io=fileName, sheet_name=sheet_name, **kwargs)
     miceIDs = data_collected["MiceID"].unique()
+    df_excel = pd.read_excel(io=fileName, sheet_name=sheet_name, **kwargs)
 
     # Go through eacry mice to correct every mice need it
     for mice in miceIDs:

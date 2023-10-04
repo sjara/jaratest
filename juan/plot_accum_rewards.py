@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from datetime import date
 from load_behavior_data import collect_behavior_data
 
 
