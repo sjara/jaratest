@@ -1,17 +1,20 @@
-from matplotlib import patches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from load_behavior_data import collect_behavior_data, correct_data_with_excel
 
-def create_legend(unique_elements:list, colors:dict) -> list:
+pd.options.mode.chained_assignment = None
+
+
+def create_legend(unique_elements: list, colors: dict) -> list:
     patches_list = list()
     for i in unique_elements:
-        #patch = patches.Patch(color=colors[i], label=f'{i}')
-        patch = plt.scatter([], [], color=colors[i], marker='o', label=i)
+        # patch = patches.Patch(color=colors[i], label=f'{i}')
+        patch = plt.scatter([], [], color=colors[i], marker="o", label=i)
         patches_list.append(patch)
-    return patches_list   
+    return patches_list
+
 
 def barplot_accu_rewards_time(data: pd.DataFrame):
     """_summary_:
@@ -426,7 +429,7 @@ def performance_across_time(data_behavior: pd.DataFrame):
 
     miceIds = data_behavior["MiceID"].unique()
     number_of_mice = len(miceIds)
-    fig, ax = plt.subplots(number_of_mice, 1, sharey=True)
+    fig, ax = plt.subplots(number_of_mice, 1, sharey=True, figsize=(10, 6))
 
     # Colors for barriers
     possible_barriers = data_behavior["BarrierType"].unique()
@@ -434,7 +437,7 @@ def performance_across_time(data_behavior: pd.DataFrame):
 
     ## limit dataframe to the columns we need for comfort
     data_behavior = data_behavior[["MiceID", "Date", "BarrierType", "Percent rewarded"]]
-    
+
     ## Reduce all the session to only one row per session
     data_behavior.drop_duplicates(subset=["MiceID", "Date"], inplace=True)
     ## Set the index for mice selection for each graph
@@ -456,21 +459,33 @@ def performance_across_time(data_behavior: pd.DataFrame):
             barriers = data_one_pair_mice.index.unique().to_list()
 
             ## convert every label to a position in x-axis
-            x_data = [day for day in range(1, len(dates) + 1)]
+            x_data = [(day, dates[day - 1]) for day in range(1, len(dates) + 1)]
 
             ax[i].scatter(
-                x=x_data,
+                x=[i[0] for i in x_data],
                 y=data_one_pair_mice["Percent rewarded"].values,
                 c=(data_one_pair_mice.index).map(
                     lambda x: colors[x]  # colors[0] if x == "solid" else colors[1]
                 ),
             )
+            ## Here I create the line to connect the points discriminating the point
+            ## according to the barrier. I take care that the line is draw in the correct days
+            for barrier in barriers:
+                ax[i].plot(
+                    [
+                        i[0]
+                        for i in x_data
+                        if i[1] in data_one_pair_mice.loc(axis=0)[barrier]["Date"].values
+                    ],
+                    data_one_pair_mice.loc(axis=0)[barrier]["Percent rewarded"].values,
+                    color=colors[barrier],
+                )
 
             # custom_labels= {'perforated_10_mm': 'perf\n_10_mm', 'perforated_5_mm': 'perf\n_5_mm', "no barrier":"no\nbarrier"}
             # barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
             ax[i].set_xlabel(miceIds[i])
-            ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
-            ax[i].set_xticks(ticks=x_data)
+            #ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
+            ax[i].set_xticks(ticks=[i[0] for i in x_data])
             ax[i].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
             ax[i].legend(handles=create_legend(barriers, colors))
 
@@ -484,19 +499,33 @@ def performance_across_time(data_behavior: pd.DataFrame):
         dates = sorted(set(data_behavior["Date"].values.tolist()))
 
         ## convert every label to a position in x-axis
-        x_data = [day for day in range(1, len(dates) + 1)]
+        ## I save the date and it's corresponding day number for future use
+        x_data = [(day, dates[day - 1]) for day in range(1, len(dates) + 1)]
+        # print(data_behavior)
 
         ax.scatter(
-            x=x_data,
+            x=[i[0] for i in x_data],
             y=data_behavior["Percent rewarded"].values,
             c=(data_behavior.index.get_level_values(1)).map(lambda x: colors[x]),
         )
+        ## Here I create the line to connect the points discriminating the point
+        ## according to the barrier. I take care that the line is draw in the correct days
+        for barrier in barriers:
+            ax.plot(
+                [
+                    i[0]
+                    for i in x_data
+                    if i[1] in data_behavior.loc(axis=0)[:, barrier]["Date"].values
+                ],
+                data_behavior.loc(axis=0)[:, barrier]["Percent rewarded"].values,
+                color=colors[barrier],
+            )
 
-        ax.title.set_text(miceIds[0]+ " Stage 4")
-        ax.set_xlabel('Days')
+        ax.title.set_text(miceIds[0] + " Stage 4")
+        ax.set_xlabel("Days")
         ax.set_ylabel("Percentage of rewarded trials")
         ax.set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
-        ax.set_xticks(ticks=x_data)
+        ax.set_xticks(ticks=[i[0] for i in x_data])
 
         ax.legend(handles=create_legend(barriers, colors))
 
@@ -717,10 +746,10 @@ def report(
 
 data = collect_behavior_data(
     mice_data={
-        "coop028x029": [("2023-09-16", "2023-10-02")],
+        #"coop028x029": [("2023-09-16", "2023-10-02")],
         # "coop026x027": [("2023-08-27", "2023-09-07")]
         # "coop024x025": [("2023-09-08", "2023-09-20")],
-        # 'coop022x023':[('2023-08-29','2023-09-13')],
+        'coop022x023':[('2023-08-29','2023-09-13')],
         #'coop022x023':[('2023-08-29','2023-09-13'),('2023-08-08','2023-08-15'), ('2023-08-17','2023-08-22')],
         #'coop018x019':[('2023-08-17','2023-08-24')]
         ## Update evidence report
@@ -742,7 +771,7 @@ data = correct_data_with_excel(
     data_collected=data,
 )
 # report(data)
-# pct_rewarded_trials(data)
-performance_across_time(data)
+pct_rewarded_trials(data)
+#performance_across_time(data)
 # plt.tight_layout()
 plt.show()

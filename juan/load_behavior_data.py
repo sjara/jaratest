@@ -131,7 +131,6 @@ def collect_behavior_data(mice_data: dict[int:list], date_format="%Y-%m-%d"):
                     inplace=True,
                 )
                 df_all_data = pd.concat([df, df_all_data], ignore_index=True)
-
                 # df_all_data.replace([{"Stage": bdata.labels["taskMode"]}], inplace=True)
     return df_all_data
 
