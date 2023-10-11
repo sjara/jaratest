@@ -64,7 +64,7 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
 
 def pct_rewarded_trials(
     data_behavior: pd.DataFrame,
-    colors: list[str] = ["red", "blue"],
+    colors: dict = {'perforated_10_mm':"blue", "solid":"red"},
     width_lines: float = 0.3,
     alpha: float = 0.7,
     custom_labels: dict = {
@@ -72,9 +72,9 @@ def pct_rewarded_trials(
         "perforated_5_mm": "perf\n_5_mm",
         "no barrier": "no\nbarrier",
     },
-    custom_title:str="",
-    hori_line:int = 0,
-    color_hori_line:str='blue',
+    custom_title: dict = {},
+    hori_line: int = 0,
+    color_hori_line: str = "blue",
     **kwargs,
 ):
     """_summary_:
@@ -98,7 +98,8 @@ def pct_rewarded_trials(
 
     # Colors for barriers
     possible_barriers = data_behavior["BarrierType"].unique()
-    colors = {key: np.random.rand(3) for key in possible_barriers}
+    if len(possible_barriers) > len(colors):
+        colors = {key: np.random.rand(3) for key in possible_barriers}
 
     ## limit dataframe to the columns we need for comfort
     data_behavior = data_behavior.loc[
@@ -145,10 +146,14 @@ def pct_rewarded_trials(
                 ],  # [colors[0] if barrier == "solid" else colors[1] for barrier in barriers],
             )
             if hori_line:
-                ax[i].axvline(x=hori_line, color=color_hori_line, label="axvline - full height")
+                ax[i].axvline(
+                    x=hori_line, color=color_hori_line, label="axvline - full height"
+                )
 
             barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
-            ax[i].set_xlabel(miceIds[i])
+            ax[i].set_xlabel(
+                miceIds[i] + (custom_title.get(miceIds[i]) if custom_title.get(miceIds[i]) else "")
+                )
             ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
             ax[i].set_xticks(ticks=np.unique(x_data), labels=barriers)
             ax[i].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
@@ -183,10 +188,12 @@ def pct_rewarded_trials(
             colors=[colors[barrier] for barrier in barriers],  # colors[::-1],
         )
         if hori_line:
-            #max(x_data) / 2
-            plt.axvline(x=hori_line, color=color_hori_line, label="axvline - full height")
-            
-        ax.set_xlabel(miceIds[0] + custom_title)
+            # max(x_data) / 2
+            plt.axvline(
+                x=hori_line, color=color_hori_line, label="axvline - full height"
+            )
+
+        ax.set_xlabel(miceIds[0] + custom_title.get(miceIds[i]))
         ax.set_ylabel("Percentage of rewarded trials")
         ax.set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
         ax.set_xticks(ticks=np.unique(x_data), labels=barriers)
@@ -201,9 +208,15 @@ def pct_rewarded_trials(
 def rewarded_trials(
     data_behavior: pd.DataFrame,
     outcome: list[int] = [1],
-    colors: list[str] = ["red", "blue"],
+    colors: dict = {'perforated_10_mm':"blue", "solid":"red"},
     alpha: float = 0.7,
     width_lines: float = 0.2,
+    custom_labels: dict = {
+        "perforated_10_mm": "perf\n_10_mm",
+        "perforated_5_mm": "perf\n_5_mm",
+        "no barrier": "no\nbarrier",
+    },
+    custom_title: dict = {}
 ):
     """_summary_:
     This categorical scatter plot is for analyze the number of trials between different barriers. The developer can filter by the outcome of preference.
@@ -223,7 +236,8 @@ def rewarded_trials(
 
     # Colors for barriers
     possible_barriers = data_behavior["BarrierType"].unique()
-    colors = {key: np.random.rand(3) for key in possible_barriers}
+    if len(possible_barriers) > len(colors):
+        colors = {key: np.random.rand(3) for key in possible_barriers}
 
     ## Filter the dataframe by the outcome desired.
     ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2)
@@ -232,12 +246,13 @@ def rewarded_trials(
         .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
         .sum()
     )
-    data_behavior_by_outcome.sort_index(level=0, inplace=True, ascending=False)
+    data_behavior_by_outcome.sort_index(level=0, inplace=True, ascending=True)
 
     miceIds = data_behavior_by_outcome.index.unique(0).to_list()
     number_of_mice = len(miceIds)
     fig, ax = plt.subplots(1, number_of_mice, sharey=True)
     locs = plt.xticks()
+    
 
     if number_of_mice > 1:
         for i in range(number_of_mice):
@@ -276,10 +291,15 @@ def rewarded_trials(
                     for barrier in data_one_pair_mice.index.get_level_values(0).unique()
                 ],
             )
-
-            ax[i].set_xlabel(miceIds[i])
+            
+            #barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
+            ax[i].set_xlabel(
+                miceIds[i] + (custom_title.get(miceIds[i]) if custom_title.get(miceIds[i]) else "")
+                )
             ax[i].set_xlim(locs[0][0] - 0.2, locs[0][-1] + 0.2)
             ax[i].set_yticks(np.arange(0, data_behavior_by_outcome.max(), 10))
+            # ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
+            # ax[i].set_xticks(ticks=np.unique(x_data), labels=barriers)
         ax[0].set_ylabel("Rewarded trials")
 
     else:
