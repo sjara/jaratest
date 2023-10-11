@@ -35,6 +35,13 @@ for nSub in range(len(subject)):
     taskMode = bdata.labels['taskMode'][bdata['taskMode'][-1]]
     numLicksL = bdata['nLicksLeft'][-1]
     numLicksR = bdata['nLicksRight'][-1]
+    if 'interrupt' in bdata.labels['outcome']:
+        numInterruptL = bdata['nInterruptsLeft'][-1]
+        numInterruptR = bdata['nInterruptsRight'][-1]
+        numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
+        numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
+        numNoResponseL = bdata['nNoResponsesLeft'][-1]
+        numNoResponseR = bdata['nNoResponsesRight'][-1]
     print()
     print(subject[nSub])
     numTrials = len(bdata['taskMode'])
@@ -50,8 +57,13 @@ for nSub in range(len(subject)):
         rightChoice = bdata['choice'] == bdata.labels['choice']['right']
         valid = bdata['choice'] != bdata.labels['choice']['none']
         noChoice = bdata['choice'] == bdata.labels['choice']['none']
-        earlyLick = bdata['outcome'] == bdata.labels['outcome']['falseAlarm']
-        noChoice = noChoice & ~earlyLick
+        if 'interrupt' in bdata.labels['outcome']:
+            earlyLick = bdata['outcome'] == bdata.labels['outcome']['earlyLick']
+            interrupt = bdata['outcome'] == bdata.labels['outcome']['interrupt']
+            noChoice = noChoice & ~earlyLick & ~interrupt
+        else:
+            earlyLick = bdata['outcome'] == bdata.labels['outcome']['falseAlarm']
+            noChoice = noChoice & ~earlyLick
         leftCorrect = leftTrials & leftChoice
         leftError = leftTrials & rightChoice
         leftInvalid = leftTrials & noChoice
@@ -68,6 +80,9 @@ for nSub in range(len(subject)):
         print('# Left Errors: {}'.format(sum(leftError)))
         print('# of noChoice: {}'.format(np.sum(noChoice)))
         print('# of Early Licks: {}'.format(np.sum(earlyLick)))
+        if 'interrupt' in bdata.labels['outcome']:
+            print(f'Interrupts L: {numInterruptL}')
+            print(f'Interrupts R: {numInterruptR}')
     else:
         print('# Licks L: {}'.format(numLicksL))
         print('# Licks R: {}'.format(numLicksR))
@@ -97,6 +112,9 @@ for nSub in range(len(subject)):
             itiEnd = bdata['interTrialIntervalMean'][-1]
             print(f'Starting ITI = {itiStart}s')
             print(f'Ending ITI = {itiEnd}s')
+            if 'interrupt' in bdata.labels['outcome']:
+                print(f'Interrupts L: {numInterruptL}')
+                print(f'Interrupts R: {numInterruptR}')
             if bdata['interTrialIntervalMean'][-1] >= 2.5:
                 print('move to next stage')
             else:
