@@ -445,7 +445,7 @@ def hist_time_in_ports(data_behavior: pd.DataFrame):
     ax.legend()
 
 
-def performance_across_time(data_behavior: pd.DataFrame):
+def performance_across_time(data_behavior: pd.DataFrame, outcome: list[int] = [1]):
     """Plot the performance for each pair of mice during stage 4 across time
 
     Args:
@@ -458,14 +458,14 @@ def performance_across_time(data_behavior: pd.DataFrame):
 
     miceIds = data_behavior["MiceID"].unique()
     number_of_mice = len(miceIds)
-    fig, ax = plt.subplots(number_of_mice, 1, sharey=True, figsize=(10, 8))
+    fig, ax = plt.subplots(number_of_mice, 2, sharey=True, figsize=(10, 8))
 
     # Colors for barriers
     possible_barriers = data_behavior["BarrierType"].unique()
     colors = {key: np.random.rand(3) for key in possible_barriers}
 
     ## limit dataframe to the columns we need for comfort
-    data_behavior = data_behavior[["MiceID", "Date", "BarrierType", "Percent rewarded"]]
+    data_behavior = data_behavior[["MiceID", "Date", "BarrierType", "Percent rewarded", "Outcome"]]
 
     ## Reduce all the session to only one row per session
     data_behavior.drop_duplicates(subset=["MiceID", "Date"], inplace=True)
@@ -476,10 +476,23 @@ def performance_across_time(data_behavior: pd.DataFrame):
     data_behavior.sort_index(level=[0, 1], inplace=True)
     data_behavior.sort_values(by="Date", inplace=True)
 
+    ## Filter the dataframe by the outcome desired. This will contain the number of rewarded trials.
+    ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2)
+    data_behavior_by_outcome = (
+        data_behavior[data_behavior["Outcome"].isin(outcome)]
+        .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
+        .sum()
+    )
+    data_behavior_by_outcome.sort_index(level=0, inplace=True, ascending=True)
+
+    
     if number_of_mice > 1:
         for i in range(number_of_mice):
             ## get the data for each pair of mice
             data_one_pair_mice = data_behavior.loc[miceIds[i]]
+            
+            data_one_pair_mice_rewarded_trials = data_behavior_by_outcome.loc[miceIds[i]]
+            data_one_pair_mice_rewarded_trials.sort_index(level=0, inplace=True)
 
             ## get all the dates which will use in the graph
             dates = sorted(set(data_one_pair_mice["Date"].values.tolist()))
@@ -490,7 +503,16 @@ def performance_across_time(data_behavior: pd.DataFrame):
             ## convert every label to a position in x-axis
             x_data = [(day, dates[day - 1]) for day in range(1, len(dates) + 1)]
 
-            ax[i].scatter(
+            ## Percentage rewarded trials
+            ax[i,0].scatter(
+                x=[i[0] for i in x_data],
+                y=data_one_pair_mice["Percent rewarded"].values,
+                c=(data_one_pair_mice.index).map(
+                    lambda x: colors[x]  # colors[0] if x == "solid" else colors[1]
+                ),
+            )
+            ## Rewarded trials
+            ax[i,1].scatter(
                 x=[i[0] for i in x_data],
                 y=data_one_pair_mice["Percent rewarded"].values,
                 c=(data_one_pair_mice.index).map(
@@ -500,7 +522,7 @@ def performance_across_time(data_behavior: pd.DataFrame):
             ## Here I create the line to connect the points discriminating the point
             ## according to the barrier. I take care that the line is draw in the correct days
             for barrier in barriers:
-                ax[i].plot(
+                ax[i,j].plot(
                     [
                         i[0]
                         for i in x_data
@@ -510,16 +532,13 @@ def performance_across_time(data_behavior: pd.DataFrame):
                     data_one_pair_mice.loc(axis=0)[barrier]["Percent rewarded"].values,
                     color=colors[barrier],
                 )
-
-            # custom_labels= {'perforated_10_mm': 'perf\n_10_mm', 'perforated_5_mm': 'perf\n_5_mm', "no barrier":"no\nbarrier"}
-            # barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
-            ax[i].set_xlabel(miceIds[i])
+                
+            ax[i,j].set_xlabel(miceIds[i])
             # ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
-            ax[i].set_xticks(ticks=[i[0] for i in x_data])
-            ax[i].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
-            ax[i].legend(handles=create_legend(barriers, colors))
-
-        ax[0].set_ylabel("Percentage rewarded trials")
+            ax[i,j].set_xticks(ticks=[i[0] for i in x_data])
+            ax[i,j].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
+            ax[i,j].legend(handles=create_legend(barriers, colors))
+            #ax[0].set_ylabel("Percentage rewarded trials")
 
     else:
         ## get all the barriers for a pair of mice
@@ -527,6 +546,15 @@ def performance_across_time(data_behavior: pd.DataFrame):
 
         ## get all the dates which will use in the graph
         dates = sorted(set(data_behavior["Date"].values.tolist()))
+
+        ## Filter the dataframe by the outcome desired.
+        ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2)
+        data_behavior_by_outcome = (
+            data_behavior[data_behavior["Outcome"].isin(outcome)]
+            .groupby(["MiceID", "BarrierType", "Date"])["Outcome"]
+            .sum()
+        )
+        data_behavior_by_outcome.sort_index(level=0, inplace=True, ascending=True)
 
         ## convert every label to a position in x-axis
         ## I save the date and it's corresponding day number for future use
@@ -779,7 +807,7 @@ def report(
 #         # "coop028x029": [("2023-09-21", "2023-10-04")],
 #         # "coop026x027": [("2023-09-26", "2023-09-27"),("2023-09-30", "2023-10-01"),("2023-10-02", "2023-10-03")]
 #         # "coop024x025": [("2023-09-08", "2023-09-20")],
-#         'coop022x023':[('2023-09-14','2023-09-22 ')],
+#         # 'coop022x023':[('2023-09-14','2023-09-22 ')],
 #         #'coop022x023':[('2023-08-29','2023-09-13'),('2023-08-08','2023-08-15'), ('2023-08-17','2023-08-22')],
 #         #'coop018x019':[('2023-08-17','2023-08-24')]
 #         ## Update evidence report
@@ -792,6 +820,11 @@ def report(
 #         # "coop016x017": [('2023-05-12', '2023-05-17'),('2023-06-04','2023-06-16'), ('2023-08-23','2023-09-01')],
 #         # "coop022x023": [('2023-08-08', '2023-08-15'),('2023-08-18', '2023-08-22')],
 #         ## Performance across time
+#         # "coop028x029": [("2023-09-16", "2023-10-02")],
+#         # "coop026x027": [("2023-08-21", "2023-09-07")],
+#         # "coop024x025": [("2023-08-25", "2023-09-07")],
+#         # "coop018x019": [("2023-05-05", "2023-05-19")]
+        
 #     }
 # )
 # data.sort_values(by="MiceID", inplace=True)
