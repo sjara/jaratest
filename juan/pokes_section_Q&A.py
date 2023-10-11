@@ -40,6 +40,10 @@ data2 = lbd.correct_data_with_excel(
 
 # PLOT
 pfa.pct_rewarded_trials(
+    data2,
+    hori_line=(len(data2['BarrierType'].unique())-1)/2
+)
+pfa.pct_rewarded_trials(
     data,
     custom_title={
         "coop026x027": f" => 10 pokes\n {min(data[data['MiceID'] == 'coop026x027']['Date'].unique())} => {max(data[data['MiceID'] == 'coop026x027']['Date'].unique())} ",

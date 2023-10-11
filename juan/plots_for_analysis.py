@@ -193,7 +193,7 @@ def pct_rewarded_trials(
                 x=hori_line, color=color_hori_line, label="axvline - full height"
             )
 
-        ax.set_xlabel(miceIds[0] + custom_title.get(miceIds[i]))
+        ax.set_xlabel(miceIds[0] + (custom_title.get(miceIds[0]) if custom_title.get(miceIds[0]) else ""))
         ax.set_ylabel("Percentage of rewarded trials")
         ax.set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
         ax.set_xticks(ticks=np.unique(x_data), labels=barriers)
