@@ -67,6 +67,14 @@ def pct_rewarded_trials(
     colors: list[str] = ["red", "blue"],
     width_lines: float = 0.3,
     alpha: float = 0.7,
+    custom_labels: dict = {
+        "perforated_10_mm": "perf\n_10_mm",
+        "perforated_5_mm": "perf\n_5_mm",
+        "no barrier": "no\nbarrier",
+    },
+    custom_title:str="",
+    hori_line:int = 0,
+    color_hori_line:str='blue',
     **kwargs,
 ):
     """_summary_:
@@ -77,6 +85,8 @@ def pct_rewarded_trials(
         data_behavior (pd.DataFrame): Pandas dataframe with at least 3 columns: BarrierType, Percent rewarded and MiceID
         colors (list[str], optional): List of colors in string type to distinguish points from each barrier. Defaults to ["red", "cyan"].
         width_lines (float, optional): Float type to set the long of the line representing the mean of the points in each barrier. Defaults to 0.1.
+        custom_labels (dict, optional): Map the x labels for new values.
+        custom_title (str, optional): Add additional information to the plots title. Default ""
     """
     # NOTE
     # Depending on the number of mice we will get list of axes of just one ax.
@@ -134,13 +144,9 @@ def pct_rewarded_trials(
                     colors[barrier] for barrier in barriers
                 ],  # [colors[0] if barrier == "solid" else colors[1] for barrier in barriers],
             )
+            if hori_line:
+                ax[i].axvline(x=hori_line, color=color_hori_line, label="axvline - full height")
 
-            # NOTE: Modify
-            custom_labels = {
-                "perforated_10_mm": "perf\n_10_mm",
-                "perforated_5_mm": "perf\n_5_mm",
-                "no barrier": "no\nbarrier",
-            }
             barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
             ax[i].set_xlabel(miceIds[i])
             ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
@@ -157,7 +163,6 @@ def pct_rewarded_trials(
             barriers.index(barrier)
             for barrier in data_behavior.index.get_level_values(1)
         ]
-        print(data_behavior)
         ax.scatter(
             x=x_data,
             y=data_behavior["Percent rewarded"].values,
@@ -177,8 +182,11 @@ def pct_rewarded_trials(
             xmax=[idx + width_lines for idx in range(0, len(barriers))],
             colors=[colors[barrier] for barrier in barriers],  # colors[::-1],
         )
-        #plt.axvline(x=max(x_data) / 2, color="b", label="axvline - full height")
-        ax.set_xlabel(miceIds[0])
+        if hori_line:
+            #max(x_data) / 2
+            plt.axvline(x=hori_line, color=color_hori_line, label="axvline - full height")
+            
+        ax.set_xlabel(miceIds[0] + custom_title)
         ax.set_ylabel("Percentage of rewarded trials")
         ax.set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
         ax.set_xticks(ticks=np.unique(x_data), labels=barriers)
@@ -476,7 +484,8 @@ def performance_across_time(data_behavior: pd.DataFrame):
                     [
                         i[0]
                         for i in x_data
-                        if i[1] in data_one_pair_mice.loc(axis=0)[barrier]["Date"].values
+                        if i[1]
+                        in data_one_pair_mice.loc(axis=0)[barrier]["Date"].values
                     ],
                     data_one_pair_mice.loc(axis=0)[barrier]["Percent rewarded"].values,
                     color=colors[barrier],
@@ -485,7 +494,7 @@ def performance_across_time(data_behavior: pd.DataFrame):
             # custom_labels= {'perforated_10_mm': 'perf\n_10_mm', 'perforated_5_mm': 'perf\n_5_mm', "no barrier":"no\nbarrier"}
             # barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
             ax[i].set_xlabel(miceIds[i])
-            #ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
+            # ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
             ax[i].set_xticks(ticks=[i[0] for i in x_data])
             ax[i].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
             ax[i].legend(handles=create_legend(barriers, colors))
@@ -747,10 +756,10 @@ def report(
 
 # data = collect_behavior_data(
 #     mice_data={
-#         "coop028x029": [("2023-09-21", "2023-10-04")],
+#         # "coop028x029": [("2023-09-21", "2023-10-04")],
 #         # "coop026x027": [("2023-09-26", "2023-09-27"),("2023-09-30", "2023-10-01"),("2023-10-02", "2023-10-03")]
 #         # "coop024x025": [("2023-09-08", "2023-09-20")],
-#         #'coop022x023':[('2023-09-25','2023-10-04')],
+#         'coop022x023':[('2023-09-14','2023-09-22 ')],
 #         #'coop022x023':[('2023-08-29','2023-09-13'),('2023-08-08','2023-08-15'), ('2023-08-17','2023-08-22')],
 #         #'coop018x019':[('2023-08-17','2023-08-24')]
 #         ## Update evidence report
