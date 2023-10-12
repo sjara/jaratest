@@ -458,7 +458,7 @@ def performance_across_time(data_behavior: pd.DataFrame, outcome: list[int] = [1
 
     miceIds = data_behavior["MiceID"].unique()
     number_of_mice = len(miceIds)
-    fig, ax = plt.subplots(number_of_mice, 2, sharey=True, figsize=(10, 8))
+    fig, ax = plt.subplots(number_of_mice, 2, sharey=False, figsize=(15, 8))
 
     # Colors for barriers
     possible_barriers = data_behavior["BarrierType"].unique()
@@ -466,15 +466,6 @@ def performance_across_time(data_behavior: pd.DataFrame, outcome: list[int] = [1
 
     ## limit dataframe to the columns we need for comfort
     data_behavior = data_behavior[["MiceID", "Date", "BarrierType", "Percent rewarded", "Outcome"]]
-
-    ## Reduce all the session to only one row per session
-    data_behavior.drop_duplicates(subset=["MiceID", "Date"], inplace=True)
-    ## Set the index for mice selection for each graph
-    data_behavior.set_index(keys=["MiceID", "BarrierType"], inplace=True)
-
-    ## Sort the dataframe by miceID and barrier
-    data_behavior.sort_index(level=[0, 1], inplace=True)
-    data_behavior.sort_values(by="Date", inplace=True)
 
     ## Filter the dataframe by the outcome desired. This will contain the number of rewarded trials.
     ## This will be the dataframe used to plot. "MiceID", "BarrierType", "Date" are the columns to keep (levels=0,1,2)
@@ -485,60 +476,97 @@ def performance_across_time(data_behavior: pd.DataFrame, outcome: list[int] = [1
     )
     data_behavior_by_outcome.sort_index(level=0, inplace=True, ascending=True)
 
+    ## Reduce all the session to only one row per session
+    data_behavior.drop_duplicates(subset=["MiceID", "Date"], inplace=True)
+    ## Set the index for mice selection for each graph
+    data_behavior.set_index(keys=["MiceID", "BarrierType"], inplace=True)
+
+    ## Sort the dataframe by miceID and barrier
+    data_behavior.sort_index(level=[0, 1], inplace=True)
+    data_behavior.sort_values(by="Date", inplace=True)
+    
     
     if number_of_mice > 1:
         for i in range(number_of_mice):
             ## get the data for each pair of mice
             data_one_pair_mice = data_behavior.loc[miceIds[i]]
-            
+
+            ## For rewarded trials
             data_one_pair_mice_rewarded_trials = data_behavior_by_outcome.loc[miceIds[i]]
-            data_one_pair_mice_rewarded_trials.sort_index(level=0, inplace=True)
+            data_one_pair_mice_rewarded_trials.sort_index(level=1, inplace=True)
+            
 
             ## get all the dates which will use in the graph
-            dates = sorted(set(data_one_pair_mice["Date"].values.tolist()))
-
+            dates_pct = sorted(data_one_pair_mice["Date"].unique())
+            dates_rwd = sorted(data_one_pair_mice_rewarded_trials.index.get_level_values(1).unique())
+            
             ## get all the barriers for legend
             barriers = data_one_pair_mice.index.unique().to_list()
 
             ## convert every label to a position in x-axis
-            x_data = [(day, dates[day - 1]) for day in range(1, len(dates) + 1)]
+            x_data_pct = [(day, dates_pct[day - 1]) for day in range(1, len(dates_pct) + 1)]
+            x_data_rwd = [(day, dates_rwd[day - 1]) for day in range(1, len(dates_rwd) + 1)]
 
             ## Percentage rewarded trials
             ax[i,0].scatter(
-                x=[i[0] for i in x_data],
+                x=[i[0] for i in x_data_pct],
                 y=data_one_pair_mice["Percent rewarded"].values,
                 c=(data_one_pair_mice.index).map(
                     lambda x: colors[x]  # colors[0] if x == "solid" else colors[1]
                 ),
             )
             ## Rewarded trials
+            # print(miceIds[i])
+            # print(data_one_pair_mice_rewarded_trials)
+            # print(dates)
+            # print(len(dates))
+            # print('days',[i[0] for i in x_data])
+            # print(data_one_pair_mice_rewarded_trials.values)
+            # print(len(data_one_pair_mice_rewarded_trials.values))
             ax[i,1].scatter(
-                x=[i[0] for i in x_data],
-                y=data_one_pair_mice["Percent rewarded"].values,
-                c=(data_one_pair_mice.index).map(
-                    lambda x: colors[x]  # colors[0] if x == "solid" else colors[1]
-                ),
+                x=[i[0] for i in x_data_rwd],
+                y=data_one_pair_mice_rewarded_trials.values,
+                c=(data_one_pair_mice_rewarded_trials.index.get_level_values(0)).map(
+                    lambda x: colors[x]
+                )
             )
             ## Here I create the line to connect the points discriminating the point
             ## according to the barrier. I take care that the line is draw in the correct days
             for barrier in barriers:
-                ax[i,j].plot(
+                ax[i,0].plot(
                     [
                         i[0]
-                        for i in x_data
+                        for i in x_data_pct
                         if i[1]
                         in data_one_pair_mice.loc(axis=0)[barrier]["Date"].values
                     ],
                     data_one_pair_mice.loc(axis=0)[barrier]["Percent rewarded"].values,
                     color=colors[barrier],
                 )
-                
-            ax[i,j].set_xlabel(miceIds[i])
-            # ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
-            ax[i,j].set_xticks(ticks=[i[0] for i in x_data])
-            ax[i,j].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
-            ax[i,j].legend(handles=create_legend(barriers, colors))
-            #ax[0].set_ylabel("Percentage rewarded trials")
+                ax[i,1].plot(
+                    [
+                        i[0]
+                        for i in x_data_rwd
+                        if i[1]
+                        in data_one_pair_mice_rewarded_trials[barrier].index
+                    ],
+                    data_one_pair_mice_rewarded_trials[barrier].values,
+                    color=colors[barrier],
+                )
+
+            ## Percentage rewarded trials
+            #miceIds[i]
+            ax[i,0].set_xlabel('Days')
+            ax[i,0].set_xticks(ticks=[i[0] for i in x_data_pct])
+            ax[i,0].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
+            ax[i,0].legend(handles=create_legend(barriers, colors))
+
+            ## Rewarded trials
+            ax[i,1].set_xlabel('Days')
+            ax[i,1].set_xticks(ticks=[i[0] for i in x_data_rwd])
+            ax[i,1].set_yticks(np.arange(0, data_one_pair_mice_rewarded_trials.values.max(), 10))
+            ax[i,1].legend(handles=create_legend(barriers, colors))
+
 
     else:
         ## get all the barriers for a pair of mice
