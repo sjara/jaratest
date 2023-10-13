@@ -64,7 +64,7 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
 
 def pct_rewarded_trials(
     data_behavior: pd.DataFrame,
-    colors: dict = {'perforated_10_mm':"blue", "solid":"red"},
+    colors: dict = {},
     width_lines: float = 0.3,
     alpha: float = 0.7,
     custom_labels: dict = {
@@ -553,16 +553,19 @@ def performance_across_time(data_behavior: pd.DataFrame, outcome: list[int] = [1
             ax[i,0].set_xticks(ticks=[i[0] for i in x_data_pct])
             ax[i,0].set_yticks(np.arange(0, data_behavior["Percent rewarded"].max(), 2))
             ax[i,0].legend(handles=create_legend(barriers, colors))
-            ax[i,0].set_ylabel("Percentage of rewarded trials")
+            ax[i,0].set_title(miceIds[i])
+            #ax[i,0].set_ylabel("Percentage of rewarded trials")
 
             ## Rewarded trials
             ax[i,1].set_xlabel('Days')
             ax[i,1].set_xticks(ticks=[i[0] for i in x_data_rwd])
             ax[i,1].set_yticks(np.arange(0, data_one_pair_mice_rewarded_trials.values.max(), 10))
             ax[i,1].legend(handles=create_legend(barriers, colors))
-            ax[i,1].set_ylabel("Rewarded trials")
-
-        ax[0,1].set_title("holA")
+            ax[i,1].set_title(miceIds[i])
+            #ax[i,1].set_ylabel("Rewarded trials")
+            
+        ax[0,0].set_ylabel("Percentage of rewarded trials")
+        ax[1,1].set_ylabel("Rewarded trials")
 
     else:
         ## get all the barriers for a pair of mice
@@ -844,7 +847,7 @@ def report(
 #         # "coop028x029": [("2023-09-21", "2023-10-04")],
 #         # "coop026x027": [("2023-09-26", "2023-09-27"),("2023-09-30", "2023-10-01"),("2023-10-02", "2023-10-03")]
 #         # "coop024x025": [("2023-09-08", "2023-09-20")],
-#         # 'coop022x023':[('2023-09-14','2023-09-22 ')],
+#         'coop022x023':[('2023-07-17','2023-07-28')],
 #         #'coop022x023':[('2023-08-29','2023-09-13'),('2023-08-08','2023-08-15'), ('2023-08-17','2023-08-22')],
 #         #'coop018x019':[('2023-08-17','2023-08-24')]
 #         ## Update evidence report
