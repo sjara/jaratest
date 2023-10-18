@@ -19,7 +19,7 @@ get_ipython().run_line_magic('matplotlib', 'notebook')
 
 # In[ ]:
 
-
+#this is just pulling values and categorizing them, so I can make a learning curve dictionary which makes plotting easier. 
 path= r'file location'
 filenames = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 
@@ -191,7 +191,7 @@ fig.tight_layout()
 
 # In[ ]:
 
-
+#this lets us look at number of responses
 fig2,ax2=plt.subplots()
 #ax2=ax2.flatten()
 plt.plot(Thing_one,color='green', linestyle='solid', label='# hits') 
