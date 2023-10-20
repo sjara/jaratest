@@ -1,5 +1,7 @@
 # Test scripts by Juan Picón.
 
+* The folder ```scripts/``` contains the code to reproduce the graphs presented on the different reports.
+  
 ### Utils 🧰
 * `load_behavior_data.py`: Contains functions for processing behavior data from coop_four_port paradigm.
     * `load_data`:description
