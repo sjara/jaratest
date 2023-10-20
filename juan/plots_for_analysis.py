@@ -16,20 +16,18 @@ def create_legend(unique_elements: list, colors: dict) -> list:
     return patches_list
 
 
-def barplot_accu_rewards_time(data: pd.DataFrame):
+def barplot_accu_rewards_time(data: pd.DataFrame, num_dates:list):
     """_summary_:
-    This function will create axes for each barrier,
+    This function is used to create axes for each barrier,
     each axes will show bars representing the accumulated rewards for each pair of mice on time.
     In turn, accumulated rewards will be segmented in as many bars as the user want. The default will be 3,
     wich means that for a 60 minute assay, accumulated rewards will be calculated every 20 minutes.
 
     Args:
-        data (pandas.dataframe): Dataframe grouped by 3 columns:
-            BarrierType, MiceID and ranges of numerical values (time).
-        This dataframe is returned by load_behavior_data.py.filter_and_group
+        data (pandas.dataframe): Dataframe containing minimun
     """
 
-    fig, ax = plt.subplots(nrows=2, figsize=(10, 5))
+    fig, ax = plt.subplots(nrows=num_dates, figsize=(10, 5))
     times = data.index.levels[2]
     mice_ids = data.index.levels[1]
     x_pos = np.arange(len(mice_ids))
@@ -55,11 +53,13 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
         offset = 0
 
         # Add some text for labels, title and custom x-axis tick labels, etc.
-        ax[index].set_title(f"{barrier} barrier")
+        ax[index].set_title(f"Date: {barrier}")
         ax[index].set_ylabel("Trials count")
         ax[index].set_xticks(x_pos + (width * len(times) - width) / 2, mice_ids)
         ax[index].legend(loc="upper left", ncols=len(times) / 2)
-        ax[index].set_ylim(0, max_value + 1000)
+        ax[index].set_ylim(0, max_value + 100)
+        ax[index].set_yticks(np.arange(0, max_value + 1, max_value))
+
 
 
 def pct_rewarded_trials(

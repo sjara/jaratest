@@ -33,7 +33,7 @@ def filter_and_group(bins: int, data: pd.DataFrame, sessionLen: int) -> pd.DataF
     return data_filtered_grouped
 
 
-def barplot_accu_rewards_time(data: pd.DataFrame):
+def barplot_accu_rewards_time(data: pd.DataFrame, num_dates:list):
     """_summary_:
     This function is used to create axes for each barrier,
     each axes will show bars representing the accumulated rewards for each pair of mice on time.
@@ -44,7 +44,7 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
         data (pandas.dataframe): Dataframe containing minimun
     """
 
-    fig, ax = plt.subplots(nrows=2, figsize=(10, 5))
+    fig, ax = plt.subplots(nrows=num_dates, figsize=(10, 5))
     times = data.index.levels[2]
     mice_ids = data.index.levels[1]
     x_pos = np.arange(len(mice_ids))
@@ -81,13 +81,14 @@ def barplot_accu_rewards_time(data: pd.DataFrame):
 if __name__ == "__main__":
     ## DATA COLLECTION
     data = collect_behavior_data(
-        mice_data={"coop026x027": [("2023-08-14", "2023-08-17")]}
+        mice_data={"coop026x027": [("2023-08-15", "2023-08-18")]}
     )
     ## RUN
     data_filtered_grouped = filter_and_group(bins=3, data=data, sessionLen=60)
-    barplot_accu_rewards_time(data_filtered_grouped)
+    
+    barplot_accu_rewards_time(data_filtered_grouped, len(data.index.get_level_values(0).unique().tolist()))
 
-    ## SHOW PLOT
+    # ## SHOW PLOT
     plt.tight_layout()
     plt.show()
     # plt.savefig('trials_on_time_stage4.jpg')
