@@ -1,5 +1,6 @@
-import load_behavior_data as lbd
-import plots_for_analysis as pfa
+import common_init
+import utils.load_behavior_data as lbd
+import utils.plots_for_analysis as pfa
 import matplotlib.pyplot as plt
 
 """

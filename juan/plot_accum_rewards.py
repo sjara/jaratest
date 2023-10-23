@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from load_behavior_data import collect_behavior_data
+from utils.load_behavior_data import collect_behavior_data
 
 
 def filter_and_group(bins: int, data: pd.DataFrame, sessionLen: int) -> pd.DataFrame:

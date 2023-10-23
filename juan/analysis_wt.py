@@ -4,7 +4,7 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 from datetime import date
-from load_behavior_data import collect_behavior_data
+from utils.load_behavior_data import collect_behavior_data
 
 #pd.options.display.float_format = "{:.6f}".format
 

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from load_behavior_data import collect_behavior_data, correct_data_with_excel
+from utils.load_behavior_data import collect_behavior_data, correct_data_with_excel
 
 pd.options.mode.chained_assignment = None
 
@@ -27,11 +27,13 @@ def barplot_accu_rewards_time(data: pd.DataFrame, num_dates:list):
         data (pandas.dataframe): Dataframe containing minimun
     """
 
-    fig, ax = plt.subplots(nrows=num_dates, figsize=(10, 5))
+    fig, ax = plt.subplots(nrows=num_dates, figsize=(2*num_dates, 2*num_dates))
     times = data.index.levels[2]
+    len_session = 60
     mice_ids = data.index.levels[1]
     x_pos = np.arange(len(mice_ids))
-    width = 0.8 / len(times)
+    print(x_pos)
+    width = 1
     offset = 0
 
     for index, barrier in enumerate(data.index.levels[0]):
@@ -54,11 +56,17 @@ def barplot_accu_rewards_time(data: pd.DataFrame, num_dates:list):
 
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax[index].set_title(f"Date: {barrier}")
-        ax[index].set_ylabel("Trials count")
-        ax[index].set_xticks(x_pos + (width * len(times) - width) / 2, mice_ids)
-        ax[index].legend(loc="upper left", ncols=len(times) / 2)
-        ax[index].set_ylim(0, max_value + 100)
-        ax[index].set_yticks(np.arange(0, max_value + 1, max_value))
+        ax[index].set_ylabel("Count")
+        ax[index].set_xlabel(f"Time")
+        ax[index].legend(loc="right", frameon=False)
+        ax[index].set_ylim(0, max_value + 5)
+        ax[index].spines['top'].set_visible(False)
+        ax[index].spines['right'].set_visible(False)
+        ax[index].spines['bottom'].set_visible(False)
+        ax[index].set_xlim(-1, x_pos+(len(times)*(width)) + 0.5)
+        ax[index].set_yticks(np.arange(0, max_value + 1, 10))
+        ax[index].set_xticks([])
+    fig.suptitle(f'Rewarded trials every {len_session//len(times)} min for {mice_ids[0]}', fontsize=14)
 
 
 
