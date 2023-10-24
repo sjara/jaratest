@@ -32,9 +32,9 @@ def barplot_accu_rewards_time(data: pd.DataFrame, num_dates:list):
     len_session = 60
     mice_ids = data.index.levels[1]
     x_pos = np.arange(len(mice_ids))
-    print(x_pos)
     width = 1
     offset = 0
+    x_sticks_pos = list()
 
     for index, barrier in enumerate(data.index.levels[0]):
         max_value = 0
@@ -45,6 +45,7 @@ def barplot_accu_rewards_time(data: pd.DataFrame, num_dates:list):
                 width,
                 label=time,
             )
+            x_sticks_pos.append(x_pos[0] + offset)
             ax[index].bar_label(bars, padding=3)
             offset += width
             max_value = (
@@ -57,15 +58,16 @@ def barplot_accu_rewards_time(data: pd.DataFrame, num_dates:list):
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax[index].set_title(f"Date: {barrier}")
         ax[index].set_ylabel("Count")
-        ax[index].set_xlabel(f"Time")
-        ax[index].legend(loc="right", frameon=False)
+        ax[index].set_xlabel(f"Time (min)")
+        #ax[index].legend(loc="right", frameon=False)
         ax[index].set_ylim(0, max_value + 5)
         ax[index].spines['top'].set_visible(False)
         ax[index].spines['right'].set_visible(False)
         ax[index].spines['bottom'].set_visible(False)
-        ax[index].set_xlim(-1, x_pos+(len(times)*(width)) + 0.5)
+        #ax[index].set_xlim(-1, x_pos+(len(times)*(width)) + 0.5)
         ax[index].set_yticks(np.arange(0, max_value + 1, 10))
-        ax[index].set_xticks([])
+        ax[index].set_xticks(list(set(x_sticks_pos)),times.values)
+        
     fig.suptitle(f'Rewarded trials every {len_session//len(times)} min for {mice_ids[0]}', fontsize=14)
 
 
