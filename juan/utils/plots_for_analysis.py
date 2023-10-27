@@ -71,7 +71,6 @@ def barplot_accu_rewards_time(data: pd.DataFrame, num_dates:list):
     fig.suptitle(f'Rewarded trials every {len_session//len(times)} min for {mice_ids[0]}', fontsize=14)
 
 
-
 def pct_rewarded_trials(
     data_behavior: pd.DataFrame,
     colors: dict = {},
@@ -218,7 +217,7 @@ def pct_rewarded_trials(
 def rewarded_trials(
     data_behavior: pd.DataFrame,
     outcome: list[int] = [1],
-    colors: dict = {'perforated_10_mm':"blue", "solid":"red"},
+    colors: dict = {},
     alpha: float = 0.7,
     width_lines: float = 0.2,
     custom_labels: dict = {

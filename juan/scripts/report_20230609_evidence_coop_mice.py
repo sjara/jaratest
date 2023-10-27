@@ -15,7 +15,7 @@ data = lbd.collect_behavior_data(
 )
 data = lbd.correct_data_with_excel(
     fileName="coop_seek_and_find_v2.xlsx",
-    sheet_name=['coop012x013',"coop014x015","coop016x017","coop018x019"],
+    sheet_name=data["MiceID"].unique().tolist(),
     data_collected=data,
 )
 
