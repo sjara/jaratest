@@ -20,6 +20,6 @@ data = lbd.correct_data_with_excel(
     data_collected=data,
 )
 
-pfa.pct_rewarded_trials(data, colors={'perforated_10_mm':'blue', 'transparent_no_holes':'purple'})
+pfa.pct_rewarded_trials(data, colors={'perforated_10_mm / dark':'blue', 'transparent_no_holes / dark':'purple'})
 #pfa.rewarded_trials(data)
 plt.show()

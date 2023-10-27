@@ -107,7 +107,8 @@ def pct_rewarded_trials(
 
     # Colors for barriers
     possible_barriers = data_behavior["BarrierType"].unique()
-    if len(possible_barriers) > len(colors):
+    if len(possible_barriers) > len(colors) or all([i in colors.keys() for i in possible_barriers]):
+        print("--> Automatic color selection <---")
         colors = {key: np.random.rand(3) for key in possible_barriers}
 
     ## limit dataframe to the columns we need for comfort
@@ -245,7 +246,8 @@ def rewarded_trials(
 
     # Colors for barriers
     possible_barriers = data_behavior["BarrierType"].unique()
-    if len(possible_barriers) > len(colors):
+    if len(possible_barriers) > len(colors) or all([i in colors.keys() for i in possible_barriers]):
+        print("--> Automatic color selection <---")
         colors = {key: np.random.rand(3) for key in possible_barriers}
 
     ## Filter the dataframe by the outcome desired.
