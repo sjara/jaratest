@@ -77,8 +77,8 @@ def pct_rewarded_trials(
     width_lines: float = 0.3,
     alpha: float = 0.7,
     custom_labels: dict = {
-        "perforated_10_mm": "perf_10_mm",
-        "perforated_5_mm": "perf_5_mm",
+        "perforated_10_mm": "perf_\n10_mm",
+        "perforated_5_mm": "perf_\n5_mm",
         "no barrier": "no\nbarrier",
         "perforated_10_mm / dark": "perf_10_mm\ndark",
         "transparent_no_holes / dark": "transp_no_holes\ndark",
@@ -108,7 +108,7 @@ def pct_rewarded_trials(
     # Depending on the number of mice we will get list of axes of just one ax.
     # When subplots = (1,1). ax takes only 1 value.
 
-    miceIds = data_behavior["MiceID"].unique()
+    miceIds = sorted(data_behavior["MiceID"].unique())
     number_of_mice = len(miceIds)
     fig, ax = plt.subplots(1, number_of_mice, sharey=True, **kwargs)
 
@@ -128,16 +128,18 @@ def pct_rewarded_trials(
     data_behavior.set_index(keys=["MiceID", "BarrierType"], inplace=True)
 
     ## Sort the dataframe by miceID and barrier
-    data_behavior.sort_index(level=[0, 1], inplace=True)
-    data_behavior.sort_values(by="Date", inplace=True)
+    #data_behavior = data_behavior.sort_index(level=[0, 1])
+    #data_behavior.sort_values(by="Date", inplace=True)
 
     if number_of_mice > 1:
         for i in range(number_of_mice):
             ## get the data for each pair of mice
             data_one_pair_mice = data_behavior.loc[miceIds[i]]
+            ## sort by barrier
+            data_one_pair_mice = data_one_pair_mice.sort_index()
 
             ## get all the barriers which will be plotted
-            barriers = data_one_pair_mice.index.unique().to_list()
+            barriers = sorted(data_one_pair_mice.index.unique().to_list())
 
             ## convert every label to a position in x-axis
             x_data = [barriers.index(barrier) for barrier in data_one_pair_mice.index]
@@ -154,7 +156,7 @@ def pct_rewarded_trials(
             ax[i].hlines(
                 y=[
                     int(data_one_pair_mice.loc[barrier]["Percent rewarded"].mean())
-                    for barrier in data_one_pair_mice.index.unique()
+                    for barrier in barriers
                 ],
                 xmin=[idx - width_lines for idx in range(0, len(barriers))],
                 xmax=[idx + width_lines for idx in range(0, len(barriers))],
@@ -227,10 +229,10 @@ def rewarded_trials(
     outcome: list[int] = [1],
     colors: dict = {},
     alpha: float = 0.7,
-    width_lines: float = 0.2,
+    width_lines: float = 0.3,
     custom_labels: dict = {
-        "perforated_10_mm": "perf_10_mm",
-        "perforated_5_mm": "perf_5_mm",
+        "perforated_10_mm": "perf_\n10_mm",
+        "perforated_5_mm": "perf_\n5_mm",
         "no barrier": "no\nbarrier",
         "perforated_10_mm / dark": "perf_10_mm\ndark",
         "transparent_no_holes / dark": "transp_no_holes\ndark",
@@ -309,22 +311,13 @@ def rewarded_trials(
                     int(data_one_pair_mice.loc[barrier].mean())
                     for barrier in data_one_pair_mice.index.unique(0).to_list()
                 ],
-                xmin=[0 - width_lines]
-                + [
-                    (0 + 1 / idx) - width_lines
-                    for idx in range(1, len(data_one_pair_mice.index.unique(0)))
-                ],
-                xmax=[0 + width_lines]
-                + [
-                    (0 + 1 / idx) + width_lines
-                    for idx in range(1, len(data_one_pair_mice.index.unique(0)))
-                ],
+                xmin=[idx - width_lines for idx in range(0, len(barriers))],
+                xmax=[idx + width_lines for idx in range(0, len(barriers))],
                 colors=[
-                    colors[barrier]
-                    for barrier in data_one_pair_mice.index.get_level_values(0).unique()
-                ],
+                    colors[barrier] for barrier in barriers
+                ],  # [colors[0] if barrier == "solid" else colors[1] for barrier in barriers],
             )
-            
+            ## CUSTOM LABELS
             barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
             ax[i].set_xlabel(
                 miceIds[i] + (custom_title.get(miceIds[i]) if custom_title.get(miceIds[i]) else "")

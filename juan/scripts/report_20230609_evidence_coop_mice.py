@@ -25,6 +25,6 @@ data = lbd.correct_data_with_excel(
     data_collected=data,
 )
 
-#pfa.pct_rewarded_trials(data)
-pfa.rewarded_trials(data)
-#plt.show()
+pfa.pct_rewarded_trials(data)
+#pfa.rewarded_trials(data)
+plt.show()
