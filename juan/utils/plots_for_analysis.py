@@ -77,9 +77,16 @@ def pct_rewarded_trials(
     width_lines: float = 0.3,
     alpha: float = 0.7,
     custom_labels: dict = {
-        "perforated_10_mm": "perf\n_10_mm",
-        "perforated_5_mm": "perf\n_5_mm",
+        "perforated_10_mm": "perf_10_mm",
+        "perforated_5_mm": "perf_5_mm",
         "no barrier": "no\nbarrier",
+        "perforated_10_mm / dark": "perf_10_mm\ndark",
+        "transparent_no_holes / dark": "transp_no_holes\ndark",
+        "transparent_no_holes / light": "transp_no_holes\nlight",
+        "transparent_no_holes":"transp_no_holes",
+        "transparent_holes":"transp_holes",
+        "transparent_holes / light": "transp_holes\nlight",
+        "transparent_holes / dark": "transp_holes\ndark"
     },
     custom_title: dict = {},
     hori_line: int = 0,
@@ -222,9 +229,16 @@ def rewarded_trials(
     alpha: float = 0.7,
     width_lines: float = 0.2,
     custom_labels: dict = {
-        "perforated_10_mm": "perf\n_10_mm",
-        "perforated_5_mm": "perf\n_5_mm",
+        "perforated_10_mm": "perf_10_mm",
+        "perforated_5_mm": "perf_5_mm",
         "no barrier": "no\nbarrier",
+        "perforated_10_mm / dark": "perf_10_mm\ndark",
+        "transparent_no_holes / dark": "transp_no_holes\ndark",
+        "transparent_no_holes / light": "transp_no_holes\nlight",
+        "transparent_no_holes":"transp_no_holes",
+        "transparent_holes":"transp_holes",
+        "transparent_holes / light": "transp_holes\nlight",
+        "transparent_holes / dark": "transp_holes\ndark"
     },
     custom_title: dict = {},
     **kwargs
@@ -271,8 +285,15 @@ def rewarded_trials(
             ## select data from each pair of mice
             data_one_pair_mice = data_behavior_by_outcome.loc[miceIds[i]]
             data_one_pair_mice.sort_index(level=0, inplace=True)
+            
+            ## get all the barriers which will be plotted
+            barriers = data_one_pair_mice.index.get_level_values(0).unique().to_list()
+            
+            ## convert every label to a position in x-axis
+            x_data = [barriers.index(barrier) for barrier in data_one_pair_mice.index.get_level_values(0).to_list()]
+            
             ax[i].scatter(
-                x=data_one_pair_mice.index.get_level_values(0).to_list(),
+                x=x_data, #data_one_pair_mice.index.get_level_values(0).to_list(),
                 y=data_one_pair_mice.values,
                 c=(data_one_pair_mice.index.get_level_values(0)).map(
                     lambda x: colors[x]
@@ -304,14 +325,14 @@ def rewarded_trials(
                 ],
             )
             
-            #barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
+            barriers = [custom_labels[i] if i in custom_labels else i for i in barriers]
             ax[i].set_xlabel(
                 miceIds[i] + (custom_title.get(miceIds[i]) if custom_title.get(miceIds[i]) else "")
                 )
             ax[i].set_xlim(locs[0][0] - 0.2, locs[0][-1] + 0.2)
             ax[i].set_yticks(np.arange(0, data_behavior_by_outcome.max(), 10))
-            # ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
-            # ax[i].set_xticks(ticks=np.unique(x_data), labels=barriers)
+            ax[i].set_xlim(0 - 0.2, max(x_data) + 0.2)
+            ax[i].set_xticks(ticks=np.unique(x_data), labels=barriers)
         ax[0].set_ylabel("Rewarded trials")
 
     else:
