@@ -14,8 +14,10 @@ data = lbd.collect_behavior_data(
         # "coop024x025": [("2023-09-09", "2023-09-17")],
         # "coop022x023": [("2023-09-25", "2023-10-06")],
         ## dark vs light ( transparent no holes)
-        "coop026x027": [("2023-09-27", "2023-09-28"), ("2023-09-30", "2023-10-01"), ("2023-10-03", "2023-10-03")],
-        "coop024x025": [("2023-10-22", "2023-10-27")]
+        # "coop026x027": [("2023-09-27", "2023-09-28"), ("2023-09-30", "2023-10-01"), ("2023-10-03", "2023-10-03")],
+        # "coop024x025": [("2023-10-22", "2023-10-27")],
+        "coop028x029": [("2023-10-15", "2023-10-26")]
+        
     }
 )
 data = lbd.correct_data_with_excel(
@@ -26,7 +28,7 @@ data = lbd.correct_data_with_excel(
 
 pfa.pct_rewarded_trials(
     data,
-    colors={"perforated_10_mm / dark": "blue", "transparent_no_holes / dark": "purple"},
+    colors={"perforated_10_mm / dark": "blue", "transparent_no_holes / dark": "purple", "transparent_no_holes / light": "blue"},
     custom_labels={
         "perforated_10_mm / dark": "perf_10_mm\ndark",
         "transparent_no_holes / dark": "transp_no_holes\ndark",

@@ -109,7 +109,7 @@ def pct_rewarded_trials(
     possible_barriers = data_behavior["BarrierType"].unique()
     if not(all([i in colors.keys() for i in possible_barriers])):
         print("--> Not all barriers have a color. Automatic color selection <---")
-        colors = {key: np.random.rand(3) for key in possible_barriers}
+        colors = {i:np.random.rand(3) for i in possible_barriers}
 
     ## limit dataframe to the columns we need for comfort
     data_behavior = data_behavior.loc[
@@ -226,7 +226,8 @@ def rewarded_trials(
         "perforated_5_mm": "perf\n_5_mm",
         "no barrier": "no\nbarrier",
     },
-    custom_title: dict = {}
+    custom_title: dict = {},
+    **kwargs
 ):
     """_summary_:
     This categorical scatter plot is for analyze the number of trials between different barriers. The developer can filter by the outcome of preference.
@@ -261,7 +262,7 @@ def rewarded_trials(
 
     miceIds = data_behavior_by_outcome.index.unique(0).to_list()
     number_of_mice = len(miceIds)
-    fig, ax = plt.subplots(1, number_of_mice, sharey=True)
+    fig, ax = plt.subplots(1, number_of_mice, sharey=True, **kwargs)
     locs = plt.xticks()
     
 
