@@ -36,10 +36,14 @@ for nSub in range(len(subject)):
     numLicksL = bdata['nLicksLeft'][-1]
     numLicksR = bdata['nLicksRight'][-1]
     if 'interrupt' in bdata.labels['outcome']:
-        numInterruptL = bdata['nInterruptsLeft'][-1]
+        numInterruptL = bdata['nInterruptsLeft'][-1] 
+        numInterruptL = bdata['nInterruptsByLickL'][-1] #new 10/2023
         numInterruptR = bdata['nInterruptsRight'][-1]
+        numInterruptR = bdata['nInterruptsByRightLick'][-1] #new
         numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
+        numEarlyLicksL = bdata['nEarlyByLicksLeft'][-1] #new 10/2023
         numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
+        numEarlyLicksR = bdata['nEarlyByLicksRight'][-1] #new 10/2023 #still might have issues running/might be in wrong place
         numNoResponseL = bdata['nNoResponsesLeft'][-1]
         numNoResponseR = bdata['nNoResponsesRight'][-1]
     print()
@@ -114,7 +118,9 @@ for nSub in range(len(subject)):
             print(f'Ending ITI = {itiEnd}s')
             if 'interrupt' in bdata.labels['outcome']:
                 print(f'Interrupts L: {numInterruptL}')
+                print(f'Interrupts L: {nInterruptsByLick}') #new 10/2023
                 print(f'Interrupts R: {numInterruptR}')
+                print(f'Interrupts R: {nnInterruptsByLick}') #new 10/2023
             if bdata['interTrialIntervalMean'][-1] >= 2.5:
                 print('move to next stage')
             else:
