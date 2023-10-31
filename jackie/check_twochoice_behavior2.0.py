@@ -41,9 +41,9 @@ for nSub in range(len(subject)):
         #numInterruptR = bdata['nInterruptsRight'][-1]
         numInterruptR = bdata['nInterruptsByLickR'][-1] #new
         #numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
-        numEarlyLicksL = bdata['nEarlyByLicksLeft'][-1] #new 10/2023
+        numEarlyLicksL = bdata['nEarlyByLicksL'][-1] #new 10/2023
         #numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
-        numEarlyLicksR = bdata['nEarlyByLicksRight'][-1] #new 10/2023 #still might have issues running/might be in wrong place
+        numEarlyLicksR = bdata['nEarlyByLicksR'][-1] #new 10/2023 #still might have issues running/might be in wrong place
         numNoResponseL = bdata['nNoResponsesLeft'][-1]
         numNoResponseR = bdata['nNoResponsesRight'][-1]
 
