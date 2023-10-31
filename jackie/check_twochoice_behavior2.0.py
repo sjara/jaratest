@@ -47,11 +47,11 @@ for nSub in range(len(subject)):
         numNoResponseL = bdata['nNoResponsesLeft'][-1]
         numNoResponseR = bdata['nNoResponsesRight'][-1]
 
-        elif: 
-            numInterruptL = bdata['nInterruptsLeft'][-1] 
-            numInterruptR = bdata['nInterruptsRight'][-1]
-            #numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
-            #numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
+    elif: 
+        numInterruptL = bdata['nInterruptsLeft'][-1] 
+        numInterruptR = bdata['nInterruptsRight'][-1]
+        #numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
+        #numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
             
     print()
     print(subject[nSub])
