@@ -47,7 +47,7 @@ for nSub in range(len(subject)):
         numNoResponseL = bdata['nNoResponsesLeft'][-1]
         numNoResponseR = bdata['nNoResponsesRight'][-1]
 
-        else: 
+        if: 
             numInterruptL = bdata['nInterruptsLeft'][-1] 
             numInterruptR = bdata['nInterruptsRight'][-1]
             numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
