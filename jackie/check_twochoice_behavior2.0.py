@@ -37,9 +37,9 @@ for nSub in range(len(subject)):
     numLicksR = bdata['nLicksRight'][-1]
     if 'interrupt' in bdata.labels['outcome']:
         #numInterruptL = bdata['nInterruptsLeft'][-1] 
-        numInterruptL = bdata['ninterruptsByLickL'][-1] #new 10/2023
+        numInterruptL = bdata['nInterruptsByLickL'][-1] #new 10/2023
         #numInterruptR = bdata['nInterruptsRight'][-1]
-        #numInterruptR = bdata['nInterruptsByLickR'][-1] #new
+        numInterruptR = bdata['nInterruptsByLickR'][-1] #new
         numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
         #numEarlyLicksL = bdata['nEarlyByLicksL'][-1] #new 10/2023
         numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
