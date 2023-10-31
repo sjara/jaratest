@@ -36,16 +36,23 @@ for nSub in range(len(subject)):
     numLicksL = bdata['nLicksLeft'][-1]
     numLicksR = bdata['nLicksRight'][-1]
     if 'interrupt' in bdata.labels['outcome']:
-        numInterruptL = bdata['nInterruptsLeft'][-1] 
+        #numInterruptL = bdata['nInterruptsLeft'][-1] 
         numInterruptL = bdata['nInterruptsByLickL'][-1] #new 10/2023
-        numInterruptR = bdata['nInterruptsRight'][-1]
+        #numInterruptR = bdata['nInterruptsRight'][-1]
         numInterruptR = bdata['nInterruptsByRightLick'][-1] #new
-        numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
+        #numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
         numEarlyLicksL = bdata['nEarlyByLicksLeft'][-1] #new 10/2023
-        numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
+        #numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
         numEarlyLicksR = bdata['nEarlyByLicksRight'][-1] #new 10/2023 #still might have issues running/might be in wrong place
         numNoResponseL = bdata['nNoResponsesLeft'][-1]
         numNoResponseR = bdata['nNoResponsesRight'][-1]
+
+        elif: 
+            numInterruptL = bdata['nInterruptsLeft'][-1] 
+            numInterruptR = bdata['nInterruptsRight'][-1]
+            numEarlyLicksL = bdata['nEarlyLicksLeft'][-1]
+            numEarlyLicksR = bdata['nEarlyLicksRight'][-1]
+            
     print()
     print(subject[nSub])
     numTrials = len(bdata['taskMode'])
