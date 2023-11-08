@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from load_behavior_data import collect_behavior_data, correct_data_with_excel
+#from load_behavior_data import collect_behavior_data, correct_data_with_excel
 
 pd.options.mode.chained_assignment = None
 
@@ -884,39 +884,39 @@ def report(
     fig.tight_layout()
 
 
-data = collect_behavior_data(
-    mice_data={
-        # "coop028x029": [("2023-09-21", "2023-10-04")],
-        "coop026x027": [("2023-09-26", "2023-09-27"),("2023-09-30", "2023-10-01"),("2023-10-02", "2023-10-03")]
-        # "coop024x025": [("2023-09-08", "2023-09-20")],
-        # 'coop022x023':[('2023-07-17','2023-07-28')],
-        #'coop022x023':[('2023-08-29','2023-09-13'),('2023-08-08','2023-08-15'), ('2023-08-17','2023-08-22')],
-        #'coop018x019':[('2023-08-17','2023-08-24')]
-        ## Update evidence report
-        # "coop012x013": [('2023-05-04', '2023-05-15')],
-        # "coop014x015": [('2023-05-11', '2023-05-17'),('2023-06-04', '2023-06-16')],
-        # "coop016x017": [('2023-05-12', '2023-05-17'),('2023-06-04','2023-06-16'), ('2023-08-23','2023-09-01')],
-        # "coop018x019": [('2023-05-08', '2023-05-19')]
-        ## Add evidence to dark vs light report
-        # "coop014x015": [('2023-05-11', '2023-05-17'),('2023-06-04', '2023-06-16')],
-        # "coop016x017": [('2023-05-12', '2023-05-17'),('2023-06-04','2023-06-16'), ('2023-08-23','2023-09-01')],
-        # "coop022x023": [('2023-08-08', '2023-08-15'),('2023-08-18', '2023-08-22')],
-        ## Performance across time
-        # "coop028x029": [("2023-09-16", "2023-10-02")],
-        # "coop026x027": [("2023-08-21", "2023-09-07")],
-        # "coop024x025": [("2023-08-25", "2023-09-07")],
-        # "coop018x019": [("2023-05-05", "2023-05-19")]
+# data = collect_behavior_data(
+#     mice_data={
+#         "coop028x029": [("2023-09-21", "2023-10-04")],
+#         "coop026x027": [("2023-09-26", "2023-09-27"),("2023-09-30", "2023-10-01"),("2023-10-02", "2023-10-03")]
+#         "coop024x025": [("2023-09-08", "2023-09-20")],
+#         'coop022x023':[('2023-07-17','2023-07-28')],
+#         'coop022x023':[('2023-08-29','2023-09-13'),('2023-08-08','2023-08-15'), ('2023-08-17','2023-08-22')],
+#         'coop018x019':[('2023-08-17','2023-08-24')]
+#         # Update evidence report
+#         "coop012x013": [('2023-05-04', '2023-05-15')],
+#         "coop014x015": [('2023-05-11', '2023-05-17'),('2023-06-04', '2023-06-16')],
+#         "coop016x017": [('2023-05-12', '2023-05-17'),('2023-06-04','2023-06-16'), ('2023-08-23','2023-09-01')],
+#         "coop018x019": [('2023-05-08', '2023-05-19')]
+#         # Add evidence to dark vs light report
+#         "coop014x015": [('2023-05-11', '2023-05-17'),('2023-06-04', '2023-06-16')],
+#         "coop016x017": [('2023-05-12', '2023-05-17'),('2023-06-04','2023-06-16'), ('2023-08-23','2023-09-01')],
+#         "coop022x023": [('2023-08-08', '2023-08-15'),('2023-08-18', '2023-08-22')],
+#         # Performance across time
+#         "coop028x029": [("2023-09-16", "2023-10-02")],
+#         "coop026x027": [("2023-08-21", "2023-09-07")],
+#         "coop024x025": [("2023-08-25", "2023-09-07")],
+#         "coop018x019": [("2023-05-05", "2023-05-19")]
         
-    }
-)
-data.sort_values(by="MiceID", inplace=True)
-data = correct_data_with_excel(
-    fileName="coop_seek_and_find_v2_updated.xlsx",
-    sheet_name=data["MiceID"].unique().tolist(),
-    data_collected=data,
-)
-report(data)
+#     }
+# )
+# data.sort_values(by="MiceID", inplace=True)
+# data = correct_data_with_excel(
+#     fileName="coop_seek_and_find_v2_updated.xlsx",
+#     sheet_name=data["MiceID"].unique().tolist(),
+#     data_collected=data,
+# )
+# report(data)
 # pct_rewarded_trials(data)
 # performance_across_time(data)
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
