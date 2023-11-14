@@ -8,7 +8,9 @@
     * `load_data`: It uses `loadbehavior.BehaviorData(behavFile)` to get behavioral data.
     * `collect_behavior_data`: Merge all the behavior data retrieved with `loadbehavior.BehaviorData(behavFile)` into one dataframe.
     * `collect_events`: Merge all the events from the behavior data retrieved with `loadbehavior.BehaviorData(behavFile)` into one dataframe.
-    * `filter_and_group`: Filter the data by the outcome of a trial and to group the data by the number of segmentation in time desired (bins).The last part means that if you consider a 60 min. long behavioral session, 3 bin is equal to intervals of 20 min.  
+    * `filter_and_group`: Filter the data by the outcome of a trial and to group the data by the number of segmentation in time desired (bins).The last part means that if you consider a 60 min. long behavioral session, 3 bin is equal to intervals of 20 min.
+    * `correct_data_with_excel`: Using an excel file to correct the data collected from using the function above described `collect_behavior_data`. This was useful
+    to correct variables which did not affect the training, for example, the barrier. For example, if in the GUI you set the wrong barrier during the session. 
 
 ## Plotting 📊 <a name = "Plotting"></a>
 
