@@ -1,16 +1,17 @@
+# %%
 import h5py
-import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.interpolate import interp1d
 
 
+# %%
 ## Sleap exports a h5 file.
 ## Here we open it and print some of the datasets features
 def open_sleap_h5(filename):
     with h5py.File(filename, "r") as handle:
         dset_names = list(handle.keys())
-        locations = handle["tracks"][:].T
+        locations_perf = handle["tracks"][:].T
         node_names = [n.decode() for n in handle["node_names"][:]]
 
     print("===filename===")
@@ -21,18 +22,19 @@ def open_sleap_h5(filename):
     print(dset_names)
     print()
 
-    print("===locations data shape===")
-    print(locations.shape)
+    print("===locations_perf data shape===")
+    print(locations_perf.shape)
     print()
 
     print("===nodes===")
-    for frame, name in enumerate(node_names):
-        print(f"{frame}: {name}")
+    for i, name in enumerate(node_names):
+        print(f"{i}: {name}")
     print()
 
-    return locations
+    return locations_perf
 
 
+# %%
 ## This is through a lineal model replace the missing values
 ## missing values are instances not predicted by SLEAP
 def fill_missing(Y, kind="linear"):
@@ -45,8 +47,8 @@ def fill_missing(Y, kind="linear"):
     Y = Y.reshape((initial_shape[0], -1))
 
     # Interpolate along each slice.
-    for frame in range(Y.shape[-1]):
-        y = Y[:, frame]
+    for i in range(Y.shape[-1]):
+        y = Y[:, i]
 
         # Build interpolant.
         x = np.flatnonzero(~np.isnan(y))
@@ -61,7 +63,7 @@ def fill_missing(Y, kind="linear"):
         y[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), y[~mask])
 
         # Save slice
-        Y[:, frame] = y
+        Y[:, i] = y
 
     # Restore to initial shape.
     Y = Y.reshape(initial_shape)
@@ -69,50 +71,59 @@ def fill_missing(Y, kind="linear"):
     return Y
 
 
-def animacion_mice(locations):
-    ## Nodes
-    ## array structure:
-    # [Frames, Nodes, x/y coord, number animals ]
-    HEAD_INDEX = 0
-    BODY_INDEX = 1
-    TAIL_INDEX = 2
-
-    head_loc = locations[:, HEAD_INDEX, :, :]
-    body_loc = locations[:, BODY_INDEX, :, :]
-    tail_loc = locations[:, TAIL_INDEX, :, :]
-    fig, ax = plt.subplots(figsize=(10, 4))
-    head = ax.scatter(x=head_loc[0, 1], y=head_loc[0, 0])
-    body = ax.scatter(x=body_loc[0, 1], y=body_loc[0, 0])
-    tail = ax.scatter(x=tail_loc[0, 1], y=tail_loc[0, 0])
-    ax.set_xlim(0, 800)
-    ax.set_ylim(0, 800)
-    ax.legend([head, body, tail], ["head", "body", "tail"])
-    # ax.invert_xaxis()
-    # ax.invert_yaxis()
-
-    def animate(frame):
-        print("frames: ", frame)
-        head.set_offsets((head_loc[frame, 1], head_loc[frame, 0]))
-        body.set_offsets((body_loc[frame, 1], body_loc[frame, 0]))
-        tail.set_offsets((tail_loc[frame, 1], tail_loc[frame, 0]))
-
-        return (body,)
-
-    ani = animation.FuncAnimation(
-        fig, animate, repeat=True, frames=len(locations) - 1, interval=100
-    )
-
-    # To save the animation using Pillow as a gif
-    # writer = animation.PillowWriter(fps=15,
-    #                                 metadata=dict(artist='Me'),
-    #                                 bitrate=1800)
-    # ani.save('scatter.gif', writer=writer)
-
-    plt.show()
-
-
-locations = open_sleap_h5(
-    "/Users/jjpc/Documents/SLEAP_data/coop026x027_20231016-1.simple.instance.2023-11-08.predictions.000_coop026x027_20231016-1.analysis.h5"
+# %%
+locations_perf = open_sleap_h5(
+    "/Users/jjpc/Documents/SLEAP_data/top-down/coop026x027_20231016-1.simple.instance.greedy.2023-11-15.predictions.000_coop026x027_20231016-1.analysis.h5"
 )
-locations = fill_missing(locations)
-animacion_mice(locations=locations[0:500])
+locations_perf = fill_missing(locations_perf)
+locations_solid = open_sleap_h5(
+    "/Users/jjpc/Documents/SLEAP_data/top-down/coop026x027_20231017-1.simple.instance.greedy.2023-11-16.predictions.000_coop026x027_20231017-1.analysis.h5"
+)
+locations_solid = fill_missing(locations_solid)
+
+# %%
+## array structure:
+# [Frames, Nodes, x/y coord, number animals ]
+HEAD_INDEX = 0
+BODY_INDEX = 1
+TAIL_INDEX = 2
+
+head_loc_perf = locations_perf[:, HEAD_INDEX, :, :]
+body_loc_perf = locations_perf[:, BODY_INDEX, :, :]
+tail_loc_perf = locations_perf[:, TAIL_INDEX, :, :]
+
+head_loc_solid = locations_solid[:, HEAD_INDEX, :, :]
+body_loc_solid = locations_solid[:, BODY_INDEX, :, :]
+tail_loc_solid = locations_solid[:, TAIL_INDEX, :, :]
+
+# %%
+head_loc_perf[0]
+
+# %%
+## Get x position of the body
+## Is it representing the pattern of synchronization?
+fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(12, 4), sharex=True)
+
+ax[0].set_title("Perforated")
+ax[0].plot(body_loc_perf[10000:20000, 0, 0], label="mice-1-x")
+ax[0].plot(body_loc_perf[10000:20000, 0, 1], label="mice-2-x")
+ax[1].set_title("Solid")
+ax[1].plot(body_loc_solid[10000:20000, 0, 0], label="mice-1-x")
+ax[1].plot(body_loc_solid[10000:20000, 0, 1], label="mice-2-x")
+plt.xlabel("Frames")
+plt.ylabel("x coords")
+plt.tight_layout()
+# plt.plot(body_loc_perf[10000:20000,1,0] * -1, label='mice-1-y')
+# plt.plot(body_loc_perf[10000:20000,1,1] * -1, label='mice-2-y')
+
+# %%
+## Get x position of the body
+## Is it representing the pattern of synchronization?
+plt.figure(figsize=(12, 4))
+
+plt.plot(body_loc_solid[10000:20000, 0, 0], label="mice-1-x")
+plt.plot(body_loc_solid[10000:20000, 0, 1], label="mice-2-x")
+# plt.plot(body_loc_solid[10000:20000,1,0] * -1, label='mice-1-y')
+# plt.plot(body_loc_solid[10000:20000,1,1] * -1, label='mice-2-y')
+plt.xlabel("Frames")
+plt.ylabel("x coords")
