@@ -16,7 +16,7 @@ data = lbd.collect_behavior_data(
         ## dark vs light ( transparent no holes)
         # "coop026x027": [("2023-09-27", "2023-09-28"), ("2023-09-30", "2023-10-01"), ("2023-10-03", "2023-10-03")],
         # "coop024x025": [("2023-10-22", "2023-10-27")],
-        "coop028x029": [("2023-10-15", "2023-10-26")]
+        
         
     }
 )
@@ -35,5 +35,4 @@ pfa.pct_rewarded_trials(
         "transparent_no_holes / light": "transp_no_holes\nlight"
     },
 )
-# pfa.rewarded_trials(data)
 plt.show()

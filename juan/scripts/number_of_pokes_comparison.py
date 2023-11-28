@@ -33,7 +33,6 @@ data2 = lbd.collect_behavior_data(
         ],
     }
 )
-data2.sort_values(by="MiceID", inplace=True)
 data2 = lbd.correct_data_with_excel(
     fileName="coop_seek_and_find_v2_updated.xlsx",
     sheet_name=data2["MiceID"].unique().tolist(),
@@ -49,12 +48,12 @@ data3 = lbd.collect_behavior_data(
         ]
     }
 )
-data3.sort_values(by="MiceID", inplace=True)
 data3 = lbd.correct_data_with_excel(
     fileName="coop_seek_and_find_v2_updated.xlsx",
     sheet_name=data3["MiceID"].unique().tolist(),
     data_collected=data3,
 )
+
 
 # PLOT
 pfa.pct_rewarded_trials(data2, hori_line=(len(data2["BarrierType"].unique()) - 1) / 2)
