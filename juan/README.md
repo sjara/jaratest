@@ -1,7 +1,7 @@
 # Test scripts by Juan Picón.
 
 * You need to install [https://github.com/sjara/jaratoolbox].
-* Also, once you clone this repo and change the working directory to this folder (juan), you must run `bash setup.sh`. this file will try to remove ubuntu packages of pandas and openpyxl and reinstalling them using pip. The reason is that this code was done in the last version of these packages and Ubuntu stopped updating this packages, which causes a syntax problem, due to how old the packages are.
+* Also, once you clone this repo and change the working directory to this folder (juan), you must run `bash setup.sh`. this file will try to remove ubuntu packages of pandas and openpyxl and reinstall them using pip. The reason is that this code was done in the last version of these packages and Ubuntu stopped updating this packages, which causes a syntax problem, due to how old the packages are.
 * The folder ```scripts/``` contains the code to reproduce the graphs presented on the different reports.
 * The folder ```utils/``` contains the functions use the functions described in  [Utils](#Utils) and [Plotting](#Plotting) below.
   
