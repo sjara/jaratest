@@ -67,6 +67,7 @@ condEachSortedTrial, sortedTrials = np.nonzero(trialsEachCond.T)
 
 plt.clf()
 colors_categories = ["red", "blue", "green", "cyan", "purple"]
+num_instances_each_category = len(possibleStims) // TOTAL_CATEGORIES
 for uniq_stim, instance_id in enumerate(possibleStims):
     
     current_instance = np.where(condEachSortedTrial == instance_id)
@@ -114,7 +115,7 @@ for uniq_stim, instance_id in enumerate(possibleStims):
     new_mat = total_spikes_all_cells[CELLS, :]
 
     ## plot the trajectory of the cells
-    curr_color = colors_categories[instance_id // TOTAL_CATEGORIES]
+    curr_color = colors_categories[instance_id // num_instances_each_category]
     plt.plot(new_mat[0, :], new_mat[1, :], '.-', color=curr_color)
     ## plot only the first point as a circle
     plt.plot(new_mat[0, 0], new_mat[1, 0], 'ko')

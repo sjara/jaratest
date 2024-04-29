@@ -119,6 +119,7 @@ print("Shape of time aligned matrix: ", time_aligned_matrix_all_instances.shape)
 
 ## use PCA to reduce dimensionality of the time_aligned_matrix_all_instances
 DIMS = 2
+num_instances_each_category = len(possibleStims) // TOTAL_CATEGORIES
 
 ## reshape the time_aligned_matrix_all_instances to 2D array so that rows = cells and columns = bins from all instances stacked from 0 to 19
 time_aligned_matrix_all_instances_transposed = time_aligned_matrix_all_instances.transpose(1, 0, 2)
@@ -157,12 +158,12 @@ plt.title('2D PCA of Spike Data')
 
 ## plot the PCA transformed matrix
 for instance_id, instance_values in enumerate(pca_matrix_all_instances_original):
-    curr_color = colors_categories[instance_id // TOTAL_CATEGORIES]
+    curr_color = colors_categories[instance_id // num_instances_each_category]
     print(instance_values.shape)
     plot_pca = ax.plot(instance_values[0, :], instance_values[1, :], '.-', color=curr_color)
     ## plot only the first point as a circle
     plt.plot(instance_values[0, 0], instance_values[1, 0], 'ko', markersize=10)
-    plt.plot(instance_values[0, -1], instance_values[1, -1], 'ro', markersize=10)
+    plt.plot(instance_values[0, -1], instance_values[1, -1], 'yo', markersize=10)
 
 
 ax.set_xlabel('Principal Component 1')

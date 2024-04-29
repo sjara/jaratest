@@ -117,53 +117,46 @@ for uniq_stim, instance_id in enumerate(possibleStims):
 time_aligned_matrix_all_instances = np.array(time_aligned_matrix_all_instances)
 print("Shape of time aligned matrix: ", time_aligned_matrix_all_instances.shape)
 
-## use PCA to reduce dimensionality of the time_aligned_matrix_all_instances
-DIMS = 2
+## calculate the distance between the time_aligned_matrix for each instance
+## the distance is calculated using the euclidean distance between the time_aligned_matrix for each instance as a function of time
+## distance (matrix A, matrix B, time) = |vector A - vector B| for each time point
 
-## reshape the time_aligned_matrix_all_instances to 2D array so that rows = cells and columns = bins from all instances stacked from 0 to 19
-time_aligned_matrix_all_instances_transposed = time_aligned_matrix_all_instances.transpose(1, 0, 2)
-final_shape = (time_aligned_matrix_all_instances_transposed.shape[0], -1)
-time_aligned_matrix_all_instances_reshaped = time_aligned_matrix_all_instances_transposed.reshape(final_shape)
+## create a dictionary to store the distance between the time_aligned_matrix for each instance
+distance_all_instances = {} ## key: instance_id_1, instance_id_2, value: [distance array for each time point for two instances]
+for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
+    for other_instance_id, other_instance_value in enumerate(time_aligned_matrix_all_instances):
+        if instance_id != other_instance_id:
+            time_array = np.arange(0, instance_value.shape[1], 1)
+            distance_all_time_points = []
+            for time_point in time_array:
+                distance_vector = np.abs(instance_value[:, time_point] - other_instance_value[:, time_point])
+                distance = np.sqrt(np.sum(distance_vector))
+                distance_all_time_points.append(distance)
+            distance_all_instances[(instance_id, other_instance_id)] = distance_all_time_points
 
-# ## test whether the reshaping is correct - we expect the first 13 columns to be the same as the first instance
-# print(time_aligned_matrix_all_instances[0] == time_aligned_matrix_all_instances_reshaped[:, 0:13])
-# print(time_aligned_matrix_all_instances[1] == time_aligned_matrix_all_instances_reshaped[:, 13:26])
+## print the distance all instances dictionary
+# for key, value in distance_all_instances.items():
+#     print(key, len(value))
 
-## perform PCA on the reshaped 2D array 
-pca = PCA(n_components=DIMS)
-pca_matrix_all_instances = pca.fit_transform(time_aligned_matrix_all_instances_reshaped.T)
+## create a category instance dictionary to store instances for each category
+category_instance_dict = {} ## key: category_id, value: [instance_ids]
+categories = list((np.arange(0, TOTAL_CATEGORIES, 1)))
+print(categories)
+num_instances_each_category = len(possibleStims) // TOTAL_CATEGORIES
+for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
+    instance_category = categories[instance_id // num_instances_each_category]
+    if instance_category in category_instance_dict:
+        category_instance_dict[instance_category].append(instance_id)
+    else:
+        category_instance_dict[instance_category] = [instance_id]
 
-pca_matrix_all_instances = pca_matrix_all_instances.T
-
-## now reshape the pca_matrix_all_instances to 3D array reflecting the original matrix 
-num_trials = possibleStims.shape[0]
-num_cells_pca = DIMS 
-num_bins_per_trial = time_aligned_matrix_all_instances.shape[2] 
-
-pca_matrix_all_instances_reshaped_original = pca_matrix_all_instances.reshape(num_cells_pca, num_trials, num_bins_per_trial)
-
-## transpose the matrix so that the dimension information is preserved
-pca_matrix_all_instances_original = pca_matrix_all_instances_reshaped_original.transpose(1, 0, 2)
-
-# ## check if the reshaping is correct
-# print(pca_matrix_all_instances_original[0] == pca_matrix_all_instances[:, 0:13])
-
-
-## plot the PCA transformed matrix
-
-fig = plt.figure(figsize=(8, 6))
-ax = fig.add_subplot(111)
-plt.title('2D PCA of Spike Data')
-
-## plot the PCA transformed matrix
-for instance_id, instance_values in enumerate(pca_matrix_all_instances_original):
-    curr_color = colors_categories[instance_id // TOTAL_CATEGORIES]
-    print(instance_values.shape)
-    plot_pca = ax.plot(instance_values[0, :], instance_values[1, :], '.-', color=curr_color)
-    ## plot only the first point as a circle
-    plt.plot(instance_values[0, 0], instance_values[1, 0], 'ko', markersize=10)
+print(category_instance_dict)
 
 
-ax.set_xlabel('Principal Component 1')
-ax.set_ylabel('Principal Component 2')
-plt.show()
+
+# ## plot the distance between the time_aligned_matrix for each instance
+# fig, ax = plt.subplots()
+# for key, value in distance_all_instances.items():
+#     ax.plot(value, label = key)
+# ax.legend()
+# plt.show()
