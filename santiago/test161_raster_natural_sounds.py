@@ -7,6 +7,7 @@ Show raster plots of neurons in response to natural sounds.
 
 import os
 import sys
+sys.path.append("/Users/praveslamichhane/src/jaratoolbox/")
 import numpy as np
 import matplotlib.pyplot as plt
 from jaratoolbox import settings
@@ -17,7 +18,7 @@ from jaratoolbox import behavioranalysis
 from importlib import reload
 reload(celldatabase)
 
-subject = 'feat015'
+subject = '/Users/praveslamichhane/jaralab_data/neuropixels/feat015'
 sessionDate = '2024-03-20'
 probeDepth = 2413
 #sessionDict = {'date':'2024-03-20', 'pdepth':2413, 'sessiontype':'naturalSound'}

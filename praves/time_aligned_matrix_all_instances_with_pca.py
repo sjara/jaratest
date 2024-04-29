@@ -121,39 +121,50 @@ print("Shape of time aligned matrix: ", time_aligned_matrix_all_instances.shape)
 DIMS = 2
 pca_matrix_all_instances = []
 
+## reshape the time_aligned_matrix_all_instances to 2D array so that rows = cells and columns = bins from all instances stacked from 0 to 19
+time_aligned_matrix_all_instances_transposed = time_aligned_matrix_all_instances.transpose(1, 0, 2)
+final_shape = (time_aligned_matrix_all_instances_transposed.shape[0], -1)
+time_aligned_matrix_all_instances_reshaped = time_aligned_matrix_all_instances_transposed.reshape(final_shape)
+
+# ## test whether the reshaping is correct - we expect the first 13 columns to be the same as the first instance
+# print(time_aligned_matrix_all_instances[0] == time_aligned_matrix_all_instances_reshaped[:, 0:13])
+# print(time_aligned_matrix_all_instances[1] == time_aligned_matrix_all_instances_reshaped[:, 13:26])
+
+## perform PCA on the reshaped 2D array 
+pca = PCA(n_components=DIMS)
+pca_matrix_all_instances = pca.fit_transform(time_aligned_matrix_all_instances_reshaped.T)
+
+pca_matrix_all_instances = pca_matrix_all_instances.T
+
+## now reshape the pca_matrix_all_instances to 3D array reflecting the original matrix 
+num_trials = 20
+num_cells_pca = 2 
+num_bins_per_trial = 13 
+
+pca_matrix_all_instances_reshaped_original = pca_matrix_all_instances.reshape(num_cells_pca, num_trials, num_bins_per_trial)
+
+## transpose the matrix so that the dimension information is preserved
+pca_matrix_all_instances_original = pca_matrix_all_instances_reshaped_original.transpose(1, 0, 2)
+
+# ## check if the reshaping is correct
+# print(pca_matrix_all_instances_original[0] == pca_matrix_all_instances[:, 0:13])
+
+
+## plot the PCA transformed matrix
+
 fig = plt.figure(figsize=(8, 6))
 ax = fig.add_subplot(111)
 plt.title('2D PCA of Spike Data')
 
-## perform PCA on the whole 3D array
-time_aligned_matrix_all_instances = time_aligned_matrix_all_instances.reshape(-1, time_aligned_matrix_all_instances.shape[-1])
-print("Shape of time aligned matrix after reshaping: ", time_aligned_matrix_all_instances.shape)
+## plot the PCA transformed matrix
+for instance_id, instance_values in enumerate(pca_matrix_all_instances_original):
+    curr_color = colors_categories[instance_id // TOTAL_CATEGORIES]
+    print(instance_values.shape)
+    plot_pca = ax.plot(instance_values[0, :], instance_values[1, :], '.-', color=curr_color)
+    ## plot only the first point as a circle
+    plt.plot(instance_values[0, 0], instance_values[1, 0], 'ko')
 
-
-
-# for instance_id, instance in enumerate(time_aligned_matrix_all_instances):
-#     print("Shape of instance: ", instance.shape)
-#     instance = instance.T
-#     pca = PCA(n_components=DIMS)
-#     instance_pca = pca.fit_transform(instance)
-
-#     print("Shape of PCA transformed matrix: ", instance_pca.shape)
-#     print("\n")
-
-#     ## append the PCA transformed matrix to the pca_matrix
-#     instance_pca = instance_pca.T
-#     pca_matrix_all_instances.append(instance_pca)
-
-#     ## plot the PCA transformed matrix
-#     curr_color = colors_categories[instance_id // TOTAL_CATEGORIES]
-#     plot_pca = ax.plot(instance_pca[0, :], instance_pca[1, :], color=curr_color)
-#     ## plot only the first point as a circle
-#     plt.plot(instance_pca[0, 0], instance_pca[1, 0], 'ko')
 
 ax.set_xlabel('Principal Component 1')
 ax.set_ylabel('Principal Component 2')
-# ax.set_zlabel('Principal Component 3')
-# plt.title('3D PCA of Spike Data')
-
-
 plt.show()
