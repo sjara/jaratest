@@ -162,7 +162,6 @@ for instance_id, instance_values in enumerate(pca_matrix_all_instances_original)
     plot_pca = ax.plot(instance_values[0, :], instance_values[1, :], '.-', color=curr_color)
     ## plot only the first point as a circle
     plt.plot(instance_values[0, 0], instance_values[1, 0], 'ko', markersize=10)
-    plt.plot(instance_values[0, -1], instance_values[1, -1], 'ro', markersize=10)
 
 
 ax.set_xlabel('Principal Component 1')
