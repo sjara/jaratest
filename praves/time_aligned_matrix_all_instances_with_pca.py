@@ -119,7 +119,6 @@ print("Shape of time aligned matrix: ", time_aligned_matrix_all_instances.shape)
 
 ## use PCA to reduce dimensionality of the time_aligned_matrix_all_instances
 DIMS = 2
-pca_matrix_all_instances = []
 
 ## reshape the time_aligned_matrix_all_instances to 2D array so that rows = cells and columns = bins from all instances stacked from 0 to 19
 time_aligned_matrix_all_instances_transposed = time_aligned_matrix_all_instances.transpose(1, 0, 2)
@@ -137,9 +136,9 @@ pca_matrix_all_instances = pca.fit_transform(time_aligned_matrix_all_instances_r
 pca_matrix_all_instances = pca_matrix_all_instances.T
 
 ## now reshape the pca_matrix_all_instances to 3D array reflecting the original matrix 
-num_trials = 20
-num_cells_pca = 2 
-num_bins_per_trial = 13 
+num_trials = possibleStims.shape[0]
+num_cells_pca = DIMS 
+num_bins_per_trial = time_aligned_matrix_all_instances.shape[2] 
 
 pca_matrix_all_instances_reshaped_original = pca_matrix_all_instances.reshape(num_cells_pca, num_trials, num_bins_per_trial)
 
