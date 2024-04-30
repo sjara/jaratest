@@ -149,32 +149,31 @@ pca_matrix_all_instances_original = pca_matrix_all_instances_reshaped_original.t
 # ## check if the reshaping is correct
 # print(pca_matrix_all_instances_original[0] == pca_matrix_all_instances[:, 0:13])
 
-# ## create a category instance dictionary to store instances for each category
-# category_instance_dict = {} ## key: category_id, value: [instance_ids]
-# categories = list((np.arange(0, TOTAL_CATEGORIES, 1)))
-# print(categories)
-# num_instances_each_category = len(possibleStims) // TOTAL_CATEGORIES
-# for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
-#     instance_category = categories[instance_id // num_instances_each_category]
-#     if instance_category in category_instance_dict:
-#         category_instance_dict[instance_category].append(instance_id)
-#     else:
-#         category_instance_dict[instance_category] = [instance_id]
+## create a category instance dictionary to store instances for each category
+category_instance_dict = {} ## key: category_id, value: [instance_ids]
+categories = list((np.arange(0, TOTAL_CATEGORIES, 1)))
+print(categories)
+num_instances_each_category = len(possibleStims) // TOTAL_CATEGORIES
+for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
+    instance_category = categories[instance_id // num_instances_each_category]
+    if instance_category in category_instance_dict:
+        category_instance_dict[instance_category].append(instance_id)
+    else:
+        category_instance_dict[instance_category] = [instance_id]
 
-# print(category_instance_dict)
+print(category_instance_dict)
 
 
 ## plot the PCA transformed matrix
 
 fig, axs = plt.subplots(2, 3, figsize=(15, 10))
 axs = axs.flatten()
-plt.title('2D PCA of Spike Data')
 
 ## plot the PCA transformed matrix all instances
 for instance_id, instance_values in enumerate(pca_matrix_all_instances_original):
     curr_color = colors_categories[instance_id // num_instances_each_category]
-    print(instance_values.shape)
-    ax = axs[instance_id // num_instances_each_category]
+    # print(instance_values.shape)
+    ax = axs[0]
     plot_pca = ax.plot(instance_values[0, :], instance_values[1, :], '.-', color=curr_color)
     ## plot only the first point as a circle
     plt.plot(instance_values[0, 0], instance_values[1, 0], 'ko', markersize=10)
@@ -182,7 +181,7 @@ for instance_id, instance_values in enumerate(pca_matrix_all_instances_original)
 
 ax.set_xlabel('Principal Component 1')
 ax.set_ylabel('Principal Component 2')
-plt.show()
+ax.title.set_text('2D PCA of Spike Data all instances')
 
 
 
@@ -197,6 +196,11 @@ for key, values in category_instance_dict.items():
         # plot only the first point as a circle
         ax.plot(instance_values[0, 0], instance_values[1, 0], 'ko', markersize=10)
         ax.plot(instance_values[0, -1], instance_values[1, -1], 'yo', markersize=10)
+    ax.set_xlim(-70, 200)
+    ax.set_ylim(-100, 200)
     ax.set_xlabel('Principal Component 1')
     ax.set_ylabel('Principal Component 2')
-    plt.show()
+    ax.title.set_text('Category: {}'.format(key))
+
+plt.tight_layout()
+plt.show()
