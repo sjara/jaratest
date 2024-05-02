@@ -157,6 +157,10 @@ print(category_instance_dict)
 ## plot the distance between the time_aligned_matrix for each instance
 fig, ax = plt.subplots()
 for key, value in distance_all_instances.items():
-    ax.plot(value, label = key)
-ax.legend()
-plt.show()
+    for category_id, instance_ids in category_instance_dict.items():
+        if key[0] in instance_ids and key[1] in instance_ids:
+            if key[0] < key[1]:
+                # print(key)
+                plt.plot(value, label = key, color = colors_categories[category_id])
+    ax.legend()
+    plt.show()
