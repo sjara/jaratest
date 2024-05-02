@@ -154,13 +154,30 @@ print(category_instance_dict)
 
 
 
-## plot the distance between the time_aligned_matrix for each instance
-fig, ax = plt.subplots()
-for key, value in distance_all_instances.items():
-    for category_id, instance_ids in category_instance_dict.items():
+# ## plot the distance between the time_aligned_matrix for each instance
+# fig, axs = plt.subplots(2, 3)
+# axs = axs.flatten()
+# for category_id, instance_ids in category_instance_dict.items():
+#     for key, value in distance_all_instances.items():
+#         if key[0] in instance_ids and key[1] in instance_ids:
+#             if key[0] < key[1]:
+#                 # print(key)
+#                 # ax = axs[category_id]
+#                 axs.plot(value, label = key, color = colors_categories[category_id])
+#                 ax.legend()
+#     plt.title(f"Distance as a function of time for Category {category_id}")
+#     plt.show()
+
+fig, axs = plt.subplots(2, 3)
+axs = axs.flatten()  # Flatten the array of axes for easier indexing
+
+for category_id, instance_ids in category_instance_dict.items():
+    ax = axs[category_id]  # Get the specific axis for this category
+    for key, value in distance_all_instances.items():
         if key[0] in instance_ids and key[1] in instance_ids:
             if key[0] < key[1]:
-                # print(key)
-                plt.plot(value, label = key, color = colors_categories[category_id])
-    ax.legend()
-    plt.show()
+                ax.plot(value, label=str(key), color=colors_categories[category_id])  # Plot on the specific subplot
+    ax.set_title(f"Distance as a function of time for Category {category_id}")
+    ax.legend()  # Show legend on the specific subplot
+
+plt.show()  # Display all plots
