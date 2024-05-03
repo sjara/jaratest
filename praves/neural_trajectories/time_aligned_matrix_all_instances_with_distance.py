@@ -129,9 +129,8 @@ for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
             time_array = np.arange(0, instance_value.shape[1], 1)
             distance_all_time_points = []
             for time_point in time_array:
-                distance_vector = np.abs(instance_value[:, time_point] - other_instance_value[:, time_point])
-                distance = np.sqrt(np.sum(distance_vector))
-                distance_all_time_points.append(distance)
+                distance_vector = np.linalg.norm(instance_value[:, time_point] - other_instance_value[:, time_point])
+                distance_all_time_points.append(distance_vector)
             distance_all_instances[(instance_id, other_instance_id)] = distance_all_time_points
 
 ## print the distance all instances dictionary
@@ -178,6 +177,7 @@ for category_id, instance_ids in category_instance_dict.items():
             if key[0] < key[1]:
                 ax.plot(value, label=str(key), color=colors_categories[category_id])  # Plot on the specific subplot
     ax.set_title(f"Distance as a function of time for Category {category_id}")
+    
     ax.legend()  # Show legend on the specific subplot
 
 plt.show()  # Display all plots
