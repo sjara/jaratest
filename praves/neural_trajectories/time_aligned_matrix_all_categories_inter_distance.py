@@ -7,9 +7,7 @@ This script is used to create a time aligned matrix of the spike counts for each
 import os 
 import sys
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
-from sklearn.decomposition import PCA
 # from mpl_toolkits.mplot3d import Axes3D
 
 ## define the path to the jaratoolbox directory
@@ -117,25 +115,6 @@ for uniq_stim, instance_id in enumerate(possibleStims):
 time_aligned_matrix_all_instances = np.array(time_aligned_matrix_all_instances)
 print("Shape of time aligned matrix: ", time_aligned_matrix_all_instances.shape)
 
-## calculate the distance between the time_aligned_matrix for each instance
-## the distance is calculated using the euclidean distance between the time_aligned_matrix for each instance as a function of time
-## distance (matrix A, matrix B, time) = |vector A - vector B| for each time point
-
-## create a dictionary to store the distance between the time_aligned_matrix for each instance
-distance_all_instances = {} ## key: instance_id_1, instance_id_2, value: [distance array for each time point for two instances]
-for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
-    for other_instance_id, other_instance_value in enumerate(time_aligned_matrix_all_instances):
-        if instance_id != other_instance_id:
-            time_array = np.arange(0, instance_value.shape[1], 1)
-            distance_all_time_points = []
-            for time_point in time_array:
-                distance_vector = np.linalg.norm(instance_value[:, time_point] - other_instance_value[:, time_point])
-                distance_all_time_points.append(distance_vector)
-            distance_all_instances[(instance_id, other_instance_id)] = distance_all_time_points
-
-## print the distance all instances dictionary
-# for key, value in distance_all_instances.items():
-#     print(key, len(value))
 
 ## create a category instance dictionary to store instances for each category
 category_instance_dict = {} ## key: category_id, value: [instance_ids]
@@ -152,32 +131,46 @@ for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
 print(category_instance_dict)
 
 
+## calculate the distance between the time_aligned_matrix for each instance
+## the distance is calculated using the euclidean distance between the time_aligned_matrix for each instance as a function of time
+## distance (matrix A, matrix B, time) = |vector A - vector B| for each time point
 
-# ## plot the distance between the time_aligned_matrix for each instance
-# fig, axs = plt.subplots(2, 3)
-# axs = axs.flatten()
-# for category_id, instance_ids in category_instance_dict.items():
-#     for key, value in distance_all_instances.items():
-#         if key[0] in instance_ids and key[1] in instance_ids:
-#             if key[0] < key[1]:
-#                 # print(key)
-#                 # ax = axs[category_id]
-#                 axs.plot(value, label = key, color = colors_categories[category_id])
-#                 ax.legend()
-#     plt.title(f"Distance as a function of time for Category {category_id}")
-#     plt.show()
-
-fig, axs = plt.subplots(2, 3)
-axs = axs.flatten()  # Flatten the array of axes for easier indexing
-
+## create a dictionary to store the distance between the time_aligned_matrix for each instance
+distance_all_categories = {} ## key: (category_id_1, category_id_2), value: {(instance a, instance b): [distance array for each time point for two instances]}
 for category_id, instance_ids in category_instance_dict.items():
-    ax = axs[category_id]  # Get the specific axis for this category
-    for key, value in distance_all_instances.items():
-        if key[0] in instance_ids and key[1] in instance_ids:
-            if key[0] < key[1]:
-                ax.plot(value, label=str(key), color=colors_categories[category_id])  # Plot on the specific subplot
-    ax.set_title(f"Distance as a function of time for Category {category_id}")
-    
-    ax.legend()  # Show legend on the specific subplot
+    for other_category_id, other_instance_ids in category_instance_dict.items():
+        if category_id < other_category_id:
+            distance_all_instances = {} ## key: instance_id_1, instance_id_2, value: [distance array for each time point for two instances]
+            for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
+                for other_instance_id, other_instance_value in enumerate(time_aligned_matrix_all_instances):
+                    if (instance_id in instance_ids) and (other_instance_id in other_instance_ids) and (instance_id < other_instance_id):
+                        time_array = np.arange(0, instance_value.shape[1], 1)
+                        distance_all_time_points = []
+                        for time_point in time_array:
+                            distance_vector = np.linalg.norm(instance_value[:, time_point] - other_instance_value[:, time_point])
+                            distance_all_time_points.append(distance_vector)
+                        distance_all_instances[(instance_id, other_instance_id)] = distance_all_time_points
+            distance_all_categories[(category_id, other_category_id)] = distance_all_instances
 
-plt.show()  # Display all plots
+
+## plot distance between categories 
+
+for categories, instance_dicts in distance_all_categories.items():
+    num_plots = len(instance_dicts)
+    # print(num_plots)
+    plot_rows = int(num_plots // np.sqrt(num_plots))
+    plot_cols = int(num_plots // plot_rows)
+    fig, axs = plt.subplots(plot_rows, plot_cols)
+    axs = axs.flatten()  # Flatten the array of axes for easier indexing
+
+    for i, (key, value) in enumerate(instance_dicts.items()):
+        ax = axs[i]
+        ax.plot(value, label=str(key))  # Plot on the specific subplot
+        ax.set_title(f"Distance for Instances {key}")
+        ax.legend()  # Show legend on the specific subplot
+        ax.set_xlabel("Time (bins)")
+        ax.set_ylabel("Distance")
+    
+    plt.title(f"Distance for Categories {categories}")
+    plt.tight_layout()
+    plt.show()  # Display all plots
