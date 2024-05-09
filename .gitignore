@@ -8,6 +8,7 @@
 .emacs*
 .~*
 doc/_build
+.DS_Store 
 
 # C extensions
 *.so
