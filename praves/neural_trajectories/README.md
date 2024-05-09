@@ -7,4 +7,5 @@ This folder contains the source files associated with the project "Neural activi
 - `time_aligned_matrix_with_all_trajectories.py`: This file builds upon the `time_aligned_matrix_with_trajectory.py` file to plot the trajectories of two different cells for all instances.
 - `time_aligned_matrix_all_instances.py`: This file creates a 3D array of the number of spike counts for each cell for every time bin. Dimensions = (instance_id x num of cells x time bins)
 - `time_aligned_matrix_all_instances_with_pca.py`: This file then applies the NumPy PCA algorithm to the 3D array obtained from `time_aligned_matrix_all_instances.py`
-- `time_aligned_matrix_all_instances_with_distance.py`: This file calculates the distance between any two different instances as a function of time.
+- `time_aligned_matrix_all_instances_with_distance.py`: This file calculates the distance as a function of time between any two different instances.
+- `time_aligned_matrix_all_categories_inter_distance.py`: This file calculates the distance as a function of time between the instances of any two different categories.

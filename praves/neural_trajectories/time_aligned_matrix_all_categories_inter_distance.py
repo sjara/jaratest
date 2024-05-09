@@ -171,6 +171,6 @@ for categories, instance_dicts in distance_all_categories.items():
         ax.set_xlabel("Time (bins)")
         ax.set_ylabel("Distance")
     
-    plt.title(f"Distance for Categories {categories}")
+    fig.suptitle(f"Distance for Categories {categories}")  # Set title for the entire figure 
     plt.tight_layout()
     plt.show()  # Display all plots
