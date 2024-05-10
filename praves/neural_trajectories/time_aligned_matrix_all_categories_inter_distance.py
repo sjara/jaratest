@@ -161,17 +161,18 @@ for categories, instance_dicts in distance_all_categories.items():
     # print(num_plots)
     plot_rows = int(num_plots // np.sqrt(num_plots))
     plot_cols = int(num_plots // plot_rows)
-    fig, axs = plt.subplots(plot_rows, plot_cols)
-    axs = axs.flatten()  # Flatten the array of axes for easier indexing
+    if categories[0] == 3 and categories[1] == 4:  
+        fig, axs = plt.subplots(plot_rows, plot_cols)
+        axs = axs.flatten()  # Flatten the array of axes for easier indexing
 
-    for i, (key, value) in enumerate(instance_dicts.items()):
-        ax = axs[i]
-        ax.plot(value, label=str(key))  # Plot on the specific subplot
-        ax.set_title(f"Distance for Instances {key}")
-        ax.legend()  # Show legend on the specific subplot
-        ax.set_xlabel("Time (bins)")
-        ax.set_ylabel("Distance")
+        for i, (key, value) in enumerate(instance_dicts.items()):
+            ax = axs[i]
+            ax.plot(value, label=str(key))  # Plot on the specific subplot
+            ax.set_title(f"Distance for Instances {key}")
+            ax.legend()  # Show legend on the specific subplot
+            ax.set_xlabel("Time (bins)")
+            ax.set_ylabel("Distance")
     
-    fig.suptitle(f"Distance for Categories {categories}")  # Set title for the entire figure 
-    plt.tight_layout()
-    plt.show()  # Display all plots
+        fig.suptitle(f"Distance for Categories {categories}")  # Set title for the entire figure 
+        plt.tight_layout()
+        plt.show()  # Display all plots

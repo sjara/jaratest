@@ -94,7 +94,7 @@ for cell_num in range(len(spikes_category_0)):
 total_spikes_all_cells = []
 for cell_num in range(len(spikes_binned_all_cells)):
     curr_cell = spikes_binned_all_cells[cell_num]
-    total_spikes_curr_cell = np.sum(curr_cell, axis=0)
+    total_spikes_curr_cell = np.mean(curr_cell, axis=0)
     total_spikes_all_cells.append(total_spikes_curr_cell)
 
 ## use various print statements to check the dimensions of the average spikes

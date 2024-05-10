@@ -53,19 +53,18 @@ bin_size = 0.5
 
 ## get the stimulus start time for the time range and bin size
 def get_stim_start_time(time_range=[-1.5, 5.5], bin_size=0.5, stim_start=0):
-    num_sec_each_bin = (time_range[1] - time_range[0]) / bin_size
+    print("Number of seconds each bin: ", bin_size)
     start_time = time_range[0]
-    end_time = start_time + num_sec_each_bin
+    end_time = start_time + bin_size
     curr_bin = 0
     while True:
-        if stim_start <= time_range[0] and stim_start >= time_range[1]:
+        if stim_start < time_range[0] or stim_start > time_range[1]:
            raise ValueError("Stimulus start time is outside the time range")  
         else:
-            start_time = time_range[0]
-            end_time = start_time + num_sec_each_bin
-            if start_time <= stim_start <= end_time:
+            if start_time <= stim_start and stim_start <= end_time:
                 return curr_bin
             start_time = end_time
+            end_time = start_time + bin_size
             curr_bin += 1 
 
 
@@ -199,6 +198,7 @@ for instance_id, instance_values in enumerate(pca_matrix_all_instances_original)
     ax.plot(instance_values[0, 0], instance_values[1, 0], 'ko', markersize=10, label='start')
     ax.plot(instance_values[0, -1], instance_values[1, -1], 'yo', markersize=10, label='end')
     ax.plot(instance_values[0, get_stim_start_time()], instance_values[1, get_stim_start_time()], 'rx', markersize=10, label='Stimulus ON')
+    print("Stimulus onset bin location: ", get_stim_start_time())
 
 ax.set_xlabel('Principal Component 1')
 ax.set_ylabel('Principal Component 2')
