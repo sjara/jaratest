@@ -1,5 +1,6 @@
 """
-This script is used to create a time aligned matrix of the spike counts for each cell in the ensemble for all the instances.
+This file calculates the distance as a function of time between the instances of any two different categories.
+
 """
 
 

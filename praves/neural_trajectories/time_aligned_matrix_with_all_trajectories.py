@@ -1,5 +1,6 @@
 """
-Doc string: 
+This file builds upon the `time_aligned_matrix_with_trajectory.py` file to plot the trajectories of two different cells for all instances.
+
 """
 
 

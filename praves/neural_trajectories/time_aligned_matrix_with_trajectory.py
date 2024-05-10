@@ -1,5 +1,6 @@
 """
-Doc string: 
+This file builds upon the `time_aligned_matrix.py` file to plot the neural trajectory of 2 cells.
+ 
 """
 
 

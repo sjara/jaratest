@@ -1,5 +1,6 @@
 """
-This script is used to create a time aligned matrix of the spike counts for each cell in the ensemble for all the instances.
+This file creates a 3D array of the number of spike counts for each cell for every time bin. Dimensions = (instance_id x num of cells x time bins)
+
 """
 
 

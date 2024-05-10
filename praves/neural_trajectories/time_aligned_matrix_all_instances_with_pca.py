@@ -1,5 +1,6 @@
 """
-This script is used to create a time aligned matrix of the spike counts for each cell in the ensemble for all the instances.
+This file applies the NumPy PCA algorithm to the 3D array obtained from `time_aligned_matrix_all_instances.py`
+
 """
 
 

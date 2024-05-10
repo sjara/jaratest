@@ -1,5 +1,6 @@
 """
-Doc string: 
+This file creates a 2D array of the number of spike counts for each cell for every time bin. Dimensions = (num of cells x time bins). The values inside the matrix represent the number of spikes for the particular neuron at a particular time bin.
+ 
 """
 
 
