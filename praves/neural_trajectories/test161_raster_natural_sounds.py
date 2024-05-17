@@ -18,7 +18,7 @@ from jaratoolbox import behavioranalysis
 from importlib import reload
 reload(celldatabase)
 
-subject = '/Users/praveslamichhane/jaralab_data/neuropixels/feat015'
+subject = 'feat015'
 sessionDate = '2024-03-20'
 probeDepth = 2413
 #sessionDict = {'date':'2024-03-20', 'pdepth':2413, 'sessiontype':'naturalSound'}
@@ -59,17 +59,17 @@ condEachSortedTrial, sortedTrials = np.nonzero(trialsEachCond.T)
 sortingInds = np.argsort(sortedTrials)  # This will be used to sort trialIndexForEachSpike
 
 # -- Plot rasters --
-someCells = [13, 15, 16, 22]
+# someCells = [13, 15, 16, 22]
 #someCells = np.arange(0,12)+12+5
-#someCells = np.arange(0,len(celldbSubset))
+someCells = np.arange(0,len(celldbSubset))
 plt.clf()
 #fig = plt.figure(figsize=[10, 6])
 for count, indcell in enumerate(someCells):
     if indcell >= len(celldbSubset):
         break
     sortedIndexForEachSpike = sortingInds[trialIndexForEachSpikeAll[indcell]]
-    #plt.subplot(4, 7, count+1)
-    plt.subplot(1, 4, count+1)
+    plt.subplot(4, 7, count+1)
+    # plt.subplot(1, 4, count+1)
     plt.plot(spikeTimesFromEventOnsetAll[indcell], sortedIndexForEachSpike, '.k', ms=1)
     plt.xlabel('Time (s)')
     plt.ylabel(f'[{indcell}] Sorted trials')
