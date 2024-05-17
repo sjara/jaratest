@@ -56,11 +56,11 @@ sortingInds = np.argsort(sortedTrials) ## this returns the indices that would so
 
 ## plot the raster for each cell
 
-someCells = np.arange(0, nCells)
+someCells = np.arange(351, nCells)
 fig = plt.figure(figsize=[10, 6])
 for count, indcell in enumerate(someCells):
     sortedIndexForEachSpike = sortingInds[trialIndexForEachSpikeAll[indcell]]
-    plt.subplot(4, 7, count+1)
+    plt.subplot(10, 5, count+1)
     plt.plot(spikeTimesFromEventOnsetAll[indcell], sortedIndexForEachSpike, '.k', ms=1)
     plt.xlabel('Time from sound onset (s)')
     plt.ylabel('Sorted Trials')

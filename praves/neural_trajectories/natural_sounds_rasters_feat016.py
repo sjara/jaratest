@@ -13,10 +13,15 @@ from jaratoolbox import celldatabase
 from jaratoolbox import settings
 from jaratoolbox import behavioranalysis
 from jaratoolbox import ephyscore 
+from jaratoolbox import spikesorting
 
 
 ## create database of cells
 inforecFile = os.path.join(settings.INFOREC_PATH, 'feat016_inforec.py')
+
+# clusteringObj = spikesorting.ClusterInforec(inforecFile)
+# clusteringObj.process_all_experiments()
+
 celldbSubset = celldatabase.generate_cell_database(inforecFile)
 
 ## load simultaneously recorded cells and create a CellEnsemble class
@@ -56,11 +61,11 @@ sortingInds = np.argsort(sortedTrials) ## this returns the indices that would so
 
 ## plot the raster for each cell
 
-someCells = np.arange(0, nCells)
+someCells = np.arange(151, nCells)
 fig = plt.figure(figsize=[10, 6])
 for count, indcell in enumerate(someCells):
     sortedIndexForEachSpike = sortingInds[trialIndexForEachSpikeAll[indcell]]
-    plt.subplot(4, 7, count+1)
+    plt.subplot(10, 5, count+1)
     plt.plot(spikeTimesFromEventOnsetAll[indcell], sortedIndexForEachSpike, '.k', ms=1)
     plt.xlabel('Time from sound onset (s)')
     plt.ylabel('Sorted Trials')
