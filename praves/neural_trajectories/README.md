@@ -9,3 +9,5 @@ This folder contains the source files associated with the project "Neural activi
 - `time_aligned_matrix_all_instances_with_pca.py`: This file then applies the NumPy PCA algorithm to the 3D array obtained from `time_aligned_matrix_all_instances.py`
 - `time_aligned_matrix_all_instances_with_distance.py`: This file calculates the distance as a function of time between any two different instances.
 - `time_aligned_matrix_all_categories_inter_distance.py`: This file calculates the distance as a function of time between the instances of any two different categories.
+- `neuralTrajectory.py`: This is an external module that contains all the custom defined functions for plotting the neural trajectories and the distances between instances and categories.
+- `neural_trajectory_pipeline.py`: This script builds the pipeline from creating time_aligned_matrix for all instances, performing PCA, plotting the PCA trajectories, plotting intra-category instance distance, and finally plotting inter-category instance distance.

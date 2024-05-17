@@ -1,138 +1,154 @@
-# The functions are in the order of dependency
-
-## import external libraries
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-import sys 
 
-## import jara toolbox libraries
+def get_stim_start_time(time_range, bin_size, stim_start=0):
+    start_time = time_range[0]
+    curr_bin = 0
+    while start_time <= time_range[1]:
+        end_time = start_time + bin_size
+        if start_time <= stim_start <= end_time:
+            return curr_bin
+        start_time = end_time
+        curr_bin += 1
+    raise ValueError("Stimulus start time is outside the time range")
 
-## define the path to the jaratoolbox directory
-JARATOOL_PATH = '/Users/praveslamichhane/src/jaratoolbox' 
-## append the path to the sys.path
-sys.path.append(JARATOOL_PATH)
+def extract_spikes_per_cell(cell_num, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, trials_current_instance):
+    spikes_curr_cell = spikeTimesFromEventOnsetAll[cell_num]
+    indices_curr_cell = indexLimitsEachTrialAll[cell_num]
+    indices_to_select = indices_curr_cell[:, trials_current_instance]
+    return [spikes_curr_cell[index[0]:index[1] + 1] for index in indices_to_select.T]
 
-from jaratoolbox import celldatabase
-from jaratoolbox import settings
-from jaratoolbox import ephyscore
-from jaratoolbox import behavioranalysis
+def bin_spikes(curr_cell, binEdges):
+    return [np.histogram(trial, binEdges)[0] for trial in curr_cell]
 
-## internal functions
+def process_instance(instance_id, condEachSortedTrial, sortedTrials, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, TIME_RANGE, BIN_SIZE):
+    current_instance = np.where(condEachSortedTrial == instance_id)
+    trials_current_instance = sortedTrials[current_instance]
+    
+    spikes_curr_instance = [extract_spikes_per_cell(cell_num, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, trials_current_instance)
+                            for cell_num in range(len(indexLimitsEachTrialAll))]
+    
+    binEdges = np.arange(TIME_RANGE[0], TIME_RANGE[1], BIN_SIZE)
+    spikes_binned_all_cells = [bin_spikes(cell, binEdges) for cell in spikes_curr_instance]
+    
+    total_spikes_all_cells = [np.sum(cell, axis=0) for cell in spikes_binned_all_cells]
+    
+    return np.array(total_spikes_all_cells)
 
-def load_data(inforecFile):
-    """
-    This function loads the ephys data and behavioral data for the cell ensemble. We only load the "naturalSound" session data
-    """
-    celldb = celldatabase.generate_cell_database(inforecFile)
-    ensemble = ephyscore.CellEnsemble(celldb)
-    ephysData, bdata = ensemble.load("naturalSound")
-    return ephysData, bdata
-
-def align_cells_to_stimulus_onset(ephysData, bdata):
-    """
-    This function aligns all cells to the stimulus onset
-    """
-    nTrials = len(bdata["soundID"])
-    eventOnsetTimes = ephysData["events"]["stimOn"][:nTrials]
-    timeRange = [-1.5, 5.5]
-    binSize = 0.5
-    spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = ensemble.eventlocked_spiketimes(eventOnsetTimes, timeRange)
-    return spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll
-
-def create_boolean_2D_array():
-    """
-    This function creates a boolean 2D array representing the sound instance of each trial
-    """
-    currentStim = bdata["soundID"]
-    possibleStims = np.unique(currentStim)
-    return possibleStims
-
-def get_category_instance_dictionary(total_categories=5, possibleStims, time_aligned_matrix_all_instances):
-    """
-    This function returns a dictionary with the category as the key and the instance as the value
-    """
-    category_instance_dict = {} ## key: category_id, value: [instance_ids]
-    categories = list((np.arange(0, TOTAL_CATEGORIES, 1)))
-    print(categories)
-    num_instances_each_category = len(possibleStims) // TOTAL_CATEGORIES
-    for instance_id, instance_value in enumerate(time_aligned_matrix_all_instances):
+def create_category_instance_dict(possibleStims, total_categories):
+    categories = list(np.arange(0, total_categories, 1))
+    num_instances_each_category = len(possibleStims) // total_categories
+    category_instance_dict = {}
+    for instance_id in range(len(possibleStims)):
         instance_category = categories[instance_id // num_instances_each_category]
         if instance_category in category_instance_dict:
             category_instance_dict[instance_category].append(instance_id)
         else:
             category_instance_dict[instance_category] = [instance_id]
-
     return category_instance_dict
 
+def plot_pca(pca_matrix_all_instances_original, category_instance_dict, colors_categories, TIME_RANGE, BIN_SIZE, num_instances_each_category):
+    fig, axs = plt.subplots(2, 3, figsize=(15, 10))
+    axs = axs.flatten()
 
-def get_stim_start_time(time_range=[-1.5, 5.5], bin_size=0.5, stim_start=0):
-    print("Number of seconds each bin: ", bin_size)
-    start_time = time_range[0]
-    end_time = start_time + bin_size
-    curr_bin = 0
-    while True:
-        if stim_start < time_range[0] or stim_start > time_range[1]:
-           raise ValueError("Stimulus start time is outside the time range")  
-        else:
-            if start_time <= stim_start and stim_start <= end_time:
-                return curr_bin
-            start_time = end_time
-            end_time = start_time + bin_size
-            curr_bin += 1 
+    def plot_instance(ax, instance_values, color, label_start_end=True):
+        ax.plot(instance_values[0, :], instance_values[1, :], '.-', color=color)
+        if label_start_end:
+            try:
+                stim_start_bin = get_stim_start_time(TIME_RANGE, BIN_SIZE)
+                ax.plot(instance_values[0, 0], instance_values[1, 0], 'ko', markersize=10, label='start')
+                ax.plot(instance_values[0, -1], instance_values[1, -1], 'yo', markersize=10, label='end')
+                ax.plot(instance_values[0, stim_start_bin], instance_values[1, stim_start_bin], 'rx', markersize=10, label='Stimulus ON')
+            except ValueError as e:
+                print(f"Error: {e}")
 
-def get_trials_each_instance():
-    """
-    This function sorts trials by stimulus type and extracts the type into each stimulus type
-    """
-    trialsEachCond = behavioranalysis.find_trials_each_type(currentStim, possibleStims)
-    nTrialsEachCond = trialsEachCond.sum(axis=0)
-    return nTrialsEachCond
+    # Plot the PCA transformed matrix for all instances
+    for instance_id, instance_values in enumerate(pca_matrix_all_instances_original):
+        curr_color = colors_categories[instance_id // num_instances_each_category]
+        ax = axs[0]
+        plot_instance(ax, instance_values, curr_color)
 
+    ax.set_xlabel('Principal Component 1')
+    ax.set_ylabel('Principal Component 2')
+    ax.title.set_text('2D PCA of Spike Data all instances')
 
-def time_aligned_matrix_2D(instance_id):
-    """
-    This function creates a 2D array of the number of spike counts for each cell for every time bin. Dimensions = (num of cells x time bins). The values inside the matrix represent the number of spikes for the particular neuron at a particular time bin.
-    """
-    for cell_num in range(len(indexLimitsEachTrialAll)):
-        total_spikes = []
-        spikes_curr_cell = spikeTimesFromEventOnsetAll[cell_num]
-        indices_curr_cell = indexLimitsEachTrialAll[cell_num]
-        indices_to_select = indices_curr_cell[:, trials_category_0]
-        for index in indices_to_select.T: ## this is where the problem is 
-            total_spikes.append(spikes_curr_cell[index[0]:index[1] + 1])
-        spikes_category_0.append(total_spikes)
-        return spikes_instance 
+    # Plot the PCA for each category separately
+    for key, values in category_instance_dict.items():
+        for instance_id in values:
+            instance_values = pca_matrix_all_instances_original[instance_id]
+            ax = axs[(instance_id // num_instances_each_category) + 1]
+            plot_instance(ax, instance_values, colors_categories[key])
+        ax.set_xlim(-70, 200)
+        ax.set_ylim(-100, 200)
+        ax.set_xlabel('Principal Component 1')
+        ax.set_ylabel('Principal Component 2')
+        ax.title.set_text(f'Category: {key}')
 
-def time_aligned_matrix_3D():
-    pass
+    fig.legend(loc='upper right')
+    plt.tight_layout()
+    plt.show()
 
-def pca():
-    pass
+def calculate_distances(time_aligned_matrix_all_instances):
+    distance_all_instances = {}
+    num_instances = len(time_aligned_matrix_all_instances)
+    for instance_id in range(num_instances):
+        for other_instance_id in range(instance_id + 1, num_instances):
+            instance_value = time_aligned_matrix_all_instances[instance_id]
+            other_instance_value = time_aligned_matrix_all_instances[other_instance_id]
+            time_array = np.arange(instance_value.shape[1])
+            distance_all_time_points = [np.linalg.norm(instance_value[:, time_point] - other_instance_value[:, time_point])
+                                        for time_point in time_array]
+            distance_all_instances[(instance_id, other_instance_id)] = distance_all_time_points
+    return distance_all_instances
 
-def plot_pca():
-    pass
+def plot_distances(distance_all_instances, category_instance_dict, colors_categories):
+    fig, axs = plt.subplots(2, 3)
+    axs = axs.flatten()  # Flatten the array of axes for easier indexing
 
-def get_category_instance_dictionary():
-    pass
+    for category_id, instance_ids in category_instance_dict.items():
+        ax = axs[category_id]  # Get the specific axis for this category
+        for key, value in distance_all_instances.items():
+            if key[0] in instance_ids and key[1] in instance_ids:
+                ax.plot(value, label=str(key), color=colors_categories[category_id])  # Plot on the specific subplot
+        ax.set_title(f"Distance as a function of time for Category {category_id}")
+        ax.legend()  # Show legend on the specific subplot
 
-def get_distance_between_categories():
-    pass
+    plt.show()  # Display all plots
 
-def get_distance_between_instances_of_the_same_category():
-    pass
+def calculate_category_distances(time_aligned_matrix_all_instances, category_instance_dict):
+    distance_all_categories = {}
+    for category_id, instance_ids in category_instance_dict.items():
+        for other_category_id, other_instance_ids in category_instance_dict.items():
+            if category_id < other_category_id:
+                distance_all_instances = {}
+                for instance_id in instance_ids:
+                    for other_instance_id in other_instance_ids:
+                        if instance_id < other_instance_id:
+                            instance_value = time_aligned_matrix_all_instances[instance_id]
+                            other_instance_value = time_aligned_matrix_all_instances[other_instance_id]
+                            time_array = np.arange(instance_value.shape[1])
+                            distance_all_time_points = [np.linalg.norm(instance_value[:, time_point] - other_instance_value[:, time_point])
+                                                        for time_point in time_array]
+                            distance_all_instances[(instance_id, other_instance_id)] = distance_all_time_points
+                distance_all_categories[(category_id, other_category_id)] = distance_all_instances
+    return distance_all_categories
 
+def plot_category_distances(distance_all_categories):
+    for categories, instance_dicts in distance_all_categories.items():
+        num_plots = len(instance_dicts)
+        plot_rows = int(num_plots // np.sqrt(num_plots))
+        plot_cols = int(np.ceil(num_plots / plot_rows))
+        fig, axs = plt.subplots(plot_rows, plot_cols)
+        axs = axs.flatten()  # Flatten the array of axes for easier indexing
 
-# 1. time aligned matrix 2D
-# 2. time aligned matrix 3D -> Incorporates the time aligned matrix 2D
-# 3. pca -> Incorporates the time aligned matrix 3D
-# 4. plot pca -> Incorporates the pca
-# 5. get category instance dictionary 
-# 6. get distance between categories -> Incorporates the get category instance dictionary
-# 7. get distance between instances of the same category -> Incorporates the get category instance dictionary
-
-def main():
-    pass
-
-if __name__ == "__main__":
-    main()
+        for i, (key, value) in enumerate(instance_dicts.items()):
+            ax = axs[i]
+            ax.plot(value, label=str(key))  # Plot on the specific subplot
+            ax.set_title(f"Distance for Instances {key}")
+            ax.legend()  # Show legend on the specific subplot
+            ax.set_xlabel("Time (bins)")
+            ax.set_ylabel("Distance")
+    
+        fig.suptitle(f"Distance for Categories {categories}")  # Set title for the entire figure 
+        plt.tight_layout()
+        plt.show()  # Display all plots
