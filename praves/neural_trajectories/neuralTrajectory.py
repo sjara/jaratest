@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 def get_stim_start_time(time_range, bin_size, stim_start=0):
     start_time = time_range[0]
@@ -46,6 +47,35 @@ def create_category_instance_dict(possibleStims, total_categories):
         else:
             category_instance_dict[instance_category] = [instance_id]
     return category_instance_dict
+
+
+def get_pca_matrix_all_instances(time_aligned_matrix_all_instances, DIMS=2):
+    ## reshape the time_aligned_matrix_all_instances to 2D array so that rows = cells and columns = bins from all instances stacked from 0 to 19
+    time_aligned_matrix_all_instances_transposed = time_aligned_matrix_all_instances.transpose(1, 0, 2)
+    final_shape = (time_aligned_matrix_all_instances_transposed.shape[0], -1)
+    time_aligned_matrix_all_instances_reshaped = time_aligned_matrix_all_instances_transposed.reshape(final_shape)
+
+    # ## test whether the reshaping is correct - we expect the first 13 columns to be the same as the first instance
+    # print(time_aligned_matrix_all_instances[0] == time_aligned_matrix_all_instances_reshaped[:, 0:13])
+    # print(time_aligned_matrix_all_instances[1] == time_aligned_matrix_all_instances_reshaped[:, 13:26])
+
+    ## perform PCA on the reshaped 2D array 
+    pca = PCA(n_components=DIMS)
+    pca_matrix_all_instances = pca.fit_transform(time_aligned_matrix_all_instances_reshaped.T)
+
+    pca_matrix_all_instances = pca_matrix_all_instances.T
+
+    ## now reshape the pca_matrix_all_instances to 3D array reflecting the original matrix 
+    num_trials = time_aligned_matrix_all_instances.shape[0]
+    num_cells_pca = DIMS 
+    num_bins_per_trial = time_aligned_matrix_all_instances.shape[2] 
+
+    pca_matrix_all_instances_reshaped_original = pca_matrix_all_instances.reshape(num_cells_pca, num_trials, num_bins_per_trial)
+
+    ## transpose the matrix so that the dimension information is preserved
+    pca_matrix_all_instances_original = pca_matrix_all_instances_reshaped_original.transpose(1, 0, 2)
+    return pca_matrix_all_instances_original
+
 
 def plot_pca(pca_matrix_all_instances_original, category_instance_dict, colors_categories, TIME_RANGE, BIN_SIZE, num_instances_each_category):
     fig, axs = plt.subplots(2, 3, figsize=(15, 10))

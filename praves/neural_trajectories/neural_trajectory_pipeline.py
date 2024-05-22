@@ -69,8 +69,7 @@ def main():
     print("Shape of time aligned matrix: ", time_aligned_matrix_all_instances.shape)
 
     # Perform PCA on the time-aligned spike counts
-    pca = PCA(n_components=DIMS)
-    pca_matrix_all_instances = [pca.fit_transform(instance.T).T for instance in time_aligned_matrix_all_instances]
+    pca_matrix_all_instances = nt.get_pca_matrix_all_instances(time_aligned_matrix_all_instances, DIMS)
 
     # Create category-instance dictionary
     category_instance_dict = nt.create_category_instance_dict(possibleStims, TOTAL_CATEGORIES)
