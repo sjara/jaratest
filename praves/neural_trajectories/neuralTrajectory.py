@@ -161,20 +161,62 @@ def calculate_category_distances(time_aligned_matrix_all_instances, category_ins
                                                         for time_point in time_array]
                             distance_all_instances[(instance_id, other_instance_id)] = distance_all_time_points
                 distance_all_categories[(category_id, other_category_id)] = distance_all_instances
+    
     return distance_all_categories
+
+# def plot_category_distances(distance_all_categories):
+#     for categories, instance_dicts in distance_all_categories.items():
+#         num_plots = len(instance_dicts)
+#         plot_rows = int(num_plots // np.sqrt(num_plots))
+#         plot_cols = int(np.ceil(num_plots / plot_rows))
+#         fig, axs = plt.subplots(plot_rows, plot_cols)
+#         axs = axs.flatten()  # Flatten the array of axes for easier indexing
+
+#         average_distance_all_categories = {}
+#         for key, value in distance_all_categories.items():
+#             all_distances = []
+#             for instance_key, instance_value in value.items():
+#                 all_distances.append(instance_value)
+#             all_distances = np.array(all_distances)
+#             average_distance_all_categories[key] = (np.mean(all_distances, axis=0), np.std(all_distances, axis=0))
+
+#         for i, (key, value) in enumerate(instance_dicts.items()):
+#             ax = axs[i]
+#             ax.plot(value, label=str(key))  # Plot on the specific subplot
+#             ax.set_title(f"Distance for Instances {key}")
+#             ax.legend()  # Show legend on the specific subplot
+#             ax.set_xlabel("Time (bins)")
+#             ax.set_ylabel("Distance")
+    
+#         fig.suptitle(f"Distance for Categories {categories}")  # Set title for the entire figure 
+#         plt.tight_layout()
+#         plt.show()  # Display all plots
+
 
 def plot_category_distances(distance_all_categories):
     for categories, instance_dicts in distance_all_categories.items():
         num_plots = len(instance_dicts)
-        plot_rows = int(num_plots // np.sqrt(num_plots))
+        plot_rows = int(np.sqrt(num_plots))
         plot_cols = int(np.ceil(num_plots / plot_rows))
-        fig, axs = plt.subplots(plot_rows, plot_cols)
+        fig, axs = plt.subplots(plot_rows, plot_cols, figsize=(15, 10))
         axs = axs.flatten()  # Flatten the array of axes for easier indexing
 
-        for i, (key, value) in enumerate(instance_dicts.items()):
+        average_distance_all_categories = {}
+        for key, value in distance_all_categories.items():
+            all_distances = []
+            for instance_value in value.values():
+                all_distances.append(instance_value)
+            all_distances = np.array(all_distances)
+            average_distance_all_categories[key] = (np.mean(all_distances, axis=0), np.std(all_distances, axis=0))
+
+        for i, (instance_pair, distances) in enumerate(instance_dicts.items()):
             ax = axs[i]
-            ax.plot(value, label=str(key))  # Plot on the specific subplot
-            ax.set_title(f"Distance for Instances {key}")
+            ax.plot(distances, label=f"Pair {instance_pair}")
+            avg_distance = average_distance_all_categories[categories][0]
+            std_distance = average_distance_all_categories[categories][1]
+            ax.plot(avg_distance, 'k--', label="Average Distance")  # Plot average distance
+            ax.fill_between(range(len(avg_distance)), avg_distance - std_distance, avg_distance + std_distance, color='gray', alpha=0.5)
+            ax.set_title(f"Distance for Instances {instance_pair}")
             ax.legend()  # Show legend on the specific subplot
             ax.set_xlabel("Time (bins)")
             ax.set_ylabel("Distance")
