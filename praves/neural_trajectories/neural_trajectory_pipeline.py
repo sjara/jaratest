@@ -28,10 +28,12 @@ TOTAL_CATEGORIES = 5
 SESSION_DATE = "2024-03-20"
 PROBE_DEPTH = 2413
 TIME_RANGE = [-1.5, 5.5]
-BIN_SIZE = 0.5
+BIN_SIZE = 0.25
 SOUND_TYPE = "naturalSound"
 DIMS = 2
 COLORS_CATEGORIES = ["red", "blue", "green", "cyan", "purple"]
+WINDOW_SIZE = 5  # Window size in bins
+STEP_SIZE = 1  # Step size in bins
 
 def main():
     # Generate cell database
@@ -61,7 +63,7 @@ def main():
     condEachSortedTrial, sortedTrials = np.nonzero(trialsEachCond.T)
 
     # Process each instance and collect spike counts
-    time_aligned_matrix_all_instances = [nt.process_instance(instance_id, condEachSortedTrial, sortedTrials, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, TIME_RANGE, BIN_SIZE)
+    time_aligned_matrix_all_instances = [nt.process_instance_with_sliding_bins(instance_id, condEachSortedTrial, sortedTrials, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, TIME_RANGE, BIN_SIZE, WINDOW_SIZE, STEP_SIZE)
                                          for instance_id in possibleStims]
 
     # Convert list to numpy array

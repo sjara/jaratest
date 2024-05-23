@@ -22,6 +22,18 @@ def extract_spikes_per_cell(cell_num, indexLimitsEachTrialAll, spikeTimesFromEve
 def bin_spikes(curr_cell, binEdges):
     return [np.histogram(trial, binEdges)[0] for trial in curr_cell]
 
+def bin_spikes_with_sliding_window(curr_cell, binEdges, window_size, step_size):
+    binned_spikes = []
+    for trial in curr_cell:
+        trial_binned_spikes = []
+        for start in range(0, len(binEdges) - window_size, step_size):
+            window_bins = binEdges[start:start + window_size + 1]
+            binned_count = np.histogram(trial, bins=window_bins)[0]
+            trial_binned_spikes.append(np.sum(binned_count))
+        binned_spikes.append(trial_binned_spikes)
+    return np.array(binned_spikes)
+
+
 def process_instance(instance_id, condEachSortedTrial, sortedTrials, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, TIME_RANGE, BIN_SIZE):
     current_instance = np.where(condEachSortedTrial == instance_id)
     trials_current_instance = sortedTrials[current_instance]
@@ -31,6 +43,20 @@ def process_instance(instance_id, condEachSortedTrial, sortedTrials, indexLimits
     
     binEdges = np.arange(TIME_RANGE[0], TIME_RANGE[1], BIN_SIZE)
     spikes_binned_all_cells = [bin_spikes(cell, binEdges) for cell in spikes_curr_instance]
+    
+    total_spikes_all_cells = [np.sum(cell, axis=0) for cell in spikes_binned_all_cells]
+    
+    return np.array(total_spikes_all_cells)
+
+def process_instance_with_sliding_bins(instance_id, condEachSortedTrial, sortedTrials, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, TIME_RANGE, BIN_SIZE, WINDOW_SIZE, STEP_SIZE):
+    current_instance = np.where(condEachSortedTrial == instance_id)
+    trials_current_instance = sortedTrials[current_instance]
+    
+    spikes_curr_instance = [extract_spikes_per_cell(cell_num, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, trials_current_instance)
+                            for cell_num in range(len(indexLimitsEachTrialAll))]
+    
+    binEdges = np.arange(TIME_RANGE[0], TIME_RANGE[1], BIN_SIZE)
+    spikes_binned_all_cells = [bin_spikes_with_sliding_window(cell, binEdges, WINDOW_SIZE, STEP_SIZE) for cell in spikes_curr_instance]
     
     total_spikes_all_cells = [np.sum(cell, axis=0) for cell in spikes_binned_all_cells]
     
@@ -108,8 +134,8 @@ def plot_pca(pca_matrix_all_instances_original, category_instance_dict, colors_c
             instance_values = pca_matrix_all_instances_original[instance_id]
             ax = axs[(instance_id // num_instances_each_category) + 1]
             plot_instance(ax, instance_values, colors_categories[key])
-        ax.set_xlim(-70, 200)
-        ax.set_ylim(-100, 200)
+        # ax.set_xlim(-70, 200)
+        # ax.set_ylim(-100, 200)
         ax.set_xlabel('Principal Component 1')
         ax.set_ylabel('Principal Component 2')
         ax.title.set_text(f'Category: {key}')
