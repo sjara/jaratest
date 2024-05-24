@@ -27,8 +27,13 @@ celldbSubset = celldatabase.generate_cell_database(inforecFile)
 ## load simultaneously recorded cells and create a CellEnsemble class
 
 # ## select session and probe depth
-# sessionDate = "2024-04-08"
-# probeDepth = 3000
+module_dir = os.path.dirname(inforecFile)
+module_name = os.path.basename(inforecFile).replace('.py', '')
+sys.path.append(module_dir)
+module = __import__(module_name)
+sessionDate = module.experiments[0].date
+probeDepth = module.experiments[0].maxDepth
+print(sessionDate, probeDepth)
 # celldbSubset = celldb[(celldb.date == sessionDate) & (celldb.pdepth == probeDepth)]
 
 ## create CellEnsemble class
@@ -63,7 +68,7 @@ sortingInds = np.argsort(sortedTrials) ## this returns the indices that would so
 
 someCells = np.arange(150, nCells)
 fig = plt.figure(figsize=[10, 6])
-fig.suptitle(f'Raster plot for FEAT016 session {} cells {someCells[0]+ 1} - {someCells[0] + 25}')
+fig.suptitle(f'Raster plot for FEAT016 session {sessionDate}_{probeDepth} cells {someCells[0]+ 1} - {someCells[0] + 25}')
 
 for count, indcell in enumerate(someCells):
     sortedIndexForEachSpike = sortingInds[trialIndexForEachSpikeAll[indcell]]
