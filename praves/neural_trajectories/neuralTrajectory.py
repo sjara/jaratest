@@ -1,3 +1,9 @@
+
+"""
+Contains the functions used in neural_trajectory_pipeline.py and neural_trajectory_pipeline_multiple_subjects.py
+
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
@@ -134,8 +140,8 @@ def plot_pca(pca_matrix_all_instances_original, category_instance_dict, colors_c
             instance_values = pca_matrix_all_instances_original[instance_id]
             ax = axs[(instance_id // num_instances_each_category) + 1]
             plot_instance(ax, instance_values, colors_categories[key])
-        # ax.set_xlim(-70, 200)
-        # ax.set_ylim(-100, 200)
+        ax.set_xlim(-150, 400)
+        ax.set_ylim(-150, 350)
         ax.set_xlabel('Principal Component 1')
         ax.set_ylabel('Principal Component 2')
         ax.title.set_text(f'Category: {key}')

@@ -1,3 +1,9 @@
+"""
+This file is a pipeline that processes the neural data on natural sound presentation experiments from the Jaramillo lab and performs PCA on the time-aligned spike counts. It also calculates the distances between instances and categories and plots the results.
+
+"""
+
+
 # Load modules
 import os
 import sys
