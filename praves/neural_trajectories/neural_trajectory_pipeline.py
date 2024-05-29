@@ -69,7 +69,11 @@ def main():
     condEachSortedTrial, sortedTrials = np.nonzero(trialsEachCond.T)
 
     # Process each instance and collect spike counts
-    time_aligned_matrix_all_instances = [nt.process_instance_with_sliding_bins(instance_id, condEachSortedTrial, sortedTrials, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, TIME_RANGE, BIN_SIZE, WINDOW_SIZE, STEP_SIZE)
+    # time_aligned_matrix_all_instances = [nt.process_instance_with_sliding_bins(instance_id, condEachSortedTrial, sortedTrials, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, TIME_RANGE, BIN_SIZE, WINDOW_SIZE, STEP_SIZE)
+    #                                      for instance_id in possibleStims]
+
+
+    time_aligned_matrix_all_instances = [nt.process_instance(instance_id, condEachSortedTrial, sortedTrials, indexLimitsEachTrialAll, spikeTimesFromEventOnsetAll, TIME_RANGE, BIN_SIZE)
                                          for instance_id in possibleStims]
 
     # Convert list to numpy array

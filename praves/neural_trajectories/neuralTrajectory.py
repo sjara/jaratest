@@ -118,11 +118,17 @@ def plot_pca(pca_matrix_all_instances_original, category_instance_dict, colors_c
         if label_start_end:
             try:
                 stim_start_bin = get_stim_start_time(TIME_RANGE, BIN_SIZE)
+                print(f"Stimulus start bin: {stim_start_bin}")
                 ax.plot(instance_values[0, 0], instance_values[1, 0], 'ko', markersize=10, label='start')
                 ax.plot(instance_values[0, -1], instance_values[1, -1], 'yo', markersize=10, label='end')
                 ax.plot(instance_values[0, stim_start_bin], instance_values[1, stim_start_bin], 'rx', markersize=10, label='Stimulus ON')
             except ValueError as e:
                 print(f"Error: {e}")
+
+    min_x = np.min(pca_matrix_all_instances_original[:, 0, :])
+    max_x = np.max(pca_matrix_all_instances_original[:, 0, :])
+    min_y = np.min(pca_matrix_all_instances_original[:, 1, :])
+    max_y = np.max(pca_matrix_all_instances_original[:, 1, :])
 
     # Plot the PCA transformed matrix for all instances
     for instance_id, instance_values in enumerate(pca_matrix_all_instances_original):
@@ -133,6 +139,8 @@ def plot_pca(pca_matrix_all_instances_original, category_instance_dict, colors_c
     ax.set_xlabel('Principal Component 1')
     ax.set_ylabel('Principal Component 2')
     ax.title.set_text('2D PCA of Spike Data all instances')
+    ax.set_xlim(min_x-50, max_x+50)
+    ax.set_ylim(min_y-50, max_y+50)
 
     # Plot the PCA for each category separately
     for key, values in category_instance_dict.items():
@@ -140,8 +148,8 @@ def plot_pca(pca_matrix_all_instances_original, category_instance_dict, colors_c
             instance_values = pca_matrix_all_instances_original[instance_id]
             ax = axs[(instance_id // num_instances_each_category) + 1]
             plot_instance(ax, instance_values, colors_categories[key])
-        ax.set_xlim(-150, 400)
-        ax.set_ylim(-150, 350)
+        ax.set_xlim(min_x-50, max_x+50)
+        ax.set_ylim(min_y-50, max_y+50)
         ax.set_xlabel('Principal Component 1')
         ax.set_ylabel('Principal Component 2')
         ax.title.set_text(f'Category: {key}')

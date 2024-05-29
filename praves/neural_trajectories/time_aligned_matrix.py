@@ -44,7 +44,7 @@ ephysData, bdata = ensemble.load("naturalSound")
 ## define parameters for the analysis
 nTrials = len(bdata["soundID"])
 eventOnsetTimes = ephysData["events"]["stimOn"][:nTrials]
-timeRange = [-1, 4]
+timeRange = [-1, 6]
 bin_size = 0.005
 
 ## get spiketimes, trial index for each spike and index limits for each trial for each cell in the ensemble
