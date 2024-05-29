@@ -1,5 +1,5 @@
 """
-Load and do basic processing of the widefield data.
+Estimate the average evoked signal for each stimulus frequency from widefield data.
 
 You need the tifffile package (I use my tiff virtual environment).
 """

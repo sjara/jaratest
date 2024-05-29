@@ -1,5 +1,5 @@
 """
-Load and do basic processing of the widefield data.
+Load widefield data, show time stamps, and plot average evoked signal.
 
 You need the tifffile package (I use my tiff virtual environment).
 """
