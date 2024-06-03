@@ -34,7 +34,7 @@ TOTAL_CATEGORIES = 5
 SESSION_DATE = "2024-03-20"
 PROBE_DEPTH = 2413
 TIME_RANGE = [-1.5, 5.5]
-BIN_SIZE = 0.25
+BIN_SIZE = 0.5
 SOUND_TYPE = "naturalSound"
 DIMS = 2
 COLORS_CATEGORIES = ["red", "blue", "green", "cyan", "purple"]
@@ -96,13 +96,16 @@ def main():
     distance_all_instances = nt.calculate_distances(time_aligned_matrix_all_instances)
 
     # Plot distances
-    nt.plot_distances(distance_all_instances, category_instance_dict, COLORS_CATEGORIES)
+    nt.plot_distances(distance_all_instances, category_instance_dict, COLORS_CATEGORIES, TIME_RANGE, BIN_SIZE)
 
     # Calculate category distances
     distance_all_categories = nt.calculate_category_distances(time_aligned_matrix_all_instances, category_instance_dict)
 
     # Plot category distances
-    nt.plot_category_distances(distance_all_categories)
+    nt.plot_category_distances(distance_all_categories, TIME_RANGE, BIN_SIZE)
+
+    # ## plot hypotheses 
+    # nt.plot_hypotheses()
 
 if __name__ == "__main__":
     main()
