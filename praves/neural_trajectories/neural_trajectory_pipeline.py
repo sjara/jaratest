@@ -58,6 +58,7 @@ def main():
     # Align all cells to the stimulus onset
     nTrials = len(bdata["soundID"])
     eventOnsetTimes = ephysData["events"]["stimOn"][:nTrials]
+    soundDuration = bdata["targetDuration"][0]
 
     # Get spiketimes, trial index, and index limits for each trial for each cell
     spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = ensemble.eventlocked_spiketimes(eventOnsetTimes, TIME_RANGE)
@@ -90,19 +91,19 @@ def main():
     num_instances_each_category = len(possibleStims) // TOTAL_CATEGORIES
 
     # Plot PCA results
-    nt.plot_pca(pca_matrix_all_instances, category_instance_dict, COLORS_CATEGORIES, TIME_RANGE, BIN_SIZE, num_instances_each_category)
+    nt.plot_pca(pca_matrix_all_instances, category_instance_dict, COLORS_CATEGORIES, TIME_RANGE, BIN_SIZE, soundDuration, num_instances_each_category)
 
     # Calculate distances between instances
     distance_all_instances = nt.calculate_distances(time_aligned_matrix_all_instances)
 
     # Plot distances
-    nt.plot_distances(distance_all_instances, category_instance_dict, COLORS_CATEGORIES, TIME_RANGE, BIN_SIZE)
+    nt.plot_distances(distance_all_instances, category_instance_dict, COLORS_CATEGORIES, TIME_RANGE, BIN_SIZE, soundDuration)
 
     # Calculate category distances
     distance_all_categories = nt.calculate_category_distances(time_aligned_matrix_all_instances, category_instance_dict)
 
     # Plot category distances
-    nt.plot_category_distances(distance_all_categories, TIME_RANGE, BIN_SIZE)
+    nt.plot_category_distances(distance_all_categories, TIME_RANGE, BIN_SIZE, soundDuration)
 
     # ## plot hypotheses 
     # nt.plot_hypotheses()
