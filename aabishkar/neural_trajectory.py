@@ -56,7 +56,7 @@ trials_my_sound_id = sortedTrials[indices_my_sound_id]
 
 sortingInds = np.argsort(sortedTrials)  # This will be used to sort trialIndexForEachSpike
 
-binSize = 0.1
+binSize = 0.5
 binEdges = np.arange(timeRange[0], timeRange[1], binSize)
 spikeCount = ensemble.spiketimes_to_spikecounts(binEdges)
 spike_count_for_my_sound = spikeCount[:, trials_my_sound_id, :]
