@@ -2,6 +2,14 @@
 Estimate the average evoked signal for each stimulus frequency from widefield data.
 
 You need the tifffile package (I use my tiff virtual environment).
+
+[4:46 PM] Tim Reizis
+The files I am using to test this are:
+D:/wifi003/20240530/wifi003_20240530_174509_tr.tif
+D:/wifi003/20240530/wifi003_20240530_174509_tr@0001.tif
+D:/wifi003/20240530/wifi003_20240530_174509_tr@0002.tif
+wifi003_timestamps_20240530_174509.npz
+wifi003_am_tuning_curve_20240530_174509a.h5
 """
 
 import tifffile
@@ -19,11 +27,11 @@ timestamps_filename = '/data/widefield/20240507/test000_timestamps_20240507_1518
 
 stimulus_filename = '/data/behavior/test000/test000_am_tuning_curve_20240529-151825.h5'
 
-INTENSITY_SCALE = [None, None]  # [-0.05, 0.1]  # [None, None]  
+INTENSITY_SCALE = [None, None]  # [-0.05, 0.1]
 
 # -- Create list of TIFF files --
 frames_filenames = [frames_filename]
-suffix = '_@{0:04g}'
+suffix = '@{0:04g}'
 for indf in range(1, n_frames_files):
     new_suffix = suffix.format(indf)
     new_filename = frames_filename.replace('.tif', new_suffix+'.tif')
@@ -54,11 +62,6 @@ n_freq = len(possible_freq)
 trials_each_freq = behavioranalysis.find_trials_each_type(current_freq, possible_freq)
 
 sound_onset = sound_onset[:n_trials]
-
-# -- Load imaging data --
-with tifffile.TiffFile(frames_filename) as tif:
-    frames = tif.asarray()
-    axes = tif.series[0].axes
 
 if 0:
     # -- Plot timestamps --
