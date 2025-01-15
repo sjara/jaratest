@@ -50,11 +50,15 @@ for subject in subjects:
 
     for indsession, session in enumerate(sessions[subject]):
         behavFile = loadbehavior.path_to_behavior_data(subject, paradigm, session)
-        bdata = loadbehavior.BehaviorData(behavFile)
+        try:
+            bdata = loadbehavior.BehaviorData(behavFile)
+            nValid = bdata['nValid'][-1]
+            nRewarded = bdata['nRewarded'][-1]
+        except:
+            print(f'\nERROR: Could not load session {session} for subject {subject}')
+            nValid = np.nan
+            nRewarded = np.nan
     
-        nValid = bdata['nValid'][-1]
-        nRewarded = bdata['nRewarded'][-1]
-
         summaryPerformance[subject] = summaryPerformance[subject].append({
             'sessionID': session,
             'nValid': nValid,
