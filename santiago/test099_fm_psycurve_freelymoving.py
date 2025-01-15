@@ -1,5 +1,5 @@
 """
-Show psychometric for head-fixed mice (FM discrimination task).
+Show psychometric for freely-moving mice (FM discrimination task).
 """
 
 import sys
