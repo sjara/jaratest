@@ -17,9 +17,9 @@ matplotlib.rcParams['svg.fonttype'] = 'none'  # So font is selectable in SVG
 FIGURE_OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH, studyparams.STUDY_NAME, 'output') # Where figures are saved 
 
 # Font size settings 
-fontSizeLabels = 7
-fontSizeTicks = 6
-fontSizePanel = 9
+fontSizeLabels = 10
+fontSizeTicks = 9
+fontSizePanel = 12
 fontSizeTitles = 12
 fontSizeNS = 10
 fontSizeStars = 9
@@ -31,11 +31,12 @@ starYfactor = 0.1
 
 dotEdgeColor = '0.5' 
 
-rasterMS = 1 # Raster plot transparency
+rasterMarkerSize = 3 # Raster maerker size
 
 colors = {} # Color library used in figures 
 
-colors['blueLaser'] = cp.TangoPalette['SkyBlue1']
+colors['soundStim'] = cp.TangoPalette['Butter2']
+colors['blueLaser'] = '#00DDDD'  #cp.TangoPalette['SkyBlue1']
 colors['D1'] = cp.TangoPalette['SkyBlue2']
-colors['nD1'] = cp.TangoPalette['ScarletRed1']
+colors['ND1'] = cp.TangoPalette['ScarletRed1']
 
