@@ -17,6 +17,9 @@ from jaratoolbox import behavioranalysis
 from importlib import reload
 reload(celldatabase)
 
+from jaratoolbox import loadneuropix
+reload(loadneuropix)
+
 SESSIONID = 0
 if SESSIONID == 0:
     subject = 'feat015'
@@ -30,12 +33,18 @@ if SESSIONID == 2:
     subject = 'feat017'
     sessionDate = "2024-03-26"
     probeDepth = 3000
+if SESSIONID == 3:
+    subject = 'feat017'
+    sessionDate = "2024-03-29"
+    probeDepth = 3000
 
-if 1:
+if 0:
     inforecFile = os.path.join(settings.INFOREC_PATH,f'{subject}_inforec.py')
     inforecFile = inforecFile.replace('.py','.test.py')
     celldb = celldatabase.generate_cell_database(inforecFile)
-
+else:
+    inforecFile = os.path.join(settings.INFOREC_PATH,f'{subject}_inforec.py')
+    celldb = celldatabase.generate_cell_database(inforecFile, ignoreMissing=True)
 
 # -- Load the data --
 celldbSubset = celldb[(celldb.date==sessionDate) & (celldb.pdepth==probeDepth)]
@@ -71,7 +80,7 @@ sortingInds = np.argsort(sortedTrials)  # This will be used to sort trialIndexFo
 #someCells = [13, 15, 16, 22]
 #someCells = [6]
 #someCells = np.arange(0,12)+12+5
-someCells = np.arange(0,4*7)+28
+someCells = np.arange(0,4*7) + 0*28
 #someCells = np.arange(0,len(celldbSubset))
 #someCells = [88, 95] # feat017 2024-03-26 (for duration of offset response)
 plt.clf()
