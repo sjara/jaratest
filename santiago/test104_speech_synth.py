@@ -12,7 +12,7 @@ reload(speechsynth)
 
 
 sampFreq = 192000 #44100 # 
-freqFactor = 1 # 1 for human hearing range, 8 for mice.
+freqFactor = 8 # 1 for human hearing range, 8 for mice.
 burstDuration = 0.000001#0.004
 vowelDuration = 0.22 # 0.315
 silenceDuration = 0.02
