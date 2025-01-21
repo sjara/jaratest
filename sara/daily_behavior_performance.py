@@ -32,7 +32,7 @@ else:
 summaryPerformance = {}
 sessions = {}
 for subject in subjects:
-    summaryPerformance[subject] = pd.DataFrame(columns=['sessionID', 'nValid', 'nRewarded'])
+    summaryPerformance[subject] = pd.DataFrame(columns=['sessionID', 'nValid', 'nRewarded', 'rig'])
 
     # Find all session files for this subject
     behavDataPath = settings.BEHAVIOR_PATH
@@ -54,17 +54,26 @@ for subject in subjects:
             bdata = loadbehavior.BehaviorData(behavFile)
             nValid = bdata['nValid'][-1]
             nRewarded = bdata['nRewarded'][-1]
+            rig = int(bdata.session['hostname'].split('jararig')[-1].replace("'", ""))
         except:
             print(f'\nERROR: Could not load session {session} for subject {subject}')
             nValid = np.nan
             nRewarded = np.nan
+            rig = None
     
         summaryPerformance[subject] = summaryPerformance[subject].append({
             'sessionID': session,
             'nValid': nValid,
-            'nRewarded': nRewarded
+            'nRewarded': nRewarded,
+            'rig': rig,
         }, ignore_index=True)
         
     print(f'\n--- {subject} ---')
     print(summaryPerformance[subject].iloc[::-1])
     
+# -- Calculate average number of rewarded trials grouped by rig --
+summaryPerformanceAll = pd.concat(summaryPerformance.values(), keys=subjects)
+summaryPerformanceAll = summaryPerformanceAll.dropna()
+summaryPerformanceAllGrouped = summaryPerformanceAll.drop(columns='sessionID').groupby('rig').mean()
+print('\n=== Average performance per rig ===')
+print(summaryPerformanceAllGrouped)
