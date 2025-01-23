@@ -28,11 +28,13 @@ if len(sys.argv) > 1:
 else:
     lastNsessions = None
 
+columns = ['sessionID', 'nValid', 'nRewarded', 'rig']
+
 # -- Process data for each mouse --
 summaryPerformance = {}
 sessions = {}
 for subject in subjects:
-    summaryPerformance[subject] = pd.DataFrame(columns=['sessionID', 'nValid', 'nRewarded', 'rig'])
+    summaryPerformance[subject] = pd.DataFrame(columns=columns)
 
     # Find all session files for this subject
     behavDataPath = settings.BEHAVIOR_PATH
@@ -60,22 +62,7 @@ for subject in subjects:
             nValid = np.nan
             nRewarded = np.nan
             rig = None
-
-        # If pandas version is less than 1.4 use append() instead of concat()
-        if pd.__version__ < '1.4':
-            summaryPerformance[subject] = summaryPerformance[subject].append({
-                'sessionID': session,
-                'nValid': nValid,
-                'nRewarded': nRewarded,
-                'rig': rig,
-            }, ignore_index=True)
-        else:
-            summaryPerformance[subject] = summaryPerformance[subject].concat({
-                'sessionID': session,
-                'nValid': nValid,
-                'nRewarded': nRewarded,
-                'rig': rig,
-            }, ignore_index=True)
+        summaryPerformance[subject].loc[indsession, columns] = (session, nValid, nRewarded, rig)
         
     print(f'\n--- {subject} ---')
     print(summaryPerformance[subject].iloc[::-1])
