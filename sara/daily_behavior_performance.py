@@ -28,7 +28,7 @@ if len(sys.argv) > 1:
 else:
     lastNsessions = None
 
-columns = ['sessionID', 'nValid', 'nRewarded', 'rig']
+columns = ['sessionID', 'rig', 'nValid', 'nRewarded', 'correctL', 'correctR', 'outcomeMode']
 
 # -- Process data for each mouse --
 summaryPerformance = {}
@@ -54,22 +54,38 @@ for subject in subjects:
         behavFile = loadbehavior.path_to_behavior_data(subject, paradigm, session)
         try:
             bdata = loadbehavior.BehaviorData(behavFile)
-            nValid = bdata['nValid'][-1]
-            nRewarded = bdata['nRewarded'][-1]
-            rig = int(bdata.session['hostname'].split('jararig')[-1].replace("'", ""))
+            assert len(bdata['nValid'])>0
         except:
             print(f'\nERROR: Could not load session {session} for subject {subject}')
+            rig = None
             nValid = np.nan
             nRewarded = np.nan
-            rig = None
-        summaryPerformance[subject].loc[indsession, columns] = (session, nValid, nRewarded, rig)
-        
+            fractionCorrectLeft = np.nan
+            fractionCorrectRight = np.nan
+            outcomeMode = ''
+        else:
+            rig = int(bdata.session['hostname'].split('jararig')[-1].replace("'", ""))
+            nValid = bdata['nValid'][-1]
+            nRewarded = bdata['nRewarded'][-1]
+            leftTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['left']
+            rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
+            correct = bdata['outcome'] == bdata.labels['outcome']['correct']
+            fractionCorrectLeft = np.sum(leftTrials & correct)/np.sum(leftTrials)
+            fractionCorrectRight = np.sum(rightTrials & correct)/np.sum(leftTrials)
+            outcomeMode = bdata.labels['outcomeMode'][bdata['outcomeMode'][-1]]
+            
+        summaryPerformance[subject].loc[indsession, columns] = (session, rig, nValid, nRewarded,
+                                                                100*fractionCorrectLeft,
+                                                                100*fractionCorrectRight,
+                                                                outcomeMode)
+            
     print(f'\n--- {subject} ---')
     print(summaryPerformance[subject].iloc[::-1])
     
 # -- Calculate average number of rewarded trials grouped by rig --
 summaryPerformanceAll = pd.concat(summaryPerformance.values(), keys=subjects)
 summaryPerformanceAll = summaryPerformanceAll.dropna()
-summaryPerformanceAllGrouped = summaryPerformanceAll.drop(columns='sessionID').groupby('rig').mean()
+numColumns = ['rig','nValid', 'nRewarded', 'correctL', 'correctR']
+summaryPerformanceAllGrouped = summaryPerformanceAll[numColumns].groupby('rig').mean()
 print('\n=== Average performance per rig ===')
 print(summaryPerformanceAllGrouped)
