@@ -71,7 +71,7 @@ for subject in subjects:
             rightTrials = bdata['rewardSide'] == bdata.labels['rewardSide']['right']
             correct = bdata['outcome'] == bdata.labels['outcome']['correct']
             fractionCorrectLeft = np.sum(leftTrials & correct)/np.sum(leftTrials)
-            fractionCorrectRight = np.sum(rightTrials & correct)/np.sum(leftTrials)
+            fractionCorrectRight = np.sum(rightTrials & correct)/np.sum(rightTrials)
             outcomeMode = bdata.labels['outcomeMode'][bdata['outcomeMode'][-1]]
             
         summaryPerformance[subject].loc[indsession, columns] = (session, rig, nValid, nRewarded,
