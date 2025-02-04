@@ -157,3 +157,23 @@ def get_psth_uncollapsed(my_data, dataTimeStamps, eventOnsetTimes, trials, psth_
     
     return psth_uncollapsed, collection_outcome_list
 
+def time_to_indices(time_difference, sampleRate, time_difference_units='s'):
+    '''
+    Parameters:
+        time_difference (float): Time elapsed to convert to samples elapsed.
+        sample_rate (int): Sampling rate (hz).
+        time_difference_units (str): Assumed input time units. Can be 's', 'ms', 'us'.
+
+    Returns:
+        int: Nearest number of samples encompassing the requested time difference.
+    '''
+
+    unit_conversion = {'s': 1, 'ms': 1e-3, 'us': 1e-6}
+    
+    if time_difference_units not in unit_conversion:
+        raise ValueError("time_difference_units must be 's', 'ms', or 'us'.")
+
+    time_in_seconds = time_difference * unit_conversion[time_difference_units]
+    sample_count = round(time_in_seconds * sampleRate)
+
+    return sample_count
