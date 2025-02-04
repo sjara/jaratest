@@ -1,5 +1,5 @@
 '''
-Loads the raw LFP data and behavior. 
+Loads the raw LFP data.
 Displays a heatmap of a subset of LFP data. 
 x-axis is time from sample 0 to sample 1000. 
 y-axis is channel index. 
@@ -28,9 +28,18 @@ sampleRate = contData.sampleRate
 nChannels = contData.nChannels
 bitVolts = contData.bitVolts
 
+nSamplesToProcess = int(0.4 * sampleRate)  # 0.4 sec
+traceToProcess = rawdata[:nSamplesToProcess, :] * bitVolts  # In uV 
+tvec = np.arange(nSamplesToProcess) / sampleRate
+
 ## Display a heatmap of a subset of LFP data
-plt.figure(figsize=(15,20))
-plt.imshow(contData.data[:1000,:].T)
-plt.title("Heatmap of the LFP data across all acquisition channels from n=0 to n=1000 | yellow = high, purple = low")
-plt.colorbar()
+#plt.figure(figsize=(15,20))
+plt.clf()
+#plt.imshow(contData.data[:1000,:].T)
+plt.imshow(traceToProcess.T, origin='lower',
+           extent=[0, nSamplesToProcess/sampleRate, 0, nChannels])
+plt.xlabel('Time (s)')
+plt.ylabel('Channel index')
+plt.title(f"Heatmap of the raw LFP data across all channels for the first {nSamplesToProcess} samples")
+plt.colorbar(label='Amplitude (uV)')
 plt.show()
