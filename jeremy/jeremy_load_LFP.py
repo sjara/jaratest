@@ -33,10 +33,8 @@ traceToProcess = rawdata[:nSamplesToProcess, :] * bitVolts  # In uV
 tvec = np.arange(nSamplesToProcess) / sampleRate
 
 ## Display a heatmap of a subset of LFP data
-#plt.figure(figsize=(15,20))
 plt.clf()
-#plt.imshow(contData.data[:1000,:].T)
-plt.imshow(traceToProcess.T, origin='lower',
+plt.imshow(traceToProcess.T, origin='lower', aspect='auto',
            extent=[0, nSamplesToProcess/sampleRate, 0, nChannels])
 plt.xlabel('Time (s)')
 plt.ylabel('Channel index')
