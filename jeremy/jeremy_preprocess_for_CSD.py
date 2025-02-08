@@ -46,6 +46,9 @@ psth_upper = jpsth.time_to_indices(time_upper, sampleRate, 's') # Ex: Collect 3 
 psth_lower = jpsth.time_to_indices(time_lower, sampleRate, 's') # Ex: Collect 3 seconds of datapoints BEFORE stimulus onset
 print(f"Indices below: {psth_lower}\nIndices above: {psth_upper}")
 
+'''
+Single figure
+'''
 # Grab your trials of interest
 trials = trialsEachCond[:,6]
 
@@ -61,4 +64,47 @@ plt.legend(loc='upper left')
 plt.title("Heatmap of average LFP data for a given stimuli.")
 plt.xlabel("Time evolution (s)")
 plt.ylabel("Channel index")
+plt.show()
+
+'''
+4 column subplot of all stimuli
+'''
+num_trials = trialsEachCond.T.shape[0]  # Number of subplots needed
+cols = min(num_trials, 4)  # Maximum 4 subplots in a row
+rows = int(np.ceil(num_trials / cols))  # Determine rows needed
+
+fig, axes = plt.subplots(rows, cols, figsize=(16, 2 * rows))  # Adjust figure size
+
+# Flatten axes if there's only one row to avoid indexing issues
+if rows == 1:
+    axes = np.reshape(axes, (1, -1))
+
+for idx, trials in enumerate(trialsEachCond.T):
+    psth_uncollapsed, collection_outcome_list = jpsth.get_psth_uncollapsed(
+        contData.data, contData.timestamps, eventOnsetTimes, trials, psth_upper, psth_lower
+    )
+    
+    row = idx // 4  # Determine row
+    col = idx % 4   # Determine column
+
+    im = axes[row, col].imshow(
+        psth_uncollapsed.mean(axis=0).T * bitVolts, 
+        aspect='auto',
+        extent=[-time_lower, time_upper, 0, nChannels]
+    )
+    
+    axes[row, col].axvline(x=1/sampleRate, c='r')
+    # axes[row, col].legend(loc='upper left')
+    axes[row, col].set_title(f"Stimulus {idx}")
+    axes[row, col].set_xlabel("Time evolution (s)")
+    axes[row, col].set_ylabel("Channel index")
+
+# Remove unused axes if num_trials is less than total subplots
+for idx in range(num_trials, rows * cols):
+    fig.delaxes(axes.flatten()[idx])
+
+cbar_ax = fig.add_axes([0.92, 0.2, 0.02, 0.6])  # Position the colorbar correctly
+fig.colorbar(im, cax=cbar_ax, label='Amplitude (uV)')  # Apply to all subplots
+
+plt.tight_layout(rect=[0, 0, 0.9, 1])  # Adjust layout to prevent overlap
 plt.show()
