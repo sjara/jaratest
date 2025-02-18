@@ -165,7 +165,7 @@ def time_to_indices(time_difference, sampleRate, time_difference_units='s'):
         time_difference_units (str): Assumed input time units. Can be 's', 'ms', 'us'.
 
     Returns:
-        int: Nearest number of samples encompassing the requested time difference.
+        sample_count (int): Nearest number of samples encompassing the requested time difference.
     '''
 
     unit_conversion = {'s': 1, 'ms': 1e-3, 'us': 1e-6}
