@@ -80,4 +80,7 @@ for idx, trials in enumerate(trialsEachCond.T):
     psth_mean_list.append(psth_uncollapsed.mean(axis=0).T * bitVolts)
     collection_outcome_list.append(collection_outcomes)
 
-jutils.make_4xN_subplots(psth_mean_list, time_lower, time_upper, nChannels, sampleRate, amplitude_units = 'μV')
+freq_titles = [f"{round(freq//1000)}kHz" for freq in array_of_frequencies]
+jutils.make_4xN_subplots(
+    psth_mean_list, time_lower, time_upper, nChannels, sampleRate, titles=freq_titles, amplitude_units = 'μV'
+    )
