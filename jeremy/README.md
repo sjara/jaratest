@@ -8,5 +8,6 @@ Test code by Jeremy Guenza-Marcus
 
 * `jeremy_csd.py`: Load in raw LFP data. Create an uncollapsed PSTH of all stimulus types given an elapsed time before and after stimuli. Calculates a kCSD of N=10 channels on a single column for all stimuli types as calculated previously. Displays this in a 4 column subplot figure as done in jeremy_preprocess_for_CSD.py.
 
+* `jeremy_psth.py`: All functions relevant to PSTH creation to be called when running the CSD analysis pipeline.
 
-
+* `jeremy_utils.py`: All functions that do not clearly belong in PSTH creation which are to be placed into another .py file until further categorization.
