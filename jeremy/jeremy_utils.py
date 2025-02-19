@@ -56,7 +56,7 @@ def get_probemap(xmlfile):
 
     return probeMap, probeName
 
-def make_4xN_subplots(arr, time_lower, time_upper, nChannels, sampleRate, amplitude_units = '[units]'):
+def make_4xN_subplots(arr, time_lower, time_upper, nChannels, sampleRate, titles, amplitude_units = '[units]'):
     '''
     Display all figures in a 4xN subplot with a consistent color scale.
 
@@ -84,7 +84,10 @@ def make_4xN_subplots(arr, time_lower, time_upper, nChannels, sampleRate, amplit
     vmin = np.min([np.min(img) for img in arr])
     vmax = np.max([np.max(img) for img in arr])
     
-    for idx, pull_img in enumerate(arr):
+    if len(titles)!=len(arr):
+        titles = [f"Figure {n}" for n in range(len(arr))]
+
+    for idx, (pull_img, grab_title) in enumerate(zip(arr, titles)):
         row = idx // 4  # Determine row
         col = idx % 4   # Determine column
 
@@ -97,7 +100,7 @@ def make_4xN_subplots(arr, time_lower, time_upper, nChannels, sampleRate, amplit
         )
         
         axes[row, col].axvline(x=1/sampleRate, c='r')
-        axes[row, col].set_title(f"Stimulus {idx}")
+        axes[row, col].set_title(f"{grab_title}")
         axes[row, col].set_xlabel("Time evolution (s)")
         axes[row, col].set_ylabel("Channel index")
     
