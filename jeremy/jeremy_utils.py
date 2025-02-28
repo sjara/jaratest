@@ -56,7 +56,41 @@ def get_probemap(xmlfile):
 
     return probeMap, probeName
 
-def make_4xN_subplots(arr, time_lower, time_upper, nChannels, sampleRate, titles, amplitude_units = '[units]'):
+def grab_probe_columns(probeMap):
+    """
+    Groups probe coordinates by unique x-coordinates.
+
+    This function takes a dictionary containing x and y coordinates,
+    organizes them by unique x-coordinates, and returns a dictionary
+    where each key is a unique x-coordinate, and the corresponding value
+    contains the indices and coordinate pairs.
+
+    Parameters:
+        probeMap (dict): A dictionary containing two keys
+            - 'xc': List or array of x-coordinates.
+            - 'yc': List or array of y-coordinates.
+
+    Returns: 
+        columnInfo (dict): A dictionary where
+            - Keys are unique x-coordinates (as strings).
+            - Values are dictionaries containing:
+                - "indices": NumPy array of indices where the x-coordinate occurs.
+                - "coordinates": NumPy array of (x, y) coordinate pairs.
+    """
+
+    allCoords = np.array([[xcoord,ycoord] for xcoord,ycoord in zip(probeMap['xc'],probeMap['yc'])])
+    uniqueXCoords = np.unique(allCoords[:,0])  # Get all unique x coordinates
+    columnInfo = {
+        f'{xCoord}': {
+            "indices": np.where(allCoords[:, 0] == xCoord)[0],
+            "coordinates": allCoords[allCoords[:, 0] == xCoord]
+        }
+        for xCoord in uniqueXCoords
+    }
+
+    return columnInfo
+
+def make_4xN_subplots(arr, time_lower, time_upper, nChannels, sampleRate, suptitle, titles, amplitude_units = '[units]'):
     '''
     Display all figures in a 4xN subplot with a consistent color scale.
 
@@ -74,8 +108,12 @@ def make_4xN_subplots(arr, time_lower, time_upper, nChannels, sampleRate, titles
     cols = min(num_subplots, 4)  # Maximum 4 subplots in a row
     rows = int(np.ceil(num_subplots / cols))  # Determine rows needed
 
-    fig, axes = plt.subplots(rows, cols, figsize=(16, 2 * rows))  # Adjust figure size
-    
+    fig = plt.gcf()
+    fig.set_size_inches((16, 2 * rows))
+    axes = fig.subplots(rows, cols)  # Adjust figure size
+
+    fig.suptitle(suptitle, fontsize=14, fontweight='bold', y=0.98)
+
     # Flatten axes if there's only one row to avoid indexing issues
     if rows == 1:
         axes = np.reshape(axes, (1, -1))
@@ -112,4 +150,3 @@ def make_4xN_subplots(arr, time_lower, time_upper, nChannels, sampleRate, titles
     fig.colorbar(im, cax=cbar_ax, label=f'Amplitude ({amplitude_units})')  # Apply to all subplots
 
     plt.tight_layout(rect=[0, 0, 0.9, 1])  # Adjust layout to prevent overlap
-    plt.show()
