@@ -50,9 +50,11 @@ ylabs = {"AM":"AM rate (Hz)",
 subject = args.subject
 studyName = args.studyName
 sessionDate = args.sessionDate
-someCells = [int(i) for i in args.cellsToPlot.split(',')]
+someCells = args.cellsToPlot
+if someCells != '':
+	someCells = [int(i) for i in args.cellsToPlot.split(',')]
 probeDepth = int(args.probeDepth)
-paradigms = args.tkParadigm.split(',')
+paradigms = args.tkParadigms.split(',')
 
 
 # get data
@@ -125,7 +127,7 @@ for paradigm,stim in zip(paradigms,stims):
             plt.setp(pRaster, ms=2)
             plt.xlabel('Time (s)')
             plt.ylabel(ylabs[paradigm])
-            plt.title(f"Cell #{oneCell.cluster}")
+            plt.title(f"Cell #{oneCell.cluster}, best channel #{celldbSubset.iloc[indcell].bestChannel}")
 
         plt.suptitle(figname)
         plt.tight_layout()
