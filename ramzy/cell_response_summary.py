@@ -74,7 +74,7 @@ else:
 if not someCells:
     celldbSubset = celldb[(celldb.date==sessionDate) & (celldb.pdepth==probeDepth)]
 else:
-    celldbSubset = celldb[(celldb.date==sessionDate) & (celldb.pdepth==probeDepth) & (celldb.cluster in someCells)]
+    celldbSubset = celldb[(celldb.date==sessionDate) & (celldb.pdepth==probeDepth) & (celldb.cluster.isin(someCells))]
 
 someCells = np.arange(len(celldbSubset))
 ensemble = ephyscore.CellEnsemble(celldbSubset)
