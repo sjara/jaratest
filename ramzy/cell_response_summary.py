@@ -1,4 +1,6 @@
-#! /usr/bin/env python
+"""
+Script for creating raster plot report of multiple cells from a recording session
+"""
 
 import os
 import argparse as arp
@@ -37,15 +39,23 @@ def get_args():
                         required=False,default='')
     return parser.parse_args()
 
+stim_types = {
+    "AM" : "currentFreq",
+    "Freq" : "currentFreq",
+    "naturalSound" : "soundID"
+}
 
+ylabs = {
+    "AM" : "AM rate (Hz)",
+    "Freq" : "Tone Frequency (Hz)",
+    "naturalSound" : "Sound ID"
+}
 
-stim_types = {"AM":"currentFreq",
-              "Freq":"currentFreq",
-              "naturalSound":"soundID"}
-
-ylabs = {"AM":"AM rate (Hz)",
-         "Freq":"Tone Frequency (Hz)",
-         "naturalSound":"Sound ID"}
+raster_times = {
+    "AM" : (-0.5,1.0),
+    "Freq" : (-0.5,1.0),
+    "naturalSound" : (-2.0,4.0)
+}
 
 # get args
 args = get_args()
@@ -71,12 +81,18 @@ else:
 
 
 # subset data
-if not someCells:
-    celldbSubset = celldb[(celldb.date==sessionDate) & (celldb.pdepth==probeDepth)]
-else:
-    celldbSubset = celldb[(celldb.date==sessionDate) & (celldb.pdepth==probeDepth) & (celldb.cluster.isin(someCells))]
+celldbSubset = celldb[(celldb.date==sessionDate) \
+                      & (celldb.pdepth==probeDepth) \
+                        & (celldb.cluster_label=='good')]
+firstCell = celldbSubset.iloc[0].name
 
-someCells = np.arange(len(celldbSubset))
+if someCells:
+    celldbSubset = celldb[(celldb.date==sessionDate) \
+                          & (celldb.pdepth==probeDepth) \
+                            & (celldb.cluster_label=='good') \
+                              & (celldb.cluster.isin(someCells))]
+
+someCellInds = np.arange(len(celldbSubset))
 ensemble = ephyscore.CellEnsemble(celldbSubset)
 
 if not paradigms[0]:
@@ -85,14 +101,12 @@ if not paradigms[0]:
 stims = [stim_types[sType] for sType in paradigms]
 
 cellsPerPage = NROW*NCOL
-rasterTimeRange = [-0.5, 1]  # In seconds
-
-
-numcells = len(someCells)
+numcells = len(someCellInds)
 numpages = int(np.ceil(numcells/cellsPerPage))
+numdigits = len(str(numpages))
+
 
 # create folders in figures directory if not already present
-
 studyFolder = os.path.join(settings.FIGURES_DATA_PATH,studyName)
 subjectFolder = os.path.join(studyFolder,subject)
 sessionFolder = os.path.join(subjectFolder,sessionDate)
@@ -103,42 +117,50 @@ if not os.path.exists(subjectFolder):
     os.mkdir(subjectFolder)                 # folder for this subject
 if not os.path.exists(sessionFolder):
     os.mkdir(sessionFolder)                 # folder for this session
-
 for paradigm,stim in zip(paradigms,stims):
     paradigmFolder = os.path.join(sessionFolder,paradigm)
     if not os.path.exists(paradigmFolder):
         os.mkdir(paradigmFolder)                # folder for current paradigm
 
+    # load in the data
     ephysData,bdata = ensemble.load(paradigm)
     nTrials = len(bdata[stim])
     eventOnsetTimes = ephysData['events']['stimOn'][:nTrials] # Ignore trials not in bdata 
 
+    stimDur = ephysData['events']['stimOff'][0] - ephysData['events']['stimOn'][0]
+
+    rasterTimeRange = (min(-0.5,-0.5*stimDur),
+                       max(1.0,1.5*stimDur))  # In seconds
+    
     spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = \
         ensemble.eventlocked_spiketimes(eventOnsetTimes, rasterTimeRange)
     
+    # get trials
+    currentStim = bdata[stim]
+    possibleStim = np.unique(currentStim)
+    trialsEachCond = behavioranalysis.find_trials_each_type(currentStim, possibleStim)
 
+    # draw raster plots
     for page in range(numpages):
         fig = plt.figure(1,figsize=(20, 12))
-        filename = f"{subject}_{sessionDate}_{probeDepth}_{paradigm}_{page+1}.png"
+        filename = f"{subject}_{sessionDate}_{probeDepth}_{paradigm}_{(page+1):02d}.png"
         figname = f"{subject} {sessionDate} {probeDepth} {paradigm} {page+1}/{numpages}"
         
         # plot cells for current page
-        currentStim = bdata[stim]
-        possibleStim = np.unique(currentStim)
-        trialsEachCond = behavioranalysis.find_trials_each_type(currentStim, possibleStim)
-
-        for count, indcell in enumerate(someCells[page*cellsPerPage:(page+1)*cellsPerPage]):
+        for count, indcell in enumerate(someCellInds[page*cellsPerPage:(page+1)*cellsPerPage]):
             plt.subplot(NROW, NCOL, count+1)
             pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[indcell], indexLimitsEachTrialAll[indcell],
                                                     rasterTimeRange, trialsEachCond, labels=possibleStim)
-            
             plt.setp(pRaster, ms=2)
             plt.xlabel('Time (s)')
             plt.ylabel(ylabs[paradigm])
-            plt.title(f"Cell #{celldbSubset.iloc[indcell].cluster} (best channel: {celldbSubset.iloc[indcell].bestChannel})")
-            
+            curr_loc = celldbSubset.iloc[indcell]
+            plt.title(f"Good Cell #{curr_loc.name - firstCell} (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel})")
+        
         plt.suptitle(figname)
         plt.tight_layout()
+
+        # save and close current page/fig
         plt.savefig(os.path.join(paradigmFolder,filename))
         plt.close(1)
 
