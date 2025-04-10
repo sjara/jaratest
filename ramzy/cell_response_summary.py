@@ -109,7 +109,7 @@ for ind,type in enumerate(celldbSubset.iloc[0].sessionType):
     sessionTimes[type] = celldbSubset.iloc[0].ephysTime[ind]
 
 if not paradigms[0]:
-    paradigms = list(celldbSubset.sessionType)[0]
+    paradigms = [i for i in list(celldbSubset.sessionType)[0] if i != 'Spont']
 
 stims = [stim_types[sType] for sType in paradigms]
 
