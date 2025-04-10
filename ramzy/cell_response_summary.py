@@ -7,7 +7,7 @@ import argparse as arp
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from jaratoolbox import settings, celldatabase, \
+from jaratoolbox import settings, celldatabase, loadneuropix, \
     ephyscore, extraplots, spikesanalysis, behavioranalysis
 
 NROW = 3
@@ -75,9 +75,17 @@ dbPath = os.path.join(settings.DATABASE_PATH, studyName, f'celldb_{subject}.h5')
 
 if os.path.exists(dbPath):
     celldb = celldatabase.load_hdf(dbPath)
+
+    if not celldb['date'].isin([sessionDate]).any():
+        celldb = celldatabase.generate_cell_database(os.path.join(settings.INFOREC_PATH,
+                                                              f"{subject}_inforec.py"))
+        
+        celldatabase.save_hdf(celldb, dbPath)
+        
 else:
     celldb = celldatabase.generate_cell_database(os.path.join(settings.INFOREC_PATH,
                                                               f"{subject}_inforec.py"))
+    celldatabase.save_hdf(celldb, dbPath)
 
 
 # subset data
@@ -95,6 +103,11 @@ if someCells:
 someCellInds = np.arange(len(celldbSubset))
 ensemble = ephyscore.CellEnsemble(celldbSubset)
 
+sessionTimes = {}
+
+for ind,type in enumerate(celldbSubset.iloc[0].sessionType):
+    sessionTimes[type] = celldbSubset.iloc[0].ephysTime[ind]
+
 if not paradigms[0]:
     paradigms = list(celldbSubset.sessionType)[0]
 
@@ -110,6 +123,7 @@ numdigits = len(str(numpages))
 studyFolder = os.path.join(settings.FIGURES_DATA_PATH,studyName)
 subjectFolder = os.path.join(studyFolder,subject)
 sessionFolder = os.path.join(subjectFolder,sessionDate)
+siteFolder = os.path.join(sessionFolder, str(probeDepth)+'um')
 
 if not os.path.exists(studyFolder):
     os.mkdir(studyFolder)                   # folder for this study (just the figures directory if no studyName)
@@ -117,13 +131,25 @@ if not os.path.exists(subjectFolder):
     os.mkdir(subjectFolder)                 # folder for this subject
 if not os.path.exists(sessionFolder):
     os.mkdir(sessionFolder)                 # folder for this session
+
+if not os.path.exists(siteFolder):
+    os.mkdir(siteFolder)                 # folder for this site
+
 for paradigm,stim in zip(paradigms,stims):
-    paradigmFolder = os.path.join(sessionFolder,paradigm)
+    paradigmFolder = os.path.join(siteFolder,paradigm)
     if not os.path.exists(paradigmFolder):
         os.mkdir(paradigmFolder)                # folder for current paradigm
 
     # load in the data
     ephysData,bdata = ensemble.load(paradigm)
+
+
+
+    XML_PATH = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject,
+                            f"{sessionDate}_{sessionTimes[paradigm]}_processed_multi",
+                            "info", "settings.xml")
+
+    pmap = loadneuropix.ProbeMap(XML_PATH)
     nTrials = len(bdata[stim])
     eventOnsetTimes = ephysData['events']['stimOn'][:nTrials] # Ignore trials not in bdata 
 
@@ -152,10 +178,13 @@ for paradigm,stim in zip(paradigms,stims):
             pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[indcell], indexLimitsEachTrialAll[indcell],
                                                     rasterTimeRange, trialsEachCond, labels=possibleStim)
             plt.setp(pRaster, ms=2)
+            plt.axvline(stimDur, color='0.75', zorder=-10)
             plt.xlabel('Time (s)')
             plt.ylabel(ylabs[paradigm])
             curr_loc = celldbSubset.iloc[indcell]
-            plt.title(f"Good Cell #{curr_loc.name - firstCell} (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel})")
+            curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
+            curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
+            plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
         
         plt.suptitle(figname)
         plt.tight_layout()
