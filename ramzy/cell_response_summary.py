@@ -7,6 +7,7 @@ import argparse as arp
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import re
 from jaratoolbox import settings, celldatabase, loadneuropix, \
     ephyscore, extraplots, spikesanalysis, behavioranalysis
 
@@ -51,12 +52,6 @@ ylabs = {
     "naturalSound" : "Sound ID"
 }
 
-raster_times = {
-    "AM" : (-0.5,1.0),
-    "Freq" : (-0.5,1.0),
-    "naturalSound" : (-2.0,4.0)
-}
-
 # get args
 args = get_args()
 subject = args.subject
@@ -64,9 +59,9 @@ studyName = args.studyName
 sessionDate = args.sessionDate
 probeDepth = int(args.probeDepth)
 paradigms = args.tkParadigms.split(',')
-someCells = args.cellsToPlot
-if someCells != '':
-	someCells = [int(i) for i in args.cellsToPlot.split(',')]
+cellsToPlot = args.cellsToPlot
+if cellsToPlot != '':
+	cellInds = [int(i) for i in args.cellsToPlot.split(',')]
 
 
 
@@ -94,13 +89,25 @@ celldbSubset = celldb[(celldb.date==sessionDate) \
                         & (celldb.cluster_label=='good')]
 firstCell = celldbSubset.iloc[0].name
 
-if someCells:
-    celldbSubset = celldb[(celldb.date==sessionDate) \
-                          & (celldb.pdepth==probeDepth) \
-                            & (celldb.cluster_label=='good') \
-                              & (celldb.cluster.isin(someCells))]
+### for doing cellsToPlot as cluster #s instead of good cell #s ---v
 
-someCellInds = np.arange(len(celldbSubset))
+# if cellsToPlot:
+#     celldbSubset = celldb[(celldb.date==sessionDate) \
+#                           & (celldb.pdepth==probeDepth) \
+#                             & (celldb.cluster_label=='good') \
+#                               & (celldb.cluster.isin(cellsToPlot))]
+
+# cellInds = np.arange(len(celldbSubset))
+
+### ---^
+
+### for doing cellsToPlot as good cell #s ---v
+
+if not cellsToPlot:
+    cellInds = np.arange(len(celldbSubset))
+
+### ---^
+
 ensemble = ephyscore.CellEnsemble(celldbSubset)
 
 sessionTimes = {}
@@ -113,10 +120,7 @@ if not paradigms[0]:
 
 stims = [stim_types[sType] for sType in paradigms]
 
-cellsPerPage = NROW*NCOL
-numcells = len(someCellInds)
-numpages = int(np.ceil(numcells/cellsPerPage))
-numdigits = len(str(numpages))
+
 
 
 # create folders in figures directory if not already present
@@ -131,19 +135,27 @@ if not os.path.exists(subjectFolder):
     os.mkdir(subjectFolder)                 # folder for this subject
 if not os.path.exists(sessionFolder):
     os.mkdir(sessionFolder)                 # folder for this session
-
 if not os.path.exists(siteFolder):
-    os.mkdir(siteFolder)                 # folder for this site
+    os.mkdir(siteFolder)                    # folder for this site
+
+if cellsToPlot:
+    cellsPerPage = 4
+    numcells = len(cellInds)
+    numpages = int(np.ceil(numcells/cellsPerPage))
+    numdigits = len(str(numpages))
+
+else:
+    cellsPerPage = NROW*NCOL
+    numcells = len(cellInds)
+    numpages = int(np.ceil(numcells/cellsPerPage))
+    numdigits = len(str(numpages))
+    
+spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = {},{},{}
+possibleStim,trialsEachCond,rasterTimeRange,stimDur = {},{},{},{}
 
 for paradigm,stim in zip(paradigms,stims):
-    paradigmFolder = os.path.join(siteFolder,paradigm)
-    if not os.path.exists(paradigmFolder):
-        os.mkdir(paradigmFolder)                # folder for current paradigm
-
     # load in the data
     ephysData,bdata = ensemble.load(paradigm)
-
-
 
     XML_PATH = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject,
                             f"{sessionDate}_{sessionTimes[paradigm]}_processed_multi",
@@ -153,43 +165,97 @@ for paradigm,stim in zip(paradigms,stims):
     nTrials = len(bdata[stim])
     eventOnsetTimes = ephysData['events']['stimOn'][:nTrials] # Ignore trials not in bdata 
 
-    stimDur = ephysData['events']['stimOff'][0] - ephysData['events']['stimOn'][0]
+    stimDur[paradigm] = ephysData['events']['stimOff'][0] - ephysData['events']['stimOn'][0]
 
-    rasterTimeRange = (min(-0.5,-0.5*stimDur),
-                       max(1.0,1.5*stimDur))  # In seconds
+    rasterTimeRange[paradigm] = (min(-0.2,-0.5*stimDur[paradigm]),
+                    max(0.6,1.5*stimDur[paradigm]))  # In seconds
     
-    spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = \
-        ensemble.eventlocked_spiketimes(eventOnsetTimes, rasterTimeRange)
+    spikeTimesFromEventOnsetAll[paradigm], trialIndexForEachSpikeAll[paradigm], indexLimitsEachTrialAll[paradigm] = \
+        ensemble.eventlocked_spiketimes(eventOnsetTimes, rasterTimeRange[paradigm])
     
     # get trials
     currentStim = bdata[stim]
-    possibleStim = np.unique(currentStim)
-    trialsEachCond = behavioranalysis.find_trials_each_type(currentStim, possibleStim)
+    possibleStim[paradigm] = np.unique(currentStim)
+    trialsEachCond[paradigm] = behavioranalysis.find_trials_each_type(currentStim, possibleStim[paradigm])
+
+# for plotting a subset of cells
+if cellsToPlot: 
+    outFolder = os.path.join(siteFolder,"cellSubsets") 
+    if not os.path.exists(outFolder):
+        os.mkdir(outFolder)                # output folder
 
     # draw raster plots
     for page in range(numpages):
-        fig = plt.figure(1,figsize=(20, 12))
-        filename = f"{subject}_{sessionDate}_{probeDepth}_{paradigm}_{(page+1):02d}.png"
-        figname = f"{subject} {sessionDate} {probeDepth} {paradigm} {page+1}/{numpages}"
+        fig = plt.figure(1,figsize=(len(paradigms)*8, 12))
+        pageCells = cellsToPlot.split(',')[page*cellsPerPage:(page+1)*cellsPerPage]
+        cellString = pageCells[0]
+        for cell in pageCells[1:]:
+            cellString += '-'+cell
+        filename = f"{subject}_{sessionDate}_{probeDepth}_cells_{cellString}.png"
         
+        if numpages > 1:
+            figname = f"{subject} {sessionDate} {probeDepth} {page+1}/{numpages}"
+        else:
+            figname = f"{subject} {sessionDate} {probeDepth}"
+
         # plot cells for current page
-        for count, indcell in enumerate(someCellInds[page*cellsPerPage:(page+1)*cellsPerPage]):
-            plt.subplot(NROW, NCOL, count+1)
-            pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[indcell], indexLimitsEachTrialAll[indcell],
-                                                    rasterTimeRange, trialsEachCond, labels=possibleStim)
-            plt.setp(pRaster, ms=2)
-            plt.axvline(stimDur, color='0.75', zorder=-10)
-            plt.xlabel('Time (s)')
-            plt.ylabel(ylabs[paradigm])
-            curr_loc = celldbSubset.iloc[indcell]
-            curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
-            curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
-            plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
+        for row,paradigm in enumerate(paradigms):
+            for count, indcell in enumerate(cellInds[page*cellsPerPage:(page+1)*cellsPerPage]):
+                plt.subplot(len(paradigms), NCOL, count+row*4+1)
+                pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], indexLimitsEachTrialAll[paradigm][indcell],
+                                                        rasterTimeRange[paradigm], trialsEachCond[paradigm], labels=possibleStim[paradigm])
+                plt.setp(pRaster, ms=2)
+                plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
+                plt.xlabel('Time (s)')
+                plt.ylabel(ylabs[paradigm])
+                curr_loc = celldbSubset.iloc[indcell]
+                curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
+                curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
+                if row==0:
+                    plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
         
         plt.suptitle(figname)
         plt.tight_layout()
 
         # save and close current page/fig
-        plt.savefig(os.path.join(paradigmFolder,filename))
+        plt.savefig(os.path.join(outFolder,filename))
         plt.close(1)
+
+# for plotting all cells
+else:
+    for paradigm in paradigms:
+        outFolder = os.path.join(siteFolder,paradigm)
+        if not os.path.exists(outFolder):
+            os.mkdir(outFolder)                # output folder
+
+        # draw raster plots
+        for page in range(numpages):
+            fig = plt.figure(1,figsize=(24, 12))
+            filename = f"{subject}_{sessionDate}_{probeDepth}_{paradigm}_{(page+1):02d}.png"
+            
+            if numpages > 1:
+                figname = f"{subject} {sessionDate} {probeDepth} {paradigm} {page+1}/{numpages}"
+            else:
+                figname = f"{subject} {sessionDate} {probeDepth} {paradigm}"
+
+            # plot cells for current page
+            for count, indcell in enumerate(cellInds[page*cellsPerPage:(page+1)*cellsPerPage]):
+                plt.subplot(NROW, NCOL, count+1)
+                pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], indexLimitsEachTrialAll[paradigm][indcell],
+                                                            rasterTimeRange[paradigm], trialsEachCond[paradigm], labels=possibleStim[paradigm])
+                plt.setp(pRaster, ms=2)
+                plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
+                plt.xlabel('Time (s)')
+                plt.ylabel(ylabs[paradigm])
+                curr_loc = celldbSubset.iloc[indcell]
+                curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
+                curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
+                plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
+            
+            plt.suptitle(figname)
+            plt.tight_layout()
+
+            # save and close current page/fig
+            plt.savefig(os.path.join(outFolder,filename))
+            plt.close(1)
 
