@@ -36,7 +36,7 @@ paradigm = 'am_tuning_curve'
 
 # -- Load raw data --
 print('Loading raw data...')
-rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, ephysSession)
+rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject, ephysSession)
 contData = loadneuropix.Continuous(rawDataPath, dataStream)
 rawdata = contData.data
 sampleRate = contData.sampleRate
