@@ -25,8 +25,9 @@ subject = 'inpi003'
 # ephysSession = '2025-03-10_15-43-57'; behavSession = '20250310b' # Shank 2, tones
 #ephysSession = '2025-03-10_15-55-03'; behavSession = '20250310c' # Shank 3, tones
 #ephysSession = '2025-03-10_16-06-35'; behavSession = '20250310d' # Shank 4, tones
-# ephysSession = '2025-04-09'; behavSession = '20250409a' # bank 385-480, tones
-ephysSession = '2025-04-09'; behavSession = '20250409b' # bank 385-480, AM
+# ephysSession = '2025-04-09_12-27-15'; behavSession = '20250409a' # bank 385-480, tones
+ephysSession = '2025-04-09_12-35-59'; behavSession = '20250409b' # bank 385-480, AM
+# ephysSession = '2025-04-09_12-43-46'; behavSession = '20250409a' # bank 385-480, naturalSound
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
 
