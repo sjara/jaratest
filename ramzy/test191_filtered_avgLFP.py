@@ -38,7 +38,7 @@ subject = str(dataLFP['subject'])
 ephysSession = str(dataLFP['ephysSession'])
 
 # -- Load probe map --
-rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject+'_raw', ephysSession)
+rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, ephysSession)
 xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
 probeMap = loadneuropix.ProbeMap(xmlfile)
 
