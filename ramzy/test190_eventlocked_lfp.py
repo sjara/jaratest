@@ -16,7 +16,7 @@ from importlib import reload
 reload(loadneuropix)
 
 
-PROCESSED_DATA_DIR = '/mnt/c/tmpdata/'
+PROCESSED_DATA_DIR = 'C:\\tmpdata'
 
 # -- Load raw data --
 subject = 'inpi003'
