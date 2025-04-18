@@ -15,7 +15,7 @@ reload(loadneuropix)
 
 
 # PROCESSED_DATA_DIR = 'C:\\tmpdata'
-PROCESSED_DATA_DIR = '/mnt/c/tmpdata'
+PROCESSED_DATA_DIR = '/data/neuropixels/inpi003_lfp'
 
 # -- Load data --
 subject = 'inpi003'
@@ -50,7 +50,9 @@ elif os.path.exists(processedDataPath):
     xmlfile = os.path.join(processedDataPath, 'info', 'settings.xml')
 
 else:
-    Exception('Please make sure there is a settings.xml file in your neuropixels ephys data directory.')    
+    print('Please make sure there is a settings.xml file in your neuropixels ephys data directory.')    
+    exit(1)
+
 probeMap = loadneuropix.ProbeMap(xmlfile)
 
 # -- Sort channels according to depth --
