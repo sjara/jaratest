@@ -39,8 +39,18 @@ subject = str(dataLFP['subject'])
 ephysSession = str(dataLFP['ephysSession'])
 
 # -- Load probe map --
-rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, ephysSession)
-xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
+rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject, ephysSession)
+processedDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, 
+                                 subject, 
+                                 ephysSession+"_processed_multi")
+if os.path.exists(rawDataPath):
+    xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
+
+elif os.path.exists(processedDataPath):
+    xmlfile = os.path.join(processedDataPath, 'info', 'settings.xml')
+
+else:
+    Exception('Please make sure there is a settings.xml file in your neuropixels ephys data directory.')    
 probeMap = loadneuropix.ProbeMap(xmlfile)
 
 # -- Sort channels according to depth --
