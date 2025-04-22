@@ -15,16 +15,16 @@ reload(loadneuropix)
 
 
 # PROCESSED_DATA_DIR = 'C:\\tmpdata'
-PROCESSED_DATA_DIR = '/data/neuropixels/inpi003_lfp'
+PROCESSED_DATA_DIR = f'{settings.EPHYS_NEUROPIX_PATH}/inpi003_lfp'
 
 # -- Load data --
 subject = 'inpi003'
-#behavSession = '20250310a'
+behavSession = '20250310a'
 # behavSession = '20250310b'
 #behavSession = '20250310c'
 #behavSession = '20250310d'
 # behavSession = '20250409a'
-behavSession = '20250409b'
+# behavSession = '20250409b'
 
 dataFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
 
@@ -55,10 +55,10 @@ else:
 
 probeMap = loadneuropix.ProbeMap(xmlfile)
 
-# -- Sort channels according to depth --
-chanOrder = np.argsort(probeMap.channelID)
-yPosNewOrder = probeMap.ypos[chanOrder]
-sortedChannels = np.argsort(yPosNewOrder)
+
+# -- Sort channels according to shank and depth --
+sortedChannels = sorted(np.argsort(probeMap.channelID), 
+                        key = lambda x: probeMap.ypos[x]*(10**probeMap.channelShank[x]))
 
 # -- Subtract baseline --
 baselineRange = [-0.2, 0]
@@ -83,6 +83,7 @@ if FILTER:
 if 1:
     print('Plotting responses for all stimuli...')
     plt.clf()
+    plt.figure(figsize=(24,12))
     for indStim in range(len(possibleStim)):
         ax = plt.subplot(4, 4, indStim+1)
         plt.imshow(sortedAvgLFP[indStim, :, :].T, aspect='auto', origin='lower',
@@ -92,13 +93,15 @@ if 1:
         plt.xlabel('Time (s)')
         plt.ylabel('Channel')
         plt.title(f'{possibleStim[indStim]/1000:0.1f} kHz')
-        ax.set_yticks(np.arange(0, nChannels+96, 96))
+        # ax.set_yticks(np.arange(96, nChannels+96,96), [1,2,3,4])
+        ax.set_yticks(np.arange(0, nChannels,24),
+                      probeMap.channelID[sortedChannels][0:nChannels:24])
         ax.label_outer()
         cbar = plt.colorbar()
         cbar.ax.set_ylabel('μV', rotation=0, va='center', labelpad=-5)
     plt.suptitle(f'Average LFP: {subject} {ephysSession} ({behavSession})', fontweight='bold')
     plt.tight_layout()
-    plt.show()
+    plt.close(1)
 
 if 1:
     # -- Save figure --
@@ -106,7 +109,8 @@ if 1:
     figFilename = f'{subject}_{ephysSession}_{behavSession}_avgLFP'
     extraplots.save_figure(figFilename, figFormat, [24, 12], outputDir=PROCESSED_DATA_DIR,
                            facecolor='w')
-    
+    plt.show()
+
 if 0:
     print('Plotting...')
     stimToPlot = 8#11
