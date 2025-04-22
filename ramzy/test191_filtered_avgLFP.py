@@ -19,12 +19,12 @@ PROCESSED_DATA_DIR = f'{settings.EPHYS_NEUROPIX_PATH}/inpi003_lfp'
 
 # -- Load data --
 subject = 'inpi003'
-behavSession = '20250310a'
+# behavSession = '20250310a'
 # behavSession = '20250310b'
 #behavSession = '20250310c'
 #behavSession = '20250310d'
 # behavSession = '20250409a'
-# behavSession = '20250409b'
+behavSession = '20250409b'
 
 dataFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
 
@@ -37,12 +37,14 @@ possibleStim = dataLFP['possibleStim']
 labelsAvgLFP = dataLFP['labelsAvgLFP']
 subject = str(dataLFP['subject'])
 ephysSession = str(dataLFP['ephysSession'])
+print(ephysSession)
 
 # -- Load probe map --
 rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject, ephysSession)
 ksDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, 
                                  subject, 
                                  ephysSession+"_processed_multi")
+
 if os.path.exists(rawDataPath):
     xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
 
@@ -57,8 +59,36 @@ probeMap = loadneuropix.ProbeMap(xmlfile)
 
 
 # -- Sort channels according to shank and depth --
-sortedChannels = sorted(np.argsort(probeMap.channelID), 
-                        key = lambda x: probeMap.ypos[x]*(10**probeMap.channelShank[x]))
+
+# chanOrder = np.argsort(probeMap.channelID)
+# yPosNewOrder = probeMap.ypos[chanOrder]
+# sortedChannels = sorted(chanOrder,
+#                         key = lambda x: probeMap.channelID[x] + probeMap.ypos[x]*(100**probeMap.channelShank[x]))
+
+# print(probeMap.channelID[sortedChannels])
+# print(probeMap.ypos[sortedChannels])
+
+chanOrder = np.argsort(probeMap.channelID)
+shankDict = {}
+
+for i in chanOrder:
+    shank = probeMap.channelShank[i]
+    if shank not in shankDict: 
+        shankDict[shank] = []
+    shankDict[shank].append(i)
+
+if len(shankDict) == 1:
+    yPosNewOrder = probeMap.ypos[chanOrder]
+    sortedChannels = np.argsort(yPosNewOrder)
+
+else:
+    sortedChannels = []
+    for i in range(4):
+        if i in shankDict:
+            currShank = sorted(shankDict[i], key = lambda x: probeMap.channelID[x])
+            sortedShank = sorted(currShank, key = lambda x: probeMap.ypos[x])
+            sortedChannels += list(currShank)
+    sortedChannels = np.array(sortedChannels)
 
 # -- Subtract baseline --
 baselineRange = [-0.2, 0]
