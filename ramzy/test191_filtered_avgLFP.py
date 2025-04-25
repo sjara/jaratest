@@ -60,35 +60,24 @@ probeMap = loadneuropix.ProbeMap(xmlfile)
 
 # -- Sort channels according to shank and depth --
 
-# chanOrder = np.argsort(probeMap.channelID)
-# yPosNewOrder = probeMap.ypos[chanOrder]
-# sortedChannels = sorted(chanOrder,
-#                         key = lambda x: probeMap.channelID[x] + probeMap.ypos[x]*(100**probeMap.channelShank[x]))
-
-# print(probeMap.channelID[sortedChannels])
-# print(probeMap.ypos[sortedChannels])
-
-chanOrder = np.argsort(probeMap.channelID)
+chanOrder = np.argsort(probeMap.channelID)      # align indices with LFP array (which is ordered by channel #)
+chansNewOrder = probeMap.channelID[chanOrder]   
+yPosNewOrder = probeMap.ypos[chanOrder]         
+yPosOrder = np.argsort(yPosNewOrder)
 shankDict = {}
 
-for i in chanOrder:
-    shank = probeMap.channelShank[i]
+for i in yPosOrder:
+    shank = probeMap.channelShank[chanOrder[i]]
     if shank not in shankDict: 
         shankDict[shank] = []
     shankDict[shank].append(i)
 
-if len(shankDict) == 1:
-    yPosNewOrder = probeMap.ypos[chanOrder]
-    sortedChannels = np.argsort(yPosNewOrder)
+sortedChannels = []
+for i in range(4):
+    if i in shankDict:
+        sortedChannels += list(shankDict[i])
 
-else:
-    sortedChannels = []
-    for i in range(4):
-        if i in shankDict:
-            currShank = sorted(shankDict[i], key = lambda x: probeMap.channelID[x])
-            sortedShank = sorted(currShank, key = lambda x: probeMap.ypos[x])
-            sortedChannels += list(currShank)
-    sortedChannels = np.array(sortedChannels)
+sortedChannels = np.array(sortedChannels)
 
 # -- Subtract baseline --
 baselineRange = [-0.2, 0]
@@ -125,7 +114,7 @@ if 1:
         plt.title(f'{possibleStim[indStim]/1000:0.1f} kHz')
         # ax.set_yticks(np.arange(96, nChannels+96,96), [1,2,3,4])
         ax.set_yticks(np.arange(0, nChannels,24),
-                      probeMap.channelID[sortedChannels][0:nChannels:24])
+                        chansNewOrder[sortedChannels][0:nChannels:24])
         ax.label_outer()
         cbar = plt.colorbar()
         cbar.ax.set_ylabel('μV', rotation=0, va='center', labelpad=-5)
