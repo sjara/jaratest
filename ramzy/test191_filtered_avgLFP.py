@@ -22,9 +22,9 @@ subject = 'inpi003'
 # behavSession = '20250310a'
 # behavSession = '20250310b'
 #behavSession = '20250310c'
-#behavSession = '20250310d'
-# behavSession = '20250409a'
-behavSession = '20250409b'
+# behavSession = '20250310d'
+behavSession = '20250409a'
+# behavSession = '20250409b'
 
 dataFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
 
@@ -58,26 +58,32 @@ else:
 probeMap = loadneuropix.ProbeMap(xmlfile)
 
 
-# -- Sort channels according to shank and depth --
+# -- Sort channels according to depth & shank--
+''' 
+Ordering of the rows in avgLFP do not match that of probeMap, so we need some kind of conversion 
+between them. For some row, i, in avgLFP, chanOrder[i] gives its corresponding index in the 
+various lists contained in probeMap (e.g., probeMap.ypos[chanOrder[10]] gives the y position of
+the channel at avgLFP[10]).
+'''
 
-chanOrder = np.argsort(probeMap.channelID)      # align indices with LFP array (which is ordered by channel #)
-chansNewOrder = probeMap.channelID[chanOrder]   
-yPosNewOrder = probeMap.ypos[chanOrder]         
-yPosOrder = np.argsort(yPosNewOrder)
-shankDict = {}
+chanOrder = np.argsort(probeMap.channelID)          # conversion between LFP and probeMap
+sortedChannels = sorted(np.arange(0,nChannels),
+                        key = lambda x: probeMap.ypos[chanOrder[x]]*(100**probeMap.channelShank[chanOrder[x]]))
 
-for i in yPosOrder:
-    shank = probeMap.channelShank[chanOrder[i]]
-    if shank not in shankDict: 
-        shankDict[shank] = []
-    shankDict[shank].append(i)
+### Alternative method ///
+# -- Split channels according to shank -- 
+# shankDict = {}
+# for i in yPosOrder: 
+#     shank = probeMap.channelShank[chanOrder[i]]     # get current shank
+#     if shank not in shankDict: 
+#         shankDict[shank] = []                       # make new list if needed
+#     shankDict[shank].append(i)                      # append to correspond shank's list of channel indices
 
-sortedChannels = []
-for i in range(4):
-    if i in shankDict:
-        sortedChannels += list(shankDict[i])
+# # -- Concatenate into sortedChannels list --
+# sortedChannels = np.concatenate([shankDict[i] for i in range(4) if i in shankDict])
 
-sortedChannels = np.array(sortedChannels)
+### ///
+
 
 # -- Subtract baseline --
 baselineRange = [-0.2, 0]
@@ -114,7 +120,7 @@ if 1:
         plt.title(f'{possibleStim[indStim]/1000:0.1f} kHz')
         # ax.set_yticks(np.arange(96, nChannels+96,96), [1,2,3,4])
         ax.set_yticks(np.arange(0, nChannels,24),
-                        chansNewOrder[sortedChannels][0:nChannels:24])
+                        probeMap.channelID[chanOrder[sortedChannels]][0:nChannels:24])
         ax.label_outer()
         cbar = plt.colorbar()
         cbar.ax.set_ylabel('μV', rotation=0, va='center', labelpad=-5)
