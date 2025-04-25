@@ -67,10 +67,14 @@ the channel at avgLFP[10]).
 '''
 
 chanOrder = np.argsort(probeMap.channelID)          # conversion between LFP and probeMap
+
 sortedChannels = sorted(np.arange(0,nChannels),
                         key = lambda x: probeMap.ypos[chanOrder[x]]*(100**probeMap.channelShank[chanOrder[x]]))
 
 ### Alternative method ///
+# yPosNewOrder = probeMap.ypos[chanOrder]
+# yPosOrder = np.argsort(yPosNewOrder)
+
 # -- Split channels according to shank -- 
 # shankDict = {}
 # for i in yPosOrder: 
