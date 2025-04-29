@@ -17,18 +17,24 @@ reload(loadneuropix)
 
 
 # PROCESSED_DATA_DIR = 'C:\\tmpdata'
-PROCESSED_DATA_DIR = '/mnt/c/tmpdata'
+PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH,'inpi003_lfp')
 
 # -- Load raw data --
 subject = 'inpi003'
-#ephysSession = '2025-03-10_15-30-45'; behavSession = '20250310a' # Shank 1, tones
-#ephysSession = '2025-03-10_16-17-01'; behavSession = '20250310e' # Shank 1, AM
-# ephysSession = '2025-03-10_15-43-57'; behavSession = '20250310b' # Shank 2, tones
-#ephysSession = '2025-03-10_15-55-03'; behavSession = '20250310c' # Shank 3, tones
-#ephysSession = '2025-03-10_16-06-35'; behavSession = '20250310d' # Shank 4, tones
+#ephysSession = '2025-03-10_15-30-45'; behavSession = '20250310a' # Shank 1a, tones
+#ephysSession = '2025-03-10_16-17-01'; behavSession = '20250310e' # Shank 1a, AM
+# ephysSession = '2025-03-10_15-43-57'; behavSession = '20250310b' # Shank 2a, tones
+#ephysSession = '2025-03-10_15-55-03'; behavSession = '20250310c' # Shank 3a, tones
+#ephysSession = '2025-03-10_16-06-35'; behavSession = '20250310d' # Shank 4a, tones
 # ephysSession = '2025-04-09_12-27-15'; behavSession = '20250409a' # bank 385-480, tones
-ephysSession = '2025-04-09_12-35-59'; behavSession = '20250409b' # bank 385-480, AM
+# ephysSession = '2025-04-09_12-35-59'; behavSession = '20250409b' # bank 385-480, AM
 # ephysSession = '2025-04-09_12-43-46'; behavSession = '20250409a' # bank 385-480, naturalSound
+
+# ephysSession = '2025-04-28_15-25-36'; behavSession = '20250428a' # shank1b extref, tones
+# ephysSession = '2025-04-28_15-33-55'; behavSession = '20250428b' # shank1b extref, AM
+# ephysSession = '2025-04-28_15-42-06'; behavSession = '20250428c' # shank1b, tones
+# ephysSession = '2025-04-28_15-50-41'; behavSession = '20250428d' # shank1b, AM
+# ephysSession = '2025-04-28_15-58-13'; behavSession = '20250428a' # shank1b, naturalSound
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
 

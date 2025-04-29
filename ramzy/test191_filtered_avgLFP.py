@@ -15,7 +15,7 @@ reload(loadneuropix)
 
 
 # PROCESSED_DATA_DIR = 'C:\\tmpdata'
-PROCESSED_DATA_DIR = f'{settings.EPHYS_NEUROPIX_PATH}/inpi003_lfp'
+PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH,'inpi003_lfp')
 
 # -- Load data --
 subject = 'inpi003'
