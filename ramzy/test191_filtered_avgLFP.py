@@ -23,8 +23,12 @@ subject = 'inpi003'
 # behavSession = '20250310b'
 #behavSession = '20250310c'
 # behavSession = '20250310d'
-behavSession = '20250409a'
+# behavSession = '20250409a'
 # behavSession = '20250409b'
+behavSession = '20250428a'
+# behavSession = '20250428b'
+# behavSession = '20250428c'
+# behavSession = '20250428d'
 
 dataFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
 
@@ -124,7 +128,7 @@ if 1:
         plt.title(f'{possibleStim[indStim]/1000:0.1f} kHz')
         # ax.set_yticks(np.arange(96, nChannels+96,96), [1,2,3,4])
         ax.set_yticks(np.arange(0, nChannels,24),
-                        probeMap.channelID[chanOrder[sortedChannels]][0:nChannels:24])
+                        4000-probeMap.ypos[chanOrder[sortedChannels]][0:nChannels:24])
         ax.label_outer()
         cbar = plt.colorbar()
         cbar.ax.set_ylabel('μV', rotation=0, va='center', labelpad=-5)
