@@ -16,8 +16,8 @@ from importlib import reload
 reload(loadneuropix)
 
 
-# PROCESSED_DATA_DIR = 'C:\\tmpdata'
-PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH,'inpi003_lfp')
+PROCESSED_DATA_DIR = 'C:\\tmpdata'
+# PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH,'inpi003_lfp')
 
 # -- Load raw data --
 subject = 'inpi003'
@@ -37,11 +37,15 @@ subject = 'inpi003'
 # ephysSession = '2025-04-28_15-58-13'; behavSession = '20250428a' # shank1b, naturalSound
 
 # ephysSession = '2025-06-02_11-09-19'; behavSession = '20250602a' # bank 385-480, soundLocalization
-# ephysSession = '2025-06-02_11-41-31'; behavSession = '20250602a' # bank 385-480, tones
+ephysSession = '2025-06-02_11-41-31'; behavSession = '20250602a' # bank 385-480, tones
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
 
 paradigm = 'am_tuning_curve'
+currentStim = 'currentFreq'
+
+# paradigm = 'sound_localization'
+# currentStim = 'soundLocation'
 
 # -- Load raw data --
 print('Loading raw data...')
@@ -61,7 +65,7 @@ if 0:
     # -- Extract a subset of the data --
     nSamplesToProcess = 4 * int(sampleRate)  # 4 sec
     nChannelsToProcess = 2
-    traceToProcess = rawdata[:nSamplesToProcess, :nChannelsToProcess] * bitVolts  # In uV 
+    traceToProcess = rawdata[:nSamplesToProcess, :nChannelsToProcess] * bitVolts  # In uV
     tvec = np.arange(nSamplesToProcess) / sampleRate
 if 0:
     # Filter traceToProcess with a digital low-pass filter
@@ -76,7 +80,7 @@ if 0:
     plt.plot(tvec, filteredTraceToProcess)
     plt.xlim([0, 1])
     plt.show()
-    
+
 
 # -- Load events from ephys data --
 print('Loading events data...')
@@ -100,7 +104,7 @@ if 0:
 print('Loading behavior data...')
 behavFile = loadbehavior.path_to_behavior_data(subject, paradigm, behavSession)
 bdata = loadbehavior.BehaviorData(behavFile)
-stimEachTrial = bdata['currentFreq']
+stimEachTrial = bdata[currentStim]
 nTrials = len(stimEachTrial)
 possibleStim = np.unique(stimEachTrial)
 nStim = len(possibleStim)
@@ -185,7 +189,7 @@ if 1:
 
 
 
-    
+
 '''
 # -- Save the eventlocked LFP --
 if 0:
@@ -196,5 +200,3 @@ if 0:
              sampleRate=sampleRate, nChannels=nChannels)
 sys.exit()
 '''
-
-
