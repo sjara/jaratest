@@ -36,6 +36,9 @@ subject = 'inpi003'
 # ephysSession = '2025-04-28_15-50-41'; behavSession = '20250428d' # shank1b, AM
 # ephysSession = '2025-04-28_15-58-13'; behavSession = '20250428a' # shank1b, naturalSound
 
+# ephysSession = '2025-06-02_11-09-19'; behavSession = '20250602a' # bank 385-480, soundLocalization
+# ephysSession = '2025-06-02_11-41-31'; behavSession = '20250602a' # bank 385-480, tones
+
 dataStream = 'Neuropix-PXI-100.ProbeA'
 
 paradigm = 'am_tuning_curve'
