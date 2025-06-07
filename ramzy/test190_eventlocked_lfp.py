@@ -39,16 +39,19 @@ subject = 'inpi003'
 # ephysSession = '2025-06-02_11-09-19'; behavSession = '20250602a' # bank 385-480, soundLocalization
 # ephysSession = '2025-06-02_11-41-31'; behavSession = '20250602a' # bank 385-480, tones
 # ephysSession = '2025-06-06_15-06-39'; behavSession = '20250606a' # bank 385-480, tones left
-ephysSession = '2025-06-06_15-15-30'; behavSession = '20250606b' # bank 385-480, tones binaural
+# ephysSession = '2025-06-06_15-15-30'; behavSession = '20250606b' # bank 385-480, tones binaural
 # ephysSession = '2025-06-06_15-32-30'; behavSession = '20250606c' # bank 385-480, AM left
-# ephysSession = '2025-06-06_15-42-24'; behavSession = '20250606d' # bank 385-480, AM binaural
+# ephysSession = '2025-06-06_15-41-24'; behavSession = '20250606d' # bank 385-480, AM binaural
 # ephysSession = '2025-06-06_15-49-33'; behavSession = '20250606a' # bank 385-480, nats left
-# ephysSession = '2025-06-06_16-16-12'; behavSession = '20250606b' # bank 385-480, nats binaural
+ephysSession = '2025-06-06_16-16-12'; behavSession = '20250606b' # bank 385-480, nats binaural
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
 
-paradigm = 'am_tuning_curve'
-currentStim = 'currentFreq'
+# paradigm = 'am_tuning_curve'
+# currentStim = 'currentFreq'
+
+paradigm = 'natural_sound_detection'
+currentStim = 'soundID'
 
 # paradigm = 'sound_localization'
 # currentStim = 'soundLocation'
