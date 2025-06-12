@@ -174,8 +174,8 @@ else:
 
 ### Allocate data dicts
 spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = {},{},{}
-possibleStim,trialsEachCond,possibleLaser,trialsEachComb,rasterTimeRange,stimDur = {},{},{},{},{},{}
-possibleYticks = {}
+possibleStim,possibleYticks,trialsEachCond,possibleLaser,rasterTimeRange,stimDur = {},{},{},{},{},{}
+
 
 ### Extract data
 for paradigm,stim in zip(paradigms,stims):
@@ -199,29 +199,31 @@ for paradigm,stim in zip(paradigms,stims):
         ensemble.eventlocked_spiketimes(eventOnsetTimes, rasterTimeRange[paradigm])
     
     currentStim = bdata[stim]
-    currentLaser = bdata['laserTrial']
         
     possibleStim[paradigm] = np.unique(currentStim)
-    possibleLaser = np.unique(currentLaser)
-
-    trialsEachCond[paradigm] = \
-        behavioranalysis.find_trials_each_type(currentStim, possibleStim[paradigm])
-    
-    trialsEachComb[paradigm] = \
-        behavioranalysis.find_trials_each_combination(currentStim,possibleStim[paradigm],
-                                                      currentLaser,possibleLaser)
-    
-
-    if 'Freq' in paradigm:
-        possibleYticks[paradigm] = np.round(possibleStim[paradigm]/1000,1)
-        ylabs[paradigm] = ylabs[paradigm].replace('Hz','kHz')
-
-    else:
-        possibleYticks[paradigm] = possibleStim[paradigm]
 
     if 'opto' in paradigm:
-        possibleYticks[paradigm] = list(possibleStim[paradigm])+list(possibleStim[paradigm])
-    
+        currentLaser = bdata['laserTrial']
+        possibleLaser = np.unique(currentLaser)
+        trialsEachCond[paradigm] = \
+            behavioranalysis.find_trials_each_combination(currentStim,possibleStim[paradigm],
+                                                      currentLaser,possibleLaser)
+    else:   
+        trialsEachCond[paradigm] = \
+            behavioranalysis.find_trials_each_type(currentStim, possibleStim[paradigm])
+
+    if 'Freq' in paradigm:
+        possibleYticks[paradigm] = list(np.round(possibleStim[paradigm]/1000,2))
+        ylabs[paradigm] = ylabs[paradigm].replace('Hz','kHz')
+
+    elif paradigm == 'L2R3_L2R1_L1R2_L3R2':
+        possibleYticks[paradigm] = ['L2R3','L2R1','L1R2','L3R2']
+
+    else:
+        possibleYticks[paradigm] = list(possibleStim[paradigm])
+
+    if len(trialsEachCond[paradigm].shape)==3:
+        possibleYticks[paradigm] *= trialsEachCond[paradigm].shape[2]
 
 # for plotting a subset of cells
 if cellsToPlot: 
@@ -252,14 +254,14 @@ if cellsToPlot:
                     plt.subplot(NROW, NCOL, count*2+row+1)
                     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], 
                                                                    indexLimitsEachTrialAll[paradigm][indcell],
-                                                                   rasterTimeRange[paradigm], trialsEachComb[paradigm], 
+                                                                   rasterTimeRange[paradigm], trialsEachCond[paradigm], 
                                                                    labels=possibleYticks[paradigm])
                     plt.setp(pRaster, ms=2)
                     plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
                     plt.xlabel('Time (s)')
                     plt.ylabel(ylabs[paradigm])
                     if 'opto' in paradigm:
-                        midline = sum(1-np.nonzero(trialsEachComb[paradigm])[2])
+                        midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
                         plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
                         ax = plt.gca()
@@ -280,7 +282,7 @@ if cellsToPlot:
                     plt.xlabel('Time (s)')
                     plt.ylabel(ylabs[paradigm])
                     if 'opto' in paradigm:
-                        midline = sum(1-np.nonzero(trialsEachComb[paradigm])[2])
+                        midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
                         plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
                         ax = plt.gca()
@@ -301,7 +303,7 @@ if cellsToPlot:
                     plt.xlabel('Time (s)')
                     plt.ylabel(ylabs[paradigm])
                     if 'opto' in paradigm:
-                        midline = sum(1-np.nonzero(trialsEachComb[paradigm])[2])
+                        midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
                         plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
                         ax = plt.gca()
@@ -319,51 +321,6 @@ if cellsToPlot:
         plt.savefig(os.path.join(outFolder,filename))
         plt.close(1)
 
-elif "optoFreq" in paradigms or "optoAM" in paradigms:
-    for paradigm in paradigms:
-        outFolder = os.path.join(siteFolder,paradigm)
-        if not os.path.exists(outFolder):
-            os.mkdir(outFolder)                # output folder
-
-        midline = sum(1-np.nonzero(trialsEachComb[paradigm])[2])
-
-        # draw raster plots
-        for page in range(numpages):
-            fig = plt.figure(1,figsize=(6*NCOL, 6*NROW))
-            filename = f"{subject}_{sessionDate}_{probeDepth}_{paradigm}_{(page+1):02d}.png"
-            
-            if numpages > 1:
-                figname = f"{subject} {sessionDate} {probeDepth} {paradigm} {page+1}/{numpages}"
-            else:
-                figname = f"{subject} {sessionDate} {probeDepth} {paradigm}"
-
-            # plot cells for current page
-            for count, indcell in enumerate(cellInds[page*cellsPerPage:(page+1)*cellsPerPage]):
-                plt.subplot(NROW, NCOL, count+1)
-                pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], indexLimitsEachTrialAll[paradigm][indcell],
-                                                            rasterTimeRange[paradigm], trialsEachComb[paradigm],labels=possibleYticks[paradigm])
-                plt.setp(pRaster, ms=2)
-                plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
-                plt.axhline(midline, color='r', zorder=-10)
-                plt.xlabel('Time (s)')
-                plt.ylabel(ylabs[paradigm])
-                plt.axhline(midline, color='r', zorder=-10)
-                plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
-                ax = plt.gca()
-                ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
-                curr_loc = celldbSubset.iloc[indcell]
-                curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
-                curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
-                plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
-
-                
-            plt.suptitle(figname)
-            plt.tight_layout()
-
-            # save and close current page/fig
-            plt.savefig(os.path.join(outFolder,filename))
-            plt.close(1)
-
 # for plotting all cells
 else:
     for paradigm in paradigms:
@@ -371,9 +328,11 @@ else:
         if not os.path.exists(outFolder):
             os.mkdir(outFolder)                # output folder
 
+        
+        dims = (6*NCOL,6*NROW) if 'opto' in paradigm else (6*NCOL,4*NROW)
+
         # draw raster plots
         for page in range(numpages):
-            fig = plt.figure(1,figsize=(6*NCOL, 4*NROW))
             filename = f"{subject}_{sessionDate}_{probeDepth}_{paradigm}_{(page+1):02d}.png"
             
             if numpages > 1:
@@ -381,25 +340,34 @@ else:
             else:
                 figname = f"{subject} {sessionDate} {probeDepth} {paradigm}"
 
+            
+            fig = plt.figure(1,figsize=dims)
+                
             # plot cells for current page
             for count, indcell in enumerate(cellInds[page*cellsPerPage:(page+1)*cellsPerPage]):
                 plt.subplot(NROW, NCOL, count+1)
-                pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], indexLimitsEachTrialAll[paradigm][indcell],
-                                                            rasterTimeRange[paradigm], trialsEachCond[paradigm], labels=possibleYticks[paradigm])
+                pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], 
+                                                                indexLimitsEachTrialAll[paradigm][indcell],
+                                                                rasterTimeRange[paradigm], trialsEachCond[paradigm],
+                                                                labels=possibleYticks[paradigm])
                 plt.setp(pRaster, ms=2)
                 plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
                 plt.xlabel('Time (s)')
                 plt.ylabel(ylabs[paradigm])
+                if 'opto' in paradigm:
+                    midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
+                    plt.axhline(midline, color='r', zorder=-10)
+                    plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
+                    ax = plt.gca()
+                    ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                 curr_loc = celldbSubset.iloc[indcell]
                 curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
                 curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
                 plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
 
-                
             plt.suptitle(figname)
             plt.tight_layout()
 
             # save and close current page/fig
             plt.savefig(os.path.join(outFolder,filename))
             plt.close(1)
-
