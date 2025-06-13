@@ -56,11 +56,11 @@ subject = 'poni001'
 # ephysSession = '2025-06-07_15-22-13'; behavSession = '20250607i' # tones, bank 385-480
 # ephysSession = '2025-06-07_15-30-29'; behavSession = '20250607j' # AM, bank 385-480
 # ephysSession = '2025-06-10_16-07-57'; behavSession = '20250610b' # soundloc, 3-4_1-192
-# ephysSession = '2025-06-10_17-20-19'; behavSession = '20250610a' # optoFreq, 3-4_1-192
-ephysSession = '2025-06-10_17-39-32'; behavSession = '20250610b' # optoAM,3-4_1-192
+ephysSession = '2025-06-10_17-20-19'; behavSession = '20250610a' # optoFreq, 3-4_1-192
+# ephysSession = '2025-06-10_17-39-32'; behavSession = '20250610b' # optoAM,3-4_1-192
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
-LASER_SESSSION = True
+LASER_SESSSION = False
 
 paradigm = 'am_tuning_curve'
 currentStim = 'currentFreq'
@@ -170,16 +170,17 @@ if LASER_SESSSION:
     for indLaser in range(nLaser):
         for indStim, stimFreq in enumerate(possibleStim):
             avgLFP[indStim, :, :,indLaser] = np.mean(eventlockedLFP[trialsEachCond[:, indStim,indLaser], :, :], axis=0)
-        avgLFP *= bitVolts  # Convert to uV
+    avgLFP *= bitVolts  # Convert to uV
+    # print(avgLFP)
 
     # -- Save the average LFP --
     if 1:
         scriptFullPath = os.path.realpath(__file__)
-        outputFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
+        outputFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}-laser_avgLFP.npz')
         print(f'Saving avgLFP to {outputFile}')
         np.savez(outputFile, avgLFP=avgLFP, timeVec=timeVec, sampleRate=sampleRate,
                  nChannels=nChannels,labelsAvgLFP=labelsAvgLFP,
-                 possibleStim=possibleStim, trialsEachCond=trialsEachCond,
+                 possibleStim=possibleStim, possibleLaser=possibleLaser,trialsEachCond=trialsEachCond,
                  subject=subject, ephysSession=ephysSession, behavSession=behavSession,
                  script=scriptFullPath)
 
@@ -225,7 +226,7 @@ if LASER_SESSSION:
 
 
 else:
-    trialsEachCond = behavioranalysis.find_trials_each_combination(stimEachTrial, possibleStim)
+    trialsEachCond = behavioranalysis.find_trials_each_type(stimEachTrial, possibleStim)
 
     # -- Align LFP to event onset --
     timeRange = [-0.2, 0.4]
@@ -242,7 +243,7 @@ else:
 
     # -- Calculate average LFP for each stimulus condition --
     print('Calculating average LFP for each stimulus...')
-    avgLFP = [np.empty((nStim, nSamplesToExtract, nChannels)),np.empty((nStim, nSamplesToExtract, nChannels))]
+    avgLFP = np.empty((nStim, nSamplesToExtract, nChannels))
     labelsAvgLFP = ['Stimulus', 'Time', 'Channel']
 
     for indstim, stimFreq in enumerate(possibleStim):
