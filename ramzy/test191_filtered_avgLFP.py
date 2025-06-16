@@ -14,21 +14,57 @@ from importlib import reload
 reload(loadneuropix)
 
 
+subject = 'poni001'
+studyName = 'patternedOpto'
+pDepth = 2360
 # PROCESSED_DATA_DIR = 'C:\\tmpdata'
-PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH,'inpi003_lfp')
+PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH, 'poni001_lfp')
+OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH,studyName,f'{subject}_lfp')
+
+if not os.path.exists(OUTPUT_DIR):
+    os.mkdir(OUTPUT_DIR)
 
 # -- Load data --
-subject = 'inpi003'
-# behavSession = '20250310a'
-# behavSession = '20250310b'
-#behavSession = '20250310c'
-# behavSession = '20250310d'
-# behavSession = '20250409a'
-# behavSession = '20250409b'
-behavSession = '20250428a'
-# behavSession = '20250428b'
-# behavSession = '20250428c'
-# behavSession = '20250428d'
+
+# behavSession = '20250310a' # freq
+# behavSession = '20250310b' # am
+#behavSession = '20250310c' # freq
+# behavSession = '20250310d' # am
+# behavSession = '20250409a' # freq
+# behavSession = '20250409b' # am
+# behavSession = '20250428a' # freq
+# behavSession = '20250428b' # am
+# behavSession = '20250428c' # freq
+# behavSession = '20250428d' # am
+
+# behavSession = '20250602a' # freq
+# behavSession = '20250602a_sloc' # soundloc
+
+# behavSession = '20250606a' # freq left
+# behavSession = '20250606b' # freq binaural
+# behavSession = '20250606c' # am left
+# behavSession = '20250606d' # am binaural
+# behavSession = '20250606a_naturalSound' # left
+# behavSession = '20250606b_naturalSound' # binaural
+
+# behavSession = '20250607a' #1a tones
+# behavSession = '20250607b' #2a tones
+# behavSession = '20250607c' # 3a tones
+# behavSession = '20250607d' # 4a tones
+# behavSession = '20250607e' # 1a am
+# behavSession = '20250607f' # 2a am
+# behavSession = '20250607g' # 3a am
+# behavSession = '20250607h' # 4a am
+# behavSession = '20250607i' # bank 385-480 tones
+# behavSession = '20250607j' # bank 385-480 AM
+# behavSession = '20250610a-laser' # optoFreq, 3-4_1-192
+# behavSession = '20250610b-laser' # optoAM bank 1-192 shanks 3/4
+behavSession = '20250613a-laser' # optoNaturalSound, 3-4_1-192
+
+# paradigm = 'tuningFreq'
+# paradigm = 'tuningAM'
+# paradigm = 'soundLocation'
+paradigm = 'naturalSound'
 
 dataFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
 
@@ -39,20 +75,30 @@ sampleRate = dataLFP['sampleRate']
 nChannels = dataLFP['nChannels']
 possibleStim = dataLFP['possibleStim']
 labelsAvgLFP = dataLFP['labelsAvgLFP']
+if len(labelsAvgLFP)==4:
+    possibleLaser = dataLFP['possibleLaser']
+
+else:
+    possibleLaser = ''
+
 subject = str(dataLFP['subject'])
 ephysSession = str(dataLFP['ephysSession'])
 print(ephysSession)
 
 # -- Load probe map --
 rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject, ephysSession)
+# ksDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, 
+#                                  subject, 
+#                                  ephysSession+"_processed_multi")
+
 ksDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, 
-                                 subject, 
-                                 ephysSession+"_processed_multi")
+                                 'poni001', 
+                                 "2025-06-09_11-10-08_processed_multi")
 
-if os.path.exists(rawDataPath):
-    xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
+# if os.path.exists(rawDataPath):
+#     xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
 
-elif os.path.exists(ksDataPath):
+if os.path.exists(ksDataPath):
     xmlfile = os.path.join(ksDataPath, 'info', 'settings.xml')
 
 else:
@@ -72,7 +118,7 @@ the channel at avgLFP[10]).
 
 chanOrder = np.argsort(probeMap.channelID)          # conversion between LFP and probeMap
 
-sortedChannels = sorted(np.arange(0,nChannels),
+sortedChannels = sorted(list(np.arange(0,nChannels)),
                         key = lambda x: probeMap.ypos[chanOrder[x]]*(100**probeMap.channelShank[chanOrder[x]]))
 
 ### Alternative method ///
@@ -94,74 +140,181 @@ sortedChannels = sorted(np.arange(0,nChannels),
 
 
 # -- Subtract baseline --
-baselineRange = [-0.2, 0]
-baselineSamples = np.logical_and(timeVec >= baselineRange[0], timeVec < baselineRange[1])
-baseline = np.mean(avgLFP[:, baselineSamples, :], axis=1)
-avgLFPnobase = avgLFP - baseline[:, np.newaxis, :]
 
-sortedAvgLFP = avgLFPnobase[:, :, sortedChannels]
+if len(avgLFP.shape)==4:
+    nLaser = avgLFP.shape[3]
+    nStim = len(possibleStim)
+    # baselineRange = [-0.2, 0]
+    # baselineSamples = np.logical_and(timeVec >= baselineRange[0], timeVec < baselineRange[1])
+    # baseline = np.mean(avgLFP[:, baselineSamples, :,:], axis=1)
+    # avgLFPnobase = avgLFP - baseline[:, np.newaxis, :,:]
 
-colorLimit = max(abs(avgLFPnobase.max()), abs(avgLFPnobase.min()))
-clim = [-colorLimit, colorLimit]
+    # sortedAvgLFP = avgLFPnobase[:, :, sortedChannels,:]
 
-FILTER = 0
-if FILTER:
-    # -- Filter avgLFP --
-    print('Filtering avgLFP...')
-    highcut = 300
-    bCoeff, aCoeff = signal.iirfilter(4, Wn=highcut, fs=sampleRate, btype="low", ftype="butter")
-    sortedAvgLFP = signal.filtfilt(bCoeff, aCoeff, sortedAvgLFP, axis=1)
-    #sys.exit()
+    # colorLimit = max(abs(avgLFPnobase.max()), abs(avgLFPnobase.min()))/2
+    # clim = [-colorLimit, colorLimit]
 
-if 1:
-    print('Plotting responses for all stimuli...')
-    plt.clf()
-    plt.figure(figsize=(24,12))
-    for indStim in range(len(possibleStim)):
-        ax = plt.subplot(4, 4, indStim+1)
-        plt.imshow(sortedAvgLFP[indStim, :, :].T, aspect='auto', origin='lower',
-                   extent=[timeVec[0], timeVec[-1], 0, nChannels], clim=clim)
-        #plt.imshow([[0]])
-        plt.axvline(0, color='1', alpha=0.5)
+    colorLimit = []
+    clim = []
+    sortedAvgLFP = []
+    for indLaser in range(nLaser):
+        baselineRange = [-0.2, 0]
+        baselineSamples = np.logical_and(timeVec >= baselineRange[0], timeVec < baselineRange[1])
+        baseline = np.mean(avgLFP[:, baselineSamples, :,:], axis=1)
+        avgLFPnobase = avgLFP[:,:,:,indLaser] - baseline[:, np.newaxis, :,indLaser]
+
+        sortedAvgLFP.append(avgLFPnobase[:, :, sortedChannels])
+
+        colorLimit = max(abs(avgLFPnobase.max()), abs(avgLFPnobase.min()))/2
+        clim = [-colorLimit, colorLimit]
+
+    FILTER = 0
+
+    if FILTER:
+        # -- Filter avgLFP --
+        print('Filtering avgLFP...')
+        highcut = 300
+        bCoeff, aCoeff = signal.iirfilter(4, Wn=highcut, fs=sampleRate, btype="low", ftype="butter")
+        sortedAvgLFP = signal.filtfilt(bCoeff, aCoeff, sortedAvgLFP, axis=1)
+        #sys.exit()
+
+    if 1:
+        print('Plotting responses for all stimuli...')
+        plt.clf()
+        plt.figure(figsize=(24,12))
+        for indLaser in range(nLaser):
+            for indStim in range(nStim):
+                ax = plt.subplot(int(np.ceil(nStim/4)), 4*nLaser, 2*indStim+indLaser+1)
+                plt.imshow(sortedAvgLFP[indLaser][indStim, :, :].T, aspect='auto', origin='lower',
+                        extent=[timeVec[0], timeVec[-1], 0, nChannels], clim=clim)
+                
+                #plt.imshow([[0]])
+                plt.axvline(0, color='1', alpha=0.5)
+                plt.xlabel('Time (s)')
+                plt.ylabel('Channel')
+                if 'Freq' in paradigm:
+                    plt.title(f'{possibleStim[indStim]/1000:0.1f} kHz, Laser {indLaser}')
+                elif 'AM' in paradigm:
+                    plt.title(f'{possibleStim[indStim]} Hz, Laser {indLaser}')
+                else:
+                    plt.title(f'{possibleStim[indStim]}, Laser {indLaser}')
+
+                # ax.set_yticks(np.arange(96, nChannels+96,96), [1,2,3,4])
+                ax.set_yticks(np.arange(0, nChannels,24),
+                                pDepth-probeMap.ypos[chanOrder[sortedChannels]][0:nChannels:24])
+                
+                ax.label_outer()
+                cbar = plt.colorbar()
+                cbar.ax.set_ylabel('μV', rotation=0, va='center', labelpad=-5)
+        plt.suptitle(f'Average LFP: {subject} {ephysSession} ({behavSession})', fontweight='bold')
+        plt.tight_layout()
+        plt.close(1)
+
+    if 1:
+        # -- Save figure --
+        figFormat = 'png'
+        figFilename = f'{subject}_{ephysSession}_{behavSession}_avgLFP'
+        extraplots.save_figure(figFilename, figFormat, [24, 12], outputDir=OUTPUT_DIR,
+                            facecolor='w')
+        plt.show()
+
+    if 0:
+        print('Plotting...')
+        stimToPlot = 8#11
+        plt.clf()
+        plt.subplot(211)
+        if not FILTER:
+            plt.imshow(avgLFPnobase[stimToPlot,:,:].T, aspect='auto', origin='lower',
+                    extent=[timeVec[0], timeVec[-1], 0, nChannels])
+        else:
+            plt.imshow(filteredAvgLFP[stimToPlot,:,:].T, aspect='auto', origin='lower',
+                    extent=[timeVec[0], timeVec[-1], 0, nChannels])
+        plt.colorbar()
+        plt.subplot(212)
+        plt.imshow(sortedAvgLFP[stimToPlot,:,:].T, aspect='auto', origin='lower',
+                extent=[timeVec[0], timeVec[-1], 0, nChannels])
+        plt.colorbar()
+        plt.title('Average LFP for {} Hz'.format(possibleStim[stimToPlot]))
         plt.xlabel('Time (s)')
         plt.ylabel('Channel')
-        plt.title(f'{possibleStim[indStim]/1000:0.1f} kHz')
-        # ax.set_yticks(np.arange(96, nChannels+96,96), [1,2,3,4])
-        ax.set_yticks(np.arange(0, nChannels,24),
-                        4000-probeMap.ypos[chanOrder[sortedChannels]][0:nChannels:24])
-        ax.label_outer()
-        cbar = plt.colorbar()
-        cbar.ax.set_ylabel('μV', rotation=0, va='center', labelpad=-5)
-    plt.suptitle(f'Average LFP: {subject} {ephysSession} ({behavSession})', fontweight='bold')
-    plt.tight_layout()
-    plt.close(1)
+        plt.show()
 
-if 1:
-    # -- Save figure --
-    figFormat = 'png'
-    figFilename = f'{subject}_{ephysSession}_{behavSession}_avgLFP'
-    extraplots.save_figure(figFilename, figFormat, [24, 12], outputDir=PROCESSED_DATA_DIR,
-                           facecolor='w')
-    plt.show()
+else:
+    baselineRange = [-0.2, 0]
+    baselineSamples = np.logical_and(timeVec >= baselineRange[0], timeVec < baselineRange[1])
+    baseline = np.mean(avgLFP[:, baselineSamples, :], axis=1)
+    avgLFPnobase = avgLFP - baseline[:, np.newaxis, :]
 
-if 0:
-    print('Plotting...')
-    stimToPlot = 8#11
-    plt.clf()
-    plt.subplot(211)
-    if not FILTER:
-        plt.imshow(avgLFPnobase[stimToPlot,:,:].T, aspect='auto', origin='lower',
-                   extent=[timeVec[0], timeVec[-1], 0, nChannels])
-    else:
-        plt.imshow(filteredAvgLFP[stimToPlot,:,:].T, aspect='auto', origin='lower',
-                   extent=[timeVec[0], timeVec[-1], 0, nChannels])
-    plt.colorbar()
-    plt.subplot(212)
-    plt.imshow(sortedAvgLFP[stimToPlot,:,:].T, aspect='auto', origin='lower',
-               extent=[timeVec[0], timeVec[-1], 0, nChannels])
-    plt.colorbar()
-    plt.title('Average LFP for {} Hz'.format(possibleStim[stimToPlot]))
-    plt.xlabel('Time (s)')
-    plt.ylabel('Channel')
-    plt.show()
+    sortedAvgLFP = avgLFPnobase[:, :, sortedChannels]
+
+    colorLimit = max(abs(avgLFPnobase.max()), abs(avgLFPnobase.min()))
+    clim = [-colorLimit, colorLimit]
+
+    FILTER = 0
+    if FILTER:
+        # -- Filter avgLFP --
+        print('Filtering avgLFP...')
+        highcut = 300
+        bCoeff, aCoeff = signal.iirfilter(4, Wn=highcut, fs=sampleRate, btype="low", ftype="butter")
+        sortedAvgLFP = signal.filtfilt(bCoeff, aCoeff, sortedAvgLFP, axis=1)
+        #sys.exit()
+
+    if 1:
+        print('Plotting responses for all stimuli...')
+        plt.clf()
+        plt.figure(figsize=(24,12))
+        for indStim in range(len(possibleStim)):
+            ax = plt.subplot(4, 4, indStim+1)
+            plt.imshow(sortedAvgLFP[indStim, :, :].T, aspect='auto', origin='lower',
+                    extent=[timeVec[0], timeVec[-1], 0, nChannels], clim=clim)
+            #plt.imshow([[0]])
+            plt.axvline(0, color='1', alpha=0.5)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Channel')
+            if 'Freq' in paradigm:
+                plt.title(f'{possibleStim[indStim]/1000:0.1f} kHz')
+            elif 'AM' in paradigm:
+                plt.title(f'{possibleStim[indStim]} Hz')
+            else:
+                plt.title(f'{possibleStim[indStim]}')
+
+            # ax.set_yticks(np.arange(96, nChannels+96,96), [1,2,3,4])
+            ax.set_yticks(np.arange(0, nChannels,24),
+                            pDepth-probeMap.ypos[chanOrder[sortedChannels]][0:nChannels:24])
+            
+            ax.label_outer()
+            cbar = plt.colorbar()
+            cbar.ax.set_ylabel('μV', rotation=0, va='center', labelpad=-5)
+        plt.suptitle(f'Average LFP: {subject} {ephysSession} ({behavSession})', fontweight='bold')
+        plt.tight_layout()
+        plt.close(1)
+
+    if 1:
+        # -- Save figure --
+        figFormat = 'png'
+        figFilename = f'{subject}_{ephysSession}_{behavSession}_avgLFP'
+        extraplots.save_figure(figFilename, figFormat, [24, 12], outputDir=OUTPUT_DIR,
+                            facecolor='w')
+        plt.show()
+
+    if 0:
+        print('Plotting...')
+        stimToPlot = 8#11
+        plt.clf()
+        plt.subplot(211)
+        if not FILTER:
+            plt.imshow(avgLFPnobase[stimToPlot,:,:].T, aspect='auto', origin='lower',
+                    extent=[timeVec[0], timeVec[-1], 0, nChannels])
+        else:
+            plt.imshow(filteredAvgLFP[stimToPlot,:,:].T, aspect='auto', origin='lower',
+                    extent=[timeVec[0], timeVec[-1], 0, nChannels])
+        plt.colorbar()
+        plt.subplot(212)
+        plt.imshow(sortedAvgLFP[stimToPlot,:,:].T, aspect='auto', origin='lower',
+                extent=[timeVec[0], timeVec[-1], 0, nChannels])
+        plt.colorbar()
+        plt.title('Average LFP for {} Hz'.format(possibleStim[stimToPlot]))
+        plt.xlabel('Time (s)')
+        plt.ylabel('Channel')
+        plt.show()
 

@@ -46,7 +46,10 @@ stim_types = {
     "optoFreq" : "currentFreq",
     "optoAM" : "currentFreq",
     "naturalSound" : "soundID",
-    "L2R3_L2R1_L1R2_L3R2" : "soundLocation"
+    "optoNaturalSound" : "soundID",
+    "L2R3_L2R1_L1R2_L3R2" : "soundLocation",
+    "soundLoc" : "soundLocation",
+    "optoSoundLoc" : "soundLocation"
 }
 
 ylabs = {
@@ -54,9 +57,16 @@ ylabs = {
     "Freq" : "Tone Frequency (Hz)",
     "optoAM" : "AM rate (Hz)",
     "optoFreq" : "Tone Frequency (Hz)",
+    "optoNaturalSound" : "Sound ID",
     "naturalSound" : "Sound ID",
-    "L2R3_L2R1_L1R2_L3R2" : "Sound Location"
+    "L2R3_L2R1_L1R2_L3R2" : "Sound Location",
+    "soundLoc" : "Sound Location",
+    "optoSoundLoc" : "Sound Location"
 }
+
+naturalSoundCategories = [
+    
+]
 
 # get args
 args = get_args()
@@ -216,7 +226,7 @@ for paradigm,stim in zip(paradigms,stims):
         possibleYticks[paradigm] = list(np.round(possibleStim[paradigm]/1000,2))
         ylabs[paradigm] = ylabs[paradigm].replace('Hz','kHz')
 
-    elif paradigm == 'L2R3_L2R1_L1R2_L3R2':
+    elif paradigm == 'L2R3_L2R1_L1R2_L3R2' or 'soundloc' in paradigm.lower():
         possibleYticks[paradigm] = ['L2R3','L2R1','L1R2','L3R2']
 
     else:
@@ -238,7 +248,7 @@ if cellsToPlot:
         cellString = pageCells[0]
         for cell in pageCells[1:]:
             cellString += '-'+cell
-        filename = f"{subject}_{sessionDate}_{probeDepth}_cells_{cellString}.png"
+        filename = f"{subject}_{sessionDate}_{probeDepth}_{args.tkParadigms.replace(',','-')}_cells_{cellString}.png"
         
         if numpages > 1:
             figname = f"{subject} {sessionDate} {probeDepth} {page+1}/{numpages}"
@@ -269,7 +279,7 @@ if cellsToPlot:
                     curr_loc = celldbSubset.iloc[indcell]
                     curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
                     curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
-                    plt.title(f"Good Cell #{curr_loc.name - firstCell} {paradigm} \n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
+                    plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
 
             elif len(paradigms)==3:
                 for row,paradigm in enumerate(paradigms):
@@ -295,7 +305,7 @@ if cellsToPlot:
 
             elif len(paradigms)==1:
                 for row,paradigm in enumerate(paradigms):
-                    plt.subplot(NROW, NCOL, count+row+1)
+                    plt.subplot(NROW, NCOL, count+1)
                     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], indexLimitsEachTrialAll[paradigm][indcell],
                                                             rasterTimeRange[paradigm], trialsEachCond[paradigm], labels=possibleYticks[paradigm])
                     plt.setp(pRaster, ms=2)
@@ -311,8 +321,7 @@ if cellsToPlot:
                     curr_loc = celldbSubset.iloc[indcell]
                     curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
                     curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
-                    if row==0:
-                        plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
+                    plt.title(f"Good Cell #{curr_loc.name - firstCell} {paradigm}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
         
         plt.suptitle(figname)
         plt.tight_layout()
@@ -328,7 +337,6 @@ else:
         if not os.path.exists(outFolder):
             os.mkdir(outFolder)                # output folder
 
-        
         dims = (6*NCOL,6*NROW) if 'opto' in paradigm else (6*NCOL,4*NROW)
 
         # draw raster plots

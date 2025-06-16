@@ -1,4 +1,4 @@
-import pygame as pg
+import pygame 
 import numpy as np
 import multiprocessing
 from screeninfo import get_monitors
@@ -6,7 +6,7 @@ from screeninfo import get_monitors
 MINIDISPLAY_DIMENSIONS = (640,480)
 ACTIVE_AREA = (480,480)
 
-def pixels_from_img(surface: pg.Surface, img: np.ndarray):
+def pixels_from_img(surface: pygame.Surface, img: np.ndarray):
     # get surface info
     width,height = surface.get_size()
     xOffset = (width - height)//2
@@ -25,8 +25,8 @@ def pixels_from_img(surface: pg.Surface, img: np.ndarray):
 
 
 # Initialize Pygame
-pg.init()
-clock = pg.time.Clock()
+pygame.init()
+clock = pygame.time.Clock()
 
 # Get monitor resolution
 monitors = get_monitors()
@@ -37,8 +37,8 @@ for i in range(len(monitors)):
     width, height = disp.width, disp.height
     if (width,height) == MINIDISPLAY_DIMENSIONS:
         x, y = disp.x, disp.y
-        screen = pg.display.set_mode((width, height), pg.FULLSCREEN, display = 1)
-        pg.display.set_caption('minidisplay')
+        screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN, display = 1)
+        pygame.display.set_caption('minidisplay')
         break
 
 # if minidisplay not present, show 640x480p rectangle on primary monitor
@@ -47,26 +47,26 @@ if (width,height) != MINIDISPLAY_DIMENSIONS:
     disp = monitors[0]
     width,height = MINIDISPLAY_DIMENSIONS
     x,y = disp.x,disp.y
-    screen = pg.display.set_mode((width,height),pg.NOFRAME,display = 0)
-    pg.display.set_caption('main')
+    screen = pygame.display.set_mode((width,height),pygame.NOFRAME,display = 0)
+    pygame.display.set_caption('main')
 
-surface = pg.display.get_surface()
+surface = pygame.display.get_surface()
 
 surface.fill((0,0,0))
 
 for i in range(10):
     img = np.zeros((4,4),dtype=int)
-    img[i%4,i%4] = 255
+    img[i%4,:] = 255
 
     pixels = pixels_from_img(surface,img)
-    pg.surfarray.blit_array(surface,pixels)
+    pygame.surfarray.blit_array(surface,pixels)
     
-    pg.display.flip()
-    # clock.tick(pg.display.get_current_refresh_rate())
-    pg.time.wait(150)
+    pygame.display.flip()
+    # clock.tick(pygame.display.get_current_refresh_rate())
+    pygame.time.wait(150)
     surface.fill((0,0,0))
-    pg.display.flip()
-    pg.time.wait(850)
+    pygame.display.flip()
+    pygame.time.wait(850)
     
-pg.quit()
+pygame.quit()
 

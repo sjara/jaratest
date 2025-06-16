@@ -2,11 +2,11 @@
 
 #################################################################################################################
 # This script is for automatically transferring spike-sorted data to jarastore once kilosort is finished. It	#
-# 	should run from a WSL terminal either just before or just after starting kilosort. If using futureSort,	#
-#	a fourth argument may be provided to indicate how many minutes to wait before checking for kilosort.	#
-# 														#
-# 	USAGE: '$ sh future_spike_sync.sh subject sessionDate probeDepth'					#
-# 		e.g., '$ sh future_spike_sync.sh test000 2025-06-13 3500'					#
+# 	should run from a WSL terminal either just before or just after starting kilosort. If using futureSort,		#
+#	a fourth argument may be provided to indicate how many minutes to wait before checking for kilosort.		#
+# 																												#
+# 	USAGE: '$ sh future_spike_sync.sh subject sessionDate probeDepth'											#
+# 		e.g., '$ sh future_spike_sync.sh test000 2025-06-13 3500'												#
 #################################################################################################################
 
 subject=$1
@@ -37,8 +37,7 @@ else
 fi
 
 echo "Waiting ${waitTime} minutes..."
-
-sleep $(( waitTime*60 )) # wait one hour (or a user-defined amount of time
+sleep $(( waitTime*60 )) # wait one hour (or a user-defined amount of time)
 
 while [ ! -e "${processedFolder}/spike_positions.png" ]; do
 	echo "Waiting..."
