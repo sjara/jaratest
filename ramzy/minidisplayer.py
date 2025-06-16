@@ -63,7 +63,10 @@ for i in range(10):
     
     pg.display.flip()
     # clock.tick(pg.display.get_current_refresh_rate())
-    clock.tick(1)
+    pg.time.wait(150)
+    surface.fill((0,0,0))
+    pg.display.flip()
+    pg.time.wait(850)
     
 pg.quit()
 
