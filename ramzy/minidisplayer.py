@@ -1,8 +1,28 @@
 import pygame as pg
+import numpy as np
 import multiprocessing
 from screeninfo import get_monitors
 
 MINIDISPLAY_DIMENSIONS = (640,480)
+ACTIVE_AREA = (480,480)
+
+def pixels_from_img(surface: pg.Surface, img: np.ndarray):
+    # get surface info
+    width,height = surface.get_size()
+    xOffset = (width - height)//2
+    scaleFactor = height//img.shape[0]
+    
+    # map image to pixels
+    scaledImg = np.kron(img,np.ones((scaleFactor,scaleFactor)))
+
+    # allocate pixels array, 3d array for each RGB values
+    pixels = np.zeros((width,height,3))
+
+    # use np.stack to create white image
+    pixels[xOffset:xOffset+height,:] = np.stack((scaledImg,scaledImg,scaledImg),axis=2)
+
+    return pixels
+
 
 # Initialize Pygame
 pg.init()
@@ -17,7 +37,7 @@ for i in range(len(monitors)):
     width, height = disp.width, disp.height
     if (width,height) == MINIDISPLAY_DIMENSIONS:
         x, y = disp.x, disp.y
-        window = pg.display.set_mode((width, height), pg.FULLSCREEN, display = 1)
+        screen = pg.display.set_mode((width, height), pg.FULLSCREEN, display = 1)
         pg.display.set_caption('minidisplay')
         break
 
@@ -27,33 +47,23 @@ if (width,height) != MINIDISPLAY_DIMENSIONS:
     disp = monitors[0]
     width,height = MINIDISPLAY_DIMENSIONS
     x,y = disp.x,disp.y
-    window = pg.display.set_mode((width,height),pg.NOFRAME,display = 0)
+    screen = pg.display.set_mode((width,height),pg.NOFRAME,display = 0)
     pg.display.set_caption('main')
 
-screen = pg.display.get_surface()
+surface = pg.display.get_surface()
 
+surface.fill((0,0,0))
 
-# Draw black and white content (simple checkerboard for demo)
-# screen.fill((0, 0, 0))  # Black background
-# for i in range(0, width, 100):
-#   for j in range(0, height, 100):
-#     if (i // 100 + j // 100) % 2 == 0:
-#         pg.draw.rect(screen, (255, 255, 255), (i, j, 100, 100))
+for i in range(10):
+    img = np.zeros((4,4),dtype=int)
+    img[i%4,i%4] = 255
 
-
-# pg.display.flip()
-
-
-
-for i in range(1000):
-    if i%2:
-        screen.fill((0,0,0))
-    else:
-        # screen.fill((255,255,255))
-        pg.draw.rect(screen, (255,255,255), (width//2 - 50, height//2 - 50, 100,100))
-
+    pixels = pixels_from_img(surface,img)
+    pg.surfarray.blit_array(surface,pixels)
+    
     pg.display.flip()
-    clock.tick(pg.display.get_current_refresh_rate())
+    # clock.tick(pg.display.get_current_refresh_rate())
+    clock.tick(1)
     
 pg.quit()
 
