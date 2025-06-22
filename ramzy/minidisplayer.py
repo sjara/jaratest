@@ -10,10 +10,10 @@ def pixels_from_img(surface: pygame.Surface, img: np.ndarray):
     # get surface info
     width,height = surface.get_size()
     xOffset = (width - height)//2
-    scaleFactor = height//img.shape[0]
+    scaleFactor = (height//img.shape[0],height//img.shape[1])
     
     # map image to pixels
-    scaledImg = np.kron(img,np.ones((scaleFactor,scaleFactor)))
+    scaledImg = np.kron(img,np.ones(scaleFactor))
 
     # allocate pixels array, 3d array for each RGB values
     pixels = np.zeros((width,height,3))
@@ -35,6 +35,7 @@ monitors = get_monitors()
 for i in range(len(monitors)):
     disp = monitors[i]  
     width, height = disp.width, disp.height
+    print(width,height)
     if (width,height) == MINIDISPLAY_DIMENSIONS:
         x, y = disp.x, disp.y
         screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN, display = 1)
@@ -53,10 +54,11 @@ if (width,height) != MINIDISPLAY_DIMENSIONS:
 surface = pygame.display.get_surface()
 
 surface.fill((0,0,0))
+pygame.display.flip()
 
-for i in range(10):
-    img = np.zeros((4,4),dtype=int)
-    img[i%4,:] = 255
+for i in range(20):
+    img = np.zeros((4,2),dtype=float)
+    img[i%4,0] = 0.6*255
 
     pixels = pixels_from_img(surface,img)
     pygame.surfarray.blit_array(surface,pixels)
@@ -66,7 +68,7 @@ for i in range(10):
     pygame.time.wait(150)
     surface.fill((0,0,0))
     pygame.display.flip()
-    pygame.time.wait(850)
+    pygame.time.wait(350)
     
 pygame.quit()
 

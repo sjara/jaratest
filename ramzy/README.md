@@ -9,3 +9,5 @@ Scripts by Ramzy Al-Mulla
 * `minidisplayer.py`: Controls minidisplay (requires pygame-ce and screeninfo modules!)
 
     * Install using ```pip install pygame-ce``` and ```pip install screeninfo```
+
+

@@ -14,6 +14,8 @@ from jaratoolbox import settings, celldatabase, loadneuropix, \
 NROW = 3
 NCOL = 4
 
+def calc_discriminability(spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond)
+
 
 studyName = 'patternedOpto'
 subject,sessionDate,probeDepth,paradigm = sys.argv[1:5]
@@ -87,7 +89,8 @@ if not os.path.exists(outFolder):
 # get eventLocked spikes
 
 spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = {},{},{}
-possibleStim,trialsEachComb,rasterTimeRange,stimDur = {},{},{},{}
+possibleStim,trialsEachCond,rasterTimeRange,stimDur = {},{},{},{}
+trialsEachCondInds,nTrialsEachCond,nCond,nTrialsAll = {},{},{},{}
 
 ephysData,bdata = ensemble.load(paradigm)
 laserEachTrial = bdata['laserTrial']
@@ -111,21 +114,49 @@ spikeTimesFromEventOnsetAll[paradigm], trialIndexForEachSpikeAll[paradigm], inde
     ensemble.eventlocked_spiketimes(eventOnsetTimes, rasterTimeRange[paradigm])
 
 # get trials
-currentStim = bdata[stim]
-possibleStim[paradigm] = np.unique(currentStim)
-currentLaser = bdata['laserTrial']
-possibleLaser = np.unique(currentLaser)
-trialsEachComb[paradigm] = behavioranalysis.find_trials_each_combination(currentStim, possibleStim[paradigm],
-                                                                         currentLaser,possibleLaser)
-
+# currentStim = bdata[stim]
+# possibleStim[paradigm] = np.unique(currentStim)
+# currentImage = np.array(list(zip(bdata['currentI'],bdata['currentJ'])))
+# possibleImage = np.unique(currentImage,axis=0)
+# trialsEachCond[paradigm] = behavioranalysis.find_trials_each_combination(currentStim, possibleStim[paradigm],
+#                                                                          currentImage,possibleImage)
+currentI = bdata['currentI']
+currentJ = bdata['currentJ']
+possibleI = np.unique(currentI)
+possibleJ = np.unique(currentJ)
+trialsEachCond[paradigm] = behavioranalysis.find_trials_each_combination(currentI, possibleI,
+                                                                         currentJ,possibleJ)
+nTrialsAll[paradigm] = len(indexLimitsEachTrialAll[paradigm][0])
+trialsEachCondInds[paradigm],nTrialsEachCond[paradigm], nCond[paradigm] = \
+    extraplots.trials_each_cond_inds(trialsEachCond[paradigm],nTrialsAll[paradigm])
 
 for count, indcell in enumerate(cellInds):
-    spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond = \
-        spikeTimesFromEventOnsetAll[paradigm][indcell], indexLimitsEachTrialAll[paradigm][indcell], trialsEachCond[paradigm]
-    
-    
+    spikeTimesFromEventOnset, indexLimitsEachTrial = \
+        spikeTimesFromEventOnsetAll[paradigm][indcell], indexLimitsEachTrialAll[paradigm][indcell]
 
+    nSpikesEachTrial = np.diff(indexLimitsEachTrial, axis=0)[0]
+    nSpikesEachTrial = nSpikesEachTrial*(nSpikesEachTrial > 0)  # FIXME: Some are negative(?)
+    trialIndexEachCond = []
+    spikeTimesEachCond = []
+    for indcond, trialsThisCond in enumerate(trialsEachCondInds[paradigm]):
+        spikeTimesThisCond = np.empty(0, dtype='float64')
+        trialIndexThisCond = np.empty(0, dtype='int')
+        for indtrial, thisTrial in enumerate(trialsThisCond):
+            indsThisTrial = slice(indexLimitsEachTrial[0, thisTrial],
+                                  indexLimitsEachTrial[1, thisTrial])
+            spikeTimesThisCond = np.concatenate((spikeTimesThisCond,
+                                                 spikeTimesFromEventOnset[indsThisTrial]))
+            trialIndexThisCond = np.concatenate((trialIndexThisCond,
+                                                 np.repeat(indtrial, nSpikesEachTrial[thisTrial])))
+        trialIndexEachCond.append(np.copy(trialIndexThisCond))
+        spikeTimesEachCond.append(np.copy(spikeTimesThisCond))
 
+    xpos = timeRange[0]+np.array([0, fillWidth, fillWidth, 0])
+    lastTrialEachCond = np.cumsum(nTrialsEachCond[paradigm])
+    firstTrialEachCond = np.r_[0, lastTrialEachCond[:-1]]
+
+for cond in range(nCond[paradigm]):
+    
 
 
 

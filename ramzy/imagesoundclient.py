@@ -543,7 +543,8 @@ class SoundServerPygame(object):
         pygame.mixer.quit()
 
 class ImageServer(object):
-    def __init__(self):
+    def __init__(self,screenSize):
+        self.screenSize = screenSize
         self.clock, self.monitors, self.screen, self.surface = self.init_pygame()
 
         self.images = {}  # Each entry should be: index:ImageContainer()
@@ -560,17 +561,17 @@ class ImageServer(object):
         for i in range(len(monitors)):
             disp = monitors[i]  
             width, height = disp.width, disp.height
-            if (width,height) == MINIDISPLAY_DIMENSIONS:
+            if (width,height) == self.screenSize:
                 x, y = disp.x, disp.y
                 screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN, display = i)
                 pygame.display.set_caption('minidisplay')
                 break
         
         # if minidisplay not present, show 640x480p rectangle on primary monitor
-        if (width,height) != MINIDISPLAY_DIMENSIONS:
+        if (width,height) != self.screenSize:
             print("minidisplay not detected!")
             disp = monitors[0]
-            width,height = MINIDISPLAY_DIMENSIONS
+            width,height = self.screenSize
             x,y = disp.x,disp.y
             screen = pygame.display.set_mode((width,height),pygame.NOFRAME,display = 0)
             pygame.display.set_caption('main')
@@ -578,6 +579,7 @@ class ImageServer(object):
         surface = pygame.display.get_surface()
 
         surface.fill((0,0,0))
+        pygame.display.flip()
 
         return clock, monitors, screen, surface
         
@@ -586,7 +588,8 @@ class ImageServer(object):
         """
         Set an image in the server.
         imageID (int): unique identifier for the image.
-        imagePixels (np.ndarray): 2D array with pixel values of the image.
+        imagePixels (np.ndarray): 2D array with pixel values of the image (image will be scaled
+                                        to screen size when presented).
         """
         self.images[imageID] = imagePixels  # Store image pixels
 
@@ -604,6 +607,15 @@ class ImageServer(object):
         return self.images[imageID]
     
     def pixels_from_img(self, img: np.ndarray):
+        '''
+        Scales up the img array to size of the display
+
+        Args:
+            img (np.ndarray): _description_
+
+        Returns:
+            _type_: _description_
+        '''
 
         # get surface info
         width,height = self.surface.get_size()
@@ -644,7 +656,8 @@ class SoundClient(threading.Thread):
     """
     Main interface for the generation, triggering, and presentation of sounds.
     """
-    def __init__(self, servertype=rigsettings.SOUND_SERVER, serialtrigger=SERIAL_TRIGGER):
+    def __init__(self, servertype=rigsettings.SOUND_SERVER, serialtrigger=SERIAL_TRIGGER,
+                 screenSize=MINIDISPLAY_DIMENSIONS):
         """
         servertype (str): 'jack', 'pygame', 'pyo'
         """
@@ -663,7 +676,7 @@ class SoundClient(threading.Thread):
         else:
             raise ValueError('Sound server type not recognized.')
 
-        self.ImageServer = ImageServer()
+        self.ImageServer = ImageServer(screenSize)
         
         # -- Set sync channel --
         if rigsettings.SOUND_SYNC_CHANNEL is not None:

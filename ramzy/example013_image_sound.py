@@ -148,8 +148,8 @@ class Paradigm(QtWidgets.QMainWindow):
         self.soundClient.set_sound(self.soundID, s1)
 
     def prepare_image(self, nextTrial=0):
-        img = np.zeros((4, 4), dtype=int)
-        img[nextTrial%4, nextTrial%4] = 1
+        img = np.zeros((4, 2), dtype=int)
+        img[(nextTrial%8)//2, nextTrial%2] = 1
         self.soundClient.set_image(self.imageID, img)
         
     def prepare_next_trial(self, nextTrial):
