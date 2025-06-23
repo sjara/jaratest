@@ -117,7 +117,6 @@ for indRow, dbRow in celldbToUse.iterrows():
     # If the ephys data is 1 more than the bdata, delete the last ephys trial.
     if len(stimEachTrialAll) == len(eventOnsetTimesAll)-1:
         eventOnsetTimesAll = eventOnsetTimesAll[:nTrialsAll]
-        spikeTimesAll = spikeTimesAll[:nTrialsAll]
     assert len(stimEachTrialAll) == len(eventOnsetTimesAll), \
         "Number of trials in behavior and ephys do not match for {oneCell}"
 

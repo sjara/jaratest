@@ -29,8 +29,8 @@ colorVoltageTrace = colorSpikeTemplate1
 
 colorStim = cp.TangoPalette['Butter2']
 colors = {'pre': cp.TangoPalette['Aluminium4'],
-          'on': cp.TangoPalette['SkyBlue2'],
-          'off': cp.TangoPalette['ScarletRed1']}
+          'off': cp.TangoPalette['SkyBlue2'],
+          'on': cp.TangoPalette['ScarletRed1']}
 colorsLight = {k: matplotlib.colors.colorConverter.to_rgba(onecol, alpha=0.5)
                for k,onecol in colors.items()}
 colorsLightDark = {'pre': [colorsLight['pre'], colors['pre']],

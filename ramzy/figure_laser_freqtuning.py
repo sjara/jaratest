@@ -39,14 +39,14 @@ SAVE_FIGURE = 1
 SAVE=0
 studyName = 'patternedOpto'
 # BTRmetric = 'ToneResponseMinPval'
-BTRmetric = 'ToneGaussianMaxChange'
-# BTRmetric = 'ToneGaussianRsquare'
+# BTRmetric = 'ToneGaussianMaxChange'
+BTRmetric = 'ToneGaussianRsquare'
 outputDir = os.path.join(settings.FIGURES_DATA_PATH,studyName,subject,sessionDate)
 figFilename = f'plots_{eventKey}_freqtuning' # Do not include extension
 figFormat = 'pdf' # 'pdf' or 'svg'
 figSize = [16, 8] # In inches
 
-cellsToPlot = [28,50,86]
+cellsToPlot = [28,88,103]
 # cellsToPlot=False
 
 
@@ -111,27 +111,30 @@ else:
 
 if eventKey == 'BTR':
     # print(f'Finding best time ranges based on {BTRmetric}')
-    # bestKeys = studyutils.find_best_time_keys(celldb,BTRmetric,['Evoked','Sustained'])
-    bestKeys = studyutils.find_best_time_keys(celldb,BTRmetric)
+    bestKeys = studyutils.find_best_time_keys(celldb,BTRmetric,['Evoked','Sustained'])
+    # bestKeys = studyutils.find_best_time_keys(celldb,BTRmetric)
     celldb['BestTimeRange']=bestKeys
-    measurements = studyparams.METRICS[2:] + ['ToneGaussianMax','ToneGaussianMaxChange','ToneGaussianBandwidth']
-    for indr,reagent in enumerate(studyparams.REAGENTS):
-        for metric in measurements:
-            celldb[reagent+metric+'BTR'] = np.copy(celldb[reagent+metric+'Evoked'])
+    measurements = studyparams.METRICS[2:] 
+    # for indr,reagent in enumerate(studyparams.REAGENTS):
+    #     for metric in measurements:
+    #         celldb[reagent+metric+'BTR'] = np.copy(celldb[reagent+metric+'Evoked'])
 
     # for indc,tKey in enumerate(bestKeys):
-    for indc,dbRow in celldb.iterrows():
-        tKey = dbRow['BestTimeRange']
-        for indr,reagent in enumerate(studyparams.REAGENTS):
-            for metric in studyparams.METRICS[2:]:
-                dbRow[reagent+metric+'BTR'] = dbRow[reagent+metric+tKey]
+    for indr,reagent in enumerate(studyparams.REAGENTS):
+        for metric in studyparams.METRICS[2:]:
+            BTRs = []
+            for indc,dbRow in celldb.iterrows():
+                tKey = dbRow['BestTimeRange']
+                BTRs.append(dbRow[reagent+metric+tKey])
+            
+            celldb[reagent+metric+'BTR'] = BTRs
 
 
 # -- Process data --
 maxChangeFactor = studyparams.MAX_CHANGE_FACTOR
 
-responsive = studyutils.find_tone_responsive_cells(celldb, eventKey, frThreshold=4,allreagents=True)
-selective = studyutils.find_freq_selective(celldb, minR2=studyparams.MIN_R_SQUARED)
+
+# selective = studyutils.find_freq_selective(celldb, minR2=studyparams.MIN_R_SQUARED)
 goodFit = studyutils.find_good_gaussian_fit(celldb, eventKey,minR2=studyparams.MIN_R_SQUARED)
 anyFiton = ~np.isnan(celldb['onToneGaussianA'+eventKey])
 anyFitoff = ~np.isnan(celldb['offToneGaussianA'+eventKey])
@@ -148,15 +151,19 @@ for indr, reagent in enumerate(studyparams.REAGENTS):
         extraplots.gaussian_full_width_half_max(celldb[reagent+'ToneGaussianSigma'+eventKey])
     baselineFiringRate = celldb[reagent+'ToneBaselineFiringRate']
     celldb[reagent+'ToneGaussianMaxChange'+eventKey] = np.abs(thisToneGaussianMax-baselineFiringRate)
+
+responsive = studyutils.find_tone_responsive_cells(celldb, eventKey, frThreshold=4,allreagents=False)
 #posResponse = (celldbAll['preToneGaussianA'+eventKey]>0) #& (celldbAll['offToneGaussianA'+eventKey]>0) #& (celldbAll['onToneGaussianA'+eventKey]>0)
-#posResponse = (celldbAll['offToneGaussianA'+eventKey]>0) #& (celldbAll['onToneGaussianA'+eventKey]>0)
+# posResponse = (celldb['offToneGaussianA'+eventKey]>0) & (celldb['onToneGaussianA'+eventKey]>0)
 #posResponse = (celldbAll['onToneGaussianA'+eventKey]>0)
 #posResponse = (celldb['offToneGaussianMax'+eventKey]>0) & (celldb['onToneGaussianMax'+eventKey]>0)
 posResponse = (celldb['offToneGaussianA'+eventKey]>0)
 steadyParams = ['ToneBaselineFiringRate'] 
 steady = studyutils.find_steady_cells(celldb, steadyParams, maxChangeFactor)
 
-selectedCells = goodFit & posResponse & anyFitboth #& steady 
+
+selectedCells = goodFit & posResponse & anyFitboth & steady #& responsive
+# selectedCells = goodFit & posResponse & anyFitboth #& responsive
 # selectedCells = responsive  & goodFit 
 # selectedCells = steady & goodFit & posResponse & anyFitboth
 # selectedCells = posResponse & goodFit & anyFitboth
@@ -268,9 +275,14 @@ if not justCurves:
                                                             trialsEachCond, labels=rasterLabels,
                                                             colorEachCond=colorEachCond,
                                                             rasterized=True)
+            
+            
             plt.setp(pRasterS, ms=rasterMarkerSize)
             plt.xlabel('Time (s)', fontsize=fontSizeLabels)
             plt.ylabel('Freq (kHz)', fontsize=fontSizeLabels)
+            if eventKey == 'BTR':
+                plt.axvline(studyparams.TIME_RANGES[dbRow['BestTimeRange']][0],color='r',zorder=-10)
+                plt.axvline(studyparams.TIME_RANGES[dbRow['BestTimeRange']][1],color='r',zorder=-10)
             #axRaster.set_yticklabels(['2']+['']*(nFreq-2)+['40'])
             if indr==0:
                 plot_stim(plt.ylim(), stimDuration)
@@ -457,6 +469,9 @@ else:
                                                                     colorEachCond=colorEachCond,
                                                                     rasterized=True)
                     plt.setp(pRasterS, ms=rasterMarkerSize)
+                    if eventKey == 'BTR':
+                        plt.axvline(studyparams.TIME_RANGES[dbRow['BestTimeRange']][0],color='r',zorder=-10)
+                        plt.axvline(studyparams.TIME_RANGES[dbRow['BestTimeRange']][1],color='r',zorder=-10)
                     plt.xlabel('Time (s)', fontsize=fontSizeLabels)
                     plt.ylabel('Freq (kHz)', fontsize=fontSizeLabels)
                     #axRaster.set_yticklabels(['2']+['']*(nFreq-2)+['40'])

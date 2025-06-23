@@ -48,6 +48,6 @@ MAX_SIGMA = 6     # Maximum value of Sigma for the Gaussian fit.
 
 FR_THRESHOLD = 5  # Minimum evoked firing rate to consider a cell responsive.
 
-MAX_CHANGE_FACTOR = 1.5  # Maximum change factor to consider a cell steady
+MAX_CHANGE_FACTOR = 1.3  # Maximum change factor to consider a cell steady
 
 TIME_KEY_METRIC = 'ToneGaussianRsquare'

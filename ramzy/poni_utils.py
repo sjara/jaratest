@@ -50,7 +50,7 @@ def find_tone_responsive_cells(celldb, eventKey='Evoked',frThreshold=10, allreag
     """
     N_FREQ = 16	
     # Apply bonferroni correction
-    alpha = 0.05#/N_FREQ
+    alpha = 0.05/N_FREQ
     if allreagents:
         responsive = ( (( (celldb['offToneResponseMinPval'+eventKey] < alpha) |
                             (celldb['offToneSelectivityPval'+eventKey] < alpha) ) &
@@ -121,7 +121,7 @@ def find_good_gaussian_fit(celldb,eventKey='Evoked', minR2=0.05):
         goodFit (np.array): Each item is a boolean.
     """
     goodFitOff = (celldb['offToneGaussianRsquare'+eventKey] > minR2)
-    goodFitOn = (celldb['onToneGaussianRsquare'+eventKey] > minR2)
+    # goodFitOn = (celldb['onToneGaussianRsquare'+eventKey] > minR2)
     return goodFitOff #| goodFitOn
 
 def find_best_time_keys(celldb,metric,tranges=studyparams.EVENT_KEYS):
