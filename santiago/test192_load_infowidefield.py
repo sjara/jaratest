@@ -26,5 +26,5 @@ frames_dir = os.path.join(dataDir, subject, sessionDate)
 #frames_filename = os.path.join(frames_dir, f'{subject}_{date}_{session}_{experimenter}.tif')
 frames_filenames = sorted(glob.glob(os.path.join(frames_dir, f'*{sessionTime}*.tif')))
 timestamps_filename = os.path.join(frames_dir, f'{subject}_timestamps_{sessionDate}_{sessionTime}.npz')
-stimulus_filename = loadbehavior.path_to_behavior_data(subject, 'am_tuning_curve',
+stimulus_filename = loadbehavior.path_to_behavior_data(subject, paradigm,
                                                        f'{sessionDate}_{sessionTime}')
