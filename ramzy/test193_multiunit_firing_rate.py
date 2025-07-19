@@ -18,9 +18,10 @@ from importlib import reload
 reload(loadneuropix)
 
 
-RAW_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','data')
-# RAW_DATA_DIR = settings.EPHYS_NEUROPIX_PATH
-PROCESSED_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','figures')
+# RAW_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','data')
+RAW_DATA_DIR = settings.EPHYS_NEUROPIX_PATH
+# PROCESSED_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','figures')
+PROCESSED_DATA_DIR = "C:\\tmpdata"
 
 DEBUG=False
 # DEBUG=True
@@ -33,7 +34,12 @@ subject = 'poni001'
 #ephysSession = '2025-03-10_15-55-03'; behavSession = '20250310c' # Shank 3, tones
 #ephysSession = '2025-03-10_16-06-35'; behavSession = '20250310d' # Shank 4, tones
 # ephysSession = '2025-06-25_16-27-00'; behavSession = '20250625a'
-ephysSession = '2025-06-30_14-59-47'; behavSession = '20250630c'
+# ephysSession = '2025-06-30_14-59-47'; behavSession = '20250630c'
+# ephysSession = '2025-07-17_17-20-44'; behavSession = '20250717a'
+# ephysSession = '2025-07-17_17-47-55'; behavSession = '20250717b'
+# ephysSession = '2025-07-18_15-42-52'; behavSession = '20250718a'
+ephysSession = '2025-07-18_16-17-46'; behavSession = '20250718b'
+
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
 
@@ -82,7 +88,7 @@ if 0:
     plt.axhline(spikeThreshold)
     plt.plot(spikeTimes, np.tile(2*spikeThreshold, len(spikeTimes)), 'o')
     plt.show()
-    
+
 # -- Load events from ephys data --
 print('Loading events data...')
 events = loadneuropix.RawEvents(rawDataPath, dataStream)
@@ -109,7 +115,8 @@ assert len(stimEachTrial) == len(eventOnsetTimes), \
 trialsEachCond = behavioranalysis.find_trials_each_type(stimEachTrial, possibleStim)
 
 # -- Align LFP to event onset --
-timeRange = [-0.2, 0.2]
+# timeRange = [-0.5,1.0]
+timeRange = [-0.2, 0.4]
 #timeRange = [-0.1, 0.1]
 sampleRange = [int(timeRange[0]*sampleRate), int(timeRange[1]*sampleRate)]
 timeVec = np.arange(sampleRange[0], sampleRange[1])/sampleRate
@@ -142,7 +149,7 @@ if not DEBUG:
             # eventlockedLFP[indt, :, :] = rawdata[evSample+sampleRange[0]:evSample+sampleRange[1], :]
             eventlockedLFP[indt, :] = rawdataOneChan[evSample+sampleRange[0]:evSample+sampleRange[1]]
 
-    
+
         # print(eventlockedLFP.shape)
         # -- High-pass filter --
         # print('Filtering eventlocked data...')
@@ -182,8 +189,8 @@ if not DEBUG:
         trialIndexForEachSpike = np.concatenate([[indr]*len(row) for indr, row in enumerate(spikeSamples)])
         indexLimitsEachTrial = np.array(indexLimits).T
 
-        
-    
+
+
     # deltaSpikes[cell,:,:] = sortedSpikeCount[cell,:,:] #- np.mean(sortedSpikeCount[cell,:,0:100])
 
         if 0:
@@ -192,7 +199,7 @@ if not DEBUG:
             # plt.plot(spikeTimesFromEventOnset, np.tile(0, len(spikeTimesFromEventOnset)), '.')
             plt.show()
 
-        
+
         spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset, indexLimitsEachTrial, binEdges)
 
         sortedIndexForEachSpike = sortingInds[trialIndexForEachSpike]
@@ -213,7 +220,7 @@ if not DEBUG:
         xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
 
     else:
-        print('Please make sure there is a settings.xml file in your neuropixels ephys data directory.')    
+        print('Please make sure there is a settings.xml file in your neuropixels ephys data directory.')
         exit(1)
 
     probeMap = loadneuropix.ProbeMap(xmlfile)
@@ -222,15 +229,15 @@ if not DEBUG:
 
     sortedChannels = sorted(list(np.arange(0,nChannels)),
                         key = lambda x: probeMap.ypos[chanOrder[x]]*(100**probeMap.channelShank[chanOrder[x]]))
-    
+
     if 1:
         sortedStims = sorted(list(possibleStim),
             key = lambda x: int(x[3])*10 + int(x[1]) if x!='off' else 0)
-            
+
         plt.clf()
-        dims = (24,24)
+        dims = (16,16)
         plt.figure(figsize=dims)
-        chanBins = 10
+        chanBins = max(nChannels//nBins,1)
         chanSortedPSTHs = PSTHs[:,sortedChannels,:]
         for indstim,stim in enumerate(sortedStims):
             chanAvgPSTHs = np.array([chanSortedPSTHs[:,i:i+chanBins,:].mean(axis=1) for i in range(0,nChannels,chanBins)])
@@ -238,29 +245,36 @@ if not DEBUG:
             ax = plt.gca()
             # plt.imshow(chanAvgPSTHs[:,indstim,:])
             plt.imshow(chanAvgPSTHs[:,indstim,:],
-                vmin = np.percentile(PSTHs[indstim,:,:],10),
-                vmax = np.percentile(PSTHs[indstim,:,:],90))
+                vmin = np.percentile(PSTHs[indstim,:,:],1),
+                vmax = np.percentile(PSTHs[indstim,:,:],99))
             # plt.imshow(PSTHs[indstim,sortedChannels,:],
             #     vmin = np.percentile(PSTHs[indstim,:,:],10),
             #     vmax=np.percentile(PSTHs[indstim,:,:],90))
 
-            # plt.colorbar()
+            plt.colorbar()
             if indstim//4==3:
                 plt.xlabel("time (sec)")
             if indstim%4 == 0:
                 plt.ylabel(f"Channel Depth ({r"$\mu$m"})")
 
-            ax.set_xticks(np.arange(0,len(binEdges),nBins//4)-0.5,np.round(binEdges[::nBins//4],2))
-            ax.set_yticks(np.arange(0,nChannels,nChannels//5)//chanBins,probeMap.ypos[chanOrder[sortedChannels][0:nChannels:nChannels//5]])
-            plt.axvline(nBins//2 - 0.5,color='r',alpha=0.5)
+            zeroPoint = int(timeRange[0]*nBins/(timeRange[0]-timeRange[1]))
+
+
+            ax.set_xticks(np.arange(0,len(binEdges),zeroPoint//2)-0.5,np.round(binEdges[::zeroPoint//2],2))
+            ax.set_yticks(np.arange(0,nChannels,nChannels//4)//chanBins,probeMap.ypos[chanOrder[sortedChannels][0:nChannels:nChannels//4]])
+            plt.axvline(zeroPoint - 0.5,color='r',alpha=0.5)
             plt.title(stim)
         plt.tight_layout()
+        plt.suptitle(f"{subject}_{ephysSession}_MUA_PSTHs")
 
         if SAVE:
             figFilename = f"{subject}_{ephysSession}_MUA_PSTHs"
-            extraplots.save_figure(figFilename,'png',dims,outputDir=PROCESSED_DATA_DIR,facecolor='w')
+            figOutDir = os.path.join(PROCESSED_DATA_DIR,"MUA_plots")
+            extraplots.save_figure(figFilename,'png',dims,outputDir=figOutDir,facecolor='w')
 
         plt.show()
+        plt.close()
+
 
     if 0:
         plt.clf()
@@ -269,7 +283,7 @@ if not DEBUG:
         plt.axvline(0,color='m')
         plt.show()
 
-    
+
 
 ### ----- For doing one channel
 else:
@@ -283,7 +297,7 @@ else:
         # eventlockedLFP[indt, :, :] = rawdata[evSample+sampleRange[0]:evSample+sampleRange[1], :]
         eventlockedLFP[indt, :] = rawdataOneChan[evSample+sampleRange[0]:evSample+sampleRange[1]]
 
-        
+
     print(eventlockedLFP.shape)
     # -- High-pass filter --
     print('Filtering eventlocked data...')
