@@ -7,7 +7,15 @@ import numpy as np
 from jaratoolbox import settings
 from jaratoolbox import spikesanalysis
 from jaratoolbox import behavioranalysis
+from jaratoolbox import ephyscore
+from joblib import Parallel,delayed
+from scipy import stats
+from scipy import optimize
 import poni_params as studyparams
+import warnings
+
+
+warnings.simplefilter('ignore')
 
 
 # def find_oddball_responsive_cells(celldb, frThreshold=10):
@@ -73,7 +81,7 @@ def find_tone_responsive_cells(celldb, eventKey='Evoked',frThreshold=10, allreag
     return responsive
 
 
-def find_steady_cells(celldb, params, maxChangeFactor=1.2):
+def find_steady_cells(celldb, params, maxChangeFactor=1.2,sessionType='optoFreq'):
     """
     Find cells that are steady during the pure tone presentation.
 
@@ -86,14 +94,34 @@ def find_steady_cells(celldb, params, maxChangeFactor=1.2):
         steady (np.array): Each item is a boolean.
     """
     steady = np.ones(len(celldb), dtype=bool)
-    for param in params:
-        changeParam = (celldb['on'+param] / celldb['off'+param] )
-        steadyThisParam =  ( (changeParam < maxChangeFactor) & (changeParam > 1/maxChangeFactor) )
-        steady = steady & steadyThisParam
+    if 'poni' in sessionType:
+        reagents = studyparams.REAGENTS[sessionType]
+        sessionPre = studyparams.SESSION_PREFIXES[sessionType]
+
+        sessionParams = sessionType.split('_')
+        tilesPre = sessionType[len(sessionParams[0])+1:] + '_'
+        prefixes = [tilesPre+reagent+sessionPre for reagent in reagents]
+        
+        
+        for param in params:
+            offParam = celldb[prefixes[0]+param]
+            for prefix in prefixes[1:]:
+                changeParam = (celldb[prefix+param] / offParam )
+                steadyThisParam =  ( (changeParam < maxChangeFactor) & (changeParam > 1/maxChangeFactor) )
+                steady = steady & steadyThisParam
+                # print(sum(steady))
+    else:
+        reagents = studyparams.REAGENTS_LASER
+        sessionPre = studyparams.SESSION_PREFIXES[sessionType]
+        prefixes = [reagent+sessionPre for reagent in reagents]
+        for param in params:
+            changeParam = (celldb[prefixes[0]+param] / celldb[prefixes[1]+param] )
+            steadyThisParam =  ( (changeParam < maxChangeFactor) & (changeParam > 1/maxChangeFactor) )
+            steady = steady & steadyThisParam
     return steady
 
 
-def find_freq_selective(celldb, eventKey='Evoked', minR2=0.05):
+def find_freq_selective(celldb, eventKey='Evoked', minR2=0.05,sessionType='optoFreq'):
     """
     Find cells that are frequency selective and have a good fit.
 
@@ -103,14 +131,19 @@ def find_freq_selective(celldb, eventKey='Evoked', minR2=0.05):
     Returns:
         freqSelective (np.array): Each item is a boolean.
     """
-    freqSelectiveOff = (celldb['offToneSelectivityPval'+eventKey]<0.05) 
-    freqSelectiveOn = (celldb['onToneSelectivityPval'+eventKey]<0.05)
-    goodFitOff = (celldb['offToneGaussianRsquare'+eventKey] > minR2)
-    goodFitOn = (celldb['onToneGaussianRsquare'+eventKey] > minR2)
-    return (freqSelectiveOff & goodFitOff) | (freqSelectiveOn & goodFitOn)
+    sessionPre = studyparams.SESSION_PREFIXES[sessionType]
+    reagents = studyparams.REAGENTS[sessionType]
+    sessionParams = sessionType.split('_')
+    tilesPre = sessionType[len(sessionParams[0])+1:]
+    prefixes = [tilesPre+reagent+sessionPre for reagent in reagents]
+    freqSelectiveOff = (celldb[prefixes[0]+'SelectivityPval'+eventKey]<0.05) 
+    freqSelectiveOn = (celldb[prefixes[-1]+'SelectivityPval'+eventKey]<0.05)
+    goodFitOff = (celldb[prefixes[0]+'GaussianRsquare'+eventKey] > minR2)
+    goodFitOn = (celldb[prefixes[-1]+'GaussianRsquare'+eventKey] > minR2)
+    return (freqSelectiveOff & goodFitOff) #| (freqSelectiveOn & goodFitOn)
     
     
-def find_good_gaussian_fit(celldb,eventKey='Evoked', minR2=0.05):
+def find_good_gaussian_fit(celldb,eventKey='Evoked', minR2=0.05,sessionType = 'optoFreq'):
     """
     Find cells that have a good Gaussian fit in both pre and saline conditions.
 
@@ -120,25 +153,48 @@ def find_good_gaussian_fit(celldb,eventKey='Evoked', minR2=0.05):
     Returns:
         goodFit (np.array): Each item is a boolean.
     """
-    goodFitOff = (celldb['offToneGaussianRsquare'+eventKey] > minR2)
-    # goodFitOn = (celldb['onToneGaussianRsquare'+eventKey] > minR2)
-    return goodFitOff #| goodFitOn
 
-def find_best_time_keys(celldb,metric,tranges=studyparams.EVENT_KEYS):
-    if metric in ['ToneNtrials','offToneBaselineFiringRate','onToneBaselineFiringRate']:
+    sessionPre = studyparams.SESSION_PREFIXES[sessionType]
+    reagents = studyparams.REAGENTS[sessionType]
+
+    sessionParams = sessionType.split('_')
+    tilesPre = sessionType[len(sessionParams[0])+1:] +'_'
+
+    if 'poni' in sessionType:
+        prefixes = [tilesPre+reagent+sessionPre for reagent in reagents]
+    else:
+        prefixes = [reagent+sessionPre for reagent in reagents]
+    goodFit = (celldb[prefixes[0]+'GaussianRsquare'+eventKey] > minR2)
+    # if 'poni' in sessionType:
+    #     for prefix in prefixes:
+    #         goodFit &= (celldb[prefix+'GaussianRsquare'+eventKey] > minR2)
+
+    return goodFit 
+
+def find_best_time_keys(celldb,metric,
+                        eventKeys=studyparams.EVENT_KEYS,
+                        sessionType='optoFreq'):
+    if metric in ['Ntrials','BaselineFiringRate','BaselineFiringRate']:
         print('Invalid Metric!')
         return 0
     
-    greaterThans = ['ToneGaussianA','ToneGaussianRsquare','ToneGaussianMaxChange']
-    lessThans = ['ToneResponseMinPval','ToneGaussianSigma','ToneSelectivityPval','ToneGaussianBandwidth']
+    greaterThans = ['GaussianA','GaussianRsquare','GaussianMaxChange']
+    lessThans = ['ResponseMinPval','GaussianSigma','SelectivityPval','GaussianBandwidth']
+    sessionPre = studyparams.SESSION_PREFIXES[sessionType]
+    reagents = studyparams.REAGENTS[sessionType]
+
+    sessionParams = sessionType.split('_')
+    tilesPre = sessionType[len(sessionParams[0])+1:] +'_'
+
+    prefix = tilesPre+reagents[0]+sessionPre
     bestKey = 'Evoked'
     bestKeys = np.zeros(len(celldb),dtype='U15')+bestKey
     cellInd = 0
     
     for indRow,dbRow in celldb.iterrows():
-        for tKey in tranges:
-            metricBestKey = dbRow['off'+metric+bestKey]
-            metricThisKey = dbRow['off'+metric+tKey]
+        for tKey in eventKeys:
+            metricBestKey = dbRow[prefix+metric+bestKey]*dbRow[prefix+'GaussianRsquare'+bestKey]
+            metricThisKey = dbRow[prefix+metric+tKey]*dbRow[prefix+'GaussianRsquare'+tKey]
 
             if metric in greaterThans and metricThisKey > metricBestKey:
                 bestKey = tKey
@@ -146,9 +202,9 @@ def find_best_time_keys(celldb,metric,tranges=studyparams.EVENT_KEYS):
             elif metric in lessThans and metricThisKey < metricBestKey:
                 bestKey = tKey
 
-            elif metric in ['ToneBestFreq'] :
-                changeParamThisKey = (np.log2(celldb['off'+metric+tKey])/np.log2(celldb['off'+metric+tKey]))
-                changeParamBestKey = (np.log2(celldb['off'+metric+bestKey])/np.log2(celldb['off'+metric+bestKey]))
+            elif metric in ['BestFreq'] :
+                changeParamThisKey = (np.log2(celldb[prefix+metric+tKey])/np.log2(celldb[prefix+metric+tKey]))
+                changeParamBestKey = (np.log2(celldb[prefix+metric+bestKey])/np.log2(celldb[prefix+metric+bestKey]))
 
                 if changeParamThisKey < changeParamBestKey:
                     bestKey = tKey
@@ -221,6 +277,226 @@ def combine_index_limits(spikeTimesFromEventOnset1, spikeTimesFromEventOnset2,
         tec2 = np.vstack((np.zeros((nTrials1,1)), np.ones((nTrials2,1))))
         tec = np.hstack((tec1, tec2))
         return (stfeo, ilet, tec)
+
+
+def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange, 
+                 timeRangeDuration, eventTimeKeys, measurements, studyparams, 
+                 PLOT=False, DEBUG=False):
+    '''
+    Extracts features from a cell's spiking data. Use with parallelization (e.g., jobslib, multiprocessing)
+    so database generation doesn't take forever.
+
+    Returns:
+        indRow (int): dataframe index of current cell, important for reincorporating this row's features
+                            with the cell database
+        columnsDict (dict): dictionary containing extracted features for this cell. 
+    '''
+
+    columnsDict = {}
+    indRow = dbRow.name 
+
+    try:
+        oneCell = ephyscore.Cell(dbRow)
+        ephysData, bdata = oneCell.load(sessionType)
+    except Exception as e:
+        print(f"Error processing {indRow}: {str(e)}")
+        return columnsDict
+
+    oneCell = ephyscore.Cell(dbRow)
+    ephysData, bdata = oneCell.load(sessionType)
+    tileEachTrial = np.array([f'C{i}R{j}' if i+j >= 0 else 'off' \
+                              for i,j in zip(bdata['currentStimCol'],bdata['currentStimRow'])])
+    
+    possibleTile = np.unique(tileEachTrial)
+
+    spikeTimesAll = ephysData['spikeTimes']
+    eventOnsetTimesAll = ephysData['events']['stimOn']
+
+    stimEachTrialAll = bdata['currentFreq']
+    nTrialsAll = len(stimEachTrialAll)
+
+    # If the ephys data is 1 more than the bdata, delete the last ephys trial.
+    if len(stimEachTrialAll) == len(eventOnsetTimesAll)-1:
+        eventOnsetTimesAll = eventOnsetTimesAll[:nTrialsAll]
+    assert len(stimEachTrialAll) == len(eventOnsetTimesAll), \
+        "Number of trials in behavior and ephys do not match for {oneCell}"
+
+    # print(nTrialsAll,len(spikeTimesAll),len(eventOnsetTimesAll),len(stimEachTrialAll))
+
+    for tile in reagents:
+        reagent = sessionPre+tile
+        trialInds = (tileEachTrial==tile)
+        # print(trialInds)
+
+        spikeTimes = spikeTimesAll
+        eventOnsetTimes = eventOnsetTimesAll[trialInds]
+
+        stimEachTrial = stimEachTrialAll[trialInds]
+        nTrials = len(stimEachTrial)
+        
+        # print(nTrials,len(spikeTimes),len(eventOnsetTimes))
+
+        if nTrials == 0:
+            break
+
+        # -- Doing this before selecting trials by running/notrunning --
+        possibleStim = np.unique(stimEachTrial)
+        nStim = len(possibleStim)
+        
+        spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = \
+            spikesanalysis.eventlocked_spiketimes(spikeTimes, eventOnsetTimes, timeRange['Full'])
+
+        trialsEachCond = behavioranalysis.find_trials_each_type(stimEachTrial, possibleStim)
+
+        # -- Estimate baseline firing rate --
+        spikeCountMatBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                                indexLimitsEachTrial,
+                                                                timeRange['Baseline'])
+        baselineFiringRate = spikeCountMatBase.mean()/timeRangeDuration['Baseline']
+
+        # -- Store non-Event data in columns dictionary
+        columnsDict[reagent+'ToneBaselineFiringRate'] = baselineFiringRate
+        columnsDict[reagent+'ToneNtrials'] = nTrials
+
+        for tKey in eventTimeKeys:
+            # -- Estimate evoked firing rate for each stim --
+            spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
+                                                                    indexLimitsEachTrial,
+                                                                    timeRange[tKey])
+            nSpikesEachTrial = spikeCountMat[:,0]  # Flatten it
+
+            # -- Calculate nSpikes for each freq to test selectivity --
+            nSpikesEachStim = []
+            avgFiringRateEachStim = np.empty(nStim)
+            pValEvokedEachStim = np.empty(nStim)
+            for indStim, frequency in enumerate(possibleStim):
+                nSpikesThisStim = nSpikesEachTrial[trialsEachCond[:,indStim]]
+                nSpikesEachStim.append(nSpikesThisStim)
+                avgFiringRateEachStim[indStim] = nSpikesThisStim.mean()/timeRangeDuration[tKey]
+                # -- Calculate p-value for each stim --
+                baselineSpikesThisStim = spikeCountMatBase[trialsEachCond[:,indStim],0]
+                try:
+                    wStat, pValThisStim = stats.wilcoxon(nSpikesThisStim, baselineSpikesThisStim,)
+                except ValueError:
+                    pValThisStim = 1
+                pValEvokedEachStim[indStim] = pValThisStim
+            try:
+                nTrialsEachCond = trialsEachCond.sum(axis=0)>0
+                nSpks = [nSpikesEachStim[ind] for ind in np.flatnonzero(nTrialsEachCond)]
+                kStat, pValKruskal = stats.kruskal(*nSpks)
+                #kStat, pValKruskal = stats.kruskal(*nSpikesEachStim)
+            except ValueError:
+                pValKruskal = 1
+            pValEvokedMin = np.min(pValEvokedEachStim)
+
+            # -- Fit Gaussian to tuning data --
+            freqEachTrial = stimEachTrial
+            possibleFreq = possibleStim
+            logFreq = np.log2(freqEachTrial)
+            possibleLogFreq = np.log2(possibleFreq)
+            maxEvokedFiringRate = np.nanmax(avgFiringRateEachStim)
+            changeFromBaseline = avgFiringRateEachStim - baselineFiringRate
+            maxChangeFromBaseline = changeFromBaseline[np.nanargmax(np.abs(changeFromBaseline))]
+            avgEvokedFiringRate = np.nanmean(avgFiringRateEachStim)
+            
+            #baselineFiringRate
+            # PARAMS: a, x0, sigma, y0
+            minS = studyparams.MIN_SIGMA
+            maxS = studyparams.MAX_SIGMA
+            if maxChangeFromBaseline >= 0:
+                p0 = [maxChangeFromBaseline, possibleLogFreq[nStim//2], 1, baselineFiringRate]
+                bounds = ([0, possibleLogFreq[0], minS, 0],
+                        [np.inf, possibleLogFreq[-1], maxS, np.inf])
+            else:
+                p0 = [maxChangeFromBaseline, possibleLogFreq[nStim//2], 1, baselineFiringRate]
+                bounds = ([-np.inf, possibleLogFreq[0], minS, 0],
+                        [0, possibleLogFreq[-1], maxS, np.inf])
+            try:
+                firingRateEachTrial = nSpikesEachTrial/timeRangeDuration[tKey]
+                fitParams, pcov = optimize.curve_fit(spikesanalysis.gaussian, logFreq,
+                                                    firingRateEachTrial, p0=p0, bounds=bounds)
+            except RuntimeError:
+                # print("Could not fit gaussian curve to tuning data.")
+                fitParams = np.full(4, np.nan)
+                Rsquared = 0
+            else:
+                gaussianResp = spikesanalysis.gaussian(logFreq, *fitParams)
+                residuals = firingRateEachTrial - gaussianResp
+                ssquared = np.sum(residuals**2)
+                ssTotal = np.sum((firingRateEachTrial-np.mean(firingRateEachTrial))**2)
+                if ssTotal:
+                    Rsquared = 1 - (ssquared/ssTotal)
+                else:
+                    # print("Divide by zero error...ssTotal is zero")
+                    Rsquared = 0
+                fullWidthHalfMax = 2.355*fitParams[2] # Sigma is fitParams[2]
+
+            # -- Store results in dictionary --
+            
+            columnsDict[reagent+'ToneResponseMinPval'+tKey] = pValEvokedMin
+            columnsDict[reagent+'ToneSelectivityPval'+tKey] = pValKruskal
+            columnsDict[reagent+'ToneFiringRateBestFreq'+tKey] = maxEvokedFiringRate
+            columnsDict[reagent+'ToneAvgEvokedFiringRate'+tKey] = avgEvokedFiringRate
+            columnsDict[reagent+'ToneBestFreq'+tKey] = possibleFreq[avgFiringRateEachStim.argmax()]
+            columnsDict[reagent+'ToneGaussianA'+tKey] = fitParams[0]
+            columnsDict[reagent+'ToneGaussianX0'+tKey] = fitParams[1]
+            columnsDict[reagent+'ToneGaussianSigma'+tKey] = fitParams[2]
+            columnsDict[reagent+'ToneGaussianY0'+tKey] = fitParams[3]
+            columnsDict[reagent+'ToneGaussianRsquare'+tKey] = Rsquared
+            columnsDict[reagent+'ToneFiringRateEachFreq'+tKey] = avgFiringRateEachStim
+    return (indRow, columnsDict)
+
+
+def process_database_parallel(sessionType, sessionPre, reagents, celldb, timeRange, 
+                                timeRangeDuration, eventTimeKeys, measurements, studyparams, 
+                                PLOT=False, DEBUG=False):
+    columnsDict = {}
+    for tile in reagents:
+        reagent = sessionPre+tile
+        # print(reagent)
+        for measurement in measurements[:2]:
+            columnsDict[reagent+measurement] = np.full(len(celldb), np.nan)
+        for tKey in eventTimeKeys:   
+            for measurement in measurements[3:]:
+                columnsDict[reagent+measurement+tKey] = np.full(len(celldb), np.nan)
+            columnsDict[reagent+'ToneFiringRateEachFreq'+tKey] = np.full((len(celldb),studyparams.N_FREQ), np.nan)
+    if DEBUG:
+        indRow = 46  # 46 # 55
+        indRow = 53  # Inverted
+        #indRow = 176
+        indRow = 1533
+        indRow = 1318
+        indRow = 1501 # Wide going down
+        indRow = 1583 # very flat
+        #indRow = 67  # Did not fit before fixing p0(A)
+        celldbToUse = celldb[(celldb['sessionType'].apply(lambda x: sessionType in x))].iloc[[indRow]]
+    else:
+        celldbToUse = celldb[(celldb['sessionType'].apply(lambda x: sessionType in x))]
+
+    print(f"--- Processing {sessionType}, {len(celldbToUse)} cells ---")
+
+    # Prepare task list
+    tasks = []
+    for _, dbRow in celldbToUse.iterrows():
+        tasks.append((
+            sessionType, sessionPre, reagents, dbRow,
+            timeRange, timeRangeDuration, eventTimeKeys,
+            measurements, studyparams,PLOT, DEBUG
+        ))
+
+    # Configure parallel processing
+    n_workers = os.cpu_count() - 1  # Use all but one core
+    columnsDictEachRow = Parallel(n_jobs=n_workers, verbose=10)(
+        delayed(process_cell)(*task) for task in tasks
+    )
+
+    for row in columnsDictEachRow:
+        indRow, columnsDictThisRow = row
+        for key in columnsDictThisRow:
+            columnsDict[key][indRow] = columnsDictThisRow[key]
+
+    return columnsDict
+    
 
 '''    
 def combine_ephys_session(spikeTimesFromEventOnset1, spikeTimesFromEventOnset2,

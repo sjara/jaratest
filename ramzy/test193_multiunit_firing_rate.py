@@ -18,10 +18,10 @@ from importlib import reload
 reload(loadneuropix)
 
 
-# RAW_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','data')
-RAW_DATA_DIR = settings.EPHYS_NEUROPIX_PATH
-# PROCESSED_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','figures')
-PROCESSED_DATA_DIR = "C:\\tmpdata"
+RAW_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','data')
+PROCESSED_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','figures')
+# RAW_DATA_DIR = settings.EPHYS_NEUROPIX_PATH
+# PROCESSED_DATA_DIR = "C:\\tmpdata"
 
 DEBUG=False
 # DEBUG=True
@@ -34,11 +34,11 @@ subject = 'poni001'
 #ephysSession = '2025-03-10_15-55-03'; behavSession = '20250310c' # Shank 3, tones
 #ephysSession = '2025-03-10_16-06-35'; behavSession = '20250310d' # Shank 4, tones
 # ephysSession = '2025-06-25_16-27-00'; behavSession = '20250625a'
-# ephysSession = '2025-06-30_14-59-47'; behavSession = '20250630c'
+ephysSession = '2025-06-30_14-59-47'; behavSession = '20250630c'
 # ephysSession = '2025-07-17_17-20-44'; behavSession = '20250717a'
 # ephysSession = '2025-07-17_17-47-55'; behavSession = '20250717b'
 # ephysSession = '2025-07-18_15-42-52'; behavSession = '20250718a'
-ephysSession = '2025-07-18_16-17-46'; behavSession = '20250718b'
+# ephysSession = '2025-07-18_16-17-46'; behavSession = '20250718b'
 
 
 dataStream = 'Neuropix-PXI-100.ProbeA'

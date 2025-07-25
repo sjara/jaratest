@@ -61,9 +61,13 @@ ephysSession = '2025-06-10_17-20-19'; behavSession = '20250610a' # optoFreq, 3-4
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
 LASER_SESSSION = False
+IMAGE_SESSION = True
+SPONT = True
 
 paradigm = 'am_tuning_curve'
 currentStim = 'currentFreq'
+
+
 
 
 # paradigm = 'natural_sound_detection'
@@ -129,7 +133,11 @@ if 0:
 print('Loading behavior data...')
 behavFile = loadbehavior.path_to_behavior_data(subject, paradigm, behavSession)
 bdata = loadbehavior.BehaviorData(behavFile)
-stimEachTrial = bdata[currentStim]
+if IMAGE_SESSION and SPONT:
+    stimEachTrial = np.array([f"C{i}R{j}" if i+j>=0 else 'off' for i,j in zip(bdata['currentStimCol'],bdata['currentStimRow'])])
+else:    
+    stimEachTrial = bdata[currentStim]
+
 nTrials = len(stimEachTrial)
 possibleStim = np.unique(stimEachTrial)
 nStim = len(possibleStim)
@@ -223,7 +231,79 @@ if LASER_SESSSION:
         plt.legend()
         plt.show()
 
+elif IMAGE_SESSION and not SPONT:
+    tileEachTrial = np.array([f"C{i}R{j}" if i+j>=0 else 'off' for i,j in zip(bdata['currentStimCol'],bdata['currentStimRow'])])
+    possibleTile = np.unique(tileEachTrial)
+    trialsEachCond = behavioranalysis.find_trials_each_combination(stimEachTrial, possibleStim,
+                                                                   tileEachTrial,possibleTile)
 
+    # -- Align LFP to event onset --
+    timeRange = [-0.2, 0.4]
+    #timeRange = [-2, 2]
+    sampleRange = [int(timeRange[0]*sampleRate), int(timeRange[1]*sampleRate)]
+    timeVec = np.arange(sampleRange[0], sampleRange[1])/sampleRate
+    nSamplesToExtract = sampleRange[1] - sampleRange[0]
+    eventlockedLFP = np.empty((nTrials, nSamplesToExtract, nChannels), dtype=np.int16)
+
+    # -- Calculate event-locked LFP --
+    print('Calculating eventlockedLFP...')
+    for indt, evSample in enumerate(eventOnsetTimes):
+        eventlockedLFP[indt, :, :] = rawdata[evSample+sampleRange[0]:evSample+sampleRange[1], :]
+
+    # -- Calculate average LFP for each stimulus condition --
+    print('Calculating average LFP for each stimulus...')
+    avgLFP = np.empty((nStim, nSamplesToExtract, nChannels))
+    labelsAvgLFP = ['Stimulus', 'Time', 'Channel']
+
+    for indstim, stimFreq in enumerate(possibleStim):
+        avgLFP[indstim, :, :] = np.mean(eventlockedLFP[trialsEachCond[:, indstim], :, :], axis=0)
+    avgLFP *= bitVolts  # Convert to uV
+
+    # -- Save the average LFP --
+    if 1:
+        scriptFullPath = os.path.realpath(__file__)
+        outputFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
+        print(f'Saving avgLFP to {outputFile}')
+        np.savez(outputFile, avgLFP=avgLFP, timeVec=timeVec, sampleRate=sampleRate,
+                 nChannels=nChannels,labelsAvgLFP=labelsAvgLFP,
+                 possibleStim=possibleStim, trialsEachCond=trialsEachCond,
+                 subject=subject, ephysSession=ephysSession, behavSession=behavSession,
+                 script=scriptFullPath)
+
+    # -- Plot the average LFP for each stimulus condition --
+    if 0:
+        print('Plotting responses for all stimuli...')
+        plt.clf()
+        for indStim in range(len(possibleStim)):
+            plt.subplot(4, 4, indStim+1)
+            plt.imshow(avgLFP[indStim, :, :].T, aspect='auto', origin='lower',
+                       extent=[timeVec[0], timeVec[-1], 0, nChannels])
+            plt.colorbar()
+            plt.title(f'{possibleStim[indStim]} Hz')
+        plt.suptitle(f'Average LFP for {subject} {ephysSession}')
+        plt.axis('tight')
+        plt.show()
+
+    collapsedAvgLFP = np.mean(avgLFP, axis=2)  # Average across channels
+    if 0:
+        # -- Filter avgLFP --
+        print('Filtering avgLFP...')
+        highcut = 300
+        bCoeff, aCoeff = signal.iirfilter(4, Wn=highcut, fs=sampleRate, btype="low", ftype="butter")
+        collapsedAvgLFP = signal.filtfilt(bCoeff, aCoeff, collapsedAvgLFP, axis=1)
+
+    # -- Plot the average LFP for each stimulus condition --
+    if 1:
+        print('Plotting responses for all stimuli...')
+        plt.clf()
+        for indStim in range(len(possibleStim)):
+            plt.subplot(4, 4, indStim+1)
+            plt.ylim([-25, 25])
+            plt.plot(timeVec, collapsedAvgLFP[indStim, :])
+            plt.title(f'{possibleStim[indStim]} Hz')
+        plt.suptitle(f'Average LFP for {subject} {ephysSession} (averaged across trials and channels)')
+        plt.axis('tight')
+        plt.show()
 
 else:
     trialsEachCond = behavioranalysis.find_trials_each_type(stimEachTrial, possibleStim)

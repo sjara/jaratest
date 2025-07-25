@@ -95,10 +95,10 @@ ksDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH,
                                  'poni001', 
                                  "2025-06-09_11-10-08_processed_multi")
 
-# if os.path.exists(rawDataPath):
-#     xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
+if os.path.exists(rawDataPath):
+    xmlfile = os.path.join(rawDataPath, 'Record Node 101', 'settings.xml')
 
-if os.path.exists(ksDataPath):
+elif os.path.exists(ksDataPath):
     xmlfile = os.path.join(ksDataPath, 'info', 'settings.xml')
 
 else:
