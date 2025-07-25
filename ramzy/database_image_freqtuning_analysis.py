@@ -88,6 +88,56 @@ measurements = ['ToneBaselineFiringRate', 'ToneNtrials', 'ToneFiringRateEachFreq
 columnsDict = {}
 reagentsAll = {}
 
+
+for sessionType in sessionTypes:
+    sessionParams = sessionType.split('_')
+    sessionPre = sessionType[len(sessionParams[0])+1:] +'_'
+    thisGridDims = (int(sessionParams[-1][0]),int(sessionParams[-1][2]))
+    reagentsAll[sessionType] = ['off'] + [f'C{i}R{j}' for i,j in \
+        itertools.product(range(thisGridDims[0]),range(thisGridDims[1]))]
+    
+    columnsDictThisSession = studyutils.process_database_parallel(sessionType, sessionPre, reagentsAll[sessionType], celldb,
+                                                                    timeRange, timeRangeDuration, eventTimeKeys,
+                                                                    measurements, studyparams, PLOT, DEBUG)
+    columnsDict|=columnsDictThisSession
+
+    for tile in reagentsAll[sessionType]:
+        reagent = sessionPre+tile
+        for tKey in eventTimeKeys:
+            columnsDict[reagent+'ToneFiringRateEachFreq'+tKey] = \
+                list(columnsDict[reagent+'ToneFiringRateEachFreq'+tKey])
+
+
+celldbWithTuning = celldb.assign(**columnsDict)
+
+for sessionType in sessionTypes:
+    sessionParams = sessionType.split('_')
+    sessionPre = sessionType[len(sessionParams[0])+1:] +'_'
+    # sessionPre = sessionType[-4:] +'_'
+    for eventKey in eventTimeKeys:
+        for indr, tile in enumerate(reagentsAll[sessionType]):
+            reagent = sessionPre + tile
+            #celldbWithTuning[reagent+'ToneGaussianMax'+eventKey] = ( celldbWithTuning[reagent+'ToneGaussianA'+eventKey] +
+            #                                      celldbWithTuning[reagent+'ToneGaussianY0'+eventKey] )
+            negResponseThisReagent = celldbWithTuning[reagent+'ToneGaussianA'+eventKey]<0
+            thisToneGaussianMax = ( celldbWithTuning[reagent+'ToneGaussianA'+eventKey] +
+                                    celldbWithTuning[reagent+'ToneGaussianY0'+eventKey] )
+            thisToneGaussianMax[negResponseThisReagent] = celldbWithTuning[reagent+'ToneGaussianY0'+eventKey]
+            celldbWithTuning[reagent+'ToneGaussianMax'+eventKey] = thisToneGaussianMax
+            celldbWithTuning[reagent+'ToneGaussianBandwidth'+eventKey] = \
+                extraplots.gaussian_full_width_half_max(celldbWithTuning[reagent+'ToneGaussianSigma'+eventKey])
+            baselineFiringRate = celldbWithTuning[reagent+'ToneBaselineFiringRate']
+            celldbWithTuning[reagent+'ToneGaussianMaxChange'+eventKey] = np.abs(thisToneGaussianMax-baselineFiringRate)
+
+# -- Save the updated celldb --
+if SAVE:
+    celldatabase.save_hdf(celldbWithTuning, outputFilename)
+
+
+
+### --- old code, unparallelized ---
+
+
 # def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange, 
 #                  timeRangeDuration, eventTimeKeys, measurements, studyparams, 
 #                  PLOT=False, DEBUG=False):
@@ -250,19 +300,8 @@ reagentsAll = {}
 #             columnsDict[reagent+'ToneFiringRateEachFreq'+tKey] = avgFiringRateEachStim
 #     return (indRow, columnsDict)
 
-for sessionType in sessionTypes:
-    sessionParams = sessionType.split('_')
-    sessionPre = sessionType[len(sessionParams[0])+1:] +'_'
-    thisGridDims = (int(sessionParams[-1][0]),int(sessionParams[-1][2]))
-    reagentsAll[sessionType] = ['off'] + [f'C{i}R{j}' for i,j in \
-        itertools.product(range(thisGridDims[0]),range(thisGridDims[1]))]
-    
-    columnsDictThisSession = studyutils.process_database_parallel(sessionType, sessionPre, reagentsAll[sessionType], celldb,
-                                                                    timeRange, timeRangeDuration, eventTimeKeys,
-                                                                    measurements, studyparams, PLOT, DEBUG)
-    columnsDict|=columnsDictThisSession
-    
-    # for tile in reagentsAll[sessionType]:
+
+# for tile in reagentsAll[sessionType]:
     #     reagent = sessionPre+tile
     #     # print(reagent)
     #     for measurement in measurements[:2]:
@@ -479,206 +518,3 @@ for sessionType in sessionTypes:
             #     #print(fitParams)
             #     if reagent=='pre':
             #         sys.exit()
-
-    for tile in reagentsAll[sessionType]:
-        reagent = sessionPre+tile
-        for tKey in eventTimeKeys:
-            columnsDict[reagent+'ToneFiringRateEachFreq'+tKey] = \
-                list(columnsDict[reagent+'ToneFiringRateEachFreq'+tKey])
-
-
-celldbWithTuning = celldb.assign(**columnsDict)
-
-for sessionType in sessionTypes:
-    sessionParams = sessionType.split('_')
-    sessionPre = sessionType[len(sessionParams[0])+1:] +'_'
-    # sessionPre = sessionType[-4:] +'_'
-    for eventKey in eventTimeKeys:
-        for indr, tile in enumerate(reagentsAll[sessionType]):
-            reagent = sessionPre + tile
-            #celldbWithTuning[reagent+'ToneGaussianMax'+eventKey] = ( celldbWithTuning[reagent+'ToneGaussianA'+eventKey] +
-            #                                      celldbWithTuning[reagent+'ToneGaussianY0'+eventKey] )
-            negResponseThisReagent = celldbWithTuning[reagent+'ToneGaussianA'+eventKey]<0
-            thisToneGaussianMax = ( celldbWithTuning[reagent+'ToneGaussianA'+eventKey] +
-                                    celldbWithTuning[reagent+'ToneGaussianY0'+eventKey] )
-            thisToneGaussianMax[negResponseThisReagent] = celldbWithTuning[reagent+'ToneGaussianY0'+eventKey]
-            celldbWithTuning[reagent+'ToneGaussianMax'+eventKey] = thisToneGaussianMax
-            celldbWithTuning[reagent+'ToneGaussianBandwidth'+eventKey] = \
-                extraplots.gaussian_full_width_half_max(celldbWithTuning[reagent+'ToneGaussianSigma'+eventKey])
-            baselineFiringRate = celldbWithTuning[reagent+'ToneBaselineFiringRate']
-            celldbWithTuning[reagent+'ToneGaussianMaxChange'+eventKey] = np.abs(thisToneGaussianMax-baselineFiringRate)
-
-# -- Save the updated celldb --
-if SAVE:
-    celldatabase.save_hdf(celldbWithTuning, outputFilename)
-
-# -- Useful for debugging --    
-# for k,v in celldbWithTuning.iloc[46].items(): print(f'{k}:\t {v}')
-
-
-
-
-# cellInds = np.arange(len(celldbToUse))
-
-# ensemble = ephyscore.CellEnsemble(celldbToUse)
-# ephysData,bdata = ensemble.load(sessionType)
-
-# stimEachTrial = bdata['currentFreq']
-# possibleStim = np.unique(stimEachTrial)
-# nStim = len(possibleStim)
-# nTrials = len(stimEachTrial)
-
-# laserEachTrial = bdata['laserTrial']
-# onTrials = np.nonzero(laserEachTrial)[0]
-# offTrials = np.nonzero(1-laserEachTrial)[0]
-
-# laserCondInds = {
-#     'on':onTrials,
-#     'off':offTrials
-# }
-
-# spikeTimesAll = ephysData['spikeTimes']
-# eventOnsetTimesAll = ephysData['events']['stimOn'][:nTrials]
-    
-# for reagent in reagentsAll:
-#     print(f'Analyzing {reagent} trials')
-#     trialInds = laserCondInds[reagent]
-    
-#     spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = \
-#         ensemble.eventlocked_spiketimes(eventOnsetTimesAll[trialInds], timeRange['Full'])
-
-#     trialsEachCond = behavioranalysis.find_trials_each_type(stimEachTrial[trialInds], possibleStim)
-
-#     for count, indRow in enumerate(cellInds):
-#         if count%20==0:
-#             print(f'{count}/{len(cellInds)} cells analyzed')
-#         spikeTimesFromEventOnset, trialIndexForEachSpike, indexLimitsEachTrial = \
-#             spikeTimesFromEventOnsetAll[indRow], trialIndexForEachSpikeAll[indRow], indexLimitsEachTrialAll[indRow]
-        
-#         # -- Estimate baseline firing rate --
-#         spikeCountMatBase = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-#                                                                     indexLimitsEachTrial,
-#                                                                     timeRange['Baseline'])
-#         baselineFiringRate = spikeCountMatBase.mean()/timeRangeDuration['Baseline']
-
-#         # -- Estimate evoked firing rate for each stim --
-#         spikeCountMat = spikesanalysis.spiketimes_to_spikecounts(spikeTimesFromEventOnset,
-#                                                                     indexLimitsEachTrial,
-#                                                                     timeRange['Evoked'])
-#         nSpikesEachTrial = spikeCountMat[:,0]  # Flatten it
-
-#         # -- Calculate nSpikes for each freq to test selectivity --
-#         nSpikesEachStim = []
-#         avgFiringRateEachStim = np.empty(nStim)
-#         pValEvokedEachStim = np.empty(nStim)
-#         for indStim, frequency in enumerate(possibleStim):
-#             nSpikesThisStim = nSpikesEachTrial[trialsEachCond[:,indStim]]
-#             nSpikesEachStim.append(nSpikesThisStim)
-#             avgFiringRateEachStim[indStim] = nSpikesThisStim.mean()/timeRangeDuration['Evoked']
-#             # -- Calculate p-value for each stim --
-#             baselineSpikesThisStim = spikeCountMatBase[trialsEachCond[:,indStim],0]
-#             try:
-#                 wStat, pValThisStim = stats.wilcoxon(nSpikesThisStim, baselineSpikesThisStim)
-#             except ValueError:
-#                 pValThisStim = 1
-#             pValEvokedEachStim[indStim] = pValThisStim
-#         try:
-#             nTrialsEachCond = trialsEachCond.sum(axis=0)>0
-#             nSpks = [nSpikesEachStim[ind] for ind in np.flatnonzero(nTrialsEachCond)]
-#             kStat, pValKruskal = stats.kruskal(*nSpks)
-#             #kStat, pValKruskal = stats.kruskal(*nSpikesEachStim)
-#         except ValueError:
-#             pValKruskal = 1
-#         pValEvokedMin = np.min(pValEvokedEachStim)
-
-#         # -- Fit Gaussian to tuning data --
-#         freqEachTrial = stimEachTrial[trialInds]
-#         possibleFreq = possibleStim
-#         logFreq = np.log2(freqEachTrial)
-#         possibleLogFreq = np.log2(possibleFreq)
-#         maxEvokedFiringRate = np.nanmax(avgFiringRateEachStim)
-#         changeFromBaseline = avgFiringRateEachStim - baselineFiringRate
-#         maxChangeFromBaseline = changeFromBaseline[np.nanargmax(np.abs(changeFromBaseline))]
-#         avgEvokedFiringRate = np.nanmean(avgFiringRateEachStim)
-        
-#         #baselineFiringRate
-#         # PARAMS: a, x0, sigma, y0
-#         minS = studyparams.MIN_SIGMA
-#         maxS = studyparams.MAX_SIGMA
-#         if maxChangeFromBaseline >= 0:
-#             p0 = [maxChangeFromBaseline, possibleLogFreq[nStim//2], 1, baselineFiringRate]
-#             bounds = ([0, possibleLogFreq[0], minS, 0],
-#                         [np.inf, possibleLogFreq[-1], maxS, np.inf])
-#         else:
-#             p0 = [maxChangeFromBaseline, possibleLogFreq[nStim//2], 1, baselineFiringRate]
-#             bounds = ([-np.inf, possibleLogFreq[0], minS, 0],
-#                         [0, possibleLogFreq[-1], maxS, np.inf])
-#         try:
-#             firingRateEachTrial = nSpikesEachTrial/timeRangeDuration['Evoked']
-#             fitParams, pcov = optimize.curve_fit(spikesanalysis.gaussian, logFreq,
-#                                                     firingRateEachTrial, p0=p0, bounds=bounds)
-#         except RuntimeError:
-#             print("Could not fit gaussian curve to tuning data.")
-#             fitParams = np.full(4, np.nan)
-#             Rsquared = 0
-#         else:
-#             gaussianResp = spikesanalysis.gaussian(logFreq, *fitParams)
-#             residuals = firingRateEachTrial - gaussianResp
-#             ssquared = np.sum(residuals**2)
-#             ssTotal = np.sum((firingRateEachTrial-np.mean(firingRateEachTrial))**2)
-#             Rsquared = 1 - (ssquared/ssTotal)
-#             fullWidthHalfMax = 2.355*fitParams[2] # Sigma is fitParams[2]
-
-#         # -- Store results in dictionary --
-#         columnsDict[reagent+'ToneBaselineFiringRate'][indRow] = baselineFiringRate
-#         columnsDict[reagent+'ToneResponseMinPval'][indRow] = pValEvokedMin
-#         columnsDict[reagent+'ToneSelectivityPval'][indRow] = pValKruskal
-#         columnsDict[reagent+'ToneFiringRateBestFreq'][indRow] = maxEvokedFiringRate
-#         columnsDict[reagent+'ToneAvgEvokedFiringRate'][indRow] = avgEvokedFiringRate
-#         columnsDict[reagent+'ToneBestFreq'][indRow] = possibleFreq[avgFiringRateEachStim.argmax()]
-#         columnsDict[reagent+'ToneGaussianA'][indRow] = fitParams[0]
-#         columnsDict[reagent+'ToneGaussianX0'][indRow] = fitParams[1]
-#         columnsDict[reagent+'ToneGaussianSigma'][indRow] = fitParams[2]
-#         columnsDict[reagent+'ToneGaussianY0'][indRow] = fitParams[3]
-#         columnsDict[reagent+'ToneGaussianRsquare'][indRow] = Rsquared
-#         columnsDict[reagent+'ToneNtrials'][indRow] = nTrials
-#         columnsDict[reagent+'ToneFiringRateEachFreq'][indRow] = avgFiringRateEachStim
-
-#     if PLOT:
-#         plt.clf()
-#         plt.figure()
-#         plt.suptitle(f'[{indRow}]  {oneCell}')
-#         plt.subplot(1,2,1)
-#         pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnset,
-#                                                         indexLimitsEachTrial,
-#                                                         timeRange['Full'], trialsEachCond)
-#         plt.setp(pRaster, ms=0.5)
-#         plt.title(f'{reagent} {sessionType}')
-        
-#         plt.subplot(1,2,2)
-#         pdots = plt.plot(possibleLogFreq, avgFiringRateEachStim, 'o')
-#         if not np.isnan(fitParams[0]):
-#             xvals = np.linspace(possibleLogFreq[0], possibleLogFreq[-1], 60)
-#             yvals = spikesanalysis.gaussian(xvals, *fitParams)
-#             pfit = plt.plot(xvals, yvals, '-', lw=3)
-#         plt.ylabel('Firing rate (Hz)')
-#         plt.xlabel('Frequency (kHz)')
-#         xTickLabels = [f'{freq/1000:0.0f}' for freq in possibleFreq]
-#         plt.xticks(possibleLogFreq, xTickLabels)
-#         plt.title(f'R2={Rsquared:0.4f}  s={fitParams[2]:0.4f}')
-#         plt.show()
-#         plt.pause(0.5);
-#         #print(fitParams)
-#         if reagent=='pre':
-#             sys.exit()
-
-# for reagent in reagentsAll:
-#     columnsDict[reagent+'ToneFiringRateEachFreq'] = list(columnsDict[reagent+'ToneFiringRateEachFreq'])
-# celldbWithTuning = celldb.assign(**columnsDict)
-
-# # -- Save the updated celldb --
-# if SAVE:
-#     celldatabase.save_hdf(celldbWithTuning, outputFilename)
-
-# # -- Useful for debugging --    
-# # for k,v in celldbWithTuning.iloc[46].items(): print(f'{k}:\t {v}')
