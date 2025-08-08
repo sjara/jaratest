@@ -11,8 +11,6 @@ import traceback
 from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 
-#SAVE_DATA = 1
-#if SAVE_DATA:
     
 mouse_name = 'wifi008'
 #date = '20250311'
@@ -26,6 +24,8 @@ mouse_name = 'wifi008'
 
 date = '20241219'#First session
 session = '161007' #First session
+field_of_view = (slice(258,270), slice(255,270))  # For wifi008_20241219_161007 (single spot)
+
 
 #date = '20250317'
 #session = '185100' #Calcium
@@ -146,7 +146,7 @@ for i, freq in enumerate(possible_freq):
             continue  # Skip if exceeding the number of frames
         
         # Extract and normalize signal
-        signal = np.mean(frames[selected_frames, 258:270, 255:270], axis=(1, 2)) #258:270, 255:270
+        signal = np.mean(frames[selected_frames, field_of_view[0], field_of_view[1]], axis=(1, 2)) #258:270, 255:270
         #baseline = np.mean(frames[selected_frames[:frames_before], 260:320, 240:320], axis=(1, 2))
         baseline = np.mean(signal[:frames_before])  # Average before sound onset
         signal_change = (signal - baseline) / baseline
