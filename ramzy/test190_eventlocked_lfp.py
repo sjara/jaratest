@@ -16,11 +16,12 @@ from importlib import reload
 reload(loadneuropix)
 
 
+subject = 'poni004'
 PROCESSED_DATA_DIR = 'C:\\tmpdata'
 # PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH,'inpi003_lfp')
+# PROCESSED_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','data',f'{subject}_lfp')
 
 # -- Load raw data --
-subject = 'poni001'
 #ephysSession = '2025-03-10_15-30-45'; behavSession = '20250310a' # Shank 1a, tones
 #ephysSession = '2025-03-10_16-17-01'; behavSession = '20250310e' # Shank 1a, AM
 # ephysSession = '2025-03-10_15-43-57'; behavSession = '20250310b' # Shank 2a, tones
@@ -56,15 +57,21 @@ subject = 'poni001'
 # ephysSession = '2025-06-07_15-22-13'; behavSession = '20250607i' # tones, bank 385-480
 # ephysSession = '2025-06-07_15-30-29'; behavSession = '20250607j' # AM, bank 385-480
 # ephysSession = '2025-06-10_16-07-57'; behavSession = '20250610b' # soundloc, 3-4_1-192
-ephysSession = '2025-06-10_17-20-19'; behavSession = '20250610a' # optoFreq, 3-4_1-192
+# ephysSession = '2025-06-10_17-20-19'; behavSession = '20250610a' # optoFreq, 3-4_1-192
 # ephysSession = '2025-06-10_17-39-32'; behavSession = '20250610b' # optoAM,3-4_1-192
+# ephysSession = '2025-06-30_14-59-47'; behavSession = '20250630c' # poniSpont
+# ephysSession = '2025-07-18_15-42-52'; behavSession = '20250718a' # poniSpont
+
+ephysSession = '2025-08-07_17-24-38'; behavSession = '20250807a' # tuningFreq shank 2 bank A
+
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
 LASER_SESSSION = False
-IMAGE_SESSION = True
-SPONT = True
+IMAGE_SESSION = False
+SPONT = False
 
 paradigm = 'am_tuning_curve'
+# paradigm = 'am_image_tuning'
 currentStim = 'currentFreq'
 
 
@@ -79,6 +86,7 @@ currentStim = 'currentFreq'
 # -- Load raw data --
 print('Loading raw data...')
 rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject, ephysSession)
+# rawDataPath = os.path.join('/Volumes/CrucialX10','Jaralab','data',subject,ephysSession)
 contData = loadneuropix.Continuous(rawDataPath, dataStream)
 rawdata = contData.data
 sampleRate = contData.sampleRate
@@ -141,6 +149,7 @@ else:
 nTrials = len(stimEachTrial)
 possibleStim = np.unique(stimEachTrial)
 nStim = len(possibleStim)
+stimDur = bdata['stimDur'][0]
 
 # FIXME: hack for session '20250310c'. Maybe there was a mistake during recording?
 #eventOnsetTimes = eventOnsetTimes[1:]  # Remove first timestamp
@@ -158,7 +167,7 @@ if LASER_SESSSION:
     trialsEachCond = behavioranalysis.find_trials_each_combination(stimEachTrial, possibleStim,laserEachTrial,possibleLaser)
 
     # -- Align LFP to event onset --
-    timeRange = [-0.2, 0.4]
+    timeRange = [-stimDur, 2*stimDur]
     #timeRange = [-2, 2]
     sampleRange = [int(timeRange[0]*sampleRate), int(timeRange[1]*sampleRate)]
     timeVec = np.arange(sampleRange[0], sampleRange[1])/sampleRate
@@ -238,7 +247,7 @@ elif IMAGE_SESSION and not SPONT:
                                                                    tileEachTrial,possibleTile)
 
     # -- Align LFP to event onset --
-    timeRange = [-0.2, 0.4]
+    timeRange = [-stimDur, 2*stimDur]
     #timeRange = [-2, 2]
     sampleRange = [int(timeRange[0]*sampleRate), int(timeRange[1]*sampleRate)]
     timeVec = np.arange(sampleRange[0], sampleRange[1])/sampleRate
@@ -309,7 +318,7 @@ else:
     trialsEachCond = behavioranalysis.find_trials_each_type(stimEachTrial, possibleStim)
 
     # -- Align LFP to event onset --
-    timeRange = [-0.2, 0.4]
+    timeRange = [-stimDur, 2*stimDur]
     #timeRange = [-2, 2]
     sampleRange = [int(timeRange[0]*sampleRate), int(timeRange[1]*sampleRate)]
     timeVec = np.arange(sampleRange[0], sampleRange[1])/sampleRate

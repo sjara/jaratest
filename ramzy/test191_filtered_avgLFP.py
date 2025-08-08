@@ -14,12 +14,14 @@ from importlib import reload
 reload(loadneuropix)
 
 
-subject = 'poni001'
+subject = 'poni004'
 studyName = 'patternedOpto'
-pDepth = 2360
-# PROCESSED_DATA_DIR = 'C:\\tmpdata'
-PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH, 'poni001_lfp')
-OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH,studyName,f'{subject}_lfp')
+pDepth = 3000
+PROCESSED_DATA_DIR = 'C:\\tmpdata'
+OUTPUT_DIR = os.path.join(PROCESSED_DATA_DIR,f'{subject}_lfp')
+# PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH, 'poni004_lfp')
+# PROCESSED_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','data',f'{subject}_lfp')
+# OUTPUT_DIR = os.path.join(settings.FIGURES_DATA_PATH,studyName,f'{subject}_lfp')
 
 if not os.path.exists(OUTPUT_DIR):
     os.mkdir(OUTPUT_DIR)
@@ -59,12 +61,16 @@ if not os.path.exists(OUTPUT_DIR):
 # behavSession = '20250607j' # bank 385-480 AM
 # behavSession = '20250610a-laser' # optoFreq, 3-4_1-192
 # behavSession = '20250610b-laser' # optoAM bank 1-192 shanks 3/4
-behavSession = '20250613a-laser' # optoNaturalSound, 3-4_1-192
+# behavSession = '20250613a-laser' # optoNaturalSound, 3-4_1-192
+# behavSession = '20250630c'
+# behavSession = '20250718a'
+behavSession = '20250807a'
 
-# paradigm = 'tuningFreq'
+paradigm = 'tuningFreq'
 # paradigm = 'tuningAM'
 # paradigm = 'soundLocation'
-paradigm = 'naturalSound'
+# paradigm = 'naturalSound'
+# paradigm = 'poniSpont'
 
 dataFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
 
@@ -263,6 +269,10 @@ else:
         print('Plotting responses for all stimuli...')
         plt.clf()
         plt.figure(figsize=(24,12))
+        if 'spont' in paradigm.lower():
+            sortedStims = sorted(list(possibleStim),
+                                    key = lambda x: int(x[3])*10 + int(x[1]) if x!='off' else 0)
+            possibleStim = sortedStims
         for indStim in range(len(possibleStim)):
             ax = plt.subplot(4, 4, indStim+1)
             plt.imshow(sortedAvgLFP[indStim, :, :].T, aspect='auto', origin='lower',

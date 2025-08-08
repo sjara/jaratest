@@ -44,8 +44,8 @@ ephysSession = '2025-06-30_14-59-47'; behavSession = '20250630c'
 dataStream = 'Neuropix-PXI-100.ProbeA'
 
 
-# paradigm = 'am_tuning_curve'
-paradigm = 'am_image_tuning'
+paradigm = 'am_tuning_curve'
+# paradigm = 'am_image_tuning'
 
 highpassCutoff = 300  # In HZ
 spikeThreshold = -100 #-100  # In uV
