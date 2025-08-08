@@ -12,10 +12,6 @@ from jaratoolbox import loadbehavior
 from jaratoolbox import behavioranalysis
 from jaratoolbox import settings
 
-# mouse_name = 'wifi008'
-# date = '20241219'
-# session = '161007' 
-# paradigm = 'am_tuning_curve'
 
 def process_widefield(mouse_name, date, session, paradigm = 'am_tuning_curve', save_data = True):
     """
@@ -124,7 +120,7 @@ def process_widefield(mouse_name, date, session, paradigm = 'am_tuning_curve', s
         save_dir = os.path.join(settings.WIDEFIELD_PROCESSED, mouse_name)
         os.makedirs(save_dir, exist_ok=True)
 
-        output_file = os.path.join(save_dir , f'{mouse_name}_{date}_{session}.npz')
+        output_file = os.path.join(save_dir , f'{mouse_name}_{date}_{session}_processed.npz')
 
         np.savez(output_file, avg_evoked_each_freq=avg_evoked_each_freq, avg_baseline_each_freq=avg_baseline_each_freq,
                 signal_change_each_freq=signal_change_each_freq, n_freq=n_freq, possible_freq=possible_freq)
@@ -213,9 +209,16 @@ def process_widefield_odd_even(mouse_name, date, session, paradigm = 'am_tuning_
     frame_after_onset = np.searchsorted(ts_frames, sound_onset, side='left')
 
     evoked_frames_each_freq = []
-    avg_evoked_each_freq = []
-    avg_baseline_each_freq = []
-    signal_change_each_freq = []
+    avg_evoked_set1_all = []
+    avg_baseline_set1_all = []
+    signal_change_set1_all = []
+
+    avg_evoked_set2_all = []
+    avg_baseline_set2_all = []
+    signal_change_set2_all = []
+
+    set1_indices_all = []
+    set2_indices_all = []
 
     for indf, freq in enumerate(possible_freq):
         frame_after_onset_this_freq = frame_after_onset[trials_each_freq[:, indf]] #Get the frames after the sound onset
@@ -248,10 +251,54 @@ def process_widefield_odd_even(mouse_name, date, session, paradigm = 'am_tuning_
         # Differences
         signal_change_set1 = (avg_evoked_set1 - avg_baseline_set1) / avg_baseline_set1
         signal_change_set2 = (avg_evoked_set2 - avg_baseline_set2) / avg_baseline_set2
-        difference_signal = signal_change_set1 - signal_change_set2
+    
+        #Start modifying
+        avg_evoked_set1_all.append(avg_evoked_set1)
+        avg_baseline_set1_all.append(avg_baseline_set1)
+        signal_change_set1_all.append(signal_change_set1)
+        
+        avg_evoked_set2_all.append(avg_evoked_set2)
+        avg_baseline_set2_all.append(avg_baseline_set2)
+        signal_change_set2_all.append(signal_change_set2)
 
-    results_dict = {'avg_evoked_each_freq':avg_evoked_each_freq, 'avg_baseline_each_freq':avg_baseline_each_freq,
-                 'signal_change_each_freq':signal_change_each_freq, 'n_freq':n_freq, 'possible_freq':possible_freq}
+        set1_indices_all.append(set1_indices)
+        set2_indices_all.append(set2_indices)
+        
+    # Convert lists to arrays and save them
+    avg_evoked_set1_all = np.array(avg_evoked_set1_all)
+    avg_baseline_set1_all = np.array(avg_baseline_set1_all)
+    signal_change_set1_all = np.array(signal_change_set1_all)
+    avg_evoked_set2_all = np.array(avg_evoked_set2_all)
+    avg_baseline_set2_all = np.array(avg_baseline_set2_all)
+    signal_change_set2_all = np.array(signal_change_set2_all)
+    set1_indices_all = np.array(set1_indices_all, dtype=object)
+    set2_indices_all = np.array(set2_indices_all, dtype=object)
+
+    print("Processing completed")
+
+    if save_data:
+        #Directory to save the results
+        save_dir = os.path.join(settings.WIDEFIELD_PROCESSED, mouse_name)
+        os.makedirs(save_dir, exist_ok=True)
+
+        output_file = os.path.join(save_dir , f'{mouse_name}_{date}_{session}_splitted.npz')
+
+        np.savez(output_file, avg_evoked_set1=avg_evoked_set1_all,avg_baseline_set1=avg_baseline_set1_all,
+            signal_change_set1=signal_change_set1_all, avg_evoked_set2=avg_evoked_set2_all,
+            avg_baseline_set2=avg_baseline_set2_all, signal_change_set2=signal_change_set2_all,
+            set1_indices=set1_indices_all, set2_indices=set2_indices_all, n_freq=n_freq, 
+            possible_freq=possible_freq, ts_frames=ts_frames, sound_onset=sound_onset 
+            )
+
+        print(f"{output_file} was saved.")
+
+    results_dict = {'n_freq':n_freq, 'possible_freq':possible_freq, 'ts_frames':ts_frames, 'sound_onset':sound_onset, 
+                    'avg_evoked_set1':avg_evoked_set1_all, 'avg_baseline_set1':avg_baseline_set1_all,
+                    'signal_change_set1':signal_change_set1_all, 'avg_evoked_set2':avg_evoked_set2_all,
+                    'avg_baseline_set2':avg_baseline_set2_all, 'signal_change_set2':signal_change_set2_all,
+                    'set1_indices':set1_indices_all, 'set2_indices':set2_indices_all
+                 }
+    
     return results_dict
 
 
