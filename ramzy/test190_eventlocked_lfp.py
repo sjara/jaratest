@@ -17,9 +17,11 @@ reload(loadneuropix)
 
 
 subject = 'poni004'
-PROCESSED_DATA_DIR = 'C:\\tmpdata'
-# PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH,'inpi003_lfp')
+# PROCESSED_DATA_DIR = 'C:\\tmpdata'
+PROCESSED_DATA_DIR = os.path.join(settings.EPHYS_NEUROPIX_PATH,f'{subject}_lfp')
 # PROCESSED_DATA_DIR = os.path.join('/Volumes/CrucialX10','Jaralab','data',f'{subject}_lfp')
+
+
 
 # -- Load raw data --
 #ephysSession = '2025-03-10_15-30-45'; behavSession = '20250310a' # Shank 1a, tones
@@ -62,11 +64,24 @@ PROCESSED_DATA_DIR = 'C:\\tmpdata'
 # ephysSession = '2025-06-30_14-59-47'; behavSession = '20250630c' # poniSpont
 # ephysSession = '2025-07-18_15-42-52'; behavSession = '20250718a' # poniSpont
 
-ephysSession = '2025-08-07_17-24-38'; behavSession = '20250807a' # tuningFreq shank 2 bank A
+# ephysSession = '2025-08-07_17-24-38'; behavSession = '20250807a' # tuningFreq shank 2 bank A
+# ephysSession = '2025-08-07_18-11-51'; behavSession = '20250807e' # shank 2 bank A parallel
+ephysSession = '2025-08-07_19-48-18'; behavSession = '20250807i' # 1-96 perp
+# ephysSession = '2025-08-07_19-57-16'; behavSession = '20250807j' # shank 4 bank A perp
+# ephysSession = '2025-08-07_19-36-04'; behavSession = '20250807h' # shank 4 bank A perp Freq
+# ephysSession = '2025-08-07_20-08-00'; behavSession = '20250807k' # 97-192 perp
+# ephysSession = '2025-08-07_20-17-40'; behavSession = '20250807l' # 193-288 perp
+# ephysSession = '2025-08-07_20-27-43'; behavSession = '20250807m' # 289-384 perp
 
+# ephysSession = '2025-08-07_17-53-33'; behavSession = '20250807c' # shank 3 bank A parallel Freq
+# ephysSession = '2025-08-07_18-21-12'; behavSession = '20250807f' # shank 3 bank A parallel AM
+
+# rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject, ephysSession)
+rawDataPath = os.path.join('/Volumes/CrucialX10','Jaralab','data',subject,ephysSession)
 
 dataStream = 'Neuropix-PXI-100.ProbeA'
-LASER_SESSSION = False
+FILTER = False
+LASER_SESSSION = True
 IMAGE_SESSION = False
 SPONT = False
 
@@ -85,8 +100,6 @@ currentStim = 'currentFreq'
 
 # -- Load raw data --
 print('Loading raw data...')
-rawDataPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject, ephysSession)
-# rawDataPath = os.path.join('/Volumes/CrucialX10','Jaralab','data',subject,ephysSession)
 contData = loadneuropix.Continuous(rawDataPath, dataStream)
 rawdata = contData.data
 sampleRate = contData.sampleRate
@@ -146,6 +159,10 @@ if IMAGE_SESSION and SPONT:
 else:    
     stimEachTrial = bdata[currentStim]
 
+for i in range(len(stimEachTrial)):
+    if bdata['currentIntensity'][i] < 0:
+        stimEachTrial[i] *= 0
+
 nTrials = len(stimEachTrial)
 possibleStim = np.unique(stimEachTrial)
 nStim = len(possibleStim)
@@ -167,7 +184,7 @@ if LASER_SESSSION:
     trialsEachCond = behavioranalysis.find_trials_each_combination(stimEachTrial, possibleStim,laserEachTrial,possibleLaser)
 
     # -- Align LFP to event onset --
-    timeRange = [-stimDur, 2*stimDur]
+    timeRange = [min(-0.2,-stimDur), max(0.6,stimDur*2)]
     #timeRange = [-2, 2]
     sampleRange = [int(timeRange[0]*sampleRate), int(timeRange[1]*sampleRate)]
     timeVec = np.arange(sampleRange[0], sampleRange[1])/sampleRate
@@ -178,6 +195,11 @@ if LASER_SESSSION:
     print('Calculating eventlockedLFP...')
     for indt, evSample in enumerate(eventOnsetTimes):
         eventlockedLFP[indt, :, :] = rawdata[evSample+sampleRange[0]:evSample+sampleRange[1], :]
+
+    if FILTER:
+        highcut = 300
+        bCoeff, aCoeff = signal.iirfilter(4, Wn=highcut, fs=sampleRate, btype="low", ftype="butter")
+        eventlockedLFP = signal.filtfilt(bCoeff, aCoeff, eventlockedLFP, axis=0)
 
     # -- Calculate average LFP for each stimulus condition --
     print('Calculating average LFP for each stimulus...')
@@ -193,7 +215,7 @@ if LASER_SESSSION:
     # -- Save the average LFP --
     if 1:
         scriptFullPath = os.path.realpath(__file__)
-        outputFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}-laser_avgLFP.npz')
+        outputFile = os.path.join(PROCESSED_DATA_DIR, f'{subject}_{behavSession}_avgLFP.npz')
         print(f'Saving avgLFP to {outputFile}')
         np.savez(outputFile, avgLFP=avgLFP, timeVec=timeVec, sampleRate=sampleRate,
                  nChannels=nChannels,labelsAvgLFP=labelsAvgLFP,
@@ -247,7 +269,7 @@ elif IMAGE_SESSION and not SPONT:
                                                                    tileEachTrial,possibleTile)
 
     # -- Align LFP to event onset --
-    timeRange = [-stimDur, 2*stimDur]
+    timeRange = [min(-0.2,-stimDur), max(0.6,stimDur*2)]
     #timeRange = [-2, 2]
     sampleRange = [int(timeRange[0]*sampleRate), int(timeRange[1]*sampleRate)]
     timeVec = np.arange(sampleRange[0], sampleRange[1])/sampleRate
@@ -318,7 +340,7 @@ else:
     trialsEachCond = behavioranalysis.find_trials_each_type(stimEachTrial, possibleStim)
 
     # -- Align LFP to event onset --
-    timeRange = [-stimDur, 2*stimDur]
+    timeRange = [min(-0.2,-stimDur), max(0.6,stimDur*2)]
     #timeRange = [-2, 2]
     sampleRange = [int(timeRange[0]*sampleRate), int(timeRange[1]*sampleRate)]
     timeVec = np.arange(sampleRange[0], sampleRange[1])/sampleRate
