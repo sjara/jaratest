@@ -86,13 +86,23 @@ for pdepth in probeDepths:
                         probe=probe,
                         results_dir=multisessionProcessedDir)
 
-        subprocess.run(['wsl','rsync','-av',
-                    multisessionProcessedDirBash + '/{cluster_Amplitude.tsv,cluster_ContamPct.tsv,cluster_group.tsv,cluster_KSlabel.tsv,spike_clusters.npy}',
-                    multisessionProcessedDirBash + '_prephy/'])
+        if 'win' in sys.platform:
+            subprocess.run(['wsl','rsync','-av',
+                        multisessionProcessedDirBash + '/{cluster_Amplitude.tsv,cluster_ContamPct.tsv,cluster_group.tsv,cluster_KSlabel.tsv,spike_clusters.npy}',
+                        multisessionProcessedDirBash + '_prephy/'])
 
-        subprocess.run(['wsl','rsync','-av',
-                        multisessionProcessedDirBash + '*',
-                        remote_dir])
+            subprocess.run(['wsl','rsync','-av',
+                            multisessionProcessedDirBash + '*',
+                            remote_dir])
+            
+        else:
+            subprocess.run(['rsync','-av',
+                        multisessionProcessedDir + '/{cluster_Amplitude.tsv,cluster_ContamPct.tsv,cluster_group.tsv,cluster_KSlabel.tsv,spike_clusters.npy}',
+                        multisessionProcessedDir + '_prephy/'])
+
+            subprocess.run(['rsync','-av',
+                            multisessionProcessedDir + '*',
+                            remote_dir])
 
     else:
         print(
