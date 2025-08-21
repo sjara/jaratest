@@ -18,6 +18,7 @@ the size of the concatenated file.
 from pathlib import Path
 import subprocess
 from kilosort import run_kilosort
+import jaratoolbox
 from jaratoolbox import settings,loadneuropix
 import os
 import sys
@@ -29,16 +30,17 @@ subject = sys.argv[1]
 dateStr = sys.argv[2]
 probeDepths = [int(i) for i in sys.argv[3].split(',')]
 debug = True if (len(sys.argv)==5 and sys.argv[4]=='debug') else False
+
+
 sessionsRootPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject)
 remote_dir = f'jarauser@jarastore:/data/neuropixels/{subject}/'
+jaraScriptDir = os.path.join(jaratoolbox.__file__,'..','jaratoolbox','scripts')
 
 # -- Load inforec file --
 inforecFile = os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py')
 spec = importlib.util.spec_from_file_location('inforec_module', inforecFile)
 inforec = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(inforec)
-
-
 
 for pdepth in probeDepths:
     multisessionRawDir = os.path.join(sessionsRootPath , f'multisession_{dateStr}_{pdepth}um_raw')
@@ -49,7 +51,7 @@ for pdepth in probeDepths:
     # -- Find sessions to concatenate --
     siteToProcess = None
     for experiment in inforec.experiments:
-        if experiment.date==dateStr:
+        if experiment.date in dateStr:
             for site in experiment.sites:
                 if site.pdepth==pdepth:
                     probeStr = experiment.probe
@@ -60,7 +62,9 @@ for pdepth in probeDepths:
     sessions = siteToProcess.session_ephys_dirs()
 
     if not os.path.exists(multisessionRawDir):
-        subprocess.run([sys.executable,'neuropix_join_multisession.py',subject, dateStr,str(pdepth)])
+        subprocess.run([sys.executable,
+                        os.path.join(jaraScriptDir,'neuropix_join_multiday.py'),
+                        subject, dateStr, str(pdepth)])
 
 
     # -- Get probe map --
