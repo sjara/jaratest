@@ -14,8 +14,6 @@ time it will take to run! Assume each probe depth will add 1~2 hours of runtime 
 the size of the concatenated file.
 '''
 
-
-from pathlib import Path
 import subprocess
 from kilosort import run_kilosort
 import jaratoolbox
