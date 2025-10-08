@@ -24,12 +24,12 @@ reload(loadneuropix)
 SAVE_FIGS = 1
 outputDir = '/data/reports/arch013'
 
-SESSIONID = 0
+SESSIONID = 1
 if SESSIONID == 0:
     subject = 'arch013'
     sessionDate = '2024-10-23'
     probeDepth = 3780
-if SESSIONID == 0:
+if SESSIONID == 1:
     subject = 'arch013'
     sessionDate = '2024-10-23'
     probeDepth = 4500
@@ -50,7 +50,7 @@ celldbSubset = celldb[(celldb.date==sessionDate) & (celldb.pdepth==probeDepth)]
 
 ensemble = ephyscore.CellEnsemble(celldbSubset)
 
-CASE = 1
+CASE = 0
 caseStr = ['AM', 'NatCateg']
 if CASE==0:
     ephysData, bdata = ensemble.load('optoTuningAM')
@@ -67,9 +67,11 @@ elif CASE==2:
     timeRange = [-0.5, 1]  # In seconds
 sessionLabel = caseStr[CASE]
 
-#nTrials = len(bdata['timeTrialStart'])
 nTrials = len(currentStim)
-eventOnsetTimes = ephysData['events']['stimOn'][:nTrials] # Ignore trials not in bdata 
+eventOnsetTimes = ephysData['events']['stimOn']
+# If we have one more (incomplete) trial in the behavior file, remove it.
+if len(currentStim) == len(eventOnsetTimes)-1:
+        eventOnsetTimes = eventOnsetTimes[:nTrials]
 
 spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = \
     ensemble.eventlocked_spiketimes(eventOnsetTimes, timeRange)
@@ -107,6 +109,7 @@ for indpage in range(nPages):
                  fontweight='bold')
     plt.tight_layout()
     plt.show()
+    #plt.pause(0.5)
     #plt.waitforbuttonpress()
 
     if SAVE_FIGS:
