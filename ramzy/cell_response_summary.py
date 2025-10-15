@@ -37,7 +37,8 @@ def get_args():
     parser.add_argument("-n","--studyName", help="(Optional) name of study",
                         required=False,default='')
     parser.add_argument("-c","--cellsToPlot", help='(Optional) list of cells to plot (e.g., \
-                        "-c 12,52,19,29"). Defaults to plotting all cells',
+                        "-c 12,52,19,29"). Defaults to plotting all cells in separate folders/grids for\
+                        each paradigm. Use "-c all" to have up to three paradigms shown within the same grid.',
                         required=False,default='')
     return parser.parse_args()
 
