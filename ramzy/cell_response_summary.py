@@ -10,6 +10,7 @@ import time
 import re
 from jaratoolbox import settings, celldatabase, loadneuropix, \
     ephyscore, extraplots, spikesanalysis, behavioranalysis
+from ramzy_utils import subplot_panel_label
 
 NROW = 3
 NCOL = 4
@@ -214,6 +215,11 @@ if not os.path.exists(siteFolder):
 ### Determine figure/page parameters
 if cellsToPlot and len(paradigms) > 1:
     dims = (6*NCOL,6*NROW)
+    if len(cellInds)==2:
+        NROW = 2
+        NCOL = len(paradigms)
+        dims = (6*NCOL,4*NROW)
+
     cellsPerPage = NROW*NCOL//len(paradigms)
     numcells = len(cellInds)
     numpages = int(np.ceil(numcells/cellsPerPage))
@@ -235,8 +241,9 @@ elif "poni" in str(paradigms) or 'AMtone' in str(paradigms):
     numdigits = len(str(numpages))
 
 else:
-    cellsPerPage = NROW*NCOL
     dims = (6*NCOL,4*NROW)
+
+    cellsPerPage = NROW*NCOL
     numcells = len(cellInds)
     numpages = int(np.ceil(numcells/cellsPerPage))
     numdigits = len(str(numpages))
@@ -263,22 +270,51 @@ for paradigm,stim in zip(paradigms,stims):
 
     stimDur[paradigm] = ephysData['events']['stimOff'][0] - ephysData['events']['stimOn'][0]
 
-    rasterTimeRange[paradigm] = (min(-0.2,-1*stimDur[paradigm]),
-                    max(0.6,stimDur[paradigm]+max(0.2,1*stimDur[paradigm])))  # In seconds
+    rasterTimeRange[paradigm] = (min(-0.5,-stimDur[paradigm]),
+                    max(0.6,2*stimDur[paradigm]))  # In seconds
     
     spikeTimesFromEventOnsetAll[paradigm], trialIndexForEachSpikeAll[paradigm], indexLimitsEachTrialAll[paradigm] = \
         ensemble.eventlocked_spiketimes(eventOnsetTimes, rasterTimeRange[paradigm])
     
+
     currentStim = bdata[stim]
 
-    if subject=='poni004':
+    if subject=='poni004' and 'optoAM' in paradigm:
+        currentStim = np.array([str(i) for i in currentStim],dtype='U18')
         for i in range(len(currentStim)):
-            if bdata['currentIntensity'][i] < 0:
-                currentStim[i] *= -1
-        
-    possibleStim[paradigm] = np.unique(currentStim)
+            if (bdata['currentIntensity'][i] < 0) or (not bdata['soundTrial'][i]):
+                currentStim[i] = 'No Sound'
 
-    if 'opto' in paradigm:
+        cellInds = np.array(sorted(cellInds, 
+                                   key=lambda x: pmap.ypos[celldbSubset.iloc[x].bestChannel]//10))
+    
+
+        possibleStim[paradigm] = np.unique(currentStim)[::-1]
+
+    else:
+        possibleStim[paradigm] = np.unique(currentStim)
+
+    if 'AMtone' in paradigm:
+        currentMods[paradigm]=bdata['currentMod']
+        if 'opto' in paradigm:
+            newMods = []
+            for indt,mod in enumerate(currentMods[paradigm]):
+                if bdata['laserTrial'][indt]:
+                    newMods.append(f'{mod}Hz Laser ON')
+                else:
+                    newMods.append(f'{mod}Hz Laser OFF')
+
+            currentMods[paradigm] = np.array(newMods)
+        
+        elif 'poni' in paradigm:
+            images = [f'C{i+1}' if i >=0 else 'off' for i in bdata['currentStimCol']]
+            currentMods[paradigm] = np.array([f'{mod}Hz {image}' for mod,image in zip(currentMods[paradigm],images)])
+
+        possibleMods[paradigm] = np.unique(currentMods[paradigm])
+        trialsEachCond[paradigm] = \
+            behavioranalysis.find_trials_each_combination(currentStim,possibleStim[paradigm],
+                                                        currentMods[paradigm],possibleMods[paradigm])
+    elif 'opto' in paradigm:
         currentLaser = bdata['laserTrial']
         possibleLaser = np.unique(currentLaser)
         trialsEachCond[paradigm] = \
@@ -298,14 +334,6 @@ for paradigm,stim in zip(paradigms,stims):
             possibleStim[paradigm] = np.unique(currentStim)
             trialsEachCond[paradigm] = \
                 behavioranalysis.find_trials_each_type(currentStim, possibleStim[paradigm])
-            
-    elif 'AMtone' in paradigm:
-        currentMods[paradigm]=bdata['currentMod']
-        possibleMods[paradigm] = np.unique(currentMods[paradigm])
-        trialsEachCond[paradigm] = \
-            behavioranalysis.find_trials_each_combination(currentStim,possibleStim[paradigm],
-                                                        currentMods[paradigm],possibleMods[paradigm])
-
     else:   
         trialsEachCond[paradigm] = \
             behavioranalysis.find_trials_each_type(currentStim, possibleStim[paradigm])
@@ -334,8 +362,9 @@ if cellsToPlot:
     # draw raster plots
     for page in range(numpages):
         fig = plt.figure(1,figsize=dims)
-        pageCells = cellsToPlot.split(',')[page*cellsPerPage:(page+1)*cellsPerPage]
-        cellString = pageCells[0]
+        pageCells = str(cellInds[page*cellsPerPage:(page+1)*cellsPerPage])[1:-1].replace('  ',' ').replace(',','').strip().split(' ')
+
+        cellString = pageCells[0] 
         for cell in pageCells[1:]:
             cellString += '-'+cell
         filename = f"{subject}_{sessionDate}_{probeDepth}_{args.tkParadigms.replace(',','-')}_cells_{cellString}.png"
@@ -352,6 +381,7 @@ if cellsToPlot:
                 for row,paradigm in enumerate(paradigms):
                     nTrials = trialsEachCond[paradigm].shape[0]
                     plt.subplot(NROW, NCOL, count*2+row+1)
+                    
                     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], 
                                                                    indexLimitsEachTrialAll[paradigm][indcell],
                                                                    rasterTimeRange[paradigm], trialsEachCond[paradigm], 
@@ -360,10 +390,40 @@ if cellsToPlot:
                     plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
                     plt.xlabel('Time (s)')
                     plt.ylabel(ylabs[paradigm])
-                    if 'opto' in paradigm:
+                    if 'AMtone' in paradigm:
+                        cumsum = 0
+                        hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                        yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                        for i in range(len(hlines)):
+                            currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
+                            cumsum += currsum
+                            hlines[i] = cumsum
+                            yticklocs[i] = cumsum - currsum//2
+
+                        for line in hlines:
+                            plt.axhline(line,color='r',zorder=-10)
+
+                        if 'opto' in paradigm:
+                            ylabsThisCell = possibleMods[paradigm]
+
+                        else:
+                            ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
+
+                        # plt.yticks(yticklocs, ylabsThisCell, minor=True)
+                        ax = plt.gca()
+
+                        # ax = plt.gca()
+                        # axleft = ax.twinx()
+                        # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
+                        # axleft.set_yticks([])
+                        ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
+                        ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    elif 'opto' in paradigm:
                         midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
-                        plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
+                        plt.yticks([0.5*midline,
+                                    midline+0.5*sum(np.nonzero(trialsEachCond[paradigm])[2])],
+                                    ['laser OFF', 'laser ON'],minor=True)
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                     elif 'poni' in paradigm:
@@ -378,50 +438,85 @@ if cellsToPlot:
                         plt.yticks(0.5*hlines, possibleTiles[paradigm], minor=True)
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
-                    elif 'AMtone' in paradigm:
-                        cumsum = 0
-                        hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
-                        yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
-                        for i in range(len(hlines)):
-                            currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
-                            cumsum += currsum
-                            hlines[i] = cumsum
-                            yticklocs[i] = cumsum - currsum//2
+                    # elif 'AMtone' in paradigm:
+                    #     cumsum = 0
+                    #     hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                    #     yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                    #     for i in range(len(hlines)):
+                    #         currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
+                    #         cumsum += currsum
+                    #         hlines[i] = cumsum
+                    #         yticklocs[i] = cumsum - currsum//2
 
-                        for line in hlines:
-                            plt.axhline(line,color='r',zorder=-10)
+                    #     for line in hlines:
+                    #         plt.axhline(line,color='r',zorder=-10)
 
-                        ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
+                    #     ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
 
-                        # plt.yticks(yticklocs, ylabsThisCell, minor=True)
-                        ax = plt.gca()
+                    #     # plt.yticks(yticklocs, ylabsThisCell, minor=True)
+                    #     ax = plt.gca()
 
-                        # ax = plt.gca()
-                        # axleft = ax.twinx()
-                        # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
-                        # axleft.set_yticks([])
-                        ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
-                        ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    #     # ax = plt.gca()
+                    #     # axleft = ax.twinx()
+                    #     # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
+                    #     # axleft.set_yticks([])
+                    #     ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
+                    #     ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
 
                     curr_loc = celldbSubset.iloc[indcell]
                     curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
                     curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
-                    plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
+                    plt.title(f"Good Cell #{curr_loc.name - firstCell} {paradigm}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
 
             elif len(paradigms)==3:
                 for row,paradigm in enumerate(paradigms):
-
-                    plt.subplot(NROW, NCOL, count+row*4+1)
+                    if len(cellInds)==2:
+                        NROW = 2
+                        NCOL = 3
+                        plt.subplot(NROW, NCOL, count*3+row+1)
+                        subplot_panel_label(plt.gca(),f'{chr(65+row)}$_{count+1}$',hpad=0.1)
+                    else:
+                        plt.subplot(NROW, NCOL, count+row*4+1)
                     pRaster, hcond, zline = extraplots.raster_plot(spikeTimesFromEventOnsetAll[paradigm][indcell], indexLimitsEachTrialAll[paradigm][indcell],
                                                             rasterTimeRange[paradigm], trialsEachCond[paradigm], labels=possibleYticks[paradigm])
                     plt.setp(pRaster, ms=2)
                     plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
                     plt.xlabel('Time (s)')
                     plt.ylabel(ylabs[paradigm])
-                    if 'opto' in paradigm:
+                    if 'AMtone' in paradigm:
+                        cumsum = 0
+                        hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                        yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                        for i in range(len(hlines)):
+                            currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
+                            cumsum += currsum
+                            hlines[i] = cumsum
+                            yticklocs[i] = cumsum - currsum//2
+
+                        for line in hlines:
+                            plt.axhline(line,color='r',zorder=-10)
+
+                        if 'opto' in paradigm:
+                            ylabsThisCell = possibleMods[paradigm]
+
+                        else:
+                            ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
+
+                        # plt.yticks(yticklocs, ylabsThisCell, minor=True)
+                        ax = plt.gca()
+
+                        # ax = plt.gca()
+                        # axleft = ax.twinx()
+                        # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
+                        # axleft.set_yticks([])
+                        ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
+                        ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    elif 'opto' in paradigm:
                         midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
-                        plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
+                        plt.yticks([0.5*midline,
+                                    midline+0.5*sum(np.nonzero(trialsEachCond[paradigm])[2])],
+                                    ['laser OFF', 'laser ON'],minor=True)
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                     elif 'poni' in paradigm:
@@ -436,35 +531,34 @@ if cellsToPlot:
                         plt.yticks(0.5*hlines, possibleTiles[paradigm], minor=True)
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
-                    elif 'AMtone' in paradigm:
-                        cumsum = 0
-                        hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
-                        yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
-                        for i in range(len(hlines)):
-                            currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
-                            cumsum += currsum
-                            hlines[i] = cumsum
-                            yticklocs[i] = cumsum - currsum//2
+                    # elif 'AMtone' in paradigm:
+                    #     cumsum = 0
+                    #     hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                    #     yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                    #     for i in range(len(hlines)):
+                    #         currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
+                    #         cumsum += currsum
+                    #         hlines[i] = cumsum
+                    #         yticklocs[i] = cumsum - currsum//2
 
-                        for line in hlines:
-                            plt.axhline(line,color='r',zorder=-10)
+                    #     for line in hlines:
+                    #         plt.axhline(line,color='r',zorder=-10)
 
-                        ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
+                    #     ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
 
-                        # plt.yticks(yticklocs, ylabsThisCell, minor=True)
-                        ax = plt.gca()
+                    #     # plt.yticks(yticklocs, ylabsThisCell, minor=True)
+                    #     ax = plt.gca()
 
-                        # ax = plt.gca()
-                        # axleft = ax.twinx()
-                        # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
-                        # axleft.set_yticks([])
-                        ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
-                        ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    #     # ax = plt.gca()
+                    #     # axleft = ax.twinx()
+                    #     # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
+                    #     # axleft.set_yticks([])
+                    #     ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
+                    #     ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                     curr_loc = celldbSubset.iloc[indcell]
                     curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
                     curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
-                    if row==0:
-                        plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
+                    plt.title(f"Good Cell #{curr_loc.name - firstCell} {paradigm}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
 
             elif len(paradigms)==1:
                 for row,paradigm in enumerate(paradigms):
@@ -475,10 +569,40 @@ if cellsToPlot:
                     plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
                     plt.xlabel('Time (s)')
                     plt.ylabel(ylabs[paradigm])
-                    if 'opto' in paradigm:
+                    if 'AMtone' in paradigm:
+                        cumsum = 0
+                        hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                        yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                        for i in range(len(hlines)):
+                            currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
+                            cumsum += currsum
+                            hlines[i] = cumsum
+                            yticklocs[i] = cumsum - currsum//2
+
+                        for line in hlines:
+                            plt.axhline(line,color='r',zorder=-10)
+
+                        if 'opto' in paradigm:
+                            ylabsThisCell = possibleMods[paradigm]
+
+                        else:
+                            ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
+
+                        # plt.yticks(yticklocs, ylabsThisCell, minor=True)
+                        ax = plt.gca()
+
+                        # ax = plt.gca()
+                        # axleft = ax.twinx()
+                        # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
+                        # axleft.set_yticks([])
+                        ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
+                        ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    elif 'opto' in paradigm:
                         midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
-                        plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
+                        plt.yticks([0.5*midline,
+                                    midline+0.5*sum(np.nonzero(trialsEachCond[paradigm])[2])],
+                                    ['laser OFF', 'laser ON'],minor=True)
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                     elif 'poni' in paradigm:
@@ -494,30 +618,30 @@ if cellsToPlot:
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
 
-                    elif 'AMtone' in paradigm:
-                        cumsum = 0
-                        hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
-                        yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
-                        for i in range(len(hlines)):
-                            currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
-                            cumsum += currsum
-                            hlines[i] = cumsum
-                            yticklocs[i] = cumsum - currsum//2
+                    # elif 'AMtone' in paradigm:
+                    #     cumsum = 0
+                    #     hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                    #     yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                    #     for i in range(len(hlines)):
+                    #         currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
+                    #         cumsum += currsum
+                    #         hlines[i] = cumsum
+                    #         yticklocs[i] = cumsum - currsum//2
 
-                        for line in hlines:
-                            plt.axhline(line,color='r',zorder=-10)
+                    #     for line in hlines:
+                    #         plt.axhline(line,color='r',zorder=-10)
 
-                        ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
+                    #     ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
 
-                        # plt.yticks(yticklocs, ylabsThisCell, minor=True)
-                        ax = plt.gca()
+                    #     # plt.yticks(yticklocs, ylabsThisCell, minor=True)
+                    #     ax = plt.gca()
 
-                        # ax = plt.gca()
-                        # axleft = ax.twinx()
-                        # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
-                        # axleft.set_yticks([])
-                        ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
-                        ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    #     # ax = plt.gca()
+                    #     # axleft = ax.twinx()
+                    #     # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
+                    #     # axleft.set_yticks([])
+                    #     ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
+                    #     ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                         
                     curr_loc = celldbSubset.iloc[indcell]
                     curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
@@ -557,16 +681,52 @@ else:
                                                                 indexLimitsEachTrialAll[paradigm][indcell],
                                                                 rasterTimeRange[paradigm], trialsEachCond[paradigm],
                                                                 labels=possibleYticks[paradigm])
+                
+                wstat,pVal,maxw = spikesanalysis.response_score(spikeTimesFromEventOnsetAll[paradigm][indcell],
+                                                                    indexLimitsEachTrialAll[paradigm][indcell],
+                                                                    [rasterTimeRange[paradigm][0],0],[0,stimDur[paradigm]])
                 plt.setp(pRaster, ms=2)
                 plt.axvline(stimDur[paradigm], color='0.75', zorder=-10)
                 plt.xlabel('Time (s)')
                 plt.ylabel(ylabs[paradigm])
-                if 'opto' in paradigm:
+                if 'AMtone' in paradigm:
+                    cumsum = 0
+                    hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                    yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
+                    for i in range(len(hlines)):
+                        currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
+                        cumsum += currsum
+                        hlines[i] = cumsum
+                        yticklocs[i] = cumsum - currsum//2
+
+                    for line in hlines:
+                        plt.axhline(line,color='r',zorder=-10)
+
+                    if 'opto' in paradigm or 'poni' in paradigm:
+                        ylabsThisCell = possibleMods[paradigm]
+
+                    else:
+                        ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
+
+                    # plt.yticks(yticklocs, ylabsThisCell, minor=True)
+                    ax = plt.gca()
+
+                    # ax = plt.gca()
+                    # axleft = ax.twinx()
+                    # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
+                    # axleft.set_yticks([])
+                    ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
+                    ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                
+                elif 'opto' in paradigm:
                     midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                     plt.axhline(midline, color='r', zorder=-10)
-                    plt.yticks([0.5*midline,1.5*midline],['laser OFF', 'laser ON'],minor=True)
+                    plt.yticks([0.5*midline,
+                                    midline+0.5*sum(np.nonzero(trialsEachCond[paradigm])[2])],
+                                    ['laser OFF', 'laser ON'],minor=True)
                     ax = plt.gca()
                     ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                
                 elif 'poni' in paradigm:
                     cumsum = 0
                     hlines=np.zeros(len(possibleTiles[paradigm]),dtype=int)
@@ -587,37 +747,12 @@ else:
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
 
-                elif 'AMtone' in paradigm:
-                    cumsum = 0
-                    hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
-                    yticklocs=np.zeros(len(possibleMods[paradigm]),dtype=int)
-                    for i in range(len(hlines)):
-                        currsum = sum((currentMods[paradigm] == possibleMods[paradigm][i]))
-                        cumsum += currsum
-                        hlines[i] = cumsum
-                        yticklocs[i] = cumsum - currsum//2
-
-                    for line in hlines:
-                        plt.axhline(line,color='r',zorder=-10)
-                    
-                    ylabsThisCell = [f'{int(i)} Hz' for i in possibleMods[paradigm]]
-
-                    # plt.yticks(yticklocs, ylabsThisCell, minor=True)
-                    ax = plt.gca()
-
-                    # ax = plt.gca()
-                    # axleft = ax.twinx()
-                    # axleft.set_ylabel('AM Rate (Hz)\n\n',rotation=270)
-                    # axleft.set_yticks([])
-                    ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
-                    ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
-                    
-
-                
+    
                 curr_loc = celldbSubset.iloc[indcell]
                 curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
                 curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]
-                plt.title(f"Good Cell #{curr_loc.name - firstCell}\n (KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
+                plt.title(f"Good Cell #{curr_loc.name - firstCell}\n"
+                          + f"(KS Unit #{curr_loc.cluster}, best channel: {curr_loc.bestChannel} (Shank #{curr_shank}, {curr_depth} {r'$\mu$'}m))")
 
             plt.suptitle(figname)
             plt.tight_layout()
@@ -625,3 +760,17 @@ else:
             # save and close current page/fig
             plt.savefig(os.path.join(outFolder,filename))
             plt.close(1)
+
+# nCells = len(celldbSubset)
+# responsiveCells = {'total': np.zeros(nCells,dtype=bool)}
+# for paradigm in paradigms:
+#     responsiveCells[paradigm] = np.zeros(nCells,dtype=bool)
+#     for indcell in range(nCells):
+#         wstat,pVal,maxw = spikesanalysis.response_score(spikeTimesFromEventOnsetAll[paradigm][indcell],indexLimitsEachTrialAll[paradigm][indcell],[rasterTimeRange[paradigm][0],0],[0,stimDur[paradigm]])
+#         responsiveCells[paradigm][indcell] = (pVal < 0.05)
+#         responsiveCells['total'][indcell] |= (pVal < 0.05)
+#     print(f"Number of Responsive Cells for {paradigm}: \t{int(sum(responsiveCells[paradigm]))}/{nCells}")
+#     print(np.nonzero(responsiveCells[paradigm]))
+
+# print(f"Total Number of Responsive Cells: \t{int(sum(responsiveCells['total']))}/{nCells}")
+# print(np.nonzero(responsiveCells['total']))
