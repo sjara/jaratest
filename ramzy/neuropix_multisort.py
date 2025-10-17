@@ -65,6 +65,9 @@ for dateStr in dateStrs:
                             os.path.join('neuropix_join_multisession.py'),
                             subject, dateStr, str(pdepth), debug])
 
+            if debug:
+                print(f'''To proceed with debugging, please use create concatenated files for the sessions on {dateStr} at {pdepth}um (see neuropix_join_multisession.py).''')
+            continue
 
         subprocess.run([sys.executable,
                         os.path.join('neuropix_kilosort.py'),
