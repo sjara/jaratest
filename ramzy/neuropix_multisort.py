@@ -1,9 +1,10 @@
 '''
-This script is makes it easier to concatenate and kilosort data recorded from
-multiple different sites in a single day. It requires three arguments and can be run as
-follows: "python neuropix_sort_multidepth.py <subject> <dateStr> <probeDepths>" where
-<probeDepths> is a comma delimited list of probe depths that you would like to sort. Basically,
-it can be run in the same way
+This is a wrapper script for neuropix_kilosort.py that makes it easier to concatenate
+and kilosort data recorded from multiple different sites on a single mouse. It requires
+three arguments, and can be run as follows:
+"python neuropix_sort_multidepth.py <subject> <dateStrs> <probeDepths>",
+where <dateStrs> and <probeDepths> are comma delimited lists of the session dates and
+probe depths that you would like to sort. 
 
 Example:
     python neuropix_multisort.py poni005 2025-08-15,2025-08-16 1570,2290,3014,3013
@@ -32,7 +33,6 @@ debug = 'debug' if (len(sys.argv)==5 and sys.argv[4]=='debug') else ''
 
 sessionsRootPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject)
 remote_dir = f'jarauser@jarastore:/data/neuropixels/{subject}/'
-jaraScriptDir = os.path.join(os.path.dirname(jaratoolbox.__file__),'scripts')
 
 # -- Load inforec file --
 inforecFile = os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py')
@@ -62,12 +62,12 @@ for dateStr in dateStrs:
 
         if not os.path.exists(multisessionRawDir):
             subprocess.run([sys.executable,
-                            os.path.join(jaraScriptDir,'neuropix_join_multisession.py'),
+                            os.path.join('neuropix_join_multisession.py'),
                             subject, dateStr, str(pdepth), debug])
 
 
         subprocess.run([sys.executable,
-                        os.path.join(jaraScriptDir ,'neuropix_kilosort.py'),
+                        os.path.join('neuropix_kilosort.py'),
                         subject, dateStr, str(pdepth), debug])
 
         if not debug:
@@ -79,7 +79,7 @@ for dateStr in dateStrs:
                 subprocess.run(['wsl','rsync','-av',
                                 multisessionProcessedDirBash + '*',
                                 remote_dir])
-                
+
             else:
                 subprocess.run(['rsync','-av',
                             multisessionProcessedDir + '/{cluster_Amplitude.tsv,cluster_ContamPct.tsv,cluster_group.tsv,cluster_KSlabel.tsv,spike_clusters.npy}',
@@ -97,5 +97,3 @@ for dateStr in dateStrs:
             subprocess.run(['wsl','rsync','-av', '--dry-run',
                             multisessionProcessedDirBash + '*',
                             remote_dir])
-
-
