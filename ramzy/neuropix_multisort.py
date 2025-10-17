@@ -15,7 +15,6 @@ the size of the concatenated file.
 '''
 
 import subprocess
-from kilosort import run_kilosort
 import jaratoolbox
 from jaratoolbox import settings,loadneuropix
 import os
@@ -61,12 +60,12 @@ for dateStr in dateStrs:
 
         if not os.path.exists(multisessionRawDir):
             subprocess.run([sys.executable,
-                            os.path.join(jaraScriptDir,'neuropix_join_multisession.py'),
+                            os.path.join('neuropix_join_multisession.py'),
                             subject, dateStr, str(pdepth), debug])
 
 
         subprocess.run([sys.executable,
-                        os.path.join(jaraScriptDir ,'neuropix_kilosort.py'),
+                        os.path.join('neuropix_kilosort.py'),
                         subject, dateStr, str(pdepth), debug])
 
         if not debug:
