@@ -32,7 +32,7 @@ debug = 'debug' if (len(sys.argv)==5 and sys.argv[4]=='debug') else ''
 
 sessionsRootPath = os.path.join(settings.EPHYS_NEUROPIX_PATH, subject)
 remote_dir = f'jarauser@jarastore:/data/neuropixels/{subject}/'
-jaraScriptDir = os.path.join(os.path.dirname(jaratoolbox.__file__),'jaratoolbox','scripts')
+jaraScriptDir = os.path.join(os.path.dirname(jaratoolbox.__file__),'scripts')
 
 # -- Load inforec file --
 inforecFile = os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py')
