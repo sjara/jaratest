@@ -66,7 +66,7 @@ for dateStr in dateStrs:
                             subject, dateStr, str(pdepth), debug])
 
             if debug:
-                print(f'''To proceed with debugging, please use create concatenated files for the sessions on {dateStr} at {pdepth}um (see neuropix_join_multisession.py).''')
+                print(f'''To proceed with debugging, please create concatenated files for the sessions on {dateStr} at {pdepth}um (see neuropix_join_multisession.py).''')
             continue
 
         subprocess.run([sys.executable,
