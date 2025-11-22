@@ -33,9 +33,9 @@ reload(studyparams)
 reload(spikesanalysis)
 reload(ephyscore)
 
+
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
-# sessionTypes=['poniFreq_4x4_C2R3_2x2','poniFreq_4x1'] 
 sessionTypes=None
 DEBUG = 0
 PLOT = 0
@@ -45,13 +45,6 @@ subject = sys.argv[1]
 # subject = 'poni001'
 # sessionDate = sys.argv[2]
 # probeDepth = int(sys.argv[3])
-# -- Check if trialSubset should be changed. Options: 'laseroff', or 'laseron' --
-if len(sys.argv)==5:
-    trialSubset = sys.argv[4]
-else:
-    trialSubset = ''
-# if trialSubset not in ['', 'laseroff', 'laseron']:
-#     raise ValueError("trialSubset must be '', 'laseroff', or 'laseron'")
 
 timeRange = studyparams.TIME_RANGES_AM
 
@@ -64,19 +57,20 @@ timeRangeDuration = {k:np.diff(timeRange[k])[0] for k in timeRange.keys()}
 
 dbPath = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME)
 dbFilename = os.path.join(dbPath, f'celldb_{subject}.h5')
+
+if not os.path.exists(dbFilename):
+    celldb = celldatabase.generate_cell_database(os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py'))
+    
+    if not os.path.exists(dbPath):
+        os.mkdir(dbPath)
+        
+    celldatabase.save_hdf(celldb, dbFilename)
+
 celldb = celldatabase.load_hdf(dbFilename)
 
 if not sessionTypes:
     sessionTypes = [i for i in np.unique(np.concat(celldb.sessionType)) if 'AMtone' in i]
 
-if trialSubset == '':
-    outputFilename = os.path.join(dbPath, f'celldb_{subject}_AMtonetuning.h5')
-else:
-    outputFilename = os.path.join(dbPath, f'celldb_{subject}_AMtonetuning_{trialSubset}.h5')
-
-# # -- Load laseroff data --
-# if trialSubset in ['laseroff','laseron']:
-#     laserData = studyutils.load_laser_data()
     
 # -- Initialize the dictionaries for new data (with keys like: doiBaselineFiringRate) --
 measurements = ['ToneBaselineFiringRate', 'ToneNtrials', 'ToneFiringRateEachFreq',
