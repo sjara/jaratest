@@ -76,6 +76,8 @@ dbFilename = os.path.join(dbPath, f'celldb_{subject}.h5')
 
 if not os.path.exists(dbFilename):
     celldb = celldatabase.generate_cell_database(os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py'))
+    if not os.path.exists(dbPath):
+        os.mkdir(dbPath)
     celldatabase.save_hdf(celldb,dbFilename)
 else:
     celldb = celldatabase.load_hdf(dbFilename)
