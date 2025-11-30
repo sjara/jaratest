@@ -60,15 +60,17 @@ def find_tone_responsive_cells(celldb, eventKey='Evoked',frThreshold=10, allreag
     # Apply bonferroni correction
     alpha = 0.05/N_FREQ
     modRates = studyparams.SESSION_MODRATES[sessionType]
-    responsive = np.zeros(len(celldb),dtype=bool)
+    responsive = np.ones(len(celldb),dtype=bool)
     # for mod in modRates:
     #     responsive &= ((celldb[f'{mod}Hz_offToneResponseMinPval'+eventKey] <= alpha) &
     #                    ((celldb[f'{mod}Hz_offToneFiringRateBestFreq'+eventKey] >= frThreshold) | 
     #                     (celldb[f'{mod}Hz_offToneBaselineFiringRate'] >= frThreshold)))
         
     for mod in modRates:
-        responsive |= ((celldb[f'{mod}Hz_offToneResponseMinPval'+eventKey] <= alpha) |
-                       ((celldb[f'{mod}Hz_offToneDiscrimBestFreq'+eventKey] >= studyparams.MIN_DPRIME)))
+        responsive &= (((celldb[f'{mod}Hz_offToneResponseMinPval'+eventKey] <= alpha) | \
+                       ((celldb[f'{mod}Hz_offToneDiscrimBestFreq'+eventKey] >= studyparams.MIN_DPRIME))) | \
+                        ((celldb[f'{mod}Hz_onToneResponseMinPval'+eventKey] <= alpha) |
+                       ((celldb[f'{mod}Hz_onToneDiscrimBestFreq'+eventKey] >= studyparams.MIN_DPRIME))))
         
         # responsive &= ((celldb[f'{mod}Hz_onToneResponseMinPval'+eventKey] <= alpha) &
         #                ((celldb[f'{mod}Hz_onToneFiringRateBestFreq'+eventKey] >= frThreshold) | 
@@ -106,17 +108,28 @@ def find_steady_cells(celldb, params, maxChangeFactor=1.2,sessionType='optoTunin
         modRates = studyparams.SESSION_MODRATES[sessionType]
         
         for param in params:
-            for mod in modRates:
-                offString = f'{mod}Hz_offTone'
+            if "Laser" in param:
+                offString = f'{modRates[0]}Hz_onTone'
                 offParam = celldb[offString+param]
 
-                
-                for prefix in prefixes:
-                    if prefix[:3] in offString and 'off' not in prefix:
-                        changeParam = (celldb[prefix+param] / offParam )
-                        steadyThisParam =  ( (changeParam < maxChangeFactor) & (changeParam > 1/maxChangeFactor) )
-                        steady &= steadyThisParam
-                # print(sum(steady))
+                for mod in studyparams.SESSION_MODRATES['optoTuningAMtone']:
+                    prefix = f'{mod}Hz_onTone'
+                    changeParam = (celldb[prefix+param] / offParam )
+                    steadyThisParam =  ( (changeParam < maxChangeFactor) & (changeParam > 1/maxChangeFactor) )
+                    steady &= steadyThisParam
+
+            else:
+                for mod in modRates:
+                    offString = f'{mod}Hz_offTone'
+                    offParam = celldb[offString+param]
+
+                    
+                    for prefix in prefixes:
+                        if prefix[:3] in offString and 'off' not in prefix:
+                            changeParam = (celldb[prefix+param] / offParam )
+                            steadyThisParam =  ( (changeParam < maxChangeFactor) & (changeParam > 1/maxChangeFactor) )
+                            steady &= steadyThisParam
+                    # print(sum(steady))
     else:
         reagents = studyparams.REAGENTS[sessionType]
         sessionPre = studyparams.SESSION_PREFIXES[sessionType]
@@ -575,7 +588,12 @@ def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange,
                 dprimeEachFreq[indStim] = \
                     abs(avgFiringRateEachStim[indStim]-baselineFiringRate)/np.sqrt(0.5*(sigmaEachStim[indStim]**2 + baselineSigma**2))
 
-                
+                # -- Normalize to Baseline --
+                if studyparams.BLNORM:
+                    if baselineFiringRate > 0:
+                        avgFiringRateEachStim[indStim] /= baselineFiringRate
+                        sigmaEachStim[indStim] /= baselineFiringRate
+                        baselineFiringRate = 1
 
                 # -- Calculate p-value for each stim --
                 baselineSpikesThisStim = spikeCountMatBase[trialsEachCond[:,indStim],0]

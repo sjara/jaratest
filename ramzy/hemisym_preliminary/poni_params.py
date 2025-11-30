@@ -34,9 +34,9 @@ PDEPTH_EACH_SUBJECT = {'poni001':[2360],
 
 SESSION_DATES_EACH_SUBJECT = {  'poni001':['2025-11-03','2025-11-07','2025-11-12'],
                                 'poni005':['2025-11-06','2025-11-07','2025-11-12'],
-                                'poni007':['2025-10-29','2025-11-18',
+                                'poni007':['2025-10-29','2025-11-18','2025-11-21',
                                            '2025-11-06','2025-11-07','2025-11-11','2025-11-13'],
-                                'poni008':['2025-11-17','2025-11-19'],
+                                'poni008':['2025-11-17','2025-11-19','2025-11-21'],
                                 'poni009':['2025-11-05','2025-11-11','2025-11-12','2025-11-17']   }
 
 SUBJECTS_EACH_IMPLANT = {
@@ -141,21 +141,25 @@ MEASUREMENTS = [['BaselineFiringRate', 'Ntrials', 'BaselineSigma'],
                 'SigmaAvgFR','NormChangeIndex','FanoFactor','VariabilityIndex',
                 'FiringRateEachFreq','DiscrimEachFreq','SigmaEachFreq','NormResponseEachOctave']]
 
+
+BLNORM = True
+# BLNORM = False
+
 RUNNING_THRESHOLD = 3
 
 SMOOTHING_WINDOW = 2
 
-MIN_R_SQUARED = 0.1 #0.1 #0.05
+MIN_R_SQUARED = 0.05 #0.1 #0.05
 MIN_DPRIME = 1
 MIN_FANO = 1
 
 MIN_SIGMA = 0.15  # Minimum value of Sigma for the Gaussian fit.
 MAX_SIGMA = 6     # Maximum value of Sigma for the Gaussian fit.
 
-FR_THRESHOLD = 1 # Minimum evoked firing rate to consider a cell responsive.
+FR_THRESHOLD = 2 # Minimum evoked firing rate to consider a cell responsive.
 
 MAX_CHANGE_FACTOR = 1.3  # Maximum change factor to consider a cell steady
 
-MIN_MODULATION = 0.1
+MIN_MODULATION = 0.25
 
-TIME_KEY_METRIC = 'FanoFactor'
+TIME_KEY_METRIC = 'SelectivityPval'

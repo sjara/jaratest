@@ -74,16 +74,22 @@ timeKeyMetric = studyparams.TIME_KEY_METRIC
 dbPath = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME)
 dbFilename = os.path.join(dbPath, f'celldb_{subject}.h5')
 
-if not os.path.exists(dbFilename):
-    celldb = celldatabase.generate_cell_database(os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py'))
-    if not os.path.exists(dbPath):
-        os.mkdir(dbPath)
-    celldatabase.save_hdf(celldb,dbFilename)
-else:
-    celldb = celldatabase.load_hdf(dbFilename)
+# if not os.path.exists(dbFilename):
+#     celldb = celldatabase.generate_cell_database(os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py'))
+#     if not os.path.exists(dbPath):
+#         os.mkdir(dbPath)
+#     celldatabase.save_hdf(celldb,dbFilename)
+# else:
+#     celldb = celldatabase.load_hdf(dbFilename)
+
+
+celldb = celldatabase.generate_cell_database(os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py'))
 
 
 outputFilename = os.path.join(dbPath, f'celldb_{subject}_laser_freqtuning.h5')
+
+if studyparams.BLNORM:
+    outputFilename  = outputFilename.replace('.h5','_norm.h5')
 
 for sessionType in sessionTypes:
     timeRange = studyparams.TIME_RANGES_AM if 'AM' in sessionType else studyparams.TIME_RANGES_FREQ
