@@ -45,12 +45,17 @@ loadDB = sys.argv[3] if len(sys.argv)==4 else ''
 
 SAVE_FIGURE = 1
 SAVE=1 
+EXCLUDE_LASER=False
 studyName = 'hemisym'
 BTRmetric = studyparams.TIME_KEY_METRIC
 if studyparams.BLNORM:
-    outputDir = os.path.join(settings.FIGURES_DATA_PATH,studyName,'norm_comparisons')
+    outputDir = os.path.join(settings.FIGURES_DATA_PATH,studyName,'session_norm_comparisons')
 else:
-    outputDir = os.path.join(settings.FIGURES_DATA_PATH,studyName,'comparisons')
+    outputDir = os.path.join(settings.FIGURES_DATA_PATH,studyName,'session_comparisons')
+
+if 'sham' in sessionType:
+    outputDir += '_sham'
+
 dbPath = os.path.join(settings.DATABASE_PATH, studyparams.STUDY_NAME)
 figFilename = f'plots_{eventKey}_compare_{sessionType}' # Do not include extension
 figFormat = 'pdf' #'svg'
@@ -58,11 +63,14 @@ figSize = figparams.FIGSIZE[sessionType] # In inches
 modRates = studyparams.SESSION_MODRATES[sessionType]
 nRates = len(modRates)
 
-# plotAllCells=True
+plotAllCells=True
 plotAllCells=False
 
 metricAnnotation = 'FanoFactor'
+# metricAnnotation = 'FanoIndex'
+# metricAnnotation = 'MeanDiscrim'
 # metricAnnotation = 'DiscrimRatio'
+# metricAnnotation = 'SelectivityIndex'
 # metricAnnotation = 'FiringRateRatio'
 # metricAnnotation = 'SelectivityKstat'
 
@@ -108,13 +116,39 @@ def gs_panel_label(gsSubFig,label='A',fontSize=figparams.fontSizePanel,hpad=0,vp
     sharedAx = get_shared_ax(gsSubFig)
     sharedAx.text(-0.25+hpad, 1.05+vpad, label, transform=sharedAx.transAxes, 
                     fontsize=fontSize, fontweight='bold')
+    
+def ax_pval(thisAX,pVal,fmt='*'):
+    if fmt =='*':
+        if pVal > 0.05:
+            plt.text(0.5, 0.9, f'NS',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        elif pVal > 0.01:
+            plt.text(0.5, 0.9, f'p = *',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        elif pVal > 0.001:
+            plt.text(0.5, 0.9, f'p = **',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        else:
+            plt.text(0.5, 0.9, f'***',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+
+    elif fmt == 'num':
+        if pVal > 0.05:
+            plt.text(0.5, 0.9, f'NS',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        elif pVal >= 0.001:
+            plt.text(0.5, 0.9, f'p = {pVal:0.3f}',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        else:
+            plt.text(0.5, 0.9, f'p < 0.001',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
 
 # -- Main gridspec --
 if 'Freq' in sessionType:
     gsMain = gridspec.GridSpec(2, 4, width_ratios=[0.2, 0.2, 0.2, 0.2])
     gsMain.update(left=0.06, right=0.98, top=0.95, bottom=0.1, wspace=0.25, hspace=0.6)
 else:
-    gsMain = gridspec.GridSpec(2, 4, width_ratios=[0.2, 0.2, 0.4, 0.2])
+    gsMain = gridspec.GridSpec(2, 3, width_ratios=[0.2, 0.2, 0.4])
     gsMain.update(left=0.06, right=0.98, top=0.95, bottom=0.1, wspace=0.25, hspace=0.3)
 
 celldbEachImplant = {}
@@ -123,6 +157,7 @@ metricDiffEachImplant = {}
 
 if 'opto' in sessionType:
     cellsToPlotAll = []
+    cellsToPlotAll = [1098,1333,2230,2224]
 else:
     cellsToPlotAll = [237,241,207,5]
 
@@ -143,8 +178,14 @@ for indimp,implant in enumerate(subjEachImplant):
             if studyparams.BLNORM:
                 dbFilenameThisSubject = dbFilenameThisSubject.replace('.h5','_norm.h5')
             if 'sham' in sessionType.lower():
+                if subject not in studyparams.SHAM_SUBJECTS:
+                    continue
                 dbFilenameThisSubject  = dbFilenameThisSubject.replace('laser','sham')
+                sessionDatesEachSubj = studyparams.SHAM_DATES_EACH_SUBJECT
+
+
             # sessionDate = sessionDatesEachSubj[subject]
+
             probeDepth = probeDepthEachSubj[subject]
             celldbThisSubj = celldatabase.load_hdf(dbFilenameThisSubject)
             celldbThisSubj = celldbThisSubj[(celldbThisSubj['date'].apply(lambda x: x in sessionDatesEachSubj[subject])) \
@@ -158,30 +199,50 @@ for indimp,implant in enumerate(subjEachImplant):
 
         celldbThisImplant['cellDepth'] = studyutils.get_cell_depths(celldbThisImplant)
         
-
-        for indr,reagent in enumerate(studyparams.REAGENTS_ALL):
+        if 'Sham' not in sessionType:
+            reagents = studyparams.REAGENTS_ALL
+        else:
+            reagents = studyparams.REAGENTS[sessionType]
+        for indr,reagent in enumerate(reagents):
             for tKey in studyparams.EVENT_KEYS:
-                celldbThisImplant[reagent+'ToneDiscrimRatio'+tKey] = celldbThisImplant[reagent+'ToneDiscrimBestFreq'+tKey]/celldbThisImplant[reagent+'ToneMeanDiscrim'+tKey]
+                
+                
+                # celldbThisImplant[reagent+'ToneZscoreBestFreq'+tKey] = \
+                #     (celldbThisImplant[reagent+'ToneFiringRateBestFreq'+tKey]-celldbThisImplant[reagent+'ToneAvgEvokedFiringRate'+tKey])\
+                #         /np.sqrt(np.mean([dbRow[reagent+'ToneSigmaEachFreq'+tKey]**2 for indrow,dbRow in celldbThisImplant.iterrows()]))
+                
+                
+                # celldbThisImplant[reagent+'ToneZscoreEachFreq'+tKey] = [[(dbRow[reagent+'ToneFiringRateEachFreq'+tKey][stim]-dbRow[reagent+'ToneAvgEvokedFiringRate'+tKey])\
+                #                                                          /np.sqrt(np.mean(dbRow[reagent+'ToneSigmaEachFreq'+tKey]**2)) for stim in range(16)] for indrow,dbRow in celldbThisImplant.iterrows()]
+                # celldbThisImplant[reagent+'ToneZscoreBestFreq'+tKey] = np.array([max(np.abs(dbRow[reagent+'ToneZscoreEachFreq'+tKey])) for indrow,dbRow in celldbThisImplant.iterrows()])
+                # celldbThisImplant[reagent+'ToneZscoreBestFreq'+tKey] = np.array([max(dbRow[reagent+'ToneZscoreEachFreq'+tKey]) for indrow,dbRow in celldbThisImplant.iterrows()])
+                
+                celldbThisImplant[reagent+'ToneEvokedSigmaRMS'+tKey] = np.array([np.sqrt(np.mean(np.mean(dbRow[reagent+'ToneSigmaEachFreq'+tKey]**2))) for indrow,dbRow in celldbThisImplant.iterrows()])          
+
+                celldbThisImplant[reagent+'ToneFanoIndex'+tKey] = np.array([(np.std(dbRow[reagent+'ToneFiringRateEachFreq'+tKey])**2)/np.sqrt(np.mean(dbRow[reagent+'ToneSigmaEachFreq'+tKey]**2)) for indrow,dbRow in celldbThisImplant.iterrows()])
+
+                     
+                
+                # celldbThisImplant[reagent+'ToneClusteringIndex'+tKey] = np.array([(dbRow[reagent+'TonePooledSigma'+tKey])/np.sqrt(np.mean(dbRow[reagent+'ToneSigmaEachFreq'+tKey]**2)) for indrow,dbRow in celldbThisImplant.iterrows()])
+                celldbThisImplant[reagent+'ToneClusteringIndex'+tKey] = celldbThisImplant[reagent+'ToneFanoIndex'+tKey]
+                # celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = celldbThisImplant[reagent+'ToneZscoreBestFreq'+tKey]
+                fanoEachFreq = np.array([(dbRow[reagent+'ToneSigmaEachFreq'+tKey]**2)/dbRow[reagent+'ToneFiringRateEachFreq'+tKey] for indrow,dbRow in celldbThisImplant.iterrows()])
+                celldbThisImplant[reagent+'ToneFanoRMS'+tKey] = np.array([np.sqrt(np.mean(fanoEachFreq[indrow]**2)) for indrow in range(len(celldbThisImplant)) ]     )                                   
+                
+                # celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = np.array([np.mean(fanoEachFreq[indcell])/np.min(fanoEachFreq[indcell]) for indcell in range(len(celldbThisImplant))])
+
                 # smoothedFiringRates = []
                 # smoothedFanoFactors = np.empty(len(celldbThisImplant))
 
                 octaveFRs = []
-                normResps = []
                 fits = []
-                nStim = studyparams.N_FREQ
+                    
                 for indcell,(indrow,dbRow) in enumerate(celldbThisImplant.iterrows()):
-                    firingRates = dbRow[reagent+'ToneFiringRateEachFreq'+tKey]
-                    firingRatesOff = dbRow[reagent.replace('on','off')+'ToneFiringRateEachFreq'+tKey]
+                    # firingRates = dbRow[reagent+'ToneFiringRateEachFreq'+tKey]
                     # smoothedFiringRates.append(studyutils.moving_average(firingRates))
                     # smoothedFanoFactors[indcell] = (np.std(smoothedFiringRates[indcell])**2)/np.mean(smoothedFiringRates[indcell])
-                    normResponseEachOctave = np.full(2*nStim-1,np.nan)
 
-                    bestFreqInd = np.argmax(firingRates)
-                    centeringInd = nStim-1-bestFreqInd
-
-                    normResponseEachOctave[centeringInd:centeringInd+nStim] = firingRates/max(firingRatesOff)
-                    normResps.append(normResponseEachOctave)
-
+                    bestFreqInd = np.argmax(dbRow[reagent+'ToneFiringRateEachFreq'+tKey])
                     if bestFreqInd < studyparams.N_FREQ//2:
                         octaveFRs.append(dbRow[reagent+'ToneFiringRateEachFreq'+tKey][bestFreqInd:studyparams.N_FREQ//2+bestFreqInd])
 
@@ -190,21 +251,38 @@ for indimp,implant in enumerate(subjEachImplant):
                 
 
 
-                # celldbThisImplant[reagent+'ToneFiringRateEachFreqSmoothed'+tKey] = smoothedFiringRates
-                # celldbThisImplant[reagent+'ToneFanoFactorSmoothed'+tKey] = smoothedFanoFactors
+                # # celldbThisImplant[reagent+'ToneFiringRateEachFreqSmoothed'+tKey] = smoothedFiringRates
+                # # celldbThisImplant[reagent+'ToneFanoFactorSmoothed'+tKey] = smoothedFanoFactors
 
                 celldbThisImplant[reagent+'ToneFiringRateEachOctave'+tKey] = octaveFRs
-                celldbThisImplant[reagent+'ToneNormResponseEachOctave'+tKey] = normResps
-                
-
     
+    for reagent in studyparams.REAGENTS[sessionType]:
+        for tKey in studyparams.EVENT_KEYS:
+            # celldbThisImplant[reagent+'ToneDiscrimRatio'+tKey] = (celldbThisImplant[reagent+'ToneDiscrimBestFreq'+tKey]-celldbThisImplant[reagent+'ToneMeanDiscrim'+tKey])\
+            #                                                                 /(celldbThisImplant[reagent+'ToneDiscrimBestFreq'+tKey]+celldbThisImplant[reagent+'ToneMeanDiscrim'+tKey])
+            
+            celldbThisImplant[reagent+'ToneDiscrimRatio'+tKey] = celldbThisImplant[reagent+'ToneDiscrimBestFreq'+tKey]/celldbThisImplant[reagent+'ToneMeanDiscrim'+tKey]
+                                                                             
+            # celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = np.sqrt(celldbThisImplant[reagent+'ToneFanoIndex'+tKey] *\
+            #                                                                             celldbThisImplant[reagent+'ToneFanoFactor'+tKey])
+            # celldbThisImplant[reagent+'ToneSelectivityIndexZFF'+tKey] = np.sqrt(celldbThisImplant[reagent+'ToneZscoreBestFreq'+tKey] *\
+            #                                                                             celldbThisImplant[reagent+'ToneFanoFactor'+tKey])
+            # celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = np.sqrt(celldbThisImplant[reagent+'ToneZscoreBestFreq'+tKey] *\
+            #                                                                             celldbThisImplant[reagent+'ToneFanoIndex'+tKey])
+            # celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = (celldbThisImplant[reagent+'ToneFanoFactor'+tKey])/((celldbThisImplant[reagent+'ToneEvokedSigmaRMS'+tKey])/celldbThisImplant[reagent+'ToneAvgEvokedFiringRate'+tKey])
+
+            # celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = (celldbThisImplant[reagent+'TonePooledSigma'+tKey]**2)/celldbThisImplant[reagent+'ToneAvgEvokedFiringRate'+tKey]
+            # celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = ((celldbThisImplant[reagent+'TonePooledSigma'+tKey]**2)/celldbThisImplant[reagent+'ToneAvgEvokedFiringRate'+tKey])/(celldbThisImplant[reagent+'ToneFanoRMS'+tKey])
+            celldbThisImplant[reagent+'ToneClusteringIndex'+tKey] = (celldbThisImplant[reagent+'TonePooledSigma'+tKey]**2)/celldbThisImplant[reagent+'ToneEvokedSigmaRMS'+tKey]
+            # celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = np.sqrt((celldbThisImplant[reagent+'TonePooledSigma'+tKey]/celldbThisImplant[reagent+'ToneEvokedSigmaRMS'+tKey])*celldbThisImplant[reagent+'ToneFanoFactor'+tKey])
+            celldbThisImplant[reagent+'ToneSelectivityIndex'+tKey] = np.sqrt(celldbThisImplant[reagent+'ToneClusteringIndex'+tKey]*celldbThisImplant[reagent+'ToneFanoFactor'+tKey])
 
     # -- Find best time range for each cell --
-    if eventKey == 'BTR':
+    if not loadDB or 0:
         # print(f'Finding best time ranges based on {BTRmetric}')
         # bestKeys = studyutils.find_best_time_keys(celldbThisImplant,BTRmetric,['Evoked','Delayed'])
         bestKeys = studyutils.find_best_time_keys(celldbThisImplant,
-                                                BTRmetric,['Onset','Sustained','Interim','Evoked'],
+                                                BTRmetric,['Onset','Sustained','Interim','Evoked','Offset'],
                                                 sessionType='optoTuningAMtone')
         
         measurements = studyparams.METRICS[6:] 
@@ -218,20 +296,21 @@ for indimp,implant in enumerate(subjEachImplant):
                 
                 celldbThisImplant[reagent+'Tone'+metric+'BTR'] = BTRs
 
-        bestKeys = studyutils.find_best_time_keys(celldbThisImplant,
-                                                BTRmetric,['Onset','Sustained','Interim','Evoked'],
-                                                sessionType='optoTuningFreq')
-        
-        measurements = studyparams.METRICS[6:] 
-        for indr,reagent in enumerate(studyparams.REAGENTS['optoTuningFreq']):
-            celldbThisImplant[reagent+'BestTimeRange']=bestKeys[indr]
-            for metric in studyparams.METRICS[6:]:
-                BTRs = []
-                for indc,dbRow in celldbThisImplant.iterrows():
-                    tKey = dbRow[reagent+'BestTimeRange']
-                    BTRs.append(dbRow[reagent+'Tone'+metric+tKey])
-                
-                celldbThisImplant[reagent+'Tone'+metric+'BTR'] = BTRs
+        # if 'Sham' not in sessionType:
+        #     bestKeys = studyutils.find_best_time_keys(celldbThisImplant,
+        #                                             BTRmetric,['Onset','Sustained','Interim','Evoked','Offset'],
+        #                                             sessionType='optoTuningFreq')
+            
+        #     measurements = studyparams.METRICS[6:] 
+        #     for indr,reagent in enumerate(studyparams.REAGENTS['optoTuningFreq']):
+        #         celldbThisImplant[reagent+'BestTimeRange']=bestKeys[indr]
+        #         for metric in studyparams.METRICS[6:]:
+        #             BTRs = []
+        #             for indc,dbRow in celldbThisImplant.iterrows():
+        #                 tKey = dbRow[reagent+'BestTimeRange']
+        #                 BTRs.append(dbRow[reagent+'Tone'+metric+tKey])
+                    
+        #             celldbThisImplant[reagent+'Tone'+metric+'BTR'] = BTRs
 
     
     
@@ -248,33 +327,32 @@ for indimp,implant in enumerate(subjEachImplant):
     goodD = studyutils.find_good_dprime(celldbThisImplant, eventKey,minDisc=studyparams.MIN_DPRIME,sessionType=sessionType)
     goodFit = studyutils.find_good_gaussian_fit(celldbThisImplant, eventKey,minR2=studyparams.MIN_R_SQUARED,sessionType=sessionType)
     anyFitall = ~np.isnan(celldbThisImplant[f'{modRates[0]}Hz_offToneGaussianA'+eventKey])
-    for mod in modRates[1:]:
-        anyFitall &= ~np.isnan(celldbThisImplant[f'{mod}Hz_offToneGaussianA'+eventKey])
+    # for mod in modRates[1:]:
+        # anyFitall &= ~np.isnan(celldbThisImplant[f'{mod}Hz_offToneGaussianA'+eventKey])
     highFiring = np.ones(len(celldbThisImplant),dtype=bool)
 
     RScell = studyutils.find_RS_cells(celldbThisImplant)
 
 
-    reagents = studyparams.REAGENTS_ALL #if 'AMtone' in sessionType else studyparams.REAGENTS[sessionType]
+    reagents = studyparams.REAGENTS[sessionType] if 'Sham' not in sessionType else studyparams.REAGENTS[sessionType]
     for indr, reagent in enumerate(reagents):
         #celldbThisImplant[reagent+'ToneGaussianMax'+eventKey] = ( celldbThisImplant[reagent+'ToneGaussianA'+eventKey] +
         #                                      celldbThisImplant[reagent+'ToneGaussianY0'+eventKey] )
-        negResponseThisReagent = celldbThisImplant[reagent+'ToneGaussianA'+eventKey]<0
-        thisToneGaussianMax = ( celldbThisImplant[reagent+'ToneGaussianA'+eventKey] +
-                                celldbThisImplant[reagent+'ToneGaussianY0'+eventKey] )
-        thisToneGaussianMax[negResponseThisReagent] = celldbThisImplant[reagent+'ToneGaussianY0'+eventKey]
-        celldbThisImplant[reagent+'ToneGaussianMax'+eventKey] = thisToneGaussianMax
-        celldbThisImplant[reagent+'ToneGaussianBandwidth'+eventKey] = \
-            extraplots.gaussian_full_width_half_max(celldbThisImplant[reagent+'ToneGaussianSigma'+eventKey])
+        # negResponseThisReagent = celldbThisImplant[reagent+'ToneGaussianA'+eventKey]<0
+        # thisToneGaussianMax = ( celldbThisImplant[reagent+'ToneGaussianA'+eventKey] +
+        #                         celldbThisImplant[reagent+'ToneGaussianY0'+eventKey] )
+        # thisToneGaussianMax[negResponseThisReagent] = celldbThisImplant[reagent+'ToneGaussianY0'+eventKey]
+        # celldbThisImplant[reagent+'ToneGaussianMax'+eventKey] = thisToneGaussianMax
+        # celldbThisImplant[reagent+'ToneGaussianBandwidth'+eventKey] = \
+        #     extraplots.gaussian_full_width_half_max(celldbThisImplant[reagent+'ToneGaussianSigma'+eventKey])
         baselineFiringRate = celldbThisImplant[reagent+'ToneBaselineFiringRate']
-        celldbThisImplant[reagent+'ToneGaussianMaxChange'+eventKey] = np.abs(thisToneGaussianMax-baselineFiringRate)
+        # celldbThisImplant[reagent+'ToneGaussianMaxChange'+eventKey] = np.abs(thisToneGaussianMax-baselineFiringRate)
         highFiring &= (celldbThisImplant[reagent+'ToneFiringRateBestFreq'+eventKey] >= studyparams.FR_THRESHOLD) | (baselineFiringRate >= studyparams.FR_THRESHOLD)
 
         celldbThisImplant[reagent+'ToneFanoSelectivityComposite'+eventKey] = celldbThisImplant[reagent+'ToneSelectivityKstat'+eventKey]*celldbThisImplant[reagent+'ToneFanoFactor'+eventKey]
-        celldbThisImplant[reagent+'ToneDiscrimRatio'+eventKey] = celldbThisImplant[reagent+'ToneDiscrimBestFreq'+eventKey]/celldbThisImplant[reagent+'ToneMeanDiscrim'+eventKey]
-
         celldbThisImplant[reagent+'ToneFiringRateRatio'+eventKey] = celldbThisImplant[reagent+'ToneFiringRateBestFreq'+eventKey]/celldbThisImplant[reagent+'ToneAvgEvokedFiringRate'+eventKey]
-
+        
+            
         
 
     posResponse = np.zeros(len(celldbThisImplant))
@@ -283,32 +361,32 @@ for indimp,implant in enumerate(subjEachImplant):
 
     lasMod = np.ones(len(celldbThisImplant),dtype=bool)
 
-    for mod in studyparams.MOD_RATES_ALL:
+    for mod in studyparams.SESSION_MODRATES[sessionType]:
         thisMetricoff = celldbThisImplant[f'{mod}Hz_offTone'+metricAnnotation+eventKey]
         thisMetricon = celldbThisImplant[f'{mod}Hz_onTone'+metricAnnotation+eventKey]
         celldbThisImplant[f'{mod}Hz_ToneLaserModulation'+eventKey] = studyutils.modulation_index(thisMetricoff,thisMetricon)
 
-        # posResponse &= (celldbThisImplant[f'{mod}Hz_offToneGaussianA'+eventKey]>0)
-        # posMod |= (np.abs(celldbThisImplant[f'{mod}Hz_ToneLaserModulation'+eventKey]) >= studyparams.MIN_MODULATION)
-        posMod |= (abs(celldbThisImplant[f'{mod}Hz_ToneLaserModulation'+eventKey]) >= studyparams.MIN_MODULATION)
-        
-        
-        # lasMod &= (celldbThisImplant[f'{mod}Hz_onToneLaserPval'] <= studyparams.MIN_PVAL) 
+        if 0 or mod > 0:
+            # posResponse &= (celldbThisImplant[f'{mod}Hz_offToneGaussianA'+eventKey]>0)
+            posMod |= (np.abs(celldbThisImplant[f'{mod}Hz_ToneLaserModulation'+eventKey]) >= studyparams.MIN_MODULATION)
+            # posMod |= (celldbThisImplant[f'{mod}Hz_ToneLaserModulation'+eventKey] >= studyparams.MIN_MODULATION)
+            
+            
+            lasMod &= (celldbThisImplant[f'{mod}Hz_onToneLaserPval'] <= studyparams.MIN_PVAL) 
 
-        lasMod &= ( (celldbThisImplant[f'{mod}Hz_onToneLaserPval'] <= studyparams.MIN_PVAL) & \
-            (((celldbThisImplant[f'{mod}Hz_onToneLaserFiringRate']/celldbThisImplant[f'{mod}Hz_onToneBaselineFiringRate'] > studyparams.MAX_CHANGE_FACTOR/3) | \
-                 (celldbThisImplant[f'{mod}Hz_onToneBaselineFiringRate']/celldbThisImplant[f'{mod}Hz_onToneLaserFiringRate']) > studyparams.MAX_CHANGE_FACTOR/3)) )
-        
-        if 0 and not loadDB:
+            # lasMod &= (celldbThisImplant[f'{mod}Hz_onToneLaserPval'] <= 0.1) & \
+            #     (celldbThisImplant[f'{mod}Hz_onToneLaserFiringRate'] > celldbThisImplant[f'{mod}Hz_onToneBaselineFiringRate'])
+
+        if 1:
             fitLins = []
             for indcell,dbRow in celldbThisImplant.iterrows():
                 # firingRatesOff = dbRow[f'{mod}Hz_offToneFiringRateEachFreq{eventKey}']/dbRow[f'{mod}Hz_offToneBaselineFiringRate'] 
                 # firingRatesOn = dbRow[f'{mod}Hz_onToneFiringRateEachFreq{eventKey}']/dbRow[f'{mod}Hz_onToneBaselineFiringRate'] 
 
-                firingRatesOff = dbRow[f'{mod}Hz_offToneFiringRateEachFreq{eventKey}']
-                firingRatesOn = dbRow[f'{mod}Hz_onToneFiringRateEachFreq{eventKey}']
+                firingRatesOff = dbRow[f'{mod}Hz_offToneFiringRateEachOctave{eventKey}']
+                firingRatesOn = dbRow[f'{mod}Hz_onToneFiringRateEachOctave{eventKey}']
                 if sum(firingRatesOff)==0:
-                    firingRatesOff += 0.0001
+                    firingRatesOff[0] += 0.0001
 
                 linfit = stats.linregress(firingRatesOff,firingRatesOn)
                 fitLins.append(linfit)
@@ -323,7 +401,7 @@ for indimp,implant in enumerate(subjEachImplant):
     responsive = studyutils.find_tone_responsive_cells(celldbThisImplant, eventKey, frThreshold=studyparams.FR_THRESHOLD,allreagents=True,sessionType=sessionType)
 
 
-    steadyParams = ['BaselineFiringRate','LaserFiringRate'] 
+    steadyParams = ['BaselineFiringRate'] 
     steady = studyutils.find_steady_cells(celldbThisImplant, steadyParams, maxChangeFactor,sessionType=sessionType)
 
     print(f'goodD\t\t{sum(goodD)} cells')
@@ -338,31 +416,31 @@ for indimp,implant in enumerate(subjEachImplant):
     # print(f'RScell\t\t{sum(RScell)} cells')
 
 
-    selectedCells =  responsive & highFiring & steady  #& selective & lasMod
+    selectedCells = responsive & highFiring & steady & selective 
 
-    if 1:
+    if 1 and 'AMtone' in sessionType:
         selectedCells &= posMod
+        # selectedCells &= lasMod
 
     if len(cellsToPlotAll)<4:
         if 'AMtone' in sessionType:
             cellsToPlot = sorted(np.nonzero(selectedCells)[0],
-                                key=lambda x: -1*abs(np.diff([celldbThisImplant.iloc[x][f'{mod}Hz_ToneLaserModulation'+eventKey] for mod in modRates])))[-3:-1]
+                            key=lambda x: (np.max([celldbThisImplant.iloc[x][f'{mod}Hz_ToneLaserModulation'+eventKey] \
+                                                   for mod in studyparams.OFF_RATE[implant]])))[-3:-1]
         else:
             cellsToPlot = sorted(np.nonzero(selectedCells)[0],
                                 key=lambda x: celldbThisImplant.iloc[x][f'0Hz_ToneLaserModulation'+eventKey])[-3:-1]
         cellsToPlotAll += cellsToPlot
     else:
         cellsToPlot = cellsToPlotAll[2*indimp:2*indimp+2]
+    
+
+    # else:
+    #     cellsToPlot = cellsToPlotAll[2*indimp:2*indimp+2]
 
     selectedCellsEachImplant[implant] = selectedCells
     celldbEachImplant[implant] = celldbThisImplant
     
-    # -- Save the updated celldbThisImplant --
-    if SAVE:
-        dbFilename = os.path.join(dbPath,f'celldb_{implant}_{sessionType}_freqtuning.h5')
-        if studyparams.BLNORM:
-            dbFilename = dbFilename.replace('.h5','_norm.h5')
-        celldatabase.save_hdf(celldbThisImplant, dbFilename)
     '''
     metrics = ['ToneGaussianX0', 'ToneGaussianBandwidth', 'ToneGaussianMax']
     metricsLabel = ['BF', 'Bandwidth', 'Max resp']
@@ -372,20 +450,28 @@ for indimp,implant in enumerate(subjEachImplant):
     '''
 
     # -- Plot examples --
-    metrics = ['ToneFanoFactor'+eventKey, 'ToneDiscrimRatio'+eventKey,  'ToneSelectivityKstat'+eventKey]
+    metrics = ['Tone'+metricAnnotation+eventKey,
+               'ToneFanoFactor'+eventKey, 
+               'ToneDiscrimRatio'+eventKey, 
+                'ToneMeanDiscrim'+eventKey,
+               'ToneSelectivityKstat'+eventKey]
+    
     # metricsLabel = ['BF', 'Width', 'Max Δ']
-    metricsLabel = ['FF', "d'",  'H-stat' ]
-
-    # metrics = ['ToneDiscrimRatio'+eventKey,  'ToneSelectivityKstat'+eventKey]
-    # # metricsLabel = ['BF', 'Width', 'Max Δ']
-    # metricsLabel = ["d'",  'H-stat' ]
+    metricsLabel = ["s'",
+                    'FF', 
+                    "d'",
+                    'H-stat' ]
     #metricsLabel = ['BF', 'Bandwidth', 'Resp at BF']
     # metricsUnits = ['kHz', 'norm.', 'spk/s']
     # metricLims = [[np.log2(2000), np.log2(40000)], [0, 6], [0, 10]]
     # metricTicks = [[2000, 8000, 32000], [0, 5, 10], [0, 25, 50]]
     metricsUnits = ['AU', 'AU', 'oct']
-    metricLims = [[0, 10],   [0, 300]]
-    metricTicks = [[0,5,10],   [0, 150, 300]]
+    metricLims = [#[0,5],
+                  [0, 10],   
+                  [0, 300]]
+    metricTicks = [#[0,2.5,5],
+                    [0,5,10],   
+                   [0, 150, 300]]
 
 
     # metrics = ['ToneSelectivityKstat'+eventKey, 'ToneFanoFactor'+eventKey,'ToneGaussianBandwidth'+eventKey]
@@ -405,7 +491,7 @@ for indimp,implant in enumerate(subjEachImplant):
     subfigure_labels = [f'A$_{indimp+1}$',f'B$_{indimp+1}$',f'C$_{indimp+1}$',f'D$_{indimp+1}$',f'E$_{indimp+1}$']
     offset=0
     if 'Freq' in sessionType:
-        gs_panel_label(gsMain[indimp,0],subfigure_labels[0])
+        #gs_panel_label(gsMain[indimp,0],subfigure_labels[0])
         offset=1
 
     # # -- Show panel labels --
@@ -424,7 +510,7 @@ for indimp,implant in enumerate(subjEachImplant):
 
     for indcell, cellInd in enumerate(cellsToPlot):
         gsExample = gsMain[indimp, indcell+offset].subgridspec(1, 1, hspace=0.4)
-        gs_panel_label(gsExample[0],subfigure_labels[indcell+offset])
+        #gs_panel_label(gsExample[0],subfigure_labels[indcell+offset])
 
         gsRasters = gsExample[0].subgridspec(nRates, 1, hspace=0.1)
         # gsTuning = gsExample[1].subgridspec(nRates,1, hspace=0.4)
@@ -458,8 +544,11 @@ for indimp,implant in enumerate(subjEachImplant):
         
             reagentsToPlot = [f'{mod}Hz_off',f'{mod}Hz_on']
             
-            trialInds = np.nonzero(modEachTrial==mod)
-            
+            if EXCLUDE_LASER:
+                trialInds = np.nonzero((modEachTrial==mod) & (bdata['laserTrial']==0))
+            else:
+                trialInds = np.nonzero(modEachTrial==mod)
+
             spikeTimes = ephysData['spikeTimes']
             eventOnsetTimes = ephysData['events']['stimOn'][trialInds]
 
@@ -501,10 +590,14 @@ for indimp,implant in enumerate(subjEachImplant):
             possibleStimInKHz = possibleStim/1000
             rasterLabels = ['']*nStim;
             
+            
             rasterLabels[-1] = int(possibleStimInKHz[-1])
 
-            rasterLabels *= trialsEachCond.shape[2]
+            for i in range(3,16,4):
+                rasterLabels[i] = int(np.ceil(possibleStimInKHz[i]))
 
+            rasterLabels *= trialsEachCond.shape[2]
+            
             rasterLabels[0] = int(possibleStimInKHz[0])
             reagent=f'{mod}Hz_off'
             
@@ -515,7 +608,7 @@ for indimp,implant in enumerate(subjEachImplant):
                                                             labels=rasterLabels,
                                                             colorEachCond=colorEachCond,
                                                             rasterized=False)
-            
+            plt.axvline(stimDuration, color='0.75', zorder=-10)
             nTrialson = sum(bdata['laserTrial'][trialInds])
             nTrialsoff = sum(1-bdata['laserTrial'][trialInds])
 
@@ -524,20 +617,20 @@ for indimp,implant in enumerate(subjEachImplant):
             if indr==len(possibleMod)-1:
                 plt.xlabel('Time (s)', fontsize=fontSizeLabels)
             plt.ylabel('Freq (kHz)', fontsize=fontSizeLabels)
-            plt.axhline(nTrialsoff,color='r',linestyle='dashed',zorder=-10)
-
-            plt.yticks([nTrialsoff//2,nTrialsoff+nTrialson//2],
-                        ['off','on'],minor=True)
-            ax = plt.gca()
-            ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+            if not EXCLUDE_LASER:
+                plt.axhline(nTrialsoff,color='r',linestyle='dashed',zorder=-10)
+                plt.yticks([nTrialsoff//2,nTrialsoff+nTrialson//2],
+                            ['off','on'],minor=True)
+                ax = plt.gca()
+                ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
         
             if eventKey == 'BTR':
                 plt.fill_between(TIME_RANGES[dbRow[reagent+'BestTimeRange']],
-                                 *plt.ylim(),color=figparams.colorLaser,alpha=0.6)
+                                 *plt.ylim(),color=figparams.colorLaser,alpha=0.4,zorder=-10)
                 # plt.axvline(TIME_RANGES[dbRow[reagent+'BestTimeRange']][1],color='r',zorder=-10)
-            else:
+            elif eventKey != 'Evoked':
                 plt.fill_between(TIME_RANGES[eventKey], *plt.ylim(), 
-                                 color=figparams.colorLaser, alpha=0.4)
+                                 color=figparams.colorLaser, alpha=0.4,zorder=-10)
             #axRaster.set_yticklabels(['2']+['']*(nFreq-2)+['40'])
             if indr==0:
                 plot_stim(plt.ylim(), stimDuration)
@@ -556,8 +649,8 @@ for indimp,implant in enumerate(subjEachImplant):
         gsMetrics = gsMain[indimp, 2+offset].subgridspec(1, 2, hspace=0.4)
     
     indmOffset=0
-    if 1:
-        gs_panel_label(gsMetrics[0,0],subfigure_labels[2],hpad=0.1)
+    if 1 and 'Freq' in sessionType:
+        #gs_panel_label(gsMetrics[0,0],subfigure_labels[2],hpad=0.1)
         indmOffset = 1
         octaves = np.round(np.array(list(1-possibleStim[::-1]/2000)+list(abs(1-possibleStim[1:]/2000))),2)
         octRange = (abs(octaves) < 2.3)
@@ -591,7 +684,7 @@ for indimp,implant in enumerate(subjEachImplant):
 
                     maxVal = max(meanoff[octRange].max(), meanon[octRange].max())
 
-                    plt.plot(octaves[octRange][::2],meanoff[octRange][::2],
+                    plt.plot(octaves[octRange],meanoff[octRange],
                             color=colorsRasterDark[sessionType][f'{mod}Hz_off'],label=f'{mod}Hz_off')
                     # plt.fill_between(octaves[octRange],
                     #                  meanoff[octRange] + stdoff[octRange],
@@ -603,7 +696,7 @@ for indimp,implant in enumerate(subjEachImplant):
                     
                     # plt.xticks(np.arange(-2,3))
                     plt.ylabel('Normalized Response',fontsize=fontSizeLabels, fontweight='normal')
-                    plt.xlabel('Octaves From BF',fontsize=fontSizeLabels, fontweight='normal')
+                    plt.xlabel('Octaves From Peak Response',fontsize=fontSizeLabels, fontweight='normal')
                     plt.ylim([0,1.1])
                     plt.yticks([0,0.25,0.5,0.75,1])
                     plt.xticks(np.arange(-2,3))
@@ -642,17 +735,66 @@ for indimp,implant in enumerate(subjEachImplant):
     #for indm, metric in enumerate(['ToneGaussianMax']): #enumerate(metrics):
     for indm, metric in enumerate(metrics[:1]):
         print(f'----- {metric} -----')
-
+        
         if indm==0:
             gsThisMetric = gsMetrics[0+indmOffset].subgridspec(nRates,1,hspace=0.1)
-            gs_panel_label(gsMetrics[0+indmOffset],subfigure_labels[2+offset+indmOffset],hpad=0.1)
+            #gs_panel_label(gsMetrics[0+indmOffset],subfigure_labels[2+offset+indmOffset],hpad=0.1)
         else:
             gsThisMetric = gsMetrics[1,indm-1].subgridspec(nRates,1,hspace=0.1)
-            gs_panel_label(gsMetrics[1,indm-1],subfigure_labels[4+indm],hpad=0.1)
+            #gs_panel_label(gsMetrics[1,indm-1],subfigure_labels[4+indm],hpad=0.1)
 
-        print(np.nonzero(selectedCells))
+        # print(np.nonzero(selectedCells))
         nCells = np.sum(selectedCells)
-        for indmod,mod in enumerate(modRates):
+        cmap = plt.get_cmap('Dark2')
+        siteDates = studyparams.SHAM_DATES_EACH_SITE if 'Sham' in sessionType else studyparams.SESSION_DATES_EACH_SITE
+        for indmod,mod in enumerate(modRates): 
+            for inds,site in enumerate(studyparams.SITES_EACH_IMPLANT[implant]):
+                subj = studyparams.SUBJECT_EACH_SITE[site]
+                for date in siteDates[site]:
+                
+                    cellsToUse = selectedCells & \
+                                    (celldbThisImplant['pdepth']==site) & \
+                                    (celldbThisImplant['date']==date)
+                    
+                    nCells = sum(cellsToUse)
+                    if nCells == 0:
+                        continue
+                    
+                    thisMetricoff = celldbThisImplant[f'{mod}Hz_off'+metric][cellsToUse]
+                    thisMetricon = celldbThisImplant[f'{mod}Hz_on'+metric][cellsToUse]
+
+                    notnans = (~np.isnan(thisMetricon) & ~np.isnan(thisMetricoff))
+
+
+                    thisMetricoff = thisMetricoff[notnans]
+                    thisMetricon = thisMetricon[notnans]
+                    
+                    wstat, pVal = stats.wilcoxon(thisMetricoff, thisMetricon,alternative='greater')
+                    medianoff = np.nanmedian(abs(thisMetricoff))
+                    meanoff = np.nanmean(abs(thisMetricoff))
+                    medianon = np.nanmedian(abs(thisMetricon))
+                    meanon = np.nanmean(abs(thisMetricon))
+                    print(f'---{subj}, {site}μm, {date}---')
+                    print(f'[N={nCells}]  Median {metric}: {mod}Hz off={medianoff:0.4f}, ' +
+                        f'on={medianon:0.4f}')
+                    
+                    print(f'\tMean {metric}: {mod}Hz off={meanoff:0.4f}, ' +
+                        f'on={meanon:0.4f}  p={pVal:0.4f}')
+                    print(f'\t on>off: {np.mean(thisMetricon>thisMetricoff):0.1%}'+
+                        f'\t on<off: {np.mean(thisMetricon<thisMetricoff):0.1%}')
+                    
+                    thisAx = plt.subplot(gsThisMetric[indmod])
+                    maxVal = max(thisMetricoff.max(), thisMetricon.max())
+                    if indm==99:
+                        plt.loglog(thisMetricoff, thisMetricon, 'o', mec='0.75', mfc='none')
+                    else:
+                        plt.plot(thisMetricoff, thisMetricon, 'o', mec=colorsRasterDark[sessionType][f'{mod}Hz_off'], mfc='none',alpha=0.75)
+                        # plt.plot(thisMetricoff, thisMetricon, '.', color=colorsRasterDark[sessionType][f'{mod}Hz_off'])
+        
+                    plt.plot(medianoff, medianon, '+', color=cmap(inds), ms=10, mew=2,zorder=10)
+
+            nCells = np.sum(selectedCells)
+            plt.plot(metricLims[indm], metricLims[indm], 'k--', lw=1)
             thisMetricoff = celldbThisImplant[f'{mod}Hz_off'+metric][selectedCells]
             thisMetricon = celldbThisImplant[f'{mod}Hz_on'+metric][selectedCells]
 
@@ -667,25 +809,8 @@ for indimp,implant in enumerate(subjEachImplant):
             meanoff = np.nanmean(abs(thisMetricoff))
             medianon = np.nanmedian(abs(thisMetricon))
             meanon = np.nanmean(abs(thisMetricon))
-            print(f'[N={nCells}]  Median {metric}: {mod}Hz off={medianoff:0.4f}, ' +
-                f'on={medianon:0.4f}')
-            
-            print(f'\tMean {metric}: {mod}Hz off={meanoff:0.4f}, ' +
-                f'on={meanon:0.4f}  p={pVal:0.4f}')
-            print(f'\t on>off: {np.mean(thisMetricon>thisMetricoff):0.1%}'+
-                f'\t on<off: {np.mean(thisMetricon<thisMetricoff):0.1%}')
-            
-            thisAx = plt.subplot(gsThisMetric[indmod])
-            maxVal = max(thisMetricoff.max(), thisMetricon.max())
-            if indm==99:
-                plt.loglog(thisMetricoff, thisMetricon, '.', mec='0.75', mfc='none')
-            else:
-                plt.plot(thisMetricoff, thisMetricon, '.', mec=colorsRasterDark[sessionType][f'{mod}Hz_off'], mfc='none',alpha=0.75)
-                # plt.plot(thisMetricoff, thisMetricon, '.', color=colorsRasterDark[sessionType][f'{mod}Hz_off'])
-        
-            plt.plot(medianoff, medianon, '+', color='k', ms=10, mew=2)
-            plt.plot(metricLims[indm], metricLims[indm], 'k--', lw=1)
-            
+
+            plt.plot(medianoff, medianon, '+k', ms=10, mew=2,zorder=10)
             plt.xlim(metricLims[indm])
             plt.ylim(metricLims[indm])
             if indm==99:
@@ -716,19 +841,82 @@ for indimp,implant in enumerate(subjEachImplant):
                 plt.text(0.5, 0.9, f'p < 0.001',
                             transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
             if indm+indmod==0:
-                plt.title(f'N = {nCells} cells', fontsize=fontSizeLabels, fontweight='normal')
+                plt.title(f'N = {sum(selectedCells)} cells', fontsize=fontSizeLabels, fontweight='normal')
         # plt.tight_layout()
         #extraplots.boxoff(thisAx)
 
     if 'AMtone' in sessionType:
-        gsModulation = gsMain[indimp,3+offset].subgridspec(2, 1, hspace=0.3, height_ratios=[0.4,0.2])
-        gs_panel_label(gsMain[indimp,3+offset],subfigure_labels[4+offset])
+        gsModulation = gsMetrics[1].subgridspec(2, 1, hspace=0.3, height_ratios=[0.4,0.2])
+        #gs_panel_label(gsMetrics[1],subfigure_labels[3+offset])
         thisAx = plt.subplot(gsModulation[0])
         plt.sca(thisAx)
 
         metric = 'ToneLaserModulation'+eventKey
 
         print(f'----- {metric} -----')
+        for inds,site in enumerate(studyparams.SITES_EACH_IMPLANT[implant]):
+            subj = studyparams.SUBJECT_EACH_SITE[site]
+            for date in siteDates[site]:
+                cellsToUse = selectedCells & \
+                                    (celldbThisImplant['pdepth']==site) & \
+                                    (celldbThisImplant['date']==date)
+                nCells = sum(cellsToUse)
+                if nCells == 0:
+                    continue
+
+                thisMetricoff = celldbThisImplant[cellsToUse]['4Hz_ToneLaserModulation'+eventKey]
+                thisMetricon = celldbThisImplant[cellsToUse]['64Hz_ToneLaserModulation'+eventKey]
+
+                notnans = (~np.isnan(thisMetricon) & ~np.isnan(thisMetricoff))
+                nCells = sum(notnans)
+
+                thisMetricoff = thisMetricoff[notnans]
+                thisMetricon = thisMetricon[notnans]
+                medianoff = np.nanmedian(thisMetricoff)
+                medianon = np.nanmedian(thisMetricon)
+                meanoff = np.nanmean(thisMetricoff)
+                meanon = np.nanmean(thisMetricon)
+
+                wstat,pVal = stats.wilcoxon(thisMetricoff,thisMetricon)
+                print(f'---{subj}, {site}μm, {date}---')
+                print(f'wstat={wstat}, p={pVal:f}')
+
+                for indcell,dbRow in celldbThisImplant[cellsToUse].iterrows():
+                    plt.plot([1,2],[dbRow['4Hz_ToneLaserModulation'+eventKey],
+                                    dbRow['64Hz_ToneLaserModulation'+eventKey]],lw=0.4, alpha=0.2,
+                                    color=cmap(inds))
+                plt.plot([1,2],[meanoff,meanon],color=cmap(inds),lw=1,zorder=10)
+                plt.plot([1,2],[meanoff,meanon],'.',color=cmap(inds),ms=4,mew=2,zorder=10)
+
+                # plt.boxplot([thisMetricoff,thisMetricon],showmeans=True)
+
+                plt.plot(1*np.ones(nCells),thisMetricoff,'o',alpha=0.1,mfc='none',color=cmap(inds))
+                plt.plot(2*np.ones(nCells),thisMetricon,'o',alpha=0.1,mfc='none',color=cmap(inds))
+
+                
+                # plt.title(f'{implant[0]} -> {implant[1]} Laser Modulation',
+                #                 fontsize=fontSizeLabels, fontweight='normal')
+                # if pVal >= 0.001:
+                #     plt.text(0.5, 0.9, f'p = {pVal:0.3f}',
+                #                 transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+                # else:
+                #     plt.text(0.5, 0.9, f'p < 0.001',
+                #                 transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+                # plt.ylabel('Modulation Index (AU)',fontsize=fontSizeLabels, fontweight='normal')
+                # plt.xlabel('AM Rate',fontsize=fontSizeLabels, fontweight='normal')
+
+                print(f'[N={nCells}]  Median {metric}: 4Hz={medianoff:0.4f}, ' +
+                f'64Hz={medianon:0.4f}')
+            
+                print(f'\tMean {metric}: 4Hz={meanoff:0.4f}, ' +
+                    f'64Hz={meanon:0.4f}  p={pVal:0.4f}')
+                print(f'\t 64Hz>4Hz: {np.mean(thisMetricon>thisMetricoff):0.1%}'+
+                    f'\t 64Hz<4Hz: {np.mean(thisMetricon<thisMetricoff):0.1%}')
+                
+
+                print(f'Median Δ{metric}: {np.nanmedian(thisMetricon - thisMetricoff):0.4f}')
+                print(f'Mean Δ{metric}: {np.nanmean(thisMetricon - thisMetricoff):0.4f}')
+        
 
         thisMetricoff = celldbThisImplant[selectedCells]['4Hz_ToneLaserModulation'+eventKey]
         thisMetricon = celldbThisImplant[selectedCells]['64Hz_ToneLaserModulation'+eventKey]
@@ -743,14 +931,8 @@ for indimp,implant in enumerate(subjEachImplant):
         meanon = np.nanmean(thisMetricon)
 
         wstat,pVal = stats.wilcoxon(thisMetricoff,thisMetricon)
-
+        print(f'---{implant} Pooled---')
         print(f'wstat={wstat}, p={pVal:f}')
-
-        for indcell,dbRow in celldbThisImplant[selectedCells].iterrows():
-            plt.plot([1,2],[dbRow['4Hz_ToneLaserModulation'+eventKey],
-                            dbRow['64Hz_ToneLaserModulation'+eventKey]],lw=0.4, alpha=0.2)
-        plt.plot([1,2],[medianoff,medianon],color='r',lw=1)
-        # plt.boxplot([thisMetricoff,thisMetricon],showmeans=True)
         violas = plt.violinplot([thisMetricoff,thisMetricon],
                     showmedians=True,showextrema=True)
 
@@ -761,43 +943,14 @@ for indimp,implant in enumerate(subjEachImplant):
             body.set_facecolor(colorsRasterDark[sessionType][f'{modRates[indv]}Hz_off'])
             body.set_edgecolor(colorsRasterDark[sessionType][f'{modRates[indv]}Hz_off'])
 
+
         plt.gca().set_aspect('equal', 'box')
 
-        plt.xticks([1,2],['4 Hz','64 Hz'],fontsize=fontSizeLabels, fontweight='normal')
+        plt.xticks([1,2],['Slow','Fast'],fontsize=fontSizeLabels, fontweight='normal')
         plt.ylim([-1,1])
-        # plt.title(f'{implant[0]} -> {implant[1]} Laser Modulation',
-        #                 fontsize=fontSizeLabels, fontweight='normal')
-        if pVal >= 0.001:
-            plt.text(0.5, 0.9, f'p = {pVal:0.3f}',
-                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
-        else:
-            plt.text(0.5, 0.9, f'p < 0.001',
-                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
         plt.ylabel('Modulation Index (AU)',fontsize=fontSizeLabels, fontweight='normal')
-        # plt.xlabel('AM Rate',fontsize=fontSizeLabels, fontweight='normal')
 
-        metricDiff = thisMetricon-thisMetricoff
-        metricDiffEachImplant[implant] = metricDiff
-
-        thisAx = plt.subplot(gsModulation[1])
-        plt.hist(metricDiff[metricDiff<=0], bins=np.arange(-1,1,0.05),
-                 color = colorsRasterDark[sessionType]['4Hz_off'],
-                 weights=np.ones(len(metricDiff[metricDiff<=0]))/len(metricDiff),
-                 label = f'64Hz < 4Hz')
-        
-        plt.hist(metricDiff[metricDiff>0], bins=np.arange(-1,1,0.05),
-                 color = colorsRasterDark[sessionType]['64Hz_off'],
-                 weights=np.ones(len(metricDiff[metricDiff>0]))/len(metricDiff),
-                 label= f'64hz ≥ 4Hz')
-        
-        plt.gca().yaxis.set_major_formatter(PercentFormatter(1))
-        plt.legend(handlelength=1)
-
-        
-
-        
-
-        print(f'[N={nCells}]  Median {metric}: 4Hz={medianoff:0.4f}, ' +
+        print(f'[N={sum(selectedCells)}]  Median {metric}: 4Hz={medianoff:0.4f}, ' +
                 f'64Hz={medianon:0.4f}')
             
         print(f'\tMean {metric}: 4Hz={meanoff:0.4f}, ' +
@@ -808,14 +961,77 @@ for indimp,implant in enumerate(subjEachImplant):
 
         print(f'Median Δ{metric}: {np.nanmedian(thisMetricon - thisMetricoff):0.4f}')
         print(f'Mean Δ{metric}: {np.nanmean(thisMetricon - thisMetricoff):0.4f}')
-        plt.xlim([-1,1])
-        # plt.ylim([0,15])
-        plt.xlabel('Change in Modulation Index (AU)',fontsize=fontSizeLabels, fontweight='normal')
-        plt.ylabel('# Cells',fontsize=fontSizeLabels, fontweight='normal')
 
+        if pVal >= 0.001:
+            plt.text(0.5, 0.9, f'p = {pVal:0.3f}',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        else:
+            plt.text(0.5, 0.9, f'p < 0.001',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+
+        metricDiff = thisMetricon-thisMetricoff
+        metricDiffEachImplant[implant] = metricDiff
+
+        thisAx = plt.subplot(gsModulation[1])
+        
+        plt.hist(metricDiff[metricDiff<=0], bins=np.arange(-1,1,0.05),
+                 color = colorsRasterDark[sessionType]['4Hz_off'],
+                 weights=np.ones(len(metricDiff[metricDiff<=0]))/len(metricDiff),
+                 label = f'Fast < Slow')
+        
+        plt.hist(metricDiff[metricDiff>0], bins=np.arange(-1,1,0.05),
+                 color = colorsRasterDark[sessionType]['64Hz_off'],
+                 weights=np.ones(len(metricDiff[metricDiff>0]))/len(metricDiff),
+                 label= f'Fast ≥ Slow')
+        
+        plt.gca().yaxis.set_major_formatter(PercentFormatter(1))
+        plt.legend(handlelength=1)
+
+        plt.xlim([-1,1])
+        plt.ylim([0,0.15])
+        plt.xlabel('Δ Modulation Index (AU)',fontsize=fontSizeLabels, fontweight='normal')
+        plt.ylabel('% Cells',fontsize=fontSizeLabels, fontweight='normal')
+        plt.axvline(0,color='k',linestyle='dashed')
 
         plt.gca().set_aspect('auto', 'box')
 
+if 'AMtone' in sessionType:
+    for mod in [4,64]:
+        metric = f'{mod}Hz_ToneLaserModulation{eventKey}'
+        metricDiffs = [celldbEachImplant[imp][f'{mod}Hz_ToneLaserModulation{eventKey}'][selectedCellsEachImplant[imp]] for imp in ['LR','RL']]
+        # notnans = (~np.isnan(metricDiffs[0]) & ~np.isnan(metricDiffs[1]))
+        # metricDiffs = [i[notnans] for i in metricDiffs]
+        altHyp = 'greater' if mod == 64 else 'less'
+        wstat,pVal = stats.mannwhitneyu(*metricDiffs,alternative=altHyp,nan_policy='omit')
+
+        medianoff = np.nanmedian(metricDiffs[0])
+        medianon =  np.nanmedian(metricDiffs[1])
+        meanoff = np.nanmean(metricDiffs[0])
+        meanon =  np.nanmean(metricDiffs[1])
+
+        print('---- Overall Per Implant ----')
+        print(f'Median {metric}: LR={medianoff:0.4f}, ' +
+                        f'RL={medianon:0.4f},   p={pVal:0.4f}')
+
+        print(f'Mean {metric}: LR={meanoff:0.4f}, ' +
+                        f'RL={meanon:0.4f}')
+    metricDiffs = [metricDiffEachImplant[imp] for imp in metricDiffEachImplant]
+    
+    wstat,pVal = stats.mannwhitneyu(*metricDiffs,alternative='greater',nan_policy='omit')
+
+    medianoff = np.nanmedian(metricDiffs[0])
+    medianon =  np.nanmedian(metricDiffs[1])
+    meanoff = np.nanmean(metricDiffs[0])
+    meanon =  np.nanmean(metricDiffs[1])
+
+    print('---- Overall Per Implant ----')
+    print(f'Median Δ{metric}: LR={medianoff:0.4f}, ' +
+                    f'RL={medianon:0.4f},   p={pVal:0.4f}')
+
+    print(f'Mean Δ{metric}: LR={meanoff:0.4f}, ' +
+                    f'RL={meanon:0.4f}')
+
+    
 if SAVE_FIGURE:
     cellstring = str(cellsToPlotAll[0])
     for cell in cellsToPlotAll[1:]:
@@ -828,6 +1044,85 @@ if SAVE_FIGURE:
                             figSize, outputDir,transparent=False)
 
 plt.show()
+
+if 0 and 'AMtone' in sessionType:
+    plt.clf()
+    metricDiffsAll = {
+        'Slow AM':[celldbEachImplant[imp][f'4Hz_ToneLaserModulation{eventKey}'][selectedCellsEachImplant[imp]] for imp in ['LR','RL']],
+        'Fast AM':[celldbEachImplant[imp][f'64Hz_ToneLaserModulation{eventKey}'][selectedCellsEachImplant[imp]] for imp in ['LR','RL']],
+        'Δ Modulation Index':[metricDiffEachImplant[imp] for imp in metricDiffEachImplant]
+    }
+
+    metricsEachImp = {
+        'LR':[celldbEachImplant['LR'][f'{mod}Hz_ToneLaserModulation{eventKey}'][selectedCellsEachImplant['LR']] for mod in [4,64]],
+        'RL':[celldbEachImplant['RL'][f'{mod}Hz_ToneLaserModulation{eventKey}'][selectedCellsEachImplant['RL']] for mod in [4,64]]
+    }
+
+    valsEachImp = {
+        'LR':[[np.nanmedian(metricsEachImp['LR'][i]),np.std(metricsEachImp['LR'][i])/np.sqrt(len(metricsEachImp['LR'][i]))] for i in range(2)],
+        'RL':[[np.nanmedian(metricsEachImp['RL'][i]),np.std(metricsEachImp['RL'][i])/np.sqrt(len(metricsEachImp['RL'][i]))] for i in range(2)]
+    }
+
+    mediansEachMetric = [[np.nanmedian(j) for j in metricDiffsAll[i]] for i in metricDiffsAll]
+    errEachMetric = [[np.std(j)/np.sqrt(len(j)) for j in metricDiffsAll[i]] for i in metricDiffsAll]
+
+    # barWidth=0.35
+    # for index,imp in enumerate(['LR','RL']):
+        
+    #     plt.bar(index-barWidth,valsEachImp[imp][0][0],barWidth,label=imp,color='steelblue')
+    #     plt.bar(index+barWidth,valsEachImp[imp][1][0],barWidth,label=imp,color='steelblue')
+    #     plt.errorbar([index-barWidth,index+barWidth],
+    #                     [valsEachImp[imp][0][0],valsEachImp[imp][1][0]],
+    #                     yerr=[valsEachImp[imp][0][1],valsEachImp[imp][1][1]],fmt='.k',zorder=10)
+
+    # plt.xticks([0,1],['LR','RL'])
+
+    gsMain = gridspec.GridSpec(1, 3, width_ratios=[0.2, 0.2, 0.2])
+    gsMain.update(left=0.1, right=0.95, top=0.9, bottom=0.1, wspace=0.6, hspace=0.3)
+
+    thisAx = plt.subplot(gsMain[0])
+    plt.sca(thisAx)
+
+    for indm, metric in enumerate(metricDiffsAll):
+        if indm not in [0]:
+            wstat,pVal = stats.mannwhitneyu(*metricDiffsAll[metric],alternative='greater',nan_policy='omit')
+        else:
+            wstat,pVal = stats.mannwhitneyu(*metricDiffsAll[metric],alternative='less',nan_policy='omit')
+
+        thisAx = plt.subplot(gsMain[indm])
+        plt.sca(thisAx)
+        
+        plt.bar(['LR','RL'],mediansEachMetric[indm],color='steelblue')
+        plt.errorbar([0,1],mediansEachMetric[indm],yerr=errEachMetric[indm],fmt='.k',zorder=10)
+        
+        plt.axhline(0,color='k')
+        
+        if pVal > 0.05:
+            plt.text(0.5, 0.9, f'NS',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        elif pVal >= 0.001:
+            plt.text(0.5, 0.9, f'p = {pVal:0.3f}',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        else:
+            plt.text(0.5, 0.9, f'p < 0.001',
+                        transform=thisAx.transAxes, ha='center', fontsize=fontSizeTicks)
+        plt.title(metric,fontsize=fontSizeLabels,fontweight='normal',y=1.01)
+        plt.ylabel('Modulation Index (AU)',fontsize=fontSizeLabels)
+        plt.ylim([-0.04,0.12])
+        plt.xticks([0,1],['LR','RL'],fontsize=fontSizeTicks)
+
+        plt.gca().set_aspect('auto', 'box')
+
+    extraplots.save_figure(figFilename+'_barplots', figFormat, 
+                            [10,4], outputDir,transparent=False)
+
+# -- Save the updated celldbThisImplant --
+if SAVE:
+    for implant in ['LR','RL']:
+        dbFilename = os.path.join(dbPath,f'celldb_{implant}_{sessionType}_freqtuning.h5')
+        if studyparams.BLNORM:
+            dbFilename = dbFilename.replace('.h5','_norm.h5')
+        celldatabase.save_hdf(celldbEachImplant[implant], dbFilename)
 
 if plotAllCells:
     for implant in celldbEachImplant:
@@ -855,7 +1150,8 @@ if plotAllCells:
         # cellInds = [list(range(i,i+5)) for i in range(0,nCells,5)]
 
         sortedInds = sorted(list(range(nCells)),
-                            key = lambda x: -1*(np.sum([celldb.iloc[x][f'{mod}Hz_ToneLaserModulation{eventKey}'] for mod in modRates])))
+                            key = lambda x: -1*(np.max([celldb.iloc[x][f'{mod}Hz_ToneLaserModulation{eventKey}'] \
+                                                         for mod in studyparams.OFF_RATE[implant]])))
         
         cellInds = [list(sortedInds[i:i+5]) for i in range(0,nCells,5)]
         
@@ -960,10 +1256,12 @@ if plotAllCells:
                         axRaster = plt.subplot(gsRasters[indmod])
                         possibleStimInKHz = possibleStim/1000
                         rasterLabels = ['']*nStim;
-                        rasterLabels[0] = int(possibleStimInKHz[0])
+            
                         rasterLabels[-1] = int(possibleStimInKHz[-1])
 
                         rasterLabels *= trialsEachCond.shape[2]
+
+                        rasterLabels[0] = int(possibleStimInKHz[0])
 
                         reagent=f'{mod}Hz_off'
                         
@@ -974,7 +1272,7 @@ if plotAllCells:
                                                                         labels=rasterLabels,
                                                                         colorEachCond=colorEachCond,
                                                                         rasterized=True)
-                        
+                        plt.axvline(stimDuration, color='0.75', zorder=-10)
                         nTrialson = sum(bdata['laserTrial'][trialInds])
                         nTrialsoff = sum(1-bdata['laserTrial'][trialInds])
 
@@ -991,16 +1289,25 @@ if plotAllCells:
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                     
-                        if eventKey == 'BTR':
-                            plt.axvline(TIME_RANGES[dbRow[reagent+'BestTimeRange']][0],color='r',zorder=-10)
-                            plt.axvline(TIME_RANGES[dbRow[reagent+'BestTimeRange']][1],color='r',zorder=-10)
+                        # if eventKey == 'BTR':
+                        #     plt.axvline(TIME_RANGES[dbRow[reagent+'BestTimeRange']][0],color='r',zorder=-10)
+                        #     plt.axvline(TIME_RANGES[dbRow[reagent+'BestTimeRange']][1],color='r',zorder=-10)
 
-                        else:
-                            plt.axvline(TIME_RANGES[eventKey][0],color='r',zorder=-10)
-                            plt.axvline(TIME_RANGES[eventKey][1],color='r',zorder=-10)
+                        # else:
+                        #     plt.axvline(TIME_RANGES[eventKey][0],color='r',zorder=-10)
+                        #     plt.axvline(TIME_RANGES[eventKey][1],color='r',zorder=-10)
+
+                        if eventKey == 'BTR':
+                            plt.fill_between(TIME_RANGES[dbRow[reagent+'BestTimeRange']],
+                                            *plt.ylim(),color=figparams.colorLaser,alpha=0.4,zorder=-10)
+                            # plt.axvline(TIME_RANGES[dbRow[reagent+'BestTimeRange']][1],color='r',zorder=-10)
+                        elif eventKey != 'Evoked':
+                            plt.fill_between(TIME_RANGES[eventKey], *plt.ylim(), 
+                                            color=figparams.colorLaser, alpha=0.4,zorder=-10)
                         #axRaster.set_yticklabels(['2']+['']*(nFreq-2)+['40'])
                         if indmod==0:
                             plot_stim(plt.ylim(), stimDuration)
+                            plot_stim(plt.ylim(),stimDuration,yposOffset=2,xposOffset=-0.25,stimColor=colorsRasterDark[sessionType]['off'])
                             plt.title(f'Cell #{cellIDs[cellInd]}',loc='left')
                             axRaster.set_xticklabels([])
 
@@ -1030,20 +1337,26 @@ if plotAllCells:
                         
                         allFits = []
                         for reagent in reagentsThisMod:
+                            laser = 0 if 'off' in reagent else 1
                             # -- Plot tuning curve --
+                            nTrialsEachCond = np.array([sum((bdata['currentMod']==mod) & (bdata['currentFreq']==stim) & (bdata['laserTrial']==laser)) for stim in possibleStim])
                             plt.sca(axTuning)
                             window = 3
                             firingRates = dbRow[reagent+'ToneFiringRateEachFreq'+eventKey]
-                            smoothedFRs = dbRow[reagent+'ToneFiringRateEachFreqSmoothed'+eventKey]
+                            # smoothedFRs = dbRow[reagent+'ToneFiringRateEachFreqSmoothed'+eventKey]
+                            errBars = dbRow[reagent+'ToneSigmaEachFreq'+eventKey]/np.sqrt(nTrialsEachCond)
         
                             
                             fitParams = [dbRow[reagent+'ToneGaussianA'+eventKey], dbRow[reagent+'ToneGaussianX0'+eventKey],
                                         dbRow[reagent+'ToneGaussianSigma'+eventKey], dbRow[reagent+'ToneGaussianY0'+eventKey]]
                             # pdots, pfit = extraplots.plot_tuning_curve(possibleStim, firingRates, fitParams)
-                            pfit = plt.plot(np.log2(possibleStim), smoothedFRs)
-                            plt.plot(np.log2(possibleStim),firingRates,'--',
+                            # pfit = plt.plot(np.log2(possibleStim), smoothedFRs)
+                            pfit = plt.plot(np.log2(possibleStim),firingRates,'--',
                                      color=colorsRasterDark[sessionType][reagent],alpha=0.6)
-                            pfit[0].set_color(colorsRasterDark[sessionType][reagent])
+                            plt.errorbar(np.log2(possibleStim),firingRates,yerr=errBars,fmt='.',
+                                     color=colorsRasterDark[sessionType][reagent])
+                            # plt.errorbar(np.log2(possibleStim),firingRates,yerr=errBars)
+                            # pfit[0].set_color(colorsRasterDark[sessionType][reagent])
                             allFits.append(pfit[0])
                             # if eventKey == 'BTR':
                             #     plt.title(dbRow['4Hz_off'+'BestTimeRange'] + ' ' + dbRow['64Hz_off'+'BestTimeRange'])
@@ -1081,20 +1394,44 @@ if plotAllCells:
                             else:
                                 annoMetricoff = dbRow[f'{mod}Hz_offTone'+metricAnnotation+eventKey]
                                 annoMetricon = dbRow[f'{mod}Hz_onTone'+metricAnnotation+eventKey]
-                                annoMetricoffSmoothed = dbRow[f'{mod}Hz_offTone'+'SelectivityKstat'+eventKey]
-                                annoMetriconSmoothed = dbRow[f'{mod}Hz_onTone'+'SelectivityKstat'+eventKey]
-                                prestring = 'Kstat: '
+                                annoMetricoffSmoothed = dbRow[f'{mod}Hz_offTone'+'ClusteringIndex'+eventKey]
+                                annoMetriconSmoothed = dbRow[f'{mod}Hz_onTone'+'ClusteringIndex'+eventKey]
+                                modIndex = dbRow[f'{mod}Hz_ToneLaserModulation{eventKey}']
+                                prestring = 'Modulation Index: '
+                                # prestring = 'CI: '
 
                             if indmod==0:
+                                # plt.title(f'{metricAnnotation}\n{mod}Hz: off={annoMetricoff:0.4f}, on={annoMetricon:0.4f}\n'+
+                                #           f'{prestring}off={annoMetricoffSmoothed:0.4f}, on={annoMetriconSmoothed:0.4f}',y=1.1)
                                 plt.title(f'{metricAnnotation}\n{mod}Hz: off={annoMetricoff:0.4f}, on={annoMetricon:0.4f}\n'+
-                                          f'{prestring}off={annoMetricoffSmoothed:0.4f}, on={annoMetriconSmoothed:0.4f}',y=1.1)
+                                          f'{prestring}{modIndex:0.4f}',y=1.1)
                             else:
+                                # plt.title(f'{mod}Hz: off={annoMetricoff:0.4f}, on={annoMetricon:0.4f}\n'+
+                                #           f'{prestring}off={annoMetricoffSmoothed:0.4f}, on={annoMetriconSmoothed:0.4f}')
                                 plt.title(f'{mod}Hz: off={annoMetricoff:0.4f}, on={annoMetricon:0.4f}\n'+
-                                          f'{prestring}off={annoMetricoffSmoothed:0.4f}, on={annoMetriconSmoothed:0.4f}')
+                                          f'{prestring}{modIndex:0.4f}')
 
                         
                         
+                        # axZscores = plt.subplot(gsExtras[0,0])
+
+                        # zScores = [dbRow[f'{mod}Hz_offToneZscoreEachFreq{eventKey}'],
+                        #            dbRow[f'{mod}Hz_onToneZscoreEachFreq{eventKey}']]
+
+                        # linfit = stats.linregress(*zScores)
+                        # maxval = max(np.concat(zScores))
                         
+                        # plt.sca(axZscores)
+                        # plt.ylim([0,maxval])
+                        # plt.xlim([0,maxval])
+                        # plt.plot(*zScores,'.',color=colorsRasterDark[sessionType][f'{mod}Hz_off'])
+                        # plt.plot(np.linspace(0,maxval,50),np.linspace(0,maxval,50),'--k')
+                        # plt.plot(np.linspace(0,maxval,50),
+                        #          linfit.intercept + linfit.slope*np.linspace(0,maxval,50),
+                        #          '--',color=colorsRasterDark[sessionType][f'{mod}Hz_off'])
+                        # plt.title("s' Each Frequency")
+                        # plt.xlabel("s' off")
+                        # plt.ylabel("s' on")
                         
                         axSpikeShape = plt.subplot(gsExtras[0,0])
                         spikeShape = dbRow['spikeShape']
@@ -1166,7 +1503,7 @@ if plotAllCells:
                     if cell < nCells:
                         cellstring += f'-{cellIDs[cell]:03d}'
 
-                outputDirNew = os.path.join(outputDir,f'{implant}_selectedCells')
+                outputDirNew = os.path.join(outputDir,f'{eventKey}_{implant}_selectedCells')
                 if not os.path.exists(outputDirNew):
                     os.mkdir(outputDirNew)
                 extraplots.save_figure(f'{pageNum}_'+figFilename+'_Just_Curves'+cellstring, 
@@ -1224,10 +1561,3 @@ if 0 and ('AMtone' in sessionType):
 
     plt.show()
 
-# -- Save the updated celldbThisImplant --
-if SAVE:
-    for implant in ['LR','RL']:
-        dbFilename = os.path.join(dbPath,f'celldb_{implant}_{sessionType}_freqtuning.h5')
-        if studyparams.BLNORM:
-            dbFilename = dbFilename.replace('.h5','_norm.h5')
-        celldatabase.save_hdf(celldbEachImplant[implant], dbFilename)

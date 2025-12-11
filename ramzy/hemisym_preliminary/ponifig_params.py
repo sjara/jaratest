@@ -14,7 +14,8 @@ fontSizeTicks = 16
 fontSizePanel = 24
 
 FIGSIZE = {
-    'optoAMtone': [16,12],
+    'optoAMtone': [18,12],
+    'optoShamAMtone': [16,12],
     'optoFreq': [16,8],
     'optoTuningAMtone': [16,12],
     'optoTuningFreq': [16,8]

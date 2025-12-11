@@ -10,9 +10,12 @@ STUDY_NAME = 'hemisym'
 
 OFF_RATE = {
     'poni001':(4,64),
+    'poni008':(4,64),
     'poni009':(4,64),
     'poni005':(64,4),
-    'poni007':(64,4)
+    'poni007':(64,4),
+    'LR':(4,64),
+    'RL':(64,4)
 }
 
 SESSION_TYPES = ['optoTuningAMtone']
@@ -22,6 +25,12 @@ SUBJECTS = ['poni001',
             'poni007',
             'poni008',
             'poni009']
+
+SHAM_SUBJECTS= ['poni001',
+                'poni005',
+                'poni007',
+                'poni008',
+                'poni009']
 
 
 PDEPTH_EACH_SUBJECT = {'poni001':[2360],
@@ -35,15 +44,58 @@ PDEPTH_EACH_SUBJECT = {'poni001':[2360],
 SESSION_DATES_EACH_SUBJECT = {  'poni001':['2025-11-03','2025-11-07','2025-11-12'],
                                 'poni005':['2025-11-06','2025-11-07','2025-11-12'],
                                 'poni007':['2025-10-29','2025-11-18','2025-11-21',
-                                           '2025-11-06','2025-11-07','2025-11-11','2025-11-13'],
+                                           '2025-11-06','2025-11-11','2025-11-13'],
                                 'poni008':['2025-11-17','2025-11-19','2025-11-21'],
-                                'poni009':['2025-11-05','2025-11-11','2025-11-12','2025-11-17']   }
+                                'poni009':['2025-11-05','2025-11-11','2025-11-17']   }
+
+SESSION_DATES_EACH_SITE = {     2360:['2025-11-03','2025-11-07','2025-11-12'],
+                                2250:['2025-11-06','2025-11-07','2025-11-12'],
+                                2300:['2025-10-29','2025-11-18','2025-11-21'],
+                                1580:['2025-11-06','2025-11-07','2025-11-11','2025-11-13'],
+                                1530:['2025-11-17','2025-11-19','2025-11-21'],
+                                1520:['2025-11-05','2025-11-11','2025-11-12','2025-11-17']   }
+
+SHAM_DATES_EACH_SITE = {
+                                2360:['2025-12-03'],
+                                2250:['2025-12-03'],
+                                2300:['2025-12-05'],
+                                1580:['2025-12-04'],
+                                1530:['2025-12-05'],
+                                1520:['2025-12-04']
+}
+
+
+SHAM_DATES_EACH_SUBJECT = {     'poni001':['2025-12-03'],
+                                'poni005':['2025-12-03'],
+                                'poni007':['2025-12-04','2025-12-05'],
+                                'poni008':['2025-12-05'],
+                                'poni009':['2025-12-04']}
+
+
 
 SUBJECTS_EACH_IMPLANT = {
     'LR'    :   ['poni001','poni008','poni009'],
     'RL'    :   ['poni005','poni007']
 }
 
+SITES_EACH_IMPLANT = {
+    'LR'    :   [2360,1530,1520],
+    'RL'    :   [2250,1580,2300]
+}
+
+SUBJECT_EACH_SITE = {
+    2360:'poni001',
+    2250:'poni005',
+    1580:'poni007',
+    2300:'poni007',
+    1530:'poni008',
+    1520:'poni009'
+}
+
+SUBJECTS_EACH_SHAM = {
+    'LR'    :   ['poni001','poni008','poni009'],
+    'RL'    :   ['poni005','poni007']
+}
 
 REAGENTS_ALL = [str(i)+'Hz_off' for i in [0,4,64]]+[str(i)+'Hz_on' for i in [0,4,64]]
 MOD_RATES_ALL = [0,4,64]
@@ -56,6 +108,7 @@ REAGENTS = {
     'optoTuningFreq':['0Hz_off','0Hz_on'],
     'optoAM':['off','on'],
     'optoTuningAMtone':[str(i)+'Hz_off' for i in [4,64]]+[str(i)+'Hz_on' for i in [4,64]],
+    'optoShamAMtone':[str(i)+'Hz_off' for i in [4,64]]+[str(i)+'Hz_on' for i in [4,64]],
     'poniAMtone_2x1': [str(i)+'Hz_off' for i in [4,64]]\
                         +[str(i)+'Hz_C1' for i in [4,64]]\
                             +[str(i)+'Hz_C2' for i in [4,64]],
@@ -64,7 +117,8 @@ REAGENTS = {
 }
 
 SESSION_MODRATES = {'optoTuningFreq':[0],
-                    'optoTuningAMtone':[4,64]}
+                    'optoTuningAMtone':[4,64],
+                    'optoShamAMtone':[4,64]}
 
 SOUND_PREFIXES = {
     'Freq':'Tone',
@@ -72,7 +126,7 @@ SOUND_PREFIXES = {
     'AMtone':'Tone'
 }
 
-SESSION_PREFIXES = {'AMtone':'Tone','optoTuningAMtone':'Tone','poniAMtone_2x1':'Tone',
+SESSION_PREFIXES = {'AMtone':'Tone','optoTuningAMtone':'Tone','optoShamAMtone':'Tone','poniAMtone_2x1':'Tone',
                     'optoTuningFreq':'Tone'}
 
 
@@ -126,12 +180,12 @@ EVENT_KEYS = ['Evoked','Onset','Interim','Sustained','Offset']
 METRICS = ['BaselineFiringRate', 'Ntrials', 'BaselineSigma', 
            'LaserFiringRate','LaserSigma','LaserPval',
            'ResponseMinPval', 'SelectivityPval', 'SelectivityKstat', 
-            'FiringRateBestFreq', 'BestFreq', 
-            'AvgEvokedFiringRate', 'GaussianA', 'GaussianX0', 'GaussianSigma', 
-            'GaussianY0', 'GaussianRsquare','MeanDiscrim','DiscrimBestFreq',
-            'SigmaAvgFR','FanoFactor','FanoFactorSmoothed','VariabilityIndex',
-            'FiringRateEachFreq','FiringRateEachFreqSmoothed','DiscrimEachFreq',
-            'SigmaEachFreq','NormResponseEachOctave']
+            'FiringRateBestFreq', 'BestFreq', 'DiscrimRatio','EvokedSigmaRMS','ClusteringIndex','PooledSigma',
+            'AvgEvokedFiringRate', 'GaussianA', 'GaussianX0', 'GaussianSigma', 'FanoIndex',
+            'GaussianY0', 'GaussianRsquare','MeanDiscrimRaw','MeanDiscrim','DiscrimBestFreq',
+            'SigmaAvgFR','FanoFactor','FanoFactorSmoothed','SelectivityIndex','VariabilityIndex',
+            'FiringRateEachFreq','FiringRateEachFreqSmoothed','DiscrimEachFreq', #'ZscoreEachFreq',
+            'SigmaEachFreq','NormResponseEachOctave','FiringRateEachOctave']
 
 MEASUREMENTS = [['BaselineFiringRate', 'Ntrials', 'BaselineSigma'], 
                 ['ResponseMinPval', 'SelectivityPval', 'SelectivityKstat', 
@@ -143,23 +197,28 @@ MEASUREMENTS = [['BaselineFiringRate', 'Ntrials', 'BaselineSigma'],
 
 
 BLNORM = True
-# BLNORM = False
+BLNORM = False
+
+# TEST = True
+TEST = False
 
 RUNNING_THRESHOLD = 3
 
 SMOOTHING_WINDOW = 2
 
-MIN_R_SQUARED = 0.05 #0.1 #0.05
+MIN_R_SQUARED = 0.2 #0.1 #0.05
+MIN_PVAL = 0.05
 MIN_DPRIME = 1
 MIN_FANO = 1
 
 MIN_SIGMA = 0.15  # Minimum value of Sigma for the Gaussian fit.
 MAX_SIGMA = 6     # Maximum value of Sigma for the Gaussian fit.
 
-FR_THRESHOLD = 2 # Minimum evoked firing rate to consider a cell responsive.
+FR_THRESHOLD = 1 if BLNORM else 2 # Minimum evoked firing rate to consider a cell responsive.
 
 MAX_CHANGE_FACTOR = 1.3  # Maximum change factor to consider a cell steady
 
-MIN_MODULATION = 0.25
 
-TIME_KEY_METRIC = 'SelectivityPval'
+MIN_MODULATION = 0.05
+
+TIME_KEY_METRIC = 'SelectivityIndex'

@@ -10,11 +10,13 @@ import time
 import re
 from jaratoolbox import settings, celldatabase, loadneuropix, \
     ephyscore, extraplots, spikesanalysis, behavioranalysis
-from ramzy_utils import subplot_panel_label
+
+
 
 NROW = 3
 NCOL = 4
 
+EXCLUDE_LASER = True
 
 def get_args():
     '''Parses user inputs from command line'''
@@ -42,12 +44,17 @@ def get_args():
                         required=False,default='')
     return parser.parse_args()
 
+def subplot_panel_label(sharedAx,label='A',fontSize=24,hpad=0,vpad=0):
+    sharedAx.text(-0.25+hpad, 1.05+vpad, label, transform=sharedAx.transAxes, 
+                    fontsize=fontSize, fontweight='bold')
+    
 stim_types = {
     "AM" : "currentFreq",
     "Freq" : "currentFreq",
     "optoFreq" : "currentFreq",
     "optoAM" : "currentFreq",
     "naturalSound" : "soundID",
+    "naturalSoundLoc": "soundID",
     "optoNaturalSound" : "soundID",
     "L2R3_L2R1_L1R2_L3R2" : "soundLocation",
     "soundLoc" : "soundLocation",
@@ -69,6 +76,7 @@ ylabs = {
     "poniSpont":"Screen Position",
     "optoNaturalSound" : "Sound ID",
     "naturalSound" : "Sound ID",
+    "naturalSoundLoc": "Sound ID",
     "L2R3_L2R1_L1R2_L3R2" : "Sound Location",
     "soundLoc" : "Sound Location",
     "optoSoundLoc" : "Sound Location"
@@ -100,21 +108,22 @@ if cellsToPlot not in ['all','']:
 	cellInds = [int(i) for i in args.cellsToPlot.split(',')]
 
 for paradigm in paradigms:
-    if 'freq' in paradigm.lower() or 'tone' in paradigm.lower():
-        stim_types[paradigm] = 'currentFreq'
-        ylabs[paradigm] = 'Tone Frequency (Hz)'
-    elif "AM" in paradigm or 'optoValidatoin' in paradigm:
-        stim_types[paradigm] = 'currentFreq'
-        ylabs[paradigm] = 'AM Rate (Hz)'
-    elif 'spont' in paradigm.lower():
-        stim_types[paradigm] = 'currentFreq'
-        ylabs[paradigm] = 'Screen Position'
-    elif 'soundloc' in paradigm.lower():
-        stim_types[paradigm] = 'soundLocation'
-        ylabs[paradigm] = 'Sound Location'
-    else:
-        stim_types[paradigm] = 'soundID'
-        ylabs[paradigm] = 'Sound ID'
+    if paradigm not in stim_types:
+        if 'freq' in paradigm.lower() or 'tone' in paradigm.lower():
+            stim_types[paradigm] = 'currentFreq'
+            ylabs[paradigm] = 'Tone Frequency (Hz)'
+        elif "AM" in paradigm or 'optoValidatoin' in paradigm:
+            stim_types[paradigm] = 'currentFreq'
+            ylabs[paradigm] = 'AM Rate (Hz)'
+        elif 'spont' in paradigm.lower():
+            stim_types[paradigm] = 'currentFreq'
+            ylabs[paradigm] = 'Screen Position'
+        elif 'soundloc' in paradigm.lower():
+            stim_types[paradigm] = 'soundLocation'
+            ylabs[paradigm] = 'Sound Location'
+        else:
+            stim_types[paradigm] = 'soundID'
+            ylabs[paradigm] = 'Sound ID'
 
 ### Load cell database, or create/save new database if needed
 dbPath = os.path.join(settings.DATABASE_PATH, studyName, f'celldb_{subject}.h5')
@@ -238,9 +247,9 @@ elif "opto" in str(paradigms):
     numpages = int(np.ceil(numcells/cellsPerPage))
     numdigits = len(str(numpages))
 
-elif "poni" in str(paradigms) or 'AMtone' in str(paradigms):
+elif "poni" in str(paradigms) or 'AMtone' in str(paradigms) or 'naturalSoundLoc' in str(paradigms):
     NROW = 1
-    dims = (6*NCOL,12*NROW)
+    dims = (6*NCOL,18*NROW)
     cellsPerPage = NROW*NCOL
     numcells = len(cellInds)
     numpages = int(np.ceil(numcells/cellsPerPage))
@@ -258,8 +267,8 @@ else:
 ### Allocate data dicts
 spikeTimesFromEventOnsetAll, trialIndexForEachSpikeAll, indexLimitsEachTrialAll = {},{},{}
 possibleStim,possibleYticks,trialsEachCond,possibleLaser,rasterTimeRange,stimDur = {},{},{},{},{},{}
-currentTiles,currentMods = {},{}
-possibleTiles,possibleMods = {},{}
+currentTiles,currentMods,currentAlt = {},{},{}
+possibleTiles,possibleMods,possibleAlt = {},{},{}
 
 ### Extract data
 for paradigm,stim in zip(paradigms,stims):
@@ -316,7 +325,7 @@ for paradigm,stim in zip(paradigms,stims):
             images = [f'C{i+1}' if i >=0 else 'off' for i in bdata['currentStimCol']]
             currentMods[paradigm] = np.array([f'{mod}Hz {image}' for mod,image in zip(currentMods[paradigm],images)])
 
-        possibleMods[paradigm] = np.unique(currentMods[paradigm])
+        possibleMods[paradigm] = np.unique(currentMods[paradigm])[::-1]
         trialsEachCond[paradigm] = \
             behavioranalysis.find_trials_each_combination(currentStim,possibleStim[paradigm],
                                                         currentMods[paradigm],possibleMods[paradigm])
@@ -326,6 +335,21 @@ for paradigm,stim in zip(paradigms,stims):
         trialsEachCond[paradigm] = \
             behavioranalysis.find_trials_each_combination(currentStim,possibleStim[paradigm],
                                                       currentLaser,possibleLaser)
+        
+    elif paradigm == 'naturalSoundLoc':
+        locs = ['B','L','R']
+
+        currentStim = [3*sid + loc for sid,loc in zip(bdata['soundID'],bdata['soundLocation'])]
+        possibleStim[paradigm] = np.unique(currentStim)
+        trialsEachCond[paradigm] = \
+            behavioranalysis.find_trials_each_type(currentStim,possibleStim[paradigm])
+
+        # currentAlt[paradigm] = [locs[i] for i in bdata['soundLocation']]
+        # possibleAlt[paradigm] = np.unique(currentAlt[paradigm])
+        # trialsEachCond[paradigm] = \
+        #     behavioranalysis.find_trials_each_combination(currentStim,possibleStim[paradigm],
+        #                                               currentAlt[paradigm],possibleAlt[paradigm])
+        
     elif 'poni' in paradigm:
         currentTiles[paradigm] = np.array([(f'C{i}R{j}' if i+j>=0 else 'off') for i,j in zip(bdata['currentStimCol'],bdata['currentStimRow'])])
         possibleTiles[paradigm] = np.unique(currentTiles[paradigm])
@@ -348,8 +372,11 @@ for paradigm,stim in zip(paradigms,stims):
         possibleYticks[paradigm] = list(np.round(possibleStim[paradigm]/1000,2))
         ylabs[paradigm] = ylabs[paradigm].replace('Hz','kHz')
 
-    elif paradigm == 'L2R3_L2R1_L1R2_L3R2' or 'soundloc' in paradigm.lower():
+    elif paradigm == 'L2R3_L2R1_L1R2_L3R2':
         possibleYticks[paradigm] = ['L2R3','L2R1','L1R2','L3R2']
+
+    elif paradigm == 'naturalSoundLoc':
+        possibleYticks[paradigm] = [str(i//3)+locs[i%3] for i in possibleStim[paradigm]]
 
     else:
         possibleYticks[paradigm] = list(possibleStim[paradigm])
@@ -641,6 +668,18 @@ if cellsToPlot:
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
 
+                    elif len(trialsEachCond[paradigm].shape)==3 and paradigm in currentAlt:
+                        cumsum = 0
+                        hlines=np.zeros(len(possibleAlt[paradigm]),dtype=int)
+                        for i in range(len(hlines)):
+                            cumsum += sum((currentAlt[paradigm] == possibleAlt[paradigm][i]))
+                            hlines[i] = cumsum
+
+                        for line in hlines:
+                            plt.axhline(line,color='r',zorder=-10)
+                        plt.yticks(0.5*hlines, possibleAlt[paradigm], minor=True)
+                        ax = plt.gca()
+                        ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                     # elif 'AMtone' in paradigm:
                     #     cumsum = 0
                     #     hlines=np.zeros(len(possibleMods[paradigm]),dtype=int)
@@ -771,7 +810,38 @@ else:
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
 
-    
+                elif len(trialsEachCond[paradigm].shape)==3 and paradigm in currentAlt:
+                    cumsum = 0
+                    hlines=np.zeros(len(possibleAlt[paradigm]),dtype=int)
+                    for i in range(len(hlines)):
+                        cumsum += sum((currentAlt[paradigm] == possibleAlt[paradigm][i]))
+                        hlines[i] = cumsum
+
+                    for line in hlines:
+                        plt.axhline(line,color='r',zorder=-10)
+                    plt.yticks(0.5*hlines, possibleAlt[paradigm], minor=True)
+                    ax = plt.gca()
+                    ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+
+                elif paradigm == 'naturalSoundLoc':
+                    cumsum = 0
+                    hlines = np.zeros(20,dtype=int)
+                    for i in range(20):
+                        cumsum += sum((np.array(currentStim)//3 == i))
+                        hlines[i] = cumsum
+
+                    for line in hlines:
+                        plt.axhline(line,color='r',zorder=-10)
+                        
+                    cumsum = 0
+                    hlines = np.zeros(60,dtype=int)
+                    for i in range(60):
+                        cumsum += sum((np.array(currentStim) == i))
+                        hlines[i] = cumsum
+
+                    for line in hlines:
+                        plt.axhline(line,color='steelblue',alpha=0.4,zorder=-10)
+
                 curr_loc = celldbSubset.iloc[indcell]
                 curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
                 curr_depth = curr_loc.maxDepth - pmap.ypos[curr_loc.bestChannel]

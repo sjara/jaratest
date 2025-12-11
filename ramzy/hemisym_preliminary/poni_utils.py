@@ -142,7 +142,7 @@ def find_steady_cells(celldb, params, maxChangeFactor=1.2,sessionType='optoTunin
 
 
 def find_freq_selective(celldb, eventKey='Evoked', 
-                        minR2=studyparams.MIN_R_SQUARED,
+                        minR2=studyparams.MIN_PVAL,
                         minD=studyparams.MIN_DPRIME,
                         minFano=studyparams.MIN_FANO,
                         sessionType='optoTuningFreq'):
@@ -157,21 +157,27 @@ def find_freq_selective(celldb, eventKey='Evoked',
     """
     sessionPre = studyparams.SESSION_PREFIXES[sessionType]
     reagents = studyparams.REAGENTS[sessionType]
-    prefixes = [reagent+sessionPre for reagent in reagents]
+    prefixes = [reagent+sessionPre for reagent in reagents if 'off' in reagent]
     freqSelectiveOff = (celldb[prefixes[0]+'SelectivityPval'+eventKey] <= minR2) 
     goodDoff = (celldb[prefixes[0]+'DiscrimBestFreq'+eventKey]>=minD)
-    goodFano = (celldb[prefixes[0]+'FanoFactorSmoothed'+eventKey] >= minFano)
+    goodFano = (celldb[prefixes[0]+'FanoFactor'+eventKey] >= minFano)
+    goodFI = (celldb[prefixes[0]+'FanoIndex'+eventKey] >= minFano)
+    # goodZ = (celldb[prefixes[0]+'ZscoreBestFreq'+eventKey] >= minFano)
+    goodSI = (celldb[prefixes[0]+'SelectivityIndex'+eventKey] >= minFano)
     highFiring = (celldb[prefixes[0]+'FiringRateBestFreq'+eventKey] >= studyparams.FR_THRESHOLD)
     for prefix in prefixes[1:]:
-        goodFano |= (celldb[prefix+'FanoFactorSmoothed'+eventKey] >= minFano)
-        freqSelectiveOff |= (celldb[prefix+'SelectivityPval'+eventKey] <= minR2)
+        goodFano |= (celldb[prefix+'FanoFactor'+eventKey] >= minFano)
+        goodFI &= (celldb[prefix+'FanoIndex'+eventKey] >= minFano)
+        # goodZ |= (celldb[prefix+'ZscoreBestFreq'+eventKey] >= minFano)
+        goodSI &= (celldb[prefix+'SelectivityIndex'+eventKey] >= minFano)
+        freqSelectiveOff &= (celldb[prefix+'SelectivityPval'+eventKey] <= minR2)
         goodDoff &= (celldb[prefix+'DiscrimBestFreq'+eventKey] >= minD)
         highFiring &= (celldb[prefix+'FiringRateBestFreq'+eventKey] >= studyparams.FR_THRESHOLD)
     
     # freqSelectiveOn = (celldb[prefixes[1]+'SelectivityPval'+eventKey]<0.05)
     # goodFitOff = (celldb[prefixes[0]+'GaussianRsquare'+eventKey] > minR2)
     # goodFitOn = (celldb[prefixes[-1]+'GaussianRsquare'+eventKey] > minR2)
-    return goodFano | freqSelectiveOff #& highFiring #& goodDoff #(freqSelectiveOff & goodFitOff) #| (freqSelectiveOn & goodFitOn)
+    return goodFano #freqSelectiveOff #| goodZ  #| goodFano #& highFiring #& goodDoff #(freqSelectiveOff & goodFitOff) #| (freqSelectiveOn & goodFitOn)
     
     
 def find_good_gaussian_fit(celldb,eventKey='Evoked', minR2=0.05,sessionType = 'optoTuningFreq'):
@@ -197,8 +203,8 @@ def find_good_gaussian_fit(celldb,eventKey='Evoked', minR2=0.05,sessionType = 'o
     goodFit = (celldb[prefixes[0]+'GaussianRsquare'+eventKey] > minR2)
 
     if 'optoTuningAMtone' in sessionType:
-        goodFit = ((celldb['4Hz_offTone'+'GaussianRsquare'+eventKey] > minR2) & \
-                    (celldb['64Hz_offTone'+'GaussianRsquare'+eventKey] > minR2)) 
+        goodFit = ((celldb['4Hz_offTone'+'GaussianRsquare'+eventKey] >= minR2) | \
+                    (celldb['64Hz_offTone'+'GaussianRsquare'+eventKey] >= minR2)) 
 
     # if 'poni' in sessionType:
     #     for prefix in prefixes:
@@ -260,7 +266,7 @@ def find_best_time_keys(celldb,metric,
         return 0
     
     greaterThans = ['GaussianA','GaussianRsquare','GaussianMaxChange','DiscrimBestFreq','FanoFactor','SelectivityKstat',
-                    'SigmaAvgFR']
+                    'SigmaAvgFR','DiscrimRatio','SelectivityIndex','FanoIndex']
     lessThans = ['ResponseMinPval','GaussianSigma','SelectivityPval','GaussianBandwidth']
     sessionPre = studyparams.SESSION_PREFIXES[sessionType]
     reagents = studyparams.REAGENTS[sessionType]
@@ -456,7 +462,7 @@ def get_cell_depths(celldb):
 
 def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange, 
                  timeRangeDuration, eventTimeKeys, measurements, studyparams, 
-                 PLOT=False, DEBUG=False):
+                 PLOT=False, TEST=False):
     '''
     Extracts features from a cell's spiking data. Use with parallelization (e.g., jobslib, multiprocessing)
     so database generation doesn't take forever.
@@ -612,6 +618,9 @@ def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange,
                 pValKruskal = 1
             pValEvokedMin = np.min(pValEvokedEachStim)
 
+            nSpikesAllStims = np.concat(nSpikesEachStim)
+            pooledSigma = np.std(nSpikesAllStims/timeRangeDuration[tKey])
+
             # -- Fit Gaussian to tuning data --
             freqEachTrial = stimEachTrial
             possibleFreq = possibleStim
@@ -675,30 +684,41 @@ def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange,
             columnsDict[reagent+'ToneSigmaEachFreq'+tKey] = sigmaEachStim
             columnsDict[reagent+'ToneDiscrimEachFreq'+tKey] = dprimeEachFreq
             columnsDict[reagent+'ToneMeanDiscrim'+tKey] = np.mean(abs(dprimeEachFreq))
+            columnsDict[reagent+'ToneMeanDiscrimRaw'+tKey] = np.mean(dprimeEachFreq)
+            # columnsDict[reagent+'ToneSelectivityIndex'+tKey] = (maxEvokedFiringRate-(sum(avgFiringRateEachStim)-maxEvokedFiringRate)/15)/np.sqrt(np.mean(sigmaEachStim**2))
+            columnsDict[reagent+'ToneSelectivityIndex'+tKey] = (maxEvokedFiringRate-avgEvokedFiringRate)/np.sqrt(np.mean(sigmaEachStim**2))
             columnsDict[reagent+'ToneDiscrimBestFreq'+tKey] = np.nanmax(abs(dprimeEachFreq))
             columnsDict[reagent+'ToneSigmaAvgFR'+tKey] = np.std(avgFiringRateEachStim)
             columnsDict[reagent+'ToneFanoFactor'+tKey] = (np.std(avgFiringRateEachStim)**2)/avgEvokedFiringRate
             columnsDict[reagent+'ToneFanoFactorSmoothed'+tKey] = (np.std(smoothedFiringRates)**2)/np.mean(smoothedFiringRates)
-            columnsDict[reagent+'ToneVariabilityIndex'+tKey] = (np.std(avgFiringRateEachStim)**2)/maxEvokedFiringRate
+            columnsDict[reagent+'ToneFanoIndex'+tKey] = (np.std(avgFiringRateEachStim)**2)/np.sqrt(np.mean(sigmaEachStim**2))
             
+            columnsDict[reagent+'ToneVariabilityIndex'+tKey] = (np.std(avgFiringRateEachStim)**2)/maxEvokedFiringRate
+            columnsDict[reagent+'TonePooledSigma'+tKey] = pooledSigma
+            columnsDict[reagent+'ToneClusteringIndex'+tKey] = pooledSigma/np.sqrt(np.mean(sigmaEachStim**2))
+
             normResponseEachOctave = np.full(2*nStim-1,np.nan)
             avgFiringRateEachStimOff = columnsDict[reagentOff+'ToneFiringRateEachFreq'+tKey]
             bestFreqInd = np.nanargmax(avgFiringRateEachStim)
             centeringInd = nStim-1-bestFreqInd
             bestFreq = possibleStim[bestFreqInd]
 
+            
             normResponseEachOctave[centeringInd:centeringInd+nStim] = avgFiringRateEachStim/max(avgFiringRateEachStimOff)
             
             columnsDict[reagent+'ToneNormResponseEachOctave'+tKey] = normResponseEachOctave
 
-
+            if bestFreqInd < nStim//2:
+                columnsDict[reagent+'ToneFiringRateEachOctave'+tKey] = avgFiringRateEachStim[bestFreqInd:studyparams.N_FREQ//2+bestFreqInd]
+            else:
+                columnsDict[reagent+'ToneFiringRateEachOctave'+tKey] = avgFiringRateEachStim[bestFreqInd - studyparams.N_FREQ//2+1: bestFreqInd+1][::-1]
 
     return (indRow, columnsDict)
 
 
 def process_database_parallel(sessionType, sessionPre, reagents, celldb, timeRange, 
                                 timeRangeDuration, eventTimeKeys, measurements, studyparams, 
-                                PLOT=False, DEBUG=False):
+                                PLOT=False, TEST=False):
     columnsDict = {}
     for mod in reagents:
         reagent = sessionPre+str(mod)
@@ -713,19 +733,15 @@ def process_database_parallel(sessionType, sessionPre, reagents, celldb, timeRan
             columnsDict[reagent+'ToneSigmaEachFreq'+tKey] = np.full((len(celldb),studyparams.N_FREQ), np.nan)
             columnsDict[reagent+'ToneDiscrimEachFreq'+tKey] = np.full((len(celldb),studyparams.N_FREQ), np.nan)
             columnsDict[reagent+'ToneNormResponseEachOctave'+tKey] = np.full((len(celldb),2*studyparams.N_FREQ - 1), np.nan)
-
-    if DEBUG:
-        indRow = 46  # 46 # 55
-        indRow = 53  # Inverted
-        #indRow = 176
-        indRow = 1533
-        indRow = 1318
-        indRow = 1501 # Wide going down
-        indRow = 1583 # very flat
-        #indRow = 67  # Did not fit before fixing p0(A)
-        celldbToUse = celldb[(celldb['sessionType'].apply(lambda x: sessionType in x))].iloc[[indRow]]
+            columnsDict[reagent+'ToneFiringRateEachOctave'+tKey] = np.full((len(celldb),studyparams.N_FREQ//2), np.nan)
+    
+    if TEST:
+        celldbToUse = celldb[(celldb['sessionType'].apply(lambda x: sessionType in x)) & \
+                             (celldb['date'].apply(lambda x: celldb.iloc[-1]['date'] in x))]
+        
     else:
         celldbToUse = celldb[(celldb['sessionType'].apply(lambda x: sessionType in x))]
+
 
     print(f"--- Processing {sessionType}, {len(celldbToUse)} cells ---")
 
@@ -735,7 +751,7 @@ def process_database_parallel(sessionType, sessionPre, reagents, celldb, timeRan
         tasks.append((
             sessionType, sessionPre, reagents, dbRow,
             timeRange, timeRangeDuration, eventTimeKeys,
-            measurements, studyparams,PLOT, DEBUG
+            measurements, studyparams,PLOT, TEST
         ))
 
     # Configure parallel processing

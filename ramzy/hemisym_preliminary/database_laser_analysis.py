@@ -36,7 +36,7 @@ reload(ephyscore)
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
 # sessionTypes=['poniFreq_4x4_C2R3_2x2','poniFreq_4x1'] 
-DEBUG = 0
+TEST = 1 if studyparams.TEST else 0
 PLOT = 0
 SAVE = 1
 
@@ -91,6 +91,9 @@ outputFilename = os.path.join(dbPath, f'celldb_{subject}_laser_freqtuning.h5')
 if studyparams.BLNORM:
     outputFilename  = outputFilename.replace('.h5','_norm.h5')
 
+if studyparams.TEST:
+    outputFilename = outputFilename.replace('.h5','_test.h5')
+
 for sessionType in sessionTypes:
     timeRange = studyparams.TIME_RANGES_AM if 'AM' in sessionType else studyparams.TIME_RANGES_FREQ
     timeRangeDuration = {k:np.diff(timeRange[k])[0] for k in timeRange.keys()}
@@ -121,6 +124,9 @@ for sessionType in sessionTypes:
 
 
 for sessionType in sessionTypes:
+    if 'sham' in sessionType.lower():
+        outputFilename  = outputFilename.replace('laser','sham')
+
     sessionParams = sessionType.split('_')
     # sessionPre = sessionType[len(sessionParams[0])+1:] +'_'
     sessionPre=''
@@ -128,7 +134,7 @@ for sessionType in sessionTypes:
     
     columnsDictThisSession = studyutils.process_database_parallel(sessionType, sessionPre, reagentsAll[sessionType], celldb,
                                                                     timeRange, timeRangeDuration, eventTimeKeys,
-                                                                    measurements, studyparams, PLOT, DEBUG)
+                                                                    measurements, studyparams, PLOT, TEST)
     columnsDict|=columnsDictThisSession
 
     for tile in reagentsAll[sessionType]:
@@ -144,6 +150,8 @@ for sessionType in sessionTypes:
                 list(columnsDict[reagent+'ToneDiscrimEachFreq'+tKey])
             columnsDict[reagent+'ToneNormResponseEachOctave'+tKey] = \
                 list(columnsDict[reagent+'ToneNormResponseEachOctave'+tKey])
+            columnsDict[reagent+'ToneFiringRateEachOctave'+tKey] = \
+                list(columnsDict[reagent+'ToneFiringRateEachOctave'+tKey])
 
 
 celldbWithTuning = celldb.assign(**columnsDict)
@@ -180,7 +188,7 @@ if SAVE:
 
 # def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange, 
 #                  timeRangeDuration, eventTimeKeys, measurements, studyparams, 
-#                  PLOT=False, DEBUG=False):
+#                  PLOT=False, TEST=False):
      
 #     """Process a single cell row with proper index handling"""
 #     columnsDict = {}
@@ -350,7 +358,7 @@ if SAVE:
     #         for measurement in measurements[3:]:
     #             columnsDict[reagent+measurement+tKey] = np.full(len(celldb), np.nan)
     #         columnsDict[reagent+'ToneFiringRateEachFreq'+tKey] = np.full((len(celldb),studyparams.N_FREQ), np.nan)
-    # if DEBUG:
+    # if TEST:
     #     indRow = 46  # 46 # 55
     #     indRow = 53  # Inverted
     #     #indRow = 176
@@ -371,7 +379,7 @@ if SAVE:
     #     tasks.append((
     #         sessionType, sessionPre, reagentsAll[sessionType], dbRow,
     #         timeRange, timeRangeDuration, eventTimeKeys,
-    #         measurements, studyparams,PLOT, DEBUG
+    #         measurements, studyparams,PLOT, TEST
     #     ))
     # # Configure parallel processing
     # n_workers = os.cpu_count() - 1  # Use all but one core
