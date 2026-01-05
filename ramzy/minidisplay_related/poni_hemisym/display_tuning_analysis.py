@@ -14,7 +14,6 @@ from jaratoolbox import settings, celldatabase, loadneuropix, \
 NROW = 3
 NCOL = 4
 
-def calc_discriminability(spikeTimesFromEventOnset, indexLimitsEachTrial, trialsEachCond)
 
 
 studyName = 'patternedOpto'

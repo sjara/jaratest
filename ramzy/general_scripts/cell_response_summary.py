@@ -55,6 +55,7 @@ stim_types = {
     "optoAM" : "currentFreq",
     "naturalSound" : "soundID",
     "naturalSoundLoc": "soundID",
+    "naturalSoundLoc50dB": "soundID",
     "optoNaturalSound" : "soundID",
     "L2R3_L2R1_L1R2_L3R2" : "soundLocation",
     "soundLoc" : "soundLocation",
@@ -77,6 +78,7 @@ ylabs = {
     "optoNaturalSound" : "Sound ID",
     "naturalSound" : "Sound ID",
     "naturalSoundLoc": "Sound ID",
+    "naturalSoundLoc50dB": "Sound ID",
     "L2R3_L2R1_L1R2_L3R2" : "Sound Location",
     "soundLoc" : "Sound Location",
     "optoSoundLoc" : "Sound Location"
@@ -249,7 +251,7 @@ elif "opto" in str(paradigms):
 
 elif "poni" in str(paradigms) or 'AMtone' in str(paradigms) or 'naturalSoundLoc' in str(paradigms):
     NROW = 1
-    dims = (6*NCOL,18*NROW)
+    dims = (6*NCOL,12*NROW)
     cellsPerPage = NROW*NCOL
     numcells = len(cellInds)
     numpages = int(np.ceil(numcells/cellsPerPage))
@@ -336,7 +338,7 @@ for paradigm,stim in zip(paradigms,stims):
             behavioranalysis.find_trials_each_combination(currentStim,possibleStim[paradigm],
                                                       currentLaser,possibleLaser)
         
-    elif paradigm == 'naturalSoundLoc':
+    elif 'naturalSoundLoc' in paradigm:
         locs = ['B','L','R']
 
         currentStim = [3*sid + loc for sid,loc in zip(bdata['soundID'],bdata['soundLocation'])]
@@ -375,7 +377,7 @@ for paradigm,stim in zip(paradigms,stims):
     elif paradigm == 'L2R3_L2R1_L1R2_L3R2':
         possibleYticks[paradigm] = ['L2R3','L2R1','L1R2','L3R2']
 
-    elif paradigm == 'naturalSoundLoc':
+    elif 'naturalSoundLoc' in paradigm:
         possibleYticks[paradigm] = [str(i//3)+locs[i%3] for i in possibleStim[paradigm]]
 
     else:
@@ -460,6 +462,26 @@ if cellsToPlot:
                         # axleft.set_yticks([])
                         ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    
+                    elif 'naturalSoundLoc' in paradigm:
+                        cumsum = 0
+                        hlines = np.zeros(20,dtype=int)
+                        for i in range(20):
+                            cumsum += sum((np.array(currentStim)//3 == i))
+                            hlines[i] = cumsum
+
+                        for line in hlines:
+                            plt.axhline(line,color='r',zorder=-10)
+                            
+                        cumsum = 0
+                        hlines = np.zeros(60,dtype=int)
+                        for i in range(60):
+                            cumsum += sum((np.array(currentStim) == i))
+                            hlines[i] = cumsum
+
+                        for line in hlines:
+                            plt.axhline(line,color='steelblue',alpha=0.4,zorder=-10)
+                    
                     elif 'opto' in paradigm:
                         midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
@@ -481,6 +503,7 @@ if cellsToPlot:
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
 
+                    
 
 
                     # ------------------------------ NO
@@ -559,6 +582,26 @@ if cellsToPlot:
                         # axleft.set_yticks([])
                         ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    
+                    elif 'naturalSoundLoc' in paradigm:
+                        cumsum = 0
+                        hlines = np.zeros(20,dtype=int)
+                        for i in range(20):
+                            cumsum += sum((np.array(currentStim)//3 == i))
+                            hlines[i] = cumsum
+
+                        for line in hlines:
+                            plt.axhline(line,color='r',zorder=-10)
+                            
+                        cumsum = 0
+                        hlines = np.zeros(60,dtype=int)
+                        for i in range(60):
+                            cumsum += sum((np.array(currentStim) == i))
+                            hlines[i] = cumsum
+
+                        for line in hlines:
+                            plt.axhline(line,color='steelblue',alpha=0.4,zorder=-10)
+                    
                     elif 'opto' in paradigm:
                         midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
@@ -567,6 +610,7 @@ if cellsToPlot:
                                     ['laser OFF', 'laser ON'],minor=True)
                         ax = plt.gca()
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    
                     elif 'poni' in paradigm:
                         cumsum = 0
                         hlines=np.zeros(len(possibleTiles[paradigm]),dtype=int)
@@ -647,6 +691,26 @@ if cellsToPlot:
                         # axleft.set_yticks([])
                         ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
                         ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
+                    
+                    elif 'naturalSoundLoc' in paradigm:
+                        cumsum = 0
+                        hlines = np.zeros(20,dtype=int)
+                        for i in range(20):
+                            cumsum += sum((np.array(currentStim)//3 == i))
+                            hlines[i] = cumsum
+
+                        for line in hlines:
+                            plt.axhline(line,color='r',zorder=-10)
+                            
+                        cumsum = 0
+                        hlines = np.zeros(60,dtype=int)
+                        for i in range(60):
+                            cumsum += sum((np.array(currentStim) == i))
+                            hlines[i] = cumsum
+
+                        for line in hlines:
+                            plt.axhline(line,color='steelblue',alpha=0.4,zorder=-10)
+
                     elif 'opto' in paradigm:
                         midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                         plt.axhline(midline, color='r', zorder=-10)
@@ -781,6 +845,25 @@ else:
                     ax.set_yticks(yticklocs, ylabsThisCell, minor=True)
                     ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
                 
+                elif 'naturalSoundLoc' in paradigm:
+                    cumsum = 0
+                    hlines = np.zeros(20,dtype=int)
+                    for i in range(20):
+                        cumsum += sum((np.array(currentStim)//3 == i))
+                        hlines[i] = cumsum
+
+                    for line in hlines:
+                        plt.axhline(line,color='r',zorder=-10)
+                        
+                    cumsum = 0
+                    hlines = np.zeros(60,dtype=int)
+                    for i in range(60):
+                        cumsum += sum((np.array(currentStim) == i))
+                        hlines[i] = cumsum
+
+                    for line in hlines:
+                        plt.axhline(line,color='steelblue',alpha=0.4,zorder=-10)
+
                 elif 'opto' in paradigm:
                     midline = sum(1-np.nonzero(trialsEachCond[paradigm])[2])
                     plt.axhline(midline, color='r', zorder=-10)
@@ -801,8 +884,6 @@ else:
                         hlines[i] = cumsum
                         yticklocs[i] = cumsum - currsum//2
                         
-                        
-
                     for line in hlines:
                         plt.axhline(line,color='r',zorder=-10)
                     if 'Spont' not in paradigm:
@@ -822,25 +903,6 @@ else:
                     plt.yticks(0.5*hlines, possibleAlt[paradigm], minor=True)
                     ax = plt.gca()
                     ax.tick_params(axis='y',which='minor',left=False, right=True, labelleft=False, labelright=True)
-
-                elif paradigm == 'naturalSoundLoc':
-                    cumsum = 0
-                    hlines = np.zeros(20,dtype=int)
-                    for i in range(20):
-                        cumsum += sum((np.array(currentStim)//3 == i))
-                        hlines[i] = cumsum
-
-                    for line in hlines:
-                        plt.axhline(line,color='r',zorder=-10)
-                        
-                    cumsum = 0
-                    hlines = np.zeros(60,dtype=int)
-                    for i in range(60):
-                        cumsum += sum((np.array(currentStim) == i))
-                        hlines[i] = cumsum
-
-                    for line in hlines:
-                        plt.axhline(line,color='steelblue',alpha=0.4,zorder=-10)
 
                 curr_loc = celldbSubset.iloc[indcell]
                 curr_shank = pmap.channelShank[curr_loc.bestChannel]+1
