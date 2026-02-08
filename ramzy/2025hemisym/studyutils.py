@@ -72,9 +72,8 @@ def find_tone_responsive_cells(celldb, eventKey='Evoked',frThreshold=10, allreag
                         ((celldb[f'{mod}Hz_onToneResponseMinPval'+eventKey] <= alpha) |
                        ((celldb[f'{mod}Hz_onToneDiscrimBestFreq'+eventKey] >= studyparams.MIN_DPRIME))))
         
-        # responsive &= ((celldb[f'{mod}Hz_onToneResponseMinPval'+eventKey] <= alpha) &
-        #                ((celldb[f'{mod}Hz_onToneFiringRateBestFreq'+eventKey] >= frThreshold) | 
-        #                 (celldb[f'{mod}Hz_onToneBaselineFiringRate'] >= frThreshold)))
+        responsive &= ((celldb[f'{mod}Hz_offToneFiringRateBestFreq'+eventKey] >= frThreshold) | 
+                        (celldb[f'{mod}Hz_offToneBaselineFiringRate'] >= frThreshold))
         
     #    responsive &= (celldb[f'{mod}Hz_offToneResponseMinPval'+eventKey] <= alpha)
 
