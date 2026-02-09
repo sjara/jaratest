@@ -1,12 +1,14 @@
 """
-Functions for 2023acid project.
+Helper functions for Ramzy's scripts
 """
 
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from jaratoolbox import settings
-from jaratoolbox import spikesanalysis,behavioranalysis,ephyscore,extraplots
+from jaratoolbox import spikesanalysis,behavioranalysis,ephyscore,extraplots,loadneuropix
+import importlib
 from joblib import Parallel,delayed
 from scipy import stats
 from scipy import optimize
@@ -332,3 +334,82 @@ def gs_panel_label(gsSubFig,label='A',fontSize=24,hpad=0,vpad=0):
 def subplot_panel_label(sharedAx,label='A',fontSize=24,hpad=0,vpad=0):
     sharedAx.text(-0.25+hpad, 1.05+vpad, label, transform=sharedAx.transAxes, 
                     fontsize=fontSize, fontweight='bold')
+    
+def neuropix_join_multisession(subject,
+                               dateStr,
+                               pdepth,
+                               debug=False,
+                               raw_root=settings.EPHYS_NEUROPIX_RAW_ARCHIVE,
+                               save_root=settings.EPHYS_NEUROPIX_RAW_PATH):
+    
+    sessionsRootPath = os.path.join(raw_root, subject)
+    multisessionRawDir = os.path.join(save_root, subject, f'multisession_{dateStr}_{pdepth}um_raw')
+    multisessionProcessedDir = os.path.join(save_root, subject, f'multisession_{dateStr}_{pdepth}um_processed')
+    #multisessionTempDir = os.path.join(sessionsRootPath, f'multisession_{dateStr}_{pdepth}um_tmp')
+
+    # -- Load inforec file --
+    inforecFile = os.path.join(settings.INFOREC_PATH, f'{subject}_inforec.py')
+    spec = importlib.util.spec_from_file_location('inforec_module', inforecFile)
+    inforec = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(inforec)
+
+    # -- Find sessions to concatenate --
+    siteToProcess = None
+    for experiment in inforec.experiments:
+        if experiment.date==dateStr:
+            for site in experiment.sites:
+                if site.pdepth==pdepth:
+                    probeStr = experiment.probe
+                    siteToProcess = site
+    if siteToProcess is None:
+        print(f'Recording for {subject} on {dateStr} at {pdepth}um not found.')
+        sys.exit()
+    sessions = siteToProcess.session_ephys_dirs()
+
+    # -- Create multisession_folders --
+    if debug:
+        print('Running in DEBUG mode. Messages will appear, but nothing will be created/saved.')
+    if not os.path.isdir(multisessionRawDir):
+        if not debug:
+            os.mkdir(multisessionRawDir)
+        print(f'Created {multisessionRawDir}')
+    '''    
+    if not os.path.isdir(multisessionTempDir):
+        if not debug:
+            os.mkdir(multisessionTempDir)
+        print(f'Created {multisessionTempDir}')
+    '''
+    if not os.path.isdir(multisessionProcessedDir):
+        if not debug:
+            os.mkdir(multisessionProcessedDir)
+        print(f'Created {multisessionProcessedDir}')
+
+    if 'NPv1' in probeStr:
+        probeType = 'NPv1'
+    elif 'NPv2' in probeStr:
+        probeType = 'NPv2'
+    else:
+        raise ValueError(f'Unknown probe type: {probeStr}. Please check your inforec file.')
+
+    sinfo = loadneuropix.concatenate_sessions(sessionsRootPath, sessions, multisessionRawDir,
+                                            probe=probeType, debug=debug, savedat=savedat)
+
+    # -- Save a copy of multisession_info.csv to processed folder --
+    multisessionInfoFilepath = os.path.join(multisessionProcessedDir,'multisession_info.csv')
+    if not debug:
+        sinfo.to_csv(multisessionInfoFilepath)
+    print(f'Saved {multisessionInfoFilepath}\n')
+
+    # -- Copy events and recording info for each session --
+    for oneSession in sessions:
+        sessionDir = os.path.join(sessionsRootPath, oneSession)
+        processedSessionSubDir = os.path.join(multisessionProcessedDir, oneSession)
+        if not debug:
+            try:
+                os.mkdir(processedSessionSubDir)
+                loadneuropix.copy_events_and_info(sessionDir, processedSessionSubDir)
+            except FileExistsError:
+                print(f'WARNING! {processedSessionSubDir} already exists. It was not modified.')
+        else:
+            print(f'DEBUG: Created {processedSessionSubDir}')
+            print(f'DEBUG: Copied events and info from {sessionDir} to {processedSessionSubDir}')
