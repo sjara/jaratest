@@ -1,5 +1,8 @@
 
 
+UMpath = '/home/ramzy/src/UnitMatch'
+jaratestpath = '/home/ramzy/src/jaratest'
+
 import subprocess
 import jaratoolbox
 from jaratoolbox import settings,loadneuropix
@@ -23,11 +26,13 @@ import UnitMatchPy.bayes_functions as bf
 import matplotlib.pyplot as plt
 import numpy as np
 
-UMpath = '/home/ramzy/src/UnitMatch'
 
 sys.path.insert(0, os.path.join(UMpath,'UnitMatchPy'))
 sys.path.insert(0, os.path.join(UMpath))
 sys.path.insert(0, os.path.join(UMpath,'UnitMatchPy','DeepUnitMatch'))
+sys.path.insert(0,os.path.join(jaratestpath))
+
+from ramzy.ramzy_utils import neuropix_join_multisession
 
 from DeepUnitMatch.utils import param_fun
 from DeepUnitMatch.testing import test
@@ -288,7 +293,13 @@ sessionDates = studyparams.SESSION_DATES_EACH_SITE[pDepth]
 debug = 'debug' if (len(sys.argv)==5 and sys.argv[4]=='debug') else ''
 
 
+#### CONCATENATE SESSIONS ####
 sessionsRootPath = os.path.join(settings.EPHYS_NEUROPIX_RAW_PATH, subject)
+if not os.path.exists(sessionsRootPath):
+    os.mkdir(sessionsRootPath)
+
+sessionsArchive = os.path.join(settings.EPHYS_NEUROPIX_RAW_ARCHIVE, subject)
+
 KSpath = os.path.join(settings.EPHYS_NEUROPIX_PATH)
 remote_dir = f'jarauser@jarastore:/data/neuropixels/{subject}/'
 
@@ -318,17 +329,20 @@ for date in sessionDates:
         continue
     sessions = siteToProcess.session_ephys_dirs()
 
-    if not os.path.exists(multisessionRawDir):
-        subprocess.run([sys.executable,
-                        os.path.join('/home/ramzy/src/jaratoolbox/scripts/neuropix_join_multisession.py'),
-                        subject, date, str(pDepth), debug])
+    if not os.path.exists(os.path.join(multisessionProcessedDir,'multisession_info.csv'):
+        # subprocess.run([sys.executable,
+        #                 os.path.join('/home/ramzy/src/jaratoolbox/scripts/neuropix_join_multisession.py'),
+        #                 subject, date, str(pDepth), debug])
 
-
+        neuropix_join_multisession(subject,date,pDepth,
+                                   raw_root=os.path.dirname(sessionsArchive),
+                                   save_root=os.path.dirname(sessionsRootPath))
 
         if debug:
             print(f'''To proceed with debugging, please create concatenated files for the sessions on {date} at {pDepth}um (see neuropix_join_multisession.py).''')
         continue
-    
+
+#### PREP FOR UNIT MATCHING ####
 
 KS_dirs = [os.path.join(KSpath,subject,f"multisession_{date}_{pDepth}um_processed") for date in sessionDates]
 save_dir = os.path.join(KSpath,subject,f'UnitMatch_{"_".join(sessionDates)}')
@@ -336,8 +350,8 @@ save_dir = os.path.join(KSpath,subject,f'UnitMatch_{"_".join(sessionDates)}')
 if not os.path.exists(save_dir):
     os.mkdir(save_dir)
 
-# extract_raw_waveforms(KS_dirs)
-run_deep_unit_match(KS_dirs,save_dir)
+extract_raw_waveforms(KS_dirs)          # extract raw waveforms for all the good units
+run_deep_unit_match(KS_dirs,save_dir)   # match units
 
 if 0:
     for date in sessionDates:

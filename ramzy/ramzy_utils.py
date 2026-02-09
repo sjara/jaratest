@@ -13,7 +13,6 @@ from joblib import Parallel,delayed
 from scipy import stats
 from scipy import optimize
 import warnings
-import figparams
 
 
 warnings.simplefilter('ignore')
@@ -308,11 +307,11 @@ def process_database_parallel(sessionType, sessionPre, reagents, celldb, timeRan
 
     return columnsDict
     
-def plot_stim(yLims, stimDuration, stimLineWidth=6, stimColor=figparams.colorStim,yposOffset=0,xposOffset=0):
-    yPos = (1.02+stimDuration*0.04*yposOffset)*yLims[-1] + 0.075*(yLims[-1]-yLims[0])*2*stimDuration
-    pstim = plt.plot([xposOffset, stimDuration], 2*[yPos], lw=stimLineWidth, color=stimColor,
-                     clip_on=False, solid_capstyle='butt')
-    return pstim[0]
+# def plot_stim(yLims, stimDuration, stimLineWidth=6, stimColor=figparams.colorStim,yposOffset=0,xposOffset=0):
+#     yPos = (1.02+stimDuration*0.04*yposOffset)*yLims[-1] + 0.075*(yLims[-1]-yLims[0])*2*stimDuration
+#     pstim = plt.plot([xposOffset, stimDuration], 2*[yPos], lw=stimLineWidth, color=stimColor,
+#                      clip_on=False, solid_capstyle='butt')
+#     return pstim[0]
 
 def get_shared_ax(gsSubFig,keep='none',yaxis=False):
     sharedAx = plt.subplot(gsSubFig)
@@ -335,12 +334,13 @@ def subplot_panel_label(sharedAx,label='A',fontSize=24,hpad=0,vpad=0):
     sharedAx.text(-0.25+hpad, 1.05+vpad, label, transform=sharedAx.transAxes, 
                     fontsize=fontSize, fontweight='bold')
     
-def neuropix_join_multisession(subject,
-                               dateStr,
-                               pdepth,
+def neuropix_join_multisession(subject:str,
+                               dateStr:str,
+                               pdepth:int,
                                debug=False,
                                raw_root=settings.EPHYS_NEUROPIX_RAW_ARCHIVE,
-                               save_root=settings.EPHYS_NEUROPIX_RAW_PATH):
+                               save_root=settings.EPHYS_NEUROPIX_RAW_PATH,
+                               savedat=True):
     
     sessionsRootPath = os.path.join(raw_root, subject)
     multisessionRawDir = os.path.join(save_root, subject, f'multisession_{dateStr}_{pdepth}um_raw')
