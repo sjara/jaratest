@@ -14,9 +14,13 @@ from jaratoolbox import extraplots
 
 SAVE_FIGS = 0
 
-subject = 'arch013'
-sessionDate = '2024-10-23'
-probeDepth = 4500
+# subject = 'arch040'
+# sessionDate = '2025-12-09'
+# probeDepth = 4500
+
+subject = 'arch043'
+sessionDate = '2025-12-19'
+probeDepth = 4600
 
 outputDir = f'/data/reports/{subject}/'
 
@@ -90,3 +94,4 @@ for indpage in range(nPages):
     if SAVE_FIGS:
         figFilename = f'{subject}_{sessionType}_{sessionDate}_{probeDepth}um_{indpage+1:02d}'
         extraplots.save_figure(figFilename, 'png', figSize, outputDir=outputDir, facecolor='w')
+
