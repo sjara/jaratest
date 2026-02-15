@@ -1,7 +1,5 @@
 
 
-UMpath = '/home/ramzy/src/UnitMatch'
-jaratestpath = '/home/ramzy/src/jaratest'
 
 import subprocess
 import jaratoolbox
@@ -14,6 +12,12 @@ import pandas as pd
 import sys
 from pathlib import Path
 import shutil
+
+homedir = os.path.expanduser('~')
+srcPath = os.path.join(homedir,'src')
+UMpath = os.path.join(srcPath,'UnitMatch')
+jaratestpath = os.path.join(srcPath,'jaratest')
+
 
 import UnitMatchPy.extract_raw_data as erd
 from joblib import Parallel, delayed
@@ -43,12 +47,16 @@ from DeepUnitMatch.testing import test
 from DeepUnitMatch.utils import helpers
 
 
-sys.path.insert(0,'/home/ramzy/src/jaratest/ramzy/2025hemisym')
+sys.path.insert(0,os.path.join(jaratestpath,'ramzy','2025hemisym'))
 import studyparams
 from importlib import reload
 
 reload(erd)
 
+subject = sys.argv[1]
+pDepth = int(sys.argv[2])
+sessionDates = studyparams.SESSION_DATES_EACH_SITE[pDepth]
+debug = 'debug' if (len(sys.argv)==5 and sys.argv[4]=='debug') else ''
 
 
 def extract_raw_waveforms(KS_dirs,raw_root=settings.EPHYS_NEUROPIX_RAW_PATH):
@@ -76,8 +84,8 @@ def extract_raw_waveforms(KS_dirs,raw_root=settings.EPHYS_NEUROPIX_RAW_PATH):
     # data_paths = [r'path/to/Decompressed/data1.dat', r'path/to/Decompressed/data2.dat']
     # meta_paths = [r'path/to/data/structure.oebin', r'path/to/data/structure.oebin']
 
-    data_paths = [os.path.join(raw_root,subject,f'multisession_{date}_{pDepth}um_raw','multisession_continuous.dat') for date in sessionDates]
-    meta_paths = [str(next(Path(os.path.join(raw_root,subject,f'multisession_{date}_{pDepth}um_processed')).rglob('structure.oebin'), None)) for date in sessionDates]
+    data_paths = [os.path.join(raw_root,f'multisession_{date}_{pDepth}um_raw','multisession_continuous.dat') for date in sessionDates]
+    meta_paths = [str(next(Path(os.path.join(raw_root,f'multisession_{date}_{pDepth}um_processed')).rglob('structure.oebin'), None)) for date in sessionDates]
 
     #Extract the units 
 
@@ -195,7 +203,7 @@ def run_deep_unit_match(KS_dirs,save_dir):
     # Visualise the similarity matrix
     plt.imshow(sim_matrix, cmap='viridis', aspect='auto')
     plt.colorbar()
-    plt.savefig(os.path.join(save_dir,'similarity_matrix.png'),format='png')
+    plt.savefig(os.path.join(save_dir,'similarity_matrix.png'),format='png',dpi=300)
 
     # Extract parameters from waveform. We only need the distance matrix in DeepUnitMatch.
     clus_info = {'good_units' : param['good_units'], 'session_switch' : session_switch, 'session_id' : session_id, 
@@ -244,7 +252,7 @@ def run_deep_unit_match(KS_dirs,save_dir):
     plt.imshow(probs, cmap='viridis', aspect='auto')
     plt.colorbar()
 
-    plt.savefig(os.path.join(save_dir,'probability_matrix.png'),format='png')
+    plt.savefig(os.path.join(save_dir,'probability_matrix.png'),format='png',dpi=300)
 
 
     # UnitMatchPy evaluation function
@@ -259,7 +267,7 @@ def run_deep_unit_match(KS_dirs,save_dir):
     final_matches[within_session] = 0
     plt.imshow(final_matches, cmap='viridis')
     plt.colorbar()
-    plt.savefig(os.path.join(save_dir,'final_matches.png'),format='png')
+    plt.savefig(os.path.join(save_dir,'final_matches.png'),format='png',dpi=300)
     print(f" Found {np.sum(final_matches)} matches in these sessions using the threshold of {param['match_threshold']}. Total number of units: {param['n_units']}")
 
     # Now we can check performance using the AUC. This tests the agreement between DeepUnitMatch matches and functional scores (in this case, ISI histogram correlations).
@@ -286,12 +294,6 @@ def run_deep_unit_match(KS_dirs,save_dir):
                     distance_matrix, final_matches, clus_info, param, UIDs = UIDs, matches_curated = None, save_match_table = True)
 
     pass
-
-subject = sys.argv[1]
-pDepth = int(sys.argv[2])
-sessionDates = studyparams.SESSION_DATES_EACH_SITE[pDepth]
-debug = 'debug' if (len(sys.argv)==5 and sys.argv[4]=='debug') else ''
-
 
 #### CONCATENATE SESSIONS ####
 sessionsRootPath = os.path.join(settings.EPHYS_NEUROPIX_RAW_PATH, subject)
@@ -329,7 +331,7 @@ for date in sessionDates:
         continue
     sessions = siteToProcess.session_ephys_dirs()
 
-    if not os.path.exists(os.path.join(multisessionProcessedDir,'multisession_info.csv'):
+    if not os.path.exists(os.path.join(multisessionProcessedDir,'multisession_info.csv')):
         # subprocess.run([sys.executable,
         #                 os.path.join('/home/ramzy/src/jaratoolbox/scripts/neuropix_join_multisession.py'),
         #                 subject, date, str(pDepth), debug])
@@ -350,13 +352,14 @@ save_dir = os.path.join(KSpath,subject,f'UnitMatch_{"_".join(sessionDates)}')
 if not os.path.exists(save_dir):
     os.mkdir(save_dir)
 
-extract_raw_waveforms(KS_dirs)          # extract raw waveforms for all the good units
-run_deep_unit_match(KS_dirs,save_dir)   # match units
+extract_raw_waveforms(KS_dirs,sessionsRootPath)         # extract raw waveforms for all the good units
+
+#### MATCH UNITS ####
+run_deep_unit_match(KS_dirs,save_dir)                   # match units
 
 if 0:
     for date in sessionDates:
         shutil.rmtree(os.path.join(sessionsRootPath , f'multisession_{date}_{pDepth}um_raw'))
-        shutil.rmtree(os.path.join(sessionsRootPath , f'multisession_{date}_{pDepth}um_processed'))
 
 if 0:
     if 'win' in sys.platform:
