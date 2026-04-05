@@ -72,8 +72,7 @@ def find_tone_responsive_cells(celldb, eventKey='Evoked',frThreshold=10, allreag
                         ((celldb[f'{mod}Hz_onToneResponseMinPval'+eventKey] <= alpha) |
                        ((celldb[f'{mod}Hz_onToneDiscrimBestFreq'+eventKey] >= studyparams.MIN_DPRIME))))
         
-        responsive &= ((celldb[f'{mod}Hz_offToneFiringRateBestFreq'+eventKey] >= frThreshold) | 
-                        (celldb[f'{mod}Hz_offToneBaselineFiringRate'] >= frThreshold))
+        responsive &= (celldb[f'{mod}Hz_offToneFiringRateBestFreq'+eventKey] >= frThreshold)
         
     #    responsive &= (celldb[f'{mod}Hz_offToneResponseMinPval'+eventKey] <= alpha)
 
@@ -158,6 +157,7 @@ def find_freq_selective(celldb, eventKey='Evoked',
     reagents = studyparams.REAGENTS[sessionType]
     prefixes = [reagent+sessionPre for reagent in reagents if 'off' in reagent]
     freqSelectiveOff = (celldb[prefixes[0]+'SelectivityPval'+eventKey] <= minR2) 
+    goodFRratio = (celldb[prefixes[0]+'AvgEvokedFiringRate'+eventKey]/celldb[prefixes[0]+'FiringRateBestFreq'+eventKey] <0.6)
     goodDoff = (celldb[prefixes[0]+'DiscrimBestFreq'+eventKey]>=minD)
     goodFano = (celldb[prefixes[0]+'FanoFactor'+eventKey] >= minFano)
     goodFI = (celldb[prefixes[0]+'FanoIndex'+eventKey] >= minFano)
@@ -165,6 +165,7 @@ def find_freq_selective(celldb, eventKey='Evoked',
     goodSI = (celldb[prefixes[0]+'SelectivityIndex'+eventKey] >= minFano)
     highFiring = (celldb[prefixes[0]+'FiringRateBestFreq'+eventKey] >= studyparams.FR_THRESHOLD)
     for prefix in prefixes[1:]:
+        goodFRratio &= (celldb[prefix+'AvgEvokedFiringRate'+eventKey]/celldb[prefix+'FiringRateBestFreq'+eventKey] <0.6)
         goodFano |= (celldb[prefix+'FanoFactor'+eventKey] >= minFano)
         goodFI &= (celldb[prefix+'FanoIndex'+eventKey] >= minFano)
         # goodZ |= (celldb[prefix+'ZscoreBestFreq'+eventKey] >= minFano)
@@ -588,6 +589,7 @@ def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange,
                 nSpikesThisStim = nSpikesEachTrial[trialsEachCond[:,indStim]]
                 nSpikesEachStim.append(nSpikesThisStim)
                 avgFiringRateEachStim[indStim] = nSpikesThisStim.mean()/timeRangeDuration[tKey]
+                medFiringRateEachStim[indStim] = nSpikesThisStim.median()/timeRangeDuration[tKey]
                 sigmaEachStim[indStim] =np.std(nSpikesThisStim/timeRangeDuration[tKey])
 
                 dprimeEachFreq[indStim] = \
@@ -696,14 +698,16 @@ def process_cell(sessionType, sessionPre, reagents, dbRow, timeRange,
             columnsDict[reagent+'TonePooledSigma'+tKey] = pooledSigma
             columnsDict[reagent+'ToneClusteringIndex'+tKey] = pooledSigma/np.sqrt(np.mean(sigmaEachStim**2))
 
-            normResponseEachOctave = np.full(2*nStim-1,np.nan)
+            
+            
             avgFiringRateEachStimOff = columnsDict[reagentOff+'ToneFiringRateEachFreq'+tKey]
             bestFreqInd = np.nanargmax(avgFiringRateEachStim)
             centeringInd = nStim-1-bestFreqInd
             bestFreq = possibleStim[bestFreqInd]
 
-            
-            normResponseEachOctave[centeringInd:centeringInd+nStim] = avgFiringRateEachStim/max(avgFiringRateEachStimOff)
+            FREachOctave = np.full(2*nStim-1,np.nan)
+            FREachOctave[centeringInd:centeringInd+nStim] = avgFiringRateEachStim
+            normResponseEachOctave[centeringInd:centeringInd+nStim] = FREachOctave/max(avgFiringRateEachStimOff)
             
             columnsDict[reagent+'ToneNormResponseEachOctave'+tKey] = normResponseEachOctave
 

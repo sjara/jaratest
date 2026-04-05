@@ -28,7 +28,7 @@ importlib.reload(studyparams)
 pd.set_option('mode.chained_assignment', None)
 
 
-# plotCellReports=True
+plotCellReports=True
 plotCellReports=False
 
 subjEachImplant = studyparams.SUBJECTS_EACH_IMPLANT
@@ -66,6 +66,7 @@ modRates = studyparams.SESSION_MODRATES[sessionType]
 nRates = len(modRates)
 
 metricAnnotation = 'FanoFactor'
+# metricAnnotation = 'LaserFRarea'
 # metricAnnotation = 'GaussianBandwidth'
 # metricAnnotation = 'FanoIndex'
 # metricAnnotation = 'MeanDiscrim'
@@ -221,7 +222,9 @@ for indimp,implant in enumerate(subjEachImplant):
 
                 celldbThisImplant[reagent+'ToneFanoIndex'+tKey] = np.array([(np.std(dbRow[reagent+'ToneFiringRateEachFreq'+tKey])**2)/np.sqrt(np.mean(dbRow[reagent+'ToneSigmaEachFreq'+tKey]**2)) for indrow,dbRow in celldbThisImplant.iterrows()])
 
-                     
+                if 'off' in reagent:
+                    celldbThisImplant[reagent.replace('off','')+'ToneLaserFRarea'+tKey] = np.array([np.trapezoid(celldbThisImplant.iloc[i][reagent.replace('off','on')+'ToneFiringRateEachFreq'+tKey]-celldbThisImplant.iloc[i][reagent+'ToneFiringRateEachFreq'+tKey],
+                                                                            np.arange(16)) for i in range(nCells)])
                 
                 # celldbThisImplant[reagent+'ToneClusteringIndex'+tKey] = np.array([(dbRow[reagent+'TonePooledSigma'+tKey])/np.sqrt(np.mean(dbRow[reagent+'ToneSigmaEachFreq'+tKey]**2)) for indrow,dbRow in celldbThisImplant.iterrows()])
                 celldbThisImplant[reagent+'ToneClusteringIndex'+tKey] = celldbThisImplant[reagent+'ToneFanoIndex'+tKey]
@@ -365,6 +368,11 @@ for indimp,implant in enumerate(subjEachImplant):
         thisMetricoff = celldbThisImplant[f'{mod}Hz_offTone'+metricAnnotation+eventKey]
         thisMetricon = celldbThisImplant[f'{mod}Hz_onTone'+metricAnnotation+eventKey]
         celldbThisImplant[f'{mod}Hz_ToneLaserModulation'+eventKey] = studyutils.modulation_index(thisMetricoff,thisMetricon)
+        nCells = len(thisMetricoff)
+        # celldbThisImplant[f'{mod}Hz_ToneLaserModulation'+eventKey] = np.abs(np.array([np.trapezoid(celldbThisImplant.iloc[i][f'{mod}Hz_offToneFiringRateEachFreq'+tKey]-celldbThisImplant.iloc[i][f'{mod}Hz_onToneFiringRateEachFreq'+tKey],
+        #                                                                             np.arange(16)) for i in range(nCells)]))/np.array([np.trapezoid(celldbThisImplant.iloc[i][f'{mod}Hz_onToneFiringRateEachFreq'+tKey]+celldbThisImplant.iloc[i][f'{mod}Hz_offToneFiringRateEachFreq'+tKey],
+        #                                                                             np.arange(16)) for i in range(nCells)])
+        
         lasMod &= (celldbThisImplant[f'{mod}Hz_onToneLaserPval'] <= studyparams.MIN_PVAL) 
 
         if 0 or mod > 0:
@@ -1093,7 +1101,7 @@ if BAR_CHARTS and 'AMtone' in sessionType:
         thisAx = plt.subplot(gsMain[indm])
         plt.sca(thisAx)
         
-        plt.bar(['LR','RL'],mediansEachMetric[indm],color='steelblue')
+        plt.bar(['L-AC','R-AC'],mediansEachMetric[indm],color='steelblue')
         plt.errorbar([0,1],mediansEachMetric[indm],yerr=errEachMetric[indm],fmt='.k',zorder=10)
         
         plt.axhline(0,color='k')
@@ -1110,7 +1118,7 @@ if BAR_CHARTS and 'AMtone' in sessionType:
         plt.title(metric,fontsize=fontSizeLabels,fontweight='normal',y=1.01)
         plt.ylabel('Modulation Index (AU)',fontsize=fontSizeLabels)
         plt.ylim([-0.04,0.12])
-        plt.xticks([0,1],['LR','RL'],fontsize=fontSizeTicks)
+        plt.xticks([0,1],['L-AC','R-AC'],fontsize=fontSizeTicks)
 
         plt.gca().set_aspect('auto', 'box')
 
@@ -1182,7 +1190,7 @@ if plotCellReports:
                     # gsExtras = gsExample[2].subgridspec(2,2, hspace=0.4,wspace=0.4)
 
                     gsRasters = gsMain[0,indcell].subgridspec(nRates,1,hspace=0.1)
-                    gsTuning = gsMain[1,indcell].subgridspec(nRates,1,hspace=0.8)
+                    gsTuning = gsMain[1,indcell].subgridspec(nRates+1,1,hspace=0.8)
                     gsExtras = gsMain[2,indcell].subgridspec(2,2,hspace=0.8,wspace=0.4)
 
                     # axTuning = plt.subplot(gsExample[1])
@@ -1335,8 +1343,12 @@ if plotCellReports:
 
                         reagentsThisMod = [i for i in reagentsToPlot if str(mod) in i]
                         axTuning = plt.subplot(gsTuning[indmod])
+                        axTuningBoth = plt.subplot(gsTuning[2])
                         
                         allFits = []
+                        allFitsBoth = []
+                        maxFR = max(np.concat([dbRow[reagent+'ToneFiringRateEachFreq'+eventKey] for reagent in reagents]))
+                        minFR = min(np.concat([dbRow[reagent+'ToneFiringRateEachFreq'+eventKey] for reagent in reagents]))
                         for reagent in reagentsThisMod:
                             laser = 0 if 'off' in reagent else 1
                             # -- Plot tuning curve --
@@ -1346,7 +1358,11 @@ if plotCellReports:
                             firingRates = dbRow[reagent+'ToneFiringRateEachFreq'+eventKey]
                             # smoothedFRs = dbRow[reagent+'ToneFiringRateEachFreqSmoothed'+eventKey]
                             errBars = dbRow[reagent+'ToneSigmaEachFreq'+eventKey]/np.sqrt(nTrialsEachCond)
-        
+
+                            # if max(firingRates)>maxFR:
+                            #     maxFR = max(firingRates)
+                            # if min(firingRates) < minFR:
+                            #     minFR = min(firingRates)
                             
                             fitParams = [dbRow[reagent+'ToneGaussianA'+eventKey], dbRow[reagent+'ToneGaussianX0'+eventKey],
                                         dbRow[reagent+'ToneGaussianSigma'+eventKey], dbRow[reagent+'ToneGaussianY0'+eventKey]]
@@ -1372,7 +1388,34 @@ if plotCellReports:
                             # axTuning.set_title(f'Cell #{cellInd}',loc='left')
                             axTuning.legend(allFits, ['off','on'],  handlelength=1,
                                                 loc='upper right',bbox_to_anchor=(1, 1.5))
+                            plt.ylim([minFR*0.9,maxFR*1.1])
                             
+                            if not laser:
+                                plt.sca(axTuningBoth)
+
+                                pfit = plt.plot(np.log2(possibleStim),firingRates,'--',
+                                        color=colorsRasterDark[sessionType][reagent],alpha=0.6)
+                                plt.errorbar(np.log2(possibleStim),firingRates,yerr=errBars,fmt='.',
+                                        color=colorsRasterDark[sessionType][reagent])
+                                # plt.errorbar(np.log2(possibleStim),firingRates,yerr=errBars)
+                                # pfit[0].set_color(colorsRasterDark[sessionType][reagent])
+                                allFitsBoth.append(pfit[0])
+                                # if eventKey == 'BTR':
+                                #     plt.title(dbRow['4Hz_off'+'BestTimeRange'] + ' ' + dbRow['64Hz_off'+'BestTimeRange'])
+                                # pdots[0].set_color(colorsRasterDark[sessionType][reagent])
+                                extraplots.boxoff(axTuningBoth)
+                                xTicks = np.array([2000, 4000, 8000,16000, 32000])
+                                axTuningBoth.set_xticks(np.log2(xTicks))
+                                axTuningBoth.set_xticklabels((xTicks/1000).astype(int))
+                                if indmod==1:
+                                    axTuningBoth.set_xlabel('Frequency (kHz)', fontsize=fontSizeLabels)
+                                axTuningBoth.set_ylabel('spk/s', fontsize=fontSizeLabels)
+                                # axTuningBoth.set_title(f'Cell #{cellInd}',loc='left')
+                                
+                                plt.ylim([minFR*0.9,maxFR*1.1])
+                                plt.sca(axTuning)
+                        axTuningBoth.legend(allFitsBoth, ['fast','slow'],  handlelength=1,
+                                                    loc='upper right',bbox_to_anchor=(1, 1.5))
                         if metricAnnotation:
                             if 'Smoothed' in metricAnnotation:
                                 annoMetricoff = dbRow[f'{mod}Hz_offTone'+metricAnnotation.replace('Smoothed','')+eventKey]
@@ -1412,8 +1455,11 @@ if plotCellReports:
                                 plt.title(f'{mod}Hz: off={annoMetricoff:0.4f}, on={annoMetricon:0.4f}\n'+
                                           f'{prestring}{modIndex:0.4f}')
 
-                        
-                        
+
+                        # for i in range(nRates+1):
+                        #     plt.sca(plt.subplot(gsTuning[i]))
+                        #     plt.ylim([minFR*0.9,maxFR*1.1])
+
                         # axZscores = plt.subplot(gsExtras[0,0])
 
                         # zScores = [dbRow[f'{mod}Hz_offToneZscoreEachFreq{eventKey}'],
