@@ -14,9 +14,9 @@ from jaratoolbox import extraplots
 
 SAVE_FIGS = 0
 
-subject = 'arch042'
-sessionDate = '2025-12-08'
-probeDepth = 3700
+subject = 'arch050'
+sessionDate = '2026-02-19'
+probeDepth = 2980
 
 outputDir = f'/data/reports/{subject}/'
 
@@ -30,7 +30,7 @@ celldbSubset = celldb[(celldb.date==sessionDate) & (celldb.pdepth==probeDepth)]
 # -- Load the data --
 ensemble = ephyscore.CellEnsemble(celldbSubset)
 
-sessionType = 'optoTuningFreq'
+sessionType = 'optoTuningAM'
 ephysData, bdata = ensemble.load(sessionType)
 
 # -- Align spikes to sound onset --
