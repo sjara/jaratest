@@ -4,6 +4,7 @@ Scripts by Evan Vickers.
 * `response_tuning`: scripts to estimate tuning of cells recorded with 2p.
 
 * For 2p colocalization of green (GCaMP8m+) and red (AAVrg-tdTomato) neurons, run the script called "twophoton_green_red_colocalization_cli.py". this gives an output to /home/jarauser/tmp called "mouseID_date_session_plane#_spatial_maps.png". Here is the docstring:
+  
 ""
 sound_tuning_redcell_spatial_maps_cli.py
 
@@ -32,6 +33,7 @@ python twophoton_green_red_colocalization_cli.py \
 """
 
 * For 2p  response tuning, run the script called "twophoton_sound_tuning_cli.py" this gives outputs to /home/jarauser/tmp called "mouseID_date_session_plane#_..."tuning_raster", "low_example_cell#", "high_example_cell#", "cell#trace_overlay", "eventlocked_avg", and "AM_tuning_curves". For this script, you do not need to pass the explicit suite2p output directory as it is inferred from the mouseID, date, and session. Here is the docstring:
+  
   """
 twophoton_sound_tuning_cli.py
 
