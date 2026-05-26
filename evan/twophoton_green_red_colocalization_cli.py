@@ -14,13 +14,13 @@ with --output-dir.
 Examples
 --------
 AM tuning:
-python sound_tuning_redcell_spatial_maps_cli.py \
+python twophoton_green_red_colocalization_cli.py \
   --subject imag029 --date 20260424 --session 006 --plane 0 \
   --paradigm am_tuning --sound-type AM \
   --suite2p-dir /data/twophoton/imag029_processed/20260424/006/suite2p/plane0
 
 Frequency tuning:
-python sound_tuning_redcell_spatial_maps_cli.py \
+python twophoton_green_red_colocalization_cli.py \
   --subject imag025 --date 20260417 --session 000 --plane 0 \
   --paradigm tuning_curve --sound-type frequency \
   --suite2p-dir /data/twophoton/imag025_processed/20260417/000/suite2p/plane0 \
