@@ -1,11 +1,38 @@
+# Two-photon analysis scripts
+
 Scripts by Evan Vickers.
 
-* `2p_colocalization`: scripts to estimate percentage of green cells that are also yellow.
-* `response_tuning`: scripts to estimate tuning of cells recorded with 2p.
+## Script directories
 
-* For 2p colocalization of green (GCaMP8m+) and red (AAVrg-tdTomato) neurons, run the script called "twophoton_green_red_colocalization_cli.py". this gives an output to /home/jarauser/tmp called "mouseID_date_session_plane#_spatial_maps.png". Here is the docstring:
-  
-""
+- `2p_colocalization`: scripts to estimate the percentage of green cells that are also yellow.
+- `response_tuning`: scripts to estimate tuning of cells recorded with two-photon imaging.
+
+---
+
+## 2p colocalization
+
+For two-photon colocalization of green `GCaMP8m+` and red `AAVrg-tdTomato` neurons, run:
+
+```bash
+python twophoton_green_red_colocalization_cli.py
+```
+
+This writes an output file to:
+
+```text
+/home/jarauser/tmp
+```
+
+with the filename format:
+
+```text
+mouseID_date_session_plane#_spatial_maps.png
+```
+
+### Docstring
+
+```python
+"""
 sound_tuning_redcell_spatial_maps_cli.py
 
 Spatial-map-only CLI for two-photon sound tuning with red-cell classification.
@@ -16,6 +43,7 @@ The right panel shows dF/F skewness.
 
 Default output directory is /home/jarauser/tmp, but this can be overridden
 with --output-dir.
+
 Examples
 --------
 AM tuning:
@@ -31,10 +59,45 @@ python twophoton_green_red_colocalization_cli.py \
   --suite2p-dir /data/twophoton/imag025_processed/20260417/000/suite2p/plane0 \
   --output-dir /data/twophoton/imag025_processed/20260417/000/analysis_outputs
 """
+```
 
-* For 2p  response tuning, run the script called "twophoton_sound_tuning_cli.py" this gives outputs to /home/jarauser/tmp called "mouseID_date_session_plane#_..."tuning_raster", "low_example_cell#", "high_example_cell#", "cell#trace_overlay", "eventlocked_avg", and "AM_tuning_curves". For this script, you do not need to pass the explicit suite2p output directory as it is inferred from the mouseID, date, and session. Here is the docstring:
-  
-  """
+---
+
+## 2p response tuning
+
+For two-photon response tuning, run:
+
+```bash
+python twophoton_sound_tuning_cli.py
+```
+
+This writes outputs to:
+
+```text
+/home/jarauser/tmp
+```
+
+with filenames beginning with:
+
+```text
+mouseID_date_session_plane#_...
+```
+
+Expected output types include:
+
+- `tuning_raster`
+- `low_example_cell#`
+- `high_example_cell#`
+- `cell#trace_overlay`
+- `eventlocked_avg`
+- `AM_tuning_curves`
+
+For this script, you do **not** need to pass the explicit Suite2p output directory. It is inferred from the mouse ID, date, and session.
+
+### Docstring
+
+```python
+"""
 twophoton_sound_tuning_cli.py
 
 CLI pipeline for two-photon sound tuning analysis.
@@ -73,4 +136,4 @@ python twophoton_sound_tuning_cli.py \
   --paradigm am_tuning --sound-type AM \
   --suite2p-dir /data/twophoton/imag029_processed/20260424/006/suite2p/plane0
 """
-
+```
