@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-sound_tuning_redcell_spatial_maps_cli.py
+twophoton_green_red_colocalization_cli.py
 
 Spatial-map-only CLI for two-photon sound tuning with red-cell classification.
 
@@ -8,8 +8,8 @@ Outputs exactly one PNG whose filename ends with "spatial_maps.png".
 The left panel shows preferred AM rate or preferred frequency.
 The right panel shows dF/F skewness.
 
-Default output directory is /home/jarauser/tmp, but this can be overridden
-with --output-dir.
+Default output directory is /tmp, but this can be overridden with --output-dir.
+If --suite2p-dir is omitted, it is inferred from settings.TWOPHOTON_PATH.
 
 Examples
 --------
@@ -44,7 +44,7 @@ try:
 except Exception:
     HAS_SKLEARN = False
 
-from jaratoolbox import behavioranalysis, twophotonanalysis
+from jaratoolbox import behavioranalysis, twophotonanalysis, settings
 
 
 # -----------------------------------------------------------------------------
@@ -62,12 +62,22 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--plane", type=int, default=0)
     p.add_argument("--paradigm", default="am_tuning")
 
-    p.add_argument("--suite2p-dir", required=True, type=Path, help="Path to suite2p/planeN")
+    p.add_argument(
+        "--suite2p-dir",
+        required=False,
+        default=None,
+        type=Path,
+        help=(
+            "Optional path to suite2p/planeN. If omitted, defaults to "
+            "settings.TWOPHOTON_PATH / '<subject>_processed' / date / session / "
+            "'suite2p' / f'plane{plane}'."
+        ),
+    )
     p.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("/home/jarauser/tmp"),
-        help="Output directory. Default: /home/jarauser/tmp",
+        default=Path("/tmp"),
+        help="Output directory. Default: /tmp",
     )
 
     p.add_argument("--sound-type", choices=["AM", "frequency", "natural"], default="AM")
@@ -164,6 +174,35 @@ def get_panel_title(sound_type: str) -> str:
     return "Preferred stimulus"
 
 
+
+def resolve_suite2p_dir(args: argparse.Namespace) -> Path:
+    """Resolve Suite2p path.
+
+    If --suite2p-dir is omitted, infer it the same way TwoPhoton defines
+    self.data_path:
+    settings.TWOPHOTON_PATH / f"{subject}_processed" / date / session / "suite2p" / f"plane{plane}".
+    """
+    if args.suite2p_dir is not None:
+        suite2p_dir = args.suite2p_dir.expanduser().resolve()
+        source = "explicit"
+    else:
+        suite2p_dir = (
+            Path(settings.TWOPHOTON_PATH)
+            / f"{args.subject}_processed"
+            / args.date
+            / args.session
+            / "suite2p"
+            / f"plane{args.plane}"
+        ).expanduser().resolve()
+        source = "default"
+
+    print("[suite2p]")
+    print(f"       source : {source}")
+    print(f"       dir    : {suite2p_dir}")
+
+    return suite2p_dir
+
+
 # -----------------------------------------------------------------------------
 # Loading and computation
 # -----------------------------------------------------------------------------
@@ -240,13 +279,18 @@ def compute_eventlocked_and_stim(data2p, args: argparse.Namespace):
         time_range=[args.time_start, args.time_end],
         dff=True,
     )
-    stim = np.asarray(data2p.bdata[stim_key])[valid_events]
 
     print("[compute] eventlocked")
-    print(f"          stim key     : {stim_key}")
-    print(f"          eventlocked  : {eventlocked.shape}")
-    print(f"          tvec         : {tvec.shape}")
-    print(f"          valid events : {valid_events.sum()} / {len(valid_events)}")
+    print(f"          stim key        : {stim_key}")
+    print(f"          eventlocked raw : {eventlocked.shape}")
+    print(f"          tvec            : {tvec.shape}")
+    print(f"          valid events    : {valid_events.sum()} / {len(valid_events)}")
+
+    eventlocked = eventlocked[:, valid_events, :]
+    stim = np.asarray(data2p.bdata[stim_key])[valid_events]
+
+    print(f"          eventlocked valid-only: {eventlocked.shape}")
+    print(f"          stim valid-only       : {stim.shape}")
 
     return eventlocked, tvec, valid_events, stim, stim_key
 
@@ -440,7 +484,7 @@ def plot_spatial_maps(
 
 def main() -> int:
     args = parse_args()
-    args.suite2p_dir = args.suite2p_dir.expanduser().resolve()
+    args.suite2p_dir = resolve_suite2p_dir(args)
     output_dir = args.output_dir.expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 

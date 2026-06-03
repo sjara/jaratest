@@ -11,7 +11,7 @@ This script generates sound-tuning outputs only:
   4. Random low-preferred-stimulus example cell
   5. Random high-preferred-stimulus example cell
   6. Overlayed response traces for an example responsive cell
-  7. Optional red-split tuning raster if --suite2p-dir is supplied and red labels are available
+  7. Red-split tuning raster if red labels are available. If --suite2p-dir is omitted, it is inferred from settings.TWOPHOTON_PATH.
 
 It does NOT generate green/red/yellow spatial maps or ROI colocalization overlays.
 
@@ -32,7 +32,7 @@ python twophoton_sound_tuning_cli.py \
   --paradigm tuning_curve --sound-type frequency \
   --output-dir /data/twophoton/imag025_processed/20260417/000/analysis_outputs
 
-AM tuning with optional red-split raster:
+AM tuning with explicit Suite2p dir:
 python twophoton_sound_tuning_cli.py \
   --subject imag029 --date 20260424 --session 006 --plane 0 \
   --paradigm am_tuning --sound-type AM \
@@ -50,7 +50,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-from jaratoolbox import behavioranalysis, twophotonanalysis
+from jaratoolbox import behavioranalysis, twophotonanalysis, settings
 
 
 # -----------------------------------------------------------------------------
@@ -71,8 +71,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("/home/jarauser/tmp"),
-        help="Output directory. Default: /home/jarauser/tmp",
+        default=Path("/tmp"),
+        help="Output directory. Default: /tmp",
     )
 
     p.add_argument(
@@ -80,8 +80,10 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         help=(
-            "Optional path to suite2p/planeN. If supplied and iscell.npy/redcell.npy are present, "
-            "also saves a red-vs-non-red tuning raster. No spatial maps are produced."
+            "Optional path to suite2p/planeN. If omitted, defaults to "
+            "settings.TWOPHOTON_PATH / '<subject>_processed' / date / session / "
+            "'suite2p' / f'plane{plane}'. Used for the red-vs-non-red tuning raster. "
+            "No spatial maps are produced."
         ),
     )
 
@@ -195,16 +197,22 @@ def load_data(args: argparse.Namespace):
     return data2p
 
 
-def compute_eventlocked(data2p, time_range: list[float], dff: bool = True):
+def compute_eventlocked(data2p, time_range: list[float], dff: bool = True, keep_valid_only: bool = True):
     eventlocked, tvec, valid_events = data2p.event_locked_average(
         time_range=time_range,
         dff=dff,
     )
+
     print("[compute] eventlocked")
     print(f"          time range   : {time_range}")
-    print(f"          eventlocked  : {eventlocked.shape}")
-    print(f"          tvec         : {tvec.shape}")
-    print(f"          valid events : {valid_events.sum()} / {len(valid_events)}")
+    print(f"          eventlocked raw : {eventlocked.shape}")
+    print(f"          tvec            : {tvec.shape}")
+    print(f"          valid events    : {valid_events.sum()} / {len(valid_events)}")
+
+    if keep_valid_only:
+        eventlocked = eventlocked[:, valid_events, :]
+        print(f"          eventlocked valid-only: {eventlocked.shape}")
+
     return eventlocked, tvec, valid_events
 
 
@@ -257,6 +265,41 @@ def sort_and_normalize_by_best(tuning: np.ndarray, possible_stim: np.ndarray) ->
     best_stim = possible_stim[best_idx]
     sort_idx = np.argsort(best_stim)
     return normalize_rows(tuning[sort_idx])
+
+
+# -----------------------------------------------------------------------------
+# Suite2p path resolution
+# -----------------------------------------------------------------------------
+
+def resolve_suite2p_dir(args: argparse.Namespace) -> Path | None:
+    """Resolve Suite2p path.
+
+    If --suite2p-dir is not supplied, infer it exactly like TwoPhoton:
+    settings.TWOPHOTON_PATH / f"{subject}_processed" / date / session / "suite2p" / f"plane{plane}".
+    """
+    if args.suite2p_dir is not None:
+        suite2p_dir = args.suite2p_dir.expanduser().resolve()
+        source = "explicit"
+    else:
+        suite2p_dir = (
+            Path(settings.TWOPHOTON_PATH)
+            / f"{args.subject}_processed"
+            / args.date
+            / args.session
+            / "suite2p"
+            / f"plane{args.plane}"
+        ).expanduser().resolve()
+        source = "default"
+
+    print("[suite2p]")
+    print(f"       source : {source}")
+    print(f"       dir    : {suite2p_dir}")
+
+    if not suite2p_dir.exists():
+        print("[warn] Suite2p directory not found; skipping red-split raster.")
+        return None
+
+    return suite2p_dir
 
 
 # -----------------------------------------------------------------------------
@@ -641,7 +684,8 @@ def main() -> int:
     print(f"       paradigm    : {args.paradigm}")
     print(f"       sound type  : {args.sound_type}")
     print(f"       output dir  : {output_dir}")
-    print(f"       suite2p dir : {args.suite2p_dir}")
+
+    suite2p_dir = resolve_suite2p_dir(args)
 
     data2p = load_data(args)
 
@@ -692,8 +736,8 @@ def main() -> int:
     plot_trace_overlay(args, output_dir, tuning, possible_stim, trials_each_stim, eventlocked, tvec)
 
     redcell = None
-    if args.suite2p_dir is not None:
-        redcell = load_aligned_red_labels(data2p, args.suite2p_dir)
+    if suite2p_dir is not None:
+        redcell = load_aligned_red_labels(data2p, suite2p_dir)
         plot_red_split_tuning_raster(args, output_dir, tuning, possible_stim, redcell)
 
     print("[done]")

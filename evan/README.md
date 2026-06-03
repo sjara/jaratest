@@ -2,25 +2,21 @@
 
 Scripts by Evan Vickers.
 
-## Script directories
-
-- `2p_colocalization`: scripts to estimate the percentage of green cells that are also yellow.
-- `response_tuning`: scripts to estimate tuning of cells recorded with two-photon imaging.
-
----
-
-## 2p colocalization
+## 2p green-red colocalization
 
 For two-photon colocalization of green `GCaMP8m+` and red `AAVrg-tdTomato` neurons, run:
 
 ```bash
-python twophoton_green_red_colocalization_cli.py
+python twophoton_green_red_colocalization_cli.py \
+  --subject --date --session --plane \
+  --paradigm --sound-type \
+  --suite2p-dir (optional)
 ```
 
 This writes an output file to:
 
 ```text
-/home/jarauser/tmp
+/tmp
 ```
 
 with the filename format:
@@ -29,52 +25,43 @@ with the filename format:
 mouseID_date_session_plane#_spatial_maps.png
 ```
 
-### Docstring
-
-```python
-"""
-sound_tuning_redcell_spatial_maps_cli.py
-
-Spatial-map-only CLI for two-photon sound tuning with red-cell classification.
-
-Outputs exactly one PNG whose filename ends with "spatial_maps.png".
-The left panel shows preferred AM rate or preferred frequency.
-The right panel shows dF/F skewness.
-
-Default output directory is /home/jarauser/tmp, but this can be overridden
-with --output-dir.
-
-Examples
+Example calls
 --------
 AM tuning:
+
+```bash
 python twophoton_green_red_colocalization_cli.py \
   --subject imag029 --date 20260424 --session 006 --plane 0 \
   --paradigm am_tuning --sound-type AM \
-  --suite2p-dir /data/twophoton/imag029_processed/20260424/006/suite2p/plane0
+  --suite2p-dir /data/twophoton/imag029_processed/20260424/006/suite2p/plane0 \
+  --output-dir /data/twophoton/imag029_processed/20260424/006/analysis_outputs
+```
 
 Frequency tuning:
+
+```bash
 python twophoton_green_red_colocalization_cli.py \
   --subject imag025 --date 20260417 --session 000 --plane 0 \
   --paradigm tuning_curve --sound-type frequency \
   --suite2p-dir /data/twophoton/imag025_processed/20260417/000/suite2p/plane0 \
   --output-dir /data/twophoton/imag025_processed/20260417/000/analysis_outputs
-"""
 ```
 
----
+## 2p sound response tuning
 
-## 2p response tuning
-
-For two-photon response tuning, run:
+For two-photon sound response tuning, run:
 
 ```bash
-python twophoton_sound_tuning_cli.py
+python twophoton_sound_tuning_cli.py \
+  --subject --date --session --plane 0 \
+  --paradigm --sound-type \
+  --suite2p-dir (optional)
 ```
 
 This writes outputs to:
 
 ```text
-/home/jarauser/tmp
+/tmp
 ```
 
 with filenames beginning with:
@@ -94,46 +81,25 @@ Expected output types include:
 
 For this script, you do **not** need to pass the explicit Suite2p output directory. It is inferred from the mouse ID, date, and session.
 
-### Docstring
-
-```python
-"""
-twophoton_sound_tuning_cli.py
-
-CLI pipeline for two-photon sound tuning analysis.
-
-This script generates sound-tuning outputs only:
-  1. Event-locked average QC plot
-  2. All-cell tuning curves
-  3. Responsive-cell tuning raster
-  4. Random low-preferred-stimulus example cell
-  5. Random high-preferred-stimulus example cell
-  6. Overlayed response traces for an example responsive cell
-  7. Optional red-split tuning raster if --suite2p-dir is supplied and red labels are available
-
-It does NOT generate green/red/yellow spatial maps or ROI colocalization overlays.
-
-Default output directory:
-  /home/jarauser/tmp
-
 Example calls
 -------------
 
 AM tuning:
-python twophoton_sound_tuning_cli.py \
-  --subject imag029 --date 20260424 --session 006 --plane 0 \
-  --paradigm am_tuning --sound-type AM
 
-Frequency tuning:
-python twophoton_sound_tuning_cli.py \
-  --subject imag025 --date 20260417 --session 000 --plane 0 \
-  --paradigm tuning_curve --sound-type frequency \
-  --output-dir /data/twophoton/imag025_processed/20260417/000/analysis_outputs
-
-AM tuning with optional red-split raster:
+```bash
 python twophoton_sound_tuning_cli.py \
   --subject imag029 --date 20260424 --session 006 --plane 0 \
   --paradigm am_tuning --sound-type AM \
-  --suite2p-dir /data/twophoton/imag029_processed/20260424/006/suite2p/plane0
-"""
+  --suite2p-dir /data/twophoton/imag029_processed/20260424/006/suite2p/plane0 \
+  --output-dir /data/twophoton/imag029_processed/20260424/006/analysis_outputs
+```
+
+Frequency tuning:
+
+```bash
+python twophoton_sound_tuning_cli.py \
+  --subject imag025 --date 20260417 --session 000 --plane 0 \
+  --paradigm tuning_curve --sound-type frequency \
+  --suite2p-dir /data/twophoton/imag025_processed/20260417/000/suite2p/plane0 \
+  --output-dir /data/twophoton/imag025_processed/20260417/000/analysis_outputs
 ```
