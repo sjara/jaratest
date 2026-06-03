@@ -16,7 +16,7 @@ This script generates sound-tuning outputs only:
 It does NOT generate green/red/yellow spatial maps or ROI colocalization overlays.
 
 Default output directory:
-  /home/jarauser/tmp
+  /tmp
 
 Example calls
 -------------
