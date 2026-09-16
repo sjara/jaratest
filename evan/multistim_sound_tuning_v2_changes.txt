@@ -1,0 +1,149 @@
+MULTISTIM SOUND_TUNING v2 — CHANGE SUMMARY
+===========================================
+
+Files
+-----
+1. sound_tuning_multistim_fov_analysis_v2.py
+2. sound_tuning_multistim_area_layer_green_yellow_analysis_v2.py
+3. sound_tuning_multistim_cross_area_cellclass_analysis_v2.py
+
+These scripts retain the FOV-aware design from v1. `FOV#` is the authoritative
+shared-cell grouping field and is treated as an integer starting at 0. FOV is
+the primary replicate for population inference. Pooled-cell comparisons are
+shown as descriptive/exploratory outputs where appropriate.
+
+Requested modifications implemented
+-----------------------------------
+
+1) NO GREEN/YELLOW OUTLINES ON GROUP-MEAN/CELL-COUNT MARKERS
+   - GREEN/YELLOW group markers no longer use class-colored outlines.
+   - Where marker size reflects cell count, markers use the class fill color
+     with edgecolors='none'.
+   - Individual-cell colors remain GREEN/YELLOW where useful.
+
+2) CORRECT TWO-AREA STATISTICS
+   - If exactly two areas are supplied (for example `--areas A1 AAF`), the
+     primary cross-area test is a direct two-sided Mann-Whitney U test on FOV-
+     level summaries.
+   - Kruskal-Wallis is NOT run for a two-area comparison.
+   - No redundant Holm correction across area pairs is applied when there is
+     only one area pair.
+   - Cliff's delta and FOV sample sizes are reported with the direct test.
+   - Family-wise Holm correction is still used when testing a family of
+     distinct metrics, stimulus conditions, or BF bins.
+   - For three or more areas, the pipeline retains Kruskal-Wallis followed by
+     pairwise Mann-Whitney U tests with Holm correction across area pairs.
+
+3) 3 x 2 INDIVIDUAL-CELL TUNING PAGES
+   - Script 1 now creates one paginated tuning-curve figure set per sound type:
+       pure_tones
+       chord_tones
+       fm_tones
+   - Each page contains 3 rows x 2 columns = 6 cells/page.
+   - Only FDR-responsive cells for that sound type are included.
+   - Cells are sorted first by preferred condition and then by response
+     strength within preference.
+   - Pages are written under each FOV output in:
+       individual_tuning_pages/<sound_type>/
+
+4) PURE-TONE BEST-FREQUENCY ANALYSIS
+   - BF is defined only for pure-tone FDR-responsive neurons:
+       BF = frequency with the largest mean pure-tone response.
+   - Script 1 outputs per-FOV BF histograms (counts and normalized fractions),
+     plus across-FOV BF heatmaps and FOV BF-center summaries.
+   - Script 2 outputs BF distributions for GREEN and YELLOW cells within each
+     area x layer, FOV-normalized BF distributions, FOV heatmaps, and paired
+     GREEN-vs-YELLOW FOV BF-center comparisons.
+   - Script 3 outputs BF histograms by area, FOV-normalized BF distributions,
+     per-BF-bin area statistics, and FOV median-BF comparisons for each cell
+     class and depth stratum.
+   - Script 3 also adds pure-tone BF center to the area x layer comparison
+     family so L2/3 vs L4/5 can be tested within each area.
+   - BF axes use log2 frequency geometry.
+
+5) CELL REPORTS
+   - Every cell that is FDR-responsive to at least one available sound block
+     receives one PNG report.
+   - Reports are saved per FOV under:
+       cell_reports/green/
+       cell_reports/yellow/
+   - One cell = one PNG.
+   - Layout is 3 rows x 2 columns:
+       row 1: pure-tone mean +/- SEM dF/F traces | pure-tone tuning curve
+       row 2: chord mean +/- SEM dF/F traces     | chord tuning curve
+       row 3: FM mean +/- SEM dF/F traces        | FM tuning curve
+   - If a sound block was not acquired in that FOV, that row is explicitly
+     labeled as unavailable rather than matching cells across another FOV.
+   - Headers include subject, date, FOV#, area, depth, Suite2p ROI, analysis
+     cell index, GREEN/YELLOW class, responsiveness, and BF where available.
+   - The dF/F traces use the primary Jaratoolbox dff=True event-locked data,
+     trial-baseline corrected by subtracting the -1 to 0 s mean.
+   - Tuning scalar response remains:
+       mean dF/F from 0 to 1 s - mean dF/F from -1 to 0 s.
+
+6) READABLE TUNING X-AXES
+   - Dense condition axes use approximately 60-degree tick-label rotation,
+     oriented lower-left to upper-right.
+   - For pure-tone frequency axes (16 conditions), only every other tick label
+     is shown.
+   - The same readable-label rule is used for other dense condition axes.
+   - Pure-tone x geometry remains log2 frequency spacing.
+
+Additional plot-family expansion toward the previous 3-script pipeline
+-----------------------------------------------------------------------
+
+Script 1 (FOV analysis)
+- Existing GREEN/YELLOW FOV tuning profiles and response rasters retained.
+- New responsive-cell 3x2 tuning pages.
+- New all-responsive-cell one-PNG-per-cell reports with dF/F and tuning.
+- New BF histograms per FOV.
+- New combined FOV-by-BF fraction heatmaps and FOV median-BF summaries.
+- Shared-cell cross-sound plots retained.
+- Trial archives are now schema `multistim_v2` and also save condition-level
+  mean +/- SEM baseline-corrected dF/F traces plus the time vector so reports
+  can be recreated without rerunning imaging extraction.
+
+Script 2 (area x layer GREEN/YELLOW)
+- FOV-point primary comparison figures retained.
+- Added exploratory individual-cell point figures for selectivity metrics.
+- Added individual-cell tuning-profile figures.
+- Added normalized cell rasters sorted by preferred condition and by lifetime
+  sparseness, for all cells and responsive-only cells.
+- Added dedicated BF outputs for each area x layer.
+- GREEN/YELLOW group markers do not use class-colored outlines.
+
+Script 3 (cross-area, GREEN and YELLOW separately)
+- FOV-point primary comparison figures retained.
+- Added exploratory pooled individual-cell point figures.
+- Added pooled individual-cell tuning-profile figures.
+- Added dedicated BF outputs for every cell-class x depth-stratum analysis.
+- Dynamic two-area vs >=3-area inference implemented everywhere through the
+  common cross-area statistics function.
+- Existing YELLOW 100/75/50/25% trial-reduction robustness is retained.
+  When there are only two areas, robustness figures correctly refer to the
+  direct Mann-Whitney U primary test rather than a Kruskal-Wallis omnibus.
+
+Important rerun note
+--------------------
+You SHOULD rerun script 1 with v2 before running scripts 2 and 3, even if v1
+has already completed. The v2 trial archives contain new dF/F trace summaries
+required by the cell reports and have a new archive filename/schema.
+
+Suggested run order for imag039 / 20260910
+------------------------------------------
+python sound_tuning_multistim_fov_analysis_v2.py imag039 --area A1 --dates 20260910
+python sound_tuning_multistim_fov_analysis_v2.py imag039 --area AAF --dates 20260910
+python sound_tuning_multistim_area_layer_green_yellow_analysis_v2.py imag039 --dates 20260910 --areas A1 AAF
+python sound_tuning_multistim_cross_area_cellclass_analysis_v2.py imag039 --dates 20260910 --areas A1 AAF
+
+Validation performed
+--------------------
+- All three v2 scripts pass Python syntax compilation.
+- Script-1 cell-report, tuning-page, and BF helpers were smoke-tested with
+  synthetic trial archives.
+- Script-2 individual-cell profile/raster/metric and BF helpers were tested on
+  synthetic multi-FOV data.
+- Script-3 direct two-area statistics were explicitly checked to confirm that
+  A1 vs AAF uses Mann-Whitney U and does not invoke Kruskal-Wallis.
+- Script-3 individual-cell and BF plotting helpers were also smoke-tested on
+  synthetic two-area data.
