@@ -8,6 +8,8 @@ This directory contains:
 - batch analyses that combine multiple imaging sessions from one auditory cortical area;
 - GREEN-versus-YELLOW comparisons within area and cortical layer;
 - cross-area comparisons across A1, AAF, and A2;
+- FOV-aware analysis of matched pure-tone, 3-tone-chord, and FM-sweep blocks;
+- natural-sound response, repeat-variability, and repeat-number stability analyses;
 - older versioned scripts retained for reproducibility.
 
 For new analyses, use the most recent version listed below unless you specifically need to reproduce an older result.
@@ -24,6 +26,11 @@ For new analyses, use the most recent version listed below unless you specifical
 | `am_tuning` area analysis | `am_tuning_area_analysis_v9.py` | Batch frequency/AM-rate tuning analysis of one area |
 | `am_tuning` GREEN vs YELLOW by layer | `am_tuning_area_layer_green_yellow_analysis_v4.py` | Within-area, within-layer GREEN/YELLOW comparisons |
 | `am_tuning` cross-area analysis | `am_tuning_cross_area_cellclass_analysis_v5.py` | Compare A1/AAF/A2 within GREEN or YELLOW cells |
+| Multistim FOV analysis | `sound_tuning_multistim_fov_analysis_v2.py` | Analyze matched pure-tone, chord, and FM blocks from the same FOV |
+| Multistim GREEN vs YELLOW by layer | `sound_tuning_multistim_area_layer_green_yellow_analysis_v2b.py` | Compare GREEN/YELLOW cells within area and layer using FOV-level inference |
+| Multistim cross-area analysis | `sound_tuning_multistim_cross_area_cellclass_analysis_v2b.py` | Compare A1/AAF/A2 separately within GREEN and YELLOW cells |
+| Natural-sound response analysis | `natural_sound_response_analysis_v2.py` | Analyze natural-sound responsiveness and same-condition repeat variability |
+| Natural-sound repeat stability | `natural_sound_repeat_stability_v2.py` | Estimate how stable mean and variance estimates are as repeat count changes |
 
 ---
 
@@ -65,7 +72,7 @@ The 300-um boundary is assigned to L4/5 so that no session is counted twice.
 
 ### Statistical unit
 
-For GREEN-versus-YELLOW and cross-area inference, the imaging **session** is treated as the primary biological replicate.
+For the original `sound_tuning` and `am_tuning` GREEN-versus-YELLOW and cross-area analyses, the imaging **session** is treated as the primary biological replicate. For the newer multistim workflow, the shared imaging **FOV** is the primary replicate.
 
 Pooled-cell statistics are retained where useful for descriptive/exploratory analyses, but cells from the same imaging session are not treated as independent biological replicates for the primary inference.
 
@@ -379,7 +386,301 @@ This compares GREEN and YELLOW populations separately across A1, AAF, and A2, fo
 
 ---
 
-# 3. Single-session utilities
+# 3. FOV-aware multistim `sound_tuning` workflow
+
+This workflow analyzes the newer `sound_tuning` blocks:
+
+- `pure_tones` / `pure_tone`;
+- `chord_tones` / `chord_3t`;
+- `fm_tones` / `fm_sounds` / `fm`.
+
+It is designed for blocks acquired without moving the two-photon field of view and processed from one concatenated Suite2p binary. After the concatenated result is split into per-session folders, Suite2p ROI index `i` must refer to the same cell in every block assigned to that FOV.
+
+### Required `info2p` FOV metadata
+
+`FOV#` is the authoritative grouping field and is an integer starting at 0. FOV numbers may be reused on different dates because the unique key is subject + date + `FOV#`.
+
+Example session metadata:
+
+```python
+{
+    "subject": "imag039",
+    "date": "20260910",
+    "session": "000",
+    "paradigm": "sound_tuning",
+    "sessionLabel": "pure_tones",
+    "brainArea": "A1",
+    "depth": 250,
+    "FOV#": 0,
+}
+```
+
+For older `info2p` files without `FOV#`, the script can infer provisional groups from acquisition order, brain area, depth, and block labels. Inspect `fov_manifest.csv`; use `--fov-groups` when a legacy day is ambiguous.
+
+## Step 1: analyze each area
+
+Run the FOV analysis once per area:
+
+```bash
+python sound_tuning_multistim_fov_analysis_v2.py imag039 \
+    --area A1 \
+    --dates 20260910
+
+python sound_tuning_multistim_fov_analysis_v2.py imag039 \
+    --area AAF \
+    --dates 20260910
+```
+
+Check grouping without loading imaging data:
+
+```bash
+python sound_tuning_multistim_fov_analysis_v2.py imag039 \
+    --area A1 \
+    --dates 20260910 \
+    --dry-run
+```
+
+Legacy explicit grouping example:
+
+```bash
+python sound_tuning_multistim_fov_analysis_v2.py imag039 \
+    --area A1 \
+    --dates 20260910 \
+    --fov-groups 20260910:000-001-002 20260910:006-007
+```
+
+Important optional arguments:
+
+```text
+--plane N
+--n-permutations N
+--seed N
+--fov-groups DATE:SESSION-SESSION-...
+--dry-run
+```
+
+Default response-test permutations: `4096`.
+
+### Main output structure
+
+```text
+<TEMP_OUTPUT_PATH>/evan/sound_tuning_multistim_fov_analysis/<subject>/<area>/<date_tag>/
+    fov_manifest.csv
+    run_manifest.json
+    failures.json
+    fov_outputs/
+        <date>_FOV###/
+            fov_cell_results.csv
+            shared_FOV_green_yellow_classification.png
+            individual_tuning_pages/
+            cell_reports/
+                green/
+                yellow/
+            ... per-block figures and trial-response archives ...
+    combined/
+        combined_cell_results.csv
+        combined_fov_summary.csv
+        responsiveness_statistics.json
+        REPORT.txt
+        ... combined figures ...
+```
+
+### What multistim v2 does
+
+- groups matched sessions by FOV and verifies shared Suite2p ROIs;
+- performs one shared Cellpose GREEN/YELLOW classification per FOV;
+- computes baseline-corrected responses using 0-1 s minus -1-0 s;
+- tests each stimulus condition with Monte-Carlo sign flips and BH-FDR across cells;
+- defines block responsiveness as the union of significant conditions;
+- calculates lifetime sparseness, Gini coefficient, and tuning-profile Fano factor;
+- calculates pure-tone BF and FWHM bandwidth, chord harmonic selectivity, and FM direction/speed selectivity;
+- creates GREEN/YELLOW profiles, rasters, pure-tone BF summaries, 3 x 2 tuning pages, and one report per responsive cell;
+- combines matched cells across sound blocks for cross-sound response-overlap summaries;
+- saves `multistim_v2` trial archives used by the cross-area trial-reduction analysis.
+
+An FOV may lack one or more sound blocks. Block-specific plots exclude cells with no data for that block, and cell reports mark unavailable blocks explicitly.
+
+## Step 2: GREEN vs YELLOW within area and layer
+
+After running the FOV analysis for the desired areas:
+
+```bash
+python sound_tuning_multistim_area_layer_green_yellow_analysis_v2b.py imag039 \
+    --dates 20260910 \
+    --areas A1 AAF
+```
+
+This script compares GREEN and YELLOW populations independently in each area x layer stratum. Primary tests use paired FOV summaries; pooled-cell plots are labeled exploratory. It includes all-cell and responsive-only tuning metrics, profiles, rasters, preference distributions, and pure-tone BF analyses.
+
+## Step 3: cross-area comparison
+
+```bash
+python sound_tuning_multistim_cross_area_cellclass_analysis_v2b.py imag039 \
+    --dates 20260910 \
+    --areas A1 AAF
+```
+
+GREEN and YELLOW cells are analyzed separately for all depths, L2/3, and L4/5. The primary replicate is FOV.
+
+- With exactly two areas, the primary test is a two-sided Mann-Whitney U test on FOV-level summaries, with Cliff's delta.
+- With three areas, the primary omnibus test is Kruskal-Wallis, followed by pairwise Mann-Whitney U tests.
+- Holm correction is applied within the relevant test families.
+
+For individually significant primary YELLOW results, the default robustness branch retains 100%, 75%, 50%, or 25% of trials within each FOV x sound block x stimulus condition and reruns the same analysis. This is an empirical stability analysis, not a prospective power calculation.
+
+Optional controls:
+
+```text
+--trial-reduction-resamples 500
+--trial-reduction-response-permutations 512
+--trial-reduction-seed 20260910
+--skip-trial-reduction
+--dry-run
+```
+
+If v1 outputs already exist, rerun `sound_tuning_multistim_fov_analysis_v2.py` before the v2b downstream scripts. The v2 archives add condition-level mean/SEM traces and use the `multistim_v2` schema.
+
+---
+
+# 4. Natural-sound response and repeat-stability workflow
+
+The natural-sound workflow has two stages. First, analyze responses and save individual trial responses. Second, resample those trials to determine how stable response means and repeat-to-repeat variances are at different repeat counts.
+
+## Step 1: natural-sound response analysis
+
+Sessions are discovered from `info2p` using `paradigm == "natural_sound_detection"` and are analyzed independently. Different sessions may contain different sounds, repeat counts, durations, areas, or depths.
+
+Analyze every matching session on a date:
+
+```bash
+python natural_sound_response_analysis_v2.py imag039 \
+    --dates 20260717
+```
+
+Restrict the analysis when needed:
+
+```bash
+python natural_sound_response_analysis_v2.py imag039 \
+    --dates 20260717 \
+    --sessions 004 008 \
+    --areas A2
+```
+
+Preview session selection:
+
+```bash
+python natural_sound_response_analysis_v2.py imag039 \
+    --dates 20260717 \
+    --dry-run
+```
+
+The preferred sound-identity key is `soundID`; `currentSound`, `soundType`, and `stimID` are accepted fallbacks. When possible, `soundID` is mapped to filenames using `sessionData/soundsList` in the behavior H5 file.
+
+By default, a repeated condition always includes sound identity and automatically adds sound location and target intensity when either varies. Laser trials are excluded. Use `--location-mode ignore`, `--intensity-mode ignore`, or `--include-laser` only when that pooling is intentional.
+
+### Responsiveness definitions
+
+The primary `natural_responsive_fdr` label pools all valid natural-sound trials for each cell, applies a two-sided sign-flip test, and then applies BH-FDR once across cells. This is intended to retain power when each individual sound has few repeats.
+
+A stricter secondary analysis tests each condition separately, applies BH-FDR across cells within that condition, and saves the union of condition-responsive labels. It is retained for interpretation but is not the default filter for repeat-stability analysis.
+
+### Main outputs
+
+```text
+<TEMP_OUTPUT_PATH>/evan/natural_sound_response_analysis/<subject>/<date>/<session>/
+    cell_results.csv
+    condition_results.csv
+    condition_summary.csv
+    class_summary.csv
+    natural_sound_trial_responses.npz
+    session_summary.json
+    alignment_diagnostics.json
+    green_yellow_classification.npz
+    classification_overlay_chan1.png
+    classification_overlay_chan2.png
+    repeat_count_by_condition.png
+    response_profiles_*.png
+    repeat_variance_distribution_*.png
+    pooled_within_condition_variance_*.png
+```
+
+The trial archive contains the primary `jaratoolbox` dF/F responses plus whole-session-median and local 60-s prestimulus-median sensitivity versions. `natural_sound_response_analysis_v2.py` deliberately imports `am_tuning_area_analysis_v9.py` so classification, alignment, FDR, and dF/F conventions remain synchronized.
+
+Important optional arguments:
+
+```text
+--sessions SESSION [SESSION ...]
+--areas A1 AAF A2
+--plane N
+--n-permutations N
+--seed N
+--min-repeats-for-variance N
+--min-repeats-for-test N
+--response-start SECONDS
+--response-end SECONDS
+--location-mode auto|include|ignore
+--intensity-mode auto|include|ignore
+--include-laser
+--dry-run
+```
+
+## Step 2: repeat-number stability analysis
+
+Run the stability analysis only after creating v2 natural-sound trial archives:
+
+```bash
+python natural_sound_repeat_stability_v2.py imag039 \
+    --dates 20260717
+```
+
+Example with selected sessions and more Monte-Carlo resamples:
+
+```bash
+python natural_sound_repeat_stability_v2.py imag039 \
+    --dates 20260717 \
+    --sessions 004 008 \
+    --n-resamples 2000
+```
+
+The resampling unit is one cell x one natural-sound condition. For each observed sample size `k`, trials are sampled without replacement and the subsampled mean, sample variance, and sample SD are compared with estimates from all available repeats for that same unit.
+
+Reported stability metrics include:
+
+- relative absolute variance error;
+- absolute log2 variance ratio;
+- Spearman correlation between subsampled and full-repeat variance across units;
+- mean error normalized by the full-repeat SD.
+
+Two curves are produced:
+
+- **available case**: every unit with at least `k` repeats contributes at each `k`;
+- **fixed cohort**: the same eligible units contribute across the entire plotted range, avoiding composition changes as `k` increases.
+
+The default design markers are `k = 4, 8, 16`. Unobserved values are reported as unobserved and are never extrapolated. The default empirical threshold summary searches for median variance relative error <= 0.25 and Spearman rho >= 0.90; these are transparent design criteria, not universal biological thresholds or formal power calculations.
+
+Important optional arguments:
+
+```text
+--response-source primary|session_median|local_60s
+--cell-filter responsive|all
+--condition-responsive-only
+--min-full-repeats N
+--max-k N
+--n-resamples N
+--seed N
+--design-k 4 8 16
+--fixed-cohort-min-units N
+--target-median-variance-relative-error FLOAT
+--target-variance-spearman-rho FLOAT
+--input-root PATH
+--output-root PATH
+```
+
+Default inclusion uses cells passing the primary global natural-sound responsiveness test. `--cell-filter all` is intended as a QC/sensitivity analysis. If an archive reports zero responsive cells and uses the older v1 schema, rerun `natural_sound_response_analysis_v2.py` rather than interpreting an empty stability result.
+
+---
+
+# 5. Single-session utilities
 
 These scripts are useful for quick inspection of one session. They are separate from the newer batch/area workflows above.
 
@@ -452,7 +753,7 @@ Note that this older single-session utility supports several red-classification 
 
 ---
 
-# 4. Requirements and expected data
+# 6. Requirements and expected data
 
 These scripts assume a working Jaramillo-lab Python environment with `jaratoolbox` configured for the local data paths.
 
@@ -463,6 +764,7 @@ numpy
 pandas
 matplotlib
 scipy
+h5py
 torch
 suite2p
 jaratoolbox
@@ -478,11 +780,13 @@ The batch workflows expect, as applicable:
 - behavioral files readable through `jaratoolbox`;
 - imaging sound-trigger/event timing compatible with the alignment/QC routines.
 
+The multistim workflow additionally expects consistent Suite2p ROI indices across blocks assigned to the same FOV. The recommended metadata route is an explicit integer `FOV#` in every matching `info2p` session.
+
 A standalone `requirements.txt` is not currently maintained inside this folder, so the recommended approach is to run these scripts from the existing lab environment in which `jaratoolbox` and Suite2p are already configured.
 
 ---
 
-# 5. Versioning
+# 7. Versioning
 
 Many older script versions are intentionally retained in this directory.
 
@@ -496,6 +800,13 @@ sound_tuning_cross_area_cellclass_analysis_v4.py
 am_tuning_area_analysis_v9.py
 am_tuning_area_layer_green_yellow_analysis_v4.py
 am_tuning_cross_area_cellclass_analysis_v5.py
+
+sound_tuning_multistim_fov_analysis_v2.py
+sound_tuning_multistim_area_layer_green_yellow_analysis_v2b.py
+sound_tuning_multistim_cross_area_cellclass_analysis_v2b.py
+
+natural_sound_response_analysis_v2.py
+natural_sound_repeat_stability_v2.py
 ```
 
 Use an older version only when reproducing an analysis that was originally generated with that version.
