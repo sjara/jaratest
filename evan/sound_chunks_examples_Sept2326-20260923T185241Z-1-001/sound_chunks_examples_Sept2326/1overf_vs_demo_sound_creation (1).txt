@@ -1,0 +1,263 @@
+COMPARISON OF THE TWO 500-ms BASE SOUNDS
+===========================================
+
+This file describes the two synthetic 500-ms base sounds used for the scrambled-chunk examples:
+
+1. The "1/f naturalistic" dynamic tone complex
+2. The original "demo intact" synthetic sound
+
+
+------------------------------------------------------------
+1. 1/f NATURALISTIC DYNAMIC TONE COMPLEX
+------------------------------------------------------------
+
+Purpose
+-------
+This sound was designed as a controlled naturalistic stimulus with broadband spectral content and temporally structured amplitude and frequency modulation. Its temporal modulation statistics follow an approximate 1/f power spectrum.
+
+Duration and sampling
+---------------------
+Duration: 500 ms
+Sampling rate: 192 kHz
+
+Carrier components
+------------------
+The carrier is a sum of 10 equal-power sinusoidal components spanning approximately 4-32 kHz:
+
+4.00 kHz
+5.04 kHz
+6.35 kHz
+8.00 kHz
+10.08 kHz
+12.70 kHz
+16.00 kHz
+20.16 kHz
+25.40 kHz
+32.00 kHz
+
+The components are summed with 1/sqrt(10) scaling so that total power does not simply grow with the number of tones.
+
+Each component is assigned an independent random initial phase.
+
+1/f modulation trajectories
+----------------------------
+Two independent frozen random modulation trajectories are generated:
+
+a(t): amplitude-modulation trajectory
+q(t): frequency-modulation trajectory
+
+For each trajectory, a random signal is constructed in the Fourier domain.
+
+Only modulation frequencies between 2 and 80 Hz are retained.
+
+For each retained Fourier frequency f, the Fourier amplitude is set proportional to:
+
+    1 / sqrt(f)
+
+with a random phase.
+
+Because power is proportional to squared Fourier amplitude, this gives an approximate modulation power spectrum:
+
+    P(f) proportional to 1/f
+
+The inverse FFT gives a real-valued temporal modulation trajectory.
+
+Each trajectory is then rescaled to the range [-1, 1].
+
+Amplitude modulation
+--------------------
+The AM trajectory controls instantaneous sound level according to:
+
+    L(t) = 60 + 10*a(t) dB
+
+Since a(t) lies between -1 and +1, the relative level trajectory spans approximately:
+
+    50 to 70 dB
+
+The corresponding linear amplitude multiplier is:
+
+    A(t) = 10^[(L(t)-60)/20]
+
+Thus the waveform undergoes slow and fast amplitude fluctuations whose temporal modulation spectrum follows approximately 1/f between 2 and 80 Hz.
+
+Frequency modulation
+--------------------
+The independent FM trajectory q(t) coherently shifts the entire tone complex in frequency.
+
+For carrier k with base frequency f_k0:
+
+    f_k(t) = f_k0 * 2^[0.30*q(t)]
+
+This produces a coherent spectral shift of up to approximately:
+
+    +/- 0.30 octave
+
+All 10 carrier frequencies move together, preserving the ratios between carrier frequencies.
+
+The instantaneous frequency trajectory is integrated over time to obtain phase before generating each sinusoid.
+
+Final waveform
+--------------
+The final carrier sum is multiplied by the AM envelope:
+
+    s(t) = A(t) * (1/sqrt(10)) * sum_k sin(phi_k(t))
+
+A 5-ms onset ramp and 5-ms offset ramp are applied.
+
+For demonstration playback, the waveform is normalized to a fixed digital level. Absolute SPL in an experiment would still need to be set using speaker calibration.
+
+Conceptual interpretation
+-------------------------
+This is not ordinary pink noise.
+
+It is a structured dynamic tone complex in which:
+
+- the amplitude envelope has approximately 1/f temporal statistics
+- the coherent spectral motion also has approximately 1/f temporal statistics
+- spectral structure is explicitly constrained to the chosen carrier frequencies
+
+The goal is to provide controlled but naturalistic temporal structure.
+
+
+------------------------------------------------------------
+2. ORIGINAL "DEMO INTACT" SYNTHETIC SOUND
+------------------------------------------------------------
+
+Purpose
+-------
+This sound was originally made simply as an easy-to-hear demonstration of chunk scrambling. It was designed to contain obvious changing temporal and spectral structure.
+
+It does NOT use a 1/f modulation process.
+
+Duration and sampling
+---------------------
+Duration: 500 ms
+Sampling rate: 48 kHz
+
+Waveform components
+-------------------
+The waveform is the weighted sum of three components.
+
+Component 1: logarithmic upward chirp
+-------------------------------------
+Weight: 0.45
+
+Frequency trajectory:
+
+    1.2 kHz -> 9 kHz
+
+over 500 ms, using a logarithmic chirp.
+
+Component 2: linear downward chirp
+----------------------------------
+Weight: 0.25
+
+Frequency trajectory:
+
+    8.5 kHz -> 1.8 kHz
+
+over 500 ms, using a linear chirp.
+
+Component 3: sinusoidal FM component
+------------------------------------
+Weight: 0.18
+
+The base term is approximately centered near 3.5 kHz, with a sinusoidal frequency modulation driven at approximately 3 Hz.
+
+The implementation was:
+
+    sin(2*pi*(3500*t + 700*sin(2*pi*3*t)/(2*pi)))
+
+This produces a smoothly changing FM tone.
+
+Amplitude envelope
+------------------
+The summed waveform is multiplied by a nonstationary amplitude envelope made from two low-frequency sinusoidal modulations:
+
+    2.1 Hz
+    5.3 Hz
+
+with different phases and amplitudes.
+
+The envelope was:
+
+    env(t) =
+        0.35
+        + 0.65 * [
+            0.5
+            + 0.28*sin(2*pi*2.1*t + 0.3)
+            + 0.17*sin(2*pi*5.3*t + 1.2)
+        ]
+
+The envelope is clipped to stay within a positive range.
+
+Unlike the 1/f sound, this amplitude trajectory is deterministic and consists of only a small number of sinusoidal modulation components.
+
+Outer ramps and normalization
+-----------------------------
+A 5-ms onset ramp and 5-ms offset ramp are applied.
+
+The waveform is then peak-normalized to approximately:
+
+    -3 dBFS
+
+This gives the original demo sound a relatively strong average level and an immediately audible sweeping/chirping character.
+
+
+------------------------------------------------------------
+3. MAIN DIFFERENCES
+------------------------------------------------------------
+
+1/f naturalistic sound
+----------------------
+- 10 simultaneous tone carriers spanning 4-32 kHz
+- independent frozen 1/f AM and FM trajectories
+- modulation frequencies distributed across 2-80 Hz
+- AM temporal power approximately follows 1/f
+- FM temporal power approximately follows 1/f
+- all carrier frequencies shift coherently during FM
+- stochastic but reproducible for a fixed random seed
+- designed as a controlled naturalistic stimulus
+
+Original demo sound
+-------------------
+- mixture of two chirps plus one FM sinusoidal component
+- deterministic spectral trajectories
+- amplitude modulation built from two sinusoids
+- no 1/f modulation statistics
+- strong obvious sweeping structure
+- designed primarily to make temporal scrambling easy to hear
+
+
+------------------------------------------------------------
+4. WHY THEY SOUND DIFFERENT
+------------------------------------------------------------
+
+The demo sound has strong, obvious directional sweeps and a relatively simple envelope. Human listeners can easily hear when those trajectories are broken up and reordered.
+
+The 1/f naturalistic sound contains many simultaneous frequencies and stochastic AM/FM fluctuations. Its structure is richer and less dominated by a single audible sweep.
+
+The two sounds therefore test somewhat different kinds of temporal structure:
+
+- The demo sound emphasizes obvious trajectory and sequence information.
+- The 1/f sound emphasizes broadband, multiscale temporal structure with controlled 1/f statistics.
+
+
+------------------------------------------------------------
+5. SCRAMBLING
+------------------------------------------------------------
+
+For both sound types, the scrambling procedure can use the same basic logic:
+
+1. Start with the same 500-ms base waveform.
+2. Divide it into equal chunks, for example:
+       125 ms    -> 4 chunks
+       62.5 ms   -> 8 chunks
+       31.25 ms  -> 16 chunks
+       15.625 ms -> 32 chunks
+3. Reorder those chunks without replacement.
+4. Preserve the waveform inside each chunk.
+5. Optionally insert short gaps or apply boundary crossfades.
+6. RMS-match the final stimuli so that differences in neural response are not trivially explained by differences in overall sound level.
+
+Thus, across chunk sizes, the main intended manipulation is the temporal scale at which sequence order is disrupted.

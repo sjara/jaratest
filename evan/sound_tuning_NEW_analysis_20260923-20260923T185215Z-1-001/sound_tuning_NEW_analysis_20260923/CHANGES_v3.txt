@@ -1,0 +1,65 @@
+MULTISTIM SOUND TUNING v3 CHANGES
+=================================
+
+1. FM x-axis spacing
+--------------------
+All numeric FM-sweep profile/preference/tuning plots now use signed log2-magnitude coordinates.
+The FM stimulus generator uses log-spaced nonzero slope magnitudes, so adjacent tested FM rates are
+uniformly spaced visually. Negative and positive slopes remain on opposite sides of the axis; a
+0-slope condition, when present, is placed at the center. If 0 is not a tested condition, the two
+smallest-magnitude slopes straddle the center without leaving an artificial empty zero slot.
+
+2. Dedicated selectivity figures
+--------------------------------
+Primary per-sound selectivity metrics are:
+
+PURE TONES
+  lifetime sparseness across the absolute tuning profile
+  S_life = [1 - (mean|R|)^2 / mean(|R|^2)] / [1 - 1/n]
+
+3-TONE CHORDS
+  harmonic-vs-nonharmonic bounded selectivity
+  SI_harm = (R_harm - mean(R_nonharm)) / (|R_harm| + |mean(R_nonharm)|)
+
+FM SOUNDS
+  up-vs-down bounded direction selectivity
+  SI_dir = (mean(R_up) - mean(R_down)) / (|mean(R_up)| + |mean(R_down)|)
+
+Every dedicated selectivity figure prints the relevant equation directly on the plot.
+
+3. New output subfolders
+------------------------
+New plots are saved under clearly labeled folders:
+  selectivity_plots/pure_tones/
+  selectivity_plots/chord_tones/
+  selectivity_plots/fm_sounds/
+
+FOV script:
+  combined/selectivity_plots/<sound>/
+  - GREEN vs YELLOW, FOV-primary, all-cells and responsive-only views.
+
+Area x layer GREEN/YELLOW script:
+  <area>/<layer>/selectivity_plots/<sound>/
+  - GREEN vs YELLOW FOV-primary plots.
+  - GREEN vs YELLOW pooled-cell exploratory plots.
+  - both all-cells and responsive-only branches.
+
+Cross-area cell-class script:
+  <depth>/<cell_class>/selectivity_plots/<sound>/
+  - cross-area FOV-primary plots.
+  - cross-area pooled-cell exploratory plots.
+  - both all-cells and responsive-only branches.
+
+  area_by_layer/<cell_class>/selectivity_plots/<sound>/
+  - within-area L2/3 vs L4/5 FOV-primary selectivity plots for responsive cells.
+
+4. Existing outputs
+-------------------
+Existing figures/statistics are retained. The new selectivity figures are additional outputs.
+FIGURE_INDEX.txt in scripts 2 and 3 now indexes PNGs recursively so figures in the new subfolders
+are included.
+
+5. Validation
+-------------
+All three v3 scripts pass Python syntax compilation. Dedicated selectivity plotting functions were
+smoke-tested with synthetic FOV/cell data for all three stimulus classes and all comparison types.

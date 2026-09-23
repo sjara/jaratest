@@ -1,0 +1,119 @@
+{
+  "fs_hz": 192000,
+  "duration_ms_base": 500.0,
+  "carrier_frequencies_hz": [
+    4000.0,
+    5040.0,
+    6350.0,
+    8000.0,
+    10080.0,
+    12700.0,
+    16000.0,
+    20160.0,
+    25400.0,
+    32000.0
+  ],
+  "modulation_psd": "1/f",
+  "modulation_band_hz": [
+    2.0,
+    80.0
+  ],
+  "am_level_db": "L(t)=60+10*a(t), a in [-1,1], i.e. 50-70 dB relative trajectory",
+  "fm": "f_k(t)=f_k0*2^(0.30*q(t)), q in [-1,1], coherent +/-0.30 octave",
+  "outer_ramp_ms": 5.0,
+  "crossfade": "true equal-power 4-ms overlap, conceptual +/-2 ms; shortens output by 4 ms per boundary",
+  "gaps": "literal 4-ms silence; lengthens output by 4 ms per boundary",
+  "orders": {
+    "125.0": [
+      0,
+      1,
+      3,
+      2
+    ],
+    "62.5": [
+      0,
+      5,
+      3,
+      4,
+      6,
+      7,
+      2,
+      1
+    ],
+    "31.25": [
+      11,
+      3,
+      0,
+      5,
+      8,
+      13,
+      10,
+      1,
+      9,
+      14,
+      15,
+      4,
+      7,
+      6,
+      12,
+      2
+    ],
+    "15.625": [
+      25,
+      30,
+      20,
+      13,
+      19,
+      26,
+      15,
+      9,
+      18,
+      14,
+      31,
+      7,
+      28,
+      5,
+      10,
+      3,
+      24,
+      12,
+      27,
+      4,
+      0,
+      6,
+      29,
+      2,
+      11,
+      16,
+      8,
+      17,
+      22,
+      1,
+      23,
+      21
+    ]
+  },
+  "durations_ms": {
+    "125.0": {
+      "n_chunks": 4,
+      "crossfade_duration_ms": 488.0,
+      "gap_duration_ms": 512.0
+    },
+    "62.5": {
+      "n_chunks": 8,
+      "crossfade_duration_ms": 472.0,
+      "gap_duration_ms": 528.0
+    },
+    "31.25": {
+      "n_chunks": 16,
+      "crossfade_duration_ms": 440.0,
+      "gap_duration_ms": 560.0
+    },
+    "15.625": {
+      "n_chunks": 32,
+      "crossfade_duration_ms": 376.0,
+      "gap_duration_ms": 624.0
+    }
+  },
+  "seed": 20260923
+}
