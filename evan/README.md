@@ -26,9 +26,9 @@ For new analyses, use the most recent version listed below unless you specifical
 | `am_tuning` area analysis | `am_tuning_area_analysis_v9.py` | Batch frequency/AM-rate tuning analysis of one area |
 | `am_tuning` GREEN vs YELLOW by layer | `am_tuning_area_layer_green_yellow_analysis_v4.py` | Within-area, within-layer GREEN/YELLOW comparisons |
 | `am_tuning` cross-area analysis | `am_tuning_cross_area_cellclass_analysis_v5.py` | Compare A1/AAF/A2 within GREEN or YELLOW cells |
-| Multistim FOV analysis | `sound_tuning_multistim_fov_analysis_v2.py` | Analyze matched pure-tone, chord, and FM blocks from the same FOV |
-| Multistim GREEN vs YELLOW by layer | `sound_tuning_multistim_area_layer_green_yellow_analysis_v2b.py` | Compare GREEN/YELLOW cells within area and layer using FOV-level inference |
-| Multistim cross-area analysis | `sound_tuning_multistim_cross_area_cellclass_analysis_v2b.py` | Compare A1/AAF/A2 separately within GREEN and YELLOW cells |
+| Multistim FOV analysis (stage 1) | `sound_tuning_multistim_fov_analysis_v3.py` | Analyze matched pure-tone, chord, and FM blocks from the same FOV |
+| Multistim GREEN vs YELLOW by layer (stage 2) | `sound_tuning_multistim_area_layer_green_yellow_analysis_v4.py` | Compare GREEN/YELLOW cells within area and layer using FOV-level inference |
+| Multistim cross-area analysis (stage 3) | `sound_tuning_multistim_cross_area_cellclass_analysis_v4.py` | Compare A1/AAF/A2 separately within GREEN and YELLOW cells |
 | Natural-sound response analysis | `natural_sound_response_analysis_v2.py` | Analyze natural-sound responsiveness and same-condition repeat variability |
 | Natural-sound repeat stability | `natural_sound_repeat_stability_v2.py` | Estimate how stable mean and variance estimates are as repeat count changes |
 
@@ -396,6 +396,25 @@ This workflow analyzes the newer `sound_tuning` blocks:
 
 It is designed for blocks acquired without moving the two-photon field of view and processed from one concatenated Suite2p binary. After the concatenated result is split into per-session folders, Suite2p ROI index `i` must refer to the same cell in every block assigned to that FOV.
 
+### Current pipeline
+
+| Stage | Script |
+|---|---|
+| 1. FOV analysis (run once per area) | `sound_tuning_multistim_fov_analysis_v3.py` |
+| 2. GREEN vs YELLOW within area and layer | `sound_tuning_multistim_area_layer_green_yellow_analysis_v4.py` |
+| 3. Cross-area comparison | `sound_tuning_multistim_cross_area_cellclass_analysis_v4.py` |
+
+Example run for two areas:
+
+```bash
+python sound_tuning_multistim_fov_analysis_v3.py imag039 --area A1 --dates 20260910
+python sound_tuning_multistim_fov_analysis_v3.py imag039 --area AAF --dates 20260910
+python sound_tuning_multistim_area_layer_green_yellow_analysis_v4.py imag039 --dates 20260910 --areas A1 AAF
+python sound_tuning_multistim_cross_area_cellclass_analysis_v4.py imag039 --dates 20260910 --areas A1 AAF
+```
+
+Stages 2 and 3 read the stage 1 outputs, so run stage 1 with v3 for every area of interest before running the v4 scripts. Stage 1 writes to the same output folder regardless of version, so a v3 run overwrites earlier v1/v2 stage 1 outputs for the same subject, area, and dates. The v4 downstream scripts are v3 plus the v2b fixes for FOVs that lack a sound block: cells with no data for a block are excluded from that block's plots, rasters, and statistics.
+
 ### Required `info2p` FOV metadata
 
 `FOV#` is the authoritative grouping field and is an integer starting at 0. FOV numbers may be reused on different dates because the unique key is subject + date + `FOV#`.
@@ -422,11 +441,11 @@ For older `info2p` files without `FOV#`, the script can infer provisional groups
 Run the FOV analysis once per area:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v2.py imag039 \
+python sound_tuning_multistim_fov_analysis_v3.py imag039 \
     --area A1 \
     --dates 20260910
 
-python sound_tuning_multistim_fov_analysis_v2.py imag039 \
+python sound_tuning_multistim_fov_analysis_v3.py imag039 \
     --area AAF \
     --dates 20260910
 ```
@@ -434,7 +453,7 @@ python sound_tuning_multistim_fov_analysis_v2.py imag039 \
 Check grouping without loading imaging data:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v2.py imag039 \
+python sound_tuning_multistim_fov_analysis_v3.py imag039 \
     --area A1 \
     --dates 20260910 \
     --dry-run
@@ -443,7 +462,7 @@ python sound_tuning_multistim_fov_analysis_v2.py imag039 \
 Legacy explicit grouping example:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v2.py imag039 \
+python sound_tuning_multistim_fov_analysis_v3.py imag039 \
     --area A1 \
     --dates 20260910 \
     --fov-groups 20260910:000-001-002 20260910:006-007
@@ -485,7 +504,7 @@ Default response-test permutations: `4096`.
         ... combined figures ...
 ```
 
-### What multistim v2 does
+### What stage 1 (v3) does
 
 - groups matched sessions by FOV and verifies shared Suite2p ROIs;
 - performs one shared Cellpose GREEN/YELLOW classification per FOV;
@@ -496,7 +515,9 @@ Default response-test permutations: `4096`.
 - calculates pure-tone BF and FWHM bandwidth, chord harmonic selectivity, and FM direction/speed selectivity;
 - creates GREEN/YELLOW profiles, rasters, pure-tone BF summaries, 3 x 2 tuning pages, and one report per responsive cell;
 - combines matched cells across sound blocks for cross-sound response-overlap summaries;
-- saves `multistim_v2` trial archives used by the cross-area trial-reduction analysis.
+- saves trial archives (schema `multistim_v2`, unchanged in v3) used by the cross-area trial-reduction analysis;
+- plots FM-sweep conditions on signed log2-magnitude axes, so adjacent tested FM rates are evenly spaced;
+- writes dedicated selectivity figures (pure-tone lifetime sparseness, chord harmonic selectivity, FM direction selectivity) under `combined/selectivity_plots/<sound>/`, with the equation printed on each plot.
 
 An FOV may lack one or more sound blocks. Block-specific plots exclude cells with no data for that block, and cell reports mark unavailable blocks explicitly.
 
@@ -505,22 +526,22 @@ An FOV may lack one or more sound blocks. Block-specific plots exclude cells wit
 After running the FOV analysis for the desired areas:
 
 ```bash
-python sound_tuning_multistim_area_layer_green_yellow_analysis_v2b.py imag039 \
+python sound_tuning_multistim_area_layer_green_yellow_analysis_v4.py imag039 \
     --dates 20260910 \
     --areas A1 AAF
 ```
 
-This script compares GREEN and YELLOW populations independently in each area x layer stratum. Primary tests use paired FOV summaries; pooled-cell plots are labeled exploratory. It includes all-cell and responsive-only tuning metrics, profiles, rasters, preference distributions, and pure-tone BF analyses.
+This script compares GREEN and YELLOW populations independently in each area x layer stratum. Primary tests use paired FOV summaries; pooled-cell plots are labeled exploratory. It includes all-cell and responsive-only tuning metrics, profiles, rasters, preference distributions, and pure-tone BF analyses. Dedicated selectivity figures are written under `<area>/<layer>/selectivity_plots/<sound>/`.
 
 ## Step 3: cross-area comparison
 
 ```bash
-python sound_tuning_multistim_cross_area_cellclass_analysis_v2b.py imag039 \
+python sound_tuning_multistim_cross_area_cellclass_analysis_v4.py imag039 \
     --dates 20260910 \
     --areas A1 AAF
 ```
 
-GREEN and YELLOW cells are analyzed separately for all depths, L2/3, and L4/5. The primary replicate is FOV.
+GREEN and YELLOW cells are analyzed separately for all depths, L2/3, and L4/5. The primary replicate is FOV. Dedicated selectivity figures are written under `<depth>/<cell_class>/selectivity_plots/<sound>/`, and within-area L2/3 vs L4/5 selectivity comparisons under `area_by_layer/<cell_class>/selectivity_plots/<sound>/`.
 
 - With exactly two areas, the primary test is a two-sided Mann-Whitney U test on FOV-level summaries, with Cliff's delta.
 - With three areas, the primary omnibus test is Kruskal-Wallis, followed by pairwise Mann-Whitney U tests.
@@ -538,7 +559,7 @@ Optional controls:
 --dry-run
 ```
 
-If v1 outputs already exist, rerun `sound_tuning_multistim_fov_analysis_v2.py` before the v2b downstream scripts. The v2 archives add condition-level mean/SEM traces and use the `multistim_v2` schema.
+Always run `sound_tuning_multistim_fov_analysis_v3.py` before the v4 downstream scripts. If only v1 outputs exist, they lack the condition-level mean/SEM traces that the `multistim_v2` archive schema added, so stage 1 must be rerun.
 
 ---
 
@@ -801,9 +822,9 @@ am_tuning_area_analysis_v9.py
 am_tuning_area_layer_green_yellow_analysis_v4.py
 am_tuning_cross_area_cellclass_analysis_v5.py
 
-sound_tuning_multistim_fov_analysis_v2.py
-sound_tuning_multistim_area_layer_green_yellow_analysis_v2b.py
-sound_tuning_multistim_cross_area_cellclass_analysis_v2b.py
+sound_tuning_multistim_fov_analysis_v3.py
+sound_tuning_multistim_area_layer_green_yellow_analysis_v4.py
+sound_tuning_multistim_cross_area_cellclass_analysis_v4.py
 
 natural_sound_response_analysis_v2.py
 natural_sound_repeat_stability_v2.py
