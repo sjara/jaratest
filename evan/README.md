@@ -10,6 +10,7 @@ This directory contains:
 - cross-area comparisons across A1, AAF, and A2;
 - FOV-aware analysis of matched pure-tone, 3-tone-chord, and FM-sweep blocks;
 - natural-sound response, repeat-variability, and repeat-number stability analyses;
+- an experimental alternate branch for days with two chord F0 blocks per FOV (dual-F0 chord analysis; section 3b);
 - older versioned scripts retained for reproducibility.
 
 For new analyses, use the most recent version listed below unless you specifically need to reproduce an older result.
@@ -26,9 +27,9 @@ For new analyses, use the most recent version listed below unless you specifical
 | `am_tuning` area analysis | `am_tuning_area_analysis_v9.py` | Batch frequency/AM-rate tuning analysis of one area |
 | `am_tuning` GREEN vs YELLOW by layer | `am_tuning_area_layer_green_yellow_analysis_v4.py` | Within-area, within-layer GREEN/YELLOW comparisons |
 | `am_tuning` cross-area analysis | `am_tuning_cross_area_cellclass_analysis_v5.py` | Compare A1/AAF/A2 within GREEN or YELLOW cells |
-| Multistim FOV analysis (stage 1) | `sound_tuning_multistim_fov_analysis_v4.py` | Analyze matched pure-tone, chord, and FM blocks from the same FOV |
-| Multistim GREEN vs YELLOW by layer (stage 2) | `sound_tuning_multistim_area_layer_green_yellow_analysis_v5.py` | Compare GREEN/YELLOW cells within area and layer using FOV-level inference |
-| Multistim cross-area analysis (stage 3) | `sound_tuning_multistim_cross_area_cellclass_analysis_v5.py` | Compare A1/AAF/A2 separately within GREEN and YELLOW cells |
+| Multistim FOV analysis (stage 1) | `sound_tuning_multistim_fov_analysis_v5.py` | Analyze matched pure-tone, chord, and FM blocks from the same FOV |
+| Multistim GREEN vs YELLOW by layer (stage 2) | `sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py` | Compare GREEN/YELLOW cells within area and layer using FOV-level inference |
+| Multistim cross-area analysis (stage 3) | `sound_tuning_multistim_cross_area_cellclass_analysis_v6.py` | Compare A1/AAF/A2 separately within GREEN and YELLOW cells |
 | Natural-sound response analysis | `natural_sound_response_analysis_v2.py` | Analyze natural-sound responsiveness and same-condition repeat variability |
 | Natural-sound repeat stability | `natural_sound_repeat_stability_v2.py` | Estimate how stable mean and variance estimates are as repeat count changes |
 
@@ -400,20 +401,20 @@ It is designed for blocks acquired without moving the two-photon field of view a
 
 | Stage | Script |
 |---|---|
-| 1. FOV analysis (run once per area) | `sound_tuning_multistim_fov_analysis_v4.py` |
-| 2. GREEN vs YELLOW within area and layer | `sound_tuning_multistim_area_layer_green_yellow_analysis_v5.py` |
-| 3. Cross-area comparison | `sound_tuning_multistim_cross_area_cellclass_analysis_v5.py` |
+| 1. FOV analysis (run once per area) | `sound_tuning_multistim_fov_analysis_v5.py` |
+| 2. GREEN vs YELLOW within area and layer | `sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py` |
+| 3. Cross-area comparison | `sound_tuning_multistim_cross_area_cellclass_analysis_v6.py` |
 
 Example run for two areas:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v4.py imag039 --area A1 --dates 20260910
-python sound_tuning_multistim_fov_analysis_v4.py imag039 --area AAF --dates 20260910
-python sound_tuning_multistim_area_layer_green_yellow_analysis_v5.py imag039 --dates 20260910 --areas A1 AAF
-python sound_tuning_multistim_cross_area_cellclass_analysis_v5.py imag039 --dates 20260910 --areas A1 AAF
+python sound_tuning_multistim_fov_analysis_v5.py imag039 --area A1 --dates 20260910
+python sound_tuning_multistim_fov_analysis_v5.py imag039 --area AAF --dates 20260910
+python sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py imag039 --dates 20260910 --areas A1 AAF
+python sound_tuning_multistim_cross_area_cellclass_analysis_v6.py imag039 --dates 20260910 --areas A1 AAF
 ```
 
-Stages 2 and 3 read the stage 1 outputs, so run stage 1 with v4 for every area of interest before running the v5 scripts. Stage 1 writes to the same output folder regardless of version, so a v4 run overwrites earlier stage 1 outputs for the same subject, area, and dates. The v5 downstream scripts keep the v2b fixes for FOVs that lack a sound block: cells with no data for a block are excluded from that block's plots, rasters, and statistics.
+Stages 2 and 3 read the stage 1 outputs, so run stage 1 with v5 for every area of interest before running the v6 scripts. Stage 1 writes to the same output folder regardless of version, so a v5 run overwrites earlier stage 1 outputs for the same subject, area, and dates. The v6 downstream scripts keep the v2b fixes for FOVs that lack a sound block: cells with no data for a block are excluded from that block's plots, rasters, and statistics.
 
 ### Required `info2p` FOV metadata
 
@@ -441,11 +442,11 @@ For older `info2p` files without `FOV#`, the script can infer provisional groups
 Run the FOV analysis once per area:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v4.py imag039 \
+python sound_tuning_multistim_fov_analysis_v5.py imag039 \
     --area A1 \
     --dates 20260910
 
-python sound_tuning_multistim_fov_analysis_v4.py imag039 \
+python sound_tuning_multistim_fov_analysis_v5.py imag039 \
     --area AAF \
     --dates 20260910
 ```
@@ -453,7 +454,7 @@ python sound_tuning_multistim_fov_analysis_v4.py imag039 \
 Check grouping without loading imaging data:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v4.py imag039 \
+python sound_tuning_multistim_fov_analysis_v5.py imag039 \
     --area A1 \
     --dates 20260910 \
     --dry-run
@@ -462,7 +463,7 @@ python sound_tuning_multistim_fov_analysis_v4.py imag039 \
 Legacy explicit grouping example:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v4.py imag039 \
+python sound_tuning_multistim_fov_analysis_v5.py imag039 \
     --area A1 \
     --dates 20260910 \
     --fov-groups 20260910:000-001-002 20260910:006-007
@@ -504,7 +505,7 @@ Default response-test permutations: `4096`.
         ... combined figures ...
 ```
 
-### What stage 1 (v4) does
+### What stage 1 (v5) does
 
 - groups matched sessions by FOV and verifies shared Suite2p ROIs;
 - performs one shared Cellpose GREEN/YELLOW classification per FOV;
@@ -515,12 +516,12 @@ Default response-test permutations: `4096`.
 - calculates pure-tone BF and FWHM bandwidth, chord harmonic selectivity, and FM direction/speed selectivity;
 - creates GREEN/YELLOW profiles, rasters, pure-tone BF summaries, 3 x 2 tuning pages, and one report per responsive cell;
 - combines matched cells across sound blocks for cross-sound response-overlap summaries;
-- saves trial archives (schema `multistim_v2`, unchanged in v3 and v4) used by the cross-area trial-reduction analysis;
+- saves trial archives (schema `multistim_v2`, unchanged in v3 to v5) used by the cross-area trial-reduction analysis;
 - plots FM-sweep conditions on signed log2-magnitude axes, so adjacent tested FM rates are evenly spaced;
 - writes dedicated selectivity figures (pure-tone lifetime sparseness, chord harmonic selectivity, FM direction selectivity) under `combined/selectivity_plots/<sound>/`;
 - prints each cell's selectivity index for the matching sound type (pure tones S_life, chords SI_harm, FM SI_dir) on every `individual_tuning_pages` panel and on each sound row of every `cell_reports` image. Missing values print as `NA`.
 
-On every dedicated selectivity figure (stages 1-3), the index equation is drawn large in a separate blank panel on the right, so it never covers data points.
+On every dedicated selectivity figure (stages 1-3), the statistics and the index equation share one side panel, with the equation drawn large directly under the p-values, so neither covers data points. Stage 2 v6 also places FM significance asterisks at the signed-log2 FM axis positions, and kHz tick labels are rounded to 3 significant figures.
 
 An FOV may lack one or more sound blocks. Block-specific plots exclude cells with no data for that block, and cell reports mark unavailable blocks explicitly.
 
@@ -529,7 +530,7 @@ An FOV may lack one or more sound blocks. Block-specific plots exclude cells wit
 After running the FOV analysis for the desired areas:
 
 ```bash
-python sound_tuning_multistim_area_layer_green_yellow_analysis_v5.py imag039 \
+python sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py imag039 \
     --dates 20260910 \
     --areas A1 AAF
 ```
@@ -539,7 +540,7 @@ This script compares GREEN and YELLOW populations independently in each area x l
 ## Step 3: cross-area comparison
 
 ```bash
-python sound_tuning_multistim_cross_area_cellclass_analysis_v5.py imag039 \
+python sound_tuning_multistim_cross_area_cellclass_analysis_v6.py imag039 \
     --dates 20260910 \
     --areas A1 AAF
 ```
@@ -562,7 +563,45 @@ Optional controls:
 --dry-run
 ```
 
-Always run `sound_tuning_multistim_fov_analysis_v4.py` before the v5 downstream scripts. If only v1 outputs exist, they lack the condition-level mean/SEM traces that the `multistim_v2` archive schema added, so stage 1 must be rerun.
+Always run `sound_tuning_multistim_fov_analysis_v5.py` before the v6 downstream scripts. If only v1 outputs exist, they lack the condition-level mean/SEM traces that the `multistim_v2` archive schema added, so stage 1 must be rerun.
+
+---
+
+# 3b. ALTERNATE BRANCH (experimental): dual-F0 chord analysis
+
+**Status:** alternate analysis branch, not yet part of the recommended pipeline. Treat its results as provisional until they have been reviewed. It writes to its own output folders, so it never overwrites the main multistim pipeline.
+
+Use it for days where each FOV has **two `chord_tones` sessions with different chord F0s**, for example imag039 20260924: F0 = 4 kHz and 6.5 kHz, with no FM block. The main stage-1 script stops on these days with "duplicate block types".
+
+| Stage | Script |
+|---|---|
+| 1. FOV analysis (run once per area) | `sound_tuning_multistim_dualF0_fov_analysis_v1.py` |
+| 2. GREEN vs YELLOW within area and layer | `sound_tuning_multistim_dualF0_area_layer_green_yellow_analysis_v1.py` |
+| 3. Cross-area comparison | `sound_tuning_multistim_dualF0_cross_area_cellclass_analysis_v1.py` |
+
+```bash
+python sound_tuning_multistim_dualF0_fov_analysis_v1.py imag039 --area A1 --dates 20260924
+python sound_tuning_multistim_dualF0_fov_analysis_v1.py imag039 --area AAF --dates 20260924
+python sound_tuning_multistim_dualF0_area_layer_green_yellow_analysis_v1.py imag039 --dates 20260924 --areas A1 AAF
+python sound_tuning_multistim_dualF0_cross_area_cellclass_analysis_v1.py imag039 --dates 20260924 --areas A1 AAF
+```
+
+All options are the same as in the main pipeline, including `--dry-run`. The stage-1 dry run also prints which F0 each chord session was assigned.
+
+### What differs from the main pipeline
+
+- **Chord blocks split by F0.** Stage 1 reads `chord3t_F0` from each chord session's behavior file and assigns it to `chord_lowF0` (column prefix `chordlo_`) or `chord_highF0` (`chordhi_`). At most two distinct F0s are allowed per run, and stages 2 and 3 check that each block has one F0 across all areas. Each block keeps the usual within-block metrics, including within-block harmonic selectivity `chordlo_/chordhi_harmonic_selectivity`.
+- **Combined harmonic selectivity** uses both chord blocks to control for each neuron's frequency preference:
+  - **Primary:** `chord_matched_harmonic_selectivity`, a frequency-matched 2 × 2 index. H is the mean response to the two harmonic chords (middle tone at 2×F0 in each block). N is the mean response to the two non-harmonic chords whose middle tone is closest in absolute frequency to the other block's harmonic tone. For F0 = 4 / 6.5 kHz that pairs 8.00 kHz with 8.47 kHz and 13.0 kHz with 12.28 kHz, 0.08 octave apart each; the maximum allowed gap is 0.15 octave. SI = (H − N)/(|H| + |N|). Each F0 block and each middle-frequency region contributes one harmonic and one non-harmonic term, so a preference for the outer tones or for the middle-tone frequency cancels out.
+  - **Sensitivity:** `chord_bfresid_harmonic_selectivity`. Each chord response is predicted as a + b × (sum of the cell's pure-tone responses at the chord's three frequencies, interpolated in log2 frequency). a and b are fit on the eight non-harmonic chords only. The index is the mean residual of the two harmonic chords divided by the cell's mean |chord response|. It is undefined (NaN) when a cell has no usable pure-tone tuning.
+  - The two indices are tested separately, not as one Holm family. Figures are under `selectivity_plots/chord_combined_matched/` and `selectivity_plots/chord_combined_bfresid/` at each stage. Stage 3 also includes them in the area × layer tests and the YELLOW trial-reduction robustness branch.
+- **Best frequency across all FOVs of an area.** These outputs come from stage 1, in `combined/best_frequency_across_FOVs/`:
+  - BF of every pure-tone-responsive cell per FOV, with Kruskal-Wallis across FOVs;
+  - pairwise FOV heatmaps (Mann-Whitney U, Holm across pairs);
+  - FOV median BF grouped by the brainArea subfield label (for example `lowFreq` vs `highFreq`), with FOV as the replicate.
+
+  The cell-level tests describe BF differences between FOVs, i.e. tonotopic position. They are not GREEN/YELLOW inference.
+- **Outputs** go under `<TEMP_OUTPUT_PATH>/evan/sound_tuning_multistim_dualF0_{fov_analysis,area_layer_green_yellow_analysis,cross_area_cellclass_analysis}/`.
 
 ---
 
@@ -825,14 +864,16 @@ am_tuning_area_analysis_v9.py
 am_tuning_area_layer_green_yellow_analysis_v4.py
 am_tuning_cross_area_cellclass_analysis_v5.py
 
-sound_tuning_multistim_fov_analysis_v4.py
-sound_tuning_multistim_area_layer_green_yellow_analysis_v5.py
-sound_tuning_multistim_cross_area_cellclass_analysis_v5.py
+sound_tuning_multistim_fov_analysis_v5.py
+sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py
+sound_tuning_multistim_cross_area_cellclass_analysis_v6.py
 
 natural_sound_response_analysis_v2.py
 natural_sound_repeat_stability_v2.py
 ```
 
 Use an older version only when reproducing an analysis that was originally generated with that version.
+
+The `sound_tuning_multistim_dualF0_*_v1.py` scripts are an experimental alternate branch (section 3b), not part of the recommended list above.
 
 When adding a new version, please update this README so the recommended-script list and workflow examples continue to point to the current pipeline.

@@ -1,0 +1,40 @@
+Multistim pipeline: main v5/v6/v6 and experimental dual-F0 branch v1
+=====================================================================
+
+Main pipeline (now current)
+---------------------------
+Stage 1: sound_tuning_multistim_fov_analysis_v5.py                    (from v4)
+Stage 2: sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py (from v5)
+Stage 3: sound_tuning_multistim_cross_area_cellclass_analysis_v6.py    (from v5)
+
+1. Dedicated selectivity figures: the statistics text and the selectivity equation now
+   share one side panel, with the equation directly under the p-values. Stages 1/2 no
+   longer draw the p-values on top of the data; stage 3 no longer has a separate
+   equation panel.
+2. kHz tick labels are rounded to 3 significant figures (previously e.g. "2.98195").
+3. Stage 2: FM significance asterisks on profile plots are placed at the signed-log2
+   FM axis positions (previously at the raw slope value, i.e. the wrong x position).
+Statistics, output tables, output folders and the trial-archive schema are unchanged.
+
+Alternate branch (experimental; results provisional until reviewed)
+--------------------------------------------------------------------
+sound_tuning_multistim_dualF0_fov_analysis_v1.py
+sound_tuning_multistim_dualF0_area_layer_green_yellow_analysis_v1.py
+sound_tuning_multistim_dualF0_cross_area_cellclass_analysis_v1.py
+
+For days with two chord_tones sessions per FOV at different chord F0s (e.g. imag039
+20260924: F0 = 4 kHz and 6.5 kHz). Chord sessions are split by the chord3t_F0 in their
+behavior file into chord_lowF0 / chord_highF0 blocks. Adds a frequency-matched 2 x 2
+harmonic selectivity index (primary) and a BF-residual harmonic selectivity index
+(sensitivity) that use both chord blocks to control for each neuron's frequency
+preference, plus best-frequency comparisons across all FOVs of an area. Writes to its own
+sound_tuning_multistim_dualF0_* output folders. Uses the same figure layout as main v5/v6/v6.
+Details: README section 3b.
+
+Validation
+----------
+All six scripts pass python -m py_compile. The dual-F0 combined indices were checked
+against known answers on synthetic cells (frequency-content-only responses give ~0;
+an added harmonic bonus gives a positive index), stages 2/3 of both pipelines were run
+end to end on synthetic stage-1 outputs, and the new figure layouts were rendered and
+inspected. The stage-1 dual-F0 script was also run on imag039 20260924 (A1, AAF).

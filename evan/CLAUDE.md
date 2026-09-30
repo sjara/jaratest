@@ -27,15 +27,16 @@ Real runs need the lab data mounts (`settings.INFO2P_PATH`, `settings.TWOPHOTON_
 - Output directories are **not versioned** (for example `<TEMP_OUTPUT_PATH>/evan/sound_tuning_multistim_fov_analysis/<subject>/<area>/<date_tag>/`). Running a different version overwrites the previous outputs in the same place. Trial-archive filenames and the `schema_version` field (for example `multistim_v2`, `_trial_response_archive_v13.npz`) are what downstream scripts check for compatibility.
 - `*_changes.txt` / `CHANGES_v*.txt` files record what changed per version. Newer drafts sometimes arrive as downloaded zip folders, such as `sound_tuning_NEW_analysis_2026*/` (the original multistim v3 drop) and `sound_chunks_examples_*/` (stimulus-generation scripts and WAV examples). Before using a script from one of these folders, copy it to the top level and add it to the README.
 
-## Current multistim pipeline (v4 / v5 / v5)
+## Current multistim pipeline (v5 / v6 / v6)
 
-1. `sound_tuning_multistim_fov_analysis_v4.py`: run once per area.
-2. `sound_tuning_multistim_area_layer_green_yellow_analysis_v5.py`
-3. `sound_tuning_multistim_cross_area_cellclass_analysis_v5.py`
+1. `sound_tuning_multistim_fov_analysis_v5.py`: run once per area.
+2. `sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py`
+3. `sound_tuning_multistim_cross_area_cellclass_analysis_v6.py`
 
-This set is the previous v3/v4/v4 pipeline plus layout changes to figure labels only. It doesn't change the statistics, the output tables or the archive format (see `CHANGES_selectivity_annotation_update.txt`). The changes are:
-- `_selectivity_equation_box(ax, block, fontsize)` now calls `ax.axis("off")` and centres the equation. So always pass it a **dedicated blank panel** (the `axeq` created as an extra `subplots` column), never a data axis.
-- Stage 1 prints each cell's selectivity index (`SELECTIVITY_SPEC[block]["metric"]`, formatted by `_format_cell_selectivity`) on the `individual_tuning_pages` panels and the `cell_reports` tuning panels.
+The previous version (v4/v5/v5, see `CHANGES_selectivity_annotation_update.txt`) added the selectivity-figure layout and per-cell selectivity labels. Its statistics, output tables and archive format are unchanged in this version. Things to know:
+- **Equation placement:** `_selectivity_equation_box(ax, block, fontsize)` calls `ax.axis("off")` and draws the equation directly under the last text already in that axes (`ax.texts[-1]`), or centred if there is none. Always pass it the blank **side panel** after drawing the statistics text there (stages 1/2: `axeq.text(...)` then the box; stage 3: `draw_stats(axs, ...)` then the box). Never pass a data axis.
+- **Per-cell labels:** stage 1 prints each cell's selectivity index (`SELECTIVITY_SPEC[block]["metric"]`, formatted by `_format_cell_selectivity`) on the `individual_tuning_pages` panels and the `cell_reports` tuning panels.
+- **Fixes in this version:** stage 2 FM significance asterisks are placed at the signed-log FM positions, and kHz tick labels use 3 significant figures.
 
 History worth keeping:
 - The downloaded v3 stage 2/3 scripts were built from v2, not v2b, and had lost the v2b fixes. The committed v4 restored them, and v5 keeps them. The fixes are:
@@ -43,6 +44,15 @@ History worth keeping:
   - the cross-area pandas fragmentation fix (`allc.copy()` / `allc.assign(...)`).
 - For the next version, start from the current scripts and keep `block_data_cells`, including in any new `all_cells` branch.
 - Don't use older multistim versions for new analyses.
+
+## Alternate branch: dual-F0 chords (experimental)
+
+`sound_tuning_multistim_dualF0_{fov_analysis,area_layer_green_yellow_analysis,cross_area_cellclass_analysis}_v1.py` is an **alternate branch** built from the main v4/v5/v5 scripts (with the v5/v6/v6 figure-layout changes applied). Its results are provisional until the user has reviewed them. Don't promote it into the main pipeline or the README's recommended list unless asked. README section 3b has the details. Things to keep in mind when editing it:
+- **Chord blocks:** chord sessions are split by the `chord3t_F0` in their behavior file into `chord_lowF0` / `chord_highF0` (prefixes `chordlo_` / `chordhi_`). `BLOCK_LABEL` for the chord blocks is filled in at runtime from the F0s.
+- **Combined index function:** `dualf0_combined_indices()` computes the combined indices from the per-condition response columns. It exists in **both** stage 1 and stage 3 (stage 3 uses it for trial reduction), and the two copies must stay identical.
+- **Two indices, tested separately:** `chord_matched_harmonic_selectivity` is the primary index and `chord_bfresid_harmonic_selectivity` the sensitivity index. They're tested separately, not as one Holm family.
+- **Output folders:** they are `sound_tuning_multistim_dualF0_*`, separate from the main pipeline.
+- **Same figure layout as main v5/v6/v6:** the equation sits under the statistics in one side panel, FM asterisks are at the signed-log positions, and kHz ticks use 3 significant figures.
 
 ## Architecture: three-stage pipelines
 
