@@ -27,17 +27,22 @@ Real runs need the lab data mounts (`settings.INFO2P_PATH`, `settings.TWOPHOTON_
 - Output directories are **not versioned** (for example `<TEMP_OUTPUT_PATH>/evan/sound_tuning_multistim_fov_analysis/<subject>/<area>/<date_tag>/`). Running a different version overwrites the previous outputs in the same place. Trial-archive filenames and the `schema_version` field (for example `multistim_v2`, `_trial_response_archive_v13.npz`) are what downstream scripts check for compatibility.
 - `*_changes.txt` / `CHANGES_v*.txt` files record what changed per version. Newer drafts sometimes arrive as downloaded zip folders, such as `sound_tuning_NEW_analysis_2026*/` (the original multistim v3 drop) and `sound_chunks_examples_*/` (stimulus-generation scripts and WAV examples). Before using a script from one of these folders, copy it to the top level and add it to the README.
 
-## Current multistim pipeline (v3 / v4 / v4)
+## Current multistim pipeline (v4 / v5 / v5)
 
-1. `sound_tuning_multistim_fov_analysis_v3.py`: run once per area. This is a byte-for-byte copy of the downloaded v3.
-2. `sound_tuning_multistim_area_layer_green_yellow_analysis_v4.py`
-3. `sound_tuning_multistim_cross_area_cellclass_analysis_v4.py`
+1. `sound_tuning_multistim_fov_analysis_v4.py`: run once per area.
+2. `sound_tuning_multistim_area_layer_green_yellow_analysis_v5.py`
+3. `sound_tuning_multistim_cross_area_cellclass_analysis_v5.py`
 
-The stage 2 and 3 v4 scripts are the v3 scripts plus the v2b fixes. The downloaded v3 downstream scripts were built from v2 and had lost them. The fixes are:
-- The `block_data_cells()` filter. Cells from FOVs that never recorded a sound block have all-NaN columns for it, and the filter excludes them from that block's `all_cells` plots, rasters, statistics and responsive-cell subsets.
-- The cross-area pandas fragmentation fix (`allc.copy()` / `allc.assign(...)`).
+This set is the previous v3/v4/v4 pipeline plus layout changes to figure labels only. It doesn't change the statistics, the output tables or the archive format (see `CHANGES_selectivity_annotation_update.txt`). The changes are:
+- `_selectivity_equation_box(ax, block, fontsize)` now calls `ax.axis("off")` and centres the equation. So always pass it a **dedicated blank panel** (the `axeq` created as an extra `subplots` column), never a data axis.
+- Stage 1 prints each cell's selectivity index (`SELECTIVITY_SPEC[block]["metric"]`, formatted by `_format_cell_selectivity`) on the `individual_tuning_pages` panels and the `cell_reports` tuning panels.
 
-Don't use the downloaded v3 stage 2/3 scripts or the v2/v2b multistim scripts for new analyses. When making a v5, start from v4 and keep `block_data_cells`, including in any new `all_cells` branch.
+History worth keeping:
+- The downloaded v3 stage 2/3 scripts were built from v2, not v2b, and had lost the v2b fixes. The committed v4 restored them, and v5 keeps them. The fixes are:
+  - the `block_data_cells()` filter. Cells from FOVs that never recorded a sound block have all-NaN columns for it, and the filter excludes them from that block's `all_cells` plots, rasters, statistics and responsive-cell subsets;
+  - the cross-area pandas fragmentation fix (`allc.copy()` / `allc.assign(...)`).
+- For the next version, start from the current scripts and keep `block_data_cells`, including in any new `all_cells` branch.
+- Don't use older multistim versions for new analyses.
 
 ## Architecture: three-stage pipelines
 

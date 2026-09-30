@@ -1,0 +1,18 @@
+Updated multistim pipeline versions
+
+Stage 1: sound_tuning_multistim_fov_analysis_v4.py
+Stage 2: sound_tuning_multistim_area_layer_green_yellow_analysis_v5.py
+Stage 3: sound_tuning_multistim_cross_area_cellclass_analysis_v5.py
+
+Changes
+-------
+1. Dedicated selectivity figures now reserve a separate right-hand white panel for the equation.
+   The equation is centered there at 15.5 pt, so it cannot occlude plotted data points.
+2. Per-cell selectivity values are printed on every responsive-cell panel in individual_tuning_pages.
+   Pure tones: lifetime sparseness S_life.
+   Chords: harmonic selectivity SI_harm.
+   FM sweeps: direction selectivity SI_dir.
+3. The same sound-specific per-cell selectivity value is printed in the tuning-panel title for each
+   corresponding sound row in every cell_reports image.
+4. Existing statistics, FM signed-log spacing, v2b incomplete-block filtering, output folder structure,
+   and selectivity definitions are unchanged.
