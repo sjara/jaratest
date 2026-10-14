@@ -54,6 +54,15 @@ History worth keeping:
 - **Output folders:** they are `sound_tuning_multistim_dualF0_*`, separate from the main pipeline.
 - **Same figure layout as main v5/v6/v6:** the equation sits under the statistics in one side panel, FM asterisks are at the signed-log positions, and kHz ticks use 3 significant figures.
 
+## Alternate branch: pure-tone level series (tonotopic mapping)
+
+`sound_tuning_pure_tone_levels_fov_analysis_v1.py` (README section 3c) handles days with several `pure_tones_<N>dB` sessions per FOV. The scientific goal is a **tonotopic map built from all levels**: thresholds vary along A1 (e.g. the low-frequency pole may need louder tones), so level is used to recruit cells, and each cell gets a threshold and CF. BF shifts across levels are a secondary check on whether combining levels is safe. Things to know:
+- **Scripts:** single stage only (no stage 2/3). Report figures come from `posthoc_figures/bf_level_figures.py` (BF histograms FOV × level, example cells across levels) and `posthoc_figures/bf_level_tonotopy.py` (threshold, CF, center frequency at threshold + 10 / + 20 dB, recruitment, threshold vs CF, ROI maps). Both read stage-1 outputs only; the tonotopy script also reads `suite2p_reference_dir` from each `fov_manifest.json` to load `ops.npy` / `stat.npy`.
+- **Column naming:** built from the dual-F0 stage 1's pure-tone parts (helpers copied). Per-level columns are `pure_<N>dB_*`. `level_view()` renames one level back to `pure_*` so the earlier BF functions (`save_combined_bf_outputs`, `plot_bf_across_fovs`) run once per level.
+- **No red channel** (`nchannels = 1`): `classify_fov_cells` skips Cellpose, labels every cell GREEN (meaning unclassified) and sets `red_channel_recorded = False`. If no FOV has a red channel, `main()` reduces the module-level `CELL_GROUPS` to `("all",)` and skips GREEN-vs-YELLOW outputs, so figure layouts must size from `len(CELL_GROUPS)`, not a hard-coded 3.
+- **Per-cell BF-shift test:** use the centroid permutation version. The argmax version is very conservative. Range-edge cells can show real centroid shifts from truncation.
+- **Pilot:** imag041 20261008 is a sparse pilot (few ROIs in the concatenated Suite2p runs; FOV 4 at 75 dB only). The user is collecting new data with all 4 levels in ≥ 3 FOVs along the tonotopic axis. Don't draw conclusions from the pilot.
+
 ## Architecture: three-stage pipelines
 
 Every workflow (`sound_tuning`, `am_tuning`, multistim `sound_tuning`, natural sound) follows the same pattern:

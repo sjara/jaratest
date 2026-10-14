@@ -11,6 +11,7 @@ This directory contains:
 - FOV-aware analysis of matched pure-tone, 3-tone-chord, and FM-sweep blocks;
 - natural-sound response, repeat-variability, and repeat-number stability analyses;
 - an experimental alternate branch for days with two chord F0 blocks per FOV (dual-F0 chord analysis; section 3b);
+- a pure-tone level-series branch for tonotopic mapping across sound levels (threshold, CF, BF at each level in the same cells; section 3c);
 - older versioned scripts retained for reproducibility.
 
 For new analyses, use the most recent version listed below unless you specifically need to reproduce an older result.
@@ -605,6 +606,108 @@ All options are the same as in the main pipeline, including `--dry-run`. The sta
 
 ---
 
+# 3c. ALTERNATE BRANCH: pure-tone level series (tonotopic mapping across sound levels)
+
+**Status:** v1. The analyses were reviewed on the imag041 20261008 pilot. That day is too sparse for conclusions (see "Pilot data and next recordings" below). The branch writes to its own output folder.
+
+**Why several levels.** Response thresholds differ across A1. For example, cells at the low-frequency pole may need louder tones before they respond, so a map built from one quiet level under-samples parts of the tonotopic axis. Each FOV is therefore imaged at several levels (e.g. 45, 55, 65, 75 dB SPL), and the map is built from all of them: each cell gets a threshold and a characteristic frequency (CF), and we can see at which level each part of the map fills in. Comparing BF across levels in the same cells also shows how far the preferred frequency moves with level, i.e. how safe it is to combine levels.
+
+Use it for days where each FOV has **several `pure_tones` sessions at different sound levels**, processed from one concatenated Suite2p run so the ROIs are the same cells in every level. In info2p, give each session the FOV's `FOV#` and a `sessionLabel` of the form `pure_tones_<N>dB` (for example `pure_tones_45dB`). The level is checked against the behavior file (`tone_intensity` / `current_intensity`) when the session is analyzed, and the script stops if any trial is not a pure tone. A plain `pure_tones` label falls back to the behavior file. An FOV may have any subset of levels: an FOV with a single level (imag041 FOV 4, session 016, 75 dB only) is included in the per-level analyses and skipped by the paired cross-level comparisons.
+
+| Step | Script |
+|---|---|
+| 1. FOV analysis (run once per area) | `sound_tuning_pure_tone_levels_fov_analysis_v1.py` |
+| Report figures | `posthoc_figures/bf_level_figures.py` (then `posthoc_figures/make_wiki_pngs.py` if needed) |
+| Tonotopic map from all levels | `posthoc_figures/bf_level_tonotopy.py`: threshold, CF, center frequency at threshold + 10 / + 20 dB, recruitment by level, threshold vs CF, ROI maps on the mean image with a fitted frequency gradient |
+
+The two posthoc scripts read only stage-1 outputs (plus each FOV's Suite2p `ops.npy` / `stat.npy` for the maps), so they can be rerun with a different FOV order without rerunning stage 1. Pass `--fov-order AREA=...` in physical order along the tonotopic axis (for imag041 20261008: FOV 0 → 4 runs from low to high frequency, `A1=0,1,2,3,4`). Without it, FOVs are sorted by median BF / CF.
+
+```bash
+python sound_tuning_pure_tone_levels_fov_analysis_v1.py imag041 --area A1 --dates 20261008 --dry-run
+python sound_tuning_pure_tone_levels_fov_analysis_v1.py imag041 --area A1 --dates 20261008
+python posthoc_figures/bf_level_figures.py \
+    <TEMP_OUTPUT_PATH>/evan/sound_tuning_pure_tone_levels_fov_analysis/imag041 --date 20261008 --areas A1 \
+    --fov-order A1=0,1,2,3,4
+python posthoc_figures/bf_level_tonotopy.py \
+    <TEMP_OUTPUT_PATH>/evan/sound_tuning_pure_tone_levels_fov_analysis/imag041 --date 20261008 --areas A1 \
+    --fov-order A1=0,1,2,3,4
+```
+
+On the lab workstation `TEMP_OUTPUT_PATH` is `/var/tmp/`, so outputs land under `/var/tmp/evan/`. Most of the stage-1 run time goes to the per-cell report PNGs (`--skip-cell-reports` turns them off).
+
+**Recordings without a red channel** (PMT1 not recorded, `nchannels = 1` in ops, as for imag041 20261008) are detected automatically. Cellpose is skipped and every cell is labeled GREEN, with `red_channel_recorded = False`, so here GREEN means "not classified", not "tdTomato-negative". If no FOV in the run has a red channel, the GREEN-vs-YELLOW comparisons are skipped and the summary figures show all cells in one column.
+
+Options: `--n-permutations` (responsiveness, default 4096), `--n-shift-permutations` (per-cell BF-shift test, default 2000), `--reference-level` (default: highest level), `--skip-cell-reports` (the per-cell report PNGs are the slowest part), `--plane`, `--seed`, `--dry-run`.
+
+### Definitions
+
+- Responsiveness, response scalar, dF/F, Cellpose GREEN/YELLOW classification, and BF (argmax of the mean tuning curve) are the same as in the multistim pipeline, computed separately at each level.
+- **BF-eligible** at a level: FDR-responsive at that level, response at BF > 0, and q < 0.05 at the BF itself. All cross-level BF comparisons use BF-eligible cells. The per-level replicas of earlier BF outputs keep the earlier rule (all FDR-responsive cells).
+- **Half-max centroid BF:** mean log2 frequency weighted by (response − peak/2) over the frequencies at or above half the peak. It is less granular than the argmax and is unchanged by a pure gain change.
+- **BF shift** for a level pair = log2(BF_high-level / BF_low-level) in octaves, for the same cell. **Slope** = least-squares slope of log2 BF against level, in octaves per 10 dB (cells BF-eligible at ≥ 3 levels).
+- **Per-cell shift test:** within each frequency, the trials of the two levels are pooled and the level labels are shuffled; BH-FDR across cells per pair within each FOV. Use the **centroid** version. On synthetic data it detected a 0.9-octave shift in >99% of cells, with no false positives for unshifted cells tuned away from the range edges. The argmax version is very conservative and is kept for reference. Caveat: when tuning broadens with level, a cell whose BF is within ~1.5 octaves of the lowest or highest tested frequency is truncated at the range edge, which really does move its centroid. Check edge cells before calling their shift a BF change.
+- **Threshold:** the lowest level with a significant excitatory response (any frequency with q < 0.05 and mean response > 0). A threshold at the lowest level recorded in that FOV is censored: it means "≤ that level". **CF:** the significant excitatory frequency with the largest response at the threshold level. **Pooled BF:** argmax of the tuning curve averaged across levels. Stage 1 computes threshold/CF only for FOVs with ≥ 2 levels; `bf_level_tonotopy.py` recomputes them from the stage-1 columns for every FOV. For a single-level FOV its "CF" is the BF at that level, with a censored threshold.
+- **Center frequency at threshold + 10 / + 20 dB** (`bf_level_tonotopy.py`): the half-max centroid at that level, if the level was recorded and the cell has a significant excitatory response there. The argmax BF at that level is also in the CSV. With 45–75 dB in 10 dB steps, + 20 dB exists only for thresholds of 45 or 55 dB. On the pilot data, the + 20 dB center sat a median 0.9 octave below CF, the usual low-frequency broadening at louder levels, so CF and center-frequency maps are not interchangeable.
+- **Maps** use the imaging frame (rows/columns of the Suite2p mean image), not cortical axes. The gradient arrow is a least-squares fit of log2 frequency on ROI center position (octaves per 100 pixels; pixel size depends on magnification), with a permutation p-value from shuffling frequencies across ROIs.
+- **Statistics:** FOV is the replicate. Across FOVs the script uses Wilcoxon on FOV medians (shift vs 0, Holm across levels), Friedman across levels on FOVs that have every level, and paired FOV Wilcoxon for GREEN vs YELLOW. With 4 FOVs, the smallest possible two-sided Wilcoxon p is 0.125, so within-FOV cell-level tests (which describe that FOV) and pooled-cell tests (labeled exploratory) are also reported.
+
+### Outputs
+
+```text
+<TEMP_OUTPUT_PATH>/evan/sound_tuning_pure_tone_levels_fov_analysis/<subject>/<area>/<date_tag>/
+    fov_manifest.csv, run_manifest.json, failures.json
+    fov_outputs/<date>_FOV###/
+        *_pure_tones_<N>dB_trial_response_archive_levels_v1.npz   (schema_version pure_tone_levels_v1, level_db)
+        <N>dB/                     profile, raster, BF histogram at that level
+        level_tuning_pages/        all cells responsive at any level; tuning curves at every level overlaid
+        cell_reports/<class>/      frequency x level response map, tuning curves per level, traces at each level's BF
+        fov_cell_results.csv
+    combined/
+        combined_cell_results.csv           wide: pure_<N>dB_* per level + cross-level columns
+                                            (bfshift_/centroidshift_<b>_vs_<a>dB_oct, _perm_p, _perm_q,
+                                             bf_/centroid_level_slope_oct_per_10dB, threshold_level_db, cf_hz, pooled_bf_hz)
+        combined_cell_level_results.csv     long: one row per cell x level
+        responsive_fraction_GREEN_vs_YELLOW_by_level.png
+        per_level/<N>dB/best_frequency/ and best_frequency_across_FOVs/   the earlier BF outputs, one folder per level
+        best_frequency_across_levels/
+            tuning_metrics_by_level.png        % responsive, % BF-eligible, median BF, response at BF, FWHM, sparseness
+            BF_distribution_by_level.png       BF distributions per level, pooled and per FOV
+            BF_pairwise_level_scatter.png      same cells, BF at level a vs level b, every pair
+            BF_shift_vs_reference_level.png    shift re reference level (argmax and centroid), FOV medians
+            bf_level_slope_by_FOV.png, centroid_level_slope_by_FOV.png
+            BF_across_levels_cell_matrix.png   cells x levels BF map per FOV
+            BF_shift_permutation_significance.png
+            threshold_and_CF.png
+            *.csv, BF_across_levels_statistics.json
+        REPORT.txt
+<TEMP_OUTPUT_PATH>/evan/posthoc_figures/bf_levels/   (bf_level_figures.py; labeled PNG + unlabeled TIFF)
+<TEMP_OUTPUT_PATH>/evan/posthoc_figures/bf_levels_tonotopy/   (bf_level_tonotopy.py)
+    <subject>_<date>_<area>_tonotopy_cells.csv          one row per cell: threshold (+ censored flag), CF,
+                                                        center frequency and BF at threshold + 10 / + 20 dB, BF per level
+    <subject>_<date>_<area>_tonotopy_FOV_summary.csv    cells, responsive, with CF, thresholds per level, median CF
+    *_recruitment_CF_by_threshold*                      CF counts per FOV stacked by threshold level
+    *_threshold_vs_CF*.png                              per FOV and pooled; Spearman rho (cells within FOV; pooled = exploratory)
+    *_tonotopic_map_CF_center10_center20*               ROI masks colored by frequency, gradient arrow
+    *_tonotopic_map_BF_by_level*                        same, BF at each level
+    *_CF_vs_center_frequency.png
+    tonotopy_statistics.json
+```
+
+### Pilot data and next recordings
+
+imag041 20261008 (A1; FOVs 0 → 4 from low to high frequency; FOVs 0–3 at 45/55/65/75 dB, FOV 4 = session 016 at 75 dB only; no red channel) ran end to end but cannot answer the tonotopy question:
+
+- The four concatenated Suite2p runs (sessions 000-003, 004-007, 008-011, 012-015) detected only 49 / 20 / 24 / 54 ROIs in total, while the standalone session 016 had 827 ROIs (207 kept as cells), with the same settings. The mean images show many more somata. FOV 0 (low-frequency pole) had only 5 cells with a CF.
+- At 75 dB, FOV 4 (nominal high-frequency end) was mostly tuned to 4–6 kHz, so the FOV medians do not follow the nominal order. Several FOVs pile up BFs at 40 kHz, the top of the tested range.
+
+For the next recordings:
+- record all four levels in at least 3 FOVs along the tonotopic axis, and number `FOV#` in physical order;
+- after Suite2p, compare the concatenated run's ROI count with a single-session run of the same FOV before analyzing;
+- consider extending the frequency range if many BFs sit at the top (or bottom) tested frequency;
+- record PMT1 if GREEN/YELLOW classification is wanted (without it every cell is labeled GREEN, meaning unclassified).
+
+---
+
 # 4. Natural-sound response and repeat-stability workflow
 
 The natural-sound workflow has two stages. First, analyze responses and save individual trial responses. Second, resample those trials to determine how stable response means and repeat-to-repeat variances are at different repeat counts.
@@ -875,5 +978,7 @@ natural_sound_repeat_stability_v2.py
 Use an older version only when reproducing an analysis that was originally generated with that version.
 
 The `sound_tuning_multistim_dualF0_*_v1.py` scripts are an experimental alternate branch (section 3b), not part of the recommended list above.
+
+`sound_tuning_pure_tone_levels_fov_analysis_v1.py` (section 3c) is a separate branch for pure-tone level-series days. It is the only stage-1 script for that experiment; its report figures come from `posthoc_figures/bf_level_figures.py` and `posthoc_figures/bf_level_tonotopy.py`.
 
 When adding a new version, please update this README so the recommended-script list and workflow examples continue to point to the current pipeline.
