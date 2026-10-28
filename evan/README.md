@@ -12,6 +12,7 @@ This directory contains:
 - natural-sound response, repeat-variability, and repeat-number stability analyses;
 - an experimental alternate branch for days with two chord F0 blocks per FOV (dual-F0 chord analysis; section 3b);
 - a pure-tone level-series branch for tonotopic mapping across sound levels (threshold, CF, BF at each level in the same cells; section 3c);
+- an automatic planner that detects which sounds were presented and runs the matching analyses (section 0);
 - older versioned scripts retained for reproducibility.
 
 For new analyses, use the most recent version listed below unless you specifically need to reproduce an older result.
@@ -28,9 +29,12 @@ For new analyses, use the most recent version listed below unless you specifical
 | `am_tuning` area analysis | `am_tuning_area_analysis_v9.py` | Batch frequency/AM-rate tuning analysis of one area |
 | `am_tuning` GREEN vs YELLOW by layer | `am_tuning_area_layer_green_yellow_analysis_v4.py` | Within-area, within-layer GREEN/YELLOW comparisons |
 | `am_tuning` cross-area analysis | `am_tuning_cross_area_cellclass_analysis_v5.py` | Compare A1/AAF/A2 within GREEN or YELLOW cells |
-| Multistim FOV analysis (stage 1) | `sound_tuning_multistim_fov_analysis_v5.py` | Analyze matched pure-tone, chord, and FM blocks from the same FOV |
+| Quick BF check during an experiment | `quick_bf_check_v1.py` | Median BF of one pure-tone session (about 20 s after single-session Suite2p) with suggested centers / chord F0 and clipping checks |
+| Automatic planner / runner | `sound_tuning_auto_analysis_v1.py` | Detect the sounds in each FOV and run the level-series and/or multistim analyses |
+| Multistim FOV analysis (stage 1) | `sound_tuning_multistim_fov_analysis_v7.py` | Analyze matched pure-tone, chord, FM, FM fixed-range, band-noise, and noise-pair blocks from the same FOV; each single-cell panel notes the cell's BF (every pure-tone level), BF offset from the sound's center, and selectivity index |
 | Multistim GREEN vs YELLOW by layer (stage 2) | `sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py` | Compare GREEN/YELLOW cells within area and layer using FOV-level inference |
 | Multistim cross-area analysis (stage 3) | `sound_tuning_multistim_cross_area_cellclass_analysis_v6.py` | Compare A1/AAF/A2 separately within GREEN and YELLOW cells |
+| Pure-tone level series (stage 1) | `sound_tuning_pure_tone_levels_fov_analysis_v2.py` | BF / threshold / CF across sound levels in the same cells (section 3c) |
 | Natural-sound response analysis | `natural_sound_response_analysis_v2.py` | Analyze natural-sound responsiveness and same-condition repeat variability |
 | Natural-sound repeat stability | `natural_sound_repeat_stability_v2.py` | Estimate how stable mean and variance estimates are as repeat count changes |
 
@@ -87,6 +91,38 @@ Batch analyses write under:
 ```
 
 rather than `/tmp` directly.
+
+---
+
+# 0. Automatic analysis (`sound_tuning_auto_analysis_v1.py`)
+
+For `sound_tuning` days with FOV# in info2p, the planner reads every session's behavior file, works out which sounds were presented in each FOV, and runs the matching analyses:
+
+| What it finds in an FOV | What it runs |
+|---|---|
+| pure-tone sessions at >= 2 levels | `sound_tuning_pure_tone_levels_fov_analysis_v2.py` on those sessions, then `posthoc_figures/bf_level_figures.py` and `posthoc_figures/bf_level_tonotopy.py` with `--fov-order AREA=<FOV# ascending>` |
+| any chord, FM, FM fixed-range, band-noise, or noise-pair session | `sound_tuning_multistim_fov_analysis_v6.py` on those sessions plus the FOV's pure tones (one level per FOV). The planner still runs v6; run v7 directly (section 3) for the per-cell BF / SI notes and the other pure-tone levels |
+| two chord F0s in one FOV | the dual-F0 branch (section 3b) |
+| a red channel, and multistim blocks | stage 2; stage 3 if >= 2 areas |
+
+Sessions without a behavior file or Suite2p output, with several sound types, or with AM / fading noise (section 1) are listed and left out.
+
+```bash
+python sound_tuning_auto_analysis_v1.py imag041 --dates 20261015 --dry-run   # print the plan only
+python sound_tuning_auto_analysis_v1.py imag041 --dates 20261015
+```
+
+Options: `--areas`, `--only levels|multistim`, `--exclude-sessions`, `--pure-tone-level`, `--n-permutations`, `--skip-cell-reports`, `--no-fov-order` (sort FOVs by median BF/CF instead of FOV#), `--plane`. The plan and one log per step go to `<TEMP_OUTPUT_PATH>/evan/sound_tuning_auto_analysis/<subject>/<date_tag>/`. FOV# should follow the physical order along the tonotopic axis, because it sets the order of the level-series figures.
+
+## Quick BF check during an experiment (`quick_bf_check_v1.py`)
+
+Use it after a pure-tone session (70 dB recommended: the planned level of the other sounds and the highest clean tone level with the current calibration) and a single-session Suite2p run, to choose the next blocks' frequencies:
+
+```bash
+python quick_bf_check_v1.py imag041 20261022 001
+```
+
+It prints and saves (`<TEMP_OUTPUT_PATH>/evan/quick_bf_check_<session>/<subject>/<date>_<session>/`) the median BF of BF-eligible cells with a bootstrap 95% CI, the half-max centroid median, and the center that puts the most cells within ±0.5 octave. It also prints suggested `noisepair_center_freq` / `bandnoise_center_freq` (= median BF), `chord3t_F0` (= median BF; the chord spans BF to 4 × BF), and the fixed 2–40 kHz FM sweep. Each setting gets a clipping check at the planned levels (`--target-level`, `--noisepair-level`, `--tone-levels`), computed from the session's own left-speaker amplitudes and `--noise-amp-at-60db`. Figures: a report-style BF histogram (`bf_histogram_labeled.png` + `bf_histogram_unlabeled.tif`, same style as `posthoc_figures/bf_histogram_stack.py`, BF-eligible cells by default, `--hist-cells responsive` for all FDR-responsive cells, dashed line = target), BF histogram, normalized tuning raster sorted by BF, ROI map colored by BF, one page per 20 BF-eligible cells, and example traces. If the BF distribution has two clear peaks, it reports the two modes instead of the median, with one set of settings and clipping checks per mode. The test smooths the log2 BF values (0.3-octave kernel) and requires the two highest peaks to be at least 1 octave apart (`--mode-min-separation`), each to hold at least 20% of BF-eligible cells within ±0.5 octave (`--mode-min-fraction`), and the density between them to fall below 0.6 of the smaller peak (`--mode-max-dip`). It also warns when a single-peaked distribution is too spread for the median to represent the FOV, and when a target sits at the edge of the tested range. It uses the multistim v6 conventions; on imag041 20261015 it reproduced the level-series median BFs (sessions 004 and 015). ROI indices are those of the single-session Suite2p run.
 
 ---
 
@@ -394,7 +430,12 @@ This workflow analyzes the newer `sound_tuning` blocks:
 
 - `pure_tones` / `pure_tone`;
 - `chord_tones` / `chord_3t`;
-- `fm_tones` / `fm_sounds` / `fm`.
+- `fm_tones` / `fm_sounds` / `fm` (fixed-duration FM sweeps);
+- `fm_range` (FM sweeps over a fixed frequency range; behavior stim type `FM_fixed_range`), v6 and later;
+- `band_noise` (`Band_noise`), v6 and later;
+- `noise_pair` (`Noise_pair`), v6 and later.
+
+From v6 the block type comes from the behavior file (`current_stim_type`), not the sessionLabel, so labels such as `fm_sounds_frange_60dB` need no alias.
 
 It is designed for blocks acquired without moving the two-photon field of view and processed from one concatenated Suite2p binary. After the concatenated result is split into per-session folders, Suite2p ROI index `i` must refer to the same cell in every block assigned to that FOV.
 
@@ -402,20 +443,20 @@ It is designed for blocks acquired without moving the two-photon field of view a
 
 | Stage | Script |
 |---|---|
-| 1. FOV analysis (run once per area) | `sound_tuning_multistim_fov_analysis_v5.py` |
+| 1. FOV analysis (run once per area) | `sound_tuning_multistim_fov_analysis_v7.py` |
 | 2. GREEN vs YELLOW within area and layer | `sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py` |
 | 3. Cross-area comparison | `sound_tuning_multistim_cross_area_cellclass_analysis_v6.py` |
 
 Example run for two areas:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v5.py imag039 --area A1 --dates 20260910
-python sound_tuning_multistim_fov_analysis_v5.py imag039 --area AAF --dates 20260910
+python sound_tuning_multistim_fov_analysis_v7.py imag039 --area A1 --dates 20260910
+python sound_tuning_multistim_fov_analysis_v7.py imag039 --area AAF --dates 20260910
 python sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py imag039 --dates 20260910 --areas A1 AAF
 python sound_tuning_multistim_cross_area_cellclass_analysis_v6.py imag039 --dates 20260910 --areas A1 AAF
 ```
 
-Stages 2 and 3 read the stage 1 outputs, so run stage 1 with v5 for every area of interest before running the v6 scripts. Stage 1 writes to the same output folder regardless of version, so a v5 run overwrites earlier stage 1 outputs for the same subject, area, and dates. The v6 downstream scripts keep the v2b fixes for FOVs that lack a sound block: cells with no data for a block are excluded from that block's plots, rasters, and statistics.
+Stages 2 and 3 read the stage 1 outputs, so run stage 1 (v7; v6 or v5 for an earlier result) for every area of interest before running the v6 scripts. v7 keeps the v6 columns and archive schema, so the v6 downstream scripts read it unchanged. Stage 2/3 v6 analyze pure tones, chords, and fixed-duration FM only; the fm_range / band_noise / noise_pair columns are ignored by them. Stage 1 writes to the same output folder regardless of version, so a v5 run overwrites earlier stage 1 outputs for the same subject, area, and dates. The v6 downstream scripts keep the v2b fixes for FOVs that lack a sound block: cells with no data for a block are excluded from that block's plots, rasters, and statistics.
 
 ### Required `info2p` FOV metadata
 
@@ -443,11 +484,11 @@ For older `info2p` files without `FOV#`, the script can infer provisional groups
 Run the FOV analysis once per area:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v5.py imag039 \
+python sound_tuning_multistim_fov_analysis_v7.py imag039 \
     --area A1 \
     --dates 20260910
 
-python sound_tuning_multistim_fov_analysis_v5.py imag039 \
+python sound_tuning_multistim_fov_analysis_v7.py imag039 \
     --area AAF \
     --dates 20260910
 ```
@@ -455,7 +496,7 @@ python sound_tuning_multistim_fov_analysis_v5.py imag039 \
 Check grouping without loading imaging data:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v5.py imag039 \
+python sound_tuning_multistim_fov_analysis_v7.py imag039 \
     --area A1 \
     --dates 20260910 \
     --dry-run
@@ -464,7 +505,7 @@ python sound_tuning_multistim_fov_analysis_v5.py imag039 \
 Legacy explicit grouping example:
 
 ```bash
-python sound_tuning_multistim_fov_analysis_v5.py imag039 \
+python sound_tuning_multistim_fov_analysis_v7.py imag039 \
     --area A1 \
     --dates 20260910 \
     --fov-groups 20260910:000-001-002 20260910:006-007
@@ -497,6 +538,7 @@ Default response-test permutations: `4096`.
             cell_reports/
                 green/
                 yellow/
+            pure_tones_other_levels/<N>dB/     (v7: FOVs with pure tones at several levels)
             ... per-block figures and trial-response archives ...
     combined/
         combined_cell_results.csv
@@ -505,6 +547,38 @@ Default response-test permutations: `4096`.
         REPORT.txt
         ... combined figures ...
 ```
+
+### What is new in stage 1 v7
+
+v7 keeps the v6 statistics, response windows, column names, and trial archives (`schema_version = multistim_v2`). The extra pure-tone levels get their own seeds, so the other blocks' random draws are the same as in v6. New:
+
+- **Per-cell notes on every single-cell panel** (`individual_tuning_pages/<block>/` and each tuning panel of `cell_reports/`):
+  - `BF: 70 dB 8.09 kHz · 75 dB 6.63 kHz`: the cell's BF at each pure-tone level of that FOV, the pure_tones block level first. `n.s.` means not BF-eligible at that level.
+  - `BF re band center (8 kHz): −0.29 oct`: BF (pure_tones level) relative to the sound's center frequency (FM center, band center, noise-pair A center) or chord F0. Only for BF-eligible cells.
+  - the selectivity index (as in v5/v6); noise-pair panels also give the per-cell novelty-test q.
+  The tuning pages are drawn after all blocks of the FOV are merged, so they know each cell's BF. The cell-report title gives the BF note and, on its own line, the blocks the cell responds to.
+- **Other pure-tone levels are analyzed, not skipped.** The pure_tones block level is chosen as in v6 (`--pure-tone-level`, or by default the level recorded in the most FOVs; ties: closest to the other blocks' level). Each other level in the FOV is analyzed the same way into `fov_outputs/<FOV>/pure_tones_other_levels/<N>dB/` (own archive, raster, tuning pages) and merged as `pure_<N>dB_*` columns. Run FOVs separately (or pass `--pure-tone-level`) when one FOV has only a different level, otherwise the "most FOVs" rule can pick that level for every FOV.
+- **BF eligibility** as in the level-series branch and `quick_bf_check_v1.py`: `pure_bf_eligible` = responsive (FDR) & response at BF > 0 & q at BF < 0.05, plus `pure_q_at_bf` (and `pure_<N>dB_bf_eligible`, `pure_<N>dB_q_at_bf`). `pure_tones_level_db` records the pure_tones block level. Existing columns such as `pure_bf_octaves_from_<fmr|bn|np>_center` are unchanged and still use the argmax BF of every cell.
+- **Reading the notes.** BF is the argmax of the tuning curve, so broadly tuned cells can show very different BFs at two levels (on 20261022 FOV1, 25% of cells eligible at both levels shifted by > 1 octave). A bounded index is ±1 when its two responses have opposite signs.
+- **One output folder per subject, area, and dates.** `fov_outputs/<FOV>/` folders from separate runs coexist, but `combined/`, `fov_manifest.csv`, and `run_manifest.json` describe the last run only (a `--dry-run` also rewrites the two manifests). Copy `combined/` first to keep an earlier run's summaries.
+
+### What is new in stage 1 v6
+
+v6 analyzes pure tones, chords, and fixed-duration FM exactly as v5 does (the FOV grouping on imag039 20260910 is identical). New:
+
+- **FM fixed range** (`fmr_`): condition = signed slope (oct/s). The sound lasts as long as the sweep (octave range / |slope|: 0.075–1.2 s for 6 octaves at 5–80 oct/s). Metrics as for fixed-duration FM: direction selectivity `fmr_direction_selectivity`, best slope, speed sparseness, plus `fmr_best_sweep_duration_s`.
+- **Band noise** (`bn_`): condition = bandwidth (octaves) around a fixed center, AM at `bandnoise_mod_rate`. `bn_bandwidth_selectivity` SI_bw = (R_widest − R_narrowest) / (|R_widest| + |R_narrowest|); +1 = prefers broadband. Spectral density is the same for every bandwidth, so wider bands carry more total power.
+- **Noise pair** (`np_`): two 0.1-s sounds, A = narrow band noise (`noisepair_center_freq`, `noisepair_bandwidth`), B = white noise, in orders AB, BA, AA, BB at several gaps. Condition code = 10 × order index (AB=0, BA=1, AA=2, BB=3) + gap in s. `np_novelty_selectivity` SI_nov = (R_diff − R_same) / (|R_diff| + |R_same|), with R_diff = mean(AB, BA) and R_same = mean(AA, BB). Both sides start once with A and once with B, so under linear summation the first-sound responses cancel and SI_nov measures the extra response to a second sound that differs from the first (stimulus-specific adaptation). Also per gap (`np_novelty_selectivity_gap_<g>_s`), `np_first_sound_selectivity` (A-first vs B-first; +1 = prefers band noise A), and a per-cell test of R_diff − R_same (`np_novelty_contrast`, `_z`, `_p`, `_q`, `_sig_fdr`; Welch-style z, BH-FDR across cells). The ratio is noisy when responses are small, so use the contrast test for "which cells adapt".
+- **Response windows:** 0–1.4 s for fm_range and noise_pair, whose sounds last up to 1.2 s and 1.0 s (with ISI ≥ 1.4 s, the window never reaches the next sound); 0–1 s for every other block. Their indices are also saved for 0–1 s (`*_win0to1`). Baseline stays −1–0 s.
+- **Real sound duration in alignment QC.** For fm_range and noise_pair the behavior file's `stim_duration` is the GUI value (0.5 s), not the sound length. v6 uses `current_FMfixedrange_sweep_duration` and 2 × `noisepair_sound_duration` + `current_noisepair_gap`.
+- **One pure-tone level per FOV** when an FOV has a level series: `--pure-tone-level`, or by default the level recorded in the most FOVs (ties: closest to the other blocks' level). The other levels are listed as skipped. The level series itself goes to section 3c.
+- **No red channel** (`nchannels = 1`): every cell is GREEN (= unclassified), `red_channel_recorded = False`, combined figures show all cells, and each selectivity index is tested against 0 per FOV (`combined/selectivity_plots/<sound>/*_by_FOV.png`, `selectivity_by_FOV_statistics.json`) instead of GREEN vs YELLOW.
+- **BF relative to each new block's center frequency** (`pure_bf_octaves_from_<fmr|bn|np>_center`, octaves) with same-cell scatters against the new indices (per FOV). For fixed-range sweeps this is the main confound of direction selectivity: an upward sweep reaches a high-BF cell late, a downward sweep reaches it early.
+- `combined/selectivity_plots/noise_pair/noise_pair_gap_dependence.png`: SI_nov and per-order responses against gap.
+- `posthoc_figures/noise_pair_novelty_by_gap.py <multistim run folder>` writes `combined/selectivity_plots/noise_pair/noise_pair_novelty_contrast_by_gap.png`: population traces of AB/BA/AA/BB at the 0.4 and 0.8 s gaps, and the novelty contrast mean(AB, BA) − mean(AA, BB) at each gap with a 95% CI **across trials** (trial responses averaged over cells first, so shared trial-to-trial noise is included), plus a ±20% band of the mean response as a smallest effect of interest. Use this figure, not the cell-level p-values, to judge whether the preceding sound matters. The design cannot isolate the effect of A on B by itself (4 orders, 6 unknowns).
+- `posthoc_figures/noise_pair_second_sound_by_gap.py <multistim run folder>` answers "does the response to B depend on whether A preceded it, as a function of gap": `noise_pair_B_response_by_preceding_sound_and_gap.png` (+ `.txt`, `.json`) compares, in B-driven cells, B alone (B as the first sound), B after A (AB), and B after B (BB). The first sound's response is removed by subtracting a template: the mean trace of trials starting with the same frozen sound at the longest gap, valid until 0.9 s and extrapolated linearly after that (so the 0.8 s gap is less certain). Each B response is the mean over 0.4 s after B onset. 95% CIs and p-values are bootstrapped over trials. It reloads the noise-pair sessions, because single-trial traces are not in the archive. This assumes the two responses add; at the 0.1–0.2 s gaps the second window overlaps the first response's peak, so sublinear summation after a large first response (B) would look like B-specific adaptation.
+- `--sessions`, `--exclude-sessions`, `--skip-cell-reports`. Sessions without a behavior file are skipped. Cell reports show one row per block recorded in that FOV.
+- Archives keep `schema_version = multistim_v2` and add `response_window_s`, `trial_sound_duration_s`, and `level_db`.
 
 ### What stage 1 (v5) does
 
@@ -564,7 +638,7 @@ Optional controls:
 --dry-run
 ```
 
-Always run `sound_tuning_multistim_fov_analysis_v5.py` before the v6 downstream scripts. If only v1 outputs exist, they lack the condition-level mean/SEM traces that the `multistim_v2` archive schema added, so stage 1 must be rerun.
+Always run `sound_tuning_multistim_fov_analysis_v7.py` (or v6/v5) before the v6 downstream scripts. If only v1 outputs exist, they lack the condition-level mean/SEM traces that the `multistim_v2` archive schema added, so stage 1 must be rerun.
 
 ---
 
@@ -616,15 +690,16 @@ Use it for days where each FOV has **several `pure_tones` sessions at different 
 
 | Step | Script |
 |---|---|
-| 1. FOV analysis (run once per area) | `sound_tuning_pure_tone_levels_fov_analysis_v1.py` |
+| 1. FOV analysis (run once per area) | `sound_tuning_pure_tone_levels_fov_analysis_v2.py` (v1 + `--sessions` / `--exclude-sessions`; skips sessions without a behavior file; same outputs) |
 | Report figures | `posthoc_figures/bf_level_figures.py` (then `posthoc_figures/make_wiki_pngs.py` if needed) |
 | Tonotopic map from all levels | `posthoc_figures/bf_level_tonotopy.py`: threshold, CF, center frequency at threshold + 10 / + 20 dB, recruitment by level, threshold vs CF, ROI maps on the mean image with a fitted frequency gradient |
 
 The two posthoc scripts read only stage-1 outputs (plus each FOV's Suite2p `ops.npy` / `stat.npy` for the maps), so they can be rerun with a different FOV order without rerunning stage 1. Pass `--fov-order AREA=...` in physical order along the tonotopic axis (for imag041 20261008: FOV 0 → 4 runs from low to high frequency, `A1=0,1,2,3,4`). Without it, FOVs are sorted by median BF / CF.
 
 ```bash
-python sound_tuning_pure_tone_levels_fov_analysis_v1.py imag041 --area A1 --dates 20261008 --dry-run
-python sound_tuning_pure_tone_levels_fov_analysis_v1.py imag041 --area A1 --dates 20261008
+python sound_tuning_pure_tone_levels_fov_analysis_v2.py imag041 --area A1 --dates 20261008 --dry-run
+python sound_tuning_pure_tone_levels_fov_analysis_v2.py imag041 --area A1 --dates 20261008
+python sound_tuning_pure_tone_levels_fov_analysis_v2.py imag041 --area A1 --dates 20261015 --sessions 001-004 012-015
 python posthoc_figures/bf_level_figures.py \
     <TEMP_OUTPUT_PATH>/evan/sound_tuning_pure_tone_levels_fov_analysis/imag041 --date 20261008 --areas A1 \
     --fov-order A1=0,1,2,3,4
@@ -967,7 +1042,9 @@ am_tuning_area_analysis_v9.py
 am_tuning_area_layer_green_yellow_analysis_v4.py
 am_tuning_cross_area_cellclass_analysis_v5.py
 
-sound_tuning_multistim_fov_analysis_v5.py
+sound_tuning_auto_analysis_v1.py
+
+sound_tuning_multistim_fov_analysis_v7.py
 sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py
 sound_tuning_multistim_cross_area_cellclass_analysis_v6.py
 
@@ -979,6 +1056,6 @@ Use an older version only when reproducing an analysis that was originally gener
 
 The `sound_tuning_multistim_dualF0_*_v1.py` scripts are an experimental alternate branch (section 3b), not part of the recommended list above.
 
-`sound_tuning_pure_tone_levels_fov_analysis_v1.py` (section 3c) is a separate branch for pure-tone level-series days. It is the only stage-1 script for that experiment; its report figures come from `posthoc_figures/bf_level_figures.py` and `posthoc_figures/bf_level_tonotopy.py`.
+`sound_tuning_pure_tone_levels_fov_analysis_v2.py` (section 3c) is a separate branch for pure-tone level-series days. It is the only stage-1 script for that experiment (v1 is kept for the 20261008 pilot); its report figures come from `posthoc_figures/bf_level_figures.py` and `posthoc_figures/bf_level_tonotopy.py`.
 
 When adding a new version, please update this README so the recommended-script list and workflow examples continue to point to the current pipeline.

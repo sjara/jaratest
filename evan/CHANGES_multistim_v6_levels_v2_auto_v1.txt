@@ -1,0 +1,62 @@
+Changes for imag041 20261015 (2026-10-21)
+==========================================
+
+New scripts (older versions unchanged):
+
+1. sound_tuning_multistim_fov_analysis_v6.py  (stage 1; v5 + new blocks)
+   - New blocks, from the behavior file's current_stim_type:
+       fm_range   (FM_fixed_range, prefix fmr_): condition = signed slope; direction selectivity,
+                  best slope, speed sparseness, as for fm_tones.
+       band_noise (Band_noise, prefix bn_): condition = bandwidth (oct); SI_bw = (R_widest - R_narrowest)/(|.|+|.|).
+       noise_pair (Noise_pair, prefix np_): condition code = 10 x order index + gap (s), orders AB, BA, AA, BB.
+                  SI_nov = (R_diff - R_same)/(|.|+|.|), R_diff = mean(AB, BA), R_same = mean(AA, BB); also per gap,
+                  first-sound preference SI_first (A vs B first), and a per-cell test of R_diff - R_same
+                  (Welch-style z, BH-FDR across cells: np_novelty_contrast/_z/_p/_q/_sig_fdr).
+   - Block type detected from the behavior file; sessionLabel only as fallback / cross-check.
+     Sessions without a behavior file are skipped (listed in run_manifest.json).
+   - One pure-tone level per FOV when an FOV has a level series (--pure-tone-level; default the level
+     recorded in the most FOVs, ties -> closest to the other blocks' level). 20261015: 65 dB.
+   - Event alignment uses each trial's real sound duration. For fm_range (sound = sweep, since
+     tkparadigms 91a5c1b) and noise_pair (2 x 0.1 s + gap) the behavior file's stim_duration (0.5 s)
+     is the GUI value; with it, session 009 failed the alignment QC (MAE 339 ms, max 825 ms); with the
+     real duration MAE = 71 ms.
+   - Response window per block: 0-1.4 s for fm_range and noise_pair (sounds up to 1.2 s / 1.0 s), 0-1 s
+     otherwise. Their indices are also saved for 0-1 s (*_win0to1). Archives add response_window_s,
+     trial_sound_duration_s, level_db; schema_version stays multistim_v2.
+   - No red channel (nchannels = 1): all cells GREEN (= unclassified), red_channel_recorded = False;
+     combined figures show all cells; selectivity indices tested against 0 per FOV
+     (selectivity_plots/<sound>/*_by_FOV.png, selectivity_by_FOV_statistics.json).
+   - BF offset from each new block's center frequency (pure_bf_octaves_from_<fmr|bn|np>_center) and
+     same-cell scatters against the new indices.
+   - Fixed-duration FM files with FMfixeddur_ fields are read as fm_tones.
+   - --sessions / --exclude-sessions, --skip-cell-reports; cell reports show one row per recorded block.
+   - pure_tones / chord_tones / fm_tones analysis is unchanged from v5 (same FOV grouping on 20260910).
+   Stage 2/3 v6 still cover pure tones, chords and fixed-duration FM only.
+
+2. sound_tuning_pure_tone_levels_fov_analysis_v2.py
+   - v1 + --sessions / --exclude-sessions, and skips pure-tone sessions without a behavior file
+     (20261015_000). Outputs and archives identical to v1.
+
+3. sound_tuning_auto_analysis_v1.py
+   - Reads info2p + behavior files, lists every session (sound type, level, center frequency, red
+     channel, Suite2p present), and runs: level series (+ both posthoc figure scripts, FOV order =
+     FOV#) for FOVs with >= 2 pure-tone levels; multistim v6 for FOVs with any non-pure-tone block
+     (dual-F0 branch when an FOV has two chord F0s); stages 2/3 only with a red channel (stage 3 with
+     >= 2 areas). --dry-run prints the plan. Detection is imported from multistim v6 on purpose.
+
+4. posthoc_figures/noise_pair_novelty_by_gap.py
+   - Noise-pair traces at the 0.4 / 0.8 s gaps and the novelty contrast per gap with trial-level
+     95% CIs (reads the multistim v6 noise-pair archives only).
+
+5. posthoc_figures/noise_pair_second_sound_by_gap.py
+   - Response to B alone vs B after A vs B after B per gap (first-sound template subtracted;
+     trial-level bootstrap CIs). Reloads the noise-pair sessions.
+
+6. quick_bf_check_v1.py
+   - One pure-tone session -> median BF, suggested centers / chord F0 (= BF), clipping checks, and
+     verification figures. Validated against the level-series medians (20261015 004: 3.64 kHz,
+     015: 32.76 kHz).
+
+Validation: py_compile; dry runs on imag041 20261008/20261015 and imag039 20260910/20260924;
+synthetic check of the noise-pair novelty test (null: 5.8% p<0.05, 0.1% FDR; +0.02 effect: 54% FDR);
+full runs of levels v2 + posthoc figures and multistim v6 on imag041 20261015.

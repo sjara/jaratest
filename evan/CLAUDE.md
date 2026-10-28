@@ -27,11 +27,28 @@ Real runs need the lab data mounts (`settings.INFO2P_PATH`, `settings.TWOPHOTON_
 - Output directories are **not versioned** (for example `<TEMP_OUTPUT_PATH>/evan/sound_tuning_multistim_fov_analysis/<subject>/<area>/<date_tag>/`). Running a different version overwrites the previous outputs in the same place. Trial-archive filenames and the `schema_version` field (for example `multistim_v2`, `_trial_response_archive_v13.npz`) are what downstream scripts check for compatibility.
 - `*_changes.txt` / `CHANGES_v*.txt` files record what changed per version. Newer drafts sometimes arrive as downloaded zip folders, such as `sound_tuning_NEW_analysis_2026*/` (the original multistim v3 drop). Before using a script from one of these folders, copy it to the top level and add it to the README.
 
-## Current multistim pipeline (v5 / v6 / v6)
+## Automatic planner
 
-1. `sound_tuning_multistim_fov_analysis_v5.py`: run once per area.
+`sound_tuning_auto_analysis_v1.py SUBJECT --dates ... [--dry-run]` reads info2p plus each behavior file and decides what to run: the level series (+ both posthoc BF scripts, `--fov-order` = FOV# ascending) for FOVs with ≥ 2 pure-tone levels, multistim v6 for FOVs with any non-pure-tone block (the dual-F0 branch when an FOV has two chord F0s), and stages 2/3 only with a red channel (stage 3 also needs ≥ 2 areas). It imports block detection (`inspect_behavior_session`, `parse_session_filter`, ...) from `sound_tuning_multistim_fov_analysis_v6.py` on purpose (second deliberate cross-script import). Renaming those functions breaks it. When a new sound type is added, add it to v6's `STIM_TYPE_BLOCK` and to the planner. The planner still runs multistim v6, not v7 (moving it to v7 would be a planner v2).
+
+## Current multistim pipeline (v7 / v6 / v6)
+
+1. `sound_tuning_multistim_fov_analysis_v7.py`: run once per area.
 2. `sound_tuning_multistim_area_layer_green_yellow_analysis_v6.py`
 3. `sound_tuning_multistim_cross_area_cellclass_analysis_v6.py`
+
+Stage 1 v7 (`CHANGES_multistim_v7.txt`) keeps v6's statistics, columns and archive schema and adds per-cell notes. Things to know:
+- **Panel notes:** every `individual_tuning_pages` panel and cell-report tuning panel shows the cell's BF at each pure-tone level (`_cell_bf_note`; "n.s." = not BF-eligible), the BF offset from the block's center / chord F0 (`_block_center`), and the SI (`_cell_selectivity_note`). So `analyze_block` no longer draws the tuning pages. It returns their inputs in `meta["_tuning_pages"]`, and `merge_fov_blocks` draws them after the merge, then pops the key before the manifest is saved.
+- **Other pure-tone levels:** `split_pure_tone_levels` (replaces `keep_one_pure_tone_level`) keeps the other levels. They are analyzed into `pure_tones_other_levels/<N>dB/` and merged as `pure_<N>dB_*` columns, with seeds `seed + 7919*(k+1)` so the main blocks' seeds are unchanged.
+- **BF eligibility:** `pure_bf_eligible` = responsive & response at BF > 0 & q at BF < 0.05, as in the level-series branch and `quick_bf_check_v1.py`.
+- **Output folder:** it is per subject/area/dates, so separate per-FOV runs on one day share `combined/`, and the last run wins. A run including an FOV that has only a different pure-tone level can make the "most FOVs" rule pick that level for every FOV. Run FOVs separately, or pass `--pure-tone-level`.
+
+Stage 1 v6 (`CHANGES_multistim_v6_levels_v2_auto_v1.txt`) adds the blocks `fm_range` (`fmr_`), `band_noise` (`bn_`), and `noise_pair` (`np_`; condition code = 10 × order index + gap, `NOISEPAIR_ORDERS`). Things to know:
+- **Block type comes from the behavior file** (`current_stim_type` → `STIM_TYPE_BLOCK`), not the sessionLabel. Sessions without a behavior file are skipped. With a pure-tone level series in an FOV, one level becomes the `pure_tones` block (`--pure-tone-level`; 65 dB on imag041 20261015).
+- **Real sound durations:** fm_range and noise_pair sounds are not `stim_duration` long (that's the GUI value). `_trial_sound_duration()` supplies the real length for the alignment QC, which fails with the GUI value.
+- **Response window per block** (`BLOCK_RESPONSE_RANGE`): 0–1.4 s for fm_range and noise_pair, 0–1 s otherwise; `*_win0to1` versions of their indices are the sensitivity check.
+- **No red channel** handled as in the level-series branch (`RED_RECORDED`, `plot_groups()`).
+- Stage 2/3 v6 still know only pure/chord/FM; the new blocks have no stage 2/3 yet (none were needed: 20261015 has no red channel and one area).
 
 The previous version (v4/v5/v5, see `CHANGES_selectivity_annotation_update.txt`) added the selectivity-figure layout and per-cell selectivity labels. Its statistics, output tables and archive format are unchanged in this version. Things to know:
 - **Equation placement:** `_selectivity_equation_box(ax, block, fontsize)` calls `ax.axis("off")` and draws the equation directly under the last text already in that axes (`ax.texts[-1]`), or centred if there is none. Always pass it the blank **side panel** after drawing the statistics text there (stages 1/2: `axeq.text(...)` then the box; stage 3: `draw_stats(axs, ...)` then the box). Never pass a data axis.
@@ -56,7 +73,7 @@ History worth keeping:
 
 ## Alternate branch: pure-tone level series (tonotopic mapping)
 
-`sound_tuning_pure_tone_levels_fov_analysis_v1.py` (README section 3c) handles days with several `pure_tones_<N>dB` sessions per FOV. The scientific goal is a **tonotopic map built from all levels**: thresholds vary along A1 (e.g. the low-frequency pole may need louder tones), so level is used to recruit cells, and each cell gets a threshold and CF. BF shifts across levels are a secondary check on whether combining levels is safe. Things to know:
+`sound_tuning_pure_tone_levels_fov_analysis_v2.py` (README section 3c; v2 = v1 + `--sessions` and skipping sessions without behavior) handles days with several `pure_tones_<N>dB` sessions per FOV. The scientific goal is a **tonotopic map built from all levels**: thresholds vary along A1 (e.g. the low-frequency pole may need louder tones), so level is used to recruit cells, and each cell gets a threshold and CF. BF shifts across levels are a secondary check on whether combining levels is safe. Things to know:
 - **Scripts:** single stage only (no stage 2/3). Report figures come from `posthoc_figures/bf_level_figures.py` (BF histograms FOV × level, example cells across levels) and `posthoc_figures/bf_level_tonotopy.py` (threshold, CF, center frequency at threshold + 10 / + 20 dB, recruitment, threshold vs CF, ROI maps). Both read stage-1 outputs only; the tonotopy script also reads `suite2p_reference_dir` from each `fov_manifest.json` to load `ops.npy` / `stat.npy`.
 - **Column naming:** built from the dual-F0 stage 1's pure-tone parts (helpers copied). Per-level columns are `pure_<N>dB_*`. `level_view()` renames one level back to `pure_*` so the earlier BF functions (`save_combined_bf_outputs`, `plot_bf_across_fovs`) run once per level.
 - **No red channel** (`nchannels = 1`): `classify_fov_cells` skips Cellpose, labels every cell GREEN (meaning unclassified) and sets `red_channel_recorded = False`. If no FOV has a red channel, `main()` reduces the module-level `CELL_GROUPS` to `("all",)` and skips GREEN-vs-YELLOW outputs, so figure layouts must size from `len(CELL_GROUPS)`, not a hard-coded 3.
